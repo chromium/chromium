@@ -619,6 +619,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1472675084647422956">Visa fler</translation>
 <translation id="1473223074251193484">Konfigurera internetdelning</translation>
 <translation id="1473616112002966036">&amp;Videobildruta</translation>
+<translation id="1475224725276659152">Logga in som <ph name="EMAIL" /> om du vill få tillgång till din läslista med mera på alla dina enheter</translation>
 <translation id="1476607407192946488">&amp;Språkinställningar</translation>
 <translation id="1477654881618305065">Organisationen tillåter inte att du delar innehållet. Kontakta administratören om du behöver hjälp.</translation>
 <translation id="1478340334823509079">Detaljer: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2148248734299717598">Stäng vänster vy</translation>
 <translation id="2148401732477136168">Det gick inte att hämta installerade appar.</translation>
 <translation id="2148892889047469596">Casta fliken</translation>
+<translation id="2149773378153994101">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina tillägg med mera från <ph name="DEVICE" /></translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2150139952286079145">Sök platser</translation>
 <translation id="2150168665016482929">Mi&amp;nimera</translation>
@@ -4149,6 +4151,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4131283654370308898">Tillåt <ph name="EXTENSION_NAME" /> på den här webbplatsen</translation>
 <translation id="4131410914670010031">Svartvitt</translation>
 <translation id="413193092008917129">Rutiner för nätverksdiagnostik</translation>
+<translation id="4132108564882155194">Logga in som <ph name="EMAIL" /> om du vill få tillgång till din läslista med mera från <ph name="DEVICE" /></translation>
 <translation id="4132137475637520539">Låt alla med länken gå med</translation>
 <translation id="4132364317545104286">Byt namn på eSIM-profilen</translation>
 <translation id="4132969033912447558">Återuppta <ph name="FILE_NAME" /></translation>
@@ -4242,6 +4245,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4213540068152645535">Problem med att ändra lösenordet</translation>
 <translation id="42137655013211669">Åtkomsten till den här resursen blockerades av servern.</translation>
 <translation id="4214192212360095377">Inaktivera nu</translation>
+<translation id="421564716234835106">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina tillägg med mera på alla dina enheter</translation>
 <translation id="4216407171061541111">Organisationen har inaktiverat möjligheten att spara flikar i Google-kontot</translation>
 <translation id="4216511743389425832">Lyssna på sidan</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -4461,6 +4465,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4379623957571212011">Välj en bild för att tillämpa temat direkt</translation>
 <translation id="4380055775103003110">Om problemet kvarstår kan du testa andra sätt att fortsätta på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Helskärmsläget aktiverades</translation>
+<translation id="4380934846131873000">Logga in som <ph name="EMAIL" /> om du vill få tillgång till din sparade information med mera från <ph name="DEVICE" /></translation>
 <translation id="4381902252848068865">Tillåt inte att webbplatsen sparar data</translation>
 <translation id="4381997246130185847">Du kan fortsätta där du slutade eller skapa nya flikgrupper när du är på språng</translation>
 <translation id="4384312707950789900">Lägg till i prioriterade nätverk</translation>
@@ -6143,6 +6148,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5700761515355162635">Tredjepartscookies tillåts</translation>
 <translation id="5700836101007545240">Lägg till anslutning har inaktiverats av administratören</translation>
 <translation id="5701212929149679556">Roaming i mobilnätverk</translation>
+<translation id="5701500921291556452">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina lösenord med mera från <ph name="DEVICE" /></translation>
 <translation id="5701786609538182967">Andra appar är inställda på att öppna samma länkar som <ph name="APP_NAME" />. Detta inaktiverar att <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> och 1 app till öppnar länkar som stöds.</translation>
 <translation id="5702161882524398150">Fråga om föregående flik</translation>
 <translation id="5703716265115423771">sänk volymen</translation>
@@ -8315,6 +8321,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="738322632977123193">Det gick inte att ladda upp. Använd en bild i något av dessa format: .jpg, .gif, .png, .bmp, .tif eller .webp</translation>
 <translation id="7384687527486377545">Automatisk upprepning på tangentbordet</translation>
 <translation id="7384804382450832142">Anslut till Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina bokmärken med mera på alla dina enheter</translation>
 <translation id="7385854874724088939">Det uppstod ett problem vid utskriften.  Se över skrivaren och försök igen.</translation>
 <translation id="7385870590821097913">Följ stegen på den andra enheten</translation>
 <translation id="7387107590792462040">Vänta medan installering pågår</translation>
@@ -8503,6 +8510,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7517292544534877198">Använd Googles standardkryptering för lösenorden i Google-kontot</translation>
 <translation id="7517959947270534934">Dina familjemedlemmar kan inte ta emot lösenord just nu. Be dem att uppdatera Chrome och synkronisera sina lösenord.</translation>
 <translation id="7518079994230200553">Det här alternativet är inte tillgängligt just nu.</translation>
+<translation id="752021853309481824">Logga in som <ph name="EMAIL" /> om du vill få tillgång till din sparade information med mera på alla dina enheter</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Visa genvägar</translation>
 <translation id="7521430434164837205">Microsoft 365-filer</translation>
@@ -10216,6 +10224,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8841843049738266382">Läs och ändra användarna på godkännandelistan</translation>
 <translation id="8841884135319684422">Avsluta uppgift</translation>
 <translation id="8842594465773264717">Radera fingeravtrycket</translation>
+<translation id="8843160937959801189">Logga in som <ph name="EMAIL" /> om du vill få tillgång till dina bokmärken med mera från <ph name="DEVICE" /></translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8846132060409673887">Läsa information om datorns tillverkare och modell</translation>
 <translation id="8846239054091760429">Monoljud, start, Livetextning med mera</translation>

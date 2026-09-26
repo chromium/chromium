@@ -619,6 +619,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1472675084647422956">Továbbiak megjelenítése</translation>
 <translation id="1473223074251193484">Internetmegosztás beállítása</translation>
 <translation id="1473616112002966036">&amp;Videóképkocka</translation>
+<translation id="1475224725276659152">Ha az összes eszközén hozzá szeretne férni olvasólistájához és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Nyelvi beállítások</translation>
 <translation id="1477654881618305065">A szervezete nem engedélyezi ennek a tartalomnak a megosztását. Ha segítségre van szüksége, forduljon a rendszergazdához.</translation>
 <translation id="1478340334823509079">Részletek: <ph name="FILE_NAME" /></translation>
@@ -1500,6 +1501,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2148248734299717598">Bal oldali nézet bezárása</translation>
 <translation id="2148401732477136168">Nem sikerült lekérdezni a telepített alkalmazásokat.</translation>
 <translation id="2148892889047469596">Lap átküldése</translation>
+<translation id="2149773378153994101">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközről származó bővítményeihez és egyebekhez, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2150139952286079145">Célhelyek keresése</translation>
 <translation id="2150168665016482929">Mi&amp;nimalizálás</translation>
@@ -4146,6 +4148,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> engedélyezése ezen a webhelyen</translation>
 <translation id="4131410914670010031">Fekete-fehér</translation>
 <translation id="413193092008917129">Hálózati diagnosztikai rutinok</translation>
+<translation id="4132108564882155194">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő olvasólistájához és egyebekhez, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">A link birtokában bárki csatlakozhat</translation>
 <translation id="4132364317545104286">Az eSIM-profil átnevezése</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> letöltésének folytatása</translation>
@@ -4239,6 +4242,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4213540068152645535">Probléma adódott a jelszó módosítása közben</translation>
 <translation id="42137655013211669">A szerver letiltotta a hozzáférést ehhez az erőforráshoz.</translation>
 <translation id="4214192212360095377">Kikapcsolás most</translation>
+<translation id="421564716234835106">Ha az összes eszközén hozzá szeretne férni bővítményeihez és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Szervezete kikapcsolta a lapok mentését az Ön Google-fiókjában</translation>
 <translation id="4216511743389425832">Oldal meghallgatása</translation>
 <translation id="4217571870635786043">Diktálás</translation>
@@ -4458,6 +4462,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4379623957571212011">Válasszon képet a téma azonnali alkalmazásához</translation>
 <translation id="4380055775103003110">Ha a probléma továbbra is fennáll, más módon is próbálkozhat a(z) <ph name="SITE_ETLD_PLUS_ONE" /> webhelyen való folytatással.</translation>
 <translation id="4380648069038809855">Teljes képernyős módba lépett</translation>
+<translation id="4380934846131873000">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő mentett adataihoz és egyebekhez, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Adatmentés tiltása a webhely számára</translation>
 <translation id="4381997246130185847">Ott folytathatja, ahol abbahagyta, és új lapcsoportokat hozhat létre útközben</translation>
 <translation id="4384312707950789900">Hozzáadás az előnyben részesített hálózatokhoz</translation>
@@ -6141,6 +6146,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5700761515355162635">Harmadik féltől származó cookie-k engedélyezve</translation>
 <translation id="5700836101007545240">A Kapcsolat hozzáadása funkciót letiltotta a rendszergazda</translation>
 <translation id="5701212929149679556">Mobilroaming</translation>
+<translation id="5701500921291556452">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön tárolt jelszavaihoz és egyebekhez, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Más alkalmazásoknál is be van állítva, hogy megnyissák ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következők számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> és 1 további alkalmazás.</translation>
 <translation id="5702161882524398150">Kérdés feltétele az előző lapról</translation>
 <translation id="5703716265115423771">hangerő csökkentése</translation>
@@ -8313,6 +8319,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="738322632977123193">Nem sikerült a feltöltés. Ilyen formátumú képeket használhat: .jpg, .gif, .png, .bmp, .tif és .webp</translation>
 <translation id="7384687527486377545">Automatikus billentyűismétlés</translation>
 <translation id="7384804382450832142">Csatlakozás a Microsoft OneDrive szolgáltatáshoz</translation>
+<translation id="7385713560829077068">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez, könyvjelzőihez és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Valami nem sikerült a nyomtatás során. Ellenőrizze a nyomtatót, és próbálkozzon újra.</translation>
 <translation id="7385870590821097913">Kövesse a másik eszközén megjelenő lépéseket</translation>
 <translation id="7387107590792462040">Kérjük, várjon, amíg tart a telepítés</translation>
@@ -8500,6 +8507,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7517292544534877198">A Google alapértelmezett titkosításának használata a Google-fiókjában tárolt jelszavakhoz</translation>
 <translation id="7517959947270534934">Családtagja jelenleg nem tud jelszavakat fogadni. Kérje meg, hogy frissítse a Chrome-ot, és szinkronizálja a jelszavait.</translation>
 <translation id="7518079994230200553">Ez a beállítás jelenleg nem áll rendelkezésre.</translation>
+<translation id="752021853309481824">Ha az összes eszközén hozzá szeretne férni mentett adataihoz és egyéb tartalmaihoz, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portál inkognitó módban: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Parancsikonok megjelenítése</translation>
 <translation id="7521430434164837205">Microsoft 365-fájlok</translation>
@@ -10213,6 +10221,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="8841843049738266382">Engedélyezőlistára tett felhasználók megtekintése és módosítása</translation>
 <translation id="8841884135319684422">Feladat befejezése</translation>
 <translation id="8842594465773264717">Ennek az ujjlenyomatnak a törlése</translation>
+<translation id="8843160937959801189">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő könyvjelzőihez és egyebekhez, jelentkezzen be a következő fiókkal: <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8846132060409673887">A számítógép gyártójának és típusának elolvasása</translation>
 <translation id="8846239054091760429">Monó hang, indítás, Élő feliratozás és egyebek.</translation>

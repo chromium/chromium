@@ -618,6 +618,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1473223074251193484">Definir configuração da ligação (à Internet) via telemóvel</translation>
 <translation id="1473616112002966036">&amp;Frame do vídeo</translation>
+<translation id="1475224725276659152">Para ter a sua Lista de leitura e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Definições de idioma</translation>
 <translation id="1477654881618305065">A sua organização não lhe permite partilhar este conteúdo. Se precisar de ajuda, contacte o seu administrador.</translation>
 <translation id="1478340334823509079">Detalhes: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2148248734299717598">Fechar vista esquerda</translation>
 <translation id="2148401732477136168">Falha ao consultar as aplicações instaladas.</translation>
 <translation id="2148892889047469596">Transmitir separador</translation>
+<translation id="2149773378153994101">Para aceder às suas extensões e muito mais de <ph name="DEVICE" />, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Pesquisar destinos</translation>
 <translation id="2150168665016482929">Mi&amp;nimizar</translation>
@@ -4137,6 +4139,7 @@ Quer pará-lo?</translation>
 <translation id="4131283654370308898">Permita a extensão <ph name="EXTENSION_NAME" /> neste site</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
 <translation id="413193092008917129">Rotinas de diagnóstico de rede</translation>
+<translation id="4132108564882155194">Para aceder à sua Lista de leitura e muito mais de <ph name="DEVICE" />, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Permitir a adesão de qualquer pessoa com o link</translation>
 <translation id="4132364317545104286">Mudar o nome do perfil do eSIM</translation>
 <translation id="4132969033912447558">Retomar <ph name="FILE_NAME" /></translation>
@@ -4230,6 +4233,7 @@ Quer pará-lo?</translation>
 <translation id="4213540068152645535">Problemas de alteração da palavra-passe</translation>
 <translation id="42137655013211669">O acesso a este recurso foi proibido pelo servidor.</translation>
 <translation id="4214192212360095377">Desativar agora</translation>
+<translation id="421564716234835106">Para aceder às suas extensões e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">A sua organização desativou a gravação de separadores na sua Conta Google</translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4217571870635786043">Ditado</translation>
@@ -4449,6 +4453,7 @@ Quer pará-lo?</translation>
 <translation id="4379623957571212011">Selecione uma imagem para aplicar o tema instantaneamente</translation>
 <translation id="4380055775103003110">Se este problema continuar a acontecer, pode experimentar outras formas de continuar em <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Entrou no modo de ecrã inteiro</translation>
+<translation id="4380934846131873000">Para aceder às suas informações guardadas e muito mais de <ph name="DEVICE" />, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Não permitir que o site guarde dados</translation>
 <translation id="4381997246130185847">Pode retomar as suas tarefas a qualquer momento ou criar novos grupos de separadores em qualquer lugar</translation>
 <translation id="4384312707950789900">Adicionar às preferidas</translation>
@@ -6132,6 +6137,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5700836101007545240">A opção Adicionar ligação foi desativada pelo gestor</translation>
 <translation id="5701212929149679556">Roaming de rede móvel</translation>
+<translation id="5701500921291556452">Para aceder às suas palavras-passe e muito mais de <ph name="DEVICE" />, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e mais 1 app abram links suportados.</translation>
 <translation id="5702161882524398150">Pergunte sobre o separador anterior</translation>
 <translation id="5703716265115423771">diminuir o volume</translation>
@@ -8304,6 +8310,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="738322632977123193">Não é possível carregar. Use uma imagem num dos seguintes formatos: .jpg, .gif, .png, .bmp, .tif ou .webp</translation>
 <translation id="7384687527486377545">Repetição automática do teclado</translation>
 <translation id="7384804382450832142">Associe ao Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Para ter os seus marcadores e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Ocorreu um erro ao tentar imprimir. Verifique a impressora e tente novamente.</translation>
 <translation id="7385870590821097913">Siga os passos no seu outro dispositivo</translation>
 <translation id="7387107590792462040">Aguarde enquanto a instalação está em curso</translation>
@@ -8492,6 +8499,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7517292544534877198">Usar a encriptação predefinida da Google para as palavras-passe na sua Conta Google</translation>
 <translation id="7517959947270534934">De momento, o membro da sua família não pode receber palavras-passe. Peça-lhe para atualizar o Chrome e sincronizar as respetivas palavras-passe.</translation>
 <translation id="7518079994230200553">De momento, esta opção não está disponível.</translation>
+<translation id="752021853309481824">Para aceder às suas informações guardadas e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal de Navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar atalhos</translation>
 <translation id="7521430434164837205">Ficheiros do Microsoft 365</translation>
@@ -10205,6 +10213,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8841843049738266382">Ler e alterar utilizadores na lista de autorizações</translation>
 <translation id="8841884135319684422">Terminar tarefa</translation>
 <translation id="8842594465773264717">Eliminar esta impressão digital</translation>
+<translation id="8843160937959801189">Para aceder aos seus marcadores e muito mais do <ph name="DEVICE" />, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8846132060409673887">Consultar o fabricante e modelo deste computador</translation>
 <translation id="8846239054091760429">Áudio mono, arranque, Legendas instantâneas e mais</translation>

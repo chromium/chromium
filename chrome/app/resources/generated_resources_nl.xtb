@@ -618,6 +618,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1472675084647422956">Meer bekijken</translation>
 <translation id="1473223074251193484">Tethering-configuratie instellen</translation>
 <translation id="1473616112002966036">&amp;Videoframe</translation>
+<translation id="1475224725276659152">Log in als <ph name="EMAIL" /> om onder andere je leeslijst op al je apparaten te gebruiken</translation>
 <translation id="1476607407192946488">&amp;Taalinstellingen</translation>
 <translation id="1477654881618305065">Je organisatie staat niet toe dat je deze content deelt. Als je hulp nodig hebt, neem je contact op met de beheerder.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2148248734299717598">Weergave links sluiten</translation>
 <translation id="2148401732477136168">Kan geïnstalleerde apps niet opvragen.</translation>
 <translation id="2148892889047469596">Tabblad casten</translation>
+<translation id="2149773378153994101">Log in als <ph name="EMAIL" /> om onder andere je extensies van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2150139952286079145">Bestemmingen zoeken</translation>
 <translation id="2150168665016482929">Mi&amp;nimaliseren</translation>
@@ -4133,6 +4135,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> toestaan op deze site</translation>
 <translation id="4131410914670010031">Zwart/wit</translation>
 <translation id="413193092008917129">Routines voor netwerkdiagnose</translation>
+<translation id="4132108564882155194">Log in als <ph name="EMAIL" /> om onder andere je leeslijst van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="4132137475637520539">Iedereen met de link toestaan om deel te nemen</translation>
 <translation id="4132364317545104286">Naam van profiel voor e-simkaart wijzigen</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> hervatten</translation>
@@ -4226,6 +4229,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4213540068152645535">Problemen met het wijzigen van je wachtwoord</translation>
 <translation id="42137655013211669">De toegang tot deze bron is verboden door de server.</translation>
 <translation id="4214192212360095377">Nu uitzetten</translation>
+<translation id="421564716234835106">Log in als <ph name="EMAIL" /> om onder andere je extensies op al je apparaten te gebruiken</translation>
 <translation id="4216407171061541111">Je organisatie heeft tabbladen opslaan uitgezet in je Google-account</translation>
 <translation id="4216511743389425832">Deze pagina beluisteren</translation>
 <translation id="4217571870635786043">Dicteren</translation>
@@ -4445,6 +4449,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4379623957571212011">Kies een afbeelding om het thema meteen toe te passen</translation>
 <translation id="4380055775103003110">Als dit probleem zich blijft voordoen, kun je andere manieren proberen om door te gaan op <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Volledig scherm geopend</translation>
+<translation id="4380934846131873000">Log in als <ph name="EMAIL" /> om onder andere je opgeslagen informatie van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="4381902252848068865">Niet toestaan dat de site gegevens opslaat</translation>
 <translation id="4381997246130185847">Je kunt onderweg verdergaan waar je gebleven was of nieuwe tabbladgroepen maken</translation>
 <translation id="4384312707950789900">Toevoegen aan voorkeursnetwerken</translation>
@@ -6123,6 +6128,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5700761515355162635">Cookies van derden toegestaan</translation>
 <translation id="5700836101007545240">Verbinding toevoegen is uitgezet door je beheerder</translation>
 <translation id="5701212929149679556">Mobiele roaming</translation>
+<translation id="5701500921291556452">Log in als <ph name="EMAIL" /> om onder andere je wachtwoorden van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="5701786609538182967">Andere apps zijn ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> en 1 andere app ondersteunde links openen.</translation>
 <translation id="5702161882524398150">Vragen stellen over vorig tabblad</translation>
 <translation id="5703716265115423771">volume omlaag</translation>
@@ -8294,6 +8300,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="738322632977123193">Kan niet uploaden. Gebruik een afbeelding met een van deze indelingen: .jpg, .gif, .png, .bmp, .tif of .webp</translation>
 <translation id="7384687527486377545">Automatische herhaling toetsenbord</translation>
 <translation id="7384804382450832142">Koppelen aan Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Log in met het e-mailadres <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="7385854874724088939">Er is iets misgegaan bij het afdrukken. Controleer je printer en probeer het opnieuw.</translation>
 <translation id="7385870590821097913">Volg de stappen op je andere apparaat</translation>
 <translation id="7387107590792462040">Een ogenblik geduld terwijl de installatie wordt uitgevoerd</translation>
@@ -8481,6 +8488,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7517292544534877198">De standaardversleuteling van Google gebruiken voor de wachtwoorden in je Google-account</translation>
 <translation id="7517959947270534934">Je gezinslid kan op dit moment geen wachtwoorden krijgen. Vraag ze Chrome te updaten en hun wachtwoorden te synchroniseren.</translation>
 <translation id="7518079994230200553">Deze optie is op dit moment niet beschikbaar.</translation>
+<translation id="752021853309481824">Log in als <ph name="EMAIL" /> om onder andere je opgeslagen informatie op al je apparaten te gebruiken</translation>
 <translation id="7520766081042531487">Incognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Snelkoppelingen tonen</translation>
 <translation id="7521430434164837205">Microsoft 365-bestanden</translation>
@@ -10195,6 +10203,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8841843049738266382">Gebruikers op de toelatingslijst lezen en wijzigen</translation>
 <translation id="8841884135319684422">Taak beëindigen</translation>
 <translation id="8842594465773264717">Deze vingerafdruk verwijderen</translation>
+<translation id="8843160937959801189">Log in als <ph name="EMAIL" /> om onder andere je bookmarks van <ph name="DEVICE" /> te gebruiken</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8846132060409673887">De fabrikant en het model van deze computer lezen</translation>
 <translation id="8846239054091760429">Monogeluid, opstarten, Live ondertiteling en meer</translation>

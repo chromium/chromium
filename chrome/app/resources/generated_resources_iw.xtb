@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">עוד</translation>
 <translation id="1473223074251193484">‏קביעת ההגדרות האישיות לשיתוף אינטרנט בין מכשירים (tethering)</translation>
 <translation id="1473616112002966036">&amp;פריים</translation>
+<translation id="1475224725276659152">כדי לקבל גישה לרשימת הקריאה ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">הגד&amp;רות שפה</translation>
 <translation id="1477654881618305065">בהתאם למדיניות הארגון שלך, אין לך אפשרות לשתף את התוכן הזה. לקבלת עזרה, צריך ליצור קשר עם מנהל המערכת.</translation>
 <translation id="1478340334823509079">פרטים: <ph name="FILE_NAME" /></translation>
@@ -1501,6 +1502,7 @@
 <translation id="2148248734299717598">סגירת התצוגה השמאלית</translation>
 <translation id="2148401732477136168">השאילתה לגבי האפליקציות המותקנות נכשלה.</translation>
 <translation id="2148892889047469596">‏הפעלת Cast של כרטיסייה</translation>
+<translation id="2149773378153994101">כדי לקבל גישה לתוספים ולנתונים אחרים מתוך <ph name="DEVICE" />, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2150139952286079145">יעדי חיפוש</translation>
 <translation id="2150168665016482929">מ&amp;זעור</translation>
@@ -4148,6 +4150,7 @@
 <translation id="4131283654370308898">מתן הרשאה לתוסף <ph name="EXTENSION_NAME" /> באתר הזה</translation>
 <translation id="4131410914670010031">שחור ולבן</translation>
 <translation id="413193092008917129">תרחישים של אבחון רשת</translation>
+<translation id="4132108564882155194">כדי לקבל גישה לרשימת הקריאה ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">כל מי שיש לו את הקישור יכול להצטרף</translation>
 <translation id="4132364317545104286">‏שינוי שם של פרופיל eSIM</translation>
 <translation id="4132969033912447558">המשך ההורדה של <ph name="FILE_NAME" /></translation>
@@ -4241,6 +4244,7 @@
 <translation id="4213540068152645535">הייתה בעיה בשינוי הסיסמה</translation>
 <translation id="42137655013211669">הגישה למשאב זה נאסרה על-ידי השרת.</translation>
 <translation id="4214192212360095377">כיבוי מיידי</translation>
+<translation id="421564716234835106">כדי לקבל גישה לתוספים ולנתונים אחרים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">‏הארגון שלך השבית את האפשרות לשמור כרטיסיות בחשבון Google</translation>
 <translation id="4216511743389425832">האזנה לדף הזה</translation>
 <translation id="4217571870635786043">הכתבה</translation>
@@ -4460,6 +4464,7 @@
 <translation id="4379623957571212011">כדי שהעיצוב החדש יופעל מיידית, צריך לבחור תמונה</translation>
 <translation id="4380055775103003110">אם הבעיה נמשכת, אפשר לנסות להמשיך בדרכים אחרות ב-<ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">התבצע מעבר למסך מלא</translation>
+<translation id="4380934846131873000">כדי לקבל גישה למידע השמור ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">אין לאפשר לאתר לשמור נתונים</translation>
 <translation id="4381997246130185847">אפשר להמשיך מהמקום שבו הפסקת או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה</translation>
 <translation id="4384312707950789900">הוספה לרשתות המועדפות</translation>
@@ -6143,6 +6148,7 @@
 <translation id="5700761515355162635">‏יש אישור לקובצי cookie של צד שלישי</translation>
 <translation id="5700836101007545240">מנהל המערכת שלך השבית את היכולת להוסיף חיבור</translation>
 <translation id="5701212929149679556">נדידה סלולרית</translation>
+<translation id="5701500921291556452">כדי לקבל גישה לסיסמאות ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ואפליקציה אחת נוספת לא יפתחו קישורים נתמכים.</translation>
 <translation id="5702161882524398150">יש לך שאלה על הכרטיסייה הקודמת?</translation>
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
@@ -8319,6 +8325,7 @@
 <translation id="738322632977123193">‏לא ניתן להעלות את הקובץ. יש להעלות תמונה באחד מהפורמטים הבאים: ‎.jpg,‏ ‏‎.gif,‏ ‎.png,‏ ‎.bmp,‏ ‎.tif או ‎.webp</translation>
 <translation id="7384687527486377545">חזרה אוטומטית על פעולת מקלדת</translation>
 <translation id="7384804382450832142">‏התחברות ל-Microsoft OneDrive</translation>
+<translation id="7385713560829077068">כדי לקבל גישה לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">משהו השתבש בעת ניסיון הדפסה. יש לבדוק את המדפסת ולנסות שוב.</translation>
 <translation id="7385870590821097913">עליך לפעול לפי השלבים שמופיעים במכשיר השני שלך</translation>
 <translation id="7387107590792462040">עליך להמתין בזמן שההתקנה מתבצעת</translation>
@@ -8507,6 +8514,7 @@
 <translation id="7517292544534877198">‏שימוש בברירת המחדל של Google להצפנת הסיסמאות בחשבון Google</translation>
 <translation id="7517959947270534934">‏בן המשפחה שלך לא יכול לקבל סיסמאות כרגע. צריך לבקש ממנו לעדכן את Chrome ולסנכרן את הסיסמאות.</translation>
 <translation id="7518079994230200553">האפשרות הזו לא זמינה כרגע.</translation>
+<translation id="752021853309481824">כדי לקבל גישה למידע השמור ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">פורטל אנונימי: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">הצגת קיצורי דרך</translation>
 <translation id="7521430434164837205">‏קובצי Microsoft 365</translation>
@@ -10220,6 +10228,7 @@
 <translation id="8841843049738266382">קריאה ושינוי של משתמשים ברשימת היתרים</translation>
 <translation id="8841884135319684422">סיום המשימה</translation>
 <translation id="8842594465773264717">מחיקת טביעת האצבע הזו</translation>
+<translation id="8843160937959801189">כדי לקבל גישה לסימניות ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8846132060409673887">קריאת היצרן והדגם של המחשב הזה</translation>
 <translation id="8846239054091760429">אודיו במונו, הפעלה, כתוביות מיידיות ועוד</translation>

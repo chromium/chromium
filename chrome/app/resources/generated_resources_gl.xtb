@@ -618,6 +618,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1472675084647422956">Mostrar máis</translation>
 <translation id="1473223074251193484">Establecer configuración da conexión compartida</translation>
 <translation id="1473616112002966036">&amp;Fotograma de vídeo</translation>
+<translation id="1475224725276659152">Para poder acceder á túa lista de lectura e moito máis en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Configuración de idioma</translation>
 <translation id="1477654881618305065">A túa organización non che permite compartir este contido. Se precisas axuda, ponte en contacto co teu administrador.</translation>
 <translation id="1478340334823509079">Detalles: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2148248734299717598">Pechar vista esquerda</translation>
 <translation id="2148401732477136168">Produciuse un erro ao consultar as aplicacións instaladas.</translation>
 <translation id="2148892889047469596">Emitir contido da pestana</translation>
+<translation id="2149773378153994101">Para acceder ás túas extensións e moito máis desde <ph name="DEVICE" />, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2150139952286079145">Destinos da busca</translation>
 <translation id="2150168665016482929">Mi&amp;nimizar</translation>
@@ -4139,6 +4141,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4131283654370308898">Permitir <ph name="EXTENSION_NAME" /> neste sitio</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
 <translation id="413193092008917129">Rutinas de diagnóstico de rede</translation>
+<translation id="4132108564882155194">Para acceder á túa lista de lectura e moito máis desde <ph name="DEVICE" />, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Permitir que se una calquera persoa que teña a ligazón</translation>
 <translation id="4132364317545104286">Cambiar nome do perfil de eSIM</translation>
 <translation id="4132969033912447558">Retomar descarga de <ph name="FILE_NAME" /></translation>
@@ -4232,6 +4235,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4213540068152645535">Produciuse un erro ao cambiar o teu contrasinal</translation>
 <translation id="42137655013211669">O servidor non permitiu acceder a este recurso.</translation>
 <translation id="4214192212360095377">Desactivar agora</translation>
+<translation id="421564716234835106">Para poder acceder ás túas extensións e moito máis en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">A túa organización desactivou a opción de gardar pestanas na túa Conta de Google</translation>
 <translation id="4216511743389425832">Escoitar esta páxina</translation>
 <translation id="4217571870635786043">Ditado</translation>
@@ -4451,6 +4455,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4379623957571212011">Escolle unha imaxe para aplicar o tema ao instante</translation>
 <translation id="4380055775103003110">Se o problema persiste, podes probar outras maneiras de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Entraches no modo de pantalla completa</translation>
+<translation id="4380934846131873000">Para acceder á información que tes gardada e moito máis desde <ph name="DEVICE" />, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Non permitir que o sitio garde datos</translation>
 <translation id="4381997246130185847">Podes retomalo onde o deixaches ou crear grupos de pestanas esteas onde esteas</translation>
 <translation id="4384312707950789900">Engadir ás redes preferidas</translation>
@@ -6131,6 +6136,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidas</translation>
 <translation id="5700836101007545240">O administrador desactivou a opción Engadir conexión</translation>
 <translation id="5701212929149679556">Itinerancia móbil</translation>
+<translation id="5701500921291556452">Para poder acceder aos teus contrasinais e moito máis desde <ph name="DEVICE" />, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Hai outras aplicacións configuradas para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e 1 aplicación máis deixarán de ser as ferramentas predeterminadas para abrir as ligazóns compatibles.</translation>
 <translation id="5702161882524398150">Fai preguntas sobre a pestana anterior</translation>
 <translation id="5703716265115423771">baixa o volume</translation>
@@ -8301,6 +8307,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="738322632977123193">Non se puido cargar o ficheiro. Usa unha imaxe nun dos seguintes formatos: .jpg, .gif, .png, .bmp, .tif ou .webp</translation>
 <translation id="7384687527486377545">Repetición automática do teclado</translation>
 <translation id="7384804382450832142">Conectar con Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Produciuse un erro ao tentar imprimir. Comproba a túa impresora e téntao de novo.</translation>
 <translation id="7385870590821097913">Sigue os pasos que se indican no teu outro dispositivo</translation>
 <translation id="7387107590792462040">Espera mentres se leva a cabo a instalación</translation>
@@ -8489,6 +8496,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7517292544534877198">Usa a encriptación predeterminada de Google para os contrasinais na túa Conta de Google</translation>
 <translation id="7517959947270534934">O membro da túa familia non pode recibir contrasinais agora mesmo. Pídelle que actualice Chrome e sincronice os seus contrasinais.</translation>
 <translation id="7518079994230200553">Esta opción non está dispoñible neste momento.</translation>
+<translation id="752021853309481824">Para poder acceder á túa información gardada e moito máis en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal do modo de incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar atallos</translation>
 <translation id="7521430434164837205">Ficheiros de Microsoft 365</translation>
@@ -10202,6 +10210,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8841843049738266382">Ler e cambiar a lista de usuarios permitidos</translation>
 <translation id="8841884135319684422">Finalizar tarefa</translation>
 <translation id="8842594465773264717">Eliminar esta impresión dixital</translation>
+<translation id="8843160937959801189">Para poder acceder aos teus marcadores e a outros datos desde <ph name="DEVICE" />, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8846132060409673887">Consultar o fabricante e o modelo deste ordenador</translation>
 <translation id="8846239054091760429">Audio en mono, inicio, Subtítulos instantáneos e moito máis</translation>

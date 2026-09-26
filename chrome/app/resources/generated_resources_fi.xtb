@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">Näytä enemmän</translation>
 <translation id="1473223074251193484">Ota yhteyden jakaminen käyttöön</translation>
 <translation id="1473616112002966036">&amp;Videon yksittäiskuva</translation>
+<translation id="1475224725276659152">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi lukulistaa kaikilla laitteillasi</translation>
 <translation id="1476607407192946488">&amp;Kieliasetukset</translation>
 <translation id="1477654881618305065">Organisaatiosi ei salli sinun jakaa tätä sisältöä. Jos tarvitset apua, ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="1478340334823509079">Lisätiedot: <ph name="FILE_NAME" /></translation>
@@ -1501,6 +1502,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2148248734299717598">Sulje vasen näkymä</translation>
 <translation id="2148401732477136168">Asennettujen sovellusten hakeminen epäonnistui.</translation>
 <translation id="2148892889047469596">Striimaa välilehti</translation>
+<translation id="2149773378153994101">Kirjaudu sisään käyttäjän <ph name="EMAIL" />, niin voit käyttää esimerkiksi laajennuksia laitteelta <ph name="DEVICE" /></translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2150139952286079145">Hae kohteita</translation>
 <translation id="2150168665016482929">Pi&amp;enennä</translation>
@@ -4145,6 +4147,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4131283654370308898">Salli <ph name="EXTENSION_NAME" /> tällä sivustolla</translation>
 <translation id="4131410914670010031">Mustavalkoinen</translation>
 <translation id="413193092008917129">Verkon diagnostiikkaohjelmat</translation>
+<translation id="4132108564882155194">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi lukulistaa laitteelta <ph name="DEVICE" /></translation>
 <translation id="4132137475637520539">Kaikki linkin saaneet voivat liittyä</translation>
 <translation id="4132364317545104286">Nimeä eSIM-profiili uudelleen</translation>
 <translation id="4132969033912447558">Jatka: <ph name="FILE_NAME" /></translation>
@@ -4238,6 +4241,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4213540068152645535">Salasanan vaihtamisessa on ongelmia</translation>
 <translation id="42137655013211669">Palvelin kielsi tämän resurssin käytön.</translation>
 <translation id="4214192212360095377">Laita pois päältä</translation>
+<translation id="421564716234835106">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi laajennuksia kaikilla laitteillasi</translation>
 <translation id="4216407171061541111">Organisaatio on laittanut välilehtien tallentamisen Google-tilille pois päältä</translation>
 <translation id="4216511743389425832">Kuuntele tämä sivu</translation>
 <translation id="4217571870635786043">Sanelu</translation>
@@ -4457,6 +4461,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4379623957571212011">Valitse kuva, niin teema otetaan käyttöön heti</translation>
 <translation id="4380055775103003110">Jos ongelma jatkuu, voit kokeilla muita tapoja jatkaa tämän käyttöä: <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Siirryttiin koko näytön tilaan</translation>
+<translation id="4380934846131873000">Kirjaudu sisään käyttäjän <ph name="EMAIL" />, niin voit käyttää esimerkiksi tallennettuja tietoja laitteelta <ph name="DEVICE" /></translation>
 <translation id="4381902252848068865">Älä salli sivuston tallentaa dataa</translation>
 <translation id="4381997246130185847">Voit jatkaa siitä, mihin jäit, tai luoda uusia välilehtiryhmiä missä tahansa</translation>
 <translation id="4384312707950789900">Lisää ensisijaisiin</translation>
@@ -6139,6 +6144,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5700761515355162635">Kolmannen osapuolen evästeet sallittu</translation>
 <translation id="5700836101007545240">Järjestelmänvalvoja on poistanut yhteyden lisäämisen käytöstä.</translation>
 <translation id="5701212929149679556">Mobiiliverkon roaming</translation>
+<translation id="5701500921291556452">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi salasanoja laitteelta <ph name="DEVICE" /></translation>
 <translation id="5701786609538182967">Muut sovellukset on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ja 1 muu sovellus eivät enää voi avata tuettuja linkkejä.</translation>
 <translation id="5702161882524398150">Kysy edellisestä välilehdestä</translation>
 <translation id="5703716265115423771">Vähennä äänenvoimakkuutta.</translation>
@@ -8311,6 +8317,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="738322632977123193">Ei voi ladata. Käytä jotakin seuraavista kuvamuodoista: .jpg, .gif, .png, .bmp, .tif tai .webp</translation>
 <translation id="7384687527486377545">Näppäimistön automaattinen toisto</translation>
 <translation id="7384804382450832142">Yhdistä Microsoft OneDriveen</translation>
+<translation id="7385713560829077068">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi kirjanmerkkejä kaikilla laitteillasi</translation>
 <translation id="7385854874724088939">Ongelmia tulostuksessa. Tarkista tulostimesi ja yritä uudelleen.</translation>
 <translation id="7385870590821097913">Seuraa toisella laitteella näkyviä ohjeita</translation>
 <translation id="7387107590792462040">Odota, asennus on käynnissä</translation>
@@ -8499,6 +8506,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7517292544534877198">Käytä Googlen oletussalausta Google-tilisi salasanoissa</translation>
 <translation id="7517959947270534934">Perheenjäsenesi ei voi vastaanottaa salasanoja tällä hetkellä. Pyydä häntä päivittämään Chrome ja synkronoimaan salasanat.</translation>
 <translation id="7518079994230200553">Vaihtoehto ei ole juuri nyt käytettävissä.</translation>
+<translation id="752021853309481824">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi tallennettuja tietoja kaikilla laitteillasi</translation>
 <translation id="7520766081042531487">Incognito-portaali: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Näytä pikakuvakkeet</translation>
 <translation id="7521430434164837205">Microsoft 365 ‑tiedostot</translation>
@@ -10212,6 +10220,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8841843049738266382">Lukea ja muokata sallittuja käyttäjiä</translation>
 <translation id="8841884135319684422">Lopeta tehtävä</translation>
 <translation id="8842594465773264717">Poista tämä sormenjälki</translation>
+<translation id="8843160937959801189">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi kirjanmerkkejä laitteelta <ph name="DEVICE" /></translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8846132060409673887">Lue tietokoneen valmistaja ja malli</translation>
 <translation id="8846239054091760429">Monoääni, käynnistys, Livetekstitys ym.</translation>

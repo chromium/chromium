@@ -619,6 +619,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1472675084647422956">Sýna meira</translation>
 <translation id="1473223074251193484">Stilla tjóðrun</translation>
 <translation id="1473616112002966036">&amp;Vídeórammi</translation>
+<translation id="1475224725276659152">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að leslistanum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="1476607407192946488">Tungumá&amp;lastillingar</translation>
 <translation id="1477654881618305065">Fyrirtækið leyfir þér ekki að deila þessu efni. Hafðu samband við kerfisstjórann ef þig vantar aðstoð.</translation>
 <translation id="1478340334823509079">Upplýsingar: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2148248734299717598">Loka vinstra yfirliti</translation>
 <translation id="2148401732477136168">Ekki tókst að spyrjast fyrir um uppsett forrit.</translation>
 <translation id="2148892889047469596">Senda út flipa</translation>
+<translation id="2149773378153994101">Skráðu þig inn sem <ph name="EMAIL" /> til að fá viðbæturnar þínar og fleira úr <ph name="DEVICE" /></translation>
 <translation id="2149973817440762519">Breyta bókamerki</translation>
 <translation id="2150139952286079145">Leitarstaðir</translation>
 <translation id="2150168665016482929">&amp;Minnka</translation>
@@ -4149,6 +4151,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4131283654370308898">Leyfa <ph name="EXTENSION_NAME" /> á þessu vefsvæði</translation>
 <translation id="4131410914670010031">Svarthvítt</translation>
 <translation id="413193092008917129">Ferli netkerfisgreiningar</translation>
+<translation id="4132108564882155194">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að leslistanum þínum og fleiru úr „<ph name="DEVICE" />“</translation>
 <translation id="4132137475637520539">Leyfa öllum með tengilinn að taka þátt</translation>
 <translation id="4132364317545104286">Endurnefna eSIM-prófíl</translation>
 <translation id="4132969033912447558">Halda áfram í <ph name="FILE_NAME" /></translation>
@@ -4242,6 +4245,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4213540068152645535">Villa kom upp við að breyta aðgangsorðinu þínu</translation>
 <translation id="42137655013211669">Þjónninn bannaði aðgang að þessu tilfangi.</translation>
 <translation id="4214192212360095377">Slökkva núna</translation>
+<translation id="421564716234835106">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að viðbótunum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="4216407171061541111">Fyrirtækið þitt slökkti á vistun flipa á Google-reikningnum þínum</translation>
 <translation id="4216511743389425832">Hlusta á þessa síðu</translation>
 <translation id="4217571870635786043">Upplestur</translation>
@@ -4461,6 +4465,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4379623957571212011">Veldu mynd til að nota þemað strax</translation>
 <translation id="4380055775103003110">Ef þetta vandamál heldur áfram að koma upp geturðu prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Opnað á öllum skjánum</translation>
+<translation id="4380934846131873000">Til að fá vistuðu upplýsingarnar þínar og fleira úr <ph name="DEVICE" /> skaltu skrá þig inn sem <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Ekki leyfa vefsvæði að vista gögn</translation>
 <translation id="4381997246130185847">Þú getur haldið áfram þar sem frá var horfið eða búið til nýja flipahópa á ferðinni</translation>
 <translation id="4384312707950789900">Bæta við forval</translation>
@@ -6143,6 +6148,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5700761515355162635">Fótspor þriðju aðila leyfð</translation>
 <translation id="5700836101007545240">Kerfisstjóri hefur slökkt á möguleikanum á að bæta við tengingu</translation>
 <translation id="5701212929149679556">Reiki á farsímakerfi</translation>
+<translation id="5701500921291556452">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að aðgangsorðum og fleiru úr <ph name="DEVICE" /></translation>
 <translation id="5701786609538182967">Önnur forrit eru stillt á að opna sömu tengla og <ph name="APP_NAME" />. Þetta slekkur á því að <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og eitt forrit í viðbót opni studda tengla.</translation>
 <translation id="5702161882524398150">Spyrðu um fyrri flipa</translation>
 <translation id="5703716265115423771">lækka hljóð</translation>
@@ -8316,6 +8322,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="738322632977123193">Ekki hægt að hlaða upp. Notaðu mynd á einu af eftirfarandi sniðum: .jpg, .gif, .png, .bmp, .tif eða .webp</translation>
 <translation id="7384687527486377545">Sjálfvirk endurtekning á lyklaborði</translation>
 <translation id="7384804382450832142">Tengjast við Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að bókamerkjum og fleiru í öllum tækjunum þínum</translation>
 <translation id="7385854874724088939">Eitthvað fór úrskeiðis við að reyna að prenta. Kannaðu prentarann og reyndu aftur.</translation>
 <translation id="7385870590821097913">Fylgdu skrefunum í hinu tækinu þínu</translation>
 <translation id="7387107590792462040">Bíddu á meðan uppsetning stendur yfir</translation>
@@ -8504,6 +8511,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7517292544534877198">Nota sjálfgefna dulkóðun Google fyrir aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="7517959947270534934">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chrome og samstilla aðgangsorðin sín.</translation>
 <translation id="7518079994230200553">Þessi valkostur er ekki í boði eins og er.</translation>
+<translation id="752021853309481824">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að vistuðu upplýsingunum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="7520766081042531487">Huliðsgátt: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Sýna flýtilykla</translation>
 <translation id="7521430434164837205">Microsoft 365-skrár</translation>
@@ -10217,6 +10225,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8841843049738266382">Lesa og breyta notendum á hvítum lista</translation>
 <translation id="8841884135319684422">Ljúka verkefni</translation>
 <translation id="8842594465773264717">Eyða þessu fingrafari</translation>
+<translation id="8843160937959801189">Skráðu þig inn sem <ph name="EMAIL" /> til að fá aðgang að bókamerkjum og fleiru úr <ph name="DEVICE" /></translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8846132060409673887">Lesa um framleiðanda og útgáfu þessarar tölvu</translation>
 <translation id="8846239054091760429">Einóma hljóðstilling, ræsing, skjátextar í rauntíma og fleira</translation>

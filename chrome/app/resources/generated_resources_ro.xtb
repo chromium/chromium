@@ -618,6 +618,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1472675084647422956">Afișați mai multe</translation>
 <translation id="1473223074251193484">Setează configurația pentru tethering</translation>
 <translation id="1473616112002966036">&amp;Cadru video</translation>
+<translation id="1475224725276659152">Pentru a-ți accesa lista de lecturi și alte date pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Setări de limbă</translation>
 <translation id="1477654881618305065">Organizația ta nu îți permite să trimiți acest conținut. Dacă ai nevoie de ajutor, contactează administratorul.</translation>
 <translation id="1478340334823509079">Detalii: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2148248734299717598">Închide afișarea din stânga</translation>
 <translation id="2148401732477136168">Nu s-au putut interoga aplicațiile instalate.</translation>
 <translation id="2148892889047469596">Proiectează fila</translation>
+<translation id="2149773378153994101">Pentru a accesa extensiile și alte date de pe <ph name="DEVICE" />, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
 <translation id="2150139952286079145">Căutați destinații</translation>
 <translation id="2150168665016482929">Mi&amp;nimizează</translation>
@@ -4135,6 +4137,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4131283654370308898">Permite <ph name="EXTENSION_NAME" /> pe acest site</translation>
 <translation id="4131410914670010031">Alb-negru</translation>
 <translation id="413193092008917129">Rutine de diagnosticare a rețelei</translation>
+<translation id="4132108564882155194">Pentru a-ți accesa lista de lecturi și alte date de pe <ph name="DEVICE" />, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Permite tuturor celor care au linkul să se alăture</translation>
 <translation id="4132364317545104286">Redenumește profilul eSIM</translation>
 <translation id="4132969033912447558">Reia <ph name="FILE_NAME" /></translation>
@@ -4228,6 +4231,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4213540068152645535">Probleme la schimbarea parolei</translation>
 <translation id="42137655013211669">Accesul la această resursă a fost interzis de server.</translation>
 <translation id="4214192212360095377">Dezactivează acum</translation>
+<translation id="421564716234835106">Pentru a-ți accesa extensiile și alte date pe toate dispozitivele tale, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Organizația ta a dezactivat salvarea filelor în Contul Google</translation>
 <translation id="4216511743389425832">Ascultă pagina</translation>
 <translation id="4217571870635786043">Dictare</translation>
@@ -4447,6 +4451,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4379623957571212011">Selectează o imagine pentru a aplica instantaneu tema</translation>
 <translation id="4380055775103003110">Dacă problema persistă, poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Ai intrat în ecranul complet</translation>
+<translation id="4380934846131873000">Pentru a-ți accesa informațiile salvate și alte date de pe <ph name="DEVICE" />, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Nu permite site-ului să salveze date</translation>
 <translation id="4381997246130185847">Poți să reiei de unde ai rămas sau să creezi grupuri de file noi din mers</translation>
 <translation id="4384312707950789900">Adaugă în preferate</translation>
@@ -6127,6 +6132,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5700761515355162635">Sunt permise cookie-urile terță parte</translation>
 <translation id="5700836101007545240">Opțiunea Adaugă o conexiune este dezactivată de administrator</translation>
 <translation id="5701212929149679556">Roaming în rețeaua mobilă</translation>
+<translation id="5701500921291556452">Pentru a accesa parolele și alte date de pe <ph name="DEVICE" />, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Alte aplicații sunt setate să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> și încă o aplicație vor fi setate să nu mai deschidă linkurile acceptate.</translation>
 <translation id="5702161882524398150">Întreabă despre fila anterioară</translation>
 <translation id="5703716265115423771">reduce volumul</translation>
@@ -8301,6 +8307,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="738322632977123193">Încărcarea nu a reușit. Folosește o imagine într-unul dintre aceste formate: .jpg, .gif, .png, .bmp, .tif sau .webp</translation>
 <translation id="7384687527486377545">Repetarea automată de la tastatură</translation>
 <translation id="7384804382450832142">Conectează-te la Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">A apărut o eroare la printare. Verifică imprimanta și încearcă din nou.</translation>
 <translation id="7385870590821097913">Urmează pașii pe celălalt dispozitiv</translation>
 <translation id="7387107590792462040">Așteaptă cât timp instalarea este în curs</translation>
@@ -8489,6 +8496,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7517292544534877198">Folosește criptarea prestabilită de la Google pentru parolele din Contul Google</translation>
 <translation id="7517959947270534934">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chrome și să-și sincronizeze parolele.</translation>
 <translation id="7518079994230200553">Momentan, opțiunea nu este disponibilă.</translation>
+<translation id="752021853309481824">Pentru a accesa informațiile salvate și alte date pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afișează comenzile rapide</translation>
 <translation id="7521430434164837205">Fișiere Microsoft 365</translation>
@@ -10202,6 +10210,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8841843049738266382">Citește și modifică utilizatorii trecuți în lista cu acces permis</translation>
 <translation id="8841884135319684422">Încheie activitatea</translation>
 <translation id="8842594465773264717">Șterge această amprentă</translation>
+<translation id="8843160937959801189">Pentru a accesa marcajele și alte date de pe <ph name="DEVICE" />, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8846132060409673887">Citește producătorul și modelul acestui computer</translation>
 <translation id="8846239054091760429">Audio mono, pornire, Subtitrări live și altele</translation>

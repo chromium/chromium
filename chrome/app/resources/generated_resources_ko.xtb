@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">자세히 보기</translation>
 <translation id="1473223074251193484">테더링 구성 설정</translation>
 <translation id="1473616112002966036">동영상 프레임(&amp;V)</translation>
+<translation id="1475224725276659152">모든 기기에서 읽기 목록 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="1476607407192946488">언어 설정(&amp;L)</translation>
 <translation id="1477654881618305065">조직에서 이 콘텐츠를 공유하도록 허용하지 않습니다. 도움이 필요하면 관리자에게 문의하세요.</translation>
 <translation id="1478340334823509079">세부정보: <ph name="FILE_NAME" /></translation>
@@ -1503,6 +1504,7 @@
 <translation id="2148248734299717598">왼쪽 뷰 닫기</translation>
 <translation id="2148401732477136168">설치된 애플리케이션을 쿼리할 수 없습니다.</translation>
 <translation id="2148892889047469596">탭 전송</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" />에서 확장 프로그램 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2150139952286079145">대상 검색</translation>
 <translation id="2150168665016482929">최소화(N)</translation>
@@ -4148,6 +4150,7 @@
 <translation id="4131283654370308898">이 사이트에서 <ph name="EXTENSION_NAME" /> 허용</translation>
 <translation id="4131410914670010031">흑백</translation>
 <translation id="413193092008917129">네트워크 진단 루틴</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" />에서 읽기 목록 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="4132137475637520539">링크가 있는 모든 사용자 참여 허용</translation>
 <translation id="4132364317545104286">eSIM 프로필 이름 바꾸기</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> 계속 다운로드</translation>
@@ -4241,6 +4244,7 @@
 <translation id="4213540068152645535">비밀번호를 변경하는 중에 문제 발생</translation>
 <translation id="42137655013211669">서버에서 이 리소스에 대한 액세스를 금지했습니다.</translation>
 <translation id="4214192212360095377">지금 끄기</translation>
+<translation id="421564716234835106">모든 기기에서 확장 프로그램 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="4216407171061541111">조직에서 사용자의 Google 계정에 탭 저장을 사용 중지했습니다.</translation>
 <translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
 <translation id="4217571870635786043">음성기록</translation>
@@ -4460,6 +4464,7 @@
 <translation id="4379623957571212011">이미지를 선택하여 테마를 즉시 적용하세요</translation>
 <translation id="4380055775103003110">이 문제가 계속 발생하는 경우 다른 방법으로 <ph name="SITE_ETLD_PLUS_ONE" />에서 진행해 볼 수 있습니다.</translation>
 <translation id="4380648069038809855">전체 화면으로 전환됨</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" />에서 저장된 정보 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="4381902252848068865">사이트에서 데이터를 저장하도록 허용하지 않음</translation>
 <translation id="4381997246130185847">중단한 부분부터 이어서 진행하거나 이동 중에 새 탭 그룹을 만들 수 있습니다.</translation>
 <translation id="4384312707950789900">기본 네트워크에 추가</translation>
@@ -6142,6 +6147,7 @@
 <translation id="5700761515355162635">서드 파티 쿠키 허용됨</translation>
 <translation id="5700836101007545240">관리자가 연결 추가를 허용하지 않았습니다.</translation>
 <translation id="5701212929149679556">셀룰러 로밍</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" />에서 비밀번호 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="5701786609538182967">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 외 앱 1개는 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="5702161882524398150">이전 탭에 관해 물어보기</translation>
 <translation id="5703716265115423771">볼륨 작게</translation>
@@ -8314,6 +8320,7 @@
 <translation id="738322632977123193">업로드할 수 없습니다. 이미지는 .jpg, .gif, .png, .bmp, .tif, .webp 형식 중 하나여야 합니다.</translation>
 <translation id="7384687527486377545">키보드 자동 반복</translation>
 <translation id="7384804382450832142">Microsoft OneDrive에 연결</translation>
+<translation id="7385713560829077068">모든 기기에서 북마크 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="7385854874724088939">인쇄를 시도하는 동안 문제가 발생했습니다. 프린터를 점검한 다음 다시 시도해 보세요.</translation>
 <translation id="7385870590821097913">다른 기기에 안내된 단계를 따르세요</translation>
 <translation id="7387107590792462040">설치가 진행되는 동안 잠시 기다려 주세요</translation>
@@ -8501,6 +8508,7 @@
 <translation id="7517292544534877198">Google 계정의 비밀번호에 Google의 기본 암호화 사용</translation>
 <translation id="7517959947270534934">가족 구성원이 비밀번호를 바로 받을 수 없습니다. Chrome을 업데이트하고 비밀번호를 동기화하도록 요청하세요.</translation>
 <translation id="7518079994230200553">지금은 이 옵션을 사용할 수 없습니다.</translation>
+<translation id="752021853309481824">모든 기기에서 저장된 정보 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="7520766081042531487">시크릿 모드 포털: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">바로가기 표시</translation>
 <translation id="7521430434164837205">Microsoft 365 파일</translation>
@@ -10214,6 +10222,7 @@
 <translation id="8841843049738266382">허용 목록에 있는 사용자를 읽고 변경하기</translation>
 <translation id="8841884135319684422">작업 종료</translation>
 <translation id="8842594465773264717">이 지문 삭제</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" />에서 북마크 등을 사용하려면 <ph name="EMAIL" /> 계정으로 로그인하세요</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8846132060409673887">이 컴퓨터의 제조업체 및 모델을 읽습니다.</translation>
 <translation id="8846239054091760429">모노 오디오, 시작, 실시간 자막 등</translation>

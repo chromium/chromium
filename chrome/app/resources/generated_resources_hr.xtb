@@ -618,6 +618,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473223074251193484">Postavite konfiguraciju modemskog povezivanja</translation>
 <translation id="1473616112002966036">&amp;Kadar videozapisa</translation>
+<translation id="1475224725276659152">Da biste mogli pristupati svojem popisu za čitanje i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Postavke jezika</translation>
 <translation id="1477654881618305065">Vaša organizacija ne dopušta vam dijeljenje ovog sadržaja. Ako vam je potrebna pomoć, obratite se svom administratoru.</translation>
 <translation id="1478340334823509079">Pojedinosti: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2148248734299717598">Zatvori lijevi prikaz</translation>
 <translation id="2148401732477136168">Upit o popisu instaliranih aplikacija nije uspio.</translation>
 <translation id="2148892889047469596">Emitiraj karticu</translation>
+<translation id="2149773378153994101">Da biste mogli pristupati svojim proširenjima i drugim podacima s uređaja <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Uredi oznaku</translation>
 <translation id="2150139952286079145">Pretražite odredišta</translation>
 <translation id="2150168665016482929">Mi&amp;nimiziraj</translation>
@@ -4136,6 +4138,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4131283654370308898">Dopusti <ph name="EXTENSION_NAME" /> na ovoj web-lokaciji</translation>
 <translation id="4131410914670010031">Crno-bijelo</translation>
 <translation id="413193092008917129">Rutine za mrežnu dijagnostiku</translation>
+<translation id="4132108564882155194">Da biste mogli pristupati svojem popisu za čitanje i drugim podacima s uređaja <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Neka se pridruži bilo tko s vezom</translation>
 <translation id="4132364317545104286">Preimenovanje profila eSIM-a</translation>
 <translation id="4132969033912447558">Nastavi <ph name="FILE_NAME" /></translation>
@@ -4229,6 +4232,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4213540068152645535">Problemi s promjenom zaporke</translation>
 <translation id="42137655013211669">Pristup tom resursu zabranio je poslužitelj.</translation>
 <translation id="4214192212360095377">Isključi odmah</translation>
+<translation id="421564716234835106">Da biste mogli pristupati svojim proširenjima i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Vaša organizacija isključila je spremanje kartica na vaš Google račun</translation>
 <translation id="4216511743389425832">Poslušajte ovu stranicu</translation>
 <translation id="4217571870635786043">Diktat</translation>
@@ -4448,6 +4452,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4379623957571212011">Odaberite sliku da biste odmah primijenili temu</translation>
 <translation id="4380055775103003110">Ako se taj problem nastavi pojavljivati, možete isprobati nove načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Otvorili ste prikaz preko cijelog zaslona</translation>
+<translation id="4380934846131873000">Da biste dobili spremljene podatke i drugo s uređaja <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Nemoj dopustiti web-lokaciji da sprema podatke</translation>
 <translation id="4381997246130185847">Možete nastaviti tamo gdje ste stali ili izraditi nove grupe kartica u pokretu</translation>
 <translation id="4384312707950789900">Dodaj u preferirane</translation>
@@ -6126,6 +6131,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5700761515355162635">Dopušteni su kolačići trećih strana</translation>
 <translation id="5700836101007545240">Dodavanje veze onemogućio je administrator</translation>
 <translation id="5701212929149679556">Roaming putem mobilne mreže</translation>
+<translation id="5701500921291556452">Da biste mogli pristupati svojim zaporkama i drugim podacima s uređaja <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Druge aplikacije postavljene su tako da otvaraju iste veze kao <ph name="APP_NAME" />. Time će se aplikacijama <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> i <ph name="APP_NAME_4" /> i još jednoj aplikaciji onemogućiti da otvaraju podržane veze.</translation>
 <translation id="5702161882524398150">Postavite pitanje o prethodnoj kartici</translation>
 <translation id="5703716265115423771">smanjivanje glasnoće</translation>
@@ -8301,6 +8307,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="738322632977123193">Prijenos nije moguć. Upotrijebite sliku u jednom od sljedećih formata: .jpg, .gif, .png, .bmp, .tif ili .webp</translation>
 <translation id="7384687527486377545">Automatsko ponavljanje na tipkovnici</translation>
 <translation id="7384804382450832142">Povezivanje s Microsoft OneDriveom</translation>
+<translation id="7385713560829077068">Da biste mogli pristupati svojim oznakama i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Tijekom ispisa nešto se pokvarilo.  Provjerite pisač i pokušajte ponovno.</translation>
 <translation id="7385870590821097913">Slijedite upute na drugom uređaju</translation>
 <translation id="7387107590792462040">Pričekajte dok postupak instalacije ne završi</translation>
@@ -8489,6 +8496,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7517292544534877198">Koristi Googleovo zadano šifriranje za zaporke na mojem Google računu</translation>
 <translation id="7517959947270534934">Član obitelji trenutačno ne može primati zaporke. Zamolite člana da ažurira Chrome i sinkronizira svoje zaporke.</translation>
 <translation id="7518079994230200553">Ta opcija trenutačno nije dostupna.</translation>
+<translation id="752021853309481824">Da biste mogli pristupati svojim spremljenim podacima i drugim podacima na svim svojim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal u anonimnom načinu: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Prikaži prečace</translation>
 <translation id="7521430434164837205">Microsoft 365 datoteke</translation>
@@ -10202,6 +10210,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8841843049738266382">čitati i mijenjati korisnike na popisu dopuštenih</translation>
 <translation id="8841884135319684422">Završi zadatak</translation>
 <translation id="8842594465773264717">Izbriši otisak prsta</translation>
+<translation id="8843160937959801189">Da biste mogli pristupati svojim oznakama i drugim podacima s uređaja <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8846132060409673887">Čitanje proizvođača i modela računala</translation>
 <translation id="8846239054091760429">Monozvuk, pokretanje, automatski titlovi i drugo</translation>

@@ -619,6 +619,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1472675084647422956">Hiện thêm</translation>
 <translation id="1473223074251193484">Thiết lập cấu hình chia sẻ Internet</translation>
 <translation id="1473616112002966036">&amp;Khung video</translation>
+<translation id="1475224725276659152">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Cài đặt ngôn ngữ</translation>
 <translation id="1477654881618305065">Tổ chức của bạn không cho phép bạn chia sẻ nội dung này. Nếu bạn cần trợ giúp, hãy liên hệ với quản trị viên của mình.</translation>
 <translation id="1478340334823509079">Chi tiết: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2148248734299717598">Đóng dạng xem bên trái</translation>
 <translation id="2148401732477136168">Không truy vấn được các ứng dụng đã cài đặt.</translation>
 <translation id="2148892889047469596">Thẻ Truyền</translation>
+<translation id="2149773378153994101">Để sử dụng tiện ích và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2150139952286079145">Tìm kiếm máy in đích</translation>
 <translation id="2150168665016482929">Th&amp;u nhỏ</translation>
@@ -4149,6 +4151,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4131283654370308898">Cho phép <ph name="EXTENSION_NAME" /> trên trang web này</translation>
 <translation id="4131410914670010031">Đen và trắng</translation>
 <translation id="413193092008917129">Quy trình chẩn đoán mạng</translation>
+<translation id="4132108564882155194">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Cho phép bất kỳ ai có đường liên kết tham gia</translation>
 <translation id="4132364317545104286">Đổi tên hồ sơ eSIM</translation>
 <translation id="4132969033912447558">Tiếp tục tải <ph name="FILE_NAME" /> xuống</translation>
@@ -4242,6 +4245,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4213540068152645535">Đã xảy ra sự cố khi đổi mật khẩu</translation>
 <translation id="42137655013211669">Máy chủ cấm truy cập vào tài nguyên này.</translation>
 <translation id="4214192212360095377">Tắt ngay</translation>
+<translation id="421564716234835106">Để sử dụng tiện ích và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Tổ chức của bạn đã tắt tính năng lưu thẻ vào Tài khoản Google</translation>
 <translation id="4216511743389425832">Đọc trang này</translation>
 <translation id="4217571870635786043">Nhập bằng giọng nói</translation>
@@ -4461,6 +4465,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4379623957571212011">Chọn một hình ảnh để áp dụng ngay giao diện</translation>
 <translation id="4380055775103003110">Nếu sự cố này vẫn tiếp diễn, bạn có thể thử các cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Đã chuyển sang chế độ toàn màn hình</translation>
+<translation id="4380934846131873000">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Không cho phép trang web lưu dữ liệu</translation>
 <translation id="4381997246130185847">Bạn có thể tiếp tục công việc dang dở hoặc tạo nhóm thẻ mới trong khi di chuyển</translation>
 <translation id="4384312707950789900">Thêm vào ưa thích</translation>
@@ -5577,7 +5582,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5233231016133573565">Mã tiến trình</translation>
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5233736638227740678">&amp;Dán</translation>
-<translation id="5234764350956374838">Bỏ qua</translation>
+<translation id="5234764350956374838">Đóng</translation>
 <translation id="5235050375939235066">Gỡ cài đặt ứng dụng?</translation>
 <translation id="5235750401727657667">Thay thế trang bạn sẽ nhìn thấy khi mở thẻ mới</translation>
 <translation id="5238301240406177137">Lưu vào tài khoản</translation>
@@ -6143,6 +6148,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5700761515355162635">Đã cho phép cookie của bên thứ ba</translation>
 <translation id="5700836101007545240">Quản trị viên của bạn đã tắt tính năng Thêm đường kết nối</translation>
 <translation id="5701212929149679556">Chuyển vùng mạng di động</translation>
+<translation id="5701500921291556452">Để sử dụng mật khẩu và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Những ứng dụng khác cũng được đặt để mở các đường liên kết giống như <ph name="APP_NAME" />. Thao tác này sẽ ngăn <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> và 1 ứng dụng khác mở các đường liên kết được hỗ trợ.</translation>
 <translation id="5702161882524398150">Hỏi về thẻ trước</translation>
 <translation id="5703716265115423771">giảm âm lượng</translation>
@@ -8317,6 +8323,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="738322632977123193">Không tải lên được. Sử dụng hình ảnh ở một trong các định dạng sau: .jpg, .gif, .png, .bmp, .tif hoặc .webp</translation>
 <translation id="7384687527486377545">Tự động lặp lại trên bàn phím</translation>
 <translation id="7384804382450832142">Kết nối với Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Có trục trặc xảy ra khi in. Hãy kiểm tra máy in của bạn và thử lại.</translation>
 <translation id="7385870590821097913">Làm theo các bước trên thiết bị kia của bạn</translation>
 <translation id="7387107590792462040">Vui lòng đợi, quá trình cài đặt đang diễn ra</translation>
@@ -8505,6 +8512,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7517292544534877198">Sử dụng phương pháp mã hoá mặc định của Google cho mật khẩu trong Tài khoản Google</translation>
 <translation id="7517959947270534934">Thành viên gia đình bạn hiện không thể nhận mật khẩu. Hãy đề nghị họ cập nhật Chrome và đồng bộ hoá mật khẩu của họ.</translation>
 <translation id="7518079994230200553">Lựa chọn này hiện không sẵn dùng.</translation>
+<translation id="752021853309481824">Để sử dụng thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Cổng thông tin ẩn danh: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Hiện lối tắt</translation>
 <translation id="7521430434164837205">Các tệp Microsoft 365</translation>
@@ -10218,6 +10226,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8841843049738266382">Đọc và thay đổi người dùng trong danh sách cho phép</translation>
 <translation id="8841884135319684422">Kết thúc tác vụ</translation>
 <translation id="8842594465773264717">Xóa vân tay này</translation>
+<translation id="8843160937959801189">Để sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8846132060409673887">Đọc thông tin về nhà sản xuất và kiểu máy của máy tính này</translation>
 <translation id="8846239054091760429">Âm thanh đơn âm, âm thanh khi khởi động, phụ đề trực tiếp và các tính năng khác</translation>

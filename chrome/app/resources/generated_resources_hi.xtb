@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">और दिखाएं</translation>
 <translation id="1473223074251193484">टेदरिंग कॉन्फ़िगरेशन सेट करें</translation>
 <translation id="1473616112002966036">&amp;वीडियो फ़्रेम</translation>
+<translation id="1475224725276659152">अपने सभी डिवाइसों पर रीडिंग लिस्ट वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिंग</translation>
 <translation id="1477654881618305065">आपका संगठन आपको यह कॉन्टेंट शेयर करने की अनुमति नहीं देता है. अगर आपको मदद चाहिए, तो अपने एडमिन से संपर्क करें.</translation>
 <translation id="1478340334823509079">विवरण: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@
 <translation id="2148248734299717598">लेफ़्ट व्यू को बंद करें</translation>
 <translation id="2148401732477136168">इंस्टॉल किए गए ऐप्लिकेशन की क्वेरी नहीं की जा सकी.</translation>
 <translation id="2148892889047469596">टैब कास्ट करें</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> से अपने एक्सटेंशन वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="2149973817440762519">बुकमार्क में बदलाव करें</translation>
 <translation id="2150139952286079145">मंज़िल खोजें</translation>
 <translation id="2150168665016482929">छोटा करें</translation>
@@ -4148,6 +4150,7 @@
 <translation id="4131283654370308898">इस साइट पर <ph name="EXTENSION_NAME" /> को अनुमति दें</translation>
 <translation id="4131410914670010031">श्याम और श्वेत</translation>
 <translation id="413193092008917129">नेटवर्क डायग्नोस्टिक रूटीन</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> पर मौजूद अपनी रीडिंग लिस्ट वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="4132137475637520539">जिन लोगों के पास यह लिंक है उन्हें शामिल होने की अनुमति दें</translation>
 <translation id="4132364317545104286">eSIM प्रोफ़ाइल का नाम बदलें</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> के डाउनलोड को फिर से शुरू करें</translation>
@@ -4241,6 +4244,7 @@
 <translation id="4213540068152645535">पासवर्ड बदलने में समस्या हुई</translation>
 <translation id="42137655013211669">इस संसाधन के लिए सर्वर ने ऐक्सेस नहीं दिया था.</translation>
 <translation id="4214192212360095377">अभी बंद करें</translation>
+<translation id="421564716234835106">अपने सभी डिवाइसों पर एक्सटेंशन वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="4216407171061541111">आपके संगठन ने Google खाते में टैब सेव करने की सुविधा बंद की है</translation>
 <translation id="4216511743389425832">इस पेज का कॉन्टेंट सुनें</translation>
 <translation id="4217571870635786043">लिखवाना</translation>
@@ -4460,6 +4464,7 @@
 <translation id="4379623957571212011">तुरंत थीम लागू करने के लिए कोई इमेज चुनें</translation>
 <translation id="4380055775103003110">अगर यह समस्या बार-बार आ रही है, तो <ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माएं.</translation>
 <translation id="4380648069038809855">फ़ुल-स्क्रीन किया गया</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" /> में सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="4381902252848068865">साइट को डेटा सेव करने की अनुमति न दें</translation>
 <translation id="4381997246130185847">आप चाहें, तो वहीं से काम शुरू करें जहां आपने छोड़ा था या कभी भी, कहीं भी नए टैब ग्रुप बनाएं</translation>
 <translation id="4384312707950789900">पसंदीदा में जोड़ें</translation>
@@ -6140,6 +6145,7 @@
 <translation id="5700761515355162635">तीसरे पक्ष की कुकी को अनुमति है</translation>
 <translation id="5700836101007545240">आपके व्यवस्थापक ने कनेक्शन जोड़ने की सुविधा बंद कर दी है</translation>
 <translation id="5701212929149679556">सेल्युलर रोमिंग</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" /> में सेव किए गए पासवर्ड वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="5701786609538182967">अन्य ऐप्लिकेशन, <ph name="APP_NAME" /> की तरह उन लिंक को खोलने के लिए तैयार हैं. यह <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" />, और एक अन्य ऐप्लिकेशन को सहायता लिंक खोलने से रोकता है.</translation>
 <translation id="5702161882524398150">पिछले टैब पर मौजूद कॉन्टेंट के बारे में सवाल पूछें</translation>
 <translation id="5703716265115423771">वॉल्‍यूम कम करें</translation>
@@ -8314,6 +8320,7 @@
 <translation id="738322632977123193">इमेज को अपलोड नहीं किया जा सकता. इनमें से किसी एक इमेज फ़ॉर्मैट का इस्तेमाल करें: .jpg, .gif, .png, .bmp, .tif या .webP</translation>
 <translation id="7384687527486377545">कीबोर्ड अपने-आप दोहराना</translation>
 <translation id="7384804382450832142">Microsoft OneDrive से कनेक्ट करें</translation>
+<translation id="7385713560829077068">अपने सभी डिवाइसों पर बुकमार्क वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="7385854874724088939">प्रिंट करने की कोशिश करते समय कुछ गड़बड़ी हो गई.  कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
 <translation id="7385870590821097913">अपने दूसरे डिवाइस पर यह तरीका अपनाएं</translation>
 <translation id="7387107590792462040">कृपया इंस्टॉल होने तक इंतज़ार करें</translation>
@@ -8501,6 +8508,7 @@
 <translation id="7517292544534877198">अपने Google खाते में सेव किए गए पासवर्ड के लिए, Google के एन्क्रिप्ट (सुरक्षित) करने के डिफ़ॉल्ट तरीके का इस्तेमाल करें</translation>
 <translation id="7517959947270534934">आपके परिवार के सदस्य को अभी पासवर्ड नहीं मिल सकता. उन्हें Chrome अपडेट करने और अपना पासवर्ड सिंक करने के लिए कहें.</translation>
 <translation id="7518079994230200553">फ़िलहाल, यह विकल्प उपलब्ध नहीं है.</translation>
+<translation id="752021853309481824">अपने सभी डिवाइसों पर सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">शॉर्टकट दिखाएं</translation>
 <translation id="7521430434164837205">Microsoft 365 फ़ाइलें</translation>
@@ -10214,6 +10222,7 @@
 <translation id="8841843049738266382">अनुमित वाले उपयोगकर्ताओं की सूची को देखने और बदलाव करने का ऐक्सेस दें</translation>
 <translation id="8841884135319684422">टास्क बंद करें</translation>
 <translation id="8842594465773264717">इस फ़िंगरप्रिंट को मिटाएं</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> से अपने बुकमार्क वगैरह ऐक्सेस करने के लिए, <ph name="EMAIL" /> के तौर पर साइन इन करें</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8846132060409673887">इस कंप्यूटर का निर्माता और मॉडल पढ़ें</translation>
 <translation id="8846239054091760429">मोनो ऑडियो, स्टार्टअप, और लाइव कैप्शन वगैरह</translation>

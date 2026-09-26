@@ -618,6 +618,7 @@
 <translation id="1472675084647422956">ተጨማሪ አሳይ</translation>
 <translation id="1473223074251193484">እንደ ሞደም መሰካት ውቅረትን አቀናብር</translation>
 <translation id="1473616112002966036">&amp;የቪድዮ ፍሬም</translation>
+<translation id="1475224725276659152">የእርስዎን የንባብ ዝርዝር እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="1476607407192946488">የ&amp;ቋንቋ ቅንብሮች...</translation>
 <translation id="1477654881618305065">የእርስዎ ድርጅት ይህን ይዘት እርስዎ እንዲያጋሩ አይፈቅድም። እገዛ ካስፈለገዎት አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="1478340334823509079">ዝርዝሮች፦ <ph name="FILE_NAME" /></translation>
@@ -1499,6 +1500,7 @@
 <translation id="2148248734299717598">የግራ ዕይታን ዝጋ</translation>
 <translation id="2148401732477136168">የተጫኑ መተግበሪያዎችን መጠየቅ አልተሳካም።</translation>
 <translation id="2148892889047469596">ትር ውስድ</translation>
+<translation id="2149773378153994101">የእርስዎን ቅጥያዎች እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="2149973817440762519">እልባት አርትዕ</translation>
 <translation id="2150139952286079145">መድረሻዎችን ይፈልጉ</translation>
 <translation id="2150168665016482929">አሳ&amp;ንስ</translation>
@@ -4142,6 +4144,7 @@
 <translation id="4131283654370308898">በዚህ ጣቢያ ላይ <ph name="EXTENSION_NAME" />ን ይፍቀዱ</translation>
 <translation id="4131410914670010031">ጥቁር እና ነጭ</translation>
 <translation id="413193092008917129">የአውታረ መረብ ምርመራ የዕለት ተዕለት ተግባራት</translation>
+<translation id="4132108564882155194">የእርስዎን የንባብ ዝርዝር እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="4132137475637520539">አገናኙ ያለው ማንኛውም ሰው እንዲቀላቀል ይፍቀዱ</translation>
 <translation id="4132364317545104286">የኢሲም መገለጫን ዳግም ይሰይሙ</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" />ን ከቆመበት ይቀጥሉ</translation>
@@ -4235,6 +4238,7 @@
 <translation id="4213540068152645535">የይለፍ ቃልዎን በመለወጥ ወቅት ችግር አለ</translation>
 <translation id="42137655013211669">የዚህ መርጃ መዳረሻ በአገልጋዩ ተከልክሏል።</translation>
 <translation id="4214192212360095377">አሁን አጥፋ</translation>
+<translation id="421564716234835106">የእርስዎን ቅጥያዎች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="4216407171061541111">ድርጅትዎ በGoogle መለያዎ ውስጥ ትሮችን ማስቀመጥን አጥፍቷል</translation>
 <translation id="4216511743389425832">ይህን ገጽ ያዳምጡት</translation>
 <translation id="4217571870635786043">በቃል ማስጻፍ</translation>
@@ -4454,6 +4458,7 @@
 <translation id="4379623957571212011">ገጽታውን በቅጽበታዊ መልኩ ለመተግበር ምስል ይምረጡ</translation>
 <translation id="4380055775103003110">ይህ ችግር መከሰቱን ከቀጠለ፣ በ<ph name="SITE_ETLD_PLUS_ONE" /> ላይ ለመቀጠል ሌሎች መንገዶችን መሞከር ይችላሉ።</translation>
 <translation id="4380648069038809855">ወደ ሙሉ ገፅ ዕይታ ገብቷል</translation>
+<translation id="4380934846131873000">የእርስዎን የተቀመጠ መረጃ እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="4381902252848068865">ጣቢያ ውሂብን እንዲያስቀምጥ አትፍቀድ</translation>
 <translation id="4381997246130185847">ካቆሙበት ቦታ መቀጠል ወይም በመሄድ ላይ አዲስ የትር ቡድኖችን መፍጠር ይችላሉ</translation>
 <translation id="4384312707950789900">ወደ የሚመረጥ ያክሉ</translation>
@@ -6136,6 +6141,7 @@
 <translation id="5700761515355162635">የሦስተኛ ወገን ኩኪዎች ተፈቅደዋል</translation>
 <translation id="5700836101007545240">ግንኙነት አክል በአስተዳዳሪዎ ተሰናክሏል</translation>
 <translation id="5701212929149679556">የተንቀሳቃሽ ስልክ ማንዣበብ</translation>
+<translation id="5701500921291556452">የእርስዎን የይለፍ ቃላት እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="5701786609538182967">ሌሎች መተግበሪያዎች ከ<ph name="APP_NAME" /> ጋር ተመሳሳይ የሆኑ አገናኞችን ለመክፈት ተቀናብረዋል። ይህ <ph name="APP_NAME_2" />፣ <ph name="APP_NAME_3" />፣ <ph name="APP_NAME_4" /> እና 1 ሌላ መተግበሪያ የሚደገፉ አገናኞችን እንዳይከፍቱ ያሰናክላቸዋል።</translation>
 <translation id="5702161882524398150">ስለ ቀዳሚው ትር ይጠይቁ</translation>
 <translation id="5703716265115423771">ድምፅ ቀንስ</translation>
@@ -8310,6 +8316,7 @@
 <translation id="738322632977123193">መስቀል አልተቻለም። ከሚከተሉት ቅርጸቶች በአንዱ የሆነ ምስል ይጠቀሙ፦ .jpg፣ .gif፣ .png፣ .bmp፣ .tif፣ ወይም .webp</translation>
 <translation id="7384687527486377545">የቁልፍ ሰሌዳ ራስ-ሰር መድገም</translation>
 <translation id="7384804382450832142">ከMicrosoft OneDrive ያገናኙ</translation>
+<translation id="7385713560829077068">የእርስዎን ዕልባቶች እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="7385854874724088939">ለማተም በሚሞክርበት ጊዜ አንድ ነገር በትክክል እየሄደ አልነበረም። እባክዎ አታሚዎን ይፈትሹና እንደገና ይሞክሩ።</translation>
 <translation id="7385870590821097913">በሌላኛው መሣሪያዎ ላይ እርምጃዎቹን ይከተሉ</translation>
 <translation id="7387107590792462040">መጫኑ በሂደት ላይ እያለ እባክዎን ይጠብቁ</translation>
@@ -8498,6 +8505,7 @@
 <translation id="7517292544534877198">በGoogle መለያዎ ውስጥ ላሉ የይለፍ ቃላት የGoogle ነባሪ ምስጠራን ይጠቀሙ</translation>
 <translation id="7517959947270534934">በአሁኑ ጊዜ የቤተሰብ አባልዎ የይለፍ ቃሎችን መቀበል አይችሉም። Chrome እንዲያዘምኑ እና የይለፍ ቃላቸውን እንዲያሰምሩ ይጠይቋቸው።</translation>
 <translation id="7518079994230200553">አሁን ላይ ይህ መረጃ አይገኝም።</translation>
+<translation id="752021853309481824">የእርስዎን የተቀመጠ መረጃ እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="7520766081042531487">ማንነት የማያሳውቁ ሁነታ፦ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">አቋራጮችን አሳይ</translation>
 <translation id="7521430434164837205">የMicrosoft 365 ፋይሎች</translation>
@@ -10216,6 +10224,7 @@ nil</translation>
 <translation id="8841843049738266382">በተፈቀደላቸው ዝርዝር ውስጥ ያሉ ተጠቃሚዎችን ማንበብ እና መቀየር</translation>
 <translation id="8841884135319684422">ተግባርን ጨርስ</translation>
 <translation id="8842594465773264717">ይህን የጣት አሻራ ይሰርዙ</translation>
+<translation id="8843160937959801189">የእርስዎን ዕልባቶች እና ሌሎችንም ከ<ph name="DEVICE" /> ለማግኘት እንደ <ph name="EMAIL" /> ይግቡ</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8846132060409673887">የዚህ ኮምፒውተር አምራችና ሞዴል ማንበብ</translation>
 <translation id="8846239054091760429">ሞኖ ኦዲዮ፣ ጀማሪ ድርጅት፣ የቀጥታ መግለጫ ጽሁፍ እና ተጨማሪ</translation>

@@ -618,6 +618,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473223074251193484">Podesi konfiguraciju privezivanja</translation>
 <translation id="1473616112002966036">&amp;Kadar videa</translation>
+<translation id="1475224725276659152">Da bi vam lista za čitanje i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Podešavanja jezika</translation>
 <translation id="1477654881618305065">Organizacija vam ne dozvoljava deljenje ovog sadržaja. Ako vam treba pomoć, obratite se administratoru.</translation>
 <translation id="1478340334823509079">Detalji: <ph name="FILE_NAME" /></translation>
@@ -1491,6 +1492,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2148248734299717598">Zatvori levi prikaz</translation>
 <translation id="2148401732477136168">Upit za instalirane aplikacije nije uspeo.</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
+<translation id="2149773378153994101">Da biste preuzeli dodatke i drugo sa: <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Izmenite obeleživač</translation>
 <translation id="2150139952286079145">Pretražite odredišta</translation>
 <translation id="2150168665016482929">Um&amp;anji</translation>
@@ -4135,6 +4137,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4131283654370308898">Dozvolite <ph name="EXTENSION_NAME" /> na ovom sajtu</translation>
 <translation id="4131410914670010031">Crno-belo</translation>
 <translation id="413193092008917129">Rutine dijagnostike mreže</translation>
+<translation id="4132108564882155194">Da biste preuzeli listu za čitanje i drugo sa: <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Neka se pridruži svako sa linkom</translation>
 <translation id="4132364317545104286">Preimenujte eSIM profil</translation>
 <translation id="4132969033912447558">Nastavite preuzimanje fajla <ph name="FILE_NAME" /></translation>
@@ -4228,6 +4231,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4213540068152645535">Problem sa promenom lozinke</translation>
 <translation id="42137655013211669">Server je zabranio pristup ovom resursu.</translation>
 <translation id="4214192212360095377">Isključi</translation>
+<translation id="421564716234835106">Da bi vam dodaci i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Organizacija je isključila čuvanje kartica na Google nalogu</translation>
 <translation id="4216511743389425832">Slušajte ovu stranicu</translation>
 <translation id="4217571870635786043">Diktiranje</translation>
@@ -4447,6 +4451,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4379623957571212011">Izaberite sliku da biste odmah primenili temu</translation>
 <translation id="4380055775103003110">Ako problem nastavi da se javlja, možete da probate druge načine da biste nastavili na <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Ušli ste u režim celog ekrana</translation>
+<translation id="4380934846131873000">Da biste preuzeli sačuvane informacije i drugo sa: <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Ne dozvoli sajtu da čuva podatke</translation>
 <translation id="4381997246130185847">Možete da nastavite tamo gde ste stali ili da u pokretu pravite nove grupe kartica</translation>
 <translation id="4384312707950789900">Dodaj željenim mrežama</translation>
@@ -6128,6 +6133,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5700761515355162635">Kolačići trećih strana su dozvoljeni</translation>
 <translation id="5700836101007545240">Administrator je onemogućio dodavanje veze</translation>
 <translation id="5701212929149679556">Roming na mobilnoj mreži</translation>
+<translation id="5701500921291556452">Da biste preuzeli lozinke i drugo sa: <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Druge aplikacije su podešene da otvaraju iste linkove kao aplikacija <ph name="APP_NAME" />. Ovim se onemogućava da <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i još 1 aplikacija otvaraju podržane linkove.</translation>
 <translation id="5702161882524398150">Postavite pitanje o prethodnoj kartici</translation>
 <translation id="5703716265115423771">utišaj zvuk</translation>
@@ -8304,6 +8310,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="738322632977123193">Otpremanje nije uspelo. Koristite sliku u nekom od ovih formata: .jpg, .gif, .png, .bmp, .tif ili .webp</translation>
 <translation id="7384687527486377545">Automatsko ponavljanje na tastaturi</translation>
 <translation id="7384804382450832142">Povežite sa Microsoft OneDrive-om</translation>
+<translation id="7385713560829077068">Da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Došlo je do greške pri pokušaju štampanja. Proverite štampač i pokušajte ponovo.</translation>
 <translation id="7385870590821097913">Pratite korake na drugom uređaju</translation>
 <translation id="7387107590792462040">Sačekajte dok je instalacija u toku</translation>
@@ -8492,6 +8499,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7517292544534877198">Koristite Google podrazumevano šifrovanje za lozinke na Google nalogu</translation>
 <translation id="7517959947270534934">Član porodice trenutno ne može da prima lozinke. Zatražite mu da ažurira Chrome i sinhronizuje lozinke.</translation>
 <translation id="7518079994230200553">Ova opcija trenutno nije dostupna.</translation>
+<translation id="752021853309481824">Da bi vam sačuvane informacije i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal u režimu bez arhiviranja: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Prikaži prečice</translation>
 <translation id="7521430434164837205">Microsoft 365 fajlovi</translation>
@@ -10205,6 +10213,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8841843049738266382">Čitanje i menjanje korisnika na listi dozvoljenih</translation>
 <translation id="8841884135319684422">Završi zadatak</translation>
 <translation id="8842594465773264717">Izbriši ovaj digitalni otisak</translation>
+<translation id="8843160937959801189">Da biste preuzeli obeleživače i drugo sa: <ph name="DEVICE" />, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8846132060409673887">Pročitajte proizvođača i model ovog računara</translation>
 <translation id="8846239054091760429">Mono zvuk, pokretanje, titl uživo i drugo</translation>

@@ -618,6 +618,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1472675084647422956">Pokaż więcej</translation>
 <translation id="1473223074251193484">Skonfiguruj tethering</translation>
 <translation id="1473616112002966036">&amp;Klatka wideo</translation>
+<translation id="1475224725276659152">Aby mieć dostęp do listy Do przeczytania oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Ustawienia języka</translation>
 <translation id="1477654881618305065">Twoja organizacja nie pozwala udostępniać tej zawartości. Jeśli potrzebujesz pomocy, skontaktuj się z administratorem.</translation>
 <translation id="1478340334823509079">Szczegóły: <ph name="FILE_NAME" /></translation>
@@ -1490,6 +1491,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2148248734299717598">Zamknij widok po lewej stronie</translation>
 <translation id="2148401732477136168">Nie udało się wysłać zapytania o zainstalowane aplikacje.</translation>
 <translation id="2148892889047469596">Przesyłaj kartę</translation>
+<translation id="2149773378153994101">Aby mieć dostęp do rozszerzeń oraz innych danych z <ph name="DEVICE" />, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Edytuj zakładkę</translation>
 <translation id="2150139952286079145">Szukaj urządzeń docelowych</translation>
 <translation id="2150168665016482929">Mi&amp;nimalizuj</translation>
@@ -4124,6 +4126,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4131283654370308898">Zezwalaj na rozszerzenie <ph name="EXTENSION_NAME" /> w tej witrynie</translation>
 <translation id="4131410914670010031">Czarno-biały</translation>
 <translation id="413193092008917129">Testy diagnostyki sieci</translation>
+<translation id="4132108564882155194">Aby mieć dostęp do listy Do przeczytania oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Pozwól dołączyć każdej osobie, która ma link</translation>
 <translation id="4132364317545104286">Zmień nazwę profilu eSIM</translation>
 <translation id="4132969033912447558">Wznów <ph name="FILE_NAME" /></translation>
@@ -4217,6 +4220,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4213540068152645535">Problemy ze zmianą hasła</translation>
 <translation id="42137655013211669">Serwer zabronił dostępu do tego zasobu.</translation>
 <translation id="4214192212360095377">Wyłącz teraz</translation>
+<translation id="421564716234835106">Aby mieć dostęp do rozszerzeń oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Twoja organizacja wyłączyła zapisywanie kart na Twoim koncie Google</translation>
 <translation id="4216511743389425832">Odsłuchaj tę stronę</translation>
 <translation id="4217571870635786043">Dyktowanie</translation>
@@ -4436,6 +4440,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="4379623957571212011">Wybierz obraz, aby od razu zastosować motyw</translation>
 <translation id="4380055775103003110">Jeśli problem będzie się powtarzał, możesz wypróbować inne sposoby logowania w witrynie <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Włączono tryb pełnego ekranu</translation>
+<translation id="4380934846131873000">Aby mieć dostęp do zapisanych informacji oraz innych danych z urządzenia <ph name="DEVICE" />, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Nie zezwalaj witrynie na zapisywanie danych</translation>
 <translation id="4381997246130185847">Możesz kontynuować pracę lub tworzyć nowe grupy kart, gdziekolwiek jesteś</translation>
 <translation id="4384312707950789900">Dodaj do preferowanych</translation>
@@ -6115,6 +6120,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5700836101007545240">Dodawanie połączenia zostało wyłączone przez administratora</translation>
 <translation id="5701212929149679556">Roaming w sieci komórkowej</translation>
+<translation id="5701500921291556452">Aby mieć dostęp do haseł oraz innych danych z <ph name="DEVICE" />, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i jeszcze 1 przestaną otwierać obsługiwane linki.</translation>
 <translation id="5702161882524398150">Zapytaj o poprzednią kartę</translation>
 <translation id="5703716265115423771">zmniejsz głośność</translation>
@@ -8289,6 +8295,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="738322632977123193">Nie udało się przesłać. Użyj obrazu w jednym z tych formatów: .jpg, .gif, .png, .bmp, .tif lub .webp</translation>
 <translation id="7384687527486377545">Automatyczne powtarzanie klawiszy</translation>
 <translation id="7384804382450832142">Połącz z Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Aby mieć do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Wystąpił błąd przy próbie drukowania. Sprawdź drukarkę i spróbuj ponownie.</translation>
 <translation id="7385870590821097913">Postępuj zgodnie z instrukcjami na drugim urządzeniu</translation>
 <translation id="7387107590792462040">Poczekaj na zakończenie instalacji</translation>
@@ -8476,6 +8483,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7517292544534877198">Używaj domyślnego szyfrowania Google dla haseł na koncie Google</translation>
 <translation id="7517959947270534934">W tej chwili członek Twojej grupy rodzinnej nie może otrzymać haseł. Poproś go, aby zaktualizował Chrome i zsynchronizował hasła.</translation>
 <translation id="7518079994230200553">Ta opcja jest obecnie niedostępna.</translation>
+<translation id="752021853309481824">Aby mieć dostęp do zapisanych informacji oraz innych danych na wszystkich swoich urządzeniach, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Pokaż skróty</translation>
 <translation id="7521430434164837205">Pliki Microsoft 365</translation>
@@ -10185,6 +10193,7 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="8841843049738266382">Odczytywanie i zmienianie użytkowników na liście dozwolonych</translation>
 <translation id="8841884135319684422">Zakończ zadanie</translation>
 <translation id="8842594465773264717">Usuń ten odcisk palca</translation>
+<translation id="8843160937959801189">Aby mieć dostęp do zakładek oraz innych danych z <ph name="DEVICE" />, zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8846132060409673887">Odczytywanie producenta i modelu tego komputera</translation>
 <translation id="8846239054091760429">Dźwięk mono, uruchamianie, napisy na żywo i inne funkcje</translation>

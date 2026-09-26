@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473223074251193484">設定網絡共享設定</translation>
 <translation id="1473616112002966036">影片影格 (&amp;V)</translation>
+<translation id="1475224725276659152">如要在你的所有裝置上取用閱讀清單及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="1476607407192946488">語言設定(&amp;L)</translation>
 <translation id="1477654881618305065">您的機構不允許分享此內容。如果您需要協助，請與管理員聯絡。</translation>
 <translation id="1478340334823509079">詳情：<ph name="FILE_NAME" /></translation>
@@ -1501,6 +1502,7 @@
 <translation id="2148248734299717598">關閉左邊檢視畫面</translation>
 <translation id="2148401732477136168">無法查詢已安裝的應用程式。</translation>
 <translation id="2148892889047469596">投放分頁</translation>
+<translation id="2149773378153994101">如要在<ph name="DEVICE" />上取用擴充程式及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2150139952286079145">搜尋目的地</translation>
 <translation id="2150168665016482929">&amp;最小化</translation>
@@ -4146,6 +4148,7 @@
 <translation id="4131283654370308898">批准喺呢個網站執行 <ph name="EXTENSION_NAME" /></translation>
 <translation id="4131410914670010031">黑白</translation>
 <translation id="413193092008917129">網絡診斷日常安排</translation>
+<translation id="4132108564882155194">如要在<ph name="DEVICE" />上取用閱讀清單及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="4132137475637520539">讓任何擁有連結的使用者參加</translation>
 <translation id="4132364317545104286">重新命名 eSIM 卡設定檔</translation>
 <translation id="4132969033912447558">繼續下載 <ph name="FILE_NAME" /></translation>
@@ -4239,6 +4242,7 @@
 <translation id="4213540068152645535">無法變更密碼</translation>
 <translation id="42137655013211669">伺服器已禁止存取此資源。</translation>
 <translation id="4214192212360095377">立即關閉</translation>
+<translation id="421564716234835106">如要在你的所有裝置上取用擴充程式及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="4216407171061541111">你的機構已關閉將分頁儲存到 Google 帳戶的功能</translation>
 <translation id="4216511743389425832">朗讀此頁面內容</translation>
 <translation id="4217571870635786043">語音輸入</translation>
@@ -4458,6 +4462,7 @@
 <translation id="4379623957571212011">選取圖片以立即套用主題</translation>
 <translation id="4380055775103003110">如果此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4380648069038809855">開咗全螢幕模式</translation>
+<translation id="4380934846131873000">如要在<ph name="DEVICE" />上取用已儲存的資料及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="4381902252848068865">不允許網站儲存資料</translation>
 <translation id="4381997246130185847">你可隨時隨地繼續未完成的操作或建立新分頁群組</translation>
 <translation id="4384312707950789900">加入慣用網絡</translation>
@@ -6136,6 +6141,7 @@
 <translation id="5700761515355162635">已允許使用第三方 Cookie</translation>
 <translation id="5700836101007545240">您的管理員已停用「新增連線」選項</translation>
 <translation id="5701212929149679556">流動數據漫遊</translation>
+<translation id="5701500921291556452">如要在<ph name="DEVICE" />上取用密碼及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="5701786609538182967">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />和另外 1 個應用程式無法開啟支援的連結。</translation>
 <translation id="5702161882524398150">詢問有關上一個分頁的問題</translation>
 <translation id="5703716265115423771">調低音量</translation>
@@ -8307,6 +8313,7 @@
 <translation id="738322632977123193">無法上載。請使用以下其中一個格式的圖片：.jpg、.png、.bmp、.tif 或 .webp</translation>
 <translation id="7384687527486377545">鍵盤自動重複</translation>
 <translation id="7384804382450832142">連線至 Microsoft OneDrive</translation>
+<translation id="7385713560829077068">如要在你的所有裝置上取用書籤及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="7385854874724088939">準備列印時出現錯誤，請檢查您的打印機，然後再試一次。</translation>
 <translation id="7385870590821097913">在另一部裝置上按照步驟操作</translation>
 <translation id="7387107590792462040">正在安裝，請稍候</translation>
@@ -8494,6 +8501,7 @@
 <translation id="7517292544534877198">使用 Google 的預設方式加密 Google 帳戶中的密碼</translation>
 <translation id="7517959947270534934">你的家庭成員目前無法接收密碼。請要求他們更新 Chrome 並同步處理密碼。</translation>
 <translation id="7518079994230200553">目前無法使用此選項。</translation>
+<translation id="752021853309481824">如要在你的所有裝置上取用已儲存的資料及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="7520766081042531487">無痕模式入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">顯示快速鍵</translation>
 <translation id="7521430434164837205">Microsoft 365 檔案</translation>
@@ -10203,6 +10211,7 @@
 <translation id="8841843049738266382">讀取及變更許可名單上的使用者</translation>
 <translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除此指紋</translation>
+<translation id="8843160937959801189">如要在<ph name="DEVICE" />上取用書籤及其他設定，請使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8846132060409673887">閱讀此電腦的生產商和型號資訊</translation>
 <translation id="8846239054091760429">單聲道音效、啟動、即時字幕等等</translation>

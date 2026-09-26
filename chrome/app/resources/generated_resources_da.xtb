@@ -619,6 +619,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1472675084647422956">Vis flere</translation>
 <translation id="1473223074251193484">Angiv konfiguration af netdeling</translation>
 <translation id="1473616112002966036">&amp;Videobillede</translation>
+<translation id="1475224725276659152">Log ind som <ph name="EMAIL" /> for at få adgang til din læseliste m.m. på alle dine enheder</translation>
 <translation id="1476607407192946488">&amp;Sprogindstillinger</translation>
 <translation id="1477654881618305065">Din organisation tillader ikke, at du deler dette indhold. Hvis du har brug for hjælp, skal du kontakte din administrator.</translation>
 <translation id="1478340334823509079">Detaljer: <ph name="FILE_NAME" /></translation>
@@ -1503,6 +1504,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2148248734299717598">Luk venstre visning</translation>
 <translation id="2148401732477136168">Forespørgslen om installerede programmer kunne ikke gennemføres.</translation>
 <translation id="2148892889047469596">Cast fanen</translation>
+<translation id="2149773378153994101">Log ind som <ph name="EMAIL" /> for at få adgang til dine udvidelser m.m. fra <ph name="DEVICE" /></translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
 <translation id="2150139952286079145">Søg efter destinationer</translation>
 <translation id="2150168665016482929">Mi&amp;nimer</translation>
@@ -4150,6 +4152,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4131283654370308898">Tillad <ph name="EXTENSION_NAME" /> på dette website</translation>
 <translation id="4131410914670010031">Sort/hvid</translation>
 <translation id="413193092008917129">Rutiner for netværksdiagnostik</translation>
+<translation id="4132108564882155194">Log ind som <ph name="EMAIL" /> for at få adgang til din læseliste m.m. fra <ph name="DEVICE" /></translation>
 <translation id="4132137475637520539">Giv alle med linket mulighed for at deltage</translation>
 <translation id="4132364317545104286">Omdøb eSIM-kortprofil</translation>
 <translation id="4132969033912447558">Genoptag <ph name="FILE_NAME" /></translation>
@@ -4243,6 +4246,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4213540068152645535">Der opstod et problem med at ændre din adgangskode</translation>
 <translation id="42137655013211669">Serveren har forbudt dig adgang til denne ressource.</translation>
 <translation id="4214192212360095377">Deaktiver nu</translation>
+<translation id="421564716234835106">Log ind som <ph name="EMAIL" /> for at få adgang til dine udvidelser m.m. på alle dine enheder</translation>
 <translation id="4216407171061541111">Din organisation har deaktiveret lagring af faner på din Google-konto</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -4462,6 +4466,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4379623957571212011">Vælg et billede for at anvende temaet med det samme</translation>
 <translation id="4380055775103003110">Hvis problemet fortsætter, kan du prøve at fortsætte på andre måder på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Fuld skærm er aktiveret</translation>
+<translation id="4380934846131873000">Log ind som <ph name="EMAIL" /> for at få adgang til dine gemte oplysninger m.m. fra <ph name="DEVICE" /></translation>
 <translation id="4381902252848068865">Tillad ikke, at websitet gemmer data</translation>
 <translation id="4381997246130185847">Du kan fortsætte, hvor du slap, eller oprette nye fanegrupper på farten</translation>
 <translation id="4384312707950789900">Føj til foretrukne</translation>
@@ -6144,6 +6149,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5700761515355162635">Tredjepartscookies er tilladt</translation>
 <translation id="5700836101007545240">Tilføjelse af forbindelser er deaktiveret af din administrator</translation>
 <translation id="5701212929149679556">Roaming på mobilnetværk</translation>
+<translation id="5701500921291556452">Log ind som <ph name="EMAIL" /> for at få adgang til dine adgangskoder m.m. fra <ph name="DEVICE" /></translation>
 <translation id="5701786609538182967">Andre apps er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Dette gør, at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og 1 anden app ikke kan åbne understøttede links.</translation>
 <translation id="5702161882524398150">Spørg om forrige fane</translation>
 <translation id="5703716265115423771">lydstyrke ned</translation>
@@ -8318,6 +8324,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="738322632977123193">Det er ikke muligt at uploade. Sørg for, at billedet har et af følgende formater: .jpg, .gif, .png, .bmp, .tif eller .webp</translation>
 <translation id="7384687527486377545">Automatisk gentagelse på tastatur</translation>
 <translation id="7384804382450832142">Forbind til Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Hvis du vil have dine bogmærker m.m. på alle dine enheder, skal du logge ind som <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Noget gik galt, da du prøvede at udskrive. Tjek din printer, og prøv igen.</translation>
 <translation id="7385870590821097913">Følg vejledningen på din anden enhed</translation>
 <translation id="7387107590792462040">Vent, mens installationen udføres</translation>
@@ -8506,6 +8513,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7517292544534877198">Brug Googles standardkryptering til adgangskoderne på din Google-konto</translation>
 <translation id="7517959947270534934">Dit familiemedlem kan ikke modtage adgangskoder lige nu. Bed medlemmet om at opdatere Chrome og synkronisere sine adgangskoder.</translation>
 <translation id="7518079994230200553">Denne mulighed er ikke tilgængelig lige nu.</translation>
+<translation id="752021853309481824">Log ind som <ph name="EMAIL" /> for at få adgang til dine gemte oplysninger m.m. på alle dine enheder</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Se genveje</translation>
 <translation id="7521430434164837205">Microsoft 365-filer</translation>
@@ -10220,6 +10228,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8841843049738266382">Se og rediger brugere på tilladelseslisten</translation>
 <translation id="8841884135319684422">Afslut opgave</translation>
 <translation id="8842594465773264717">Slet dette fingeraftryk</translation>
+<translation id="8843160937959801189">Log ind som <ph name="EMAIL" /> for at få adgang til dine bogmærker m.m. fra <ph name="DEVICE" /></translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8846132060409673887">Læs computerens producent og model</translation>
 <translation id="8846239054091760429">Monolyd, opstart, Livetekstning m.m.</translation>

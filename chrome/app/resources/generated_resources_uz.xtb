@@ -619,6 +619,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1472675084647422956">Yana</translation>
 <translation id="1473223074251193484">Modem rejimi konfiguratsiyasini sozlash</translation>
 <translation id="1473616112002966036">&amp;Video kadri</translation>
+<translation id="1475224725276659152">Barcha qurilmalaringizda saqlangan sahifalar va boshqa maʼlumotlardan foydalanish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="1476607407192946488">Til sozlamalari</translation>
 <translation id="1477654881618305065">Bu kontentni. ulashish tashkilotingiz tomonidan taqiqlanadi. Yodam uchun administratorga murojaat qiling.</translation>
 <translation id="1478340334823509079">Batafsil ma’lumotlar: <ph name="FILE_NAME" /></translation>
@@ -1494,6 +1495,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2148248734299717598">Chap panelni yopish</translation>
 <translation id="2148401732477136168">Oʻrnatilgan ilovalar soʻrovi bajarilmadi.</translation>
 <translation id="2148892889047469596">Tab translatsiyasi</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlaringizni olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
 <translation id="2150139952286079145">Belgilangan manzillarni qidirish</translation>
 <translation id="2150168665016482929">Ki&amp;chraytirish</translation>
@@ -4139,6 +4141,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4131283654370308898">Bu saytda <ph name="EXTENSION_NAME" />ga ruxsat berish</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
 <translation id="413193092008917129">Tarmoq diagnostikasi dasturlari</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> qurilmasidagi saqlangan sahifalar va boshqa maʼlumotlaringizni olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="4132137475637520539">Havolaga ega har kim qoʻshilishi mumkin</translation>
 <translation id="4132364317545104286">eSIM profilini qayta nomlash</translation>
 <translation id="4132969033912447558">Davom ettirish: <ph name="FILE_NAME" /></translation>
@@ -4232,6 +4235,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4213540068152645535">Parolni almashtirishda muammo yuz berdi</translation>
 <translation id="42137655013211669">Server bu manbaga kirishga ruxsat bermagan.</translation>
 <translation id="4214192212360095377">Hozircha faolsizlantirish</translation>
+<translation id="421564716234835106">Barcha qurilmalaringizda kengaytmalar va boshqa maʼlumotlaringizdan foydalanish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="4216407171061541111">Tashkilotingiz Google hisobingizda varaqlarni saqlashni faolsizlantirgan</translation>
 <translation id="4216511743389425832">Bu sahifani tinglash</translation>
 <translation id="4217571870635786043">Ovoz bilan yozish</translation>
@@ -4451,6 +4455,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4379623957571212011">Mavzuni darhol tatbiq qilish uchun rasm tanlang</translation>
 <translation id="4380055775103003110">Muammo qayta takrorlansa, <ph name="SITE_ETLD_PLUS_ONE" /> orqali boshqa usulda davom eting.</translation>
 <translation id="4380648069038809855">Butun ekran rejimiga kirildi</translation>
+<translation id="4380934846131873000">Saqlangan maʼlumotlaringiz va boshqalarni <ph name="DEVICE" /> qurilmasidan olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="4381902252848068865">Sayt maʼlumotlarni saqlashini taqiqlash</translation>
 <translation id="4381997246130185847">Istalgan joyda ishni kelgan joyidan davom ettirish yoki yangi varaqlar guruhini yaratish mumkin</translation>
 <translation id="4384312707950789900">Afzal tarmoqlarga qo‘shish</translation>
@@ -6132,6 +6137,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5700761515355162635">Tashqi cookie fayllarga ruxsat berilgan</translation>
 <translation id="5700836101007545240">Yangi aloqa o‘rnatish administrator tomonidan taqiqlangan</translation>
 <translation id="5701212929149679556">Roumingni sozlash</translation>
+<translation id="5701500921291556452">Parollar va boshqa maʼlumotlaringizni <ph name="DEVICE" /> qurilmasidan olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" /> ilovasini standart ilova sifatida oʻrnatishni istaysizmi? Bu havola oʻzgartirilgandan keyin <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> va yana 1 ta ilova ochilmay qoladi.</translation>
 <translation id="5702161882524398150">Avvalgi varaq haqida savol bering</translation>
 <translation id="5703716265115423771">ovozni pasaytirish</translation>
@@ -8303,6 +8309,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="738322632977123193">Yuklash imkonsiz. Rasm quyidagi formatlardan birida boʻlsin: .jpg, .gif, .png, .bmp, .tif yoki .webp</translation>
 <translation id="7384687527486377545">Klaviaturada avtomatik qayta kiritish</translation>
 <translation id="7384804382450832142">Microsoft OneDrive omboriga ulanmoqda</translation>
+<translation id="7385713560829077068">Barcha qurilmalarda bukmarklarni olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="7385854874724088939">Chop etish vaqtida xatolik yuz berdi. Printeringizni tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="7385870590821097913">Keyingi amallarni boshqa qurilmada bajaring</translation>
 <translation id="7387107590792462040">Oʻrnatish jarayoni tugashini kuting</translation>
@@ -8491,6 +8498,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7517292544534877198">Google hisobidagi parollarni Google shifrlash tizimi yordamida himoyalash</translation>
 <translation id="7517959947270534934">Oila aʼzolaringiz hozir parollarni qabul qila olmaydi. Ulardan Chrome brauzerini yangilash va parollarini sinxronlashni soʻrang.</translation>
 <translation id="7518079994230200553">Hozir bu usul ishlamayapti.</translation>
+<translation id="752021853309481824">Barcha qurilmalaringizda saqlangan maʼlumotlar va boshqalardan foydalanish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="7520766081042531487">Inkognito rejimidagi portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Yorliqlarni ochish</translation>
 <translation id="7521430434164837205">Microsoft 365 fayllari</translation>
@@ -10204,6 +10212,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8841843049738266382">Foydalanuvchilarning oq roʻyxatini oʻqish va tahrirlash</translation>
 <translation id="8841884135319684422">Vazifani yakunlash</translation>
 <translation id="8842594465773264717">Bu barmoq izini olib tashlash</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> qurilmasidagi bukmarklar va boshqa maʼlumotlaringizni olish uchun <ph name="EMAIL" /> hisobidan kiring</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8846132060409673887">Kompyuter ishlab chiqaruvchisi va modeli haqidagi axborotni olish</translation>
 <translation id="8846239054091760429">Mono audio, boshlanishi, Jonli izoh va boshqalar</translation>

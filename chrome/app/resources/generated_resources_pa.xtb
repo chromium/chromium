@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">ਹੋਰ ਦਿਖਾਓ</translation>
 <translation id="1473223074251193484">ਟੈਦਰਿੰਗ ਸੰਰੂਪਣ ਨੂੰ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="1473616112002966036">&amp;ਵੀਡੀਓ ਫ੍ਰੇਮ</translation>
+<translation id="1475224725276659152">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="1476607407192946488">&amp;ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="1477654881618305065">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦੀ। ਜੇ ਤੁਹਾਨੂੰ ਮਦਦ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="1478340334823509079">ਵੇਰਵੇ: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@
 <translation id="2148248734299717598">ਖੱਬੇ ਦ੍ਰਿਸ਼ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="2148401732477136168">ਸਥਾਪਤ ਐਪਲੀਕੇਸ਼ਨਾਂ ਦੀ ਜਾਣਕਾਰੀ ਨਹੀਂ ਮਿਲ ਸਕੀ।</translation>
 <translation id="2148892889047469596">ਟੈਬ ਨੂੰ ਕਾਸਟ ਕਰੋ</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="2149973817440762519">ਬੁੱਕਮਾਰਕ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="2150139952286079145">ਮੰਜ਼ਿਲਾਂ ਖੋਜੋ</translation>
 <translation id="2150168665016482929">ਛੋਟਾ ਕਰੋ</translation>
@@ -4150,6 +4152,7 @@
 <translation id="4131283654370308898">ਇਸ ਸਾਈਟ 'ਤੇ <ph name="EXTENSION_NAME" /> ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
 <translation id="413193092008917129">ਨੈੱਟਵਰਕ ਤਸ਼ਖੀਸ ਸੰਬੰਧੀ ਨਿਯਮਬੱਧ ਕੰਮ</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4132137475637520539">ਜਿਸ ਕੋਲ ਵੀ ਲਿੰਕ ਹੈ, ਉਸ ਨੂੰ ਸ਼ਾਮਲ ਹੋਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="4132364317545104286">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
@@ -4243,6 +4246,7 @@
 <translation id="4213540068152645535">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲਣ ਵਿੱਚ ਸਮੱਸਿਆ ਆਈ</translation>
 <translation id="42137655013211669">ਇਸ ਸਾਧਨ ਤੱਕ ਪਹੁੰਚ ਸਰਵਰ ਵੱਲੋਂ ਵਰਜਿਤ ਸੀ।</translation>
 <translation id="4214192212360095377">ਹੁਣੇ ਬੰਦ ਕਰੋ</translation>
+<translation id="421564716234835106">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4216407171061541111">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਟੈਬਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਬੰਦ ਕਰ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="4216511743389425832">ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ</translation>
 <translation id="4217571870635786043">ਬੋਲ ਅਨੁਸਾਰ ਲਿਖਤ</translation>
@@ -4462,6 +4466,7 @@
 <translation id="4379623957571212011">ਥੀਮ ਨੂੰ ਤੁਰੰਤ ਲਾਗੂ ਕਰਨ ਲਈ ਕੋਈ ਚਿੱਤਰ ਚੁਣੋ</translation>
 <translation id="4380055775103003110">ਜੇ ਇਹ ਸਮੱਸਿਆ ਜਾਰੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ <ph name="SITE_ETLD_PLUS_ONE" /> 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਲਈ ਹੋਰ ਤਰੀਕਿਆਂ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4380648069038809855">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਿੱਚ ਦਾਖਲ ਹੋਏ</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="4381902252848068865">ਸਾਈਟ ਨੂੰ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="4381997246130185847">ਤੁਸੀਂ ਉੱਥੋਂ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਜਾਂ ਤੁਰਦੇ-ਫਿਰਦੇ ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਬਣਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="4384312707950789900">ਤਰਜੀਹੀ ਨੈੱਟਵਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -6143,6 +6148,7 @@
 <translation id="5700761515355162635">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="5700836101007545240">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ 'ਕਨੈਕਸ਼ਨ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ' ਨੂੰ ਅਯੋਗ ਬਣਾਇਆ ਗਿਆ ਹੈ</translation>
 <translation id="5701212929149679556">ਸੈਲਿਊਲਰ ਰੋਮਿੰਗ</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="5701786609538182967">ਹੋਰ ਐਪਾਂ <ph name="APP_NAME" /> ਵਾਂਗ ਉਹੀ ਲਿੰਕ ਖੋਲ੍ਹਣ ਲਈ ਤਿਆਰ ਹਨ। ਇਹ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਖੋਲ੍ਹਣ ਤੋਂ ਰੋਕ ਦੇਵੇਗਾ।</translation>
 <translation id="5702161882524398150">ਪਿਛਲੀ ਟੈਬ ਬਾਰੇ ਪੁੱਛੋ</translation>
 <translation id="5703716265115423771">ਵੌਲਿਊਮ ਘਟਾਓ</translation>
@@ -8316,6 +8322,7 @@
 <translation id="738322632977123193">ਅੱਪਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਇਨ੍ਹਾਂ ਵਿੱਚੋਂ ਕਿਸੇ ਇੱਕ ਫਾਰਮੈਟ ਦੇ ਚਿੱਤਰ ਦੀ ਵਰਤੋਂ ਕਰੋ: .jpg, .gif, .png, .bmp, .tif, ਜਾਂ .webp</translation>
 <translation id="7384687527486377545">ਕੀ-ਬੋਰਡ ਸਵੈ-ਦੁਹਰਾਓ</translation>
 <translation id="7384804382450832142">Microsoft OneDrive ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
+<translation id="7385713560829077068">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕਰੋ</translation>
 <translation id="7385854874724088939">ਪ੍ਰਿੰਟ ਕਰਦੇ ਸਮੇਂ ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਿੰਟਰ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="7385870590821097913">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਦਿੱਤੇ ਹੋਰ ਪੜਾਵਾਂ ਦੀ ਪਾਲਣਾ ਕਰੋ</translation>
 <translation id="7387107590792462040">ਕਿਰਪਾ ਕਰਕੇ ਸਥਾਪਨਾ ਹੋਣ ਦੌਰਾਨ ਉਡੀਕ ਕਰੋ</translation>
@@ -8504,6 +8511,7 @@
 <translation id="7517292544534877198">ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਪਾਸਵਰਡਾਂ ਲਈ Google ਦੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="7517959947270534934">ਫ਼ਿਲਹਾਲ ਤੁਹਾਡਾ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਪਾਸਵਰਡ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਉਨ੍ਹਾਂ ਨੂੰ Chrome ਅੱਪਡੇਟ ਕਰ ਕੇ ਉਨ੍ਹਾਂ ਦੇ ਪਾਸਵਰਡ ਸਿੰਕ ਕਰਨ ਲਈ ਕਹੋ।</translation>
 <translation id="7518079994230200553">ਫ਼ਿਲਹਾਲ ਇਹ ਵਿਕਲਪ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
+<translation id="752021853309481824">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੀ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="7520766081042531487">ਇਨਕੋਗਨਿਟੋ ਪੋਰਟਲ: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
 <translation id="7521430434164837205">Microsoft 365 ਫ਼ਾਈਲਾਂ</translation>
@@ -10217,6 +10225,7 @@
 <translation id="8841843049738266382">ਪ੍ਰਵਾਨਗੀ ਲਈ ਸੂਚੀਬੱਧ ਵਰਤੋਂਕਾਰਾਂ ਬਾਰੇ ਪੜ੍ਹੋ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਬਦਲੋ</translation>
 <translation id="8841884135319684422">ਕਾਰਜ ਸਮਾਪਤ ਕਰੋ</translation>
 <translation id="8842594465773264717">ਇਸ ਫਿੰਗਰਪ੍ਰਿੰਟ ਨੂੰ ਮਿਟਾਓ</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> ਤੋਂ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="8845001906332463065">ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8846132060409673887">ਇਸ ਕੰਪਿਊਟਰ ਦੇ ਨਿਰਮਾਤਾ ਅਤੇ ਮਾਡਲ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਪੜ੍ਹੋ</translation>
 <translation id="8846239054091760429">ਮੋਨੋ ਆਡੀਓ, ਸ਼ੁਰੂਆਤ, ਲਾਈਵ ਸੁਰਖੀਆਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>

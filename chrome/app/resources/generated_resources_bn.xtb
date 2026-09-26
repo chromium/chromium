@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">আরও দেখান</translation>
 <translation id="1473223074251193484">টেথারিং কনফিগারেশন সেট করুন</translation>
 <translation id="1473616112002966036">&amp;Video ফ্রেম</translation>
+<translation id="1475224725276659152">আপনার সব ডিভাইসে পড়ার তালিকা ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="1476607407192946488">&amp;ভাষা সেটিংস</translation>
 <translation id="1477654881618305065">আপনার প্রতিষ্ঠান আপনাকে এই কন্টেন্ট শেয়ার করার অনুমতি দেয় না। আপনার সহায়তা প্রয়োজন হলে, অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="1478340334823509079">বিবরণ: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@
 <translation id="2148248734299717598">বাঁদিকের ভিউ বন্ধ করুন</translation>
 <translation id="2148401732477136168">ইনস্টল করা অ্যাপ্লিকেশন সম্পর্কে কোয়েরি করা যায়নি।</translation>
 <translation id="2148892889047469596">ট্যাব কাস্ট করুন</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> থেকে আপনার এক্সটেনশন ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="2150139952286079145">গন্তব্যস্থল খুঁজুন</translation>
 <translation id="2150168665016482929">ছোট করুন</translation>
@@ -4149,6 +4151,7 @@
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" />-কে এই সাইট অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="4131410914670010031">সাদা ও কালো</translation>
 <translation id="413193092008917129">নেটওয়ার্ক ডায়াগনস্টিকস রুটিন</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> থেকে আপনার পড়ার তালিকা ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="4132137475637520539">যেসব ব্যক্তির কাছে এই লিঙ্ক আছে, তাদের সবাইকে যোগ দেওয়ার অনুমতি দিন</translation>
 <translation id="4132364317545104286">ই-সিম প্রোফাইলের নতুন নাম দিন</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> আবার শুরু করুন</translation>
@@ -4242,6 +4245,7 @@
 <translation id="4213540068152645535">আপনার পাসওয়ার্ড পরিবর্তন করতে সমস্যা হচ্ছে</translation>
 <translation id="42137655013211669">এই সম্পদে অ্যাক্সেস করা সার্ভার দ্বারা নিষিদ্ধ ছিল।</translation>
 <translation id="4214192212360095377">এখনই বন্ধ করুন</translation>
+<translation id="421564716234835106">আপনার সব ডিভাইসে এক্সটেনশন ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="4216407171061541111">আপনার সংস্থা Google অ্যাকাউন্টে ট্যাব সেভ করার সুবিধা বন্ধ করে দিয়েছে</translation>
 <translation id="4216511743389425832">এই পৃষ্ঠার কন্টেন্ট শুনুন</translation>
 <translation id="4217571870635786043">ডিক্টেশন</translation>
@@ -4461,6 +4465,7 @@
 <translation id="4379623957571212011">ঝটপট থিম প্রয়োগ করার জন্য ছবি বেছে নিন</translation>
 <translation id="4380055775103003110">এই সমস্যা থেকে গেলে, আপনি <ph name="SITE_ETLD_PLUS_ONE" />-এ চালিয়ে যেতে অন্য উপায় চেষ্টা করে দেখতে পারেন।</translation>
 <translation id="4380648069038809855">ফুল-স্ক্রিনে ঢোকা হয়েছে</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" /> থেকে আপনার সেভ করা তথ্য ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="4381902252848068865">ডেটা সেভ করার জন্য সাইটকে অনুমতি দেবেন না</translation>
 <translation id="4381997246130185847">আপনি যেখানে শেষ করেছিলেন সেখান থেকেই শুরু করতে পারবেন অথবা যখন খুশি যেখানে খুশি নতুন ট্যাব গ্রুপ তৈরি করতে পারবেন</translation>
 <translation id="4384312707950789900">পছন্দের তালিকায় জুড়ুন</translation>
@@ -6144,6 +6149,7 @@
 <translation id="5700761515355162635">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
 <translation id="5700836101007545240">আপনার প্রশাসকের দ্বারা ‘সংযোগ জুড়ুন’ অক্ষম করা হয়েছে</translation>
 <translation id="5701212929149679556">মোবাইল রোমিং</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" /> থেকে আপনার পাসওয়ার্ড ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> এবং আরও অন্য ১টি অ্যাপের সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="5702161882524398150">আগের ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="5703716265115423771">ভলিউম কমান</translation>
@@ -8318,6 +8324,7 @@
 <translation id="738322632977123193">আপলোড করা যায়নি। নিম্নলিখিত যেকোনও একটি ফর্ম্যাটে ছবি ব্যবহার করুন: .jpg, .gif, .png, .bmp, .tif বা .webp</translation>
 <translation id="7384687527486377545">কীবোর্ড অটো-রিপিট</translation>
 <translation id="7384804382450832142">Microsoft OneDrive-এ কানেক্ট করুন</translation>
+<translation id="7385713560829077068">আপনার সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="7385854874724088939">প্রিন্টের চেষ্টা করার সময় কোন সমস্যা হয়েছে৷  অনুগ্রহ করে আপনার প্রিন্টার চেক করে আবার চেষ্টা করুন৷</translation>
 <translation id="7385870590821097913">আপনার অন্য ডিভাইসে ধাপগুলো ফলো করুন</translation>
 <translation id="7387107590792462040">ইনস্টলেশনের প্রসেস চলাকালীন অপেক্ষা করুন</translation>
@@ -8506,6 +8513,7 @@
 <translation id="7517292544534877198">আপনার Google অ্যাকাউন্টের পাসওয়ার্ডের জন্য Google-এর ডিফল্ট এনক্রিপশন ব্যবহার করুন</translation>
 <translation id="7517959947270534934">আপনার পরিবারের সদস্য এই মুহূর্তে পাসওয়ার্ড রিসিভ করতে পারবেন না। তাকে Chrome আপডেট করে পাসওয়ার্ড সিঙ্ক করতে বলুন।</translation>
 <translation id="7518079994230200553">এই মুহূর্তে এই বিকল্প উপলভ্য নয়।</translation>
+<translation id="752021853309481824">আপনার সব ডিভাইসে সেভ করা তথ্য ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="7520766081042531487">ছদ্মবেশী পোর্টাল: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">শর্টকাট দেখান</translation>
 <translation id="7521430434164837205">Microsoft 365 ফাইল</translation>
@@ -10219,6 +10227,7 @@
 <translation id="8841843049738266382">সাদা তালিকাভুক্ত ব্যবহারকারীদের তালিকা পড়ুন ও পরিবর্তন করুন</translation>
 <translation id="8841884135319684422">টাস্ক শেষ করুন</translation>
 <translation id="8842594465773264717">এই ফিঙ্গারপ্রিন্ট মুছুন</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> থেকে আপনার বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8846132060409673887">এই কম্পিউটারের প্রস্তুতকারক এবং মডেলটি পড়ুন</translation>
 <translation id="8846239054091760429">মোনো অডিও, স্টার্টআপ, 'লাইভ ক্যাপশন' ও আরও অনেক কিছু</translation>

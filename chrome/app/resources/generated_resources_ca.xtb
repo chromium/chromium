@@ -618,6 +618,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1472675084647422956">Mostra'n més</translation>
 <translation id="1473223074251193484">Defineix la configuració de la compartició de xarxa</translation>
 <translation id="1473616112002966036">&amp;Fotograma de vídeo</translation>
+<translation id="1475224725276659152">Per obtenir la llista de lectura i altres dades de tots els dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Configuració d'idioma</translation>
 <translation id="1477654881618305065">La teva organització no et permet compartir aquest contingut. Si necessites ajuda, contacta amb l'administrador.</translation>
 <translation id="1478340334823509079">Detalls: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2148248734299717598">Tanca la visualització esquerra</translation>
 <translation id="2148401732477136168">No s'han pogut consultar les aplicacions instal·lades.</translation>
 <translation id="2148892889047469596">Emet la pestanya</translation>
+<translation id="2149773378153994101">Per obtenir les extensions i altres dades de <ph name="DEVICE" />, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
 <translation id="2150139952286079145">Cerca destinacions</translation>
 <translation id="2150168665016482929">Mi&amp;nimitza</translation>
@@ -4133,6 +4135,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4131283654370308898">Permet <ph name="EXTENSION_NAME" /> en aquest lloc web</translation>
 <translation id="4131410914670010031">Blanc i negre</translation>
 <translation id="413193092008917129">Rutines de diagnòstic de la xarxa</translation>
+<translation id="4132108564882155194">Per obtenir la llista de lectura i altres dades de <ph name="DEVICE" />, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Permet que s'hi uneixi tothom que tingui l'enllaç</translation>
 <translation id="4132364317545104286">Canvia el nom del perfil de l'eSIM</translation>
 <translation id="4132969033912447558">Reprèn <ph name="FILE_NAME" /></translation>
@@ -4226,6 +4229,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4213540068152645535">Hi ha hagut un problema en canviar la contrasenya</translation>
 <translation id="42137655013211669">El servidor ha prohibit l'accés a aquest recurs.</translation>
 <translation id="4214192212360095377">Desactiva ara</translation>
+<translation id="421564716234835106">Per accedir a les extensions i altres dades de tots els teus dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">La teva organització ha desactivat l'opció de desar pestanyes al teu Compte de Google</translation>
 <translation id="4216511743389425832">Escolta aquesta pàgina</translation>
 <translation id="4217571870635786043">Dictat</translation>
@@ -4445,6 +4449,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4379623957571212011">Selecciona una imatge per aplicar el tema a l'instant</translation>
 <translation id="4380055775103003110">Si el problema persisteix, pots provar altres maneres de continuar a <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">S'ha entrat en pantalla completa</translation>
+<translation id="4380934846131873000">Per obtenir la informació desada i altres dades de <ph name="DEVICE" />, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">No permetis que el lloc web desi dades</translation>
 <translation id="4381997246130185847">Pots continuar on ho vas deixar o crear grups de pestanyes nous siguis on siguis</translation>
 <translation id="4384312707950789900">Afegeix a les preferides</translation>
@@ -6125,6 +6130,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5700761515355162635">Galetes de tercers permeses</translation>
 <translation id="5700836101007545240">L'administrador ha desactivat l'opció Afegeix una connexió</translation>
 <translation id="5701212929149679556">Itinerància mòbil</translation>
+<translation id="5701500921291556452">Per obtenir les contrasenyes i altres dades de <ph name="DEVICE" />, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">S'han configurat altres aplicacions per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de les aplicacions <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> i 1 aplicació més.</translation>
 <translation id="5702161882524398150">Pregunta sobre la pestanya anterior</translation>
 <translation id="5703716265115423771">abaixa el volum</translation>
@@ -8296,6 +8302,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="738322632977123193">No es pot penjar. Utilitza una imatge en qualsevol d'aquests formats: .jpg, .png, .bmp, .tif o .webp.</translation>
 <translation id="7384687527486377545">Repetició automàtica del teclat</translation>
 <translation id="7384804382450832142">Connecta't a Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Per obtenir les adreces d'interès i altres dades en tots els dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Hi ha hagut un problema en intentar imprimir. Comproveu la impressora i torneu-ho a provar.</translation>
 <translation id="7385870590821097913">Segueix els passos a l'altre dispositiu</translation>
 <translation id="7387107590792462040">Espera mentre la instal·lació està en curs</translation>
@@ -8484,6 +8491,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7517292544534877198">Utilitza l'encriptació predeterminada de Google per a les contrasenyes del meu Compte de Google</translation>
 <translation id="7517959947270534934">El membre de la teva família no pot rebre contrasenyes en aquest moment. Demana-li que actualitzi Chrome i que sincronitzi les seves contrasenyes.</translation>
 <translation id="7518079994230200553">Aquesta opció no està disponible en aquests moments.</translation>
+<translation id="752021853309481824">Per obtenir la informació desada i altres dades de tots els teus dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal d'incògnit: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostra les dreceres</translation>
 <translation id="7521430434164837205">Fitxers de Microsoft 365</translation>
@@ -10197,6 +10205,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8841843049738266382">Llegir i canviar els usuaris de la llista d'accés permès</translation>
 <translation id="8841884135319684422">Finalitza la tasca</translation>
 <translation id="8842594465773264717">Suprimeix aquesta empremta digital</translation>
+<translation id="8843160937959801189">Per obtenir les adreces d'interès i altres dades de <ph name="DEVICE" />, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8846132060409673887">Consultar el fabricant i el model d'aquest ordinador</translation>
 <translation id="8846239054091760429">Àudio mono, inici, subtítols instantanis, etc.</translation>

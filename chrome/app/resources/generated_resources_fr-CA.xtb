@@ -618,6 +618,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1472675084647422956">Plus</translation>
 <translation id="1473223074251193484">Définir la configuration du partage de connexion</translation>
 <translation id="1473616112002966036">Image vidéo</translation>
+<translation id="1475224725276659152">Pour obtenir votre liste de lecture et plus encore sur tous vos appareils, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">Paramètres &amp;linguistiques</translation>
 <translation id="1477654881618305065">Votre organisation ne vous autorise pas à partager ce contenu. Si vous avez besoin d'aide, communiquez avec votre administrateur.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2148248734299717598">Fermer l'affichage de gauche</translation>
 <translation id="2148401732477136168">Échec de la requête d'applications installées.</translation>
 <translation id="2148892889047469596">Onglet Diffuser</translation>
+<translation id="2149773378153994101">Pour obtenir vos extensions et plus encore à partir de <ph name="DEVICE" />, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2150139952286079145">Rechercher des destinations</translation>
 <translation id="2150168665016482929">Réduire</translation>
@@ -4138,6 +4140,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4131283654370308898">Autoriser <ph name="EXTENSION_NAME" /> sur ce site</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="413193092008917129">Routines de diagnostic réseau</translation>
+<translation id="4132108564882155194">Pour obtenir votre liste de lecture et plus encore à partir de <ph name="DEVICE" />, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Autoriser toute personne disposant du lien à se joindre</translation>
 <translation id="4132364317545104286">Renommer le profil de la carte eSIM</translation>
 <translation id="4132969033912447558">Reprendre l'activité de <ph name="FILE_NAME" /></translation>
@@ -4231,6 +4234,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4213540068152645535">Problème de modification du mot de passe</translation>
 <translation id="42137655013211669">L'accès à ces ressources a été interdit par le serveur.</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
+<translation id="421564716234835106">Pour obtenir vos extensions et plus encore sur tous vos appareils, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Votre organisation a désactivé l'enregistrement des onglets dans votre compte Google</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
 <translation id="4217571870635786043">Dictée</translation>
@@ -4450,6 +4454,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4379623957571212011">Sélectionnez une image pour appliquer le thème instantanément</translation>
 <translation id="4380055775103003110">Si ce problème persiste, vous pouvez essayer d'autres solutions pour continuer sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Mode plein écran activé</translation>
+<translation id="4380934846131873000">Pour obtenir vos informations enregistrées et plus encore à partir de <ph name="DEVICE" />, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Ne pas autoriser le site à enregistrer des données</translation>
 <translation id="4381997246130185847">Vous pouvez reprendre là où vous vous étiez arrêté ou créer de nouveaux groupes d'onglets en déplacement</translation>
 <translation id="4384312707950789900">Ajouter aux réseaux préférés</translation>
@@ -6130,6 +6135,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5700761515355162635">Témoins tiers autorisés</translation>
 <translation id="5700836101007545240">Votre administrateur a désactivé l'ajout de connexion</translation>
 <translation id="5701212929149679556">Itinérance cellulaire</translation>
+<translation id="5701500921291556452">Pour obtenir vos mots de passe et plus encore à partir de <ph name="DEVICE" />, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">D'autres applications sont configurées pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par les applications <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ainsi qu'une autre application.</translation>
 <translation id="5702161882524398150">Poser une question sur l'onglet précédent</translation>
 <translation id="5703716265115423771">diminuer le volume</translation>
@@ -8303,6 +8309,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="738322632977123193">Téléversement impossible. Utilisez une image dans l'un des formats suivants : .jpg, .gif, .png, .bmp, .tif ou .webp</translation>
 <translation id="7384687527486377545">Répétition automatique du clavier</translation>
 <translation id="7384804382450832142">Connectez-vous à Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Une erreur s'est produite lors de l'impression. Veuillez vérifier votre imprimante et essayer de nouveau.</translation>
 <translation id="7385870590821097913">Suivre les étapes sur votre autre appareil</translation>
 <translation id="7387107590792462040">Veuillez patienter pendant que l'installation est en cours</translation>
@@ -8491,6 +8498,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7517292544534877198">Utiliser le chiffrement par défaut de Google pour les mots de passe de votre compte Google</translation>
 <translation id="7517959947270534934">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chrome et de synchroniser ses mots de passe.</translation>
 <translation id="7518079994230200553">Cette option n'est pas disponible pour le moment.</translation>
+<translation id="752021853309481824">Pour obtenir vos informations enregistrées et plus encore sur tous vos appareils, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portail de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afficher les raccourcis</translation>
 <translation id="7521430434164837205">Fichiers Microsoft 365</translation>
@@ -10203,6 +10211,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8841843049738266382">Consulter et modifier les utilisateurs ajoutés à la liste verte</translation>
 <translation id="8841884135319684422">Terminer la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>
+<translation id="8843160937959801189">Pour obtenir vos favoris et plus encore à partir de votre <ph name="DEVICE" />, connectez-vous au moyen de l'adresse <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8846132060409673887">Trouvez le fabricant et le modèle de cet ordinateur</translation>
 <translation id="8846239054091760429">Son mono, démarrage, sous-titres instantanés et plus encore</translation>

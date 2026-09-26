@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">عرض المزيد</translation>
 <translation id="1473223074251193484">ضبط إعدادات التوصيل</translation>
 <translation id="1473616112002966036">‫&amp;إطار الفيديو</translation>
+<translation id="1475224725276659152">للوصول إلى قائمة القراءة وغيرها على جميع أجهزتك، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">إ&amp;عدادات اللغة</translation>
 <translation id="1477654881618305065">لا تسمح مؤسستك بمشاركة هذا المحتوى. إذا كنت بحاجة للمساعدة، يُرجى التواصل مع المشرف.</translation>
 <translation id="1478340334823509079">التفاصيل: <ph name="FILE_NAME" /></translation>
@@ -1495,6 +1496,7 @@
 <translation id="2148248734299717598">إغلاق العرض الأيسر</translation>
 <translation id="2148401732477136168">تعذَّر طلب التطبيقات المثبَّتة.</translation>
 <translation id="2148892889047469596">علامة التبويب "إرسال"</translation>
+<translation id="2149773378153994101">للوصول إلى الإضافات وغيرها من <ph name="DEVICE" />، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
 <translation id="2150139952286079145">بحث في الوجهات</translation>
 <translation id="2150168665016482929">ت&amp;صغير</translation>
@@ -4137,6 +4139,7 @@
 <translation id="4131283654370308898">السماح بالإضافة "<ph name="EXTENSION_NAME" />" على هذا الموقع الإلكتروني</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="413193092008917129">سلسلة إجراءات بيانات تشخيص الشبكة</translation>
+<translation id="4132108564882155194">للوصول إلى قائمة القراءة وغيرها من <ph name="DEVICE" />، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">السماح لأي مستخدم لديه الرابط بالانضمام</translation>
 <translation id="4132364317545104286">‏إعادة تسمية الملف الشخصي لشريحة eSIM</translation>
 <translation id="4132969033912447558">استئناف تنزيل "<ph name="FILE_NAME" />"</translation>
@@ -4230,6 +4233,7 @@
 <translation id="4213540068152645535">حدثت مشكلة أثناء تغيير كلمة المرور</translation>
 <translation id="42137655013211669">الدخول إلى هذا المورد محظور  من الخادم</translation>
 <translation id="4214192212360095377">الإيقاف الآن</translation>
+<translation id="421564716234835106">للوصول إلى الإضافات وغيرها على جميع أجهزتك، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">‏أوقفت مؤسستك إمكانية حفظ علامات التبويب في حسابك على Google</translation>
 <translation id="4216511743389425832">الاستماع إلى هذه الصفحة</translation>
 <translation id="4217571870635786043">إملاء</translation>
@@ -4449,6 +4453,7 @@
 <translation id="4379623957571212011">اختر صورة لتطبيق المظهر على الفور</translation>
 <translation id="4380055775103003110">في حال استمرار حدوث هذه المشكلة، يمكنك تجربة طرق أخرى للمتابعة على "<ph name="SITE_ETLD_PLUS_ONE" />".</translation>
 <translation id="4380648069038809855">الدخول إلى وضع ملء الشاشة</translation>
+<translation id="4380934846131873000">للوصول إلى معلوماتك المحفوظة وغيرها من <ph name="DEVICE" />، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">عدم السماح للموقع الإلكتروني بحفظ البيانات</translation>
 <translation id="4381997246130185847">يمكنك المتابعة من حيث توقفت أو إنشاء مجموعات علامات تبويب جديدة أثناء التنقّل</translation>
 <translation id="4384312707950789900">إضافة إلى الشبكات المُفضلة</translation>
@@ -6131,6 +6136,7 @@
 <translation id="5700761515355162635">ملفات تعريف الارتباط الخارجية مسموح بها</translation>
 <translation id="5700836101007545240">تم إيقاف إضافة اتصال بواسطة المشرف</translation>
 <translation id="5701212929149679556">التجوال على شبكة الجوّال</translation>
+<translation id="5701500921291556452">للوصول إلى كلمات المرور وغيرها من <ph name="DEVICE" />، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">تم ضبط تطبيقات أخرى لفتح الروابط نفسها مثل <ph name="APP_NAME" />. وسيؤدي هذا الإجراء إلى منع <ph name="APP_NAME_2" /> و<ph name="APP_NAME_3" /> و<ph name="APP_NAME_4" /> وتطبيق واحد آخر من فتح الروابط المتوافقة.</translation>
 <translation id="5702161882524398150">طرح سؤال حول علامة التبويب السابقة</translation>
 <translation id="5703716265115423771">صوت منخفض</translation>
@@ -8312,6 +8318,7 @@
 <translation id="738322632977123193">‏يتعذّر تحميل الملف. يجب استخدام صورة بأحد التنسيقات التالية: ‎.‎jpg أو ‎.gif أو ‎.png أو ‎.bmp أو ‎.tif أو ‎.webp.</translation>
 <translation id="7384687527486377545">التكرار التلقائي على لوحة المفاتيح</translation>
 <translation id="7384804382450832142">‏الربط بمساحة تخزين Microsoft OneDrive</translation>
+<translation id="7385713560829077068">يتيح لك تسجيل الدخول بالحساب <ph name="EMAIL" /> الوصول إلى الإشارات المرجعية وغيرها على جميع أجهزتك</translation>
 <translation id="7385854874724088939">حدث خطأ ما أثناء الطباعة. يُرجى التحقق من الطابعة والمحاولة مرة أخرى.</translation>
 <translation id="7385870590821097913">يُرجى اتّباع الخطوات التي تظهر على جهازك الآخر</translation>
 <translation id="7387107590792462040">يُرجى الانتظار إلى أن تنتهي عملية التثبيت الجارية.</translation>
@@ -8499,6 +8506,7 @@
 <translation id="7517292544534877198">‏استخدام تشفير Google التلقائي لكلمات المرور في حسابك على Google</translation>
 <translation id="7517959947270534934">‏لا يمكن لأفراد عائلتك تلقّي كلمات المرور الآن. اطلب منهم تحديث تطبيق Chrome ومزامنة كلمات المرور لديهم.</translation>
 <translation id="7518079994230200553">لا يتوفّر هذا الخيار في الوقت الحالي.</translation>
+<translation id="752021853309481824">للوصول إلى معلوماتك المحفوظة وغيرها على جميع أجهزتك، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">بوابة التصفّح المتخفي: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">عرض الاختصارات</translation>
 <translation id="7521430434164837205">‏ملفات Microsoft 365</translation>
@@ -10213,6 +10221,7 @@
 <translation id="8841843049738266382">قراءة قائمة المستخدمين المسموح بهم وتغييرها</translation>
 <translation id="8841884135319684422">إنهاء المهمّة</translation>
 <translation id="8842594465773264717">حذف بصمة الإصبع هذه</translation>
+<translation id="8843160937959801189">للوصول إلى الإشارات المرجعية وغيرها من <ph name="DEVICE" />، يُرجى تسجيل الدخول بالحساب <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>
 <translation id="8846239054091760429">ميزة "الصوت الأحادي" وأصوات بدء التشغيل وميزة "النسخ النصي التلقائي" وغيرها</translation>

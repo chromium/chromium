@@ -619,6 +619,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1472675084647422956">Show more</translation>
 <translation id="1473223074251193484">Set tethering configuration</translation>
 <translation id="1473616112002966036">&amp;Video frame</translation>
+<translation id="1475224725276659152">To get your reading list and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Language Settings</translation>
 <translation id="1477654881618305065">Your organisation doesn't allow you to share this content. If you need help, contact your administrator.</translation>
 <translation id="1478340334823509079">Details: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2148248734299717598">Close left view</translation>
 <translation id="2148401732477136168">Failed to query installed applications.</translation>
 <translation id="2148892889047469596">Cast tab</translation>
+<translation id="2149773378153994101">To get your extensions and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2150139952286079145">Search destinations</translation>
 <translation id="2150168665016482929">Mi&amp;nimise</translation>
@@ -4149,6 +4151,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4131283654370308898">Allow <ph name="EXTENSION_NAME" /> on this site</translation>
 <translation id="4131410914670010031">Black and white</translation>
 <translation id="413193092008917129">Network diagnostic routines</translation>
+<translation id="4132108564882155194">To get your reading list and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Let anyone with the link join</translation>
 <translation id="4132364317545104286">Rename eSIM profile</translation>
 <translation id="4132969033912447558">Resume <ph name="FILE_NAME" /></translation>
@@ -4242,6 +4245,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4213540068152645535">Trouble changing your password</translation>
 <translation id="42137655013211669">Access to this resource was forbidden by the server.</translation>
 <translation id="4214192212360095377">Turn Off Now</translation>
+<translation id="421564716234835106">To get your extensions and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Your organisation turned off saving tabs in your Google Account</translation>
 <translation id="4216511743389425832">Listen to this page</translation>
 <translation id="4217571870635786043">Dictation</translation>
@@ -4461,6 +4465,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4379623957571212011">Select an image to apply the theme instantly</translation>
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Entered full screen</translation>
+<translation id="4380934846131873000">To get your saved info and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Don't allow site to save data</translation>
 <translation id="4381997246130185847">You can pick up where you left off or create new tab groups on the go</translation>
 <translation id="4384312707950789900">Add to preferred</translation>
@@ -6143,6 +6148,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5700761515355162635">Third-party cookies allowed</translation>
 <translation id="5700836101007545240">Add connection is disabled by your administrator</translation>
 <translation id="5701212929149679556">Mobile roaming</translation>
+<translation id="5701500921291556452">To get your passwords and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Other apps are set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> and one other app from opening supported links.</translation>
 <translation id="5702161882524398150">Ask about previous tab</translation>
 <translation id="5703716265115423771">volume down</translation>
@@ -8315,6 +8321,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="738322632977123193">Can't upload. Use an image in one of these formats: .jpg, .gif, .png, .bmp, .tif or .webp</translation>
 <translation id="7384687527486377545">Keyboard auto-repeat</translation>
 <translation id="7384804382450832142">Connect to Microsoft OneDrive</translation>
+<translation id="7385713560829077068">To get your bookmarks and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Something went wrong when trying to print.  Please check your printer and try again.</translation>
 <translation id="7385870590821097913">Follow the steps on your other device</translation>
 <translation id="7387107590792462040">Please wait while verification is in progress</translation>
@@ -8503,6 +8510,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7517292544534877198">Use Google's default encryption for the passwords in your Google Account</translation>
 <translation id="7517959947270534934">Your family member can't receive passwords right now. Ask them to update Chrome and sync their passwords.</translation>
 <translation id="7518079994230200553">This option is unavailable right now.</translation>
+<translation id="752021853309481824">To get your saved info and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Show shortcuts</translation>
 <translation id="7521430434164837205">Microsoft 365 files</translation>
@@ -10216,6 +10224,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8841843049738266382">Read and change the allowlist users</translation>
 <translation id="8841884135319684422">End task</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
+<translation id="8843160937959801189">To get your bookmarks and more from <ph name="DEVICE" />, sign in as <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8846132060409673887">Read the manufacturer and model of this computer</translation>
 <translation id="8846239054091760429">Mono audio, startup, Live Caption and more</translation>

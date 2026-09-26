@@ -619,6 +619,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1472675084647422956">Vis mer</translation>
 <translation id="1473223074251193484">Angi konfigurasjon for internettdeling</translation>
 <translation id="1473616112002966036">&amp;Videoramme</translation>
+<translation id="1475224725276659152">For å få leselisten med mer på alle enhetene, logg på som <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Språkinnstillinger</translation>
 <translation id="1477654881618305065">Organisasjonen din lar deg ikke dele dette innholdet. Hvis du trenger hjelp, kan du kontakte administratoren din.</translation>
 <translation id="1478340334823509079">Detaljer: <ph name="FILE_NAME" /></translation>
@@ -1499,6 +1500,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2148248734299717598">Lukk venstre visning</translation>
 <translation id="2148401732477136168">Kunne ikke spørre installerte apper.</translation>
 <translation id="2148892889047469596">Castefane</translation>
+<translation id="2149773378153994101">For å få utvidelsene med mer fra <ph name="DEVICE" />, logg på som <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Rediger bokmerke</translation>
 <translation id="2150139952286079145">Søk etter destinasjoner</translation>
 <translation id="2150168665016482929">Mi&amp;nimer</translation>
@@ -4144,6 +4146,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4131283654370308898">Tillat <ph name="EXTENSION_NAME" /> på dette nettstedet</translation>
 <translation id="4131410914670010031">Svarthvitt</translation>
 <translation id="413193092008917129">Rutiner for nettverksdiagnostikk</translation>
+<translation id="4132108564882155194">For å få leselisten med mer fra <ph name="DEVICE" />, logg på som <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">La alle som har linken, bli med</translation>
 <translation id="4132364317545104286">Gi nytt navn til eSIM-kortprofilen</translation>
 <translation id="4132969033912447558">Fortsett å laste ned <ph name="FILE_NAME" /></translation>
@@ -4237,6 +4240,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4213540068152645535">Problemer med å endre passordet</translation>
 <translation id="42137655013211669">Tilgangen til denne ressursen ble avvist av tjeneren.</translation>
 <translation id="4214192212360095377">Slå av nå</translation>
+<translation id="421564716234835106">For å få utvidelsene med mer på alle enhetene, logg på som <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Organisasjonen din har slått av lagring av faner i Google-kontoen din</translation>
 <translation id="4216511743389425832">Lytt til denne siden</translation>
 <translation id="4217571870635786043">Diktering</translation>
@@ -4456,6 +4460,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4379623957571212011">Velg et bilde for å bruke temaet umiddelbart</translation>
 <translation id="4380055775103003110">Hvis problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="4380648069038809855">Åpnet fullskjerm</translation>
+<translation id="4380934846131873000">For å få den lagrede informasjonen med mer fra <ph name="DEVICE" />, logg på som <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Ikke tillat nettstedet å lagre data</translation>
 <translation id="4381997246130185847">Du kan fortsette der du slapp, eller opprette nye fanegrupper mens du er på farten</translation>
 <translation id="4384312707950789900">Legg til som et foretrukket nettverk</translation>
@@ -6135,6 +6140,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5700761515355162635">Informasjonskapsler fra tredjeparter tillates</translation>
 <translation id="5700836101007545240">Administratoren din har slått av Legg til tilkobling</translation>
 <translation id="5701212929149679556">Roaming</translation>
+<translation id="5701500921291556452">For å få passordene med mer fra <ph name="DEVICE" />, logg på som <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Andre apper er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> og én annen app ikke kan åpne støttede linker.</translation>
 <translation id="5702161882524398150">Spør om forrige fane</translation>
 <translation id="5703716265115423771">volum ned</translation>
@@ -8307,6 +8313,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="738322632977123193">Kan ikke laste opp. Bruk et bilde i et av disse formatene: .jpg, .gif, .png, .bmp, .tif eller .webp</translation>
 <translation id="7384687527486377545">Automatisk gjentakelse for tastaturet</translation>
 <translation id="7384804382450832142">Koble til Microsoft OneDrive</translation>
+<translation id="7385713560829077068">For å få bokmerkene med mer på alle enhetene, logg på som <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Det oppsto en feil under forsøket på å skrive ut. Kontroller skriveren og prøv igjen.</translation>
 <translation id="7385870590821097913">Følg trinnene på den andre enheten</translation>
 <translation id="7387107590792462040">Vent til installeringen er fullført</translation>
@@ -8495,6 +8502,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7517292544534877198">Bruk Googles standardkryptering for passordene i Google-kontoen din</translation>
 <translation id="7517959947270534934">Familiemedlemmet ditt kan ikke motta passord akkurat nå. Be vedkommende om å oppdatere Chrome og synkronisere passordene sine.</translation>
 <translation id="7518079994230200553">Dette alternativet er ikke tilgjengelig akkurat nå.</translation>
+<translation id="752021853309481824">For å få den lagrede informasjonen med mer på alle enhetene, logg på som <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Vis snarveier</translation>
 <translation id="7521430434164837205">Microsoft 365-filer</translation>
@@ -10208,6 +10216,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8841843049738266382">Lese og endre brukere på godkjenningslisten</translation>
 <translation id="8841884135319684422">Avslutt oppgaven</translation>
 <translation id="8842594465773264717">Slett dette fingeravtrykket</translation>
+<translation id="8843160937959801189">For å få bokmerkene med mer fra <ph name="DEVICE" />, logg på som <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8846132060409673887">Les om datamaskinens produsent og modell</translation>
 <translation id="8846239054091760429">Monolyd, oppstart, direkteteksting med mer</translation>

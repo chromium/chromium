@@ -618,6 +618,7 @@
 <translation id="1472675084647422956">さらに表示</translation>
 <translation id="1473223074251193484">テザリング設定を行う</translation>
 <translation id="1473616112002966036">動画フレーム(&amp;V)</translation>
+<translation id="1475224725276659152">すべてのデバイスで同じリーディング リストなどを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="1476607407192946488">言語設定(&amp;L)</translation>
 <translation id="1477654881618305065">お客様の組織では、このコンテンツの共有は許可されていません。サポートが必要な場合は、管理者にお問い合わせください。</translation>
 <translation id="1478340334823509079">詳細: <ph name="FILE_NAME" /></translation>
@@ -1491,6 +1492,7 @@
 <translation id="2148248734299717598">左のビューを閉じる</translation>
 <translation id="2148401732477136168">インストール済みのアプリケーションを取得できませんでした。</translation>
 <translation id="2148892889047469596">タブをキャスト</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" />の拡張機能などを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="2149973817440762519">ブックマークを編集</translation>
 <translation id="2150139952286079145">送信先の検索</translation>
 <translation id="2150168665016482929">最小化(&amp;N)</translation>
@@ -4133,6 +4135,7 @@
 <translation id="4131283654370308898"><ph name="EXTENSION_NAME" /> をこのサイトで許可する</translation>
 <translation id="4131410914670010031">白黒</translation>
 <translation id="413193092008917129">ネットワーク診断ルーティン</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" />のリーディング リストなどを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="4132137475637520539">リンクを使って他のユーザーが参加できるようにする</translation>
 <translation id="4132364317545104286">eSIM プロファイルの名前変更</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> を再開</translation>
@@ -4226,6 +4229,7 @@
 <translation id="4213540068152645535">パスワードの変更に関する問題</translation>
 <translation id="42137655013211669">このリソースへのアクセスはサーバーにより禁止されています。</translation>
 <translation id="4214192212360095377">今すぐオフにする</translation>
+<translation id="421564716234835106">すべてのデバイスで同じ拡張機能などを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="4216407171061541111">Google アカウントでのタブの保存は組織によって無効にされています</translation>
 <translation id="4216511743389425832">このページを読み上げ</translation>
 <translation id="4217571870635786043">音声入力</translation>
@@ -4445,6 +4449,7 @@
 <translation id="4379623957571212011">画像を選択してテーマをすぐに適用</translation>
 <translation id="4380055775103003110">問題が解消しない場合は、<ph name="SITE_ETLD_PLUS_ONE" /> で続行するための別の方法をお試しください。</translation>
 <translation id="4380648069038809855">全画面表示に切り替えました</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" />で保存した情報などを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="4381902252848068865">サイトによるデータの保存を許可しない</translation>
 <translation id="4381997246130185847">外出先で、前回使用したタブグループを開いたり、新しいタブグループを作成したりできます</translation>
 <translation id="4384312707950789900">優先ネットワークに追加</translation>
@@ -6123,6 +6128,7 @@
 <translation id="5700761515355162635">サードパーティ Cookie が許可されています</translation>
 <translation id="5700836101007545240">接続の追加機能は管理者によって無効にされています</translation>
 <translation id="5701212929149679556">データ ローミング</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" />のパスワードなどを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリが複数あります。設定を変更すると、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />、その他 1 件のアプリで対応リンクを開けなくなります。</translation>
 <translation id="5702161882524398150">前のタブについて質問する</translation>
 <translation id="5703716265115423771">音量を下げる</translation>
@@ -8295,6 +8301,7 @@
 <translation id="738322632977123193">アップロードできません。使用できる画像の形式は .jpg、.gif、.png、.bmp、.tif、.webp のいずれかです</translation>
 <translation id="7384687527486377545">キーボードの自動リピート</translation>
 <translation id="7384804382450832142">Microsoft OneDrive に接続</translation>
+<translation id="7385713560829077068">すべてのデバイスで同じブックマークなどを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="7385854874724088939">印刷中に問題が発生しました。プリンタを確認してからもう一度お試しください。</translation>
 <translation id="7385870590821097913">別のデバイスに表示される手順に沿って操作してください</translation>
 <translation id="7387107590792462040">インストール中のため、しばらくお待ちください</translation>
@@ -8483,6 +8490,7 @@
 <translation id="7517292544534877198">Google アカウントのパスワードに Google のデフォルトの暗号化を使用する</translation>
 <translation id="7517959947270534934">現在、ファミリー メンバーはパスワードを受信できません。Chrome を更新してパスワードを同期するようメンバーに依頼してください。</translation>
 <translation id="7518079994230200553">このオプションは現在使用できません。</translation>
+<translation id="752021853309481824">すべてのデバイスで保存した情報などを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
 <translation id="7521430434164837205">Microsoft 365 ファイル</translation>
@@ -10195,6 +10203,7 @@
 <translation id="8841843049738266382">許可リストに登録されたユーザーの読み取りと変更</translation>
 <translation id="8841884135319684422">タスクを終了</translation>
 <translation id="8842594465773264717">この指紋を削除</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" />のブックマークなどを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8846132060409673887">このパソコンのメーカーと機種の情報を取得する</translation>
 <translation id="8846239054091760429">モノラル音声、起動、自動字幕起こしなど</translation>

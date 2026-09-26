@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1473223074251193484">Поставете конфигурација за интернет преку мобилен</translation>
 <translation id="1473616112002966036">&amp;Видеокадар</translation>
+<translation id="1475224725276659152">За да ги добиете вашата „Список за читање“ и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Поставки за јазик</translation>
 <translation id="1477654881618305065">Вашата организација не ви дозволува да ги споделувате овие содржини. Ако ви треба помош, контактирајте со администраторот.</translation>
 <translation id="1478340334823509079">Детали: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@
 <translation id="2148248734299717598">Затвори го приказот лево</translation>
 <translation id="2148401732477136168">Не можеше да се побараат инсталираните апликации.</translation>
 <translation id="2148892889047469596">Картичка за емитување</translation>
+<translation id="2149773378153994101">За да ги добиете екстензиите и друго од <ph name="DEVICE" />, најавете се како <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Измени Обележувач</translation>
 <translation id="2150139952286079145">Пребарај дестинации</translation>
 <translation id="2150168665016482929">Мин&amp;имизирај</translation>
@@ -4149,6 +4151,7 @@
 <translation id="4131283654370308898">Дозволи <ph name="EXTENSION_NAME" /> на сајтов</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
 <translation id="413193092008917129">Рутини за мрежна дијагностика</translation>
+<translation id="4132108564882155194">За да ги добиете вашата „Список за читање“ и друго од <ph name="DEVICE" />, најавете се како <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Дозволете да се придружи секој што го има линкот</translation>
 <translation id="4132364317545104286">Преименувајте го профилот на eSIM</translation>
 <translation id="4132969033912447558">Продолжи со <ph name="FILE_NAME" /></translation>
@@ -4242,6 +4245,7 @@
 <translation id="4213540068152645535">Проблем при променување на лозинката</translation>
 <translation id="42137655013211669">Пристапот до изворов е забранет од серверот.</translation>
 <translation id="4214192212360095377">Исклучи сега</translation>
+<translation id="421564716234835106">За да ги добиете екстензиите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Вашата организација го исклучи зачувувањето картички во вашата сметка на Google</translation>
 <translation id="4216511743389425832">Слушајте ја страницава</translation>
 <translation id="4217571870635786043">Диктат</translation>
@@ -4461,6 +4465,7 @@
 <translation id="4379623957571212011">Изберете слика за да се примени темата веднаш</translation>
 <translation id="4380055775103003110">Ако и натаму се соочувате со проблемов, може да испробате други начини да продолжите на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Се влезе во цел екран</translation>
+<translation id="4380934846131873000">За да ги добиете зачуваните податоци и друго од <ph name="DEVICE" />, најавете се како <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Не дозволувај го сајтов за зачувување податоци</translation>
 <translation id="4381997246130185847">Може да продолжувате од каде што сте застанале или да создавате нови групи картички во движење</translation>
 <translation id="4384312707950789900">Додај во претпочитани</translation>
@@ -6143,6 +6148,7 @@
 <translation id="5700761515355162635">Колачињата од трети страни се дозволени</translation>
 <translation id="5700836101007545240">Администраторот ја оневозможил функцијата „Додај врска“</translation>
 <translation id="5701212929149679556">Роаминг на мобилна мрежа</translation>
+<translation id="5701500921291556452">За да ги добиете лозинките и друго од <ph name="DEVICE" />, најавете се како <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Поставени се други апликации да ги отвораат истите линкови како <ph name="APP_NAME" />. Со ова ќе се оневозможи <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> и 1 друга апликација да ги отвораат линковите за поддршка.</translation>
 <translation id="5702161882524398150">Прашајте за претходната картичка</translation>
 <translation id="5703716265115423771">намали звук</translation>
@@ -8316,6 +8322,7 @@
 <translation id="738322632977123193">Не може да се прикачи. Користете слика во некој од следниве формати: .jpg, .gif, .png, .bmp, .tif или .webp</translation>
 <translation id="7384687527486377545">Автоматско повторување на тастатурата</translation>
 <translation id="7384804382450832142">Поврзување со Microsoft OneDrive</translation>
+<translation id="7385713560829077068">За да ги добиете обележувачите и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Нешто не беше во ред при печатењето. Проверете го вашиот печатач и обидете се повторно.</translation>
 <translation id="7385870590821097913">Следете ги чекорите на другиот ваш уред</translation>
 <translation id="7387107590792462040">Почекајте да заврши инсталирањето во тек</translation>
@@ -8504,6 +8511,7 @@
 <translation id="7517292544534877198">Користете го стандардното шифрирање на Google за лозинките во вашата сметка на Google</translation>
 <translation id="7517959947270534934">Членот на вашето семејство не може да прима лозинки во моментов. Кажете му да го ажурира Chrome и да ги синхронизира своите лозинки.</translation>
 <translation id="7518079994230200553">Опцијава е недостапна во моментов.</translation>
+<translation id="752021853309481824">За да ги добиете зачуваните податоци и друго на сите ваши уреди, најавете се како <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Инкогнито портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Прикажи кратенки</translation>
 <translation id="7521430434164837205">Датотеки на Microsoft 365</translation>
@@ -10217,6 +10225,7 @@
 <translation id="8841843049738266382">да ги чита и менува корисниците во списокот со дозволени</translation>
 <translation id="8841884135319684422">Заврши ја задачата</translation>
 <translation id="8842594465773264717">Избришете го отпечатоков</translation>
+<translation id="8843160937959801189">За да ги добиете обележувачите и друго од <ph name="DEVICE" />, најавете се како <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8846132060409673887">Прочитај ги производителот и моделот на овој компјутер</translation>
 <translation id="8846239054091760429">Моно аудио, стартување, „Автоматски титлови“ и друго</translation>

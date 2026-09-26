@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">अधिक दर्शवा</translation>
 <translation id="1473223074251193484">टेदरिंग कॉन्फिगरेशन सेट करा</translation>
 <translation id="1473616112002966036">आणिव्हिडिओ फ्रेम</translation>
+<translation id="1475224725276659152">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिंग्ज</translation>
 <translation id="1477654881618305065">तुमची संस्था हा आशय शेअर करण्याची अनुमती देत नाही. तुम्हाला मदत हवी असल्यास, तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="1478340334823509079">तपशील: <ph name="FILE_NAME" /></translation>
@@ -1502,6 +1503,7 @@
 <translation id="2148248734299717598">डावीकडील दृश्य बंद करा</translation>
 <translation id="2148401732477136168">इंस्टॉल केलेल्या ॲप्लिकेशनची क्वेरी करता आली नाही.</translation>
 <translation id="2148892889047469596">टॅब कास्ट करा</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> वरून तुमची एक्स्टेंशन आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="2149973817440762519">बुकमार्क संपादित करा</translation>
 <translation id="2150139952286079145">शोध गंतव्ये</translation>
 <translation id="2150168665016482929">लहान करा</translation>
@@ -4147,6 +4149,7 @@
 <translation id="4131283654370308898">या साइटवर <ph name="EXTENSION_NAME" /> ला अनुमती द्या</translation>
 <translation id="4131410914670010031">कृष्ण धवल</translation>
 <translation id="413193092008917129">नेटवर्क निदान दिनक्रम</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> वरून तुमची वाचन सूची आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="4132137475637520539">लिंक असलेल्या कोणत्याही व्यक्तीला सामील होऊ द्या</translation>
 <translation id="4132364317545104286">eSIM प्रोफाइलचे नाव बदला</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> चे डाउनलोड पुन्‍हा सुरू करा</translation>
@@ -4240,6 +4243,7 @@
 <translation id="4213540068152645535">तुमचा पासवर्ड बदलताना समस्या आली</translation>
 <translation id="42137655013211669">सर्व्हरद्वारे या स्त्रोताचा ॲक्सेस निषिद्ध केला होता.</translation>
 <translation id="4214192212360095377">आता बंद करा</translation>
+<translation id="421564716234835106">तुमच्या सर्व डिव्हाइसवर तुमची एक्स्टेंशन आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="4216407171061541111">तुमच्या संस्थेने तुमच्या Google खाते मध्ये टॅब सेव्ह करणे बंद केले आहे</translation>
 <translation id="4216511743389425832">हे पेज ऐका</translation>
 <translation id="4217571870635786043">डिक्टेशन</translation>
@@ -4459,6 +4463,7 @@
 <translation id="4379623957571212011">लगेच थीम लागू करण्यासाठी इमेज निवडा</translation>
 <translation id="4380055775103003110">ही समस्या येत राहिल्यास, <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवण्यासाठीचे इतर मार्ग तुम्ही वापरून पाहू शकता.</translation>
 <translation id="4380648069038809855">फुल स्क्रीनमध्ये प्रवेश केला आहे</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" /> वरून तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="4381902252848068865">साइटना डेटा सेव्ह करण्याची अनुमती देऊ नका</translation>
 <translation id="4381997246130185847">तुम्ही जिथे सोडले होते तिथून पुढे सुरू करू शकता किंवा फिरतीवर असताना नवीन टॅब गट तयार करू शकता</translation>
 <translation id="4384312707950789900">प्राधान्यीकृतमध्‍ये जोडा</translation>
@@ -6141,6 +6146,7 @@
 <translation id="5700761515355162635">तृतीय पक्ष कुकीना अनुमती दिली</translation>
 <translation id="5700836101007545240">तुमच्या ॲडमिनिस्ट्रेटरने कनेक्शन जोडा अक्षम केले आहे</translation>
 <translation id="5701212929149679556">मोबाइल रोमिंग</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="5701786609538182967">इतर ॲप्स ही <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केली आहेत. हे <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> आणि आणखी एका ॲपला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="5702161882524398150">मागील टॅबबद्दल विचारा</translation>
 <translation id="5703716265115423771">आवाज कमी करा</translation>
@@ -8315,6 +8321,7 @@ I feel - विटांची इमारत</translation>
 <translation id="738322632977123193">अपलोड करू शकत नाही. या फॉरमॅटपैकी एका फॉरमॅटमध्ये इमेज वापरा: .jpg, .gif, .png, .bmp, .tif, किंवा .webp</translation>
 <translation id="7384687527486377545">कीबोर्ड ऑटो-रिपीट</translation>
 <translation id="7384804382450832142">Microsoft OneDrive शी कनेक्ट करा</translation>
+<translation id="7385713560829077068">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="7385854874724088939">प्रिंट करण्याचा प्रयत्न करताना काहीतरी चूक झाली. कृपया तुमचा प्रिंटर तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7385870590821097913">तुमच्या दुसऱ्या डिव्हाइसवर पायऱ्या फॉलो करा</translation>
 <translation id="7387107590792462040">इंस्टॉल करणे प्रगतीपथावर असताना कृपया प्रतीक्षा करा</translation>
@@ -8503,6 +8510,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7517292544534877198">तुमच्या Google खाते मधील पासवर्डसाठी Google चे डीफॉल्ट एन्क्रिप्शन वापरा</translation>
 <translation id="7517959947270534934">तुमच्या कुटुंबातील सदस्याला सध्या पासवर्ड मिळू शकत नाहीत. त्यांना Chrome अपडेट आणि त्यांचे पासवर्ड सिंक करण्यास सांगा.</translation>
 <translation id="7518079994230200553">हा पर्याय सध्या उपलब्ध नाही.</translation>
+<translation id="752021853309481824">तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">शॉर्टकट दाखवा</translation>
 <translation id="7521430434164837205">Microsoft 365 फाइल</translation>
@@ -10216,6 +10224,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8841843049738266382">अनुमती दिलेल्या सूची मधील वापरकर्ते पहा आणि बदला</translation>
 <translation id="8841884135319684422">टास्क संपवा</translation>
 <translation id="8842594465773264717">हे फिंगरप्रिंट हटवा</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>
 <translation id="8846239054091760429">मोनो ऑडिओ, स्टार्टअप, लाइव्ह कॅप्शन आणि बरेच काही</translation>

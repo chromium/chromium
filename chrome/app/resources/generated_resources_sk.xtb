@@ -618,6 +618,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1472675084647422956">Zobraziť viac</translation>
 <translation id="1473223074251193484">Nastaviť konfiguráciu zdieľania dátového pripojenia</translation>
 <translation id="1473616112002966036">&amp;Snímka videa</translation>
+<translation id="1475224725276659152">Ak chcete mať čitateľský zoznam a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Nastavenia jazyka</translation>
 <translation id="1477654881618305065">Vaša organizácia vám nepovoľuje zdieľať tento obsah. Ak potrebujete pomoc, kontaktujte správcu.</translation>
 <translation id="1478340334823509079">Podrobnosti: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2148248734299717598">Zavrieť ľavé zobrazenie</translation>
 <translation id="2148401732477136168">Nainštalované aplikácie sa nepodarilo načítať.</translation>
 <translation id="2148892889047469596">Prenos karty</translation>
+<translation id="2149773378153994101">Ak chcete získať rozšírenia a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2150139952286079145">Hľadať ciele</translation>
 <translation id="2150168665016482929">Minimalizovať</translation>
@@ -4136,6 +4138,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4131283654370308898">Povoliť <ph name="EXTENSION_NAME" /> na tomto webe</translation>
 <translation id="4131410914670010031">Čiernobielo</translation>
 <translation id="413193092008917129">Postupy diagnostiky siete</translation>
+<translation id="4132108564882155194">Ak chcete získať svoj čitateľský zoznam a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Pripojiť sa môže každý, kto má odkaz</translation>
 <translation id="4132364317545104286">Premenovať profil eSIM</translation>
 <translation id="4132969033912447558">Pokračovať v sťahovaní súboru <ph name="FILE_NAME" /></translation>
@@ -4229,6 +4232,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4213540068152645535">Pri zmene hesla sa vyskytol problém</translation>
 <translation id="42137655013211669">Server zakázal prístup k tomuto zdroju</translation>
 <translation id="4214192212360095377">Vypnúť</translation>
+<translation id="421564716234835106">Ak chcete mať rozšírenia a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Vaša organizácia vypla ukladanie kariet vo vašom účte Google</translation>
 <translation id="4216511743389425832">Vypočuť obsah tejto stránky</translation>
 <translation id="4217571870635786043">Diktovanie</translation>
@@ -4448,6 +4452,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4379623957571212011">Vyberte obrázok, na ktorý sa má motív okamžite použiť</translation>
 <translation id="4380055775103003110">Ak sa tento problém opakuje, môžete skúsiť ďalšie spôsoby, ako pokračovať na webe <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Zapnutie režimu celej obrazovky</translation>
+<translation id="4380934846131873000">Ak chcete získať svoje uložené informácie a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Nepovoliť webu ukladať údaje</translation>
 <translation id="4381997246130185847">Môžete pokračovať tam, kde ste prestali, alebo vytvárať nové skupiny kariet, nech ste kdekoľvek</translation>
 <translation id="4384312707950789900">Pridať k preferovaným</translation>
@@ -6128,6 +6133,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5700761515355162635">Súbory cookie tretích strán sú povolené</translation>
 <translation id="5700836101007545240">Možnosť Pridať pripojenie je zakázaná správcom</translation>
 <translation id="5701212929149679556">Mobilný roaming</translation>
+<translation id="5701500921291556452">Ak chcete získať svoje heslá a ďalší obsah zo zariadenia <ph name="DEVICE" />, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Ďalšie aplikácie sú nastavené, aby otvárali rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikáciám <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> a jednej ďalšej otvárať podporované odkazy.</translation>
 <translation id="5702161882524398150">Opýtajte sa na predchádzajúcu kartu</translation>
 <translation id="5703716265115423771">zníženie hlasitosti</translation>
@@ -8304,6 +8310,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="738322632977123193">Nedá sa nahrať. Použite obrázok v jednom z týchto formátov: .jpg, .gif, .png, .bmp, .tif alebo .webp.</translation>
 <translation id="7384687527486377545">Automatické opakovanie na klávesnici</translation>
 <translation id="7384804382450832142">Pripojenie k službe Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Ak chcete mať záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Pri pokuse o tlač sa vyskytla chyba. Skontrolujte svoju tlačiareň a skúste to znova.</translation>
 <translation id="7385870590821097913">Postupujte podľa pokynov v druhom zariadení</translation>
 <translation id="7387107590792462040">Počkajte, kým prebieha inštalácia</translation>
@@ -8491,6 +8498,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7517292544534877198">Používajte predvolené šifrovanie hesiel od Googlu vo svojom účte Google</translation>
 <translation id="7517959947270534934">Člen vašej rodiny nemôže momentálne dostávať heslá. Požiadajte ho, aby aktualizoval Chrome a synchronizoval svoje heslá.</translation>
 <translation id="7518079994230200553">Táto možnosť nie je momentálne k dispozícii.</translation>
+<translation id="752021853309481824">Ak chcete mať uložené informácie a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Anonymný portál: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Zobraziť skratky</translation>
 <translation id="7521430434164837205">Súbory Microsoft 365</translation>
@@ -10204,6 +10212,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8841843049738266382">Čítať a meniť používateľov na zozname povolených</translation>
 <translation id="8841884135319684422">Ukončiť úlohu</translation>
 <translation id="8842594465773264717">Odstrániť tento odtlačok prsta</translation>
+<translation id="8843160937959801189">Ak chcete získať záložky a ďalší obsah z účtu <ph name="DEVICE" />, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8846132060409673887">Prečítať informácie o výrobcovi a modeli tohto zariadenia</translation>
 <translation id="8846239054091760429">Zvuk mono, spustenie, živý prepis a ďalšie možnosti</translation>

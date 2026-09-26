@@ -618,6 +618,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1472675084647422956">Mostra altro</translation>
 <translation id="1473223074251193484">Imposta configurazione tethering</translation>
 <translation id="1473616112002966036">&amp;Frame</translation>
+<translation id="1475224725276659152">Accedi come <ph name="EMAIL" /> per trovare l'elenco di lettura e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="1476607407192946488">&amp;Impostazioni lingua</translation>
 <translation id="1477654881618305065">La tua organizzazione non ti consente di condividere questo contenuto. Se hai bisogno di assistenza, contatta l'amministratore.</translation>
 <translation id="1478340334823509079">Dettagli: <ph name="FILE_NAME" /></translation>
@@ -1491,6 +1492,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2148248734299717598">Chiudi visualizzazione sinistra</translation>
 <translation id="2148401732477136168">Impossibile fare query sulle applicazioni installate.</translation>
 <translation id="2148892889047469596">Trasmetti scheda</translation>
+<translation id="2149773378153994101">Accedi come <ph name="EMAIL" /> per trovare le estensioni e altri dati da <ph name="DEVICE" /></translation>
 <translation id="2149973817440762519">Modifica Preferito</translation>
 <translation id="2150139952286079145">Cerca destinazioni</translation>
 <translation id="2150168665016482929">&amp;Riduci a icona</translation>
@@ -4135,6 +4137,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4131283654370308898">Consenti <ph name="EXTENSION_NAME" /> su questo sito</translation>
 <translation id="4131410914670010031">In bianco e nero</translation>
 <translation id="413193092008917129">Routine di diagnostica rete</translation>
+<translation id="4132108564882155194">Accedi come <ph name="EMAIL" /> per trovare il tuo elenco di lettura e altri dati dal <ph name="DEVICE" /></translation>
 <translation id="4132137475637520539">Consenti a chiunque abbia il link di partecipare</translation>
 <translation id="4132364317545104286">Rinomina profilo eSIM</translation>
 <translation id="4132969033912447558">Riprendi <ph name="FILE_NAME" /></translation>
@@ -4228,6 +4231,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4213540068152645535">Problemi con la modifica della password</translation>
 <translation id="42137655013211669">L'accesso a questa risorsa è vietato dal server.</translation>
 <translation id="4214192212360095377">Disattiva ora</translation>
+<translation id="421564716234835106">Accedi come <ph name="EMAIL" /> per trovare le estensioni e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="4216407171061541111">La tua organizzazione ha disattivato il salvataggio delle schede nel tuo Account Google</translation>
 <translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4217571870635786043">Dettatura</translation>
@@ -4447,6 +4451,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4379623957571212011">Seleziona un'immagine per applicare subito il tema</translation>
 <translation id="4380055775103003110">Se il problema persiste, puoi provare altri metodi per continuare su <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Modalità a schermo intero attivata</translation>
+<translation id="4380934846131873000">Accedi come <ph name="EMAIL" /> per recuperare le informazioni salvate e altri dati da <ph name="DEVICE" /></translation>
 <translation id="4381902252848068865">Non consentire al sito di salvare dati</translation>
 <translation id="4381997246130185847">Puoi riprendere da dove avevi interrotto o creare nuovi gruppi di schede ovunque ti trovi</translation>
 <translation id="4384312707950789900">Aggiungi ai preferiti</translation>
@@ -6126,6 +6131,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5700761515355162635">Cookie di terze parti consentiti</translation>
 <translation id="5700836101007545240">L'opzione "Aggiungi connessione" è stata disabilitata dal tuo amministratore</translation>
 <translation id="5701212929149679556">Roaming rete mobile</translation>
+<translation id="5701500921291556452">Accedi come <ph name="EMAIL" /> per trovare le password e altri dati da <ph name="DEVICE" /></translation>
 <translation id="5701786609538182967">Ci sono altre app impostate per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e 1 altra app.</translation>
 <translation id="5702161882524398150">Chiedi informazioni sulla scheda precedente</translation>
 <translation id="5703716265115423771">abbassa volume</translation>
@@ -8297,6 +8303,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="738322632977123193">Caricamento non riuscito. Utilizza un'immagine in uno di questi formati: .jpg, .gif, .png, .bmp, .tif o .webp</translation>
 <translation id="7384687527486377545">Ripetizione automatica tastiera</translation>
 <translation id="7384804382450832142">Collegati a Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Accedi come <ph name="EMAIL" /> per trovare preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="7385854874724088939">Si è verificato un problema durante il tentativo di stampa. Controlla la stampante e riprova.</translation>
 <translation id="7385870590821097913">Segui i passaggi sull'altro dispositivo</translation>
 <translation id="7387107590792462040">Attendi mentre è in corso l'installazione</translation>
@@ -8485,6 +8492,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7517292544534877198">Usa la crittografia predefinita di Google per le password nel tuo Account Google</translation>
 <translation id="7517959947270534934">Al momento il tuo membro del gruppo Famiglia non può ricevere password. Chiedi di aggiornare Chrome e sincronizzare le sue password.</translation>
 <translation id="7518079994230200553">Questa opzione non è al momento disponibile.</translation>
+<translation id="752021853309481824">Accedi come <ph name="EMAIL" /> per trovare le informazioni salvate e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="7520766081042531487">Portale in modalità Incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostra scorciatoie</translation>
 <translation id="7521430434164837205">File di Microsoft 365</translation>
@@ -10198,6 +10206,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8841843049738266382">Leggi e modifica gli utenti nella lista consentita</translation>
 <translation id="8841884135319684422">Termina attività</translation>
 <translation id="8842594465773264717">Elimina questa impronta</translation>
+<translation id="8843160937959801189">Accedi come <ph name="EMAIL" /> per trovare i preferiti e altri dati da <ph name="DEVICE" /></translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8846132060409673887">Lettura del produttore e del modello di questo computer</translation>
 <translation id="8846239054091760429">Audio in formato mono, avvio, Sottotitoli in tempo reale e altro ancora</translation>

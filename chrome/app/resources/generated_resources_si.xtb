@@ -618,6 +618,7 @@
 <translation id="1472675084647422956">තවත් පෙන්වන්න</translation>
 <translation id="1473223074251193484">ටෙදරින් වින්‍යාසය සකසන්න</translation>
 <translation id="1473616112002966036">&amp;වීඩියෝ රාමුව</translation>
+<translation id="1475224725276659152">ඔබේ සියලු ම උපාංගවල කියවීම් ලැයිස්තුව සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="1476607407192946488">භාශා සැකසුම්</translation>
 <translation id="1477654881618305065">මෙම අන්තර්ගතය බෙදා ගැනීමට ඔබගේ සංවිධානය ඔබට ඉඩ නොදේ. ඔබට උදව් අවශ්‍ය නම්, ඔබගේ පරිපාලක අමතන්න.</translation>
 <translation id="1478340334823509079">විස්තර: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@
 <translation id="2148248734299717598">වම් දසුන වසන්න</translation>
 <translation id="2148401732477136168">ස්ථාපිත යෙදුම් විමසීමට අසමත් විය.</translation>
 <translation id="2148892889047469596">විකාශ පටිත්ත</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" /> වෙතින් ඔබේ දිගු සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="2149973817440762519">පිටු සලකුණු සංස්කරණය කරන්න</translation>
 <translation id="2150139952286079145">ගමනාන්ත සොයන්න</translation>
 <translation id="2150168665016482929">අ&amp;වම කරන්න</translation>
@@ -4137,6 +4139,7 @@
 <translation id="4131283654370308898">මෙම අඩවියෙහි <ph name="EXTENSION_NAME" /> හට ඉඩ දෙන්න</translation>
 <translation id="4131410914670010031">කළු සහ සුදු</translation>
 <translation id="413193092008917129">ජාල දෝෂ නිර්ණ දින චර්යා</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> වෙතින් ඔබේ කියවීම් ලැයිස්තුව සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="4132137475637520539">සබැඳිය ඇති ඕනෑම කෙනෙකුට එක් වීමට ඉඩ දෙන්න</translation>
 <translation id="4132364317545104286">eSIM පැතිකඩ යළි නම් කරන්න</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> යළි ආරම්භ කරන්න</translation>
@@ -4230,6 +4233,7 @@
 <translation id="4213540068152645535">ඔබේ මුරපදය වෙනස් කිරීමේ ගැටලුවකි</translation>
 <translation id="42137655013211669">මෙම සම්පත වෙත ප්‍රවේශය සේවාදායකය විසින් තහනම් කර ඇත.</translation>
 <translation id="4214192212360095377">දැන් ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="421564716234835106">ඔබේ සියලු ම උපාංගවල දිගු සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="4216407171061541111">ඔබේ සංවිධානය ඔබේ Google ගිණුමේ පටිති සුරැකීම ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="4216511743389425832">මෙම පිටුවට සවන් දෙන්න</translation>
 <translation id="4217571870635786043">අනුලේඛනය</translation>
@@ -4449,6 +4453,7 @@
 <translation id="4379623957571212011">තේමාව ක්ෂණිකව යෙදීමට රූපයක් තෝරන්න</translation>
 <translation id="4380055775103003110">මෙම ගැටලුව දිගටම සිදු වන්නේ නම්, <ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ඔබට වෙනත් ක්‍රම උත්සාහ කළ හැක.</translation>
 <translation id="4380648069038809855">පූර්ණ තිරයට ඇතුළ විය</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" /> වෙතින් ඔබේ සුරකින ලද තතු සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="4381902252848068865">දත්ත සුරැකීමට අඩවියට ඉඩ නොදෙන්න</translation>
 <translation id="4381997246130185847">ඔබට ඔබ නතර කළ ස්ථානයෙන් නැවත ආරම්භ කිරීමට හෝ ගමනේ දී නව පටිති සමූහ තැනීමට හැක</translation>
 <translation id="4384312707950789900">වඩා කැමති ඒවා එක් කරන්න</translation>
@@ -6131,6 +6136,7 @@
 <translation id="5700761515355162635">තුන්වන පාර්ශ්ව කුකීස් ඉඩ දී ඇත</translation>
 <translation id="5700836101007545240">සබැඳුම එක් කිරීම ඔබේ පරිපාලක විසින් අබල කර ඇත</translation>
 <translation id="5701212929149679556">සෙලියුලර් රෝමිං</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" /> වෙතින් ඔබේ මුරපද සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="5701786609538182967">අනෙකුත් යෙදුම් <ph name="APP_NAME" /> ලෙස එකම සබැඳි විවෘත කිරීමට සකසා ඇත. මෙය සහාය දක්වන සබැඳි විවෘත කිරීමෙන් <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> සහ තවත් 1 යෙදුමක් අබල කරනු ඇත.</translation>
 <translation id="5702161882524398150">පෙර පටිත්ත ගැන අසන්න</translation>
 <translation id="5703716265115423771">හඩ පරිමාව අඩු කිරීම</translation>
@@ -8302,6 +8308,7 @@
 <translation id="738322632977123193">උඩුගත කළ නොහැක. මෙම ආකෘතිවලින් එකක රූපයක් භාවිතා කරන්න: .jpg, .gif, .png, .bmp, .tif, හෝ .webp</translation>
 <translation id="7384687527486377545">යතුරු පුවරු ස්වයං යළි කිරීම</translation>
 <translation id="7384804382450832142">Microsoft OneDrive වෙත සම්බන්ධ වන්න</translation>
+<translation id="7385713560829077068">ඔබේ සියලු ම උපාංගවල පිටුසන් සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="7385854874724088939">මුද්‍රණයේදී යම් කිසි වරදක් සිදුවිය. කරුණාකර ඔබේ මුද්‍රකය පිරික්සා නැවත උත්සහ කරන්න.</translation>
 <translation id="7385870590821097913">ඔබේ අනෙක් උපාංගයෙහි පියවර අනුගමනය කරන්න</translation>
 <translation id="7387107590792462040">ස්ථාපනය සිදුවෙමින් පවතින තෙක් රැඳී සිටින්න</translation>
@@ -8490,6 +8497,7 @@
 <translation id="7517292544534877198">ඔබේ Google ගිණුම තුළ මුරපද සඳහා Google හි පෙරනිමි සංකේතනය භාවිත කරන්න</translation>
 <translation id="7517959947270534934">ඔබේ පවුලේ සාමාජිකයාට මේ මොහොතේ මුරපද ලබා ගත නොහැක. Chrome යාවත්කාලීන කිරීමට සහ ඔවුන්ගේ මුරපද සමමුහුර්ත කිරීමට ඔවුන්ගෙන් විමසන්න.</translation>
 <translation id="7518079994230200553">මෙම විකල්පය දැන් නොමැත.</translation>
+<translation id="752021853309481824">ඔබේ සියලු ම උපාංගවල සුරකින ලද තතු සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරනය වන්න</translation>
 <translation id="7520766081042531487">අප්‍රසිද්ධ ද්වාරය: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">කෙටිමං පෙන්වන්න</translation>
 <translation id="7521430434164837205">Microsoft 365 ගොනු</translation>
@@ -10203,6 +10211,7 @@
 <translation id="8841843049738266382">සුදු ලැයිස්තුගත පරිශීලකයන් කියවන්න සහ වෙනස් කරන්න</translation>
 <translation id="8841884135319684422">කාර්යය නිමා කරන්න</translation>
 <translation id="8842594465773264717">මෙම ඇඟිලි සලකුණ මකන්න</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> වෙතින් ඔබේ පිටුසන් සහ තවත් දේ ලබා ගැනීමට, <ph name="EMAIL" /> ලෙස පුරන්න</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8846132060409673887">මෙම උපාංගයේ නිෂ්පාදකයා සහ මාදිලිය කියවන්න</translation>
 <translation id="8846239054091760429">ඒකල ශ්‍රව්‍ය, ඇරඹුම, සජීවී සිරස්තල, සහ තවත් දේ</translation>

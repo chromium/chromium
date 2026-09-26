@@ -618,6 +618,7 @@
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473223074251193484">设置网络共享配置</translation>
 <translation id="1473616112002966036">视频帧(&amp;V)</translation>
+<translation id="1475224725276659152">如需在您的所有设备上获取阅读清单等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="1476607407192946488">语言设置(&amp;L)</translation>
 <translation id="1477654881618305065">贵组织不允许您分享此内容。如果需要帮助，请与您的管理员联系。</translation>
 <translation id="1478340334823509079">详细信息：<ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@
 <translation id="2148248734299717598">关闭左侧视图</translation>
 <translation id="2148401732477136168">未能查询已安装的应用。</translation>
 <translation id="2148892889047469596">投放标签页</translation>
+<translation id="2149773378153994101">如需获取<ph name="DEVICE" />中的扩展程序等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2150139952286079145">搜索目标打印机</translation>
 <translation id="2150168665016482929">最小化(&amp;N)</translation>
@@ -4133,6 +4135,7 @@
 <translation id="4131283654370308898">允许在此网站上使用“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4131410914670010031">黑白色</translation>
 <translation id="413193092008917129">网络诊断例程</translation>
+<translation id="4132108564882155194">如需获取<ph name="DEVICE" />中的阅读清单等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="4132137475637520539">允许任何知道链接的人加入</translation>
 <translation id="4132364317545104286">重命名 eSIM 卡配置文件</translation>
 <translation id="4132969033912447558">继续下载 <ph name="FILE_NAME" /></translation>
@@ -4226,6 +4229,7 @@
 <translation id="4213540068152645535">更改密码时遇到问题</translation>
 <translation id="42137655013211669">服务器禁止访问此资源。</translation>
 <translation id="4214192212360095377">立即关闭</translation>
+<translation id="421564716234835106">如需在您的所有设备上获取扩展程序等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="4216407171061541111">您的组织已关闭在您的 Google 账号中保存标签页的功能</translation>
 <translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4217571870635786043">语音输入</translation>
@@ -4445,6 +4449,7 @@
 <translation id="4379623957571212011">选择图片即可立即应用主题</translation>
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="4380648069038809855">已进入全屏模式</translation>
+<translation id="4380934846131873000">如需获取<ph name="DEVICE" />中保存的信息等，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="4381902252848068865">不允许网站保存数据</translation>
 <translation id="4381997246130185847">您可随时随地继续上次未完成的操作，或创建新标签页分组</translation>
 <translation id="4384312707950789900">添加到首选网络列表</translation>
@@ -6123,6 +6128,7 @@
 <translation id="5700761515355162635">已允许使用第三方 Cookie</translation>
 <translation id="5700836101007545240">“添加连接”功能已由您的管理员停用</translation>
 <translation id="5701212929149679556">移动网络漫游</translation>
+<translation id="5701500921291556452">如需获取<ph name="DEVICE" />中的密码等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="5701786609538182967">其他应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />和另外 1 款应用打开受支持的链接。</translation>
 <translation id="5702161882524398150">询问关于上一个标签页的问题</translation>
 <translation id="5703716265115423771">调低音量</translation>
@@ -8294,6 +8300,7 @@
 <translation id="738322632977123193">无法上传。请使用以下任意格式的图片：.jpg、.gif、.png、.bmp、.tif 或 .webp</translation>
 <translation id="7384687527486377545">键盘自动重复</translation>
 <translation id="7384804382450832142">连接到 Microsoft OneDrive</translation>
+<translation id="7385713560829077068">如需在您的所有设备上获取书签等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="7385854874724088939">尝试打印时出现错误。请检查您的打印机，然后重试。</translation>
 <translation id="7385870590821097913">按照另一部设备上的步骤操作</translation>
 <translation id="7387107590792462040">正在安装，请稍候</translation>
@@ -8482,6 +8489,7 @@
 <translation id="7517292544534877198">使用 Google 的默认加密方式加密您 Google 账号中的密码</translation>
 <translation id="7517959947270534934">您的家庭成员目前无法接收密码。请让他们更新 Chrome 并同步其密码。</translation>
 <translation id="7518079994230200553">目前无法使用此选项。</translation>
+<translation id="752021853309481824">如需在您的所有设备上获取已保存的信息等，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="7520766081042531487">无痕式门户网站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">显示快捷方式</translation>
 <translation id="7521430434164837205">Microsoft 365 文件</translation>
@@ -10195,6 +10203,7 @@
 <translation id="8841843049738266382">读取和更改已列入许可名单的用户</translation>
 <translation id="8841884135319684422">结束任务</translation>
 <translation id="8842594465773264717">删除此指纹</translation>
+<translation id="8843160937959801189">如需获取<ph name="DEVICE" />中的书签等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8846132060409673887">查看此计算机的制造商和型号</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>

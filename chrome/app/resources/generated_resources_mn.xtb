@@ -619,6 +619,7 @@
 <translation id="1472675084647422956">Дэлгэрэнгүй харуулах</translation>
 <translation id="1473223074251193484">Модем болгох тохируулгыг тохируулах</translation>
 <translation id="1473616112002966036">&amp;Видеоны фрейм</translation>
+<translation id="1475224725276659152">Унших жагсаалт болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="1476607407192946488">&amp;Хэлний Тохиргоо</translation>
 <translation id="1477654881618305065">Танай байгууллага энэ контентыг хуваалцахыг зөвшөөрдөггүй. Хэрэв танд тусламж хэрэгтэй бол администратортайгаа холбогдоно уу.</translation>
 <translation id="1478340334823509079">Дэлгэрэнгүй мэдээлэл: <ph name="FILE_NAME" /></translation>
@@ -1501,6 +1502,7 @@
 <translation id="2148248734299717598">Зүүн талын харагдах байдлыг хаах</translation>
 <translation id="2148401732477136168">Суулгасан аппликейшнуудын жагсаалтыг авч чадсангүй.</translation>
 <translation id="2148892889047469596">Цонх дамжуулах</translation>
+<translation id="2149773378153994101"><ph name="DEVICE" />-с өргөтгөл болон бусад зүйлээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
 <translation id="2150139952286079145">Очих газрыг хайх</translation>
 <translation id="2150168665016482929">Жижгэрүүлэх</translation>
@@ -4147,6 +4149,7 @@
 <translation id="4131283654370308898">Энэ сайтад <ph name="EXTENSION_NAME" />-г зөвшөөрөх</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="413193092008917129">Сүлжээний оношилгооны хэвшлүүд</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" />-с унших жагсаалт болон бусад зүйлээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="4132137475637520539">Холбоостой дурын хүнд нэгдэхийг зөвшөөрөх</translation>
 <translation id="4132364317545104286">eSIM-н профайлын нэрийг өөрчлөх</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" />-г үргэлжлүүлэх</translation>
@@ -4240,6 +4243,7 @@
 <translation id="4213540068152645535">Нууц үгээ өөрчлөхөд асуудал гарсан уу?</translation>
 <translation id="42137655013211669">Энэ нөөцөд хандалт хийхийг серверээс хориглосон байна.</translation>
 <translation id="4214192212360095377">Одоо унтраах</translation>
+<translation id="421564716234835106">Өргөтгөл болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="4216407171061541111">Танай байгууллага таны Google Бүртгэлд таб хадгалахыг унтраасан</translation>
 <translation id="4216511743389425832">Энэ хуудсыг сонсох</translation>
 <translation id="4217571870635786043">Заавар</translation>
@@ -4459,6 +4463,7 @@
 <translation id="4379623957571212011">Загварыг тэр даруй ашиглахын тулд зураг сонгоно уу</translation>
 <translation id="4380055775103003110">Хэрэв энэ асуудал тохиолдсоор байвал та <ph name="SITE_ETLD_PLUS_ONE" />-д үргэлжлүүлэх бусад аргыг турших боломжтой.</translation>
 <translation id="4380648069038809855">Бүтэн дэлгэцэд орсон</translation>
+<translation id="4380934846131873000"><ph name="DEVICE" />-с хадгалсан мэдээлэл болон бусад зүйлээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="4381902252848068865">Өгөгдөл хадгалахыг сайтад зөвшөөрөхгүй</translation>
 <translation id="4381997246130185847">Та орхисон газраасаа үргэлжлүүлэх, явж байх зуураа шинэ табын бүлэг үүсгэх боломжтой</translation>
 <translation id="4384312707950789900">Сонгосон жагсаалтад нэмэх</translation>
@@ -6142,6 +6147,7 @@
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="5700836101007545240">Таны админ холболт нэмэх тохиргоог цуцалсан байна</translation>
 <translation id="5701212929149679556">Үүрэн холбооны роуминг</translation>
+<translation id="5701500921291556452"><ph name="DEVICE" />-с нууц үг болон бусад зүйлээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="5701786609538182967">Бусад аппыг <ph name="APP_NAME" />-тай ижил холбоосыг нээхээр тохируулсан. Энэ нь <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> болон бусад 1 аппын тусламж дэмжлэгийн холбоос нээхийг идэвхгүй болгоно.</translation>
 <translation id="5702161882524398150">Өмнөх табын талаар асуух</translation>
 <translation id="5703716265115423771">дууны түвшинг хасах</translation>
@@ -8312,6 +8318,7 @@
 <translation id="738322632977123193">Байршуулах боломжгүй. Эдгээрийн аль нэг форматтай зургийг ашиглана уу: .jpg, .gif, .png, .bmp, .tif, .webp</translation>
 <translation id="7384687527486377545">Гарын автомат давталт</translation>
 <translation id="7384804382450832142">Microsoft OneDrive-д холбогдоно уу</translation>
+<translation id="7385713560829077068">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="7385854874724088939">Хэвлэхийг оролдож байх үед ямар нэг зүйл ажиллахаа больсон байна. Принтерээ шалгаад дахин оролдоно уу.</translation>
 <translation id="7385870590821097913">Өөрийн нөгөө төхөөрөмж дээрх алхмуудыг дагана уу</translation>
 <translation id="7387107590792462040">Суулгаж байх хооронд түр хүлээнэ үү</translation>
@@ -8500,6 +8507,7 @@
 <translation id="7517292544534877198">Google Бүртгэлийнхээ нууц үгнүүдэд Google-н өгөгдмөл шифрлэлтийг ашиглах</translation>
 <translation id="7517959947270534934">Танай гэр бүлийн гишүүн одоогоор нууц үгнүүд хүлээн авах боломжгүй байна. Түүнээс Chrome-г шинэчилж, нууц үгнүүдээ синк хийхийг хүснэ үү.</translation>
 <translation id="7518079994230200553">Энэ сонголт одоогоор боломжгүй байна.</translation>
+<translation id="752021853309481824">Хадгалсан мэдээлэл болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="7520766081042531487">Нууцлалтай портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Товчлол харуулах</translation>
 <translation id="7521430434164837205">Microsoft 365 файлууд</translation>
@@ -10210,6 +10218,7 @@
 <translation id="8841843049738266382">Зөвшөөрсөн жагсаалтын хэрэглэгчдийг уншиж, өөрчлөх</translation>
 <translation id="8841884135319684422">Ажлыг дуусгах</translation>
 <translation id="8842594465773264717">Энэ хурууны хээг устгах</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" />-с хавчуурга болон бусад зүйлээ авахын тулд <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8846132060409673887">Энэ компьютерийн үйлдвэрлэгч болон загварыг унших</translation>
 <translation id="8846239054091760429">Моно аудио, эхлэл, Шууд тайлбар болон бусад</translation>

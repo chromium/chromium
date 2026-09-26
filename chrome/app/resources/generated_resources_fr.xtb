@@ -618,6 +618,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1472675084647422956">Plus</translation>
 <translation id="1473223074251193484">Définir la configuration du partage de connexion</translation>
 <translation id="1473616112002966036">Image &amp;vidéo</translation>
+<translation id="1475224725276659152">Pour accéder à votre liste de lecture et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Paramètres linguistiques</translation>
 <translation id="1477654881618305065">Votre organisation ne vous permet pas de partager ce contenu. Pour toute question, contactez votre administrateur.</translation>
 <translation id="1478340334823509079">Détails : <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2148248734299717598">Fermer la vue de gauche</translation>
 <translation id="2148401732477136168">Échec de l'interrogation des applications installées.</translation>
 <translation id="2148892889047469596">Caster l'onglet</translation>
+<translation id="2149773378153994101">Pour accéder à vos extensions et plus encore depuis <ph name="DEVICE" />, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
 <translation id="2150139952286079145">Rechercher des emplacements de destination</translation>
 <translation id="2150168665016482929">&amp;Réduire</translation>
@@ -4134,6 +4136,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4131283654370308898">Autoriser <ph name="EXTENSION_NAME" /> sur ce site</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
 <translation id="413193092008917129">Routines de diagnostics réseau</translation>
+<translation id="4132108564882155194">Pour accéder à votre liste de lecture et plus encore depuis <ph name="DEVICE" />, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Autoriser toutes les personnes disposant du lien à rejoindre</translation>
 <translation id="4132364317545104286">Renommer le profil de l'eSIM</translation>
 <translation id="4132969033912447558">Reprendre <ph name="FILE_NAME" /></translation>
@@ -4227,6 +4230,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4213540068152645535">Problème pour modifier votre mot de passe</translation>
 <translation id="42137655013211669">L'accès à cette ressource est interdit sur ce serveur.</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
+<translation id="421564716234835106">Pour accéder à vos extensions et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Votre organisation a désactivé l'enregistrement des onglets dans votre compte Google</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
 <translation id="4217571870635786043">Dictée</translation>
@@ -4446,6 +4450,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4379623957571212011">Sélectionnez une image pour appliquer le thème instantanément</translation>
 <translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Mode plein écran activé</translation>
+<translation id="4380934846131873000">Pour accéder à vos informations enregistrées et plus encore depuis <ph name="DEVICE" />, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Ne pas autoriser le site à enregistrer des données</translation>
 <translation id="4381997246130185847">Vous pouvez reprendre là où vous en étiez ou créer des groupes d'onglets où que vous soyez</translation>
 <translation id="4384312707950789900">Ajouter aux réseaux préférés</translation>
@@ -6127,6 +6132,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5700761515355162635">Cookies tiers autorisés</translation>
 <translation id="5700836101007545240">Votre administrateur a désactivé l'ajout d'une connexion</translation>
 <translation id="5701212929149679556">Itinérance mobile</translation>
+<translation id="5701500921291556452">Pour accéder à vos mots de passe et plus encore depuis <ph name="DEVICE" />, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">D'autres applis sont définies pour ouvrir les mêmes liens que <ph name="APP_NAME" />. Cela empêchera <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> et 1 autre appli d'ouvrir les liens compatibles.</translation>
 <translation id="5702161882524398150">Poser une question sur l'onglet précédent</translation>
 <translation id="5703716265115423771">baisser le volume</translation>
@@ -8301,6 +8307,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="738322632977123193">Impossible d'importer. Utilisez une image dans l'un de ces formats : .jpg, .gif, .png, .bmp, .tif ou .webp.</translation>
 <translation id="7384687527486377545">Répétition automatique du clavier</translation>
 <translation id="7384804382450832142">Se connecter à Microsoft OneDrive</translation>
+<translation id="7385713560829077068">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Erreur lors de la tentative d'impression. Vérifiez votre imprimante et réessayez.</translation>
 <translation id="7385870590821097913">Suivez les étapes sur votre autre appareil</translation>
 <translation id="7387107590792462040">Veuillez patienter pendant l'installation</translation>
@@ -8489,6 +8496,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7517292544534877198">Utiliser le chiffrement par défaut de Google pour les mots de passe de votre compte Google</translation>
 <translation id="7517959947270534934">Le membre de votre famille ne peut pas recevoir de mots de passe pour le moment. Demandez-lui de mettre à jour Chrome et de synchroniser ses mots de passe.</translation>
 <translation id="7518079994230200553">Cette option n'est pas disponible pour le moment.</translation>
+<translation id="752021853309481824">Pour accéder à vos informations enregistrées et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portail de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afficher les raccourcis</translation>
 <translation id="7521430434164837205">Fichiers Microsoft 365</translation>
@@ -10202,6 +10210,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8841843049738266382">Accéder aux comptes utilisateur sur liste d'autorisation et les modifier</translation>
 <translation id="8841884135319684422">Arrêter la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>
+<translation id="8843160937959801189">Pour accéder à vos favoris et plus encore depuis <ph name="DEVICE" />, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8846132060409673887">Lire le fabricant et le modèle de cet ordinateur</translation>
 <translation id="8846239054091760429">Audio mono, démarrage, sous-titres instantanés, etc.</translation>

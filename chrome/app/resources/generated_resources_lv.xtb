@@ -618,6 +618,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1472675084647422956">Rādīt vairāk</translation>
 <translation id="1473223074251193484">Iestatīt piesaistes konfigurāciju</translation>
 <translation id="1473616112002966036">&amp;Video kadrs</translation>
+<translation id="1475224725276659152">Pierakstieties ar kontu <ph name="EMAIL" />, lai varētu piekļūt lasīšanas sarakstam un citiem datiem visās savās ierīcēs.</translation>
 <translation id="1476607407192946488">&amp;Valodas iestatījumi</translation>
 <translation id="1477654881618305065">Jūsu organizācija neatļauj kopīgot šo saturu. Ja jums ir nepieciešama palīdzība, sazinieties ar administratoru.</translation>
 <translation id="1478340334823509079">Detalizēta informācija: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2148248734299717598">Aizvērt kreisās puses skatu</translation>
 <translation id="2148401732477136168">Neizdevās pieprasīt instalētās lietojumprogrammas.</translation>
 <translation id="2148892889047469596">Cilnes apraide</translation>
+<translation id="2149773378153994101">Lai piekļūtu saviem paplašinājumiem un citiem datiem no ierīces (<ph name="DEVICE" />), pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="2149973817440762519">Rediģēt grāmatzīmes</translation>
 <translation id="2150139952286079145">Meklēt printerus</translation>
 <translation id="2150168665016482929">Mi&amp;nimizēt</translation>
@@ -4134,6 +4136,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4131283654370308898">Atļaut paplašinājumu <ph name="EXTENSION_NAME" /> šajā vietnē</translation>
 <translation id="4131410914670010031">Melnbaltā</translation>
 <translation id="413193092008917129">Tīkla diagnostikas pārbaudes</translation>
+<translation id="4132108564882155194">Lai iegūtu savu lasīšanas sarakstu un citu saturu no ierīces (<ph name="DEVICE" />), pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="4132137475637520539">Ļaut pievienoties ikvienam, kam ir saite</translation>
 <translation id="4132364317545104286">Pārdēvēt eSIM profilu</translation>
 <translation id="4132969033912447558">Atsākt: <ph name="FILE_NAME" /></translation>
@@ -4227,6 +4230,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4213540068152645535">Neizdevās nomainīt paroli</translation>
 <translation id="42137655013211669">Serveris neatļāva piekļūt šim resursam.</translation>
 <translation id="4214192212360095377">Izslēgt tūlīt</translation>
+<translation id="421564716234835106">Lai piekļūtu saviem paplašinājumiem un citiem datiem visās savās ierīcēs, pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="4216407171061541111">Jūsu organizācija izslēdza ciļņu saglabāšanu jūsu Google kontā.</translation>
 <translation id="4216511743389425832">Klausīties šo lapu</translation>
 <translation id="4217571870635786043">Diktēšana</translation>
@@ -4446,6 +4450,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4379623957571212011">Izvēlieties attēlu, lai nekavējoties lietotu motīvu.</translation>
 <translation id="4380055775103003110">Ja šī problēma atkārtojas, varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Tika atvērts pilnekrāna režīms</translation>
+<translation id="4380934846131873000">Lai iegūtu saglabāto informāciju un citus datus no ierīces (<ph name="DEVICE" />), pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="4381902252848068865">Neatļaut vietnei saglabāt datus</translation>
 <translation id="4381997246130185847">Varat turpināt darbu, kur to pārtraucāt, vai izveidot jaunas ciļņu grupas, atrodoties ceļā.</translation>
 <translation id="4384312707950789900">Pievienot vēlamajam</translation>
@@ -6125,6 +6130,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5700761515355162635">Trešo pušu sīkfailu ir atļauti</translation>
 <translation id="5700836101007545240">Administrators ir atspējojis savienojuma pievienošanu.</translation>
 <translation id="5701212929149679556">Mobilā tīkla viesabonēšana</translation>
+<translation id="5701500921291556452">Lai iegūtu paroles un citus datus no ierīces (<ph name="DEVICE" />), pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="5701786609538182967">Citas lietotnes ir iestatītas to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotnes <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> un vēl 1 lietotni.</translation>
 <translation id="5702161882524398150">Uzdodiet jautājumus par iepriekšējo cilni</translation>
 <translation id="5703716265115423771">samazināt skaļumu</translation>
@@ -8300,6 +8306,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="738322632977123193">Nevar augšupielādēt. Izmantojiet attēlu, kas ir vienā no šiem formātiem: .jpg, .gif, .png, .bmp, .tif vai .webp.</translation>
 <translation id="7384687527486377545">Tastatūras darbību automātiska atkārtošana</translation>
 <translation id="7384804382450832142">Microsoft OneDrive saistīšana</translation>
+<translation id="7385713560829077068">Lai piekļūtu grāmatzīmēm un citiem datiem visās savās ierīcēs, pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="7385854874724088939">Mēģinot drukāt, radās kļūda. Lūdzu, pārbaudiet printeri un mēģiniet vēlreiz.</translation>
 <translation id="7385870590821097913">Izpildiet otrā ierīcē norādītās darbības</translation>
 <translation id="7387107590792462040">Lūdzu, uzgaidiet, kamēr notiek instalēšana.</translation>
@@ -8488,6 +8495,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7517292544534877198">Izmantot Google noklusējuma šifrēšanu parolēm jūsu Google kontā</translation>
 <translation id="7517959947270534934">Jūsu ģimenes loceklis pašlaik nevar saņemt paroles. Lūdziet viņam atjaunināt pārlūku Chrome un sinhronizēt paroles.</translation>
 <translation id="7518079994230200553">Šī iespēja pašlaik nav pieejama.</translation>
+<translation id="752021853309481824">Lai piekļūtu saglabātajai informācijai un citiem datiem visās savās ierīcēs, pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="7520766081042531487">Inkognito režīma portāls: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Rādīt saīsnes</translation>
 <translation id="7521430434164837205">Microsoft 365 faili</translation>
@@ -10201,6 +10209,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="8841843049738266382">Lasīt un mainīt atļaušanas sarakstā iekļautos lietotājus</translation>
 <translation id="8841884135319684422">Beigt uzdevumu</translation>
 <translation id="8842594465773264717">Dzēst šo pirksta nospiedumu</translation>
+<translation id="8843160937959801189">Lai iegūtu grāmatzīmes un citus datus no ierīces (<ph name="DEVICE" />), pierakstieties ar kontu <ph name="EMAIL" />.</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8846132060409673887">Nolasīt šī datora ražotāju un modeli</translation>
 <translation id="8846239054091760429">Mono audio, startēšana, subtitri reāllaikā u.c.</translation>

@@ -5767,7 +5767,7 @@ Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_
 <translation id="4700450186549212780">Hiermee worden de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> geconfigureerd.
 
 Als beheerders <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> willen instellen, moeten ze een van de volgende opties invoeren:
-* De URL van de web-app van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OF
+* De URL van de web-app van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), OF
 * Alle 3 de verouderde parameters samen: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> en <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Als je maar een gedeeltelijke subset van deze 3 parameters verstrekt zonder URL, wordt het beleid afgewezen.
 
 Als zowel de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> als de oude parameters zijn ingesteld, heeft de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> voorrang.
@@ -8016,7 +8016,7 @@ Als je het beleid toepast, wordt de API ondersteund.
 Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voor deze API problemen aan het licht brengt. Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Het beleid is beschikbaar via <ph name="PRODUCT_NAME" /> versie 114, waarna support voor deze API onvoorwaardelijk is beëindigd.
 
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
-<translation id="6083071443488983075">Bepaalt of <ph name="PRODUCT_NAME" /> inactieve achtergrondtabbladen vastzet om CPU en geheugen te besparen.
+<translation id="6083071443488983075">Bepaalt of <ph name="PRODUCT_NAME" /> inactieve achtergrondtabbladen vastzet om CPU-rekenkracht en geheugen te besparen.
 
 Als het vastzetten van tabbladen op de achtergrond actief is, worden tabbladen die een tijdje inactief zijn geweest op de achtergrond vastgezet door de uitvoering van JavaScript en timertaken te onderbreken. Vastgezette tabbladen blijven in het geheugen geladen en worden onmiddellijk hervat als de gebruiker ze selecteert. Tabbladen met actieve achtergrondtaken, zoals tabbladen die audio of video afspelen, scherm- of camerastreams vastleggen, actieve WebRTC-verbindingen onderhouden of Web Locks bevatten, komen niet in aanmerking voor vastzetten en blijven actief. Sites die zijn ingesteld in het beleid <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" /> of in de uitzonderingen voor het verwijderen van tabbladen van de gebruiker, zijn ook vrijgesteld van vastzetten.
 

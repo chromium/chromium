@@ -619,6 +619,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1473223074251193484">Nustatyti įrenginio kaip modemo naudojimo konfigūraciją</translation>
 <translation id="1473616112002966036">&amp;Vaizdo įrašo kadras</translation>
+<translation id="1475224725276659152">Jei norite pasiekti skaitymo sąrašą ir kt. visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="1476607407192946488">&amp;Kalbos nustatymai</translation>
 <translation id="1477654881618305065">Organizacijoje neleidžiama bendrinti šio turinio. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
 <translation id="1478340334823509079">Išsami informacija: „<ph name="FILE_NAME" />“</translation>
@@ -1502,6 +1503,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2148248734299717598">Uždaryti kairįjį rodinį</translation>
 <translation id="2148401732477136168">Nepavyko pateikti užklausos dėl įdiegtų programų.</translation>
 <translation id="2148892889047469596">Skirtuko perdavimas</translation>
+<translation id="2149773378153994101">Jei norite gauti plėtinius ir kt. iš <ph name="DEVICE" />, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
 <translation id="2150139952286079145">Ieškoti paskirties vietų</translation>
 <translation id="2150168665016482929">Su&amp;mažinti</translation>
@@ -4149,6 +4151,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4131283654370308898">Leisti „<ph name="EXTENSION_NAME" />“ šioje svetainėje</translation>
 <translation id="4131410914670010031">Nespalvotai</translation>
 <translation id="413193092008917129">Tinklo diagnostikos veiksmų sekos</translation>
+<translation id="4132108564882155194">Jei norite gauti skaitymo sąrašą ir kt. iš <ph name="DEVICE" />, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="4132137475637520539">Leisti prisijungti visiems nuorodą turintiems žmonėms</translation>
 <translation id="4132364317545104286">Pervardyti „eSIM“ kortelės profilį</translation>
 <translation id="4132969033912447558">Tęsti <ph name="FILE_NAME" /></translation>
@@ -4242,6 +4245,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4213540068152645535">Problemos keičiant slaptažodį</translation>
 <translation id="42137655013211669">Prieigą prie šio ištekliaus uždraudė serveris.</translation>
 <translation id="4214192212360095377">Išjungti dabar</translation>
+<translation id="421564716234835106">Jei norite pasiekti plėtinius ir kt. visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="4216407171061541111">Organizacija išjungė skirtukų išsaugojimą „Google“ paskyroje</translation>
 <translation id="4216511743389425832">Klausytis šio puslapio</translation>
 <translation id="4217571870635786043">Diktavimas</translation>
@@ -4461,6 +4465,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4379623957571212011">Pasirinkite vaizdą, kad iš karto pritaikytumėte temą</translation>
 <translation id="4380055775103003110">Jei ši problema išlieka, galite išbandyti kitus būdus, kaip tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4380648069038809855">Įjungtas viso ekrano režimas</translation>
+<translation id="4380934846131873000">Jei norite gauti išsaugotą informaciją ir kt. iš <ph name="DEVICE" />, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="4381902252848068865">Neleisti svetainei išsaugoti duomenų</translation>
 <translation id="4381997246130185847">Galite tęsti ten, kur baigėte, arba kurti naujas skirtukų grupes keliaudami</translation>
 <translation id="4384312707950789900">Pridėti prie pageidaujamų</translation>
@@ -6144,6 +6149,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5700761515355162635">Trečiųjų šalių slapukai leidžiami</translation>
 <translation id="5700836101007545240">Ryšio pridėjimo funkciją išjungė administratorius</translation>
 <translation id="5701212929149679556">Mobilusis tarptinklinis ryšys</translation>
+<translation id="5701500921291556452">Jei norite gauti slaptažodžius ir kt. iš <ph name="DEVICE" />, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="5701786609538182967">Kitos programos nustatytos atidaryti tas pačias nuorodas kaip ir „<ph name="APP_NAME" />“. Tai atlikus „<ph name="APP_NAME_2" />“, „<ph name="APP_NAME_3" />“, „<ph name="APP_NAME_4" />“ ir dar viena programa negalės atidaryti palaikomų nuorodų.</translation>
 <translation id="5702161882524398150">Klauskite apie ankstesnį skirtuką</translation>
 <translation id="5703716265115423771">garsumo mažinimas</translation>
@@ -8322,6 +8328,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="738322632977123193">Įkelti nepavyko. Naudokite vaizdą vienu iš nurodytų formatų: .jpg, .gif, .png, .bmp, .tif arba .webp</translation>
 <translation id="7384687527486377545">Klaviatūros automatinis kartojimas</translation>
 <translation id="7384804382450832142">Prisijungimas prie „Microsoft OneDrive“</translation>
+<translation id="7385713560829077068">Jei norite pasiekti žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="7385854874724088939">Bandant spausdinti atsirado triktis. Patikrinkite spausdintuvą ir bandykite dar kartą.</translation>
 <translation id="7385870590821097913">Atlikite kitame įrenginyje nurodytus veiksmus</translation>
 <translation id="7387107590792462040">Palaukite, kol vykdomas diegimas</translation>
@@ -8510,6 +8517,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7517292544534877198">Naudokite „Google“ numatytąją slaptažodžių šifruotę „Google“ paskyroje</translation>
 <translation id="7517959947270534934">Šeimos grupės narys šiuo metu negali gauti slaptažodžių. Paprašykite atnaujinti „Chrome“ ir sinchronizuoti slaptažodžius.</translation>
 <translation id="7518079994230200553">Ši parinktis šiuo metu nepasiekiama.</translation>
+<translation id="752021853309481824">Jei norite pasiekti išsaugotą informaciją ir kt. visuose įrenginiuose, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portalas inkognito režimu: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Rodyti sparčiuosius klavišus</translation>
 <translation id="7521430434164837205">„Microsoft 365“ failai</translation>
@@ -10223,6 +10231,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="8841843049738266382">Skaityti ir keisti į leidžiamųjų sąrašą įtrauktus naudotojus</translation>
 <translation id="8841884135319684422">Baigti užduotį</translation>
 <translation id="8842594465773264717">Ištrinti šį kontrolinį kodą</translation>
+<translation id="8843160937959801189">Jei norite gauti žymes ir kt. iš <ph name="DEVICE" />, prisijunkite kaip <ph name="EMAIL" /></translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
 <translation id="8846132060409673887">Skaityti šio kompiuterio gamintojo ir modelio informaciją</translation>
 <translation id="8846239054091760429">Monofoninis garsas, paleidimas, subtitrai realiuoju laiku ir daugiau</translation>

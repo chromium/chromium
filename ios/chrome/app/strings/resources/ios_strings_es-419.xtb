@@ -1615,7 +1615,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6193448654517602979">Seleccionar pestañas</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
-<translation id="6210079381482819663">Las pestañas que no se usaron durante <ph name="THRESHOLD" /> días o más se mueven aquí. Puedes cambiar este parámetro cuando lo desees en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
+<translation id="6210079381482819663">Las pestañas que no se usaron durante <ph name="THRESHOLD" /> días o más se mueven aquí. Puedes cambiar este parámetro en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">No se encontraron direcciones</translation>
 <translation id="6218508144653756827">Tema fucsia</translation>
 <translation id="6218758465102657583">Mover la barra de direcciones a la parte superior</translation>

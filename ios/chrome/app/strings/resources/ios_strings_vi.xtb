@@ -1319,7 +1319,7 @@
 <translation id="5233638681132016545">Thẻ mới</translation>
 <translation id="5234094073825090254">{count,plural, =1{Đã lưu dấu trang vào Tài khoản Google {email} của bạn.}other{Đã lưu dấu trang vào Tài khoản Google {email} của bạn.}}</translation>
 <translation id="5234162151438379838">{COUNT,plural, =1{Bạn chỉ có thể chia sẻ 1 thẻ.}other{Bạn chỉ có thể chia sẻ {COUNT} thẻ.}}</translation>
-<translation id="5234764350956374838">Bỏ qua</translation>
+<translation id="5234764350956374838">Đóng</translation>
 <translation id="5238596603078743134">Giờ đây, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> có thể sử dụng tên người dùng và mật khẩu của bạn khi dùng Trình quản lý mật khẩu của Google để đăng nhập vào <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5241106044372754566"><ph name="NAME" />, <ph name="EMAIL" />, do tổ chức của bạn quản lý, hiện đang được chọn. Chọn một tài khoản.</translation>
 <translation id="5242899254250321823">Đổi mật khẩu trên trang web</translation>

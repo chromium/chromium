@@ -618,6 +618,7 @@
 <translation id="1472675084647422956">مزید دکھائیں</translation>
 <translation id="1473223074251193484">ٹیدرنگ کنفیگریشن سیٹ کریں</translation>
 <translation id="1473616112002966036">&amp;ویڈیو فریم</translation>
+<translation id="1475224725276659152">اپنے تمام آلات پر اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="1476607407192946488">&amp;زبان کی ترتیبات</translation>
 <translation id="1477654881618305065">آپ کی تنظیم آپ کو اس مواد کا اشتراک کرنے کی اجازت نہیں دیتی ہے۔ اگر آپ کو مدد درکار ہے تو اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="1478340334823509079">تفصیلات: <ph name="FILE_NAME" /></translation>
@@ -1492,6 +1493,7 @@
 <translation id="2148248734299717598">بائیں منظر کو بند کریں</translation>
 <translation id="2148401732477136168">انسٹال کردہ ایپلیکیشنز سے استفسار کرنے میں ناکام۔</translation>
 <translation id="2148892889047469596">ٹیب کاسٹ کریں</translation>
+<translation id="2149773378153994101">‫<ph name="DEVICE" /> سے اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2150139952286079145">منازل مقصود تلاش کریں</translation>
 <translation id="2150168665016482929">کم سے کم کریں</translation>
@@ -4134,6 +4136,7 @@
 <translation id="4131283654370308898">اس سائٹ پر <ph name="EXTENSION_NAME" /> کی اجات دیں</translation>
 <translation id="4131410914670010031">سیاہ اور سفید</translation>
 <translation id="413193092008917129">نیٹ ورک کی تشخیصی روٹینز</translation>
+<translation id="4132108564882155194">‫<ph name="DEVICE" /> سے اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="4132137475637520539">لنک کے حامل کسی بھی شخص کو شامل ہونے کی اجازت دیں</translation>
 <translation id="4132364317545104286">‏eSIM کی پروفائل کا نام تبدیل کریں</translation>
 <translation id="4132969033912447558"><ph name="FILE_NAME" /> دوبارہ شروع کریں</translation>
@@ -4227,6 +4230,7 @@
 <translation id="4213540068152645535">آپ کا پاس ورڈ تبدیل کرنے میں دشواری</translation>
 <translation id="42137655013211669">سرور نے اس ماخذ تک رسائی کو ممنوع کر دیا۔</translation>
 <translation id="4214192212360095377">ابھی آف کریں</translation>
+<translation id="421564716234835106">اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="4216407171061541111">‏آپ کی تنظیم نے آپ کے Google اکاؤنٹ میں ٹیبز کو محفوظ کرنے کا اختیار بند کر دیا ہے</translation>
 <translation id="4216511743389425832">اس صفحے کو سنیں</translation>
 <translation id="4217571870635786043">املاء</translation>
@@ -4446,6 +4450,7 @@
 <translation id="4379623957571212011">فوری طور پر تھیم کو لاگو کرنے کے لیے تصویر کو منتخب کریں</translation>
 <translation id="4380055775103003110">اگر یہ مسئلہ جاری رہتا ہے، تو آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
 <translation id="4380648069038809855">پوری اسکرین میں داخل ہو گئی</translation>
+<translation id="4380934846131873000">‫<ph name="DEVICE" /> سے اپنی محفوظ کردہ معلومات اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="4381902252848068865">سائٹ کو ڈیٹا محفوظ کرنے کی اجازت نہ دیں</translation>
 <translation id="4381997246130185847">آپ وہیں سے شروع کر سکتے ہیں جہاں آپ نے چھوڑا تھا یا چلتے پھرتے نئے ٹیب گروپس تخلیق کر سکتے ہیں</translation>
 <translation id="4384312707950789900">ترجیحی میں شامل کریں</translation>
@@ -6125,6 +6130,7 @@
 <translation id="5700761515355162635">فریق ثالث کوکیز کی اجازت ہے</translation>
 <translation id="5700836101007545240">کنکشن شامل کرنے کو آپ کے منتظم نے غیر فعال کر دیا ہے</translation>
 <translation id="5701212929149679556">سیلولر رومنگ</translation>
+<translation id="5701500921291556452">‫<ph name="DEVICE" /> سے اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="5701786609538182967">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، <ph name="APP_NAME_4" /> اور ایک دوسری ایپ کو تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="5702161882524398150">گزشتہ ٹیب کے بارے میں پوچھیں</translation>
 <translation id="5703716265115423771">والیوم کم کریں</translation>
@@ -8296,6 +8302,7 @@
 <translation id="738322632977123193">‏اپ لوڈ نہیں کر سکتے۔ تصویر کا استعمال ان میں سے کسی ایک فارمیٹ میں کریں: jpg, .gif, .png, .bmp, .tif. یا webp.</translation>
 <translation id="7384687527486377545">کی بورڈ کا خودکار اعادہ</translation>
 <translation id="7384804382450832142">‏Microsoft OneDrive سے منسلک کریں</translation>
+<translation id="7385713560829077068">اپنے تمام آلات پر اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="7385854874724088939">پرنٹ کرنے کی کوشش کرتے وقت کچھ غلط ہوگیا۔  براہ کرم اپنا پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="7385870590821097913">اپنے دوسرے آلے پر اقدامات کی پیروی کریں</translation>
 <translation id="7387107590792462040">انسٹالیشن کے پیش رفت میں ہونے کے دوران براہ کرم انتظار کریں</translation>
@@ -8484,6 +8491,7 @@
 <translation id="7517292544534877198">‏اپنے Google اکاؤنٹ میں پاس ورڈز کے لیے Google کی ڈیفالٹ مرموز کاری کا استعمال کریں</translation>
 <translation id="7517959947270534934">‏آپ کا فیملی ممبر ابھی پاس ورڈز موصول نہیں کر سکتا۔ ان سے Chrome اپ ڈیٹ کرنے اور پاس ورڈز کو مطابقت پذیر کرنے کے لیے کہیں۔</translation>
 <translation id="7518079994230200553">یہ اختیار اب دستیاب نہیں ہے۔</translation>
+<translation id="752021853309481824">اپنے تمام آلات پر اپنی محفوظ کردہ معلومات وغیرہ حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="7520766081042531487">پوشیدگی وضع کا پورٹل: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">شارٹ کٹس دکھائيں</translation>
 <translation id="7521430434164837205">‏Microsoft 365 فائلز</translation>
@@ -10197,6 +10205,7 @@
 <translation id="8841843049738266382">اجازت یافتہ فہرست کے صارفین کو پڑھیں اور تبدیل کریں</translation>
 <translation id="8841884135319684422">ٹاسک بند کریں</translation>
 <translation id="8842594465773264717">اس فنگر پرنٹ کو حذف کریں</translation>
+<translation id="8843160937959801189">‫<ph name="DEVICE" /> سے اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8846132060409673887">اس کمپیوٹر کے مینوفیکچرر اور ماڈل کو پڑھیں</translation>
 <translation id="8846239054091760429">مونو آڈیو، اسٹارٹ اپ، لائیو کیپشن، اور بہت کچھ</translation>
