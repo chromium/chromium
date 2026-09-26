@@ -37,4 +37,7 @@ const char kLoadMinimalAppUI[] = "load-minimal-app-ui";
 
 const char kUseDefaultInfobarDuration[] = "use-default-infobar-duration";
 
+const char kPauseStartupAtBackgroundStage[] =
+    "pause-startup-at-background-stage";
+
 }  // namespace test_switches

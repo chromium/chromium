@@ -269,6 +269,14 @@ void InjectFakeTabsInBrowser(Browser* browser);
 // Returns a fake reauthentication module to be used in tests.
 id<ReauthenticationProtocol> GetFakeReauthenticationModule();
 
+// Returns true if application startup should pause at the background stage
+// (AppInitStage::kBrowserObjectsForBackgroundHandlers) and suppress scene
+// foregrounding to simulate a background launch.
+bool ShouldPauseStartupAtBackgroundStage();
+
+// Unpauses application startup if it was paused at the background stage.
+void UnpauseStartupAtBackgroundStage();
+
 }  // namespace tests_hook
 
 #endif  // IOS_CHROME_APP_TESTS_HOOK_H_

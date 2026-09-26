@@ -7,13 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/app/application_delegate/startup_information.h"
+#import <optional>
+
+#import "ios/chrome/app/application_delegate/startup_information.h"
 
 // Fakes a class adopting the StartupInformation protocol. It only synthetizes
 // the properties.
 @interface FakeStartupInformation : NSObject <StartupInformation>
 
 @property(nonatomic, assign) BOOL isTerminating;
+@property(nonatomic, assign) std::optional<IOSLaunchReason> launchReason;
+@property(nonatomic, assign) base::TimeDelta preMainDuration;
 
 @end
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_FAKE_STARTUP_INFORMATION_H_

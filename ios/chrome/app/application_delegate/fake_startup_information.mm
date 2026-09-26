@@ -10,10 +10,12 @@
 @implementation FakeStartupInformation
 
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize preMainDuration = _preMainDuration;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
+@synthesize launchReason = _launchReason;
 @synthesize isTerminating = _isTerminating;
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
@@ -48,6 +50,16 @@
 
 - (void)startChromeMain {
   // Stub.
+}
+
+- (BOOL)isLaunchedInBackground {
+  return _launchReason.has_value() && IsBackgroundLaunchReason(*_launchReason);
+}
+
+- (void)maybeSetLaunchReason:(IOSLaunchReason)launchReason {
+  if (!_launchReason.has_value()) {
+    _launchReason = launchReason;
+  }
 }
 
 @end

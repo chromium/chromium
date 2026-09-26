@@ -203,4 +203,10 @@ id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
   return nil;
 }
 
+bool ShouldPauseStartupAtBackgroundStage() {
+  return false;
+}
+
+void UnpauseStartupAtBackgroundStage() {}
+
 }  // namespace tests_hook

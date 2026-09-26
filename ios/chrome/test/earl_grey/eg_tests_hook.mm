@@ -7,6 +7,7 @@
 // clang-format on
 
 #import <algorithm>
+#import <optional>
 #import <string_view>
 
 #import "base/apple/foundation_util.h"
@@ -501,6 +502,27 @@ void InjectFakeTabsInBrowser(Browser* browser) {
 
 id<ReauthenticationProtocol> GetFakeReauthenticationModule() {
   return [[MockReauthenticationModule alloc] init];
+}
+
+namespace {
+
+std::optional<bool> g_pause_startup_at_background_stage;
+
+}  // namespace
+
+bool ShouldPauseStartupAtBackgroundStage() {
+  if (!g_pause_startup_at_background_stage.has_value()) {
+    NSString* switch_string = [NSString
+        stringWithFormat:@"--%s",
+                         test_switches::kPauseStartupAtBackgroundStage];
+    g_pause_startup_at_background_stage =
+        [NSProcessInfo.processInfo.arguments containsObject:switch_string];
+  }
+  return *g_pause_startup_at_background_stage;
+}
+
+void UnpauseStartupAtBackgroundStage() {
+  g_pause_startup_at_background_stage = false;
 }
 
 }  // namespace tests_hook

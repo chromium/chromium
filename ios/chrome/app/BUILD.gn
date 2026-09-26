@@ -200,6 +200,7 @@ source_set("unit_tests") {
     "change_profile_animator_unittest.mm",
     "deferred_initialization_runner_unittest.mm",
     "legacy_scene_identifier_map_unittest.mm",
+    "main_controller_unittest.mm",
     "safe_mode_app_state_agent_unittest.mm",
     "scene_identifier_map_impl_unittest.mm",
     "tab_opener_unittest.mm",

@@ -14,6 +14,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
+#import "ios/chrome/app/background_refresh/background_refresh_app_agent+Testing.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
@@ -205,6 +206,11 @@
 // If not, caches the task for later executuion.
 - (void)handleExecutionForTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // Record the launch reason before checking `initStage` below. Even if the app
+  // launched too early (`continueExecution` is NO) and task execution is
+  // deferred, the process was still launched for background refresh.
+  [self.startupInformation
+      maybeSetLaunchReason:IOSLaunchReason::kBackgroundRefresh];
 
   // Record cold/warm start for this refresh.
   LaunchTypeForBackgroundRefreshActions launchType =
@@ -426,6 +432,14 @@
   }
 
   base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
+}
+
+#pragma mark - Testing
+
+- (void)simulateRefreshWithTask:(BGTask*)task {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _taskStart = base::TimeTicks::Now();
+  [self handleExecutionForTask:task];
 }
 
 @end

@@ -10,6 +10,7 @@ source_set("background_refresh") {
   sources = [
     "app_refresh_provider.h",
     "app_refresh_provider.mm",
+    "background_refresh_app_agent+Testing.h",
     "background_refresh_app_agent.h",
     "background_refresh_app_agent.mm",
     "discover_feed_provider.h",

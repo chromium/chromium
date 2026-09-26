@@ -20,7 +20,9 @@
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state+Testing.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/background_refresh/app_refresh_provider.h"
+#import "ios/chrome/app/background_refresh/background_refresh_app_agent+Testing.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent_audience.h"
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 #import "ios/chrome/app/background_refresh_constants.h"
@@ -241,15 +243,17 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
     BuildMockTaskScheduler();
     BuildMockTask();
 
-    // Set up mock app state and configure its -initStage method to return
-    // `init_stage_`. This is done instead of stubbing so that the return value
-    // can be changed.
-    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    // Set up mock app state with FakeStartupInformation and configure its
+    // -initStage method to return `init_stage_`.
+    startup_information_ = [[FakeStartupInformation alloc] init];
+    app_state_ =
+        [[AppState alloc] initWithStartupInformation:startup_information_];
     [app_state_ updateInitStage:
                     NextAppInitStage(
                         AppInitStage::kBrowserObjectsForBackgroundHandlers)];
 
     agent_ = [[BackgroundRefreshAppAgent alloc] init];
+    agent_.startupInformation = startup_information_;
     audience_ = [[TestRefreshAudience alloc] init];
     agent_.audience = audience_;
     agent_.appState = app_state_;
@@ -365,6 +369,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   id task_mock_;
   TaskExpirationBlock task_expiration_handler_;
   AppState* app_state_;
+  FakeStartupInformation* startup_information_;
   int task_request_count_ = 0;
 
   // Object under test and its audience.
@@ -856,4 +861,41 @@ TEST_F(BackgroundRefreshAppAgentTest, TestDelayedExecutionTimeoutMetrics) {
   histogram_tester.ExpectTotalCount(kStartupWaitDurationTimeoutHistogram, 1);
   // Rescheduled once when executing the deferred task after browser objects.
   EXPECT_EQ(task_request_count_, 2);
+}
+
+// Tests that when BGTaskScheduler triggers a background task launch handler,
+// `maybeSetLaunchReason:` is called and latches `launchReason` to
+// `IOSLaunchReason::kBackgroundRefresh` and `isLaunchedInBackground` to YES.
+TEST_F(BackgroundRefreshAppAgentTest, TestBackgroundLaunchViaBGTask) {
+  // 1. Initial state is unset before task execution.
+  EXPECT_FALSE([startup_information_ launchReason].has_value());
+  EXPECT_FALSE([startup_information_ isLaunchedInBackground]);
+
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
+
+  // 2. Simulate backgrounding and BGTaskScheduler invoking the launch handler.
+  SimulateAppBackgrounding();
+  InvokeTaskHandler();
+  run_loop_.Run();
+
+  // 3. Verify launchReason is latched to kBackgroundRefresh and
+  // isLaunchedInBackground is YES.
+  ASSERT_TRUE([startup_information_ launchReason].has_value());
+  EXPECT_EQ(*[startup_information_ launchReason],
+            IOSLaunchReason::kBackgroundRefresh);
+  EXPECT_TRUE([startup_information_ isLaunchedInBackground]);
+}
+
+// Tests that `-simulateRefreshWithTask:` synchronously sets `launchReason` to
+// `IOSLaunchReason::kBackgroundRefresh` before returning.
+TEST_F(BackgroundRefreshAppAgentTest, TestSimulateRefreshWithTask) {
+  EXPECT_FALSE([startup_information_ launchReason].has_value());
+  OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
+
+  [agent_ simulateRefreshWithTask:task_mock_];
+
+  ASSERT_TRUE([startup_information_ launchReason].has_value());
+  EXPECT_EQ(*[startup_information_ launchReason],
+            IOSLaunchReason::kBackgroundRefresh);
+  EXPECT_TRUE([startup_information_ isLaunchedInBackground]);
 }

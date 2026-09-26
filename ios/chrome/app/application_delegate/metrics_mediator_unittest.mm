@@ -6,7 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+#import <string>
+
 #import "base/metrics/histogram_functions.h"
+#import "base/scoped_environment_variable_override.h"
+#import "base/strings/strcat.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
@@ -14,7 +19,9 @@
 #import "components/password_manager/core/common/browser_assisted_login_type.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/previous_session_info/previous_session_info_private.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/app/app_startup_parameters.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator_testing.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -29,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -341,7 +349,39 @@ TEST_F(MetricsMediatorLogLaunchTest, logLaunchMetricsNoBackgroundDate) {
   verifySwizzleHasBeenCalled();
 }
 
-using MetricsMediatorNoFixtureTest = PlatformTest;
+class MetricsMediatorNoFixtureTest : public PlatformTest {
+ public:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade = NO;
+    SetFirstSessionAfterDeviceRestoreForTesting(signin::Tribool::kFalse);
+  }
+
+  void TearDown() override {
+    ResetDeviceRestoreDataForTesting();
+    [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade = NO;
+    PlatformTest::TearDown();
+  }
+
+ protected:
+  // Creates and returns a FakeStartupInformation configured for a standard cold
+  // start.
+  FakeStartupInformation* CreateDefaultStartupInformation() {
+    FakeStartupInformation* startup_information =
+        [[FakeStartupInformation alloc] init];
+    startup_information.isColdStart = YES;
+    startup_information.isFirstRun = NO;
+    startup_information.launchReason = std::nullopt;
+    startup_information.appLaunchTime =
+        base::TimeTicks::Now() - base::Seconds(1);
+    startup_information.didFinishLaunchingTime =
+        startup_information.appLaunchTime;
+    startup_information.firstSceneConnectionTime =
+        startup_information.appLaunchTime;
+    startup_information.preMainDuration = base::Milliseconds(200);
+    return startup_information;
+  }
+};
 
 // Tests that +logDateInUserDefaults logs the date in UserDefaults.
 TEST_F(MetricsMediatorNoFixtureTest, logDateInUserDefaultsTest) {
@@ -366,22 +406,8 @@ TEST_F(MetricsMediatorNoFixtureTest, logDateInUserDefaultsTest) {
 // Tests that +logStartupDuration: calls
 // +endExtendedLaunchTask on cold start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
-  id startupInformation =
-      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  [[[startupInformation stub] andReturnValue:@YES] isColdStart];
-
-  base::TimeTicks time = base::TimeTicks();
-  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&time];
-  }] appLaunchTime];
-
-  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&time];
-  }] didFinishLaunchingTime];
-
-  [[[startupInformation stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&time];
-  }] firstSceneConnectionTime];
+  FakeStartupInformation* startupInformation =
+      CreateDefaultStartupInformation();
 
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];
@@ -391,12 +417,351 @@ TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnColdStart) {
   EXPECT_OCMOCK_VERIFY(metricKitSubscriber);
 }
 
+// Tests that +logStartupDuration: does not record metrics if not cold start.
+TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationNotColdStart) {
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.isColdStart = NO;
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain.NotPrewarmed",
+                                    0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain.ActivePrewarm",
+                                    0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.Regular", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.ActivePrewarm",
+                                    0);
+}
+
+// Scoped helper to set or unset the ActivePrewarm environment variable used by
+// base::ios::IsApplicationPreWarmed().
+class ScopedSetProcessPreWarmed {
+ public:
+  explicit ScopedSetProcessPreWarmed(bool pre_warmed)
+      : scoped_override_(
+            pre_warmed
+                ? base::ScopedEnvironmentVariableOverride("ActivePrewarm", "1")
+                : base::ScopedEnvironmentVariableOverride("ActivePrewarm")) {}
+
+ private:
+  base::ScopedEnvironmentVariableOverride scoped_override_;
+};
+
+// Parameters for MetricsMediatorStartupTemperatureTest.
+struct StartupTemperatureTestCase {
+  std::string test_name;
+  bool is_pre_warmed = false;
+  std::optional<IOSLaunchReason> initial_launch_reason = std::nullopt;
+  base::TimeDelta app_launch_delay = base::Seconds(1);
+  IOSLaunchReason expected_launch_reason = IOSLaunchReason::kForeground;
+  std::string expected_temperature;
+  int expected_cold_start_from_main_count = 1;
+  int expected_cold_start_pre_main_count = 1;
+};
+
+// Test fixture for testing startup duration variants across different startup
+// temperatures.
+class MetricsMediatorStartupTemperatureTest
+    : public MetricsMediatorNoFixtureTest,
+      public ::testing::WithParamInterface<StartupTemperatureTestCase> {};
+
+// Tests that +logStartupDuration: records the expected histogram variants for
+// each startup temperature.
+TEST_P(MetricsMediatorStartupTemperatureTest, LogStartupDuration) {
+  const StartupTemperatureTestCase& test_case = GetParam();
+  ScopedSetProcessPreWarmed scoped_pre_warmed(test_case.is_pre_warmed);
+
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.launchReason = test_case.initial_launch_reason;
+  startup_information.appLaunchTime =
+      base::TimeTicks::Now() - test_case.app_launch_delay;
+  startup_information.didFinishLaunchingTime =
+      startup_information.appLaunchTime;
+  startup_information.firstSceneConnectionTime =
+      startup_information.appLaunchTime;
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  ASSERT_TRUE(startup_information.launchReason.has_value());
+  EXPECT_EQ(*startup_information.launchReason,
+            test_case.expected_launch_reason);
+  histogram_tester.ExpectUniqueSample("Startup.IOSLaunchReason.Foregrounded",
+                                      test_case.expected_launch_reason, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Startup.IOSColdStartType.ForegroundLaunchesOnly",
+      test_case.expected_cold_start_from_main_count);
+  histogram_tester.ExpectTotalCount(
+      "Startup.ColdStartFromMain",
+      test_case.expected_cold_start_from_main_count);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"Startup.ColdStartFromMain.", test_case.expected_temperature}),
+      test_case.expected_cold_start_from_main_count);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Startup.ColdStartFromMain.",
+                    test_case.expected_temperature, ".Regular"}),
+      test_case.expected_cold_start_from_main_count);
+
+  histogram_tester.ExpectTotalCount(
+      "Startup.TimeFromMainToDidFinishLaunchingCall",
+      test_case.expected_cold_start_from_main_count);
+  histogram_tester.ExpectTotalCount(
+      "Startup.TimeFromMainToSceneConnection",
+      test_case.expected_cold_start_from_main_count);
+
+  histogram_tester.ExpectTotalCount(
+      "Startup.ColdStartPreMain", test_case.expected_cold_start_pre_main_count);
+  histogram_tester.ExpectTotalCount(
+      "Startup.ColdStartPreMain.Regular",
+      test_case.expected_cold_start_pre_main_count);
+
+  // Verify other temperatures are not recorded for ColdStartFromMain, and no
+  // temperature variants are ever recorded for ColdStartPreMain.
+  for (const std::string& temp : {"NotPrewarmed", "ActivePrewarm"}) {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"Startup.ColdStartPreMain.", temp}), 0);
+    if (temp != test_case.expected_temperature) {
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Startup.ColdStartFromMain.", temp}), 0);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MetricsMediatorStartupTemperatureTest,
+    ::testing::Values(
+        StartupTemperatureTestCase{
+            .test_name = "NotPrewarmed",
+            .is_pre_warmed = false,
+            .initial_launch_reason = std::nullopt,
+            .expected_launch_reason = IOSLaunchReason::kForeground,
+            .expected_temperature = "NotPrewarmed",
+            .expected_cold_start_from_main_count = 1,
+            .expected_cold_start_pre_main_count = 1,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "ActivePrewarm",
+            .is_pre_warmed = true,
+            .initial_launch_reason = std::nullopt,
+            .expected_launch_reason = IOSLaunchReason::kPreWarming,
+            .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 1,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "LaunchedInBackground",
+            .is_pre_warmed = false,
+            .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .expected_temperature = "NotPrewarmed",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "LaunchedInBackgroundPrecedence",
+            .is_pre_warmed = true,
+            .initial_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .expected_launch_reason = IOSLaunchReason::kBackgroundRefresh,
+            .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "Suspicious",
+            .is_pre_warmed = false,
+            .initial_launch_reason = std::nullopt,
+            .app_launch_delay = base::Seconds(31),
+            .expected_launch_reason = IOSLaunchReason::kSuspicious,
+            .expected_temperature = "NotPrewarmed",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        },
+        StartupTemperatureTestCase{
+            .test_name = "SuspiciousPrewarm",
+            .is_pre_warmed = true,
+            .initial_launch_reason = std::nullopt,
+            .app_launch_delay = base::Seconds(31),
+            .expected_launch_reason = IOSLaunchReason::kSuspicious,
+            .expected_temperature = "ActivePrewarm",
+            .expected_cold_start_from_main_count = 0,
+            .expected_cold_start_pre_main_count = 0,
+        }),
+    [](const ::testing::TestParamInfo<StartupTemperatureTestCase>& info) {
+      return info.param.test_name;
+    });
+
+// Parameters for MetricsMediatorColdStartTypeTest.
+struct ColdStartTypeTestCase {
+  std::string test_name;
+  bool is_first_run = false;
+  bool is_first_session_after_upgrade = false;
+  signin::Tribool device_restore = signin::Tribool::kFalse;
+  std::string expected_cold_start_type;
+};
+
+// Test fixture for testing startup duration sub-variants across different cold
+// start types.
+class MetricsMediatorColdStartTypeTest
+    : public MetricsMediatorNoFixtureTest,
+      public ::testing::WithParamInterface<ColdStartTypeTestCase> {};
+
+// Tests that +logStartupDuration: records the expected ColdStartType
+// sub-variants.
+TEST_P(MetricsMediatorColdStartTypeTest, LogStartupDuration) {
+  const ColdStartTypeTestCase& test_case = GetParam();
+  ScopedSetProcessPreWarmed scoped_pre_warmed(false);
+  SetFirstSessionAfterDeviceRestoreForTesting(test_case.device_restore);
+  [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade =
+      test_case.is_first_session_after_upgrade;
+
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.isFirstRun = test_case.is_first_run;
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  histogram_tester.ExpectTotalCount(
+      "Startup.IOSColdStartType.ForegroundLaunchesOnly", 1);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain", 1);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain.NotPrewarmed",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Startup.ColdStartFromMain.NotPrewarmed.",
+                    test_case.expected_cold_start_type}),
+      1);
+
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"Startup.ColdStartPreMain.", test_case.expected_cold_start_type}),
+      1);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
+
+  // Verify other cold start types are not recorded.
+  for (const std::string& type :
+       {"Regular", "FirstRun", "AfterChromeUpgrade", "AfterDeviceRestore",
+        "AfterDeviceRestoreAndChromeUpgrade", "UnknownDeviceRestore",
+        "UnknownDeviceRestoreAndChromeUpgrade"}) {
+    if (type != test_case.expected_cold_start_type) {
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Startup.ColdStartFromMain.NotPrewarmed.", type}), 0);
+      histogram_tester.ExpectTotalCount(
+          base::StrCat({"Startup.ColdStartPreMain.", type}), 0);
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MetricsMediatorColdStartTypeTest,
+    ::testing::Values(
+        ColdStartTypeTestCase{
+            .test_name = "Regular",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = false,
+            .device_restore = signin::Tribool::kFalse,
+            .expected_cold_start_type = "Regular",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "FirstRun",
+            .is_first_run = true,
+            .is_first_session_after_upgrade = false,
+            .device_restore = signin::Tribool::kFalse,
+            .expected_cold_start_type = "FirstRun",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "AfterChromeUpgrade",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = true,
+            .device_restore = signin::Tribool::kFalse,
+            .expected_cold_start_type = "AfterChromeUpgrade",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "AfterDeviceRestore",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = false,
+            .device_restore = signin::Tribool::kTrue,
+            .expected_cold_start_type = "AfterDeviceRestore",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "AfterDeviceRestoreAndChromeUpgrade",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = true,
+            .device_restore = signin::Tribool::kTrue,
+            .expected_cold_start_type = "AfterDeviceRestoreAndChromeUpgrade",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "UnknownDeviceRestore",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = false,
+            .device_restore = signin::Tribool::kUnknown,
+            .expected_cold_start_type = "UnknownDeviceRestore",
+        },
+        ColdStartTypeTestCase{
+            .test_name = "UnknownDeviceRestoreAndChromeUpgrade",
+            .is_first_run = false,
+            .is_first_session_after_upgrade = true,
+            .device_restore = signin::Tribool::kUnknown,
+            .expected_cold_start_type = "UnknownDeviceRestoreAndChromeUpgrade",
+        }),
+    [](const ::testing::TestParamInfo<ColdStartTypeTestCase>& info) {
+      return info.param.test_name;
+    });
+
+// Tests that +logStartupDuration: does not record Startup.ColdStartPreMain
+// when preMainDuration is zero or not positive.
+TEST_F(MetricsMediatorNoFixtureTest, LogStartupDurationZeroPreMainDuration) {
+  ScopedSetProcessPreWarmed scoped_pre_warmed(false);
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.preMainDuration = base::TimeDelta();
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain", 1);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartFromMain.NotPrewarmed",
+                                    1);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.Regular", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.NotPrewarmed", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.ActivePrewarm",
+                                    0);
+}
+
+// Tests that +logStartupDuration: does not record Startup.ColdStartPreMain
+// when preMainDuration exceeds the 30s upper bound (e.g., due to a forward
+// wall-clock jump).
+TEST_F(MetricsMediatorNoFixtureTest,
+       LogStartupDurationExcessivePreMainDuration) {
+  ScopedSetProcessPreWarmed scoped_pre_warmed(false);
+  base::HistogramTester histogram_tester;
+  FakeStartupInformation* startup_information =
+      CreateDefaultStartupInformation();
+  startup_information.preMainDuration = base::Seconds(31);
+
+  [MetricsMediator logStartupDuration:startup_information];
+
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain", 0);
+  histogram_tester.ExpectTotalCount("Startup.ColdStartPreMain.Regular", 0);
+}
+
 // Tests that +logStartupDuration: does not call
 // +endExtendedLaunchTask on warm start.
 TEST_F(MetricsMediatorNoFixtureTest, endExtendedLaunchTaskOnWarmStart) {
-  id startupInformation =
-      [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  [[[startupInformation stub] andReturnValue:@NO] isColdStart];
+  FakeStartupInformation* startupInformation =
+      CreateDefaultStartupInformation();
+  startupInformation.isColdStart = NO;
 
   id metricKitSubscriber =
       [OCMockObject mockForClass:[MetricKitSubscriber class]];

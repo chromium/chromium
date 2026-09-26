@@ -33,10 +33,16 @@
 @implementation StubStartupInformation
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
+@synthesize launchReason = _launchReason;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize preMainDuration = _preMainDuration;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
 @synthesize isTerminating = _isTerminating;
+
+- (BOOL)isLaunchedInBackground {
+  return _launchReason.has_value() && IsBackgroundLaunchReason(*_launchReason);
+}
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   return nil;
@@ -56,6 +62,12 @@
 }
 
 - (void)stopChromeMain {
+}
+
+- (void)maybeSetLaunchReason:(IOSLaunchReason)launchReason {
+  if (!_launchReason.has_value()) {
+    _launchReason = launchReason;
+  }
 }
 
 - (NSDictionary*)launchOptions {

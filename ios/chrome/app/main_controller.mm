@@ -5,6 +5,7 @@
 #import "ios/chrome/app/main_controller.h"
 
 #import <memory>
+#import <optional>
 #import <utility>
 
 #import "base/apple/bundle_locations.h"
@@ -407,7 +408,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // background initilisation that are required, and then transition to the
 // next stage.
 - (void)startUpBrowserBackgroundInitialization;
-
 @end
 
 @implementation MainController {
@@ -471,6 +471,13 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // entered the background at least once since start up.
   BOOL _isColdStart;
 
+  // The initial launch reason for the application process. Unset if not yet
+  // determined.
+  std::optional<IOSLaunchReason> _launchReason;
+
+  // Duration between process creation and the call to main().
+  base::TimeDelta _preMainDuration;
+
   // True if the launch metrics have already been recorded.
   BOOL _launchMetricsRecorded;
 
@@ -503,6 +510,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 // - StartupInformation
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize preMainDuration = _preMainDuration;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isTerminating = _isTerminating;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
@@ -525,6 +533,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
 
 - (void)startUpBrowserBasicInitialization {
   _appLaunchTime = IOSChromeMain::StartTime();
+  _preMainDuration = IOSChromeMain::PreMainDuration();
   _isColdStart = YES;
   UMA_HISTOGRAM_BOOLEAN("IOS.Process.ActivePrewarm",
                         base::ios::IsApplicationPreWarmed());
@@ -543,6 +552,21 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   [self.appState.appCommandDispatcher
       startDispatchingToTarget:self
                    forProtocol:@protocol(ChangeProfileCommands)];
+}
+
+- (std::optional<IOSLaunchReason>)launchReason {
+  return _launchReason;
+}
+
+- (BOOL)isLaunchedInBackground {
+  return _launchReason.has_value() && IsBackgroundLaunchReason(*_launchReason);
+}
+
+- (void)maybeSetLaunchReason:(IOSLaunchReason)launchReason {
+  if (!_launchReason.has_value()) {
+    _launchReason = launchReason;
+    base::UmaHistogramEnumeration("Startup.IOSLaunchReason", *_launchReason);
+  }
 }
 
 - (void)startUpBrowserBackgroundInitialization {
@@ -630,7 +654,9 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // TODO(crbug.com/462018636): Remove once the feature is fully launched.
   SaveEnableNewStartupFlowForNextStart();
 
-  [self.appState queueTransitionToNextInitStage];
+  if (!tests_hook::ShouldPauseStartupAtBackgroundStage()) {
+    [self.appState queueTransitionToNextInitStage];
+  }
 }
 
 // This initialization must happen before any windows are created.

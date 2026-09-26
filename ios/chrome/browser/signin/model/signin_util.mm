@@ -199,6 +199,13 @@ void ResetDeviceRestoreDataForTesting() {
   g_restore_data.reset();
 }
 
+void SetFirstSessionAfterDeviceRestoreForTesting(signin::Tribool tribool) {
+  CHECK_IS_TEST();
+  signin::RestoreData restore_data;
+  restore_data.is_first_session_after_device_restore = tribool;
+  g_restore_data = restore_data;
+}
+
 NSString* UserGivenNameFullNameOrEmail(id<SystemIdentity> identity) {
   NSString* name = identity.userGivenName;
   if (name) {

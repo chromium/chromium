@@ -10,6 +10,7 @@
 #include "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
 namespace base {
+class TimeDelta;
 class TimeTicks;
 }
 
@@ -32,6 +33,11 @@ class IOSChromeMain {
   // Returns the time that main() started.  Used for performance tests.
   // InitStartTime() must has been called before.
   static base::TimeTicks StartTime();
+
+  // Returns the duration between process creation and the call to main().
+  // Returns a zero TimeDelta if process creation time is unavailable or
+  // invalid. InitStartTime() must have been called before.
+  static base::TimeDelta PreMainDuration();
 
  private:
   IOSChromeMainDelegate main_delegate_;

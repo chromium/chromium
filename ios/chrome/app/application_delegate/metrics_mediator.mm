@@ -7,14 +7,18 @@
 #import <mach/mach.h>
 #import <sys/sysctl.h>
 
+#import <optional>
 #import <set>
 #import <vector>
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/ios/device_util.h"
+#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
@@ -80,6 +84,12 @@ NSString* const kAppStartupCounterKey = @"LoadTimePreferenceKey";
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
 
+// The timeout delay before marking the launch reason as suspicious if no
+// launch reason has been determined. At the time of writing this code,
+// 99.9% of launches finish in less than 30s.
+constexpr base::TimeDelta kLaunchReasonTimeout = base::Seconds(30);
+
+// LINT.IfChange(ColdStartType)
 // Enum values for Startup.IOSColdStartType histogram.
 // Entries should not be renumbered and numeric values should never be reused.
 enum class ColdStartType : int {
@@ -99,6 +109,7 @@ enum class ColdStartType : int {
   kUnknownDeviceRestoreAndChromeUpgrade = 6,
   kMaxValue = kUnknownDeviceRestoreAndChromeUpgrade,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:IOSColdStartType)
 
 // Enum representing the existing set of all open tabs age scenarios. Current
 // values should not be renumbered. Please keep in sync with
@@ -221,6 +232,101 @@ std::string WarmStartHistogramPrefix(bool version_mismatch) {
   return version_mismatch ? kHistogramPrefixIncludingMismatch
                           : kHistogramPrefix;
 }
+
+// LINT.IfChange(IOSStartupTemperature)
+// Startup temperature variants corresponding to the IOSStartupTemperature
+// token.
+enum class IOSStartupTemperature {
+  kNotPrewarmed,
+  kActivePrewarm,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/startup/histograms.xml:IOSStartupTemperature)
+
+// Converts the startup temperature to a string suffix corresponding to the
+// IOSStartupTemperature histogram token variant.
+std::string_view IOSStartupTemperatureToString(
+    IOSStartupTemperature temperature) {
+  switch (temperature) {
+    case IOSStartupTemperature::kNotPrewarmed:
+      return ".NotPrewarmed";
+    case IOSStartupTemperature::kActivePrewarm:
+      return ".ActivePrewarm";
+  }
+}
+
+// Returns the startup temperature classification for the current cold start.
+IOSStartupTemperature GetStartupTemperature(
+    id<StartupInformation> startup_information) {
+  return startup_information.launchReason == IOSLaunchReason::kPreWarming
+             ? IOSStartupTemperature::kActivePrewarm
+             : IOSStartupTemperature::kNotPrewarmed;
+}
+
+// Converts the cold start type to a string suffix corresponding to the
+// IOSColdStartType histogram token variant.
+std::string_view IOSColdStartTypeToString(ColdStartType type) {
+  switch (type) {
+    case ColdStartType::kRegular:
+      return ".Regular";
+    case ColdStartType::kFirstRun:
+      return ".FirstRun";
+    case ColdStartType::kAfterDeviceRestore:
+      return ".AfterDeviceRestore";
+    case ColdStartType::kAfterChromeUpgrade:
+      return ".AfterChromeUpgrade";
+    case ColdStartType::kAfterDeviceRestoreAndChromeUpgrade:
+      return ".AfterDeviceRestoreAndChromeUpgrade";
+    case ColdStartType::kUnknownDeviceRestore:
+      return ".UnknownDeviceRestore";
+    case ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade:
+      return ".UnknownDeviceRestoreAndChromeUpgrade";
+  }
+}
+
+// Returns the cold start type for the current session.
+ColdStartType GetColdStartType(id<StartupInformation> startup_information) {
+  if (startup_information.isFirstRun) {
+    return ColdStartType::kFirstRun;
+  }
+  const bool after_upgrade =
+      [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
+  const signin::Tribool device_restore = IsFirstSessionAfterDeviceRestore();
+  switch (device_restore) {
+    case signin::Tribool::kUnknown:
+      return after_upgrade
+                 ? ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade
+                 : ColdStartType::kUnknownDeviceRestore;
+    case signin::Tribool::kTrue:
+      return after_upgrade ? ColdStartType::kAfterDeviceRestoreAndChromeUpgrade
+                           : ColdStartType::kAfterDeviceRestore;
+    case signin::Tribool::kFalse:
+      return after_upgrade ? ColdStartType::kAfterChromeUpgrade
+                           : ColdStartType::kRegular;
+  }
+}
+
+// Logs the base, temperature variant (if specified), and temperature + cold
+// start type (or just cold start type if temperature is not specified)
+// sub-variant histograms for a startup duration metric.
+void LogStartupDurationWithTemperatureAndType(
+    std::string_view histogram_name,
+    base::TimeDelta duration,
+    std::optional<IOSStartupTemperature> temperature,
+    ColdStartType cold_start_type) {
+  const std::string_view temp_str =
+      temperature ? IOSStartupTemperatureToString(*temperature)
+                  : std::string_view();
+  const std::string_view type_str = IOSColdStartTypeToString(cold_start_type);
+  base::UmaHistogramTimes(histogram_name, duration);
+  if (temperature.has_value()) {
+    base::UmaHistogramTimes(base::StrCat({histogram_name, temp_str}), duration);
+    base::UmaHistogramTimes(base::StrCat({histogram_name, temp_str, type_str}),
+                            duration);
+  } else {
+    base::UmaHistogramTimes(base::StrCat({histogram_name, type_str}), duration);
+  }
+}
+
 }  // namespace
 
 // A class to log the "load" count in uma.
@@ -354,6 +460,44 @@ BOOL _credentialExtensionWasUsed = NO;
   [MetricKitSubscriber createExtendedLaunchTask];
 }
 
+// Logs startup duration metrics (base, temperature variants, and cold start
+// type sub-variants) on cold start.
+//
+// Use Case Analysis:
+// - Direct Foreground Cold Launch: Neither pre-warmed nor launched in the
+//   background (`ActivePrewarm` is unset and `isLaunchedInBackground` is
+//   `false`).
+//   Recorded under base and `.NotPrewarmed`.
+// - ActivePrewarm Launch: The OS pre-warms the process by initializing it and
+//   suspending it before entering `main()` (`ActivePrewarm` is set in the
+//   environment). Because the process may remain suspended before `main()`,
+//   `Startup.ColdStartPreMain` is omitted for pre-warmed launches. When the
+//   user subsequently launches the app, `Startup.ColdStartFromMain` is recorded
+//   under base and `.ActivePrewarm`.
+// - Background or Suspicious Launch: When Chrome is launched or woken up in the
+//   background (e.g., background fetch, notification, or background URL
+//   session), or when the launch reason is suspicious (e.g. timeout expired
+//   before a launch reason could be determined), `isColdStart` remains `YES`
+//   until the first scene renders because the app never transitioned from
+//   foreground to background. The metrics `Startup.ColdStartFromMain`,
+//   `Startup.ColdStartPreMain`,
+//   `Startup.TimeFromMainToDidFinishLaunchingCall`, and
+//   `Startup.TimeFromMainToSceneConnection` are omitted, preventing long
+//   suspension durations (minutes to days) or anomalous launches from
+//   contaminating the metrics.
+// - Interrupted Launch Before UI: If the user backgrounds the app before the
+//   first scene finishes connecting and rendering,
+//   `-applicationWillResignActive:` resets `isColdStart` to `NO`, causing this
+//   method to return early without recording metrics.
+// - Warm Start / Resume: When the app is resumed after having previously been
+//   active, `isColdStart` is `NO` because
+//   `-[MainController applicationWillResignActive:]` set it to `NO` when the
+//   app previously lost focus. Since `isColdStart` is never reset to `YES`
+//   during the process lifetime, this method returns early without recording
+//   cold startup metrics.
+// - Pre-Main Duration Unavailable: If `preMainDuration` is zero or
+//   non-positive, or if the app was pre-warmed, `Startup.ColdStartPreMain*`
+//   metrics are skipped.
 + (void)logStartupDuration:(id<StartupInformation>)startupInformation {
   if (![startupInformation isColdStart]) {
     return;
@@ -368,6 +512,22 @@ BOOL _credentialExtensionWasUsed = NO;
   const base::TimeDelta sceneConnectionToNowTime =
       now - [startupInformation firstSceneConnectionTime];
 
+  if (![startupInformation isLaunchedInBackground]) {
+    if (mainToNowTime > kLaunchReasonTimeout) {
+      // If main-to-now time is too long, it is likely that the app process was
+      // suspended during startup for an unknown reason, making launch reason
+      // classification unreliable. Treat these as suspicious launches.
+      [startupInformation maybeSetLaunchReason:IOSLaunchReason::kSuspicious];
+    } else if (base::ios::IsApplicationPreWarmed()) {
+      [startupInformation maybeSetLaunchReason:IOSLaunchReason::kPreWarming];
+    } else {
+      [startupInformation maybeSetLaunchReason:IOSLaunchReason::kForeground];
+    }
+  }
+
+  base::UmaHistogramEnumeration("Startup.IOSLaunchReason.Foregrounded",
+                                *[startupInformation launchReason]);
+
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   int consecutiveLoads = [defaults integerForKey:kAppStartupCounterKey];
   [defaults removeObjectForKey:kAppStartupCounterKey];
@@ -375,16 +535,34 @@ BOOL _credentialExtensionWasUsed = NO;
       [defaults integerForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
   [defaults removeObjectForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
 
-  base::UmaHistogramTimes("Startup.ColdStartFromMain", mainToNowTime);
-  base::UmaHistogramTimes("Startup.TimeFromMainToDidFinishLaunchingCall",
-                          mainToNowTime - didFinishLaunchingToNowTime);
-  base::UmaHistogramTimes("Startup.TimeFromMainToSceneConnection",
-                          mainToNowTime - sceneConnectionToNowTime);
+  if (![startupInformation isLaunchedInBackground] &&
+      [startupInformation launchReason] != IOSLaunchReason::kSuspicious) {
+    const IOSStartupTemperature temperature =
+        GetStartupTemperature(startupInformation);
+    const ColdStartType coldStartType = GetColdStartType(startupInformation);
+    base::UmaHistogramEnumeration(
+        "Startup.IOSColdStartType.ForegroundLaunchesOnly", coldStartType);
+    LogStartupDurationWithTemperatureAndType(
+        "Startup.ColdStartFromMain", mainToNowTime, temperature, coldStartType);
+    base::UmaHistogramTimes("Startup.TimeFromMainToDidFinishLaunchingCall",
+                            mainToNowTime - didFinishLaunchingToNowTime);
+    base::UmaHistogramTimes("Startup.TimeFromMainToSceneConnection",
+                            mainToNowTime - sceneConnectionToNowTime);
+
+    if (temperature == IOSStartupTemperature::kNotPrewarmed &&
+        [startupInformation preMainDuration].is_positive() &&
+        [startupInformation preMainDuration] <= kLaunchReasonTimeout) {
+      LogStartupDurationWithTemperatureAndType(
+          "Startup.ColdStartPreMain", [startupInformation preMainDuration],
+          std::nullopt, coldStartType);
+    }
+  }
   base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
                               consecutiveLoads);
   base::UmaHistogramCounts100(
       "Startup.ConsecutiveDidFinishLaunchingWithoutLaunch",
       consecutiveDidFinishLaunching);
+
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   DumpEnvironment(startupInformation);
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -564,30 +742,7 @@ BOOL _credentialExtensionWasUsed = NO;
   if (!startupInformation.isColdStart) {
     return;
   }
-  signin::Tribool device_restore = IsFirstSessionAfterDeviceRestore();
-  ColdStartType sessionType;
-  if (startupInformation.isFirstRun) {
-    sessionType = ColdStartType::kFirstRun;
-  } else {
-    bool afterUpgrade =
-        [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
-    switch (device_restore) {
-      case signin::Tribool::kUnknown:
-        sessionType = afterUpgrade
-                          ? ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade
-                          : ColdStartType::kUnknownDeviceRestore;
-        break;
-      case signin::Tribool::kTrue:
-        sessionType = afterUpgrade
-                          ? ColdStartType::kAfterDeviceRestoreAndChromeUpgrade
-                          : ColdStartType::kAfterDeviceRestore;
-        break;
-      case signin::Tribool::kFalse:
-        sessionType = afterUpgrade ? ColdStartType::kAfterChromeUpgrade
-                                   : ColdStartType::kRegular;
-        break;
-    }
-  }
+  ColdStartType sessionType = GetColdStartType(startupInformation);
   base::UmaHistogramEnumeration("Startup.IOSColdStartType", sessionType);
 }
 

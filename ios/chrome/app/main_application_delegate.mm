@@ -191,6 +191,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     didReceiveRemoteNotification:(NSDictionary*)userInfo
           fetchCompletionHandler:
               (void (^)(UIBackgroundFetchResult result))completionHandler {
+  [_appState.startupInformation
+      maybeSetLaunchReason:IOSLaunchReason::kBackgroundSilentNotification];
   // This method is invoked by iOS to process an incoming remote push
   // notification for the application and fetch any additional data.
   //
@@ -240,6 +242,8 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 - (void)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(NSString*)identifier
                       completionHandler:(void (^)())completionHandler {
+  [_appState.startupInformation
+      maybeSetLaunchReason:IOSLaunchReason::kBackgroundURLSession];
   if (![identifier
           hasPrefix:base::SysUTF8ToNSString(
                         download::kBackgroundDownloadIdentifierPrefix)]) {

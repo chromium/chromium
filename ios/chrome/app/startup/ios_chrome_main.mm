@@ -9,13 +9,24 @@
 #import <vector>
 
 #import "base/check.h"
+#import "base/process/process.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/fixed_array.h"
 #import "ios/web/public/init/web_main.h"
 
 namespace {
-base::TimeTicks* g_start_time;
+// Upper bound for a valid pre-main duration. Because both endpoints are
+// wall-clock times (base::Time), a forward clock adjustment (e.g. NTP sync)
+// between fork() and main() could inflate a delta.  So deltas above 30s are
+// discarded because they're more likely to represent a clock adjustment
+// than actual startup time, especially considering the iOS launch watchdog
+// is expected to terminate foreground launches that take >20s.  The watchdog
+// timer starts at fork(), so it will include pre-main duration
+constexpr base::TimeDelta kMaxPreMainDuration = base::Seconds(30);
+
+base::TimeTicks* g_start_time = nullptr;
+base::TimeDelta* g_pre_main_duration = nullptr;
 }  // namespace
 
 IOSChromeMain::IOSChromeMain() {
@@ -40,10 +51,26 @@ IOSChromeMain::~IOSChromeMain() {}
 void IOSChromeMain::InitStartTime() {
   DCHECK(!g_start_time);
   g_start_time = new base::TimeTicks(base::TimeTicks::Now());
+
+  const base::Time creation_time = base::Process::Current().CreationTime();
+  if (!creation_time.is_null()) {
+    const base::TimeDelta delta = base::Time::Now() - creation_time;
+    if (delta.is_positive() && delta <= kMaxPreMainDuration) {
+      g_pre_main_duration = new base::TimeDelta(delta);
+    }
+  }
 }
 
 // static
 base::TimeTicks IOSChromeMain::StartTime() {
   CHECK(g_start_time);
   return *g_start_time;
+}
+
+// static
+base::TimeDelta IOSChromeMain::PreMainDuration() {
+  if (g_pre_main_duration) {
+    return *g_pre_main_duration;
+  }
+  return base::TimeDelta();
 }

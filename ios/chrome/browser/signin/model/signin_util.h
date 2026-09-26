@@ -77,6 +77,9 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref);
 // Resets the data related to device restore. This is for test only.
 void ResetDeviceRestoreDataForTesting();
 
+// Sets the first session after device restore. This is for test only.
+void SetFirstSessionAfterDeviceRestoreForTesting(signin::Tribool tribool);
+
 // Returns the user given name of `identity`. In case it’s nil, returns the full
 // name or the email.
 NSString* UserGivenNameFullNameOrEmail(id<SystemIdentity> identity);

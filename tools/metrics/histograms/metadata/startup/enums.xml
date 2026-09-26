@@ -60,6 +60,29 @@ chromium-metrics-reviews@google.com.
       label="Cold start with unknown device restore and Chrome upgrade"/>
 </enum>
 
+<!-- LINT.IfChange(IOSLaunchReason) -->
+
+<enum name="IOSLaunchReason">
+  <int value="0" label="Pre-warming">
+    The application process was pre-warmed by iOS and subsequently foregrounded
+    without having performed an intervening background task. If a pre-warmed
+    launch is used to perform a background task, the reported launch reason is
+    the background launch reason instead.
+  </int>
+  <int value="1" label="Foreground"/>
+  <int value="2" label="Background Refresh"/>
+  <int value="3" label="Background URL Session"/>
+  <int value="4" label="Background Silent Notification"/>
+  <int value="5" label="Suspicious">
+    The launch reason could not be determined within the expected timeout delay.
+    A large number of counts in this bucket is a sign of either unusually slow
+    launches or a background launch use case that is not being properly detected
+    by our startup metrics.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/app/application_delegate/startup_information.h:IOSLaunchReason) -->
+
 <enum name="MobileSessionCallerApp">
   <int value="0" label="Google Search"/>
   <int value="1" label="Gmail"/>

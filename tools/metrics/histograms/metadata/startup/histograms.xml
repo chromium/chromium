@@ -31,6 +31,42 @@ chromium-metrics-reviews@google.com.
                launches where ShouldLogStartupHistogram() is false"/>
 </variants>
 
+<!-- LINT.IfChange(IOSColdStartType) -->
+
+<variants name="IOSColdStartType">
+  <variant name="" summary="all cold start types"/>
+  <variant name=".AfterChromeUpgrade"
+      summary="cold start after a Chrome upgrade"/>
+  <variant name=".AfterDeviceRestore"
+      summary="cold start after a device restore"/>
+  <variant name=".AfterDeviceRestoreAndChromeUpgrade"
+      summary="cold start after a device restore and Chrome upgrade"/>
+  <variant name=".FirstRun" summary="cold start with first run experience"/>
+  <variant name=".Regular" summary="regular cold start"/>
+  <variant name=".UnknownDeviceRestore"
+      summary="cold start with unknown device restore"/>
+  <variant name=".UnknownDeviceRestoreAndChromeUpgrade"
+      summary="cold start with unknown device restore and Chrome upgrade"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/app/application_delegate/metrics_mediator.mm:ColdStartType) -->
+
+<!-- IOSStartupTemperature captures whether the application process was launched
+     via iOS ActivePrewarm. This is distinct from the notion of
+     StartupTemperature on other OSes, which is based on OS memory hard fault
+     levels -->
+
+<!-- LINT.IfChange(IOSStartupTemperature) -->
+
+<variants name="IOSStartupTemperature">
+  <variant name=".ActivePrewarm"
+      summary="app was pre-warmed: process initialized then suspended before
+               entering main()."/>
+  <variant name=".NotPrewarmed" summary="app was not pre-warmed"/>
+</variants>
+
+<!-- LINT.ThenChange(//ios/chrome/app/application_delegate/metrics_mediator.mm:IOSStartupTemperature) -->
+
 <variants name="StartActivityType">
   <variant name="Tabbed"
       summary="Chrome starts up with intent to ChromeTabbedActivity"/>
@@ -935,14 +971,12 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-02-14">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The duration of all initializations from the call to main to UI ready to
-    receive input. iOS specific, from M125+
-
-    The process can only be created in response to a user action, either tapping
-    the icon, tapping a link that opens in Chrome, or using the app switcher to
-    switch to Chrome after it has been background-killed by the OS.
+    receive input. iOS specific, all starts, all cold start types. Recorded from
+    M125+.
 
     The metric is recorded at the point where the Chrome window starts receiving
     input events like touches and keypresses. However, the Chrome splash screen
@@ -951,13 +985,73 @@ chromium-metrics-reviews@google.com.
 
     It does not include code loading and static initializers.
 
+    Samples are omitted from this metric when the app was launched into the
+    background or when the launch is classified as suspicious, because the
+    process may have been suspended for an extended duration before the user
+    brought it to the foreground, making the resulting measurement not
+    representative of a cold start.
+
     The total counts in this histogram can be compared with the number of emits
     to the user action MobileWillEnterForeground. The former reports the number
     of cold starts. The latter is only recorded when Chrome comes to the
     foreground on non-cold starts.
-
-    {StartupTemperature}
   </summary>
+</histogram>
+
+<histogram
+    name="Startup.ColdStartFromMain{IOSStartupTemperature}{IOSColdStartType}"
+    units="ms" expires_after="2027-02-14">
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>junov@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration of all initializations from the call to main to UI ready to
+    receive input. iOS specific, {IOSStartupTemperature}, {IOSColdStartType}.
+    Recorded from M156+.
+
+    The metric is recorded at the point where the Chrome window starts receiving
+    input events like touches and keypresses. However, the Chrome splash screen
+    is showing at this point, so there aren't any UI elements for a user to
+    interact with.
+
+    It does not include code loading and static initializers.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or when the launch is classified as suspicious, because the
+    process may have been suspended for an extended duration before the user
+    brought it to the foreground, making the resulting measurement not
+    representative of a cold start.
+
+    The total counts in this histogram can be compared with the number of emits
+    to the user action MobileWillEnterForeground. The former reports the number
+    of cold starts. The latter is only recorded when Chrome comes to the
+    foreground on non-cold starts.
+  </summary>
+  <token key="IOSStartupTemperature" variants="IOSStartupTemperature"/>
+  <token key="IOSColdStartType" variants="IOSColdStartType"/>
+</histogram>
+
+<histogram name="Startup.ColdStartPreMain{IOSColdStartType}" units="ms"
+    expires_after="2027-02-14">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The duration from kernel process creation to the call to main on iOS.
+    Captures pre-main startup overhead including dyld4::prepare, dynamic library
+    mapping and binding, code signature validation, and static C++/ObjC
+    initializers. iOS specific, {IOSColdStartType}.
+
+    Samples are omitted from this metric when the app was launched into the
+    background, pre-warmed, or classified as a suspicious launch, because the
+    process may have been suspended for an extended duration during startup.
+    Also, pre-main duration is not on the critical path to UI readiness, when
+    the app was pre-warmed or started in the background.
+
+    Recorded from M156+.
+  </summary>
+  <token key="IOSColdStartType" variants="IOSColdStartType"/>
 </histogram>
 
 <histogram name="Startup.ConsecutiveDidFinishLaunchingWithoutLaunch"
@@ -1311,6 +1405,73 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records session type for a cold start. It is recorded at cold start.
     Histogram only for iOS.
+
+    Note: This histogram includes samples from background launches (e.g. for
+    processing background refreshes, notifications, etc.). See:
+    Startup.IOSColdStartType.ForegroundLaunchesOnly to filter out background
+    launches.
+  </summary>
+</histogram>
+
+<histogram name="Startup.IOSColdStartType.ForegroundLaunchesOnly"
+    enum="IOSColdStartType" expires_after="2027-04-01">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Records session type for cold starts that were launched directly into the
+    foreground, meaning that the app was launched in response to a
+    user-initiated foreground action (e.g. user tapped the app icon, or invoked
+    the app from Spotlight, Shortcuts, Siri, etc.). The app process may or may
+    not have been pre-warmed by iOS.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or when the launch is classified as suspicious (where the process
+    was likely suspended during startup). Note: See Startup.IOSColdStartType to
+    include background and suspicious launches.
+  </summary>
+</histogram>
+
+<histogram name="Startup.IOSLaunchReason" enum="IOSLaunchReason"
+    expires_after="2027-04-01">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Records the reason why the Chrome process was started on iOS, e.g.
+    pre-warming, foreground, background refresh, background URL session,
+    background silent notification, or suspicious if no launch reason could be
+    reliably determined.
+
+    If a launch was pre-warmed and then used to perform a background task, the
+    reported launch reason is the background launch reason. However, if a launch
+    was pre-warmed, and the first use of the app was in the foreground, the
+    reported launch reason is pre-warming. The reason for this precedence logic
+    is so that the value of Startup.IOSLaunchReason reflects the last point at
+    which the process may have been suspended during app initialization.
+
+    Prewarming: The process was last suspended before the invocation of main(),
+    at the latest, if at all.
+
+    Background *: The process was last suspended prior to UIScene connection, at
+    the latest, if at all.
+
+    Foreground: The process was never suspended during app initialization.
+
+    Suspicious: Process suspension during initialization is likely, but the
+    exact reason cannot be reliably determined.
+  </summary>
+</histogram>
+
+<histogram name="Startup.IOSLaunchReason.Foregrounded" enum="IOSLaunchReason"
+    expires_after="2027-04-01">
+  <owner>junov@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <summary>
+    Variant of Startup.IOSLaunchReason that records the initial launch reason
+    only in cases where the process was eventually foregrounded. Recorded when
+    the first scene becomes active in the foreground during cold start. If a
+    launch was pre-warmed and then used to perform a background task before
+    eventually being foregrounded, the reported launch reason is the background
+    launch reason.
   </summary>
 </histogram>
 
@@ -1548,6 +1709,11 @@ chromium-metrics-reviews@google.com.
     [IOS] The duration between the call to main and the call to
     [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
     becomes active.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or when the launch is classified as suspicious, because the
+    process may have been suspended for an extended duration during the measured
+    interval.
   </summary>
 </histogram>
 
@@ -1583,6 +1749,11 @@ chromium-metrics-reviews@google.com.
   <summary>
     [IOS] The duration between the call to main and the call to the first scene
     connection. Recorded when first scene is becomes active.
+
+    Samples are omitted from this metric when the app was launched into the
+    background or when the launch is classified as suspicious, because the
+    process may have been suspended for an extended duration during the measured
+    interval.
   </summary>
 </histogram>
 

@@ -45,6 +45,12 @@ extern const char kLoadMinimalAppUI[];
 // Switch to use the default infobar duration instead a longer one for EGTests.
 extern const char kUseDefaultInfobarDuration[];
 
+// Switch used to pause the application startup sequence at the background
+// initialization stage (AppInitStage::kBrowserObjectsForBackgroundHandlers),
+// keeping connected scenes in the background, to simulate background launch
+// conditions.
+extern const char kPauseStartupAtBackgroundStage[];
+
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_
