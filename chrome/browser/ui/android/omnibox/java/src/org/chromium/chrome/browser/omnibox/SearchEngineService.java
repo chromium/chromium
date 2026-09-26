@@ -23,8 +23,10 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
@@ -90,6 +92,10 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     private boolean mIsAiModeButtonUiConfigOverriddenForTesting;
 
+    private final SettableNonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier =
+            ObservableSuppliers.createNonNull(
+                    new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
+
     private long mNativeSearchEngineServiceAndroid;
 
     private @Nullable SearchEngineMetadata mDefaultSearchEngineMetadata;
@@ -118,18 +124,12 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     }
 
     @VisibleForTesting
-    SearchEngineService(Profile profile, FaviconHelper faviconHelper) {
+    SearchEngineService(Profile profile, FaviconHelper faviconHelper, ImageFetcher imageFetcher) {
         mProfile = profile;
         mIsOffTheRecord = profile.isOffTheRecord();
         mFaviconHelper = faviconHelper;
+        mImageFetcher = imageFetcher;
         mContext = ContextUtils.getApplicationContext();
-
-        mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(),
-                        GlobalDiscardableReferencePool.getReferencePool(),
-                        MAX_IMAGE_CACHE_SIZE_BYTES);
 
         // TODO(b/557170473): Consider supplying OmniboxResourceProvider to resolve status icon
         // size.
@@ -168,7 +168,14 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     }
 
     private static SearchEngineService buildForProfile(Profile profile) {
-        return new SearchEngineService(profile, new FaviconHelper());
+        return new SearchEngineService(
+                profile,
+                new FaviconHelper(),
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool(),
+                        MAX_IMAGE_CACHE_SIZE_BYTES));
     }
 
     @Override
@@ -216,8 +223,25 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
         // Native pushes a config only to an eligible client, which a test device isn't. Tests fake
         // one via #setAiModeButtonUiConfigForTesting(), so don't let native overwrite it.
         if (mIsAiModeButtonUiConfigOverriddenForTesting) return;
+        if (Objects.equals(mAiModeButtonUiConfigSupplier.get(), config)) return;
 
         mAiModeButtonUiConfigSupplier.set(config);
+        mAiModeButtonIconSupplier.set(
+                new StatusIconResource(R.drawable.ic_search_24dp, Resources.ID_NULL));
+
+        if (config == null || GURL.isEmptyOrInvalid(config.faviconUrl)) return;
+
+        GURL faviconUrl = config.faviconUrl;
+        ImageFetcher.Params params =
+                ImageFetcher.Params.create(faviconUrl, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
+        mImageFetcher.fetchImage(
+                params,
+                bitmap -> {
+                    if (bitmap == null) return;
+                    mAiModeButtonIconSupplier.set(
+                            new StatusIconResource(
+                                    faviconUrl.getSpec(), bitmap, Resources.ID_NULL));
+                });
     }
 
     /**
@@ -249,6 +273,11 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
                     mIsAiModeButtonUiConfigOverriddenForTesting = false;
                     mAiModeButtonUiConfigSupplier.set(oldConfig);
                 });
+    }
+
+    /** Supplies the icon for the AI Mode entry point button. */
+    public NonNullObservableSupplier<StatusIconResource> getAiModeButtonIconSupplier() {
+        return mAiModeButtonIconSupplier;
     }
 
     /** Add observer to be notified whenever the default search engine name changes. */
