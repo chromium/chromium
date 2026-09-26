@@ -4,6 +4,10 @@
 
 package org.chromium.components.browser_ui.widget.highlight;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,10 +19,8 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.MediumTest;
+import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,35 +30,35 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.R;
 
 /** Tests the utility methods for highlighting of a view. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ViewHighlighterTest {
-    @Mock Canvas mCanvas;
+    private static final int DEFAULT_VIEW_WIDTH = 100;
+    private static final int DEFAULT_VIEW_HEIGHT = 100;
 
-    private Context mContext;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private final ViewHighlighter.HighlightParams mCircleParams =
             new ViewHighlighter.HighlightParams(ViewHighlighter.HighlightShape.CIRCLE);
     private final ViewHighlighter.HighlightParams mRectangleParams =
             new ViewHighlighter.HighlightParams(ViewHighlighter.HighlightShape.RECTANGLE);
-    private static final int DEFAULT_VIEW_WIDTH = 100;
-    private static final int DEFAULT_VIEW_HEIGHT = 100;
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private @Mock Canvas mCanvas;
+
+    private Context mContext;
 
     @Before
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
-                        InstrumentationRegistry.getTargetContext(),
+                        ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
     }
 
     @Test
-    @MediumTest
     public void testRepeatedCallsToHighlightWorksCorrectly() {
         View tintedImageButton = new ImageView(mContext);
         // Create and lay out the view.
@@ -84,7 +86,6 @@ public class ViewHighlighterTest {
     }
 
     @Test
-    @MediumTest
     public void testViewWithNullBackground() {
         View tintedImageButton = new ImageView(mContext);
         // Create and lay out the view.
@@ -109,7 +110,6 @@ public class ViewHighlighterTest {
     }
 
     @Test
-    @MediumTest
     public void testHighlightExtension() {
         int highlightExtension = 10;
         View tintedImageButton = new ImageView(mContext);
@@ -129,16 +129,16 @@ public class ViewHighlighterTest {
         // Get the highlight.
         PulseDrawable pulseDrawable =
                 (PulseDrawable) tintedImageButton.getTag(R.id.highlight_drawable);
-        Assert.assertNotNull("Highlight should not be null", pulseDrawable);
+        assertNotNull("Highlight should not be null", pulseDrawable);
 
         // Get the highlight bounds.
         Rect highlightBounds = pulseDrawable.getBounds();
 
         // Check that the bounds are configured properly.
-        Assert.assertEquals(-highlightExtension, highlightBounds.left);
-        Assert.assertEquals(-highlightExtension, highlightBounds.top);
-        Assert.assertEquals(DEFAULT_VIEW_WIDTH + highlightExtension, highlightBounds.right);
-        Assert.assertEquals(DEFAULT_VIEW_HEIGHT + highlightExtension, highlightBounds.bottom);
+        assertEquals(-highlightExtension, highlightBounds.left);
+        assertEquals(-highlightExtension, highlightBounds.top);
+        assertEquals(DEFAULT_VIEW_WIDTH + highlightExtension, highlightBounds.right);
+        assertEquals(DEFAULT_VIEW_HEIGHT + highlightExtension, highlightBounds.bottom);
 
         // Verify that the highlight is drawn properly.
         ViewHighlighterTestUtils.drawPulseDrawable(tintedImageButton, mCanvas);
@@ -157,7 +157,7 @@ public class ViewHighlighterTest {
      * @param view The view of interest.
      */
     private static void checkHighlightOn(View view) {
-        Assert.assertTrue(ViewHighlighterTestUtils.checkHighlightOn(view));
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOn(view));
     }
 
     /**
@@ -166,6 +166,6 @@ public class ViewHighlighterTest {
      * @param view The view of interest.
      */
     private static void checkHighlightOff(View view) {
-        Assert.assertTrue(ViewHighlighterTestUtils.checkHighlightOff(view));
+        assertTrue(ViewHighlighterTestUtils.checkHighlightOff(view));
     }
 }
