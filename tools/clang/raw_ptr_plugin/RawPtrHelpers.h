@@ -5,8 +5,6 @@
 #ifndef TOOLS_CLANG_RAW_PTR_PLUGIN_RAWPTRHELPERS_H_
 #define TOOLS_CLANG_RAW_PTR_PLUGIN_RAWPTRHELPERS_H_
 
-#include <optional>
-
 #include "RawPtrCastingUnsafeChecker.h"
 #include "StackAllocatedChecker.h"
 #include "Util.h"
@@ -189,29 +187,7 @@ AST_MATCHER(clang::Decl, isInExternCContext) {
   return Node.getLexicalDeclContext()->isExternCContext();
 }
 
-// Given:
-//   template <typename T, typename T2> class MyTemplate {};  // Node1 and Node4
-//   template <typename T2> class MyTemplate<int, T2> {};     // Node2
-//   template <> class MyTemplate<int, char> {};              // Node3
-//   void foo() {
-//     // This creates implicit template specialization (Node4) out of the
-//     // explicit template definition (Node1).
-//     MyTemplate<bool, double> v;
-//   }
-// with the following AST nodes:
-//   ClassTemplateDecl MyTemplate                                       - Node1
-//   | |-CXXRecordDecl class MyTemplate definition
-//   | `-ClassTemplateSpecializationDecl class MyTemplate definition    - Node4
-//   ClassTemplatePartialSpecializationDecl class MyTemplate definition - Node2
-//   ClassTemplateSpecializationDecl class MyTemplate definition        - Node3
-//
-// Matches AST node 4, but not AST node2 nor node3.
-AST_MATCHER(clang::ClassTemplateSpecializationDecl,
-            isImplicitClassTemplateSpecialization) {
-  return !Node.isExplicitSpecialization();
-}
-
-static bool IsAnnotated(const clang::Decl* decl,
+inline bool IsAnnotated(const clang::Decl* decl,
                         llvm::StringRef expected_annotation) {
   for (const auto* attr : decl->specific_attrs<clang::AnnotateAttr>()) {
     if (attr->getAnnotation() == expected_annotation) {
@@ -243,36 +219,6 @@ AST_MATCHER(clang::Decl, isRawPtrExclusionAnnotated) {
 
 AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {
   return Node.getName().empty();
-}
-
-// Given:
-//   template <typename T, typename T2> void foo(T t, T2 t2) {};  // N1 and N4
-//   template <typename T2> void foo<int, T2>(int t, T2 t) {};    // N2
-//   template <> void foo<int, char>(int t, char t2) {};          // N3
-//   void foo() {
-//     // This creates implicit template specialization (N4) out of the
-//     // explicit template definition (N1).
-//     foo<bool, double>(true, 1.23);
-//   }
-// with the following AST nodes:
-//   FunctionTemplateDecl foo
-//   |-FunctionDecl 0x191da68 foo 'void (T, T2)'         // N1
-//   `-FunctionDecl 0x194bf08 foo 'void (bool, double)'  // N4
-//   FunctionTemplateDecl foo
-//   `-FunctionDecl foo 'void (int, T2)'                 // N2
-//   FunctionDecl foo 'void (int, char)'                 // N3
-//
-// Matches AST node N4, but not AST nodes N1, N2 nor N3.
-AST_MATCHER(clang::FunctionDecl, isImplicitFunctionTemplateSpecialization) {
-  switch (Node.getTemplateSpecializationKind()) {
-    case clang::TSK_ImplicitInstantiation:
-      return true;
-    case clang::TSK_Undeclared:
-    case clang::TSK_ExplicitSpecialization:
-    case clang::TSK_ExplicitInstantiationDeclaration:
-    case clang::TSK_ExplicitInstantiationDefinition:
-      return false;
-  }
 }
 
 // Matches Objective-C @synthesize field declaration.
