@@ -306,7 +306,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     is_context_menu_open_ = open;
   }
   bool is_dragging_for_testing() const { return is_dragging_; }
-  bool is_demoted_for_testing() const { return is_demoted_; }
+  bool is_demoted() const { return is_demoted_; }
   void OnContextMenuClosedForTesting() { OnContextMenuClosed(); }
   const ui::SimpleMenuModel* context_menu_model_for_testing() const {
     return context_menu_model_.get();
@@ -329,6 +329,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 #endif
   void OnMostVisitedPrefChanged();
   void MaybeRecordFreImpression();
+  void MaybeShowLensPromo();
+  void EndLensPromo();
   static gfx::Rect CalculateWidgetBounds(int height);
 
   // Try and acquire process and profile keep alives. If unsuccessful, releases

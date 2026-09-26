@@ -119,4 +119,13 @@ TEST_F(OmniboxEverywhereServiceTest, OnScreensharePickerOpenedDoesNotCrash) {
   ASSERT_TRUE(service);
   service->OnScreensharePickerOpened();
 }
+
+TEST_F(OmniboxEverywhereServiceTest, EndLensPromoDoesNotCrash) {
+  TestingProfile profile;
+  OmniboxEverywhereService* service =
+      OmniboxEverywhereServiceFactory::GetForProfile(&profile);
+  ASSERT_TRUE(service);
+  service->MaybeShowLensPromo();
+  service->EndLensPromo();
+}
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

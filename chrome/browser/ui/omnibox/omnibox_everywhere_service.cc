@@ -91,11 +91,7 @@ bool OmniboxEverywhereService::AcquireProfileKeepAlive() {
 
 void OmniboxEverywhereService::ReleaseProfileKeepAlive() {
   profile_keep_alive_.reset();
-  if (feature_promo_controller_) {
-    feature_promo_controller_->EndPromo(
-        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
-  }
+  EndLensPromo();
 }
 
 void OmniboxEverywhereService::Shutdown() {
@@ -119,6 +115,7 @@ bool OmniboxEverywhereService::IsPopupVisible() const {
 bool OmniboxEverywhereService::IsPopupVisibleForProfile() const {
   return controller() && controller()->ui_manager() &&
          controller()->ui_manager()->IsVisible() &&
+         !controller()->ui_manager()->is_demoted() &&
          controller()->ui_manager()->profile() == profile_;
 }
 
@@ -127,6 +124,14 @@ void OmniboxEverywhereService::MaybeShowLensPromo() {
     feature_promo_controller_->MaybeShowPromo(
         user_education::FeaturePromoParams(
             feature_engagement::kIPHOmniboxEverywhereLensPromoFeature));
+  }
+}
+
+void OmniboxEverywhereService::EndLensPromo() {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->EndPromo(
+        feature_engagement::kIPHOmniboxEverywhereLensPromoFeature,
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 
