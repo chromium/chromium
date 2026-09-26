@@ -25,6 +25,8 @@ external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.ht
 # Concurrent summarize() calls reject with AbortError due to an on-device model service crash.
 crbug.com/560176361 external/wpt/ai/summarizer/summarizer-summarize-concurrent.tentative.https.window.html [ Failure Pass ]
 crbug.com/560176361 external/wpt/ai/summarizer/summarizer-summarize-streaming-concurrent.tentative.https.window.html [ Failure Pass ]
+crbug.com/560176361 external/wpt/ai/summarizer/speed/summarizer-summarize-concurrent.tentative.https.window.html [ Failure Pass ]
+crbug.com/560176361 external/wpt/ai/summarizer/speed/summarizer-summarize-streaming-concurrent.tentative.https.window.html [ Failure Pass ]
 
 # Audio inputs are currently disabled by default for the CPU model via feature flags; image and video should be re-assessed.
 crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure Pass ]

@@ -548,6 +548,13 @@
     },
     {
       name: "AISummarizationPerformancePreference",
+      status: {
+        "Win": "experimental",
+        "Mac": "experimental",
+        "Linux": "experimental",
+        "ChromeOS": "experimental",
+        "default": "",
+      },
     },
     {
       name: "AIWriterAPI",
