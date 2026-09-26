@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -64,7 +65,7 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
         DPLOG(WARNING) << "Failed to dup FD to transmit.";
         return mojo::ScopedHandle();
       }
-      return mojo::WrapPlatformFile(std::move(file));
+      return mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(file)));
     }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
@@ -97,8 +98,9 @@ mojo::ScopedHandle MessageAttachment::TakeMojoHandle() {
     }
 #elif BUILDFLAG(IS_WIN)
     case Type::WIN_HANDLE:
-      return mojo::WrapPlatformFile(base::win::ScopedHandle(
-          static_cast<internal::HandleAttachmentWin*>(this)->Take()));
+      return mojo::WrapPlatformHandle(
+          mojo::PlatformHandle(base::win::ScopedHandle(
+              static_cast<internal::HandleAttachmentWin*>(this)->Take())));
 #endif
     default:
       break;
