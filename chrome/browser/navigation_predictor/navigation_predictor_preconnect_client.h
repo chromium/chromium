@@ -12,7 +12,6 @@
 #include "base/timer/timer.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
 class SearchEnginePreconnector;
@@ -25,9 +24,11 @@ class RenderFrameHost;
 class NavigationPredictorKeyedService;
 
 class NavigationPredictorPreconnectClient
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NavigationPredictorPreconnectClient> {
+    : public content::WebContentsObserver {
  public:
+  explicit NavigationPredictorPreconnectClient(
+      content::WebContents* web_contents);
+
   NavigationPredictorPreconnectClient(
       const NavigationPredictorPreconnectClient&) = delete;
   NavigationPredictorPreconnectClient& operator=(
@@ -46,11 +47,6 @@ class NavigationPredictorPreconnectClient
   }
 
  private:
-  friend class content::WebContentsUserData<
-      NavigationPredictorPreconnectClient>;
-  explicit NavigationPredictorPreconnectClient(
-      content::WebContents* web_contents);
-
   NavigationPredictorKeyedService* GetNavigationPredictorKeyedService() const;
   SearchEnginePreconnector* GetSearchEnginePreconnector();
 
@@ -96,8 +92,6 @@ class NavigationPredictorPreconnectClient
   bool is_publicly_routable_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_PRECONNECT_CLIENT_H_

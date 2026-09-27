@@ -37,6 +37,7 @@
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/multistep_filter/chrome_filter_navigation_observer.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/payments/web_payments_observer.h"
@@ -879,6 +880,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   no_state_prefetch_tab_helper_ =
       std::make_unique<prerender::NoStatePrefetchTabHelper>(tab.GetContents());
+
+  navigation_predictor_preconnect_client_ =
+      std::make_unique<NavigationPredictorPreconnectClient>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1177,6 +1181,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   no_state_prefetch_tab_helper_ =
       std::make_unique<prerender::NoStatePrefetchTabHelper>(new_contents);
+
+  navigation_predictor_preconnect_client_.reset();
+  navigation_predictor_preconnect_client_ =
+      std::make_unique<NavigationPredictorPreconnectClient>(new_contents);
 }
 
 customize_chrome::SidePanelController*

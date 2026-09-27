@@ -33,8 +33,6 @@
 NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<NavigationPredictorPreconnectClient>(
-          *web_contents),
       browser_context_(web_contents->GetBrowserContext()),
       current_visibility_(web_contents->GetVisibility()) {}
 
@@ -264,5 +262,3 @@ bool NavigationPredictorPreconnectClient::
 std::optional<int>
     NavigationPredictorPreconnectClient::preconnect_interval_for_testing_ =
         std::nullopt;
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NavigationPredictorPreconnectClient);

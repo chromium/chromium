@@ -554,6 +554,7 @@ if (!is_android) {
       "//chrome/browser/lifetime",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/metrics",
+      "//chrome/browser/navigation_predictor",
       "//chrome/browser/net",
       "//chrome/browser/payments",
       "//chrome/browser/preloading/bookmarkbar_preload",

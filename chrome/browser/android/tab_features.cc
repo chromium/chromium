@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
+#include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/payments/web_payments_observer.h"
@@ -267,6 +268,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   no_state_prefetch_tab_helper_ =
       std::make_unique<prerender::NoStatePrefetchTabHelper>(web_contents);
+
+  navigation_predictor_preconnect_client_ =
+      std::make_unique<NavigationPredictorPreconnectClient>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;
