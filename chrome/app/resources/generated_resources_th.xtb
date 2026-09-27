@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">เยี่ยมมาก</translation>
 <translation id="1342886103232377846">หากต้องการตรวจสอบรหัสผ่านที่ถูกละเมิด ให้ไปที่เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="1343920184519992513">ดำเนินการต่อจากจุดที่คุณค้างไว้และเปิดกลุ่มหน้าเว็บที่ต้องการ</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">ยืนยันและรีสตาร์ท</translation>
 <translation id="1346748346194534595">ขวา</translation>
 <translation id="1347512539447549782">พื้นที่เก็บข้อมูล Linux</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">แอปพลิเคชันถูกจำกัดในภูมิภาคนี้</translation>
 <translation id="1607139524282324606">ล้างรายการ</translation>
 <translation id="1608668830839595724">การดำเนินการอื่นๆ สำหรับรายการที่เลือก</translation>
-<translation id="1609603645228231640">Gemini Spark อยู่ระหว่างการทดลองและอาจทำสิ่งต่างๆ เช่น แชร์ข้อมูลหรือทำการซื้อโดยไม่ขออนุญาต <ph name="LINK_BEGIN" />ตรวจสอบความเสี่ยง<ph name="LINK_END" /></translation>
 <translation id="1610272688494140697">การตั้งค่าแอป</translation>
 <translation id="161042844686301425">สีฟ้า</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">รายการใหม่</translation>
 <translation id="1809201888580326312">คุณเลือกที่จะไม่บันทึกรหัสผ่านสำหรับเว็บไซต์และแอปเหล่านี้</translation>
 <translation id="1809734401532861917">เพิ่มบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ของฉันไปยัง <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">เฟรมที่มีการปิดกั้นแบบไม่ระบุตัวตน: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">ดำเนินการต่อโดยใช้ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ใน <ph name="SITE_ETLD_PLUS_ONE" /> ไม่ได้</translation>
 <translation id="1812284620455788548">กำลังแคสต์ <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">บริการ</translation>
@@ -1287,7 +1286,6 @@
 <translation id="1983612835086592681">คุณเปิดเมื่อสัปดาห์ที่แล้ว</translation>
 <translation id="1984087999855033707">หมายเลขโทรศัพท์</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
-<translation id="1984683754853869253">คุณต้องการสร้างโปรไฟล์ใหม่สำหรับโรงเรียนไหม</translation>
 <translation id="198507684520034826">วิธีใช้</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">การตั้งค่าตำแหน่งขั้นสูง</translation>
@@ -1320,7 +1318,7 @@
 <translation id="2010501376126504057">อุปกรณ์ที่เข้ากันได้</translation>
 <translation id="2010636492623189611">ที่เลือกไว้</translation>
 <translation id="2012935757369720523">ลบไฟล์</translation>
-<translation id="2014495120525813351">อนุญาตให้ Gemini Spark ท่องเว็บในอุปกรณ์นี้</translation>
+<translation id="2014191284313949173">ปิดหน้าต่างแยก</translation>
 <translation id="2016473077102413275">ฟีเจอร์ที่ต้องใช้รูปภาพจะไม่ทำงาน</translation>
 <translation id="2017334798163366053">ปิดใช้งานการเก็บรวบรวมข้อมูลผลการปฏิบัติงาน</translation>
 <translation id="2017770349934140286">Google Play และแอปที่คุณดาวน์โหลดจาก Google Play จะถูกลบออกจาก Chromebook นี้
@@ -1452,6 +1450,7 @@
 <translation id="2121825465123208577">ปรับขนาด</translation>
 <translation id="2122446694240899610">ระบบจะบันทึกทักษะของคุณลงในบัญชี Google</translation>
 <translation id="2123766928840368256">เลือกไฟล์อื่น</translation>
+<translation id="2124153808069020510">หากต้องการลบข้อมูล ให้ปิดหน้าต่างแยกทั้งหมด</translation>
 <translation id="2124930039827422115">{1,plural, =1{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ 1 ราย}other{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ # ราย}}</translation>
 <translation id="2125715366913703594">สำรวจและส่วนขยาย</translation>
 <translation id="2126167708562367080">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
@@ -1594,6 +1593,7 @@
 <translation id="2227179592712503583">นำคำแนะนำออก</translation>
 <translation id="222931766245975952">ไฟล์ไม่สมบูรณ์</translation>
 <translation id="2229342031987138128">คำอธิบายภาพสำหรับกรณีที่ผู้ฟังไม่ได้ยินเสียง</translation>
+<translation id="22294739381015133">ระบบจะไม่บันทึกเว็บไซต์ที่คุณเข้าชมในโหมดแยก</translation>
 <translation id="2231351769755997720">ไม่มีคำแนะนำ ลองถามคำถามของคุณเองเกี่ยวกับหน้านี้</translation>
 <translation id="2232751457155581899">เว็บไซต์ขอติดตามตำแหน่งของกล้องได้</translation>
 <translation id="2233502537820838181">&amp;ข้อมูลเพิ่มเติม</translation>
@@ -2030,7 +2030,6 @@
 <translation id="2554553592469060349">ไฟล์ที่เลือกมีขนาดใหญ่เกินไป (ขนาดสูงสุด: 3 MB)</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> แอปจาก <ph name="TOTAL_NUM_APPS" /> แอปสามารถส่งการแจ้งเตือนได้</translation>
 <translation id="2555855727505718984">การป้อนข้อความอัตโนมัติจะไม่มีข้อมูลนี้ในอุปกรณ์นี้เพื่อช่วยกรอกแบบฟอร์ม</translation>
-<translation id="25568951186001797">เฟรมที่มีการปิดกั้น: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">ดูบุ๊กมาร์กทั้งหมดที่นี่</translation>
 <translation id="2563924218974330506">ตอนนี้คุณสามารถจัดการกลุ่มแท็บได้ที่นี่ เลิกปักหมุดได้ทุกเมื่อ</translation>
 <translation id="2564520396658920462">การเรียกใช้ JavaScript ผ่าน AppleScript ปิดอยู่ หากต้องการเปิด จากแถบเมนู ให้ไปที่ มุมมอง &gt; นักพัฒนาซอฟต์แวร์ &gt; อนุญาตให้เรียกใช้ JavaScript จากกิจกรรมใน Apple ดูข้อมูลเพิ่มเติมที่ https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2108,6 @@
 <translation id="2626746300781063303">เว็บไซต์ต่างๆ รวมถึง Google จะใช้การพิจารณาตามที่เห็นสมควรเมื่อตอบกลับคำขอนี้</translation>
 <translation id="2626799779920242286">โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2627424346328942291">แชร์ไม่สำเร็จ</translation>
-<translation id="2627970398976286795">ตรวจสอบความเสี่ยงของ Gemini Spark</translation>
 <translation id="2628258844236035475">นำที่อยู่บ้านออกจากฟีเจอร์ป้อนข้อความอัตโนมัติของ Chrome ใช่ไหม</translation>
 <translation id="2628770867680720336">รีเเซ็ต Chromebook เครื่องนี้เป็นค่าเริ่มต้นเพื่อเปิดใช้การแก้ไขข้อบกพร่อง ADB <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">เริ่มแชทใหม่กับ Gemini</translation>
@@ -2418,7 +2416,6 @@
 <translation id="2845276301195220700">การดำเนินการเพิ่มเติมสำหรับ Google ปฏิทิน</translation>
 <translation id="2845382757467349449">แสดงแถบบุ๊กมาร์กเสมอ</translation>
 <translation id="284581348330507117">สร้างรหัสผ่านที่ไม่ซ้ำกัน</translation>
-<translation id="2846345106886298325">งานเสร็จแล้วและกลับไปที่ Gemini Spark</translation>
 <translation id="284884486564166077">ค้นหารูปภาพต่างๆ ด้วย Lens</translation>
 <translation id="2849035674501872372">ค้นหา</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2477,6 @@
 <translation id="2893318819023133318">มุมมองแบบย้อนกลับ</translation>
 <translation id="2894596417096093634">ตัวระบุรายงานข้อขัดข้อง</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
-<translation id="2895194086130800590">Gemini Spark จะใช้การท่องเว็บอัตโนมัติในอุปกรณ์นี้ได้ก็ต่อเมื่ออุปกรณ์เปิดอยู่และ Chrome กำลังทำงาน</translation>
 <translation id="289695669188700754">รหัสคีย์: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ระบบจะนำการตั้งค่าที่กำหนดเองนี้ออกเมื่อคุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2897878306272793870">คุณแน่ใจหรือไม่ว่าต้องการเปิด <ph name="TAB_COUNT" /> แท็บ</translation>
@@ -2533,7 +2529,6 @@
 <translation id="2933653107553951760">กู้คืนกลุ่ม</translation>
 <translation id="2934225044529065415">เข้าถึงกล้องไม่ได้</translation>
 <translation id="2935314715123552088">ปิดใช้โปรไฟล์ eSIM ที่ใช้งานอยู่</translation>
-<translation id="2936067606203230121">Gemini Spark จะตัดสินใจว่าจะดำเนินการใดบ้างตามงานที่คุณเริ่มหรืออัปเดต</translation>
 <translation id="2936851848721175671">การสำรองและคืนค่าข้อมูล</translation>
 <translation id="2938981087412273365">ไม่ได้รับอนุญาตให้อ่านและเปลี่ยนแปลงเว็บไซต์นี้</translation>
 <translation id="2939005221756255562">เปิดใช้การแจ้งเตือนในศูนย์การแจ้งเตือน เปิด<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
@@ -2911,6 +2906,7 @@
 <translation id="3213681682237645841">กำลังดาวน์โหลดเสียงภาษา<ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">สร้างทางลัดไหม</translation>
 <translation id="3220494908385619295">แสดงคู่กัน</translation>
+<translation id="3220541426929880850">ปิดแท็บแยกทั้งหมดเพื่อลบประวัติการท่องเว็บแบบแยกออกจากอุปกรณ์</translation>
 <translation id="3220943972464248773">หากต้องการซิงค์รหัสผ่าน โปรดยืนยันว่าเป็นคุณ</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">เชื่อมต่อ <ph name="USB_VM_NAME" /></translation>
@@ -3409,6 +3405,7 @@
 <translation id="3600956933576601730">คุณจำเป็นต้องอ่านและยอมรับข้อกำหนดเพื่อใช้ฟีเจอร์เหล่านี้</translation>
 <translation id="3601374594714740284">เพิ่มพื้นที่ว่างในอุปกรณ์เพื่อเสียงที่มีคุณภาพสูงขึ้น</translation>
 <translation id="360180734785106144">นำเสนอฟีเจอร์ใหม่ๆ เมื่อพร้อมให้บริการ</translation>
+<translation id="3601988315287782413">การดำเนินการนี้จะส่งผลต่อหน้าต่างแยกเท่านั้น</translation>
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3602495161941872610">แก้ไขปัญหา&amp;การซิงค์</translation>
 <translation id="3602894439067790744">อ่านหมายเลขเป็น</translation>
@@ -3637,7 +3634,6 @@
 <translation id="3756578970075173856">ตั้ง PIN</translation>
 <translation id="3756806135608816820">เว็บไซต์ขอค้นหาอุปกรณ์บลูทูธได้</translation>
 <translation id="3756823472711156529">กู้คืนกลุ่ม</translation>
-<translation id="3757337311115630808">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Gemini Spark</translation>
 <translation id="3757567010566591880">เลิกปักหมุดจากแถบเครื่องมือ</translation>
 <translation id="3757645900890881944">เครื่องมือค้นหา</translation>
 <translation id="3757733214359997190">ไม่พบเว็บไซต์</translation>
@@ -4761,6 +4757,7 @@
 <translation id="4631637535315947773">ระบบนำทางลัดสำหรับเว็บไซต์ที่คุณเข้าชมบ่อยที่สุดออกเนื่องจากคุณไม่ได้ใช้ทางลัดเหล่านั้นเมื่อเร็วๆ นี้</translation>
 <translation id="4631955550884380853">เสียงที่โฟกัส</translation>
 <translation id="4632655012900268062">ปรับแต่งการ์ด</translation>
+<translation id="4634719521235795064">Gemini สามารถใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ให้คุณได้ <ph name="BEGIN_LINK" />ดูวิธีที่ Gemini จัดการข้อมูลของคุณ<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">ถอนการติดตั้ง Crostini</translation>
 <translation id="4635398712689569051">ผู้ใช้ที่เป็นผู้มาเยือนไม่สามารถใช้ <ph name="PAGE_NAME" /></translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{อัปโหลดรูปภาพ 1 รายการเพื่อใช้กับคำถาม}other{อัปโหลดรูปภาพสูงสุด # รายการเพื่อใช้กับคำถาม}}</translation>
@@ -5247,7 +5244,6 @@
 <translation id="4989966318180235467">ตรวจสอบ&amp;หน้าพื้นหลัง</translation>
 <translation id="499016799952867794">การดำเนินการนี้จะทำให้แอปทำงานได้ตามที่คาดไว้</translation>
 <translation id="4990673372047946816">ไม่มีกล้องที่พร้อมใช้งาน</translation>
-<translation id="499126848196136237">Gemini Spark สามารถใช้การท่องเว็บอัตโนมัติของ Chrome ในอุปกรณ์นี้เพื่อโต้ตอบกับเว็บไซต์และทำงานให้เสร็จแทนคุณ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">ใช้แป้นแถวบนสุดเป็นแป้นฟังก์ชัน</translation>
 <translation id="4991873517942703737">ถามเกี่ยวกับเอกสารนี้</translation>
 <translation id="4992066212339426712">เปิดเสียง</translation>
@@ -5504,7 +5500,6 @@
 <translation id="5189274947477567401">การเลือกไม่ใช้การแชร์กระบวนการจำเป็นต้องรีสตาร์ทเบราว์เซอร์ เบราว์เซอร์จะรีสตาร์ทตอนนี้</translation>
 <translation id="5189404424758444348">สตีมพังก์</translation>
 <translation id="5190577235024772869">กำลังใช้ <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="5190926251776387065">เปิดใช้งานพอร์ต</translation>
 <translation id="5190959794678983197">ไม่มีไมโครโฟน</translation>
 <translation id="5191094172448199359">PIN ที่คุณป้อนไม่ตรงกัน</translation>
@@ -6070,6 +6065,7 @@
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณคลิกปุ่มหน้าแรก</translation>
 <translation id="5643191124441701136">รหัสความปลอดภัยอยู่ที่ด้านหน้าบัตร</translation>
 <translation id="5643321261065707929">เครือข่ายมีการวัดปริมาณอินเทอร์เน็ต</translation>
+<translation id="5645369002069651355">กำลังยืนยันอีเมล</translation>
 <translation id="5646376287012673985">ตำแหน่ง</translation>
 <translation id="5646558797914161501">นักธุรกิจ</translation>
 <translation id="564670806635578888">ค้นหา "<ph name="SEARCH_TERMS" />" ใน Google</translation>
@@ -7000,7 +6996,6 @@
 <translation id="6393550101331051049">ได้รับอนุญาตให้แสดงเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="6394634179843537518">เพิ่มไฟล์</translation>
 <translation id="6395423953133416962">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลระบบ<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />เมตริก<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">ใช่ แยกข้อมูลของฉันออกจากข้อมูลโรงเรียน (แนะนำ)</translation>
 <translation id="6398715114293939307">นำ Google Play Store ออก</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
 <translation id="639880411171387127">ภาพที่คุณเลือกสำหรับ Google Lens กด Enter หรือ Backspace เพื่อลบภาพที่เลือกใน Google Lens</translation>
@@ -8360,7 +8355,6 @@
 <translation id="7421293530411019405">ออกจากกลุ่มแท็บใช่ไหม</translation>
 <translation id="7421925624202799674">&amp;ดูแหล่งที่มาของหน้า</translation>
 <translation id="7422192691352527311">ค่ากำหนด...</translation>
-<translation id="7423381908337122792">ทุกคนที่มีสิทธิ์เข้าถึง Gemini Spark Agent จะควบคุมเบราว์เซอร์ Chrome ของคุณได้</translation>
 <translation id="7423425410216218516">ระดับการเข้าถึงจะเปิดเป็นเวลา <ph name="MINUTES" /> นาที</translation>
 <translation id="7423513079490750513">นำ <ph name="INPUT_METHOD_NAME" /> ออก</translation>
 <translation id="7424818322350938336">เพิ่มเครือข่ายแล้ว</translation>
@@ -8485,6 +8479,7 @@
 <translation id="7517292544534877198">ใช้การเข้ารหัสเริ่มต้นของ Google สำหรับรหัสผ่านในบัญชี Google</translation>
 <translation id="7517959947270534934">สมาชิกในครอบครัวของคุณไม่สามารถรับรหัสผ่านได้ในขณะนี้ ขอให้สมาชิกอัปเดต Chrome และซิงค์รหัสผ่าน</translation>
 <translation id="7518079994230200553">ตัวเลือกนี้ไม่พร้อมใช้งานในขณะนี้</translation>
+<translation id="7519506357537394422">อนุญาตให้ Gemini ลงชื่อเข้าใช้ <ph name="DOMAIN" /> ให้คุณไหม</translation>
 <translation id="752021853309481824">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL" /> เพื่อรับข้อมูลที่บันทึกไว้และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="7520766081042531487">พอร์ทัลที่ไม่ระบุตัวตน: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">แสดงแป้นพิมพ์ลัด</translation>
@@ -8712,7 +8707,6 @@
 <translation id="769824636077131955">เอกสารนี้ใหญ่เกินไปสำหรับการตรวจสอบความปลอดภัย คุณสามารถพิมพ์เอกสารที่มีขนาดสูงสุด 50 MB</translation>
 <translation id="7698507637739331665">บางรายการถูกบล็อก</translation>
 <translation id="7700516433658473670">เครื่องพิมพ์และเครื่องสแกน</translation>
-<translation id="7700873336634517379">ไม่ ใช้สำหรับโรงเรียนในโปรไฟล์นี้ต่อไป</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7701869757853594372">ผู้ใช้จัดการ</translation>
 <translation id="770231223935918661">ถามเกี่ยวกับรูปภาพนี้</translation>
@@ -9078,6 +9072,7 @@
 <translation id="7978450511781612192">การดำเนินการนี้จะนำคุณออกจากบัญชี Google บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และข้อมูลอื่นๆ จะไม่ซิงค์อีกต่อไป</translation>
 <translation id="7980066177668669492">ASCII ที่เข้ารหัสฐาน 64, ใบรับรองหลายใบ</translation>
 <translation id="7981410461060625406">ใช้พาสคีย์ที่บันทึกไว้สำหรับ <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">ยืนยันอีเมลของคุณไม่ได้</translation>
 <translation id="7981662863948574132">แสดง EID ของอุปกรณ์และป๊อปอัปคิวอาร์โค้ด</translation>
 <translation id="7982578888426609524">ข้อมูลอัปเดตล่าสุดของกลุ่มนี้</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
@@ -10137,6 +10132,7 @@
 <translation id="878862491037637275">กลุ่มแท็บนี้เต็มแล้ว</translation>
 <translation id="8791157330927639737">ดูข้อมูลเพิ่มเติมเกี่ยวกับการอัปเดต</translation>
 <translation id="8791534160414513928">ส่งคำขอ "ไม่ติดตาม" พร้อมกับการเข้าชมของคุณ</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (แยก)</translation>
 <translation id="8793390639824829328">เว็บไซต์ต่างๆ ใช้ฟีเจอร์นี้เพื่อเลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="8793895150509408038">ดูรายละเอียดเว็บไซต์สำหรับ <ph name="SITE" /> จากรายการ <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">ขณะที่ฮอตสปอตเปิดอยู่ <ph name="PHONE_NAME" /> ของคุณจะ:</translation>
@@ -10373,7 +10369,6 @@
 <translation id="897525204902889653">บริการเขตกักบริเวณ</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก 1 แท็บ}other{"<ph name="TAB_TITLE" />" และแท็บอื่นอีก # แท็บ}}</translation>
 <translation id="897565255818387330">อนุญาตให้เว็บไซต์นี้ดูและคัดลอก <ph name="FILE_NAME" /> ใช่ไหม</translation>
-<translation id="8977523125954274918">ตั้งค่าโปรไฟล์โรงเรียนเพื่อบันทึกและใช้รหัสผ่าน รวมถึงข้อมูลอื่นๆ ในบัญชี</translation>
 <translation id="8977811652087512276">รหัสผ่านไม่ถูกต้องหรือไฟล์เสียหาย</translation>
 <translation id="8978154919215542464">เปิด - ซิงค์ทุกอย่าง</translation>
 <translation id="8978670037548431647">รีเฟรชความสามารถในการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
@@ -10477,7 +10472,6 @@
 <translation id="9040661932550800571">อัปเดตรหัสผ่านสำหรับ <ph name="ORIGIN" /> ไหม</translation>
 <translation id="9041560164471731796">หากต้องการบันทึกรหัสผ่านที่รัดกุมด้วยเครื่องมือจัดการรหัสผ่านบน Google ให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="9041692268811217999">ผู้ดูแลระบบปิดการเข้าถึงไฟล์ในเครื่องของคุณ</translation>
-<translation id="9041881059840744611">เกี่ยวกับโปรไฟล์โรงเรียน</translation>
 <translation id="904224458472510106">การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="9042827002460091668">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="9042893549633094279">ความเป็นส่วนตัวและความปลอดภัย</translation>
@@ -10694,7 +10688,6 @@
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219572436491982747">เจ้าหน้าที่ตรวจสอบอาจเห็นข้อมูลที่ส่งไปยัง Google เพื่อนำไปใช้ปรับปรุงเทคโนโลยี AI ของ Chrome</translation>
 <translation id="9219741625496141320">มีการลบข้อมูลการท่องเว็บโดยอัตโนมัติ</translation>
-<translation id="9220484506568374422">Gemini Spark จะเข้าถึงเว็บไซต์เดียวกับคุณ รวมถึงเว็บไซต์ที่คุณลงชื่อเข้าใช้ โดยจะแชร์ข้อมูลที่จำเป็นกับบุคคลที่สาม ซึ่งอาจรวมถึงข้อมูลส่วนบุคคลที่คุณอาจมองว่ามีความละเอียดอ่อน</translation>
 <translation id="9220525904950070496">ลบบัญชี</translation>
 <translation id="9220723036554088545">อัปโหลดไฟล์</translation>
 <translation id="9220820413868316583">ยกนิ้วขึ้นแล้วลองอีกครั้ง</translation>

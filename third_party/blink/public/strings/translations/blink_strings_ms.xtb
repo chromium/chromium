@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Penyahpepijat dijeda dalam tab lain, klik untuk beralih kepada tab itu.</translation>
 <translation id="1171774979989969504">Sila masukkan alamat e-mel.</translation>
 <translation id="1178581264944972037">Jeda</translation>
+<translation id="1254779809141342904">Makluman CAP ini menggunakan teknologi yang dipanggil XSLT; kefungsian itu sedang <ph name="REMOVAL_LINK" />. Apabila perkara itu berlaku, makluman ini akan dipaparkan sebagai data XML mentah. Anda mungkin boleh <ph name="EXTENSION_LINK" /> yang membolehkan anda terus melihat makluman tersebut.</translation>
 <translation id="1306460908038601864">Mati</translation>
 <translation id="1311894908970423688">Nilai mestilah <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Biasa</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2746543609216772311">Nilai mestilah <ph name="MINIMUM_DATE_OR_TIME" /> atau kemudian.</translation>
 <translation id="2761667185364618470">Sila tandakan kotak ini jika anda mahu teruskan.</translation>
+<translation id="2854734116215697908">dialih keluar daripada penyemak imbas ini</translation>
 <translation id="2908441821576996758">Sila masukkan senarai alamat e-mel yang dipisahkan dengan koma.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Sila masukkan nilai yang sah. Medan tidak lengkap atau mengandungi tarikh yang tidak sah.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">Ketik dua kali ke kiri atau kanan untuk melangkau 10s</translation>
 <translation id="57838592816432529">Redam</translation>
+<translation id="5855560023261018690">dialih keluar daripada penyemak imbas ini tidak lama lagi</translation>
 <translation id="5868587040512539609">Runut Video</translation>
 <translation id="588258955323874662">Skrin penuh</translation>
 <translation id="5888666972993069672">Sekarang menghantar ke <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Keluar daripada Gambar dalam Gambar</translation>
 <translation id="6484738902856791350">Cetak cantik</translation>
 <translation id="6550675742724504774">Pilihan</translation>
+<translation id="65574987622079584">pasang sambungan penyemak imbas</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
 <translation id="6661136971638885481">Runut #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Lain-lain...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Minggu ini</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">Jangan tunjukkan amaran ini lagi</translation>
 <translation id="8284326494547611709">Kapsyen</translation>
 <translation id="835897206747267392">Nilai tidak sah.</translation>
 <translation id="839593075537728968">Nilai mestilah antara <ph name="MINIMUM_TIME" /> hingga <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Balutan baris</translation>
 <translation id="8750798805984357768">Sila pilih salah satu pilihan ini.</translation>
+<translation id="8753001114009816390">Laman ini menggunakan XSLT; kefungsian itu sedang <ph name="REMOVAL_LINK" />. Apabila perkara itu berlaku, halaman ini mungkin tidak akan dipaparkan dengan betul lagi. Anda mungkin boleh <ph name="EXTENSION_LINK" /> yang membolehkan anda terus melihat halaman tersebut. Jika tidak, anda perlu menghubungi penyenggara laman untuk mendapatkan maklumat lanjut.</translation>
 <translation id="8845239796550121995">Menghantar ke TV anda sekarang</translation>
 <translation id="8875657656876809964">Ralat main balik video</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

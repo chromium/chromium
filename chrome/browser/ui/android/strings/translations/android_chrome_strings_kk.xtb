@@ -889,7 +889,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4535755320005483982">Ортақ <ph name="GROUP_TITLE" /> қойындылар тобы</translation>
 <translation id="4537137366307982887">Кеңестер хабарландыруларына жазылу терезесі толық ашылды.</translation>
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> аккаунтымен кіріп тұрсыз.</translation>
-<translation id="4543131175509360848">Кіру кілттерінің ешқандай парағы жоқ.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойынды}other{<ph name="TAB_COUNT_MANY" /> қойынды, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито қойындысы}}</translation>
 <translation id="4558311620361989323">Веббет пернелер тіркесімдері</translation>
 <translation id="4572422548854449519">Басқарылатын аккаунтқа кіру</translation>
@@ -934,6 +933,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4719927025381752090">Аудармасын ұсыну</translation>
 <translation id="4720556299488643018">Тоқтату</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Көлденең</translation>
 <translation id="4736934858538408121">Виртуалдық карта</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4738065825338914557">Жазылым тоқтатылып жатыр…</translation>
@@ -982,6 +982,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="488187801263602086">Файлдың атын өзгерту</translation>
 <translation id="4885273946141277891">Chrome нұсқаларының қайшылығы орын алды.</translation>
 <translation id="4890973535105146893">Google аккаунтыңызда сақталған құпия сөздер жоқ</translation>
+<translation id="490375751687810070">Тік</translation>
 <translation id="4905823827770127520">Бетке сілтеме енгізіңіз.</translation>
 <translation id="4910889077668685004">Төлем қолданбалары</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, қайта оралғаныңызға қуаныштымыз!</translation>
@@ -1287,6 +1288,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6192907950379606605">Сурет сипаттамаларын алу</translation>
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6196315980958524839">Құпия сөздер осы құрылғыдағы Google Құпия сөз менеджеріне сақталады.</translation>
+<translation id="6200780647297916498">Қойындының орны</translation>
 <translation id="6204781143409202534">Chrome браузері <ph name="DOMAIN" /> доменінен спам болуы мүмкін хабарландыруды анықтады.</translation>
 <translation id="6211386937064921208">Осы беттің алдын ала көрінісі</translation>
 <translation id="6212567362666004597">Топқа қойынды қосу</translation>

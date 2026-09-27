@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Jou berging is vol</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1190609913194133056">Kennisgewingsentrum</translation>
-<translation id="1195433173321863960">Prente sal weer beskikbaar wees wanneer jou limiet terugstel <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Gee my ’n kort opsomming van hierdie bladsy</translation>
 <translation id="1199631150313925648">Voer self in</translation>
 <translation id="1199963004393929848">Groen tema</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Kry en vul in</translation>
 <translation id="1483493594462132177">Stuur</translation>
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
-<translation id="1486593497476255523">Oortjiegroepe is voltooi!</translation>
 <translation id="1491277525950327607">Dubbeltik om instelling te wissel</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1497590942294823549">Kieslys → Wagwoordbestuuder</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Skakel oor na ’n ander profiel</translation>
 <translation id="1741219894094057085">Slimhorlosie</translation>
 <translation id="1743244221910283364">Gooi veranderinge weg</translation>
-<translation id="1744234754703485302">Bestuur Betaalmetodes is voltooi!</translation>
 <translation id="1748975028205587434">Kies jou lêer</translation>
 <translation id="1749733017156547309">’n Wagwoord word vereis</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opsie vir adres is bo jou sleutelbord beskikbaar.}other{{count} opsies vir adres is bo jou sleutelbord beskikbaar.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Vee oor 1 maand uit</translation>
 <translation id="2161446265348023004">Wissel na oop venster</translation>
 <translation id="2164946989711475905">Meld aan …</translation>
-<translation id="2165110345209765380">Soek met KI-modus is voltooi!</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2180338296831857171">Vee adresse uit</translation>
 <translation id="218350106843433823">Outovul wagwoorde en toegangsleutels</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">Gaan na die bladsy van ’n produk</translation>
 <translation id="2219935992754556187">Chrome hou jou sensitiewe data met Gesig-ID veilig</translation>
 <translation id="2220529011494928058">Gee 'n kwessie aan</translation>
+<translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />” word geblokkeer om toegang tot jou kamera te kry</translation>
 <translation id="2223461067862937305">Skep ’n QR-kode</translation>
 <translation id="2230173723195178503">Webblad is gelaai</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Outovul inligting van apps soos Gmail en Foto’s af. Aangedryf deur Persoonlike Intelligensie.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
 <translation id="2295236662082735391">Langdruk ’n prent op die web om met Gemini te redigeer</translation>
-<translation id="2296360194694387941">Gebruik Gemini in Chrome is voltooi!</translation>
 <translation id="2297989278479054870">Nadat jy afgemeld het, sal die boekmerke, wagwoorde en meer in jou Google-rekening van hierdie toestel verwyder word.</translation>
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="2306265833370324042">Wys <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">Veiligblaai (beskerm jou en jou toestel teen gevaarlike werwe)</translation>
 <translation id="3183362380688692618">Nuwe oortjiegroep …</translation>
 <translation id="3185000827934321633">Navigeer tans</translation>
-<translation id="3185760469172949183">Soek Met Kamera is voltooi!</translation>
 <translation id="3186796054637504691">Vee geskiedenis en webwerfdata uit</translation>
 <translation id="3190558889382726167">Wagwoord is gestoor</translation>
 <translation id="3190736958609431397">Stop nasporing</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">Gebruik Live met Gemini om oor ’n bladsy te vra, hardop ’n dinkskrum te hou, en heen en weer te gesels.</translation>
 <translation id="3462768334899086950">Dit beteken dat jy jou ongestoorde lêer en huidige oortjies sal verloor</translation>
 <translation id="3464194322481586217">Kon nie die prys naspoor nie.</translation>
-<translation id="346831467152294287">Wagwoorde en Outovul is voltooi!</translation>
 <translation id="3469117812148449995">Opsies om wagwoord te stoor</translation>
 <translation id="3472469028191701821">Maak in nuwe oortjie oop</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{vir {COUNT} werf of app}other{vir {COUNT} werwe en apps}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="3580448612293054698">Dateer <ph name="ENTITY_TYPE" /> op?</translation>
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
+<translation id="3585482760087850407">Kameratoegang vir hierdie werf</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587885837929752825">Jou organisasie beperk wat jy in jou Google-rekening kan stoor.</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">Nuttige voorstelle wat blaai beter en makliker maak</translation>
 <translation id="3818293389945649617">Vind volgende</translation>
 <translation id="3819183753496523827">Jy is vanlyn. Gaan jou internetverbinding na en probeer weer.</translation>
-<translation id="3826034723896327540">Speld Oortjies Vas is voltooi!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betaalmetode}other{# betaalmetodes}}</translation>
 <translation id="3831560640878483188">Maak waarskuwing toe?</translation>
 <translation id="3832419617903252251">Wagwoord is net op hierdie toestel gestoor</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">Jy sal die kans kry om hierdie inligting in Wallet te stoor wanneer jy weer ’n relevante vorm invul.</translation>
 <translation id="3868495844258915202">Wys volle URL</translation>
 <translation id="3875783148670536197">Wys my hoe</translation>
+<translation id="3877211858413020188">“<ph name="SITE_DOMAIN" />” word geblokkeer om toegang tot jou mikrofoon te kry</translation>
 <translation id="3878657761594430423">Bladgryper</translation>
 <translation id="3885587018298784481">Sluit by ’n gesinsgroep aan</translation>
 <translation id="3888230626190453136">Blaai in Incognito</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">Jy het verskeie wagwoordkwessies wat jou sekuriteit in gevaar kan stel.</translation>
 <translation id="422477017457571619">Intydse, KI-aangedrewe beskerming teen gevaarlike werwe, aflaaie en uitbreidings wat gegrond is op blaaierdata wat na Google toe gestuur word</translation>
 <translation id="4231395118547300571">Kennisgewings vir veiligheidskontrole is aangeskakel</translation>
-<translation id="4232376164796433044">Wagwoorde en outovul</translation>
 <translation id="4232817129213135694">Stel toegangsleutels vir hierdie toestel op</translation>
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Verstekblaaierprogram<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Stoor bekendereisigernommer</translation>
@@ -1820,6 +1814,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750456911389438250">{count,plural, =1{Het {count} geskiedenisitem ingevoer}other{Het {count} geskiedenisitems ingevoer}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opsie vir eiebewys is bo jou sleutelbord beskikbaar.}other{{count} opsies vir eiebewys is bo jou sleutelbord beskikbaar.}}</translation>
+<translation id="6753460329812070808">Voorstel is uit Chrome verwyder</translation>
 <translation id="6755200887046212842">Bestuur rekeninge</translation>
 <translation id="6757899787818440812">Medium hoogte</translation>
 <translation id="6759709389246683070">Jy kan hierdie oortjie raak en hou om ’n onthounota te stel om later daarheen terug te keer</translation>
@@ -1905,6 +1900,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Maak verstek in Instellings …</translation>
 <translation id="7007970306646738803">Kies wat om met bestaande blaaierdata op hierdie toestel te doen, soos oortjies, geskiedenis en wagwoorde.</translation>
+<translation id="701134422972919485">Mikrofoontoegang vir hierdie werf</translation>
 <translation id="7012978439516925343">Verifieer dat dit jy is om ’n toegangsleutel te skep</translation>
 <translation id="7015418667643980944">Verdeelde aansig</translation>
 <translation id="7016070607649558507">Jy het 1 swak wagwoord. Maak dit nou reg om veilig te bly.</translation>
@@ -2077,7 +2073,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="7603308509262646847">Vul die kaarthouer <ph name="NAME" /> outomaties in</translation>
 <translation id="7603852183842204213">Opspringers geblokkeer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
-<translation id="7606639338662398635">Oortjiegroepe</translation>
 <translation id="760667371114328991">Skakel kennisgewings vir veiligheidskontrole af</translation>
 <translation id="7612619742409846846">By Google aangemeld as</translation>
 <translation id="7612849887607288481">Maak KI-prototipekieslys oop</translation>
@@ -2285,7 +2280,6 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8240217649914883113">Voeg dit by my kalender</translation>
 <translation id="824379025871762038">Moet nooit toelaat nie</translation>
 <translation id="8250920743982581267">Dokumente</translation>
-<translation id="8252980988000695656">Google Lens is voltooi!</translation>
 <translation id="8258734532103758067">Ek het my data uitgevoer</translation>
 <translation id="8258999165172757081">Bygevoeg</translation>
 <translation id="8261506727792406068">Vee uit</translation>
@@ -2336,6 +2330,7 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8393700583063109961">Stuur boodskap</translation>
 <translation id="8393889347136007944">Oortjies nie in die afgelope <ph name="THRESHOLD" /> dae gebruik nie</translation>
 <translation id="8395180897620197612">Stop loginskrywing</translation>
+<translation id="8399253661151100858">“<ph name="SITE_DOMAIN" />” kan toegang tot jou mikrofoon kry wanneer jy ook al hierdie werf besoek</translation>
 <translation id="8407669440184693619">Geen wagwoorde is vir hierdie werf gekry nie</translation>
 <translation id="8407831512155324054">Jou wagwoorde lyk sterk</translation>
 <translation id="8414283596511250978">Vergeet nooit jou wagwoorde nie</translation>
@@ -2350,6 +2345,7 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="8439758443371991593">Versteek Voeg by leeslys</translation>
 <translation id="8443986842926457191">URL is meer as 2 048 karakters.</translation>
 <translation id="8449869326050867919">Wagwoord is gedeel</translation>
+<translation id="8458009459729013424">“<ph name="SITE_DOMAIN" />” kan toegang tot jou kamera kry wanneer jy hierdie werf besoek</translation>
 <translation id="8461708300275916315">As jy jonger as 18 is</translation>
 <translation id="8473815223723723001">Redigeer prent met Gemini</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>

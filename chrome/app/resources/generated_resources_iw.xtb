@@ -797,7 +797,6 @@
 <translation id="160689647589417224">האפליקציה מוגבלת באזור הזה.</translation>
 <translation id="1607139524282324606">ניקוי רשומה</translation>
 <translation id="1608668830839595724">פעולות נוספות שאפשר לבצע בפריטים שנבחרו</translation>
-<translation id="1609603645228231640">‏‫Gemini Spark הוא ניסיוני ויכול לשתף את המידע שלך, לבצע רכישות בלי אישור או לעשות פעולות נוספות. <ph name="LINK_BEGIN" />כדאי לעיין בסיכונים<ph name="LINK_END" /></translation>
 <translation id="1610272688494140697">הגדרות של אפליקציות</translation>
 <translation id="161042844686301425">ציאן</translation>
 <translation id="1611649489706141841">קדימה</translation>
@@ -1063,7 +1062,6 @@
 <translation id="1808805149659872686">רשומה חדשה</translation>
 <translation id="1809201888580326312">בחרת שלא לשמור סיסמאות לאתרים ולאפליקציות האלה</translation>
 <translation id="1809734401532861917">הוספת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות שלי אל <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">‏Fenced Frame במצב פרטי: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">ל-<ph name="SITE_ETLD_PLUS_ONE" /> אין אפשרות להמשיך להשתמש ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">מתבצעת העברה של <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">שירותים</translation>
@@ -1296,7 +1294,6 @@
 <translation id="1983612835086592681">פתחת את המסמך בשבוע האחרון</translation>
 <translation id="1984087999855033707">מספר טלפון</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
-<translation id="1984683754853869253">רוצה ליצור פרופיל חדש לבית הספר?</translation>
 <translation id="198507684520034826">עזרה</translation>
 <translation id="1986113927738155371">אייפד</translation>
 <translation id="1986836014090708999">הגדרות מיקום מתקדמות</translation>
@@ -1329,7 +1326,7 @@
 <translation id="2010501376126504057">מכשירים תואמים</translation>
 <translation id="2010636492623189611">נבחר.</translation>
 <translation id="2012935757369720523">מחיקת הקובץ</translation>
-<translation id="2014495120525813351">‏מתן הרשאה ל-Gemini Spark לגלוש במכשיר הזה</translation>
+<translation id="2014191284313949173">סגירת כל הכרטיסיות המבודדות</translation>
 <translation id="2016473077102413275">תכונות שצריכות תמונות לא יפעלו</translation>
 <translation id="2017334798163366053">השבתת האיסוף של נתוני ביצועים</translation>
 <translation id="2017770349934140286">‏Google Play ואפליקציות שהורדת מ-Google Play יימחקו מה-Chromebook הזה.
@@ -1461,6 +1458,7 @@
 <translation id="2121825465123208577">שינוי גודל</translation>
 <translation id="2122446694240899610">‏המיומנויות נשמרות בחשבון Google,‏</translation>
 <translation id="2123766928840368256">בחירת קובץ אחר</translation>
+<translation id="2124153808069020510">כדי למחוק נתונים, צריך לסגור את כל החלונות המבודדים</translation>
 <translation id="2124930039827422115">{1,plural, =1{משתמש אחד נתן דירוג של <ph name="AVERAGE_RATING" />.}one{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}two{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}other{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2125715366913703594">תוספים שכדאי להכיר</translation>
 <translation id="2126167708562367080">מנהל המערכת שלך השבית את הסנכרון.</translation>
@@ -1603,6 +1601,7 @@
 <translation id="2227179592712503583">הסרת ההצעה</translation>
 <translation id="222931766245975952">הקובץ נקטע</translation>
 <translation id="2229342031987138128">כתוביות</translation>
+<translation id="22294739381015133">אתרים שנכנסים אליהם לא נשמרים במצב מבודד</translation>
 <translation id="2231351769755997720">אין הצעות זמינות. יש לך אפשרות לנסות לשאול שאלה משלך על הדף הזה.</translation>
 <translation id="2232751457155581899">אתרים יכולים לבקש הרשאה לעקוב אחר מיקום המצלמה</translation>
 <translation id="2233502537820838181">&amp;מידע נוסף</translation>
@@ -2042,7 +2041,6 @@
 <translation id="2554553592469060349">‏הקובץ שנבחר גדול מדי (גודל מרבי: ‎3mb).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> מתוך <ph name="TOTAL_NUM_APPS" /> אפליקציות יכולות לשלוח התראות</translation>
 <translation id="2555855727505718984">המידע הזה לא יהיה זמין יותר למילוי האוטומטי במכשיר כדי לעזור לך למלא טפסים</translation>
-<translation id="25568951186001797">‏Fenced Frame‏: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">אפשר לראות כאן את כל הסימניות שלך</translation>
 <translation id="2563924218974330506">מעכשיו אפשר לנהל כאן את קבוצות הכרטיסיות. אפשר לבטל את ההצמדה בכל שלב.</translation>
 <translation id="2564520396658920462">‏הפעלת JavaScript דרך AppleScript מושבתת. כדי להפעיל את האפשרות הזו, מסרגל התפריטים יש לעבור אל 'תצוגה' &gt; 'מפתח' &gt; 'התרת JavaScript מאירועי Apple'. מידע נוסף זמין בכתובת https://support.google.com/chrome/?p=applescript</translation>
@@ -2121,7 +2119,6 @@
 <translation id="2626746300781063303">‏לכל אתר, כולל Google, יש שיקול דעת משלו בתגובה לבקשה הזו</translation>
 <translation id="2626799779920242286">יש לנסות שוב מאוחר יותר.</translation>
 <translation id="2627424346328942291">השיתוף נכשל</translation>
-<translation id="2627970398976286795">‏מידע על הסיכונים של Gemini Spark</translation>
 <translation id="2628258844236035475">‏להסיר את כתובת המגורים מהמילוי האוטומטי של Chrome?</translation>
 <translation id="2628770867680720336">‏כדי לאפשר ניפוי באגים באמצעות ADB צריך לאפס את ה-Chromebook הזה להגדרות היצרן. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">‏התחלת שיחה חדשה עם Gemini</translation>
@@ -2430,7 +2427,6 @@
 <translation id="2845276301195220700">‏פעולות נוספות ביומן Google</translation>
 <translation id="2845382757467349449">תמיד להציג את סרגל הסימניות</translation>
 <translation id="284581348330507117">חשוב ליצור סיסמאות ייחודיות</translation>
-<translation id="2846345106886298325">‏המשימה הושלמה והוחזרה אל Gemini Spark</translation>
 <translation id="284884486564166077">‏חיפוש תמונה כלשהי באמצעות Lens</translation>
 <translation id="2849035674501872372">יש להרים את המבט</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2492,7 +2488,6 @@
 <translation id="2893318819023133318">היפוך התצוגות</translation>
 <translation id="2894596417096093634">מזהים של דוחות קריסה</translation>
 <translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
-<translation id="2895194086130800590">‏‫Gemini Spark יכול להשתמש בפעולות אוטומטיות בדפדפן רק אם המכשיר לא במצב שינה ו-Chrome מופעל.</translation>
 <translation id="289695669188700754">מזהה מפתח: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">לאחר הסגירה של כל החלונות האנונימיים, ההגדרה שהותאמה אישית תוסר</translation>
 <translation id="2897878306272793870">רוצה לפתוח <ph name="TAB_COUNT" /> כרטיסיות, בטוח?</translation>
@@ -2545,7 +2540,6 @@
 <translation id="2933653107553951760">שחזור קבוצת הכרטיסיות</translation>
 <translation id="2934225044529065415">אין גישה למצלמה</translation>
 <translation id="2935314715123552088">‏השבתה של פרופיל ה-eSIM הפעיל</translation>
-<translation id="2936067606203230121">‏‫Gemini Spark יחליט אילו פעולות לבצע על סמך המשימות שהתחלת או עדכנת.</translation>
 <translation id="2936851848721175671">גיבוי ושחזור</translation>
 <translation id="2938981087412273365">אין הרשאה לקריאה ולשינוי של האתר הזה</translation>
 <translation id="2939005221756255562">ניתן להפעיל התראות במרכז ההתראות. <ph name="BEGIN_LINK" />להגדרות המערכת<ph name="END_LINK" /></translation>
@@ -2925,6 +2919,7 @@
 <translation id="3213681682237645841">המערכת מורידה קולות ב<ph name="LANGUAGE" />…</translation>
 <translation id="3217843140356091325">ליצור קיצור דרך?</translation>
 <translation id="3220494908385619295">פתיחת התצוגות זו לצד זו</translation>
+<translation id="3220541426929880850">כדי למחוק מהמכשיר את היסטוריית הגלישה במצב מבודד, צריך לסגור את כל הכרטיסיות המבודדות</translation>
 <translation id="3220943972464248773">כדי לסנכרן את הסיסמאות עליך לאמת את זהותך</translation>
 <translation id="3222066309010235055">קדם-עיבוד: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">התחברות אל <ph name="USB_VM_NAME" /></translation>
@@ -3423,6 +3418,7 @@
 <translation id="3600956933576601730">כדי להשתמש בתכונות האלה, עליך לקרוא את התנאים ולאשר אותם</translation>
 <translation id="3601374594714740284">כדי להוריד קובצי קול באיכות גבוהה יותר, צריך לפנות מקום במכשיר</translation>
 <translation id="360180734785106144">להציע תכונות חדשות כשהן זמינות</translation>
+<translation id="3601988315287782413">הפעולה הזו משפיעה רק על החלונות האלה</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3602495161941872610">תיקון &amp;הבעיה בסנכרון</translation>
 <translation id="3602894439067790744">הקראת מספרים בתור</translation>
@@ -3651,7 +3647,6 @@
 <translation id="3756578970075173856">הגדרת קוד אימות</translation>
 <translation id="3756806135608816820">‏אתרים רשאים לבקש הרשאה לאיתור מכשירי Bluetooth</translation>
 <translation id="3756823472711156529">שחזור קבוצת הכרטיסיות</translation>
-<translation id="3757337311115630808">‏מידע נוסף על Gemini Spark</translation>
 <translation id="3757567010566591880">ביטול ההצמדה לסרגל הכלים</translation>
 <translation id="3757645900890881944">כלי החיפוש</translation>
 <translation id="3757733214359997190">לא נמצאו אתרים</translation>
@@ -5072,6 +5067,7 @@
 <translation id="4850886885716139402">הצגה</translation>
 <translation id="485088796993065002">אתרים יכולים להפעיל סאונד כדי להשמיע מוזיקה או אודיו של סרטונים, או מדיה מסוגים אחרים</translation>
 <translation id="4850919322897956733">הנתונים נמחקו.</translation>
+<translation id="4851973858921178330">סינון אתרים</translation>
 <translation id="4852030988197799562">‏חסימת הגישה לכלי האופטימיזציה של JavaScript באתרים שביקרת בהם לאחרונה</translation>
 <translation id="4852383141291180386">ניהול ההתראות של האפליקציות</translation>
 <translation id="4852916668365817106">צבע סמן העכבר</translation>
@@ -5262,7 +5258,6 @@
 <translation id="4989966318180235467">בדיקת דף ה&amp;רקע</translation>
 <translation id="499016799952867794">ההרשאה הזו מאפשרת לאפליקציה לפעול כמו שצריך.</translation>
 <translation id="4990673372047946816">אין מצלמה זמינה</translation>
-<translation id="499126848196136237">‏‫Gemini Spark יכול להשתמש בפעולות אוטומטיות בדפדפן Chrome במכשיר הזה כדי להיכנס לאתרים ולבצע בשבילך משימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">התייחסות למקשים בשורה העליונה כאל מקשי פונקציה</translation>
 <translation id="4991873517942703737">יש לי שאלה לגבי המסמך הזה</translation>
 <translation id="4992066212339426712">ביטול השתקה</translation>
@@ -5519,7 +5514,6 @@
 <translation id="5189274947477567401">כדי להפסיק את שיתוף התהליך, צריך להפעיל מחדש את הדפדפן. הדפדפן הזה יופעל מחדש עכשיו.</translation>
 <translation id="5189404424758444348">סטימפאנק</translation>
 <translation id="5190577235024772869">נפח אחסון בשימוש: <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="5190926251776387065">הפעלת היציאה</translation>
 <translation id="5190959794678983197">אין מיקרופון</translation>
 <translation id="5191094172448199359">קודי האימות שהזנת לא תואמים.</translation>
@@ -7019,7 +7013,6 @@
 <translation id="6393550101331051049">מורשים להציג תוכן לא מאובטח</translation>
 <translation id="6394634179843537518">הוספה של קובץ</translation>
 <translation id="6395423953133416962">שליחת <ph name="BEGIN_LINK1" />פרטי מערכת<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />ערכים<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">כן, אני רוצה לשמור את הנתונים שלי בנפרד מפרופיל בית הספר (מומלץ)</translation>
 <translation id="6398715114293939307">‏הסרה של חנות Google Play</translation>
 <translation id="6398765197997659313">יציאה ממסך מלא</translation>
 <translation id="639880411171387127">‏התמונה שנבחרה ב-Google Lens. כדי למחוק את החלק שנבחר ב-Google Lens צריך להקיש על Enter או על מקש Backspace.</translation>
@@ -7489,6 +7482,7 @@
 <translation id="6754359471209693699">התחלת חיפוש חדש</translation>
 <translation id="6755702685749429945">הוספת מילון</translation>
 <translation id="6756643207511618722">מנועי דיבור</translation>
+<translation id="6756882635793733911">אפשר לשאול על כל דבר שמופיע במסך</translation>
 <translation id="6757431299485455321">עזרה למכשירים אחרים באיתור הנקודה הזו לשיתוף אינטרנט.</translation>
 <translation id="6757615605516049275">צריך לפתוח את הנעילה של <ph name="TOKEN_NAME" />.</translation>
 <translation id="6758056191028427665">נשמח לקבל ממך משוב.</translation>
@@ -8382,7 +8376,6 @@
 <translation id="7421293530411019405">לצאת מקבוצת הכרטיסיות?</translation>
 <translation id="7421925624202799674">&amp;הצגת מקור הדף</translation>
 <translation id="7422192691352527311">העדפות...</translation>
-<translation id="7423381908337122792">‏כל מי שיש לו גישה לסוכן Gemini Spark שלך יכול לשלוט בדפדפן Chrome.</translation>
 <translation id="7423425410216218516">הרשאות הגישה פועלות למשך <ph name="MINUTES" /> דקות</translation>
 <translation id="7423513079490750513">הסרת <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">הרשת התווספה</translation>
@@ -8735,7 +8728,6 @@
 <translation id="769824636077131955">‏המסמך הזה גדול מדי בשביל בדיקת אבטחה. אפשר להדפיס מסמכים שגודלם לא עולה על 50MB.</translation>
 <translation id="7698507637739331665">חלק מהפריטים נחסמו</translation>
 <translation id="7700516433658473670">מדפסות וסורקים</translation>
-<translation id="7700873336634517379">לא, אני רוצה להמשיך להשתמש בפרופיל הזה לבית הספר</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701869757853594372">מזהים ייחודיים של משתמשים</translation>
 <translation id="770231223935918661">שאלה לגבי התמונה הזו</translation>
@@ -10160,6 +10152,7 @@
 <translation id="878862491037637275">קבוצת הכרטיסיות הזו מלאה</translation>
 <translation id="8791157330927639737">מידע נוסף על עדכון</translation>
 <translation id="8791534160414513928">‏שליחת בקשת 'Do Not Track' יחד עם תנועת הגלישה שלך</translation>
+<translation id="879230900046110068">‫<ph name="WINDOW_TITLE" /> (מבודד)</translation>
 <translation id="8793390639824829328">אתרים משתמשים בתכונה הזו כדי לגלול בכרטיסיות המשותפות ולשנות את מרחק התצוגה שלהן</translation>
 <translation id="8793895150509408038">הצגת פרטי האתר של <ph name="SITE" /> מהרשימה <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">כשהנקודה לשיתוף אינטרנט מופעלת, ה-<ph name="PHONE_NAME" /> יבצע את הפעולות הבאות:</translation>
@@ -10396,7 +10389,6 @@
 <translation id="897525204902889653">שירות הסגר</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ועוד כרטיסייה אחת}one{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}two{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}other{"<ph name="TAB_TITLE" />" ועוד # כרטיסיות}}</translation>
 <translation id="897565255818387330">לאפשר לאתר הזה לגשת ל-<ph name="FILE_NAME" /> ולהעתיק אותו?</translation>
-<translation id="8977523125954274918">כדי לשמור את הסיסמאות שלך ולהשתמש בהן ובעוד אפשרויות, צריך להגדיר פרופיל בית ספר בחשבון</translation>
 <translation id="8977811652087512276">הסיסמה שגויה או שהקובץ פגום</translation>
 <translation id="8978154919215542464">פועל - סנכרון הכול</translation>
 <translation id="8978670037548431647">‏רענון של היכולות לשיתוף אינטרנט בין מכשירים (tethering)</translation>
@@ -10500,7 +10492,6 @@
 <translation id="9040661932550800571">האם לעדכן את הסיסמה של <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">‏כדי לשמור סיסמאות חזקות באמצעות מנהל הסיסמאות של Google, צריך להיכנס ל-Chrome</translation>
 <translation id="9041692268811217999">הגישה לקבצים מקומיים במחשב שלך מושבתת על-ידי מנהל המערכת</translation>
-<translation id="9041881059840744611">מידע על פרופילים של בתי ספר</translation>
 <translation id="904224458472510106">לא ניתן לבטל את הפעולה הזו</translation>
 <translation id="9042827002460091668">מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
@@ -10717,7 +10708,6 @@
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219572436491982747">‏יכול להיות שבודקים אנושיים יראו את הנתונים שנשלחים אל Google כדי לשפר את טכנולוגיית ה-AI של Chrome</translation>
 <translation id="9219741625496141320">נתוני הגלישה נמחקו באופן אוטומטי</translation>
-<translation id="9220484506568374422">‏ל-Gemini Spark תהיה גישה לאותם אתרים כמוך, כולל אתרים שהתחברת אליהם. הוא ישתף מידע נחוץ עם צדדים שלישיים, כולל פרטים אישיים שעשויים להיחשב בעיניך כרגישים.</translation>
 <translation id="9220525904950070496">הסרת חשבון</translation>
 <translation id="9220723036554088545">להעלות קובץ</translation>
 <translation id="9220820413868316583">צריך להרים את האצבע ולנסות שוב.</translation>

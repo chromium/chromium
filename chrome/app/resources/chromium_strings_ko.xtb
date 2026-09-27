@@ -10,6 +10,7 @@
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
 <translation id="1083934481477628225">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다</translation>
+<translation id="109026165963220603">근처 기기를 검색하고 사용하려면 Chromium에서 로컬 네트워크에 액세스해야 합니다.</translation>
 <translation id="1090946077924227754">특정 Chromium 기능 또는 확장 프로그램을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="1098493699368672217">작업 표시줄에 Chromium으로 검색 표시 및 키보드 단축키 사용 설정</translation>
 <translation id="1104942323762546749">Chromium에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
@@ -105,6 +106,7 @@
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2135919691573380097">이 사이트 신고</translation>
 <translation id="2137162749895930932">번역 화면 닫기</translation>
+<translation id="2147218225094845757">측면 패널 숨기기</translation>
 <translation id="215352261310130060">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="2170098639895543546">페이지에서 항목 선택</translation>
 <translation id="2174178932569897599">Chromium 맞춤설정</translation>
@@ -304,7 +306,6 @@
 <translation id="4251772536351901305">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chromium 경고를 건너뛸 수 있습니다.</translation>
 <translation id="4269093074552541569">Chromium에서 로그아웃</translation>
 <translation id="4271805377592243930">Chromium 도움말 보기</translation>
-<translation id="4275788652681621337">측면 패널 닫기</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4285930937574705105">확인되지 않은 오류로 설치에 실패했습니다. Chromium이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
 <translation id="4298125729853015961">Chromium에서 비밀번호 내보내기</translation>

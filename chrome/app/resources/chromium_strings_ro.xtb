@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Ajută-ne să îmbunătățim modul incognito, răspunzând la acest sondaj de un minut.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
+<translation id="109026165963220603">Chromium are nevoie de acces la rețeaua locală pentru a descoperi și a folosi dispozitivele din apropiere</translation>
 <translation id="1090946077924227754">Pentru a căuta o anumită funcție sau extensie Chromium, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="1098493699368672217">Afișează căutarea cu Chromium în bara de sistem și activează comanda rapidă de la tastatură</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Fișierul descărcat nu a putut fi verificat.</translation>
 <translation id="2135919691573380097">Raportează acest site</translation>
 <translation id="2137162749895930932">Închide ecranul de traducere</translation>
+<translation id="2147218225094845757">Ascunde panoul lateral</translation>
 <translation id="215352261310130060">Chromium a blocat descărcarea, deoarece site-ul nu folosește o conexiune securizată și este posibil ca fișierul să fi fost modificat</translation>
 <translation id="2170098639895543546">Selectează orice din pagină</translation>
 <translation id="2174178932569897599">Personalizează Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți alege să omiți avertismentele din Chromium.</translation>
 <translation id="4269093074552541569">Deconectează-te de la Chromium</translation>
 <translation id="4271805377592243930">Obține ajutor privind Chromium</translation>
-<translation id="4275788652681621337">Închide panoul lateral</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="4285930937574705105">Instalarea a eșuat din cauza unei erori necunoscute. Dacă Chromium rulează în acest moment, închideți-l și încercați din nou.</translation>
 <translation id="4298125729853015961">Exportă parolele din Chromium</translation>

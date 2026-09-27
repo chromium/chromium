@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 salasana tuotu tänne: <ph name="BRAND" /> tällä laitteella}other{{NUM_PASSWORDS} salasana tuotu tänne: <ph name="BRAND" /> tällä laitteella}}</translation>
 <translation id="1046572983040892965">Ikkuna siirretty ylös vasemmalle</translation>
 <translation id="1047431265488717055">Kopioi linkin te&amp;ksti</translation>
+<translation id="104751728059674265">Palaute ei ole käytettävissä tililläsi. Aikuinen voi ilmoittaa ongelmasta puolestasi laitteellaan tai profiilillaan.</translation>
 <translation id="1048986595386481879">Dynaamisesti jaettu</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Laitteelta (<ph name="DEVICE_NAME" />) vastaanotetaan <ph name="ATTACHMENTS" />}other{Laitteelta (<ph name="DEVICE_NAME" />) vastaanotetaan <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -469,6 +470,7 @@
 <translation id="1341701348342335220">Hyvin tehty!</translation>
 <translation id="1342886103232377846">Siirry Google Salasanoihin ja tarkista vaarantuneet salasanat</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
+<translation id="1344216785734288669">Apple Salasanat</translation>
 <translation id="1346630054604077329">Vahvista ja käynnistä uudelleen</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1347512539447549782">Linux-tallennustila</translation>
@@ -797,7 +799,6 @@
 <translation id="160689647589417224">Sovellusta on rajoitettu tällä alueella.</translation>
 <translation id="1607139524282324606">Tyhjennä merkintä</translation>
 <translation id="1608668830839595724">Lisää toimintoja valituille kohteille</translation>
-<translation id="1609603645228231640">Gemini Spark on kokeellinen, ja se saattaa esimerkiksi jakaa tietojasi tai tehdä ostoksia pyytämättä lupaa. <ph name="LINK_BEGIN" />Tutustu riskeihin<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Sovellusasetukset</translation>
 <translation id="161042844686301425">Turkoosi</translation>
 <translation id="1611649489706141841">seuraava</translation>
@@ -991,6 +992,7 @@
 <translation id="1755601632425835748">Tekstin koko</translation>
 <translation id="1756963401828337401">Valitse näyttö kuvakaappaukselle</translation>
 <translation id="17584710573359123">Näytä Chrome Web Storessa</translation>
+<translation id="1758845021884209593">Käytä pikanäppäinyhdistelmää käyttöjärjestelmän sovelluksissa</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> on määritetty uudelleen: <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Tilit: <ph name="NAME" /></translation>
 <translation id="176272781006230109">ostosehdotuksia</translation>
@@ -1062,7 +1064,6 @@
 <translation id="1808805149659872686">Uudet kirjautumistiedot</translation>
 <translation id="1809201888580326312">Olet päättänyt olla tallentamatta näiden sivustojen ja sovellusten salasanoja</translation>
 <translation id="1809734401532861917">Lisää kirjanmerkit, salasanat ja muut asetukset tilille <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Incognito-tilan Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ei voi jatkaa tämän käyttöä: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> striimataan</translation>
 <translation id="1813278315230285598">Palvelut</translation>
@@ -1296,7 +1297,6 @@
 <translation id="1983612835086592681">Avasit viimeisen viikon aikana</translation>
 <translation id="1984087999855033707">puhelinnumero</translation>
 <translation id="1984417487208496350">Ei suojausta (ei suositella)</translation>
-<translation id="1984683754853869253">Haluatko luoda uuden profiilin oppilaitosta varten?</translation>
 <translation id="198507684520034826">Ohje</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Sijainnin lisäasetukset</translation>
@@ -1330,7 +1330,6 @@
 <translation id="2010636492623189611">Valittu</translation>
 <translation id="2012935757369720523">Poista tiedosto</translation>
 <translation id="2014191284313949173">Sulje eristetyt välilehdet</translation>
-<translation id="2014495120525813351">Anna Gemini Sparkin selata tällä laitteella</translation>
 <translation id="2016473077102413275">Kuvia edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="2017334798163366053">Poista tehokkuustietojen kerääminen käytöstä</translation>
 <translation id="2017770349934140286">Google Play ja Google Playsta lataamasi sovellukset poistetaan tältä Chromebookilta.
@@ -2045,7 +2044,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2554553592469060349">Valittu tiedosto on liian iso (enimmäiskoko: 3 Mt).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" />/<ph name="TOTAL_NUM_APPS" /> sovellusta voi lähettää ilmoituksia</translation>
 <translation id="2555855727505718984">Automaattinen täyttö ei voi käyttää näitä tietoja lomakkeiden täyttämiseen tällä laitteella</translation>
-<translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Näet kaikki kirjanmerkkisi täällä</translation>
 <translation id="2563924218974330506">Voit nyt ylläpitää välilehtiryhmiä täällä. Voit poistaa kiinnityksen milloin tahansa.</translation>
 <translation id="2564520396658920462">JavaScriptin suorittaminen AppleScriptin kautta on poistettu käytöstä. Voit ottaa sen käyttöön valitsemalla valikkoriviltä Näytä &gt; Kehittäjä &gt; Salli JavaScript Apple Eventsistä. Lisätietoja: https://support.google.com/chrome/?p=applescript</translation>
@@ -2124,7 +2122,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2626746300781063303">Sivustot (mukaan lukien Google) reagoivat tähän pyyntöön oman harkintansa mukaan</translation>
 <translation id="2626799779920242286">Yritä myöhemmin uudelleen.</translation>
 <translation id="2627424346328942291">Jakaminen ei onnistu</translation>
-<translation id="2627970398976286795">Tutustu Gemini Sparkin riskeihin</translation>
 <translation id="2628258844236035475">Poistetaanko kotiosoitteesi Chromen automaattisesta täytöstä?</translation>
 <translation id="2628770867680720336">Kun ADB-virheenkorjaus otetaan käyttöön, tämä Chromebook on palautettava tehdasasetuksiin. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Aloita uusi keskustelu Geminin kanssa</translation>
@@ -2433,7 +2430,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2845276301195220700">Lisää Google Kalenteriin liittyviä toimintoja</translation>
 <translation id="2845382757467349449">Näytä kirjanmerkkipalkki aina</translation>
 <translation id="284581348330507117">Luo yksilöllisiä salasanoja</translation>
-<translation id="2846345106886298325">Tehtävä suoritettu ja palautettu Gemini Sparkiin</translation>
 <translation id="284884486564166077">Hae mitä tahansa kuvaa Lensillä</translation>
 <translation id="2849035674501872372">Hae</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2495,7 +2491,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2893318819023133318">Käännä näkymät</translation>
 <translation id="2894596417096093634">Virheraporttitunnisteet</translation>
 <translation id="2894757982205307093">Uusi välilehti ryhmässä</translation>
-<translation id="2895194086130800590">Gemini Spark voi käyttää automaattiselausta tällä laitteella vain, jos laite on päällä ja Chrome on käynnissä.</translation>
 <translation id="289695669188700754">Avaimen tunnus: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Tämä oma asetus poistetaan, kun suljet kaikki incognito-ikkunat</translation>
 <translation id="2897878306272793870">Haluatko varmasti avata <ph name="TAB_COUNT" /> välilehteä?</translation>
@@ -2548,7 +2543,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2933653107553951760">Palauta ryhmä</translation>
 <translation id="2934225044529065415">Kameraa ei voi käyttää</translation>
 <translation id="2935314715123552088">Poista aktiivinen eSIM-profiili käytöstä</translation>
-<translation id="2936067606203230121">Gemini Spark päättää suoritettavat toiminnot aloittamiesi tai päivittämiesi tehtävien perusteella.</translation>
 <translation id="2936851848721175671">Varmuuskopiointi ja palautus</translation>
 <translation id="2938981087412273365">Tämän sivuston lukemista ja muuttamista ei sallittu</translation>
 <translation id="2939005221756255562">Ota ilmoitukset käyttöön Ilmoituskeskuksessa. Avaa <ph name="BEGIN_LINK" />järjestelmäasetukset<ph name="END_LINK" />.</translation>
@@ -3106,6 +3100,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3355936511340229503">Yhteysvirhe</translation>
 <translation id="335678817537689040">Staattinen</translation>
 <translation id="3359256513598016054">Varmennekäytännön rajoitteet</translation>
+<translation id="3359465538772230055">Ei tehtäviä</translation>
 <translation id="3360297538363969800">Tulostus epäonnistui. Tarkista tulostin ja yritä uudelleen.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> jakaa <ph name="ATTACHMENTS" /> kanssasi.}other{<ph name="DEVICE_NAME" /> jakaa <ph name="ATTACHMENTS" /> kanssasi.}}</translation>
@@ -3656,7 +3651,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3756578970075173856">Aseta PIN-koodi</translation>
 <translation id="3756806135608816820">Sivustot voivat pyytää lupaa etsiä Bluetooth-laitteita</translation>
 <translation id="3756823472711156529">Palauta ryhmä</translation>
-<translation id="3757337311115630808">Lue lisää Gemini Sparkista</translation>
 <translation id="3757567010566591880">Irrota yläpalkista</translation>
 <translation id="3757645900890881944">Hakutyökalut</translation>
 <translation id="3757733214359997190">Sivustoja ei löytynyt</translation>
@@ -4777,6 +4771,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4631637535315947773">Useimmin avattujen sivustojen pikakuvakkeet on poistettu, koska et ole käyttänyt niitä viime aikoina</translation>
 <translation id="4631955550884380853">Keskittynyt ääni</translation>
 <translation id="4632655012900268062">Yksilöi kortteja</translation>
+<translation id="4634719521235795064">Gemini voi käyttää Google Salasanoja kirjautuakseen sisään puolestasi. <ph name="BEGIN_LINK" />Lue, miten Gemini käsittelee dataasi<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Poista Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ei ole vieraskäyttäjien saatavilla.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Lataa 1 kuva, jota haluat käyttää kysymyksessä}other{Lataa enintään # kuvaa, joita haluat käyttää kysymyksessä}}</translation>
@@ -5264,7 +5259,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4989966318180235467">Tarkista &amp;taustasivu</translation>
 <translation id="499016799952867794">Tämän jälkeen sovellus toimii odotetusti.</translation>
 <translation id="4990673372047946816">Ei käytettävissä olevaa kameraa</translation>
-<translation id="499126848196136237">Gemini Spark voi käyttää Chromen automaattiselausta tällä laitteella sivustojen kanssa toimimiseen ja tehtävien suorittamiseen puolestasi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Käytä ylärivin näppäimiä toimintanäppäiminä</translation>
 <translation id="4991873517942703737">Kysy tästä dokumentista</translation>
 <translation id="4992066212339426712">Poista mykistys</translation>
@@ -5521,7 +5515,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5189274947477567401">Prosessin jakamisen poistaminen käytöstä edellyttää selaimen uudelleenkäynnistystä. Selain käynnistyy uudelleen nyt.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" />-sovelluksen käyttäminen</translation>
-<translation id="5190835502935405962">Kirjanmerkkipalkki</translation>
 <translation id="5190926251776387065">Aktivoi portti</translation>
 <translation id="5190959794678983197">Ei mikrofonia</translation>
 <translation id="5191094172448199359">Lisäämäsi PIN-koodit eivät täsmää</translation>
@@ -6090,6 +6083,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" on muuttanut sivua, joka näkyy, kun klikkaat etusivupainiketta.</translation>
 <translation id="5643191124441701136">Turvakoodi on korttisi etupuolella</translation>
 <translation id="5643321261065707929">Maksullinen verkko</translation>
+<translation id="5645369002069651355">Vahvistetaan sähköpostia</translation>
 <translation id="5646376287012673985">Sijainti</translation>
 <translation id="5646558797914161501">Liikemies</translation>
 <translation id="564670806635578888">Hae Googlesta: "<ph name="SEARCH_TERMS" />"</translation>
@@ -6128,6 +6122,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5687340364605915800">Sivustot reagoivat tähän pyyntöön oman harkintansa mukaan</translation>
 <translation id="5689233503102158537">alt + askelpalautin</translation>
 <translation id="5689516760719285838">Sijainti</translation>
+<translation id="568984110402742489">Palautetta ei voi lähettää</translation>
 <translation id="56907980372820799">Yhdistä tiedot</translation>
 <translation id="5691772641933328258">Sormenjälkeä ei tunnistettu</translation>
 <translation id="5693255400847650006">Mikrofoni käytössä</translation>
@@ -7021,7 +7016,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6393550101331051049">Suojaamattoman sisällön näyttäminen sallittu</translation>
 <translation id="6394634179843537518">Lisää tiedosto</translation>
 <translation id="6395423953133416962">Lähetä <ph name="BEGIN_LINK1" />järjestelmän tiedot<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />tilastot<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Kyllä, pidä datani erillään oppilaitosdatasta (suositus)</translation>
 <translation id="6398715114293939307">Poista Google Play Kauppa</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
 <translation id="639880411171387127">Google Lens ‐valintasi. Poista Google Lens ‑valinta painamalla Enteriä tai askelpalautinta</translation>
@@ -8381,7 +8375,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7421293530411019405">Poistutaanko välilehtiryhmästä?</translation>
 <translation id="7421925624202799674">&amp;Näytä sivun lähdekoodi</translation>
 <translation id="7422192691352527311">Asetukset...</translation>
-<translation id="7423381908337122792">Kaikki, joilla on pääsy Gemini Spark ‑agenttiisi, voivat hallita Chrome-selaintasi.</translation>
 <translation id="7423425410216218516">Näkyvyys on päällä <ph name="MINUTES" /> minuutin ajan</translation>
 <translation id="7423513079490750513">Poista <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Verkko lisättiin</translation>
@@ -8507,6 +8500,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7517292544534877198">Käytä Googlen oletussalausta Google-tilisi salasanoissa</translation>
 <translation id="7517959947270534934">Perheenjäsenesi ei voi vastaanottaa salasanoja tällä hetkellä. Pyydä häntä päivittämään Chrome ja synkronoimaan salasanat.</translation>
 <translation id="7518079994230200553">Vaihtoehto ei ole juuri nyt käytettävissä.</translation>
+<translation id="7519506357537394422">Saako Gemini kirjautua sisään tänne puolestasi: <ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">Kirjaudu sisään käyttäjänä <ph name="EMAIL" />, niin voit käyttää esimerkiksi tallennettuja tietoja kaikilla laitteillasi</translation>
 <translation id="7520766081042531487">Incognito-portaali: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Näytä pikakuvakkeet</translation>
@@ -8734,7 +8728,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="769824636077131955">Dokumentti on liian iso turvatarkistukseen. Voit tulostaa korkeintaan 50 Mt:n kokoisia dokumentteja.</translation>
 <translation id="7698507637739331665">Osa kohteista on estetty</translation>
 <translation id="7700516433658473670">Tulostimet ja skannerit</translation>
-<translation id="7700873336634517379">Ei, jatka tämän profiilin käyttöä oppilaitoksen profiilina</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701869757853594372">KÄYTTÄJÄ-tunnukset</translation>
 <translation id="770231223935918661">Kysy tästä kuvasta</translation>
@@ -9100,6 +9093,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7978450511781612192">Tämä kirjaa sinut ulos Google-tileiltäsi. Kirjanmerkkejä, historiaa, salasanoja tai muita ei enää synkronoida.</translation>
 <translation id="7980066177668669492">Base64-koodattu ASCII, useita varmenteita</translation>
 <translation id="7981410461060625406">Käytä tallennettua avainkoodia: <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Sähköpostiosoitetta ei voitu vahvistaa</translation>
 <translation id="7981662863948574132">Näytä ponnahdusikkuna, jossa on laitteen EID ja QR-koodi</translation>
 <translation id="7982578888426609524">Ryhmän uusimmat päivitykset</translation>
 <translation id="7982789257301363584">Verkko</translation>
@@ -9286,6 +9280,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8109991406044913868">Tekoälyn luoma teema</translation>
 <translation id="8110393529211831722">Tilaus asennetaan vain tälle laitteelle, eikä sitä synkronoida muille tiliisi liitetyille laitteille. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Ladataan kontakteja…</translation>
+<translation id="8110781914702267195">Jos haluat muuttaa <ph name="BEGIN_LINK1" />data- ja yksityisyysasetuksia<ph name="END_LINK1" /> tai ylläpitää <ph name="BEGIN_LINK2" />maksutapoja<ph name="END_LINK2" /> ja <ph name="BEGIN_LINK3" />kortteja<ph name="END_LINK3" />, kuten kanta-asiakaskortteja, siirry Google Walletiin</translation>
 <translation id="8114925369073821854">Mikrofonilupa (<ph name="APP_NAME" />)</translation>
 <translation id="8116497846156149">Pyydä vanhemmalta lupa</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> muistaa, miten olet kirjautunut sisään ja kirjaa sinut automaattisesti sisään, jos mahdollista. Jos tämä ei ole päällä, sinua pyydetään aina vahvistamaan kirjautuminen.</translation>
@@ -10268,6 +10263,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8874341931345877644">Striimaa laitteeseen:</translation>
 <translation id="8874647982044395866">Orgaaninen</translation>
 <translation id="8874790741333031443">Kokeile sallia kolmannen osapuolen evästeet väliaikaisesti. Selauksen suojaus ei tällöin ole niin vahva, mutta sivuston ominaisuudet toimivat todennäköisemmin oikein.</translation>
+<translation id="8874864294955002500">Palaute ei ole käytettävissä tililläsi. Yrityksen järjestelmänvalvoja voi ilmoittaa ongelmasta puolestasi laitteellaan tai profiilillaan.</translation>
 <translation id="8875736897340638404">Valitse näkyvyytesi</translation>
 <translation id="8876307312329369159">Tätä asetusta ei voi muuttaa demo-käyttökerralla.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> etsii lähellä olevia laitteita Bluetooth-haun avulla.</translation>
@@ -10396,7 +10392,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="897525204902889653">Karanteenipalvelu</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{<ph name="TAB_TITLE" />}=1{<ph name="TAB_TITLE" /> ja yksi muu välilehti}other{<ph name="TAB_TITLE" /> ja # muuta välilehteä}}</translation>
 <translation id="897565255818387330">Saako sivusto nähdä ja kopioida tämän: <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Luo oppilaitoksen profiili, jotta voit tallentaa ja käyttää tilillä esimerkiksi salasanoja</translation>
 <translation id="8977811652087512276">Virheellinen salasana tai vioittunut tiedosto</translation>
 <translation id="8978154919215542464">Käytössä – synkronoi kaikki</translation>
 <translation id="8978670037548431647">Päivitä yhteyden jako-ominaisuudet</translation>
@@ -10500,7 +10495,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9040661932550800571">Päivitetäänkö salasana: <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Jos haluat tallentaa vahvoja salasanoja Google Salasanoilla, kirjaudu Chromeen</translation>
 <translation id="9041692268811217999">Järjestelmänvalvojasi on estänyt sinua käyttämästä koneellesi tallennettuja tiedostoja.</translation>
-<translation id="9041881059840744611">Tietoa oppilaitosten profiileista</translation>
 <translation id="904224458472510106">Tätä toimintoa ei voi kumota</translation>
 <translation id="9042827002460091668">Tarkista internetyhteys ja yritä uudelleen</translation>
 <translation id="9042893549633094279">Yksityisyys ja turvallisuus</translation>
@@ -10717,7 +10711,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="9219572436491982747">Tarkastajat voivat nähdä Googlelle lähetettyä dataa Chromen tekoälyteknologian parantamiseksi</translation>
 <translation id="9219741625496141320">Selausdata on poistettu automaattisesti</translation>
-<translation id="9220484506568374422">Gemini Sparkilla on pääsy samoille sivustoille kuin sinulla, mukaan lukien sivustot, joille olet kirjautunut sisään. Se jakaa kolmansille osapuolille tarvittavat tiedot, joihin voi sisältyä henkilökohtaisia ja arkaluontoisia tietoja.</translation>
 <translation id="9220525904950070496">Poista tili</translation>
 <translation id="9220723036554088545">lataa tiedosto</translation>
 <translation id="9220820413868316583">Nosta sormi ja yritä uudelleen.</translation>

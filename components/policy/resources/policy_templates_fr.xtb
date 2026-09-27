@@ -542,6 +542,7 @@ Les règles Chrome prévaudront sur cette règle, par exemple si l'extension se 
       Elle remplace <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> et les préférences de l'utilisateur.</translation>
 <translation id="1413768951234456918">Effacer l'historique de navigation</translation>
 <translation id="1413936351612032792">Transmettre des informations sur l'utilisation des applications Linux</translation>
+<translation id="1417591892602709307">Nombre maximal de profils utilisateur stockés sur l'appareil</translation>
 <translation id="1417776888841750570">Cette règle détermine le comportement du navigateur une fois l'utilisateur connecté à un compte géré dans la zone de contenu.
 
 Cette règle remplace <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -2075,6 +2076,11 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       Cette règle ne concerne que l'accès aux appareils USB via l'API WebUSB. Pour autoriser l'accès aux appareils USB via l'API Web Serial, consultez la règle <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Activer l'installation d'AWI par l'utilisateur</translation>
 <translation id="2318583605563438459">Autoriser les parents à ajouter des comptes supervisés</translation>
+<translation id="2323318142178972965">Contrôle le nombre maximal de profils utilisateur conservés sur l'appareil.
+
+Si cette règle est définie sur un entier positif <ph name="MAX_USERS" />, <ph name="PRODUCT_OS_NAME" /> conserve au maximum <ph name="MAX_USERS" /> profils utilisateur standards sur l'appareil. Lorsqu'un nouvel utilisateur se connecte et que la limite est dépassée, le ou les profils utilisateur les moins récemment utilisés (à l'exception de l'utilisateur actuellement actif) sont automatiquement supprimés, ainsi que leur espace de stockage local, pour que de l'espace disque reste disponible.
+
+Si cette règle n'est pas configurée ou si elle est définie sur 0, le nombre de profils utilisateur pouvant être ajoutés à l'appareil n'est pas limité. Pour ne conserver aucun profil utilisateur sur l'appareil, utilisez plutôt la règle <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
@@ -2392,24 +2398,6 @@ Si cette règle est désactivée, la fonctionnalité d'encodage de contenu <ph n
 <translation id="2521581787935130926">Afficher le raccourci des applications dans la barre de favoris</translation>
 <translation id="2522304491589804974">Configurer la liste d'autorisation concernant l'installation des extensions</translation>
 <translation id="2523511232831599126">Activer les raccourcis d'accessibilité sur l'écran de connexion</translation>
-<translation id="252611686271192278">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Les points de terminaison de réseau privés sont ceux qui utilisent des adresses IP issues de l'espace d'adressage IP privé, défini à l'adresse https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Cette règle permet de lister les formats d'URL pour lesquels les sites ne sont pas autorisés à accéder au réseau privé dans l'API Direct Sockets.
-Les formats valides sont limités aux applis Web isolées.
-
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
-
-Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL figure dans les deux règles.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-Notez que cette règle ne s'applique que si l'origine est autorisée à utiliser l'API Direct Sockets.
-Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Cette règle ne s'applique qu'aux nouvelles tentatives de connexion et n'invalide pas les connexions existantes.</translation>
 <translation id="252742292004421898">Autoriser l'API Direct Sockets sur ces sites</translation>
 <translation id="2528762900096510743">Activer le service de déconnexion automatique</translation>
 <translation id="2529880111512635313">Configurer la liste des applications et des extensions dont l'installation est forcée</translation>
@@ -3123,6 +3111,13 @@ La règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> est
 <translation id="2953447815703785478">Indique les certificats clients qui doivent être enregistrés au niveau de l'appareil à l'aide du protocole de gestion des appareils.
 
 L'option d'algorithme de clé <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> est prise en charge depuis la version 132 de <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2953620259874711778">Cette règle étant obsolète depuis M156, veuillez utiliser <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> à la place.
+
+Pour conserver le comportement actuel de désactivation de <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" />, configurez <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> avec "url_pattern" défini sur "*" et "blocked_types" défini sur ["contact_info", "identity_docs", "travel"].
+
+Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs contrôlent la saisie automatique des adresses dans l'interface utilisateur.
+
+Si cette règle est définie sur "False", les adresses ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires liées à une adresse que les utilisateurs fournissent sur une page Web ne sont pas enregistrées.</translation>
 <translation id="2957506574938329824">Interdire à tous les sites de demander l'accès à des appareils Bluetooth via l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Type de compte pour l'authentification <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Toujours transmettre les points d'accès Wi-Fi au serveur tout en mettant à jour le fuseau horaire</translation>
@@ -5969,7 +5964,6 @@ Cette règle est temporaire et sera supprimée dès le lancement de l'annulation
 Si cette règle est définie sur "False", c'est le comportement par défaut qui est appliqué.</translation>
 <translation id="4820432864264617413">Empêcher <ph name="BOREALIS_NAME" /> de fonctionner sur un appareil</translation>
 <translation id="4821987881803903281">Bloquer l'autorisation de positionnement des fenêtres sur ces sites</translation>
-<translation id="4825653993105771848">Contrôler l'accès au réseau privé dans l'API Direct Sockets</translation>
 <translation id="4825777333376170738">Désactiver les rapports sur les sessions kiosque de l'appareil</translation>
 <translation id="4826326557828204741">Définit l'action à effectuer si le délai d'inactivité est atteint lorsque l'appareil fonctionne sur batterie.</translation>
 <translation id="4826701474986856664">Afficher l'écran de détection de présence humaine lors de la connexion</translation>
@@ -8744,7 +8738,6 @@ REMARQUE : Le comportement par défaut des appareils grand public et profession
 <translation id="647645276885673708">Activer <ph name="LACROS_NAME" /> et en faire le navigateur principal</translation>
 <translation id="647698599569353771">Autorisez l'activation du Partage à proximité.</translation>
 <translation id="6477685422297715670">Rétroéclairage du clavier vert</translation>
-<translation id="6477933144150138501">Autoriser les origines d'applis Web isolées à communiquer avec les points de terminaison de réseau privés dans l'API Direct Sockets</translation>
 <translation id="6478258366184919502">Origines de l'écran de connexion</translation>
 <translation id="6478261301433199402">Cette règle permet de définir l'image de <ph name="PLUGIN_VM_NAME" /> pour un utilisateur. Spécifiez cette règle sous la forme d'une chaîne au format JSON. Dans le champ "<ph name="URL_PLUGIN_VM_IMAGE_FIELD" />", indiquez l'URL où télécharger l'image, et dans le champ "<ph name="HASH_PLUGIN_VM_IMAGE_FIELD" />", le hachage SHA-256 utilisé pour vérifier l'intégrité du téléchargement.</translation>
 <translation id="6481245670325946423">Autoriser le mode headless</translation>
@@ -9116,20 +9109,6 @@ Lorsqu'elle est activée, la fonctionnalité de mise à jour GREASE User-Agent C
       Remarque : Même si la règle peut accepter plusieurs éléments dans "<ph name="ENTRIES_FIELD_NAME" />", ils sont tous ignorés, sauf le premier.
       Avertissement : Configurer cette règle peut retarder l'application des mises à jour logicielles.</translation>
 <translation id="6695441448686167614">Paramètres d'impression Web</translation>
-<translation id="6695983959768914375">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Les points de terminaison de réseau privés sont ceux qui utilisent des adresses IP issues de l'espace d'adressage IP privé, défini à l'adresse https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Si vous définissez cette règle sur "1" ou si vous ne la configurez pas, les origines d'applis Web isolées peuvent communiquer avec les points de terminaison de réseau privés dans l'API Direct Sockets.
-
-Si cette règle est définie sur "2", les origines d'applis Web isolées ne peuvent pas communiquer avec les points de terminaison de réseau privés dans l'API Direct Sockets.
-
-Notez que cette règle ne s'applique que si l'origine est autorisée à utiliser l'API Direct Sockets.
-Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-Vous pouvez également remplacer la valeur par défaut pour les URL correspondantes à l'aide de <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Cette règle ne s'applique qu'aux nouvelles tentatives de connexion et n'invalide pas les connexions existantes.</translation>
 <translation id="6698632841807204978">Activer l'impression monochrome</translation>
 <translation id="6699740789657890714">Spécifie si les sites sont autorisés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée</translation>
 <translation id="6699880231565102694">Activer l'authentification forte pour les hôtes d'accès à distance</translation>
@@ -10479,22 +10458,6 @@ L'activation de Gemini n'est pas disponible dans tous les pays ni dans toutes le
 <translation id="7512514325152952954">Il est possible de télécharger les charges utiles de mise à jour automatique pour <ph name="PRODUCT_OS_NAME" /> via HTTP plutôt que HTTPS. Cela permet une mise en cache transparente lors des téléchargements via HTTP.
 
 Si cette règle est définie sur "True", le téléchargement des charges utiles de mise à jour automatique est effectué par <ph name="PRODUCT_OS_NAME" /> via HTTP. Si cette règle est définie sur "False", ou si elle n'est pas configurée, HTTPS est utilisé pour le téléchargement des charges utiles de mise à jour automatique.</translation>
-<translation id="7512603255315110634">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
-Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
-
-Les points de terminaison de réseau privés sont ceux qui utilisent des adresses IP issues de l'espace d'adressage IP privé, défini à l'adresse https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Cette règle permet de lister les formats d'URL pour lesquels les sites sont autorisés à communiquer avec des points de terminaison de réseau privés dans l'API Direct Sockets.
-Les formats valides sont limités aux applis Web isolées.
-
-Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie.
-
-Les formats d'URL ne doivent pas entrer en conflit avec ceux de la règle <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Aucune règle ne prévaut si un format d'URL figure dans les deux règles.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.
-
-Notez que cette règle ne s'applique que si l'origine est autorisée à utiliser l'API Direct Sockets.
-Pour en savoir plus, veuillez consulter <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7515953732107149296">Cette règle a été supprimée dans la version M53 après la suppression de RC4 dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée ou si elle est définie sur "False", les suites de chiffrement RC4 dans TLS ne seront pas activées. Sinon, il est possible de la définir sur "true" afin de conserver la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire et il est conseillé de reconfigurer le serveur.</translation>
@@ -10965,7 +10928,6 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="7832225468415136704">Empêcher Chrome Cleanup d'analyser périodiquement le système, et désactiver les analyses manuelles</translation>
 <translation id="7833148823006528332">Identifiant d'appli Android (par ex. : "com.google.android.gm" pour Gmail)</translation>
 <translation id="7835218570504220753">Désactiver les clics automatiques</translation>
-<translation id="7836591982756027878">Autoriser l'accès au réseau privé dans l'API Direct Sockets sur ces sites</translation>
 <translation id="7839124608155212387">Fréquence de collecte des données télémétriques d'utilisation des applis sur les appareils enregistrés des utilisateurs affiliés. La valeur minimale autorisée est de cinq minutes.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
@@ -11138,7 +11100,6 @@ Si la règle <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> est désactivée, ell
 <translation id="7937766917976512374">Autoriser ou interdire la capture vidéo</translation>
 <translation id="7941528208359969119">Autoriser l'exécution de vérifications <ph name="OCSP_CRL_LABEL" /> en ligne</translation>
 <translation id="7941975817681987555">Ne pas prédire d'actions réseau lors d'une connexion au réseau</translation>
-<translation id="794447754389837404">Bloquer l'accès au réseau privé dans l'API Direct Sockets sur ces sites</translation>
 <translation id="7945445169067895719">Activer le verrouillage quand l'appareil est arrêté provisoirement ou que l'écran est rabattu</translation>
 <translation id="7945744599423774764">Autoriser la randomisation de la taille du pool de sockets pour les proxys</translation>
 <translation id="7946350455013548764">Si cette règle est définie sur "3", les sites Web peuvent demander l'accès aux appareils HID. Si cette règle est définie sur "2", l'accès aux appareils HID est refusé.
@@ -12687,7 +12648,6 @@ Si cette règle n'est pas configurée, aucune navigation dans le navigateur n'es
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
 <translation id="8963464192296208229">Les paramètres F11 utilisent le raccourci qui contient la touche de modification Alt</translation>
-<translation id="8966888925105658202">Ne pas autoriser les origines d'applis Web isolées à communiquer avec les points de terminaison de réseau privés dans l'API Direct Sockets</translation>
 <translation id="8973579598359969188">Choisissez si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être présentée à vos utilisateurs</translation>
 <translation id="8974457039656761249">Contrôler la fonctionnalité d'écriture prédictive pour le clavier physique</translation>
 <translation id="8974588819713914715">Cette règle est obsolète et non compatible (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).</translation>
@@ -13083,6 +13043,13 @@ Détermine si un utilisateur est autorisé à configurer le nom d'hôte de l'app
       Si cette règle est définie sur "False", seuls les utilisateurs présents dans <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> peuvent se connecter.
 
       Si elle est définie sur "True" ou si elle n'est pas configurée, tous les utilisateurs peuvent se connecter.</translation>
+<translation id="963342674988073839">Cette règle étant obsolète depuis M156, veuillez utiliser <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> à la place.
+
+Pour conserver le comportement actuel de désactivation de <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />, configurez <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> avec "url_pattern" défini sur "*" et "blocked_types" défini sur ["payments"].
+
+Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
+
+Si cette règle est définie sur "False", les informations de carte de crédit ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires de carte de crédit que l'utilisateur est susceptible de fournir sur une page Web ne sont pas enregistrées.</translation>
 <translation id="966425658642788645">Appliquer le comportement par défaut</translation>
 <translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>

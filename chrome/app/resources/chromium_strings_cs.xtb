@@ -106,6 +106,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2126108037660393668">Stažený soubor nelze ověřit.</translation>
 <translation id="2135919691573380097">Nahlásit tento web</translation>
 <translation id="2137162749895930932">Zavřít překladač obrazovky</translation>
+<translation id="2147218225094845757">Skrýt boční panel</translation>
 <translation id="215352261310130060">Prohlížeč Chromium toto stahování zablokoval, protože web nepoužívá zabezpečené připojení a se souborem mohl někdo manipulovat</translation>
 <translation id="2170098639895543546">Vyberte cokoli na stránce</translation>
 <translation id="2174178932569897599">Přizpůsobit prohlížeč Chromium</translation>
@@ -305,7 +306,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4251772536351901305">Varuje vás před nebezpečnými weby (včetně těch, o kterých Google dříve nevěděl) tím, že analyzuje více dat z webů než standardní ochrana. Upozornění prohlížeče Chromium můžete přeskočit.</translation>
 <translation id="4269093074552541569">Odhlásit se z prohlížeče Chromium</translation>
 <translation id="4271805377592243930">Pomoc s prohlížečem Chromium</translation>
-<translation id="4275788652681621337">Zavřít boční panel</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4285930937574705105">Došlo k nespecifikované chybě, instalace se nezdařila. Pokud je prohlížeč Chromium právě spuštěný, zavřete jej prosím a zkuste to znovu.</translation>
 <translation id="4298125729853015961">Export hesel z prohlížeče Chromium</translation>

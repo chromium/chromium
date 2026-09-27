@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Bantu kami meningkatkan mode Samaran dengan mengikuti survei 1 menit ini.</translation>
 <translation id="1065672644894730302">Preferensi Anda tidak dapat dibaca. Beberapa fitur mungkin tidak tersedia dan perubahan pada preferensi tidak akan disimpan.</translation>
 <translation id="1083934481477628225">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium</translation>
+<translation id="109026165963220603">Chromium memerlukan akses ke jaringan lokal Anda untuk menemukan dan menggunakan perangkat di sekitar</translation>
 <translation id="1090946077924227754">Untuk menelusuri fitur atau ekstensi Chromium tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="1098493699368672217">Tampilkan penelusuran dengan Chromium di area notifikasi dan aktifkan pintasan keyboard</translation>
 <translation id="1104942323762546749">Chromium ingin mengekspor sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
 <translation id="2135919691573380097">Laporkan situs ini</translation>
 <translation id="2137162749895930932">Tutup layar terjemahan</translation>
+<translation id="2147218225094845757">Sembunyikan panel samping</translation>
 <translation id="215352261310130060">Chromium memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="2170098639895543546">Pilih apa pun di halaman</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chromium.</translation>
 <translation id="4269093074552541569">Logout dari Chromium</translation>
 <translation id="4271805377592243930">Dapatkan bantuan Chromium</translation>
-<translation id="4275788652681621337">Tutup panel samping</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
 <translation id="4285930937574705105">Pemasangan gagal karena kesalahan yang tidak diketahui. Jika Chromium sedang berjalan, tutup, lalu ulang kembali.</translation>
 <translation id="4298125729853015961">Ekspor Sandi dari Chromium</translation>

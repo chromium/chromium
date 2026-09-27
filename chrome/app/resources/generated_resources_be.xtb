@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Выдатна!</translation>
 <translation id="1342886103232377846">Каб праверыць наяўнасць раскрытых пароляў, перайдзіце ў Менеджар пароляў Google</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">Пацвердзіць і перазапусціць</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1347512539447549782">Сховішча Linux</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">Выкарыстанне праграмы ў гэтым рэгіёне абмежавана.</translation>
 <translation id="1607139524282324606">Выдаліць запіс</translation>
 <translation id="1608668830839595724">Іншыя дзеянні для выбраных элементаў</translation>
-<translation id="1609603645228231640">Gemini Spark – гэта эксперыментальная тэхналогія, таму часам пэўныя дзеянні, напрыклад купля тавараў ці абагульванне вашай інфармацыі, могуць адбывацца без запыту. <ph name="LINK_BEGIN" />Азнаёміцца з рызыкамі<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Налады праграмы</translation>
 <translation id="161042844686301425">Блакітны</translation>
 <translation id="1611649489706141841">наперад</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">Новы запіс</translation>
 <translation id="1809201888580326312">Вы вырашылі не захоўваць паролі для гэтых сайтаў і праграм</translation>
 <translation id="1809734401532861917">Дадаць мае закладкі, гісторыю, паролі і іншыя налады ў <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Акно fenced frame у рэжыме "інкогніта": <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584">Нельга выканаць уваход на сайце <ph name="SITE_ETLD_PLUS_ONE" /> з дапамогай сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />"</translation>
 <translation id="1812284620455788548">Ідзе трансляцыя ўкладкі "<ph name="TAB_NAME" />"</translation>
 <translation id="1813278315230285598">Сэрвісы</translation>
@@ -1286,7 +1285,6 @@
 <translation id="1983612835086592681">Вы адкрывалі на мінулым тыдні</translation>
 <translation id="1984087999855033707">нумар тэлефона</translation>
 <translation id="1984417487208496350">Без абароны (не рэкамендуецца)</translation>
-<translation id="1984683754853869253">Стварыць новы профіль для навучання?</translation>
 <translation id="198507684520034826">Даведка</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Пашыраныя налады месцазнаходжання</translation>
@@ -1319,7 +1317,7 @@
 <translation id="2010501376126504057">Сумяшчальныя прылады</translation>
 <translation id="2010636492623189611">Выбрана.</translation>
 <translation id="2012935757369720523">Выдаліць файл</translation>
-<translation id="2014495120525813351">Дазволіць Gemini Spark праглядаць вэб-старонкі на гэтай прыладзе</translation>
+<translation id="2014191284313949173">Закрыць ізаляваныя ўкладкі</translation>
 <translation id="2016473077102413275">Функцыі, для якіх патрэбныя відарысы, не будуць працаваць</translation>
 <translation id="2017334798163366053">Выключыць збор даных аб прадукцыйнасці</translation>
 <translation id="2017770349934140286">Google Play і праграмы, якія вы адтуль спампавалі, будуць выдалены з гэтай прылады Chromebook.
@@ -1449,6 +1447,7 @@
 <translation id="2121825465123208577">Змяніць памер</translation>
 <translation id="2122446694240899610">Вашы навыкі захоўваюцца ва Уліковым запісе Google</translation>
 <translation id="2123766928840368256">Выберыце іншы файл</translation>
+<translation id="2124153808069020510">Каб выдаліць даныя, закрыйце ўсе ізаляваныя вокны</translation>
 <translation id="2124930039827422115">{1,plural, =1{Ацэнена на <ph name="AVERAGE_RATING" /> адным карыстальнікам.}one{Ацэнена на <ph name="AVERAGE_RATING" /> # карыстальнікам.}few{Ацэнена на <ph name="AVERAGE_RATING" /> # карыстальнікамі.}many{Ацэнена на <ph name="AVERAGE_RATING" /> # карыстальнікамі.}other{Ацэнена на <ph name="AVERAGE_RATING" /> # карыстальніка.}}</translation>
 <translation id="2125715366913703594">Агляд &amp;пашырэнняў</translation>
 <translation id="2126167708562367080">Сінхранізацыя выключана вашым адміністратарам.</translation>
@@ -1591,6 +1590,7 @@
 <translation id="2227179592712503583">Выдаліць прапанову</translation>
 <translation id="222931766245975952">Файл абрэзаны</translation>
 <translation id="2229342031987138128">Субцітры</translation>
+<translation id="22294739381015133">Сайты, якія вы наведваеце ў ізаляваным рэжыме, не захоўваюцца</translation>
 <translation id="2231351769755997720">Няма даступных прапаноў. Задайце пытанне пра гэту старонку сваімі словамі.</translation>
 <translation id="2232751457155581899">Сайты могуць запытваць дазвол, каб адсочваць становішча камеры</translation>
 <translation id="2233502537820838181">&amp;Дадатковая інфармацыя</translation>
@@ -2027,7 +2027,6 @@
 <translation id="2554553592469060349">Выбраны файл занадта вялікі (максімальны памер: 3 МБ).</translation>
 <translation id="2555802059188792472">Колькі праграм могуць адпраўляць апавяшчэнні: <ph name="NUM_ALLOWED_APPS" /> з <ph name="TOTAL_NUM_APPS" /></translation>
 <translation id="2555855727505718984">Функцыя аўтазапаўнення форм больш не зможа выкарыстоўваць гэту інфармацыю на гэтай прыладзе</translation>
-<translation id="25568951186001797">Акно fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Тут знаходзяцца ўсе вашы закладкі</translation>
 <translation id="2563924218974330506">Цяпер вы можаце кіраваць групамі ўкладак тут. Адмацаваць можна ў любы час.</translation>
 <translation id="2564520396658920462">Выкананне JavaScript праз AppleScript выключана. Каб уключыць яго, перайдзіце з панэлі меню ў "Прагляд &gt; Распрацоўшчык &gt; Дазволіць JavaScript з падзей Apple". Падрабязную інфармацыю глядзіце тут: https://support.google.com/chrome/?p=applescript</translation>
@@ -2106,7 +2105,6 @@
 <translation id="2626746300781063303">Сайты, у тым ліку Google, могуць не рэагаваць на гэты запыт</translation>
 <translation id="2626799779920242286">Паўтарыце спробу пазней.</translation>
 <translation id="2627424346328942291">Збой абагульвання</translation>
-<translation id="2627970398976286795">Азнаёмцеся з рызыкамі выкарыстання Gemini Spark</translation>
 <translation id="2628258844236035475">Выдаліць хатні адрас з прапаноў аўтазапаўнення Chrome?</translation>
 <translation id="2628770867680720336">Уключэнне адладкі ADB патрабуе скіду налад Chromebook да заводскіх значэнняў. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Пачаць новы чат з Gemini</translation>
@@ -2415,7 +2413,6 @@
 <translation id="2845276301195220700">Іншыя дзеянні для Google Календара</translation>
 <translation id="2845382757467349449">Заўсёды паказваць панэль закладак</translation>
 <translation id="284581348330507117">Стварыце ўнікальныя паролі</translation>
-<translation id="2846345106886298325">Задача выканана і вы вярнуліся ў Gemini Spark</translation>
 <translation id="284884486564166077">Пошук па відарысе з дапамогай Аб’ектыва</translation>
 <translation id="2849035674501872372">Знайсці</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2477,7 +2474,6 @@
 <translation id="2893318819023133318">Памяняць экраны месцамі</translation>
 <translation id="2894596417096093634">Ідэнтыфікатары справаздач аб збоях</translation>
 <translation id="2894757982205307093">Стварыць у групе новую ўкладку</translation>
-<translation id="2895194086130800590">Gemini Spark можа выкарыстоўваць аўтаматычны прагляд на гэтай прыладзе, толькі калі прылада актыўная і запушчаны браўзер Chrome.</translation>
 <translation id="289695669188700754">Ідэнтыфікатар ключа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Гэта карыстальніцкая налада будзе выдалена, калі вы закрыеце ўсе вокны, адкрытыя ў рэжыме інкогніта</translation>
 <translation id="2897878306272793870">Сапраўды адкрыць укладкі (<ph name="TAB_COUNT" />)?</translation>
@@ -2530,7 +2526,6 @@
 <translation id="2933653107553951760">Аднавіць групу</translation>
 <translation id="2934225044529065415">Не ўдалося атрымаць доступ да камеры</translation>
 <translation id="2935314715123552088">Адключыць дзеючы профіль eSIM-карты</translation>
-<translation id="2936067606203230121">Gemini Spark будзе выбіраць дзеянні ў залежнасці ад задач, якія вы пачынаеце або абнаўляеце.</translation>
 <translation id="2936851848721175671">Рэзервовае капіраванне i аднаўленне</translation>
 <translation id="2938981087412273365">Пашырэнне не мае дазволу на прагляд і змяненне гэтага сайта</translation>
 <translation id="2939005221756255562">Уключыце апавяшчэнні ў Цэнтры апавяшчэнняў. <ph name="BEGIN_LINK" />Адкрыць налады сістэмы<ph name="END_LINK" />.</translation>
@@ -2910,6 +2905,7 @@
 <translation id="3213681682237645841">Ідзе спампоўванне файлаў галасоў для наступнай мовы: <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Стварыць ярлык?</translation>
 <translation id="3220494908385619295">Паказваць побач</translation>
+<translation id="3220541426929880850">Каб выдаліць гісторыю прагляду сайтаў у ізаляваным рэжыме на прыладзе, закрыйце ўсе ізаляваныя ўкладкі</translation>
 <translation id="3220943972464248773">Каб сінхранізаваць паролі, пацвердзіце сваю асобу</translation>
 <translation id="3222066309010235055">Папярэдняя візуалізацыя: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Падключыцца да віртуальнай машыны "<ph name="USB_VM_NAME" />"</translation>
@@ -3408,6 +3404,7 @@
 <translation id="3600956933576601730">Каб карыстацца гэтай функцыяй, трэба азнаёміцца з умовамі і прыняць іх</translation>
 <translation id="3601374594714740284">Каб спампаваць галасавыя пакеты ў больш высокай якасці, вызваліце месца на прыладзе</translation>
 <translation id="360180734785106144">Прапаноўваць новыя функцыі, як толькі яны з’яўляюцца</translation>
+<translation id="3601988315287782413">Гэта дзеянне закранае толькі ізаляваныя вокны</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3602495161941872610">Выправіць &amp;памылку сінхранізацыі</translation>
 <translation id="3602894439067790744">Зачытваць лікі як</translation>
@@ -3636,7 +3633,6 @@
 <translation id="3756578970075173856">Задаць PIN-код</translation>
 <translation id="3756806135608816820">Сайты могуць запытваць дазвол на пошук прылад з Bluetooth</translation>
 <translation id="3756823472711156529">Аднавіць групу</translation>
-<translation id="3757337311115630808">Даведацца больш пра Gemini Spark</translation>
 <translation id="3757567010566591880">Адмацаваць ад панэлі інструментаў</translation>
 <translation id="3757645900890881944">Інструменты пошуку</translation>
 <translation id="3757733214359997190">Сайты не знойдзены</translation>
@@ -4760,6 +4756,7 @@
 <translation id="4631637535315947773">Ярлыкі сайтаў, якія вы наведваеце часцей за ўсё, былі выдалены, бо вы не выкарыстоўвалі іх у апошні час</translation>
 <translation id="4631955550884380853">Сфакусіраваны голас</translation>
 <translation id="4632655012900268062">Наладзіць карткі</translation>
+<translation id="4634719521235795064">Gemini можа выконваць уваход ад вашага імя з дапамогай Менеджара пароляў Google. <ph name="BEGIN_LINK" />Даведацца, як Gemini апрацоўвае вашы даныя<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Выдаліць Crostini</translation>
 <translation id="4635398712689569051">Старонка <ph name="PAGE_NAME" /> недаступная для гасцявых карыстальнікаў.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Запампуйце 1 відарыс, які вы хочаце выкарыстаць у сваім пытанні}one{Запампуйце максімум # відарыс, які вы хочаце выкарыстаць у сваім пытанні}few{Запампуйце максімум # відарысы, якія вы хочаце выкарыстаць у сваім пытанні}many{Запампуйце максімум # відарысаў, якія вы хочаце выкарыстаць у сваім пытанні}other{Запампуйце максімум # відарыса, якія вы хочаце выкарыстаць у сваім пытанні}}</translation>
@@ -5247,7 +5244,6 @@
 <translation id="4989966318180235467">Праглядзець &amp;фонавую старонку</translation>
 <translation id="499016799952867794">Дзякуючы гэтаму дазволу праграма зможа працаваць належным чынам.</translation>
 <translation id="4990673372047946816">Даступных камер няма</translation>
-<translation id="499126848196136237">Gemini Spark можа выкарыстоўваць аўтаматычны прагляд у Chrome на гэтай прыладзе, каб узаемадзейнічаць з сайтамі і выконваць задачы ад вашага імя. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Выкарыстоўваць клавішы верхняга рада як функцыянальныя клавішы</translation>
 <translation id="4991873517942703737">Спытаць пра гэты дакумент</translation>
 <translation id="4992066212339426712">Уключыць гук</translation>
@@ -5504,7 +5500,6 @@
 <translation id="5189274947477567401">Каб адмовіцца ад абагульвання, трэба перазапусціць браўзер. Гэты браўзер будзе перазапушчаны.</translation>
 <translation id="5189404424758444348">Стымпанк</translation>
 <translation id="5190577235024772869">Выкарыстоўваецца <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="5190926251776387065">Уключыць порт</translation>
 <translation id="5190959794678983197">Няма мікрафона</translation>
 <translation id="5191094172448199359">Уведзеныя PIN-коды не супадаюць</translation>
@@ -6072,6 +6067,7 @@
 <translation id="5641715878999557094">Пашырэнне "<ph name="EXTENSION_NAME" />" змяніла старонку, якая адкрываецца пры націсканні кнопкі галоўнага экрана.</translation>
 <translation id="5643191124441701136">Код бяспекі знаходзіцца на пярэднім баку вашай карткі</translation>
 <translation id="5643321261065707929">Сетка з падлікам трафіка</translation>
+<translation id="5645369002069651355">Спраўджваецца адрас электроннай пошты</translation>
 <translation id="5646376287012673985">Месцазнаходжанне</translation>
 <translation id="5646558797914161501">Бізнесмен</translation>
 <translation id="564670806635578888">Шукаць у Google "<ph name="SEARCH_TERMS" />"</translation>
@@ -7003,7 +6999,6 @@
 <translation id="6393550101331051049">Дазволена паказваць небяспечнае змесціва</translation>
 <translation id="6394634179843537518">Дадайце файл</translation>
 <translation id="6395423953133416962">Адпраўляць <ph name="BEGIN_LINK1" />звесткі пра сістэму<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />значэнні паказчыкаў<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Так, я хачу захоўваць свае даныя адасоблена ад навучальных (рэкамендуецца)</translation>
 <translation id="6398715114293939307">Выдаліць Краму Google Play</translation>
 <translation id="6398765197997659313">Выключыць поўнаэкранны рэжым</translation>
 <translation id="639880411171387127">Ваш выбар у Google Аб’ектыве. Націсніце клавішу "Увод" ці Backspace, каб выдаліць ваш выбар у Google Аб’ектыве.</translation>
@@ -8368,7 +8363,6 @@
 <translation id="7421293530411019405">Выйсці з групы ўкладак?</translation>
 <translation id="7421925624202799674">&amp;Прагляд зыходнага тэксту старонкі</translation>
 <translation id="7422192691352527311">Параметры...</translation>
-<translation id="7423381908337122792">Любы, хто мае доступ да вашага агента Gemini Spark, можа кіраваць вашым браўзерам Chrome.</translation>
 <translation id="7423425410216218516">Прылада будзе бачнай яшчэ <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Выдаліць: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Сетка дададзена</translation>
@@ -8494,6 +8488,7 @@
 <translation id="7517292544534877198">Прымяняць да пароляў, якія захоўваюцца ва Уліковым запісе Google, стандартнае шыфраванне Google</translation>
 <translation id="7517959947270534934">Удзельнік сямейнай групы не можа атрымаць паролі. Папрасіце абнавіць Chrome і сінхранізаваць паролі.</translation>
 <translation id="7518079994230200553">Гэты варыянт зараз недаступны.</translation>
+<translation id="7519506357537394422">Дазволіць Gemini выконваць уваход на сайце <ph name="DOMAIN" /> ад вашага імя?</translation>
 <translation id="752021853309481824">Каб выкарыстоўваць сваю захаваную інфармацыю і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў сістэму як <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Партал у рэжыме інкогніта: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Паказаць спалучэнні клавіш</translation>
@@ -8721,7 +8716,6 @@
 <translation id="769824636077131955">Гэты дакумент занадта вялікі, каб прайсці праверку бяспекі. Вы можаце друкаваць дакументы, памер якіх не перавышае 50 МБ.</translation>
 <translation id="7698507637739331665">Некаторыя элементы заблакіраваны</translation>
 <translation id="7700516433658473670">Прынтары і сканеры</translation>
-<translation id="7700873336634517379">Не, я хачу выкарыстоўваць гэты профіль і для навучання</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701869757853594372">Маркеры КАРЫСТАЛЬНІКА</translation>
 <translation id="770231223935918661">Спытаць пра гэты відарыс</translation>
@@ -9087,6 +9081,7 @@
 <translation id="7978450511781612192">Вы выйдзеце з Уліковых запісаў Google. Вашы закладкі, гісторыя, паролі і г. д. больш не будуць сінхранізавацца.</translation>
 <translation id="7980066177668669492">ASCII з кадаваннем Base64, некалькі сертыфікатаў</translation>
 <translation id="7981410461060625406">Выкарыстайце захаваны ключ доступу для праграмы "<ph name="APP_NAME" />"</translation>
+<translation id="7981445433812028278">Не ўдалося спраўдзіць адрас электроннай пошты</translation>
 <translation id="7981662863948574132">Паказаць усплывальнае акно з электронным ідэнтыфікатарам прылады і QR-кодам</translation>
 <translation id="7982578888426609524">Апошнія змяненні ў гэтай групе</translation>
 <translation id="7982789257301363584">Сетка</translation>
@@ -10146,6 +10141,7 @@
 <translation id="878862491037637275">Гэта група ўкладак запоўнена</translation>
 <translation id="8791157330927639737">Даведацца больш пра абнаўленне</translation>
 <translation id="8791534160414513928">Адпраўляць запыт Do Not Track пры праглядзе старонак у інтэрнэце</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (ізаляваны рэжым)</translation>
 <translation id="8793390639824829328">Гэта функцыя ўплывае на тое, ці могуць сайты змяняць маштаб і прагортваць змесціва абагуленых укладак</translation>
 <translation id="8793895150509408038">Праглядзець падрабязныя звесткі пра сайт <ph name="SITE" /> са спіса "<ph name="SECTION_HEADER" />"</translation>
 <translation id="879413103056696865">Калі хот-спот уключаны, прылада <ph name="PHONE_NAME" /> будзе:</translation>
@@ -10382,7 +10378,6 @@
 <translation id="897525204902889653">Каранцінны сэрвіс</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" і яшчэ 1 укладка}one{"<ph name="TAB_TITLE" />" і яшчэ # укладка}few{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}many{"<ph name="TAB_TITLE" />" і яшчэ # укладак}other{"<ph name="TAB_TITLE" />" і яшчэ # укладкі}}</translation>
 <translation id="897565255818387330">Дазволіць гэтаму сайту праглядаць і капіраваць файл "<ph name="FILE_NAME" />"?</translation>
-<translation id="8977523125954274918">Вы можаце наладзіць навучальны профіль, які дазволіць захоўваць і выкарыстоўваць паролі і іншую інфармацыю ва ўліковым запісе</translation>
 <translation id="8977811652087512276">Няправільны пароль, або файл пашкоджаны</translation>
 <translation id="8978154919215542464">Уключана. Сінхранізуецца ўсё</translation>
 <translation id="8978670037548431647">Абнавіць магчымасці рэжыму мадэма</translation>
@@ -10486,7 +10481,6 @@
 <translation id="9040661932550800571">Абнавіць пароль для сайта <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Каб захоўваць надзейныя паролі ў Менеджары пароляў Google, увайдзіце ў Chrome</translation>
 <translation id="9041692268811217999">Доступ да лакальных файлаў на прыладзе выключаны адміністратарам</translation>
-<translation id="9041881059840744611">Інфармацыя пра навучальныя профілі</translation>
 <translation id="904224458472510106">Гэту аперацыю нельга адрабіць</translation>
 <translation id="9042827002460091668">Праверце падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="9042893549633094279">Прыватнасць і бяспека</translation>
@@ -10700,7 +10694,6 @@
 <translation id="9219103736887031265">Відарысы</translation>
 <translation id="9219572436491982747">Для паляпшэння функцыі штучнага інтэлекту ў Chrome даныя, якія перадаюцца ў Google, могуць разглядацца спецыялістамі</translation>
 <translation id="9219741625496141320">Даныя пра работу ў браўзеры аўтаматычна выдалены</translation>
-<translation id="9220484506568374422">Gemini Spark будзе мець доступ да тых жа сайтаў, што і вы, у тым ліку да сайтаў, на якіх вы ўвайшлі ва ўліковы запіс. Сэрвіс будзе абагульваць неабходную інфармацыю з трэцімі бакамі, у тым ліку асабістую інфармацыю, якую вы можаце лічыць канфідэнцыяльнай.</translation>
 <translation id="9220525904950070496">Выдаліць уліковы запіс</translation>
 <translation id="9220723036554088545">запампуйце файл</translation>
 <translation id="9220820413868316583">Адніміце палец і паўтарыце спробу.</translation>

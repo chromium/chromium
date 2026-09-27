@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Lo spazio di archiviazione è esaurito</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
-<translation id="1195433173321863960">Le immagini torneranno disponibili al ripristino del limite il giorno <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Fammi un breve riepilogo di questa pagina</translation>
 <translation id="1199631150313925648">Inserisci manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Trova e compila</translation>
 <translation id="1483493594462132177">Invia</translation>
 <translation id="1486096554574027028">Cerca password</translation>
-<translation id="1486593497476255523">Gruppi di schede completati.</translation>
 <translation id="1491277525950327607">Tocca due volte per attivare/disattivare l'impostazione</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1497590942294823549">Menu → Gestore delle password</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Passa a un altro profilo</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Ignora modifiche</translation>
-<translation id="1744234754703485302">Gestione dei metodi di pagamento completata.</translation>
 <translation id="1748975028205587434">Seleziona il file</translation>
 <translation id="1749733017156547309">È necessaria una password.</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opzione per l'indirizzo disponibile sopra la tastiera.}other{{count} opzioni per l'indirizzo disponibili sopra la tastiera.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Elimina tra 1 mese</translation>
 <translation id="2161446265348023004">Passa alla finestra aperta</translation>
 <translation id="2164946989711475905">Accedi…</translation>
-<translation id="2165110345209765380">Ricerca con AI Mode completata.</translation>
 <translation id="2175927920773552910">Codice QR</translation>
 <translation id="2180338296831857171">Elimina indirizzi</translation>
 <translation id="218350106843433823">Inserisci automaticamente password e passkey</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">Vai alla pagina di un prodotto</translation>
 <translation id="2219935992754556187">Chrome protegge i tuoi dati sensibili con Face ID</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
+<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" non può accedere alla fotocamera</translation>
 <translation id="2223461067862937305">Crea un codice QR</translation>
 <translation id="2230173723195178503">Pagina web caricata</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Compila automaticamente le informazioni da app come Gmail e Foto. Con tecnologia Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Questo indirizzo verrà eliminato da questo dispositivo.}other{Questi indirizzi verranno eliminati da questo dispositivo.}}</translation>
 <translation id="2295236662082735391">Tieni premuta un'immagine sul web per modificarla con Gemini</translation>
-<translation id="2296360194694387941">Utilizzo di Gemini in Chrome completato.</translation>
 <translation id="2297989278479054870">Quando esci, i preferiti, le password e altri dati nel tuo Account Google verranno rimossi da questo dispositivo.</translation>
 <translation id="2299218006564889602">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google.</translation>
 <translation id="2306265833370324042">Mostra dettagli <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
 <translation id="3183362380688692618">Nuovo gruppo di schede...</translation>
 <translation id="3185000827934321633">Navigazione</translation>
-<translation id="3185760469172949183">Ricerca con la fotocamera completata.</translation>
 <translation id="3186796054637504691">Cancella dati siti web e cronologia</translation>
 <translation id="3190558889382726167">Password salvata</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">Usa Live con Gemini per fare domande su una pagina, raccogliere idee ad alta voce e avere una vera e propria conversazione.</translation>
 <translation id="3462768334899086950">Perderai i dati non salvati.</translation>
 <translation id="3464194322481586217">Impossibile monitorare il prezzo.</translation>
-<translation id="346831467152294287">Password e compilazione automatica completate.</translation>
 <translation id="3469117812148449995">Opzioni per salvare la password</translation>
 <translation id="3472469028191701821">Si apre in una nuova scheda</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{per {COUNT} sito o app}other{per {COUNT} siti e app}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="3580448612293054698">Aggiornare <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponi di tradurre le pagine in altre lingue</translation>
+<translation id="3585482760087850407">Accesso alla fotocamera per questo sito</translation>
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587885837929752825">La tua organizzazione limita ciò che puoi salvare nel tuo Account Google.</translation>
 <translation id="3588820906588687999">Apri immagine in un'altra scheda</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">Suggerimenti utili che rendono la navigazione migliore e più semplice</translation>
 <translation id="3818293389945649617">Trova successivo</translation>
 <translation id="3819183753496523827">Sei offline. Controlla la connessione a internet e riprova.</translation>
-<translation id="3826034723896327540">Fissaggio schede completato.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metodo di pagamento}other{# metodi di pagamento}}</translation>
 <translation id="3831560640878483188">Ignorare l'avviso?</translation>
 <translation id="3832419617903252251">Password salvata solo su questo dispositivo</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">Avrai la possibilità di salvare queste informazioni in Wallet la prossima volta che compilerai un modulo pertinente.</translation>
 <translation id="3868495844258915202">Mostra URL completo</translation>
 <translation id="3875783148670536197">Mostrami come fare</translation>
+<translation id="3877211858413020188">L'accesso al microfono è bloccato per "<ph name="SITE_DOMAIN" />"</translation>
 <translation id="3878657761594430423">Pinza per fogli</translation>
 <translation id="3885587018298784481">Unisciti a un gruppo Famiglia</translation>
 <translation id="3888230626190453136">Naviga in incognito</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">Sono presenti diversi problemi relativi alle password che potrebbero mettere a rischio la tua sicurezza.</translation>
 <translation id="422477017457571619">Protezione basata sull'AI in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google</translation>
 <translation id="4231395118547300571">Notifiche del controllo di sicurezza attivate</translation>
-<translation id="4232376164796433044">Password e compilazione automatica</translation>
 <translation id="4232817129213135694">Configura le passkey per questo dispositivo</translation>
 <translation id="4237377247299956313">Tocca <ph name="BEGIN_BOLD" />App browser predefinita<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Salva Known Traveler Number</translation>
@@ -1820,6 +1814,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento della cronologia importato}other{{count} elementi della cronologia importati}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} opzione per le credenziali disponibile sopra la tastiera.}other{{count} opzioni per le credenziali disponibili sopra la tastiera.}}</translation>
+<translation id="6753460329812070808">Suggerimento rimosso da Chrome</translation>
 <translation id="6755200887046212842">Gestisci account</translation>
 <translation id="6757899787818440812">Mezza altezza</translation>
 <translation id="6759709389246683070">Puoi toccare e tenere premuta questa scheda per impostare un promemoria per tornare più tardi</translation>
@@ -1905,6 +1900,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Rendilo predefinito nelle Impostazioni…</translation>
 <translation id="7007970306646738803">Scegli cosa fare con i dati di navigazione esistenti su questo dispositivo, ad esempio schede, cronologia e password.</translation>
+<translation id="701134422972919485">Accesso al microfono per questo sito</translation>
 <translation id="7012978439516925343">Verifica la tua identità per creare una passkey</translation>
 <translation id="7015418667643980944">Visualizzazione divisa</translation>
 <translation id="7016070607649558507">Hai 1 password inefficace. Sistemala subito per rimanere al sicuro.</translation>
@@ -2077,7 +2073,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7603308509262646847">Compila automaticamente il titolare della carta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronizzazione non funziona</translation>
-<translation id="7606639338662398635">Gruppi di schede</translation>
 <translation id="760667371114328991">Disattiva le notifiche del controllo di sicurezza</translation>
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612849887607288481">Apri il menu di prototipazione AI</translation>
@@ -2285,7 +2280,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8240217649914883113">Aggiungi al mio calendario</translation>
 <translation id="824379025871762038">Non consentire mai</translation>
 <translation id="8250920743982581267">Documenti</translation>
-<translation id="8252980988000695656">Google Lens completato.</translation>
 <translation id="8258734532103758067">Ho esportato i miei dati</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8261506727792406068">Elimina</translation>
@@ -2336,6 +2330,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8393889347136007944">Schede non utilizzate per <ph name="THRESHOLD" /> giorni</translation>
 <translation id="8395180897620197612">Interrompi logging</translation>
+<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" può accedere al microfono ogni volta che visiti questo sito</translation>
 <translation id="8407669440184693619">Non è stata trovata alcuna password per questo sito</translation>
 <translation id="8407831512155324054">Le tue password sembrano efficaci</translation>
 <translation id="8414283596511250978">Le tue password sempre con te</translation>
@@ -2350,6 +2345,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
 <translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8449869326050867919">Password condivisa</translation>
+<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" può accedere alla fotocamera ogni volta che visiti questo sito</translation>
 <translation id="8461708300275916315">Se non sei ancora maggiorenne</translation>
 <translation id="8473815223723723001">Modifica immagine con Gemini</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>

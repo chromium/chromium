@@ -889,7 +889,6 @@
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
 <translation id="4537137366307982887">স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ খোলা অবস্থায়, সেখানে দেখানো পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করার স্ক্রিন</translation>
 <translation id="4537987892902330164">আপনি <ph name="NAME_OR_EMAIL" /> হিসেবে সাইন-ইন করে আছেন।</translation>
-<translation id="4543131175509360848">কোনও পাসকী শিট নেই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4558311620361989323">ওয়েবপৃষ্ঠার শর্টকাটগুলি</translation>
 <translation id="4572422548854449519">ম্যানেজ করা অ্যাকাউন্টে সাইন-ইন করুন</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">অনুবাদ করুন</translation>
 <translation id="4720556299488643018">আনসাবস্ক্রাইব</translation>
 <translation id="4732120983431207637">স্ট্যাক আনউইন্ডার</translation>
+<translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4736934858538408121">ভার্চুয়াল কার্ড</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4738065825338914557">আনসাবস্ক্রাইব করা হচ্ছে…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ফাইলটির আবার নাম দিন</translation>
 <translation id="4885273946141277891">অসমর্থিত সংখ্যার Chrome দৃষ্টান্তগুলি</translation>
 <translation id="4890973535105146893">আপনার Google অ্যাকাউন্ট কোনও সেভ করা পাসওয়ার্ড নেই</translation>
+<translation id="490375751687810070">উল্লম্ব</translation>
 <translation id="4905823827770127520">পৃষ্ঠাতে লিঙ্ক যোগ করুন</translation>
 <translation id="4910889077668685004">পেমেন্ট অ্যাপ্লিকেশান</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, আপনাকে আবার স্বাগত জানাই!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ছবির বিবরণ পান</translation>
 <translation id="6193448654517602979">ট্যাব বেছে নিন</translation>
 <translation id="6196315980958524839">পাসওয়ার্ড এই ডিভাইসের Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা হয়</translation>
+<translation id="6200780647297916498">ট্যাবের পজিশন</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-এর থেকে সম্ভাব্য স্প্যাম শনাক্ত করেছে।</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
 <translation id="6212567362666004597">গ্রুপে ট্যাব যোগ করুন</translation>

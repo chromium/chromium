@@ -128,6 +128,7 @@
 <translation id="2128411189117340671">Halda Chrome’i profiile</translation>
 <translation id="2137162749895930932">Sulgege tõlkeekraan</translation>
 <translation id="2139300032719313227">Taaskäivitage Chrome OS</translation>
+<translation id="2147218225094845757">Peida külgpaneel</translation>
 <translation id="2151406531797534936">Käivitage Chrome kohe uuesti</translation>
 <translation id="2163089732491971196">Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool</translation>
 <translation id="2170098639895543546">Valige lehel mis tahes element.</translation>
@@ -557,7 +558,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6434035853014503219">Täname, et valisite Chrome'i oma vaikebrauseriks!</translation>
 <translation id="6438015621983209660">Laiendage telefonis Chrome'iga täiustatud ohutut sirvimist</translation>
 <translation id="6442774133615368941">Ostke, tõlkige ja tuvastage, mida näete, kasutades Chrome'i iOS-i rakenduses oma kaamerat.</translation>
-<translation id="6446105560007692480">Chrome'iga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks</translation>
+<translation id="6446105560007692480">Chrome'iga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks.</translation>
 <translation id="6448835208126432197">Ekraanikuva osa valimiseks funktsioonis Gemini Chrome'is kasutage klaviatuuri otseteed.</translation>
 <translation id="6473905796280459355">Minemine lehele Teave Chrome’i kohta</translation>
 <translation id="6481963882741794338">Linkige Chrome ja teised Google’i teenused isikupärastamiseks ja muudel eesmärkidel</translation>
@@ -758,6 +759,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8196526165798579689">Chrome arendusversiooniga otsimine</translation>
 <translation id="8221491193165283816">Tavaliselt blokeerite märguanded. Kui soovite lubada sellel saidil endale märguandeid saata, klõpsake siin.</translation>
 <translation id="8227493674161801700">Chrome'i beetaversiooniga otsimine</translation>
+<translation id="8233224921566021881">Chrome vajab juurdepääsu teie kohalikule võrgule, et läheduses olevaid seadmeid avastada ja kasutada.</translation>
 <translation id="8253851811470049684">Avage mis tahes rakenduse lingid Chrome'is ja hoidke brauser tegumiribal käepärast.</translation>
 <translation id="8255190535488645436">Google Chrome kasutab kaamerat ja mikrofoni.</translation>
 <translation id="8260086374035800939">Kui Gemini Chrome'is on avatud, jääb külgpaneel uute vahelehtede loomisel avatuks</translation>

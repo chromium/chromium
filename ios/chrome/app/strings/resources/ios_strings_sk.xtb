@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Priestor je plný</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1190609913194133056">Centrum upozornení</translation>
-<translation id="1195433173321863960">Obrázky budú opäť k dispozícii po resetovaní limitu <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Stručne mi zhrň túto stránku</translation>
 <translation id="1199631150313925648">Zadať manuálne</translation>
 <translation id="1199963004393929848">Zelený motív</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Nájsť a vyplniť</translation>
 <translation id="1483493594462132177">Odoslať</translation>
 <translation id="1486096554574027028">Vyhľadajte heslá</translation>
-<translation id="1486593497476255523">Skupiny kariet sú dokončené.</translation>
 <translation id="1491277525950327607">Nastavenie môžete prepnúť dvojitým klepnutím</translation>
 <translation id="1492417797159476138">Toto používateľské meno ste pre tento web už uložili</translation>
 <translation id="1497590942294823549">Ponuka → Správca hesiel</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Prepnutie na iný profil</translation>
 <translation id="1741219894094057085">Inteligentné hodinky</translation>
 <translation id="1743244221910283364">Zahodiť zmeny</translation>
-<translation id="1744234754703485302">Správa spôsobov platby je dokončená.</translation>
 <translation id="1748975028205587434">Vybrať súbor</translation>
 <translation id="1749733017156547309">Heslo je povinné</translation>
 <translation id="174998178145075354">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť adresy.}few{Nad klávesnicou sú k dispozícii {count} možnosti adresy.}many{{count} options for address available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností adresy.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Odstrániť o 1 mesiac</translation>
 <translation id="2161446265348023004">Prepnúť na otvorené okno</translation>
 <translation id="2164946989711475905">Prihlásiť sa…</translation>
-<translation id="2165110345209765380">Vyhľadávanie v režime AI je dokončené.</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2180338296831857171">Odstrániť adresy</translation>
 <translation id="218350106843433823">Automatické dopĺňanie hesiel a prístupových kľúčov</translation>
@@ -426,7 +422,6 @@
 <translation id="2274179746480077483">Automaticky dopĺňa informácie z aplikácií, ako sú Gmail a Fotky. Využíva inteligenciu na mieru.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Táto adresa bude odstránená z tohto zariadenia.}few{Tieto adresy budú odstránené z tohto zariadenia.}many{Tieto adresy budú odstránené z tohto zariadenia.}other{Tieto adresy budú odstránené z tohto zariadenia.}}</translation>
 <translation id="2295236662082735391">Dlhým stlačením obrázka na internete ho upravíte pomocou Gemini</translation>
-<translation id="2296360194694387941">Používanie Gemini v Chrome je dokončené.</translation>
 <translation id="2297989278479054870">Po odhlásení budú záložky, heslá a ďalšie položky vo vašom účte Google odstránené z tohto zariadenia.</translation>
 <translation id="2299218006564889602">Heslá sú šifrované v zariadení ešte pred ich uložením do správcu hesiel Google.</translation>
 <translation id="2306265833370324042">Zobraziť podrobnosti o vyhľadávači <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -694,7 +689,6 @@
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
 <translation id="3183362380688692618">Nová skupina kariet…</translation>
 <translation id="3185000827934321633">Navigácia</translation>
-<translation id="3185760469172949183">Vyhľadávanie kamerou je dokončené.</translation>
 <translation id="3186796054637504691">Vymazať históriu a údaje webov</translation>
 <translation id="3190558889382726167">Heslo bolo uložené</translation>
 <translation id="3190736958609431397">Prestať sledovať</translation>
@@ -767,7 +761,6 @@
 <translation id="3459644598174926977">Prejdite s Gemini na režim Live a pýtajte sa na stránku, brainstormujte nahlas a diskutujte.</translation>
 <translation id="3462768334899086950">Znamená to, že prídete o neuložený súbor a aktuálne karty</translation>
 <translation id="3464194322481586217">Cenu sa nepodarilo sledovať.</translation>
-<translation id="346831467152294287">Heslá a automatické dopĺňanie sú dokončené.</translation>
 <translation id="3469117812148449995">Možnosti uloženia hesla</translation>
 <translation id="3472469028191701821">Otvorí sa na novej karte</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pre {COUNT} web alebo aplikáciu}few{pre {COUNT} weby alebo aplikácie}many{for {COUNT} sites and apps}other{pre {COUNT} webov alebo aplikácií}}</translation>
@@ -868,7 +861,6 @@
 <translation id="3813175908845379029">Užitočné návrhy, ktoré zlepšujú a uľahčujú prehliadanie</translation>
 <translation id="3818293389945649617">Vyhľadať ďalšie</translation>
 <translation id="3819183753496523827">Ste offline. Skontrolujte internetové pripojenie a skúste to znova.</translation>
-<translation id="3826034723896327540">Pripnutie kariet je dokončené.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 spôsob platby}few{# spôsoby platby}many{# payment methods}other{# spôsobov platby}}</translation>
 <translation id="3831560640878483188">Chcete varovanie zavrieť?</translation>
 <translation id="3832419617903252251">Heslo je uložené iba v tomto zariadení</translation>
@@ -997,7 +989,6 @@
 <translation id="422474357428465195">Máte viacero problémov heslami, ktoré môžu ohroziť vaše zabezpečenie.</translation>
 <translation id="422477017457571619">Ochrana využívajúca umelú inteligenciu v reálnom čase proti nebezpečným webom, stiahnutým súborom a rozšíreniam, ktorá je založená na odosielaní vašich dát prehliadania Googlu</translation>
 <translation id="4231395118547300571">Upozornenia kontroly bezpečnosti sú zapnuté</translation>
-<translation id="4232376164796433044">Heslá a automatické dopĺňanie</translation>
 <translation id="4232817129213135694">Nastavte prístupové kľúče pre toto zariadenie</translation>
 <translation id="4237377247299956313">Klepnite na položku <ph name="BEGIN_BOLD" />Predvolená aplikácia prehliadača<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Uložte číslo Known Traveler Number</translation>
@@ -2077,7 +2068,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="7603308509262646847">Automaticky doplniť majiteľa karty <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokované kontextové okná (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronizácia nefunguje</translation>
-<translation id="7606639338662398635">Skupiny kariet</translation>
 <translation id="760667371114328991">Vypnite upozornenia kontroly bezpečnosti</translation>
 <translation id="7612619742409846846">Prihlásený účet Google</translation>
 <translation id="7612849887607288481">Otvoriť ponuku vytvárania prototypov pomocou umelej inteligencie</translation>
@@ -2285,7 +2275,6 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8240217649914883113">Pridaj mi to do kalendára</translation>
 <translation id="824379025871762038">Nikdy nepovoliť</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
-<translation id="8252980988000695656">Funkcia Google Lens je dokončená.</translation>
 <translation id="8258734532103758067">Moje dáta boli exportované</translation>
 <translation id="8258999165172757081">Pridané</translation>
 <translation id="8261506727792406068">Odstrániť</translation>

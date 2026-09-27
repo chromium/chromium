@@ -130,6 +130,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2128411189117340671">Manage Chrome profiles</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
+<translation id="2147218225094845757">Hide side panel</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
 <translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
 <translation id="2170098639895543546">Select anything on page</translation>
@@ -762,6 +763,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8196526165798579689">Search with Chrome Dev</translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8227493674161801700">Search with Chrome Beta</translation>
+<translation id="8233224921566021881">Chrome needs access to your local network to discover and use nearby devices</translation>
 <translation id="8253851811470049684">Open links in Chrome from any app and keep the browser accessible on your taskbar</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8260086374035800939">If Gemini in Chrome is open, the side panel stays open when creating new tabs</translation>

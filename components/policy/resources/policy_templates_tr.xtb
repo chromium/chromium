@@ -552,6 +552,7 @@ Uzantının <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXT
       Bu politika <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> ve kullanıcının tercihlerini geçersiz kılar.</translation>
 <translation id="1413768951234456918">Göz Atma Geçmişini Temizle</translation>
 <translation id="1413936351612032792">Linux uygulamalarının kullanımıyla ilgili bilgileri raporla</translation>
+<translation id="1417591892602709307">Cihazda depolanan maksimum kullanıcı profili sayısı</translation>
 <translation id="1417776888841750570">Bu politika, yönetilen bir hesap, içerik alanında oturum açtıktan sonra tarayıcının davranışını kontrol eder.
 
 Bu politika, <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> politikasını geçersiz kılar.
@@ -2106,6 +2107,11 @@ Bu politikayı ayarlarsanız kullanıcılar <ph name="PRODUCT_NAME" /> ürünün
       Bu politika, yalnızca WebUSB API üzerinden USB cihazlarına erişimi etkiler. Web Serial API üzerinden USB cihazlarına erişim izni vermek için <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> politikasını inceleyin.</translation>
 <translation id="2318353380372431186">IWA kullanıcı yüklemesini etkinleştir</translation>
 <translation id="2318583605563438459">Anne veya babaların gözetilen hesap eklemesine izin ver</translation>
+<translation id="2323318142178972965">Cihazda tutulan kullanıcı profillerinin maksimum sayısını kontrol eder.
+
+Bu politika pozitif tam sayı (<ph name="MAX_USERS" />) değerine ayarlandığında <ph name="PRODUCT_OS_NAME" />, cihazda en fazla <ph name="MAX_USERS" /> normal kullanıcı profili saklar. Yeni bir kullanıcı giriş yaptığında ve sınır aşıldığında, boş disk alanını korumak için en eski kullanıcı profilleri (mevcut etkin kullanıcı hariç) yerel depolama alanlarıyla birlikte otomatik olarak silinir.
+
+Bu politika ayarlanmaz veya 0 değerine ayarlanırsa cihaza eklenebilecek kullanıcı profili sayısında herhangi bir sınırlama olmaz. Cihazda hiçbir kullanıcı profili tutmamak için <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="2326031114717677574">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlamazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
@@ -2451,24 +2457,6 @@ Politika, Devre dışı değerine ayarlanırsa
 <translation id="2521581787935130926">Yer işareti çubuğunda uygulamalar kısayolunu göster</translation>
 <translation id="2522304491589804974">Uzantı kurulum izin listesini yapılandırma</translation>
 <translation id="2523511232831599126">Oturum açma ekranında erişilebilirlik kısayollarını etkinleştir</translation>
-<translation id="252611686271192278">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
-Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
-
-Özel ağ uç noktaları, https://wicg.github.io/private-network-access/#ip-address-space-private adresinde belirtilen özel IP adresi alanındaki IP adreslerini kullanır.
-
-Bu politikayı ayarlamak, Direct Sockets API'de özel ağa erişimi engellenen sitelerin belirtildiği URL kalıplarının listesini oluşturmanıza olanak tanır.
-Geçerli kalıplar, yalıtılmış web uygulamalarıyla sınırlıdır.
-
-Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur.
-
-URL kalıpları, <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.
-
-Bu politikanın yalnızca, kaynağın Direct Sockets API'yi kullanmasına izin verildiğinde geçerli olduğunu unutmayın.
-Daha fazla bilgiyi <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> politikalarında bulabilirsiniz.
-
-Bu politika yalnızca yeni bağlantı denemelerinde geçerli olup mevcut bağlantıları geçersiz kılmaz.</translation>
 <translation id="252742292004421898">Bu sitelerde Direct Sockets API'ye izin ver</translation>
 <translation id="2528762900096510743">Otomatik oturum kapatma hizmetini etkinleştir</translation>
 <translation id="2529880111512635313">Yüklenmeye zorlanan uygulama ve uzantıların listesini yapılandır</translation>
@@ -3191,6 +3179,13 @@ Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler,
 <translation id="2953447815703785478">Cihaz yönetim protokolü kullanılarak kaydolunması gereken, cihaz genelinde istemci sertifikalarını belirtir.
 
 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> anahtar algoritması seçeneği, <ph name="PRODUCT_OS_NAME" /> 132 sürümünden itibaren desteklenmektedir.</translation>
+<translation id="2953620259874711778">Bu politika M156'da kullanımdan kaldırıldı. Lütfen bunun yerine <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> politikasını kullanın
+
+<ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> politikasını devre dışı bırakma davranışını sürdürmek için <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> politikasını, "url_pattern" değeri "*" ve "blocked_types" değeri ["contact_info", "identity_docs", "travel"] olacak şekilde yapılandırın.
+
+Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, kullanıcı arayüzünde adresler için Otomatik doldurma kontrolünü kullanıcıya verir.
+
+Politikayı False (Yanlış) değerine ayarlamak, Otomatik doldurmanın hiçbir zaman öneride bulunmayacağı, adres bilgilerini doldurmayacağı ve kullanıcının web'e göz atarken gönderdiği ek adres bilgilerini kaydetmeyeceği anlamına gelir.</translation>
 <translation id="2957506574938329824">Hiçbir sitenin Web Bluetooth API'sı aracılığıyla Bluetooth hizmetlerine erişim istemesine izin verme</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> kimlik doğrulaması için hesap türü</translation>
 <translation id="2959469725686993410">Saat dilimini çözümlerken kablosuz erişim noktalarını her zaman sunucuya gönder</translation>
@@ -6079,7 +6074,6 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
 Politika, Yanlış değerine ayarlanırsa varsayılan davranış kullanılır.</translation>
 <translation id="4820432864264617413"><ph name="BOREALIS_NAME" /> politikasının kullanıcı için çalışması engellensin</translation>
 <translation id="4821987881803903281">Bu sitelerde pencere yerleşimi iznini engelle</translation>
-<translation id="4825653993105771848">Direct Sockets API'de özel ağa erişimi kontrol et</translation>
 <translation id="4825777333376170738">Cihaz kiosk oturumu raporlamasını devre dışı bırak</translation>
 <translation id="4826326557828204741">Cihaz pille çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
 <translation id="4826701474986856664">Oturum açma sırasında insan varlığı sensörü ekranını göster</translation>
@@ -8897,7 +8891,6 @@ NOT: Tüketici cihazlarıyla kurumsal cihazların varsayılan davranışı farkl
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> tarayıcısını etkinleştir ve birincil tarayıcı yap</translation>
 <translation id="647698599569353771">Yakındakilerle Paylaş'ın etkinleştirilmesine izin verin.</translation>
 <translation id="6477685422297715670">Klavye arka ışığı yeşil</translation>
-<translation id="6477933144150138501">Yalıtılmış web uygulaması kaynaklarının, Direct Sockets API'deki özel ağ uç noktalarıyla iletişim kurmasına izin ver</translation>
 <translation id="6478258366184919502">Giriş ve ekran kaynakları</translation>
 <translation id="6478261301433199402">Politika ayarlanırsa bir kullanıcı için <ph name="PLUGIN_VM_NAME" /> resmi belirlenir. Bu politikayı, <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> ve resmin indirme işleminin bütünlüğünü doğrulamak için bir SHA-256 karması olacak şekilde indirileceği yeri belirten <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> ile bir JSON biçimi dize olarak belirleyin.</translation>
 <translation id="6481245670325946423">Gözetimsiz Mod'un kullanılmasına izin ver</translation>
@@ -9270,20 +9263,6 @@ Kullanıcı Aracısı İstemci İpuçları GREASE güncelleme özelliği etkinle
       Not: Politika <ph name="ENTRIES_FIELD_NAME" /> alanında birden çok öğe kabul edebilir, ancak birinci öğe hariç diğerleri yok sayılır.
       Uyarı: Bu politikayı ayarlamak, yazılım güncellemelerinin uygulanmasını geciktirebilir.</translation>
 <translation id="6695441448686167614">Web yazdırma ayarları</translation>
-<translation id="6695983959768914375">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
-Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
-
-Özel ağ uç noktaları, https://wicg.github.io/private-network-access/#ip-address-space-private adresinde belirtilen özel IP adresi alanındaki IP adreslerini kullanır.
-
-Politika, 1 değerine ayarlanır veya ayarlanmadan bırakılırsa yalıtılmış web uygulaması kaynaklarının, Direct Sockets API'deki özel ağ uç noktalarıyla iletişim kurmasına izin verilir.
-
-Politika, 2 değerine ayarlanırsa yalıtılmış web uygulaması kaynaklarının Direct Sockets API'deki özel ağ uç noktalarıyla iletişim kurmasına izin verilmez.
-
-Bu politikanın yalnızca, kaynağın Direct Sockets API'yi kullanmasına izin verildiğinde geçerli olduğunu unutmayın.
-Daha fazla bilgiyi <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> politikalarında bulabilirsiniz.
-Eşleşen URL'ler için varsayılan değer, <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> kullanılarak da geçersiz kılınabilir.
-
-Bu politika yalnızca yeni bağlantı denemelerinde geçerli olup mevcut bağlantıları geçersiz kılmaz.</translation>
 <translation id="6698632841807204978">Tek renk yazdırmayı etkinleştir</translation>
 <translation id="6699740789657890714">Web sitelerinin, daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin verilip verilmeyeceğini belirtir</translation>
 <translation id="6699880231565102694">Uzaktan erişim ana makineleri için iki öğeli kimlik doğrulamayı etkinleştir</translation>
@@ -10667,22 +10646,6 @@ Gemini'ın etkinleştirilmesi tüm ülkelerde veya dillerde kullanılamaz. Bu po
 <translation id="7512514325152952954"><ph name="PRODUCT_OS_NAME" /> üzerindeki otomatik güncelleme verileri, HTTPS yerine HTTP üzerinden indirilebilir. Bu kullanım, indirilen HTTP öğelerinin şeffaf bir şekilde HTTP önbelleğine alınmasına olanak sağlar.
 
 Bu politika Doğru seçeneğine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> otomatik güncelleme verilerini HTTP aracılığıyla indirmeye çalışır. Politika, Yanlış değerine ayarlanırsa veya hiç ayarlanmazsa otomatik güncelleme verilerini indirmek için HTTPS kullanılır.</translation>
-<translation id="7512603255315110634">Direct Sockets API, TCP ve UDP kullanarak rastgele uç noktalarla iletişime izin verir.
-Ayrıntılar için lütfen https://github.com/WICG/direct-sockets adresini inceleyin.
-
-Özel ağ uç noktaları, https://wicg.github.io/private-network-access/#ip-address-space-private adresinde belirtilen özel IP adresi alanındaki IP adreslerini kullanır.
-
-Bu politikayı ayarlamak, Direct Sockets API'de özel ağ uç noktalarıyla iletişim kurmasına izin verilen sitelerin belirtildiği URL kalıplarının listesini oluşturmanıza olanak tanır.
-Geçerli kalıplar, yalıtılmış web uygulamalarıyla sınırlıdır.
-
-Politika etkinleştirilir ve ayarlanmadan bırakılırsa <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> bütün siteler için geçerli olur.
-
-URL kalıpları, <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> ile çakışmamalıdır. Bir URL her ikisiyle de eşleşirse politikaların ikisinin de diğeri üzerinde önceliği olmaz.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.
-
-Bu politikanın yalnızca, kaynağın Direct Sockets API'yi kullanmasına izin verildiğinde geçerli olduğunu unutmayın.
-Daha fazla bilgiyi <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> ve <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> politikalarında bulabilirsiniz.</translation>
 <translation id="7515953732107149296">Bu politika, <ph name="PRODUCT_NAME" /> ürünündeki RC4 kaldırıldıktan sonra M53 sürümünde kaldırılmıştır.
 
       Politika ayarlanmazsa veya yanlış değerine ayarlanırsa TLS'deki RC4 şifre paketleri etkinleştirilmez. Aksi takdirde, eski bir sunucuyla uyumluluğu korumak için doğru değerine ayarlanabilir. Bu geçici bir tedbir olup sunucu yeniden yapılandırılmalıdır.</translation>
@@ -11157,7 +11120,6 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
 <translation id="7832225468415136704">Chrome Temizleme özelliğinin, sistemi düzenli olarak taramasını engelle ve manuel taramaları devre dışı bırak</translation>
 <translation id="7833148823006528332">Android uygulaması tanımlayıcı (ör. Gmail için "com.google.android.gm")</translation>
 <translation id="7835218570504220753">Otomatik tıklamayı devre dışı bırak</translation>
-<translation id="7836591982756027878">Bu sitelerde Direct Sockets API'deki özel ağ erişimine izin ver</translation>
 <translation id="7839124608155212387">Satış ortağı kullanıcılar için kayıtlı cihazlarla ilgili uygulama kullanımı telemetrisinin toplanma hızı. İzin verilen minimum süre 5 dakikadır.
 
       Ayarlanmazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
@@ -11333,7 +11295,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa ku
 <translation id="7937766917976512374">Video yakalamaya izin verme veya reddetme</translation>
 <translation id="7941528208359969119">Online <ph name="OCSP_CRL_LABEL" /> kontrollerinin yapılmasına izin ver</translation>
 <translation id="7941975817681987555">Ağ bağlantılarında ağ işlemlerini tahmin etme</translation>
-<translation id="794447754389837404">Bu sitelerde Direct Sockets API'deki özel ağ erişimini engelle</translation>
 <translation id="7945445169067895719">Cihaz askıya alındığında veya cihazın kapağı kapatıldığında kilidi etkinleştir</translation>
 <translation id="7945744599423774764">Proxy'ler için yuva havuzu boyutunu rastgele hale getirmeye izin ver</translation>
 <translation id="7946350455013548764">Politikayı 3 değerine ayarlarsanız web siteleri HID cihazlara erişim izni isteyebilir. Politikayı 2 değerine ayarlarsanız HID cihazlara erişime izin verilmez.
@@ -12927,7 +12888,6 @@ Politikanın ayarlanmadan bırakılması, yüksek düzey modunda Her zaman açı
 <translation id="8955719471735800169">Başa dön</translation>
 <translation id="8956312248048980644">Varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.</translation>
 <translation id="8963464192296208229">F11 ayarları, alt tuşu değiştiriciyi içeren kısayolu kullanır</translation>
-<translation id="8966888925105658202">Yalıtılmış web uygulaması kaynaklarının, Direct Sockets API'deki özel ağ uç noktalarıyla iletişim kurmasına izin verme</translation>
 <translation id="8973579598359969188">Kullanıcılara <ph name="PRIVACY_SANDBOX_NAME" /> isteminin gösterilip gösterilemeyeceğini seç.</translation>
 <translation id="8974457039656761249">Fiziksel klavyede tahmine dayalı yazma özelliğini kontrol et</translation>
 <translation id="8974588819713914715">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine "<ph name="URL_ALLOWLIST_POLICY_NAME" />" politikasını kullanın.</translation>
@@ -13324,6 +13284,13 @@ Bir kullanıcının, cihazın ana makine adını yapılandırmasına izin verili
       Bu politika yanlış değerine ayarlanırsa yalnızca <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> içerisinde mevcut olan kullanıcılar giriş yapabilir.
 
       Bu politika doğru değerine ayarlanır veya yapılandırılmadan bırakılırsa tüm kullanıcılar giriş yapabilir.</translation>
+<translation id="963342674988073839">Bu politika M156'da kullanımdan kaldırıldı. Lütfen bunun yerine <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> politikasını kullanın
+
+<ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> politikasını devre dışı bırakma davranışını sürdürmek için <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> politikasını, "url_pattern" "*" ve "blocked_types" ["payments"] olarak ayarlanacak şekilde yapılandırın.
+
+Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, kullanıcı arayüzünde kredi kartları için otomatik doldurma önerilerini kontrol edebilirler.
+
+Politika False (Yanlış) değerine ayarlanırsa otomatik doldurma hiçbir zaman kredi kartı bilgilerini önermez ve doldurmaz, ayrıca kullanıcının web'de gezinirken gönderdiği ek kredi kartı bilgileri kaydedilmez.</translation>
 <translation id="966425658642788645">Varsayılan davranışı uygula</translation>
 <translation id="971677226939413180">Resim olarak yazdır seçeneği kullanıcı tarafından seçilemez.</translation>
 <translation id="974349541138387272">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonunu belirler</translation>

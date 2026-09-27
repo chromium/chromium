@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">To use parental controls like app approval and screen time limits, a child must have a Google Account managed by a parent. A school account can be added later for tools like Google Classroom.</translation>
 <translation id="1375557162880614858">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex?</translation>
-<translation id="1375938286942050085">Setup is complete! Get your device ready for gaming next</translation>
 <translation id="1377600615067678409">Skip for now</translation>
 <translation id="1399261165075500043">Can't load Google Play Terms of Service</translation>
 <translation id="1400243387594338234">You can use this PIN to sign in to your device</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Use your Google Account on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Select Time Zone</translation>
 <translation id="3893630138897523026">ChromeVox (spoken feedback)</translation>
-<translation id="3897746662269329507">Your <ph name="DEVICE_TYPE" /> is built for gaming. The Explore app will open next where you can access hundreds of the latest games, see gaming offers and discover gaming features that come with your device.</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3910588685973519483">Create wallpapers with AI</translation>
 <translation id="3924259174674732591">Display and text size <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">An update for the trusted platform module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oops, something went wrong with signing in</translation>
 <translation id="5453829744223920473">Your child can use all of their school apps, bookmarks and resources just like they do in class. The school sets the ground rules.</translation>
-<translation id="5463450804024056231">Sign up for <ph name="DEVICE_TYPE" /> emails</translation>
 <translation id="5473099001878321374">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child's operator and this device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
 <translation id="5502915260472117187">A child</translation>
 <translation id="5511823366942919280">Are you sure that you want to set up this device as a "Shark"?</translation>

@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Je opslag is vol</translation>
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="1190609913194133056">Meldingscentrum</translation>
-<translation id="1195433173321863960">Afbeeldingen zijn weer beschikbaar als je limiet wordt gereset op <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Geef me een korte samenvatting van deze pagina</translation>
 <translation id="1199631150313925648">Handmatig invoeren</translation>
 <translation id="1199963004393929848">Groen thema</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Zoeken en invullen</translation>
 <translation id="1483493594462132177">Verzenden</translation>
 <translation id="1486096554574027028">Zoeken in wachtwoorden</translation>
-<translation id="1486593497476255523">Tabbladgroepen is afgerond.</translation>
 <translation id="1491277525950327607">Dubbeltik om de instelling aan of uit te zetten</translation>
 <translation id="1492417797159476138">Je hebt deze gebruikersnaam al opgeslagen voor deze site</translation>
 <translation id="1497590942294823549">Menu → Wachtwoordmanager</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Van profiel wisselen</translation>
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Niet opslaan</translation>
-<translation id="1744234754703485302">Betaalmethoden beheren is afgerond.</translation>
 <translation id="1748975028205587434">Je bestand selecteren</translation>
 <translation id="1749733017156547309">Er is een wachtwoord vereist</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} optie voor adres beschikbaar boven je toetsenbord.}other{{count} opties voor adressen beschikbaar boven je toetsenbord.}}</translation>
@@ -269,7 +266,7 @@
 <translation id="17906873777101817">Aanbieden om wachtwoorden en toegangssleutels op te slaan</translation>
 <translation id="1794893174442046596">Tabbladgroep</translation>
 <translation id="1807893857950749072">Meldingen voor prijs volgen toestaan…</translation>
-<translation id="1808142805674973090">Modi wisselen</translation>
+<translation id="1808142805674973090">Andere modus</translation>
 <translation id="1809929083618343438">Hiermee verwijder je geselecteerde informatie uit Chrome, maar wordt deze informatie niet uit je Google-account verwijderd.</translation>
 <translation id="1810976980198522421">Annuleren</translation>
 <translation id="1815941218935345331">Toegangscode</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Over 1 maand verwijderen</translation>
 <translation id="2161446265348023004">Naar geopend venster gaan</translation>
 <translation id="2164946989711475905">Inloggen…</translation>
-<translation id="2165110345209765380">Zoeken met de AI-modus is afgerond.</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="2180338296831857171">Adressen verwijderen</translation>
 <translation id="218350106843433823">Wachtwoorden en toegangssleutels automatisch invullen</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">Ga naar de pagina van een product</translation>
 <translation id="2219935992754556187">Chrome beveiligt je gevoelige gegevens met Face ID</translation>
 <translation id="2220529011494928058">Een probleem melden</translation>
+<translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je camera</translation>
 <translation id="2223461067862937305">Een QR-code maken</translation>
 <translation id="2230173723195178503">Webpagina geladen</translation>
 <translation id="2236949375853147973">Mijn activiteit</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Vul informatie automatisch in vanuit apps zoals Gmail en Foto's. Mogelijk gemaakt door Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
 <translation id="2295236662082735391">Houd je vinger lang op een afbeelding op het web om deze te bewerken met Gemini</translation>
-<translation id="2296360194694387941">Gemini in Chrome gebruiken is afgerond.</translation>
 <translation id="2297989278479054870">Nadat je bent uitgelogd, worden onder andere de bookmarks en wachtwoorden in je Google-account van dit apparaat verwijderd.</translation>
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2306265833370324042">Details voor <ph name="SEARCH_ENGINE_NAME" /> tonen</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">Safe Browsing (hiermee worden jij en je apparaat beschermd tegen gevaarlijke sites)</translation>
 <translation id="3183362380688692618">Nieuwe tabbladgroep...</translation>
 <translation id="3185000827934321633">Navigeren</translation>
-<translation id="3185760469172949183">Zoeken met camera is afgerond.</translation>
 <translation id="3186796054637504691">Geschiedenis en websitegegevens wissen</translation>
 <translation id="3190558889382726167">Wachtwoord opgeslagen</translation>
 <translation id="3190736958609431397">Niet meer volgen</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">Ga Live met Gemini om vragen te stellen over een pagina, hardop te brainstormen en een gesprek te voeren.</translation>
 <translation id="3462768334899086950">Dit betekent dat je je niet-opgeslagen bestand en huidige tabbladen kwijtraakt</translation>
 <translation id="3464194322481586217">Kan de prijs niet volgen.</translation>
-<translation id="346831467152294287">Wachtwoorden en automatisch invullen zijn afgerond.</translation>
 <translation id="3469117812148449995">Opties om een wachtwoord op te slaan</translation>
 <translation id="3472469028191701821">Opent in nieuw tabblad</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{voor {COUNT} site of app}other{voor {COUNT} sites en apps}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> updaten?</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
+<translation id="3585482760087850407">Cameratoegang voor deze site</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587885837929752825">Je organisatie beperkt wat je kunt opslaan in je Google-account.</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">Handige suggesties die browsen beter en makkelijker maken</translation>
 <translation id="3818293389945649617">Volgende zoeken</translation>
 <translation id="3819183753496523827">Je bent offline. Check de internetverbinding en probeer het opnieuw.</translation>
-<translation id="3826034723896327540">Tabbladen vastzetten is afgerond.</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betaalmethode}other{# betaalmethoden}}</translation>
 <translation id="3831560640878483188">Waarschuwing sluiten?</translation>
 <translation id="3832419617903252251">Wachtwoord alleen opgeslagen op dit apparaat</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">Je krijgt de volgende keer dat je een relevant formulier invult de kans om deze informatie op te slaan in Wallet.</translation>
 <translation id="3868495844258915202">Volledige URL tonen</translation>
 <translation id="3875783148670536197">Laten zien</translation>
+<translation id="3877211858413020188"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je microfoon</translation>
 <translation id="3878657761594430423">Bladgrijper</translation>
 <translation id="3885587018298784481">Lid worden van een gezinsgroep</translation>
 <translation id="3888230626190453136">Incognito browsen</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">Je hebt verschillende wachtwoordproblemen die een beveiligingsrisico kunnen vormen.</translation>
 <translation id="422477017457571619">Realtime, AI-gestuurde bescherming tegen gevaarlijke sites, downloads en extensies op basis van je browsegegevens die naar Google worden gestuurd</translation>
 <translation id="4231395118547300571">Meldingen van Veiligheidscheck aangezet</translation>
-<translation id="4232376164796433044">Wachtwoorden en automatisch invullen</translation>
 <translation id="4232817129213135694">Toegangssleutels instellen voor dit apparaat</translation>
 <translation id="4237377247299956313">Tik op <ph name="BEGIN_BOLD" />Standaard browser-app<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Known Traveler Number opslaan</translation>
@@ -1820,6 +1814,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} geschiedenisitem geïmporteerd}other{{count} geschiedenisitems geïmporteerd}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{{count} optie voor inloggegevens beschikbaar boven je toetsenbord.}other{{count} opties voor inloggegevens beschikbaar boven je toetsenbord.}}</translation>
+<translation id="6753460329812070808">Suggestie verwijderd uit Chrome</translation>
 <translation id="6755200887046212842">Accounts beheren</translation>
 <translation id="6757899787818440812">Gemiddelde hoogte</translation>
 <translation id="6759709389246683070">Je kunt je vinger op dit tabblad houden om een herinnering in te stellen om het later opnieuw te bezoeken</translation>
@@ -1905,6 +1900,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Als standaard instellen in Instellingen…</translation>
 <translation id="7007970306646738803">Kies wat je wilt doen met de bestaande browsegegevens op dit apparaat, zoals tabbladen, geschiedenis en wachtwoorden.</translation>
+<translation id="701134422972919485">Microfoontoegang voor deze site</translation>
 <translation id="7012978439516925343">Laat verifiëren dat jij het bent om een toegangssleutel te maken</translation>
 <translation id="7015418667643980944">Gesplitste weergave</translation>
 <translation id="7016070607649558507">Je hebt 1 zwak wachtwoord. Los dit nu op om beveiligd te blijven.</translation>
@@ -2077,7 +2073,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7603308509262646847">De kaarthouder <ph name="NAME" /> automatisch invullen</translation>
 <translation id="7603852183842204213">Pop-ups geblokkeerd (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronisatie werkt niet</translation>
-<translation id="7606639338662398635">Tabbladgroepen</translation>
 <translation id="760667371114328991">Meldingen van Veiligheidscheck uitzetten</translation>
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612849887607288481">Menu voor AI-prototypering openen</translation>
@@ -2285,7 +2280,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8240217649914883113">Dit toevoegen aan mijn agenda</translation>
 <translation id="824379025871762038">Nooit toestaan</translation>
 <translation id="8250920743982581267">Documenten</translation>
-<translation id="8252980988000695656">Google Lens is afgerond.</translation>
 <translation id="8258734532103758067">Ik heb mijn gegevens geëxporteerd</translation>
 <translation id="8258999165172757081">Toegevoegd</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
@@ -2336,6 +2330,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8393700583063109961">Bericht verzenden</translation>
 <translation id="8393889347136007944">Tabbladen die <ph name="THRESHOLD" /> dagen niet zijn gebruikt</translation>
 <translation id="8395180897620197612">Logboekregistratie stoppen</translation>
+<translation id="8399253661151100858"><ph name="SITE_DOMAIN" /> heeft toegang tot je microfoon wanneer je deze site bezoekt</translation>
 <translation id="8407669440184693619">Geen wachtwoorden gevonden voor deze site</translation>
 <translation id="8407831512155324054">Je wachtwoorden lijken sterk</translation>
 <translation id="8414283596511250978">Je wachtwoorden nooit vergeten</translation>
@@ -2350,6 +2345,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8439758443371991593">Toevoegen aan leeslijst verbergen</translation>
 <translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
 <translation id="8449869326050867919">Wachtwoord gedeeld</translation>
+<translation id="8458009459729013424"><ph name="SITE_DOMAIN" /> heeft toegang tot je camera wanneer je deze site bezoekt</translation>
 <translation id="8461708300275916315">Als je jonger bent dan 18 jaar</translation>
 <translation id="8473815223723723001">Afbeelding bewerken met Gemini</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>

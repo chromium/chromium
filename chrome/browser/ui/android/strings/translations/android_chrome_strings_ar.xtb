@@ -766,7 +766,7 @@
 <translation id="4072805772816336153">يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="4084682180776658562">إشارة</translation>
 <translation id="4084712963632273211">‏من <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />تعرضه Google<ph name="END_DEEMPHASIZED" /></translation>
-<translation id="4092709865241032354">‏لمساعدة "مدير كلمات المرور في Google" على حفظ معلومات تسجيل الدخول، عليك إضافة اسم المستخدم لهذا الموقع الإلكتروني.</translation>
+<translation id="4092709865241032354">‏لمساعدة "مدير كلمات المرور في Google" على حفظ معلومات تسجيل الدخول، عليك إضافة اسم المستخدم لهذا الموقع الإلكتروني</translation>
 <translation id="4095146165863963773">هل ترغب في حذف بيانات التطبيق؟</translation>
 <translation id="4095483462103784441">إنشاء مجموعة علامات تبويب جديدة</translation>
 <translation id="4105527135143631701">‏تمّ فتح التحذير المتعلّق بتحديث "مدير كلمات المرور في Google"</translation>
@@ -890,7 +890,6 @@
 <translation id="4535755320005483982">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />" التي تمت مشاركتها</translation>
 <translation id="4537137366307982887">تم فتح البطاقة السفلية لتفعيل إشعارات النصائح بطول الشاشة</translation>
 <translation id="4537987892902330164">لقد سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /> مسبقًا.</translation>
-<translation id="4543131175509360848">صفحة "ما من مفاتيح مرور"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب عاديتان (<ph name="TAB_COUNT_MANY" />) وعلامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_INCOGNITO" />)}few{<ph name="TAB_COUNT_MANY" /> علامات تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="4558311620361989323">اختصارات صفحة الويب</translation>
 <translation id="4572422548854449519">تسجيل الدخول إلى الحساب المدار</translation>
@@ -935,6 +934,7 @@
 <translation id="4719927025381752090">عرض ترجمة</translation>
 <translation id="4720556299488643018">ألغِ اشتراكي</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">أفقي</translation>
 <translation id="4736934858538408121">البطاقة الافتراضية</translation>
 <translation id="473775607612524610">تعديل</translation>
 <translation id="4738065825338914557">جارٍ إلغاء الاشتراك…</translation>
@@ -983,6 +983,7 @@
 <translation id="488187801263602086">إعادة تسمية الملف</translation>
 <translation id="4885273946141277891">‏عدد نسخ Chrome غير متوافق.</translation>
 <translation id="4890973535105146893">‏ما مِن كلمات مرور محفوظة في حسابك على Google</translation>
+<translation id="490375751687810070">عمودي</translation>
 <translation id="4905823827770127520">تضمين رابط يؤدي إلى هذه الصفحة</translation>
 <translation id="4910889077668685004">تطبيقات الدفع</translation>
 <translation id="4911042367886397055">مرحبًا بك من جديد، <ph name="USER_NAME" /></translation>
@@ -1288,6 +1289,7 @@
 <translation id="6192907950379606605">عرض أوصاف الصور</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
 <translation id="6196315980958524839">‏يتم حفظ كلمات المرور في تطبيق "مدير كلمات المرور في Google" على هذا الجهاز.</translation>
+<translation id="6200780647297916498">موضع علامة التبويب</translation>
 <translation id="6204781143409202534">‏رصدَ متصفِّح Chrome إشعارًا يُحتمل أن يكون غير مرغوب فيه من <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>
 <translation id="6212567362666004597">إضافة علامة التبويب إلى مجموعة</translation>
@@ -1353,7 +1355,7 @@
 <translation id="6401458660421980302">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="6404511346730675251">تعديل الإشارة المرجعية</translation>
 <translation id="6408370409308816490">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في "وضع التصفّح المتخفي" وتشارك محتواها</translation>
-<translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد.</translation>
+<translation id="6410883413783534063">يمكنك فتح علامات تبويب لزيارة صفحات مختلفة في آنٍ واحد</translation>
 <translation id="6411009031428071896">الاستماع إلى محتوى الخلاصة</translation>
 <translation id="6411219469806822692">لا يمكن السحب أعلى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أعلى في الصفحة.</translation>
 <translation id="6412215853589222273">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها عدة مرات</translation>

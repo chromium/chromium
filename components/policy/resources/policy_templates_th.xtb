@@ -545,6 +545,7 @@ https://chromeenterprise.google/policies/url-patterns/ * ไม่ใช่ค�
       นโยบายนี้จะลบล้าง <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> และค่ากำหนดของผู้ใช้</translation>
 <translation id="1413768951234456918">ล้างประวัติการท่องเว็บ</translation>
 <translation id="1413936351612032792">รายงานข้อมูลเกี่ยวกับการใช้งานแอป Linux</translation>
+<translation id="1417591892602709307">จำนวนโปรไฟล์ผู้ใช้สูงสุดที่จัดเก็บไว้ในอุปกรณ์</translation>
 <translation id="1417776888841750570">นโยบายนี้ควบคุมลักษณะการทำงานของเบราว์เซอร์หลังจากลงชื่อเข้าใช้บัญชีที่มีการจัดการในพื้นที่สำหรับเนื้อหา
 
 นโยบายนี้จะลบล้าง <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />
@@ -2081,6 +2082,11 @@ ChromeOS M184 จะเป็นเวอร์ชันสำคัญสุด
       รวมถึงจะมีผลเฉพาะกับสิทธิ์เข้าถึงอุปกรณ์ USB ผ่าน WebUSB API เท่านั้น หากต้องการให้สิทธิ์เข้าถึงอุปกรณ์ USB ผ่าน Web Serial API ให้ดูนโยบาย <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /></translation>
 <translation id="2318353380372431186">เปิดใช้การติดตั้ง IWA โดยผู้ใช้</translation>
 <translation id="2318583605563438459">อนุญาตให้ผู้ปกครองเพิ่มบัญชีที่มีการควบคุมดูแล</translation>
+<translation id="2323318142178972965">ควบคุมจำนวนโปรไฟล์ผู้ใช้สูงสุดที่เก็บไว้ในอุปกรณ์
+
+เมื่อตั้งค่านโยบายนี้เป็นจำนวนเต็มบวก <ph name="MAX_USERS" /> แล้ว <ph name="PRODUCT_OS_NAME" /> จะเก็บโปรไฟล์ผู้ใช้ปกติไว้ในอุปกรณ์สูงสุด <ph name="MAX_USERS" /> โปรไฟล์ เมื่อผู้ใช้ใหม่เข้าสู่ระบบและเกินขีดจำกัด โปรไฟล์ผู้ใช้ที่ใช้งานล่าสุด (ไม่รวมผู้ใช้ที่ใช้งานอยู่ในปัจจุบัน) จะถูกลบโดยอัตโนมัติพร้อมกับพื้นที่เก็บข้อมูลในเครื่องเพื่อรักษาพื้นที่ว่างในดิสก์
+
+หากไม่ได้ตั้งค่านโยบายนี้หรือตั้งค่าเป็น 0 จะไม่มีการจำกัดจำนวนโปรไฟล์ผู้ใช้ที่เพิ่มลงในอุปกรณ์ได้ หากไม่ต้องการให้เก็บโปรไฟล์ผู้ใช้ไว้ในอุปกรณ์เลย ให้ใช้นโยบาย <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> แทน</translation>
 <translation id="2326031114717677574">อัตราที่ใช้ในการสุ่มตัวอย่างและรวบรวมข้อมูลเสียง ค่าขั้นต่ำที่อนุญาตคือ 1 นาที
 
       หากไม่ได้ตั้งค่า ระบบจะใช้อัตราเริ่มต้น 15 นาที</translation>
@@ -2398,24 +2404,6 @@ Web Worker สามารถสร้างได้โดยใช้ URL ข�
 <translation id="2521581787935130926">แสดงทางลัดของแอปในแถบบุ๊กมาร์ก</translation>
 <translation id="2522304491589804974">กำหนดค่ารายการที่อนุญาตสำหรับการติดตั้งส่วนขยาย</translation>
 <translation id="2523511232831599126">เปิดใช้ทางลัดสำหรับการช่วยเหลือพิเศษในหน้าจอการลงชื่อเข้าใช้</translation>
-<translation id="252611686271192278">Direct Sockets API ช่วยให้สื่อสารกับอุปกรณ์ปลายทางที่กำหนดเองได้โดยใช้ TCP และ UDP
-โปรดดูรายละเอียดที่ https://github.com/WICG/direct-sockets
-
-อุปกรณ์ปลายทางของเครือข่ายส่วนตัวคืออุปกรณ์ที่ใช้ที่อยู่ IP จากพื้นที่ที่อยู่ IP ส่วนตัว ซึ่งกำหนดไว้ใน https://wicg.github.io/private-network-access/#ip-address-space-private
-
-การตั้งค่านโยบายนี้ให้คุณระบุรูปแบบ URL ซึ่งเจาะจงเว็บไซต์ที่ถูกบล็อกไม่ให้เข้าถึงเครือข่ายส่วนตัวใน Direct Sockets API
-รูปแบบที่ถูกต้องจะจำกัดอยู่ที่ Isolated Web App
-
-การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้)
-
-รูปแบบ URL ต้องไม่ขัดแย้งกับ <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> ไม่มีนโยบายที่จะมีความสำคัญสูงกว่าหาก URL ตรงกับทั้ง 2 นโยบาย
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้
-
-โปรดทราบว่านโยบายนี้มีผลบังคับใช้เฉพาะเมื่อต้นทางได้รับอนุญาตให้ใช้ Direct Sockets API
-โปรดดูรายละเอียดเพิ่มเติมที่ <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> และ <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />
-
-นโยบายนี้มีผลเฉพาะกับการพยายามเชื่อมต่อใหม่เท่านั้น และไม่ทำให้การเชื่อมต่อที่มีอยู่เป็นโมฆะ</translation>
 <translation id="252742292004421898">อนุญาต Direct Sockets API ในเว็บไซต์เหล่านี้</translation>
 <translation id="2528762900096510743">เปิดใช้บริการออกจากระบบอัตโนมัติ</translation>
 <translation id="2529880111512635313">กำหนดค่ารายชื่อแอปและส่วนขยายที่บังคับให้ติดตั้ง</translation>
@@ -5976,7 +5964,6 @@ https://chromeenterprise.google/policies/url-patterns
 การตั้งค่านโยบายเป็น "เท็จ" จะใช้ลักษณะการทำงานเริ่มต้น</translation>
 <translation id="4820432864264617413">ป้องกันไม่ให้ <ph name="BOREALIS_NAME" /> ทำงานสำหรับผู้ใช้</translation>
 <translation id="4821987881803903281">บล็อกสิทธิ์สำหรับตำแหน่งหน้าต่างในเว็บไซต์เหล่านี้</translation>
-<translation id="4825653993105771848">ควบคุมการเข้าถึงเครือข่ายส่วนตัวใน Direct Sockets API</translation>
 <translation id="4825777333376170738">ปิดใช้การรายงานเซสชันคีออสก์ของอุปกรณ์</translation>
 <translation id="4826326557828204741">การกระทำที่จะดำเนินการเมื่อไม่มีการใช้งานจนถึงการหน่วงเวลาที่กำหนด ขณะที่ใช้พลังงานจากแบตเตอรี่</translation>
 <translation id="4826701474986856664">แสดงหน้าจอเซ็นเซอร์ตรวจหาบุคคลในบ้านระหว่างการลงชื่อเข้าใช้</translation>
@@ -8726,7 +8713,6 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
 <translation id="647645276885673708">เปิดใช้ <ph name="LACROS_NAME" /> และกำหนดให้เป็นเบราว์เซอร์หลัก</translation>
 <translation id="647698599569353771">อนุญาตให้เปิดใช้การแชร์ใกล้เคียง</translation>
 <translation id="6477685422297715670">ไฟแบ็กไลต์ของแป้นพิมพ์เป็นสีเขียว</translation>
-<translation id="6477933144150138501">อนุญาตให้ต้นทางของ Isolated Web App สื่อสารกับอุปกรณ์ปลายทางของเครือข่ายส่วนตัวใน Direct Sockets API</translation>
 <translation id="6478258366184919502">ต้นทางของการเข้าสู่ระบบและหน้าจอ</translation>
 <translation id="6478261301433199402">การตั้งค่านโยบายจะระบุรูปภาพ <ph name="PLUGIN_VM_NAME" /> สำหรับผู้ใช้ ระบุนโยบายนี้เป็นสตริงรูปแบบ JSON โดยที่ <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> ระบุตำแหน่งที่จะดาวน์โหลดรูปภาพและ <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> เป็นแฮช SHA-256 ที่ใช้เพื่อยืนยันความสมบูรณ์ของการดาวน์โหลด</translation>
 <translation id="6481245670325946423">อนุญาตให้ใช้โหมดไม่มีส่วนหัว</translation>
@@ -9097,20 +9083,6 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
       หมายเหตุ: แม้ว่านโยบายจะยอมรับได้หลายรายการใน <ph name="ENTRIES_FIELD_NAME" /> แต่ระบบจะพิจารณาเฉพาะรายการแรก
       คำเตือน: การตั้งค่านโยบายนี้อาจทำให้การนำอัปเดตซอฟต์แวร์ไปใช้ล่าช้า</translation>
 <translation id="6695441448686167614">การตั้งค่าการพิมพ์ผ่านเว็บ</translation>
-<translation id="6695983959768914375">Direct Sockets API ช่วยให้สื่อสารกับอุปกรณ์ปลายทางที่กำหนดเองได้โดยใช้ TCP และ UDP
-โปรดดูรายละเอียดที่ https://github.com/WICG/direct-sockets
-
-อุปกรณ์ปลายทางของเครือข่ายส่วนตัวคืออุปกรณ์ที่ใช้ที่อยู่ IP จากพื้นที่ที่อยู่ IP ส่วนตัว ซึ่งกำหนดไว้ใน https://wicg.github.io/private-network-access/#ip-address-space-private
-
-การตั้งค่านโยบายเป็น 1 หรือไม่ได้ตั้งค่าจะอนุญาตให้ต้นทางของ Isolated Web App สื่อสารกับอุปกรณ์ปลายทางของเครือข่ายส่วนตัวใน Direct Sockets API ได้
-
-การตั้งค่านโยบายเป็น 2 จะบล็อกต้นทางของ Isolated Web App ไม่ให้สื่อสารกับอุปกรณ์ปลายทางของเครือข่ายส่วนตัวใน Direct Sockets API
-
-โปรดทราบว่านโยบายนี้มีผลบังคับใช้เฉพาะเมื่อต้นทางได้รับอนุญาตให้ใช้ Direct Sockets API
-โปรดดูรายละเอียดเพิ่มเติมที่ <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> และ <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />
-นอกจากนี้ ค่าเริ่มต้นอาจถูกลบล้างสำหรับ URL ที่ตรงกันโดยใช้ <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> และ <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />
-
-นโยบายนี้มีผลเฉพาะกับการเชื่อมต่อใหม่เท่านั้น และไม่ทำให้การเชื่อมต่อที่มีอยู่เป็นโมฆะ</translation>
 <translation id="6698632841807204978">เปิดใช้การพิมพ์ขาวดำ</translation>
 <translation id="6699740789657890714">ระบุว่าจะอนุญาตให้เว็บไซต์ส่งคำขอไปยังปลายทางเครือข่ายที่มีความเป็นส่วนตัวมากกว่าในลักษณะที่ไม่ปลอดภัยหรือไม่</translation>
 <translation id="6699880231565102694">เปิดใช้งานการตรวจสอบสิทธิ์แบบสองปัจจัยสำหรับโฮสต์การเข้าถึงระยะไกล</translation>
@@ -10458,22 +10430,6 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
 <translation id="7512514325152952954">การอัปเดตเพย์โหลดอัตโนมัติใน <ph name="PRODUCT_OS_NAME" /> สามารถดาวน์โหลดผ่าน HTTP แทน HTTPS ได้ ซึ่งจะทำให้การแคชการดาวน์โหลดของ HTTP เป็นแบบโปร่งใส
 
 หากตั้งค่านโยบายนี้เป็น "จริง" จะทำให้ <ph name="PRODUCT_OS_NAME" /> พยายามดาวน์โหลดการอัปเดตรายได้อัตโนมัติผ่าน HTTP หากตั้งค่านโยบายเป็น "เท็จ" หรือไม่ตั้งเลย จะมีการใช้ HTTPS สำหรับการดาวน์โหลดการอัปเดตเพย์โหลดอัตโนมัติ</translation>
-<translation id="7512603255315110634">Direct Sockets API ช่วยให้สื่อสารกับอุปกรณ์ปลายทางที่กำหนดเองได้โดยใช้ TCP และ UDP
-โปรดดูรายละเอียดที่ https://github.com/WICG/direct-sockets
-
-อุปกรณ์ปลายทางของเครือข่ายส่วนตัวคืออุปกรณ์ที่ใช้ที่อยู่ IP จากพื้นที่ที่อยู่ IP ส่วนตัว ซึ่งกำหนดไว้ใน https://wicg.github.io/private-network-access/#ip-address-space-private
-
-การตั้งค่านโยบายนี้ให้คุณระบุรูปแบบ URL ซึ่งเจาะจงเว็บไซต์ที่ได้รับอนุญาตให้สื่อสารกับอุปกรณ์ปลายทางของเครือข่ายส่วนตัวใน Direct Sockets API
-รูปแบบที่ถูกต้องจะจำกัดอยู่ที่ Isolated Web App
-
-การไม่ตั้งค่านโยบายหมายความว่า <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> จะมีผลกับทุกเว็บไซต์ (หากตั้งค่าไว้)
-
-รูปแบบ URL ต้องไม่ขัดแย้งกับ <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> ไม่มีนโยบายที่จะมีความสำคัญสูงกว่าหาก URL ตรงกับทั้ง 2 นโยบาย
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ URL ที่ถูกต้องได้ที่ https://chromeenterprise.google/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้
-
-โปรดทราบว่านโยบายนี้มีผลบังคับใช้เฉพาะเมื่อต้นทางได้รับอนุญาตให้ใช้ Direct Sockets API
-โปรดดูรายละเอียดเพิ่มเติมที่ <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> และ <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /></translation>
 <translation id="7515953732107149296">เรานำนโยบายนี้ออกไปแล้วในเวอร์ชัน M53 หลังจากที่นำ RC4 ออกจาก "<ph name="PRODUCT_NAME" />"
 
       หากไม่ได้ตั้งค่านโยบายหรือตั้งค่าเป็น "เท็จ" จะไม่มีการเปิดใช้ชุดการเข้ารหัส RC4 ใน TLS มิเช่นนั้น อาจตั้งค่าเป็น "จริง" เพื่อรักษาความเข้ากันได้กับเซิร์ฟเวอร์ที่ล้าสมัย ซึ่งเป็นมาตรการชั่วคราวและควรจะต้องมีการกำหนดค่าเซิร์ฟเวอร์ใหม่</translation>
@@ -10944,7 +10900,6 @@ URL ที่ตรงกับทั้งรายการที่อนุ�
 <translation id="7832225468415136704">ป้องกันไม่ให้ฟีเจอร์ทำความสะอาด Chrome สแกนระบบเป็นระยะและปิดใช้การสแกนด้วยตนเอง</translation>
 <translation id="7833148823006528332">ตัวระบุแอป Android เช่น "com.google.android.gm" สำหรับ Gmail</translation>
 <translation id="7835218570504220753">ปิดใช้การคลิกอัตโนมัติ</translation>
-<translation id="7836591982756027878">อนุญาตการเข้าถึงเครือข่ายส่วนตัวใน Direct Sockets API บนเว็บไซต์เหล่านี้</translation>
 <translation id="7839124608155212387">อัตราที่เก็บรวบรวมการวัดและส่งข้อมูลทางไกลจากการใช้งานแอปในอุปกรณ์ที่ลงทะเบียนไว้สำหรับผู้ใช้ที่เชื่อมโยง ค่าขั้นต่ำที่อนุญาตคือ 5 นาที
 
       หากไม่ได้ตั้งค่า ระบบจะใช้อัตราเริ่มต้น 15 นาที</translation>
@@ -11118,7 +11073,6 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="7937766917976512374">อนุญาตหรือปฏิเสธการจับวิดีโอ</translation>
 <translation id="7941528208359969119">อนุญาตให้ดำเนินการตรวจสอบ <ph name="OCSP_CRL_LABEL" /> ออนไลน์</translation>
 <translation id="7941975817681987555">อย่าคาดการณ์การทำงานของเครือข่ายจากการเชื่อมต่อเครือข่ายใดๆ</translation>
-<translation id="794447754389837404">บล็อกการเข้าถึงเครือข่ายส่วนตัวใน Direct Sockets API บนเว็บไซต์เหล่านี้</translation>
 <translation id="7945445169067895719">เปิดใช้การล็อกเมื่ออุปกรณ์มีการระงับการใช้งานหรือพับจอ</translation>
 <translation id="7945744599423774764">อนุญาตให้สุ่มขนาดพูลซ็อกเก็ตสำหรับพร็อกซี</translation>
 <translation id="7946350455013548764">การตั้งค่านโยบายเป็น 3 จะให้เว็บไซต์ขอสิทธิ์เข้าถึงอุปกรณ์ HID ได้ การตั้งค่านโยบายเป็น 2 จะปฏิเสธการเข้าถึงอุปกรณ์ HID
@@ -12663,7 +12617,6 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="8955719471735800169">กลับไปด้านบน</translation>
 <translation id="8956312248048980644">อนุญาตการสร้างคลัสเตอร์ Agent ที่ผูกกับต้นทางโดยค่าเริ่มต้น</translation>
 <translation id="8963464192296208229">การตั้งค่า F11 ใช้แป้นพิมพ์ลัดที่มีแป้นกดร่วม Alt</translation>
-<translation id="8966888925105658202">ไม่อนุญาตให้ต้นทางของ Isolated Web App สื่อสารกับอุปกรณ์ปลายทางของเครือข่ายส่วนตัวใน Direct Sockets API</translation>
 <translation id="8973579598359969188">เลือกว่าจะแสดงข้อความแจ้งเกี่ยวกับ <ph name="PRIVACY_SANDBOX_NAME" /> ต่อผู้ใช้ได้หรือไม่</translation>
 <translation id="8974457039656761249">ควบคุมฟีเจอร์การเขียนแบบช่วยคาดเดาบนแป้นพิมพ์จริง</translation>
 <translation id="8974588819713914715">เราเลิกใช้งานและไม่รองรับนโยบายนี้แล้ว โปรดใช้นโยบาย "<ph name="URL_ALLOWLIST_POLICY_NAME" />" แทน</translation>

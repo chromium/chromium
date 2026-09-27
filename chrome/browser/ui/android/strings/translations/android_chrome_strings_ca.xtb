@@ -889,7 +889,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4535755320005483982">Grup de pestanyes compartit <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">L'opció d'activar les notificacions de consells està oberta a alçada completa</translation>
 <translation id="4537987892902330164">Has mantingut la sessió iniciada com a <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">No hi ha cap full de claus d'accés</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya}other{<ph name="TAB_COUNT_MANY" /> pestanyes, <ph name="TAB_COUNT_INCOGNITO" /> d'incògnit}}</translation>
 <translation id="4558311620361989323">Dreceres per a pàgines web</translation>
 <translation id="4572422548854449519">Inicia la sessió al compte gestionat</translation>
@@ -934,6 +933,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
 <translation id="4720556299488643018">Cancel·la</translation>
 <translation id="4732120983431207637">Anul·lador de piles</translation>
+<translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4736934858538408121">Targeta virtual</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4738065825338914557">S'està cancel·lant la subscripció…</translation>
@@ -982,6 +982,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="488187801263602086">Canvia el nom del fitxer</translation>
 <translation id="4885273946141277891">No s'admet aquest nombre d'instàncies de Chrome.</translation>
 <translation id="4890973535105146893">No hi ha cap contrasenya desada al teu Compte de Google</translation>
+<translation id="490375751687810070">Vertical</translation>
 <translation id="4905823827770127520">Inclou un enllaç a la pàgina</translation>
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4911042367886397055">Et donem la benvinguda de nou, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6192907950379606605">Obtén descripcions d'imatges</translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6196315980958524839">Les contrasenyes es desen al gestor de contrasenyes de Google en aquest dispositiu</translation>
+<translation id="6200780647297916498">Posició de la pestanya</translation>
 <translation id="6204781143409202534">Chrome ha detectat possible contingut brossa de <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Es previsualitza aquesta pàgina</translation>
 <translation id="6212567362666004597">Afegeix la pestanya al grup</translation>

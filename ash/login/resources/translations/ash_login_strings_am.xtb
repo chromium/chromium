@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">ባትሪው <ph name="BATTERY_LEVEL" />% ሲደርስ ዝማኔ ይጀምራል።</translation>
 <translation id="1353275871123211385">እንደ የመተግበሪያ ማጽደቅ እና የማያ ገፅ ጊዜ ገደቦች ያሉ የወላጅ መቆጣጠሪያዎችን ለመጠቀም አንድ ልጅ በወላጅ የሚተዳደር የGoogle መለያ ሊኖረው ይገባል። የትምህርት ቤት መለያ በኋላ ላይ እንደ Google Classroom ላሉ መሣሪያዎች ሊታከል ይችላል።</translation>
 <translation id="1375557162880614858">የChromeOS Flex አብሮገነብ የማያ ገፅ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ?</translation>
-<translation id="1375938286942050085">ውቅረት ተጠናቅቋል! ቀጥሎ መሣሪያዎን ለጨዋታ ዝግጁ ያድርጉ</translation>
 <translation id="1377600615067678409">ለአሁን ዝለለው</translation>
 <translation id="1399261165075500043">የGoogle Play ውሎችን መጫን አልተቻለም</translation>
 <translation id="1400243387594338234">ይህን የይለፍ ቃል ወደ መሣሪያዎ በመለያ ለመግባት መጠቀም ይችላሉ</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">የእርስዎን Google መለያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይጠቀሙ</translation>
 <translation id="3856800405688283469">የሰዓት ሰቅ ይምረጡ</translation>
 <translation id="3893630138897523026">ChromeVox (የሚነገር ግብረመልስ)</translation>
-<translation id="3897746662269329507">የእርስዎ <ph name="DEVICE_TYPE" /> ለጨዋታ የተገነባ ነው። በመቶዎች የሚቆጠሩ አዳዲስ ጨዋታዎች ላይ የሚደርሱበት፣ የጨዋታ ቅናሾችን የሚመለከቱበት እና የጨዋታ ባህሪያትን የሚያገኙበት የያስሱ መተግበሪያ በቀጣይነት ይከፈታል።</translation>
 <translation id="389901847090970821">የቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="3910588685973519483">ልጣፎችን በAI ይፍጠሩ</translation>
 <translation id="3924259174674732591">የማሳያ እና የጽሁፍ መጠን <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">የታመኑ የመሣሪያ ስርዓት ሞዱል ፊርምዌር ዝማኔ መጫን አለበት። <ph name="TPM_FIRMWARE_UPDATE_LINK" />ን ይመልከቱ</translation>
 <translation id="5448293924669608770">ውይ፣ መግባት ላይ የሆነ ችግር ተፈጥሯል</translation>
 <translation id="5453829744223920473">ልጅዎ ልክ ክፍል ውስጥ እንደሚያደርጉት ሁሉንም የእነሱን የትምህርት ቤት መተግበሪያዎች፣ እልባቶች እና ግብዓቶች መጠቀም ይችላሉ። ትምህርት ቤቱ የመመሪያ ሕጎቹን ያወጣል።</translation>
-<translation id="5463450804024056231">ለ<ph name="DEVICE_TYPE" /> ኢሜይሎች ይመዝገቡ</translation>
 <translation id="5473099001878321374">በመቀጠልዎ ይህ መሣሪያ እንዲሁም ዝማኔዎችን እና መተግበሪያዎችን ከGoogle፣ ከልጅዎ አገልግሎት አቅራቢ እና ከዚህ መሣሪያ አምራች፣ ምናልባት የተንቀሳቃሽ ውሂብን በመጠቀም፣ በራስ-ሰር ሊያወርድ እና ሊጭን እንደሚችል መስማማትዎን ያረጋግጣሉ። አንዳንድ መተግበሪያዎች የውስጠ-መተግበሪያ ግዢዎችን ሊያቀርቡ ይችላሉ።</translation>
 <translation id="5502915260472117187">ልጅ</translation>
 <translation id="5511823366942919280">እርግጠኛ ነዎት ይህንን እንደ «Shark» አድርገው ማዋቀር ይፈልጋሉ?</translation>

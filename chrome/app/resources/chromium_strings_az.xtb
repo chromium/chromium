@@ -10,6 +10,7 @@
 
 Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən dəyişikliklər saxlanmaya bilər.</translation>
 <translation id="1083934481477628225">Valideyn Chromium-da "Sayt, tətbiq və artırmalar üçün icazələr"i deaktiv edib</translation>
+<translation id="109026165963220603">Chromium yaxınlıqdakı cihazları tapmaq və istifadə etmək üçün lokal şəbəkəyə giriş tələb edir</translation>
 <translation id="1090946077924227754">Xüsusi Chromium funksiyası və ya artırmasını axtarmaq üçün ünvan panelinə onun qısayolunu, sonra isə seçdiyiniz klaviatura düyməsini daxil edin</translation>
 <translation id="1098493699368672217">Chromium ilə axtarış bildiriş sahəsində göstərilsin və klaviatura qısayolunu aktivləşdirin</translation>
 <translation id="1104942323762546749">Chromium parollarınızı eksport etmək istəyir. Buna icazə vermək üçün Windows parolunu yazın.</translation>
@@ -106,6 +107,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2126108037660393668">Endirilmiş fayl doğrulanmadı.</translation>
 <translation id="2135919691573380097">Bu saytı şikayət edin</translation>
 <translation id="2137162749895930932">Tərcümə ekranını bağlayın</translation>
+<translation id="2147218225094845757">Yan paneli gizlədin</translation>
 <translation id="215352261310130060">Sayt güvənli bağlantı istifadə etmədiyi və bu fayla müdaxilə edilmiş ola biləcəyi üçün Chromium endirməni blokladı</translation>
 <translation id="2170098639895543546">Səhifədə istədiyinizi seçin</translation>
 <translation id="2174178932569897599">Chromium'u fərdiləşdirin</translation>
@@ -303,7 +305,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="4251772536351901305">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chromium xəbərdarlıqlarını ötürə bilərsiniz.</translation>
 <translation id="4269093074552541569">Chromium-dan çıxın</translation>
 <translation id="4271805377592243930">Chromium ilə yardım alın</translation>
-<translation id="4275788652681621337">Yan paneli bağlayın</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
 <translation id="4285930937574705105">Naməlum xəta üzündən quraşdırmaq alınmadı. Əgər Chromium hazırda işləyirsə, lütfən, qapadın və yenidən cəhd edin.</translation>
 <translation id="4298125729853015961">Parolları Chromium-dan eksport edin</translation>

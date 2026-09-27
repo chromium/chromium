@@ -10,6 +10,7 @@
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
 <translation id="1083934481477628225">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium</translation>
+<translation id="109026165963220603">Chromium heeft toegang tot je lokale netwerk nodig om apparaten in de buurt te vinden en te gebruiken</translation>
 <translation id="1090946077924227754">Als je naar een specifieke Chromium-functie of -extensie wilt zoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="1098493699368672217">Zoeken met Chromium tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
@@ -105,6 +106,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>
 <translation id="2135919691573380097">Deze site melden</translation>
 <translation id="2137162749895930932">Scherm voor vertalen sluiten</translation>
+<translation id="2147218225094845757">Zijvenster verbergen</translation>
 <translation id="215352261310130060">Chromium heeft deze download geblokkeerd, omdat de site geen beveiligde verbinding gebruikt en er met het bestand kan zijn geknoeid</translation>
 <translation id="2170098639895543546">Iets op de pagina selecteren</translation>
 <translation id="2174178932569897599">Chromium aanpassen</translation>
@@ -304,7 +306,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4251772536351901305">Geeft je waarschuwingen over gevaarlijke sites, zelfs sites die Google niet eerder kende, door meer gegevens van sites te analyseren dan de standaardbeveiliging. Je kunt ervoor kiezen om waarschuwingen voor Chromium over te slaan.</translation>
 <translation id="4269093074552541569">Uitloggen bij Chromium</translation>
 <translation id="4271805377592243930">Hulp bij Chromium</translation>
-<translation id="4275788652681621337">Zijvenster sluiten</translation>
 <translation id="4281844954008187215">Servicevoorwaarden</translation>
 <translation id="4285930937574705105">De installatie is mislukt wegens een onbekende fout. Als Chromium momenteel actief is, moet je Chromium sluiten en het opnieuw proberen.</translation>
 <translation id="4298125729853015961">Wachtwoorden exporteren uit Chromium</translation>

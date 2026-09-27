@@ -889,7 +889,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4535755320005483982">Bendrinama skirtukų grupė „<ph name="GROUP_TITLE" />“</translation>
 <translation id="4537137366307982887">Patarimų pranešimų pasirinkimo lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="4537987892902330164">Likote prisijungę kaip <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Lapas, informuojantis, kad nėra prieigos raktų</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skirtukas}one{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}few{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{Skirtukų: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Tinklalapių spartieji klavišai</translation>
 <translation id="4572422548854449519">Prisijungimas prie tvarkomos paskyros</translation>
@@ -934,6 +933,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4719927025381752090">Siūlyti versti</translation>
 <translation id="4720556299488643018">Atšaukti prenumeratą</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Horizontaliai</translation>
 <translation id="4736934858538408121">Virtuali kortelė</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4738065825338914557">Atšaukiama prenumerata…</translation>
@@ -982,6 +982,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="488187801263602086">Failo pervardijimas</translation>
 <translation id="4885273946141277891">Nepalaikomas „Chrome“ atvejų skaičius.</translation>
 <translation id="4890973535105146893">„Google“ paskyroje nėra išsaugotų slaptažodžių</translation>
+<translation id="490375751687810070">Vertikaliai</translation>
 <translation id="4905823827770127520">Įtraukti nuorodą į puslapį</translation>
 <translation id="4910889077668685004">Mokėjimo programos</translation>
 <translation id="4911042367886397055">Sveiki sugrįžę, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6192907950379606605">Gauti vaizdų aprašus</translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
 <translation id="6196315980958524839">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje</translation>
+<translation id="6200780647297916498">Skirtuko padėtis</translation>
 <translation id="6204781143409202534">„Chrome“ aptiko galimą šlamštą iš <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
 <translation id="6212567362666004597">Pridėti skirtuką prie grupės</translation>
@@ -2000,6 +2002,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8816556050903368450">Įtraukiama nuoroda: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Peržiūros skirtuko turinio peržiūrėti negalima.</translation>
 <translation id="8820817407110198400">Žymės</translation>
+<translation id="8822533681006532064">Jei norite kalbėti su „Gemini“, suteikite leidimą naudoti mikrofoną. Tai taip pat galite tvarkyti <ph name="BEGIN_LINK" />nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8840953339110955557">Šis puslapis gali skirtis nuo prisijungus pateiktos versijos.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Paslėpta</translation>

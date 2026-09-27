@@ -70,6 +70,7 @@
             לא תהיה השפעה על הסימניות, ההיסטוריה והסיסמאות השמורות.</translation>
 <translation id="1619887657840448962">‏כדי לשפר את האבטחה של Chrome, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="1628000112320670027">‏קבלת עזרה בנושא Chrome</translation>
+<translation id="1632241302126471515">‏חיפוש באמצעות Chrome Canary</translation>
 <translation id="1640672724030957280">מוריד...</translation>
 <translation id="1651617469580841801">‏כשמשתמשים ב-Google Lens, כותרת הדף, כתובת ה-URL והתוכן, כולל קובצי PDF, נשלחים אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏מידע על ChromeOS Flex</translation>
@@ -125,6 +126,7 @@
 <translation id="2128411189117340671">‏ניהול הפרופילים ב-Chrome</translation>
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
 <translation id="2139300032719313227">‏הפעלה מחדש של ChromeOS</translation>
+<translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
 <translation id="2151406531797534936">‏יש להפעיל מחדש את Chrome עכשיו</translation>
 <translation id="2163089732491971196">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך</translation>
 <translation id="2170098639895543546">צריך לבחור משהו מהדף</translation>
@@ -270,6 +272,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון}=1{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. החלון האנונימי לא ייפתח מחדש.}one{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}two{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}other{‏מנהל המערכת מבקש להפעיל מחדש את Chrome כדי להחיל עדכון. # החלונות האנונימיים לא ייפתחו מחדש.}}</translation>
 <translation id="3597003331831379823">הפעלת ההגדרה נכשלה עם הרשאות מורחבות. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3598673391539778844">‏הצגת Gemini ב-Chrome במגש המערכת</translation>
+<translation id="3616622400661108683">‏אפשר לשאול על תכנים מחוץ ל-Chrome, כמו אפליקציות או קבצים אחרים</translation>
 <translation id="3622716124581627104">‏אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים ב-Google Lens, צילום מסך של הדף נשלח אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏קל יותר כעת להשתמש ב-Chrome באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
 <translation id="3628103251823745322">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
@@ -749,7 +752,9 @@
 <translation id="8162006532256575008">‏שימוש ב-Chrome ללא חשבון</translation>
 <translation id="8172231188687329735">‏כדי לשמור סיסמאות תוך כדי תנועה, צריך להוריד את אפליקציית Chrome</translation>
 <translation id="8177472873527554730">לא נמצא תוכן בדף</translation>
+<translation id="8196526165798579689">‏חיפוש באמצעות Chrome פיתוח</translation>
 <translation id="8221491193165283816">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות יש ללחוץ כאן.</translation>
+<translation id="8227493674161801700">‏חיפוש באמצעות Chrome בטא</translation>
 <translation id="8253851811470049684">‏הגדרת Chrome כברירת מחדל מאפשרת לפתוח קישורים מכל אפליקציה ולהשאיר את הדפדפן נגיש בסרגל האפליקציות</translation>
 <translation id="8255190535488645436">‏Google Chrome משתמש במצלמה ובמיקרופון שלך.</translation>
 <translation id="8260086374035800939">‏אם Gemini פתוח ב-Chrome, החלונית הצדדית תישאר פתוחה גם כשיוצרים כרטיסיות חדשות</translation>

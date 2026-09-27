@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">Google Walletடில் குறைதீர்வு எண்ணைச் சேமியுங்கள்</translation>
 <translation id="1455413310270022028">எரேஸர்</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 கருத்துகளைக் காட்டு}=1{1 கருத்தைக் காட்டு}other{எல்லா # கருத்துகளையும் காட்டு}}</translation>
-<translation id="1458770162980644530">‘இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ சேவை விதிமுறைகள் திரை. கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="1460317464907341501">இந்த ஈமெயில் முகவரியைத் தானாகச் சரிபார்க்கவா?</translation>
 <translation id="1461041542809785877">செயல்பாடு</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">இணைப்பின் விவரங்களைக் காட்டும்</translation>
 <translation id="2277949605527755300"><ph name="URL" /> உங்கள் கை அசைவை டிராக் செய்ய விரும்புகிறது</translation>
 <translation id="22792995594807632">பதிவிறக்கும் முன் சரிபார்க்க வேண்டும்</translation>
+<translation id="2279607542590042584">கடவுச்சாவி • Apple Passwords</translation>
 <translation id="2283340219607151381">முகவரிகளைச் சேமித்துத் தானாக நிரப்பு</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' நீக்கப்பட்டது</translation>
 <translation id="2283599456633275070">பயணம்</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073">எல்லா <ph name="PROTOCOL" /> இணைப்புகளையும் திறக்க, <ph name="HANDLER_HOSTNAME" /> ஐ அனுமதிக்கவா?</translation>
 <translation id="243815215670139125">இந்தக் கார்டை உங்கள் Google கணக்கில் சேமிக்க முடியவில்லை. அதற்குப் பதிலாக, இந்தச் சாதனத்தில் உள்ள Chrome உலாவியில் சேமிக்கப்பட்டது.</translation>
 <translation id="2438874542388153331">குவாட் பஞ்ச் ரைட்</translation>
-<translation id="2441854154602066476">தொட்டு நிரப்பக்கூடிய வகையில் கிடைக்கும் பேமெண்ட் முறைகள். கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="2442865686365739754">பின்வரும் தகவல்களை Chrome <ph name="BEGIN_EMPHASIS" />சேமிக்காது<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />நீங்கள் இதுவரை இணையத்தில் பார்த்தவை
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">சேவையகச் சான்றிதழில் பிழைகள் உள்ளன.</translation>
 <translation id="2491414235131909199">இந்தப் பக்கத்தை நீட்டிப்பு தடுத்துள்ளது</translation>
 <translation id="2493122313108999546">அளவு மாற்றப்பட்டது</translation>
-<translation id="249376477913017009">Gmail மற்றும் பலவற்றின் தானியங்கு நிரப்பல் குறித்த அறிவிப்பு திறக்கப்பட்டது</translation>
 <translation id="2495083838625180221">JSON பார்சர்</translation>
+<translation id="2495909791227061512">அருகிலுள்ள சாதனங்களுடன் இணைக்கவா?</translation>
 <translation id="2496402116964818747">கடவுச்சொற்களை நிரப்புவதற்காக உங்கள் கைரேகையைப் பயன்படுத்த வேண்டுமா என்பதை <ph name="SETTINGS" /> சென்று மாற்றிக்கொள்ளலாம்</translation>
 <translation id="2498091847651709837">புதிய கார்டை ஸ்கேன்செய்</translation>
 <translation id="2501270939904835585">சாட்டின் லேபிள்கள்</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">வழக்கமாக, தளங்களுடன் பாதுகாப்பாக இணைக்கப்படுவீர்கள். ஆனால் இந்த முறை பாதுகாப்பான இணைப்பை Chrome உலாவியால் பயன்படுத்த முடியவில்லை. ஹேக்கர் உங்கள் நடவடிக்கைகளைக் கண்காணிக்கலாம் அல்லது உங்கள் நெட்வொர்க் இணைப்பை மாற்ற முயலலாம். <ph name="BEGIN_LEARN_MORE_LINK" />இந்த எச்சரிக்கை குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> விலை <ph name="PRICE_DROP" /> குறைந்துள்ளது</translation>
 <translation id="3053013834507634016">சான்றிதழ் விசைப் பயன்பாடு</translation>
-<translation id="3056660797732519147">‘இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ பிழைத் திரை. கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="3057844102210575426">பயணத் தகவல்களை நிர்வகியுங்கள்</translation>
 <translation id="3061707000357573562">பேட்ச் சேவை</translation>
 <translation id="3062655045399308513">உலாவிய தரவை நீக்கு...</translation>
@@ -1441,6 +1439,7 @@
 <translation id="3447884698081792621">சான்றிதழைக் காட்டு (வழங்கியது: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">எனது MIDI சாதனங்களைக் கட்டுப்படுத்துவதற்கும் ரீ-புரோகிராமிங் செய்வதற்கும் அனுமதி கேட்கலாம்</translation>
 <translation id="3452404311384756672">எடுப்பதற்கான இடைவேளை:</translation>
+<translation id="345268527248907593">இந்தத் தளத்தை அணுக முடியவில்லை</translation>
 <translation id="3453962258458347894">மீண்டும் முயலும் எண்ணிக்கை</translation>
 <translation id="3461266716147554923">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும், <ph name="URL" /> என்ற இணைப்பு பார்க்க விரும்புகிறது</translation>
 <translation id="3461824795358126837">ஹைலைட்டர்</translation>
@@ -1970,6 +1969,7 @@
 <translation id="4284885181066817063"><ph name="DOMAIN" /> தடுத்துள்ளது</translation>
 <translation id="4288101205645068104">வாகனத்தை நீக்குதல்</translation>
 <translation id="4290920330097335010">ஒருபோதும் அனுமதிக்காதே</translation>
+<translation id="4291909791598163333">இந்தத் தளத்திற்குச் செல்வதை உங்கள் நிறுவனம் தடுத்துள்ளது</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> பக்கத்தின் சிறுபடம்</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> மாற்றப்பட்டது</translation>
 <translation id="4298148761711700950">QR குறியீட்டைப் பதிவேற்றாமல் உடனடியாகப் பணம் செலுத்துங்கள்</translation>
@@ -2082,7 +2082,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">ஒத்திசைக்கப்பட்ட கடவுச்சொற்களை எனது Google கணக்கின் மூலம் என்க்ரிப்ட் செய்</translation>
 <translation id="4493480324863638523">தவறான URL. URL ஒரு நிலையான வகையில் இருக்க வேண்டும், எ.கா http://example.com or https://example.com.</translation>
-<translation id="4497010149473852018">தொட்டு நிரப்பக்கூடிய வகையில் கிடைக்கும் லாயல்டி கார்டுகள். கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="4497843134750481377">ஆஃபர்களை நிர்வகியுங்கள்</translation>
 <translation id="4500587658229086076">பாதுகாப்பற்ற உள்ளடக்கம்</translation>
 <translation id="4501939680615452918">பிரபலமான உணவகங்களில் டேபிள் உள்ளதா என்று பார்</translation>
@@ -2149,7 +2148,6 @@
 <translation id="4628948037717959914">படம்</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749"><ph name="CLOUD_PROVIDER" />க்கு உங்கள் ஃபைல் பதிவேற்றம் <ph name="HOURS" /> மணிநேரத்தில் தொடங்கும்</translation>
-<translation id="4631881646528206880">விர்ச்சுவல் கார்டைப் பதிவுசெய்யலாம்</translation>
 <translation id="4635278307999235413">நிர்வாகிக் கன்சோலுக்குத் தரவு அனுப்பப்படுகிறது</translation>
 <translation id="4636930964841734540">தகவல்</translation>
 <translation id="4640225694041297329">கடந்த 7 நாட்களின் முடிவுகளைக் காட்டும்</translation>
@@ -2532,7 +2530,6 @@
 <translation id="5255583962255635076">உங்கள் பணிக் கணக்கில் பயன்படுத்தப்பட்டுள்ள உலாவிக் கொள்கைகள்</translation>
 <translation id="5255690596502591079">பரவாயில்லை, படமெடு</translation>
 <translation id="5255771248404149177">கார்டை வழங்கிய நிறுவனம் இது நீங்கள்தான் என்பதை உறுதிசெய்ய விரும்புகிறது</translation>
-<translation id="525579853540851404">’இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ செயல்நிலையைக் காட்டும் திரை. கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="5255833070095767006">350 x 460 மிமீ</translation>
 <translation id="5257739419779698609">{0,plural, =1{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைலை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}other{<ph name="DESTINATION_NAME" />க்கு இந்த ஃபைல்களை நகலெடுப்பதை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" பக்கக் குழு இனி கிடைக்காது</translation>
@@ -2651,6 +2648,7 @@
 <translation id="5452923259299906094">இ-வாலட் மற்றும் Pix மூலம் பணம் செலுத்துங்கள்</translation>
 <translation id="5455374756549232013">தவறான கொள்கை நேரமுத்திரை</translation>
 <translation id="5456428544444655325">எப்போதும் காட்ட வேண்டாம்</translation>
+<translation id="5457082343331641453">தேடலில் சேருங்கள்</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">சாதனங்களைத் தேடுகிறது...</translation>
 <translation id="5465128270485645058">இந்தச் சாளரத்தில் திறந்துள்ள பக்கங்கள் இந்த மெசேஜ் தொடருடன் தொடர்புடையதாக இருந்தால், அவற்றைத் தானாகப் பகிர்வதன் மூலம் மேலும் பிரத்தியேகமான பதில்களைப் பெறுங்கள்.</translation>
@@ -3135,6 +3133,7 @@
 <translation id="6264485186158353794">பாதுகாப்பான நிலைக்குத் திரும்பு</translation>
 <translation id="6264636978858465832">Password Managerருக்குக் கூடுதல் அணுகல் தேவை</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> கொள்கையின் மதிப்பை நகலெடுக்கும்</translation>
+<translation id="6271264012613848937">உங்கள் நிறுவனக் கொள்கைகள் காரணமாக <ph name="URL" /> தளத்திற்குச் செல்வது தடுக்கப்பட்டுள்ளது. தடுக்கப்பட வேண்டாம் என்றால் உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="6272088941196661550">Chrome செயல்பாடுகளில் இருக்கும் தொடர்புடைய செயல்பாடுகளைப் பார்க்க, உலாவலைத் தொடரலாம்</translation>
 <translation id="6272383483618007430">Google புதுப்பிப்பு</translation>
 <translation id="6278015583149890680">Google Drive மற்றும் OneDrive</translation>
@@ -3415,6 +3414,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">கொள்கை மதிப்பு</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> உள்ளீட்டை நீக்கும்</translation>
+<translation id="6753460329812070808">Chromeமில் இருந்து பரிந்துரை அகற்றப்பட்டது</translation>
 <translation id="6757797048963528358">உங்கள் சாதனம் உறக்கநிலைக்குச் சென்றது.</translation>
 <translation id="6758934187792712102">உங்கள் மோஷன் மற்றும் லைட் சென்சார்களை <ph name="URL" /> பயன்படுத்த விரும்புகிறது</translation>
 <translation id="6770747695101757579">காட்டன் காகிதம்</translation>
@@ -3494,6 +3494,7 @@
 <translation id="6897140037006041989">பயனர் ஏஜெண்ட்</translation>
 <translation id="6898699227549475383">நிறுவனம் (O)</translation>
 <translation id="6900702165119149418">வெளியேறிவிட்டீர்கள்</translation>
+<translation id="6902049722133977432">செயல்தவிர்</translation>
 <translation id="6910211073230771657">நீக்கப்பட்டது</translation>
 <translation id="691024665142758461">பல ஃபைல்களைப் பதிவிறக்குதல்</translation>
 <translation id="691046363691324218">குறைதீர்வு எண்</translation>
@@ -3708,6 +3709,7 @@
 <translation id="7266094331715305887">சாதனத்திலுள்ள ஆப்ஸ்</translation>
 <translation id="7268742523336093718">Google Walletடில் பாஸ்போர்ட்டைப் பாதுகாப்பாகச் சேர்த்தல்</translation>
 <translation id="7269151392155523061"><ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> வரையறுத்துள்ள தேடலை ஒருங்கிணைக்கும் சேவையின் தேடல் குறிப்பும் ஷார்ட்கட்டும் ஒன்றாக இருக்கக்கூடாது: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">உங்கள் நிறுவனம் அமைத்துள்ள பாதுகாப்புகள் அல்லது கொள்கைகளில் ஏதோ தவறாகிவிட்டது. பிறகு முயற்சி செய்யவும் அல்லது உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="7273111226200291353">நீங்கள் பதிவிறக்கும் ஃபைல்கள் பகுப்பாய்விற்காக Google Cloud அல்லது மூன்றாம் தரப்புகளுக்கு அனுப்பப்படும். எடுத்துக்காட்டாக, பாதுகாக்கப்பட வேண்டிய தனிப்பட்ட தரவோ மால்வேரோ உள்ளதா என்று கண்டறிவதற்காக அவை ஸ்கேன் செய்யப்படலாம். மேலும், நிறுவனக் கொள்கைகளின் அடிப்படையில் சேமிக்கப்பட்டு நிர்வாகிக்குக் காட்டப்படலாம்.</translation>
 <translation id="7275334191706090484">நிர்வகிக்கப்படும் புக்மார்க்குகள்</translation>
 <translation id="7278933725460302617">இப்போது ஐசோலேட்டட் மோடில் உள்ளீர்கள்</translation>
@@ -4062,7 +4064,6 @@
 <translation id="7839192898639727867">சான்றிதழ் பொருள் விசை ID</translation>
 <translation id="7840103971441592723">ஸ்கிரீன் கேப்சர் தொடங்கியது</translation>
 <translation id="784137052867620416">ஷாப்பிங் புள்ளிவிவரங்கள்</translation>
-<translation id="7841633276323004751">பேமெண்ட்டைத் தொடர்வதற்காகத் தேர்ந்தெடுப்பதற்குக் கிடைக்கும் பேமெண்ட் முறைகள். கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{எதுவுமில்லை}=1{1 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />)}=2{2 ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ஆப்ஸ் (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="784623644169604270">சமீபத்திய செயல்கள் இல்லை</translation>
@@ -4141,7 +4142,6 @@
 <translation id="79682505114836835">மதிப்பு "<ph name="VALUE" />" தவறான ஹெக்ஸ் வண்ணமாகும்.</translation>
 <translation id="7968982339740310781">விவரங்களைக் காண்பி</translation>
 <translation id="7972714317346275248">RSA என்க்ரிப்ஷனுடன் PKCS #1 SHA-384</translation>
-<translation id="7976053965094442846">'இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்' முறையை வழங்குநர்கள் தவணை முறையில் பணம் செலுத்தவும் அனுமதிக்கின்றனர். கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
 <translation id="7976214039405368314">அளவுக்கு அதிகமான கோரிக்கைகள்</translation>
 <translation id="7977029776654598145">இந்த அம்சத்தைப் பயன்படுத்தும்போது</translation>
 <translation id="7977538094055660992">அவுட்புட் சாதனம்</translation>
@@ -4151,6 +4151,7 @@
 <translation id="7984945080620862648">இணையதளமானது Chrome ஆல் செயல்படுத்த முடியாத வழக்கத்திற்கு மாறான நற்சான்றுகளை அனுப்பியுள்ளதால், நீங்கள் இப்போது <ph name="SITE" /> ஐப் பார்வையிட முடியாது, நெட்வொர்க் பிழைகள் மற்றும் தாக்குதல்கள் தற்காலிகமானவையாகும், எனவே இந்தப் பக்கம் சிறிது நேரம் கழித்து செயல்படும்.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">தவணை முறையில் பணம் செலுத்த அனுமதிக்கும் 'இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்' முறையை வழங்குநர்களின் பட்டியல் முழு அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
+<translation id="7990290316254726169">இந்தத் தளம் HTTPSஸை ஆதரிக்காது என்பதாலும் நீங்கள் ஐசோலேட்டட் மோடில் இருப்பதாலும் இந்த எச்சரிக்கை காட்டப்படுகிறது. <ph name="BEGIN_LEARN_MORE_LINK" />இந்த எச்சரிக்கை குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">பைண்டு</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> உடன் திரையைப் பகிர்வது மீண்டும் தொடங்கப்பட்டது</translation>
 <translation id="799384093520583425">இந்தப் பக்கத்தில் டெவெலப்பர் கருவிகளைப் பயன்படுத்துவதை உங்கள் நிறுவனம் தடுத்துள்ளது</translation>
@@ -4448,7 +4449,6 @@
 <translation id="8522552481199248698">உங்கள் Google கணக்கைப் பாதுகாக்கவும் கடவுச்சொல்லை மாற்றவும் Chrome உதவும்.</translation>
 <translation id="8523574453888018351">புதிய மொழி கற்றுக்கொடு</translation>
 <translation id="852450791482410042">இப்போதே செலுத்துதல்</translation>
-<translation id="8528479410903501741">IBANனைச் சேமிக்கும்</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">துல்லிய இருப்பிடம் பயன்படுத்து</translation>
 <translation id="8533619373899488139">தடைசெய்யப்பட்ட URLகளின் பட்டியலையும் உங்கள் சிஸ்டம் நிர்வாகி செயல்படுத்தியுள்ள பிற கொள்கைகளையும் பார்க்க &lt;strong&gt;chrome://policy&lt;/strong&gt; என்பதற்குச் செல்லவும்.</translation>
@@ -4492,6 +4492,7 @@
 <translation id="860043288473659153">கார்டு உரிமையாளரின் பெயர்</translation>
 <translation id="8601206103050338563">TLS WWW கிளையன்ட் அங்கீகரிப்பு</translation>
 <translation id="8604103095921958091">‘இப்போது வாங்குங்கள், பிறகு பணம் செலுத்துங்கள்’ சேவை விதிமுறைகள் திரை முழு அளவிற்குத் திறந்துள்ளது.</translation>
+<translation id="8605014984308506350">இந்தத் தளம் HTTPSஸை ஆதரிக்காது என்பதாலும் நீங்கள் ஐசோலேட்டட் மோடில் இருப்பதாலும் இந்த எச்சரிக்கை காட்டப்படுகிறது. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">உங்கள் சாதன உபயோகம்</translation>
 <translation id="8619130384334725124">தற்போது இயல்பாக இருப்பது</translation>
 <translation id="8620276786115098679">என்வெலப் காகு 7</translation>
@@ -4645,6 +4646,7 @@
 <translation id="8883863364960302898">Google Drive ஃபோல்டர்</translation>
 <translation id="8884537526797090108">ரகசியமான உள்ளடக்கம் இருப்பதால் ரெக்கார்டு செய்ய முடியாது</translation>
 <translation id="8889525327610245418">Google Walletடில் ஓட்டுநர் உரிமத்தைப் பாதுகாப்பாக மாற்றுங்கள்</translation>
+<translation id="8890516388109605451">மூலங்கள்</translation>
 <translation id="8891031436559779793">ஏதேனும் தளத்தில் விலை குறைந்தால் அதுகுறித்த அறிவிப்பைப் பெறுவீர்கள்.</translation>
 <translation id="8891727572606052622">தவறான ப்ராக்ஸி முறை.</translation>
 <translation id="8894794286471754040">நீளமான ஓரம் முதலில்</translation>

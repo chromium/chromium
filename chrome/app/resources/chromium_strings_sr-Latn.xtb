@@ -107,6 +107,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2126108037660393668">Verifikacija preuzetog fajla nije uspela.</translation>
 <translation id="2135919691573380097">Prijavite ovaj sajt</translation>
 <translation id="2137162749895930932">Zatvorite ekran za prevođenje</translation>
+<translation id="2147218225094845757">Sakrij bočnu tablu</translation>
 <translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer ovaj sajt ne koristi bezbednu vezu, pa je fajl možda neovlašćeno menjan</translation>
 <translation id="2170098639895543546">Izaberite bilo šta na stranici</translation>
 <translation id="2174178932569897599">Prilagodite Chromium</translation>
@@ -306,7 +307,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4251772536351901305">Upozorava vas na opasne sajtove, čak i na one za koje Google ranije nije znao, analizirajući više podataka sa sajtova nego standardna zaštita. Možete da odaberete da preskočite upozorenja Chromium-a.</translation>
 <translation id="4269093074552541569">Odjavi me iz Chromium-a</translation>
 <translation id="4271805377592243930">Pronađite pomoć za Chromium</translation>
-<translation id="4275788652681621337">Zatvori bočnu tablu</translation>
 <translation id="4281844954008187215">Uslovi korišćenja usluge</translation>
 <translation id="4285930937574705105">Instalacija nije uspela zbog neodređene greške. Ako je Chromium trenutno otvoren, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4298125729853015961">Izvezite lozinke iz Chromium-a</translation>

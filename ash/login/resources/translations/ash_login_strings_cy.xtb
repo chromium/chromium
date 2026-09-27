@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Bydd y diweddariad yn dechrau pan fydd y batri yn cyrraedd <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Er mwyn defnyddio rheolaethau rhieni megis cymeradwyaeth apiau a therfynau amser sgrîn, rhaid i blentyn fod â Chyfrif Google a reolir gan riant. Gellir ychwanegu cyfrif ysgol yn nes ymlaen ar gyfer offer megis Google Classroom.</translation>
 <translation id="1375557162880614858">Ydych chi am weithredu ChromeVox, y darllenydd sgrîn integredig ar gyfer ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Wedi cwblhau gosod! Paratowch eich dyfais ar gyfer chwarae gemau nesaf</translation>
 <translation id="1377600615067678409">Neidio am nawr</translation>
 <translation id="1399261165075500043">Methu â llwytho Telerau Gwasanaeth Google Play</translation>
 <translation id="1400243387594338234">Gallwch ddefnyddio'r PIN hwn i fewngofnodi i'ch dyfais</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Defnyddio eich Cyfrif Google ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Dewis cylchfa amser</translation>
 <translation id="3893630138897523026">ChromeVox (adborth ar lafar)</translation>
-<translation id="3897746662269329507">Mae eich <ph name="DEVICE_TYPE" /> wedi'i adeiladu ar gyfer chwarae gemau. Bydd yr ap Explore yn agor nesaf, lle gallwch gael mynediad at gannoedd o'r gemau diweddaraf, gweld cynigion chwarae gemau a darganfod nodweddion chwarae gemau sy'n dod gyda'ch dyfais.</translation>
 <translation id="389901847090970821">Dewis bysellfwrdd</translation>
 <translation id="3910588685973519483">Creu papurau wal gydag AI</translation>
 <translation id="3924259174674732591">Maint y sgrîn a thestun <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Mae angen gosod diweddariad ar gyfer cadarnwedd y Modiwl Platfform Cymeradwy. Gweler <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Wps, aeth rhywbeth o'i le wrth fewngofnodi</translation>
 <translation id="5453829744223920473">Gall eich plentyn ddefnyddio ei holl apiau ysgol, nodau tudalen, ac adnoddau yn union fel y maent yn ei wneud yn y dosbarth. Yr ysgol sy'n gosod y rheolau sylfaenol.</translation>
-<translation id="5463450804024056231">Cofrestru ar gyfer e-byst <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Drwy barhau, rydych yn cytuno y gall y ddyfais hon hefyd lawrlwytho a gosod diweddariadau ac apiau yn awtomatig gan Google, cludydd eich plentyn a gwneuthurwr y ddyfais hon, gan ddefnyddio data symudol o bosib. Mae'n bosib y bydd rhai o'r apiau hyn yn cynnig pryniannau o fewn yr ap.</translation>
 <translation id="5502915260472117187">Plentyn</translation>
 <translation id="5511823366942919280">Ydych chi'n siŵr eich bod am osod y ddyfais hon fel "Siarc"?</translation>

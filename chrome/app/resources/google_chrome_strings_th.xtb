@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">จัดการโปรไฟล์ Chrome</translation>
 <translation id="2137162749895930932">ปิดหน้าจอแปลภาษา</translation>
 <translation id="2139300032719313227">รีสตาร์ท Chrome OS</translation>
+<translation id="2147218225094845757">ซ่อนแผงด้านข้าง</translation>
 <translation id="2151406531797534936">โปรดรีสตาร์ท Chrome ตอนนี้เลย</translation>
 <translation id="2163089732491971196">โปรดป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
 <translation id="2170098639895543546">เลือกสิ่งที่ต้องการในหน้า</translation>
@@ -753,6 +754,7 @@
 <translation id="8196526165798579689">ค้นหาด้วย Chrome Dev</translation>
 <translation id="8221491193165283816">คุณมักจะบล็อกการแจ้งเตือน หากต้องการให้เว็บไซต์ส่งการแจ้งเตือน ให้คลิกที่นี่</translation>
 <translation id="8227493674161801700">ค้นหาด้วย Chrome เบต้า</translation>
+<translation id="8233224921566021881">Chrome จำเป็นต้องเข้าถึงเครือข่ายในพื้นที่เพื่อค้นหาและใช้อุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="8253851811470049684">เปิดลิงก์ใน Chrome จากแอปใดก็ได้ และช่วยให้เข้าถึงเบราว์เซอร์ได้ง่ายจากในแถบงาน</translation>
 <translation id="8255190535488645436">Google Chrome ใช้กล้องและไมโครโฟนของคุณอยู่</translation>
 <translation id="8260086374035800939">หาก Gemini ใน Chrome เปิดอยู่ แผงด้านข้างจะเปิดอยู่เมื่อสร้างแท็บใหม่</translation>

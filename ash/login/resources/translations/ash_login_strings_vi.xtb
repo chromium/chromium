@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Sẽ bắt đầu cập nhật khi pin đạt đến mức <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Để sử dụng các quyền kiểm soát của cha mẹ như phê duyệt ứng dụng và giới hạn thời gian sử dụng thiết bị, trẻ phải có một Tài khoản Google do cha mẹ quản lý. Bạn có thể thêm một tài khoản trường học vào lúc khác để dùng các công cụ như Google Lớp học.</translation>
 <translation id="1375557162880614858">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không?</translation>
-<translation id="1375938286942050085">Đã thiết lập xong! Tiếp theo, hãy chuẩn bị sẵn thiết bị để chơi trò chơi</translation>
 <translation id="1377600615067678409">Bỏ qua ngay bây giờ</translation>
 <translation id="1399261165075500043">Không tải được Điều khoản dịch vụ của Google Play</translation>
 <translation id="1400243387594338234">Bạn có thể dùng mã PIN này để đăng nhập vào thiết bị của mình</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Sử dụng Tài khoản Google của bạn trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Chọn múi giờ</translation>
 <translation id="3893630138897523026">ChromeVox (phản hồi bằng giọng nói)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> có thiết kế đặc biệt phù hợp cho bạn chơi trò chơi. Tiếp theo, ứng dụng Khám phá sẽ mở ra. Trên ứng dụng này, bạn có thể truy cập hàng trăm trò chơi mới nhất, xem các ưu đãi về trò chơi và khám phá các tính năng chơi trò chơi đi kèm với thiết bị của bạn.</translation>
 <translation id="389901847090970821">Chọn bàn phím</translation>
 <translation id="3910588685973519483">Tạo hình nền bằng AI</translation>
 <translation id="3924259174674732591">Kích thước hiển thị và văn bản <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Bạn cần cài đặt bản cập nhật của chương trình cơ sở Mô-đun nền tảng đáng tin cậy. Hãy truy cập vào <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Rất tiếc, đã xảy ra lỗi khi đăng nhập</translation>
 <translation id="5453829744223920473">Con bạn có thể sử dụng tất cả ứng dụng, dấu trang và tài nguyên của trường học giống như trong lớp học. Trường học sẽ đặt ra các quy tắc cơ bản.</translation>
-<translation id="5463450804024056231">Đăng ký nhận email về <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của con bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp các lựa chọn mua hàng trong ứng dụng.</translation>
 <translation id="5502915260472117187">Một trẻ</translation>
 <translation id="5511823366942919280">Bạn có chắc chắn muốn thiết lập thiết bị này là "Shark" không?</translation>

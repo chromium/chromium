@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">当电池电量达到 <ph name="BATTERY_LEVEL" />% 时将开始更新。</translation>
 <translation id="1353275871123211385">如果您想使用家长控制功能（例如应用审批和设备使用时限），您的孩子必须有一个由家长管理的 Google 账号。日后需要时，您还可添加学校账号以用于访问相关工具（例如 Google 课堂）。</translation>
 <translation id="1375557162880614858">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？</translation>
-<translation id="1375938286942050085">设置完毕！准备好您的设备，畅享接下来的精彩游戏</translation>
 <translation id="1377600615067678409">暂时跳过</translation>
 <translation id="1399261165075500043">无法加载《Google Play 服务条款》</translation>
 <translation id="1400243387594338234">您可以使用此 PIN 码登录设备</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用您的 Google 账号</translation>
 <translation id="3856800405688283469">选择时区</translation>
 <translation id="3893630138897523026">ChromeVox（语音反馈）</translation>
-<translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 专为游戏打造。接下来系统会打开“探索”应用，以便您从中获取数百款最新游戏、查看游戏优惠，以及发现设备自带的游戏功能。</translation>
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3910588685973519483">利用 AI 制作壁纸</translation>
 <translation id="3924259174674732591">显示大小和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">糟糕，登录时出了点问题</translation>
 <translation id="5453829744223920473">您的孩子可以像在课堂中一样使用所有学校应用、书签和资源。学校会设立基本规则。</translation>
-<translation id="5463450804024056231">注册接收 <ph name="DEVICE_TYPE" /> 电子邮件</translation>
 <translation id="5473099001878321374">继续操作即表示您同意：此设备还可自动下载并安装来自 Google、您孩子的运营商和此设备的制造商的更新及应用（期间可能会使用移动数据网络），其中的部分应用可能会提供应用内购商品。</translation>
 <translation id="5502915260472117187">孩子</translation>
 <translation id="5511823366942919280">确定要将此设备设为“Shark”吗？</translation>

@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">შესანიშნავია!</translation>
 <translation id="1342886103232377846">გატეხილი პაროლების შესამოწმებლად გადადით Google პაროლების მმართველზე</translation>
 <translation id="1343920184519992513">გააგრძელეთ იქიდან, სადაც შეჩერდით, და გახსენით გვერდების კონკრეტული წყობა</translation>
+<translation id="1344216785734288669">Apple-ის პაროლები</translation>
 <translation id="1346630054604077329">დადასტურება და გადატვირთვა</translation>
 <translation id="1346748346194534595">მარჯვნივ</translation>
 <translation id="1347512539447549782">Linux-ის მეხსიერება</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">აპი შეზღუდულია ამ რეგიონში.</translation>
 <translation id="1607139524282324606">ჩანაწერის გასუფთავება</translation>
 <translation id="1608668830839595724">სხვა ქმედებები არჩეული ერთეულებისთვის</translation>
-<translation id="1609603645228231640">Gemini Spark ექსპერიმენტული ხელსაწყოა და შესაძლოა მან თქვენი ინფორმაცია გააზიაროს ან შესყიდვები ნებართვის გარეშე განახორციელოს. <ph name="LINK_BEGIN" />გაითვალისწინეთ რისკები<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">აპის პარამეტრები</translation>
 <translation id="161042844686301425">ციანი</translation>
 <translation id="1611649489706141841">წინ</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">ახალი ჩანაწერი</translation>
 <translation id="1809201888580326312">თქვენ არ ისურვეთ ამ საიტებისა და აპების პაროლების შენახვა.</translation>
 <translation id="1809734401532861917">ჩემი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების <ph name="USER_EMAIL_ADDRESS" />-ში დამატება</translation>
-<translation id="1811908311154949291">ინკოგნიტო შემოღობილი ფრეიმი: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
 <translation id="1812284620455788548">ტრანსლირდება <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">სერვისები</translation>
@@ -1287,7 +1286,6 @@
 <translation id="1983612835086592681">თქვენ გახსენით წინა კვირაში</translation>
 <translation id="1984087999855033707">ტელეფონის ნომერი</translation>
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
-<translation id="1984683754853869253">გსურთ სკოლისთვის ახალი პროფილის შექმნა?</translation>
 <translation id="198507684520034826">დახმარება</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">მდებარეობის გაფართოებული პარამეტრები</translation>
@@ -1321,7 +1319,6 @@
 <translation id="2010636492623189611">არჩეულია.</translation>
 <translation id="2012935757369720523">ფაილის წაშლა</translation>
 <translation id="2014191284313949173">იზოლირებული ჩანართ(ებ)ის დახურვა</translation>
-<translation id="2014495120525813351">ნება დართეთ Gemini Spark-ს, დაათვალიეროს ამ მოწყობილობაზე</translation>
 <translation id="2016473077102413275">ფუნქციები, რომლებიც სურათებს საჭიროებს, არ იმუშავებს</translation>
 <translation id="2017334798163366053">გამორთეთ შესრულების მონაცემების შეგროვება</translation>
 <translation id="2017770349934140286">Google Play და Google Play-დან თქვენ მიერ ჩამოტვირთული აპები წაიშლება ამ Chromebook-იდან.
@@ -2033,7 +2030,6 @@
 <translation id="2554553592469060349">არჩეული ფაილი ძალიან დიდია (მაქს. ზომა: 3 მბ).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" />-დან <ph name="NUM_ALLOWED_APPS" /> აპს შეუძლია შეტყობინებების გამოგზავნა</translation>
 <translation id="2555855727505718984">ავტომატური შევსების სერვისს არ ექნება ეს ინფორმაცია ამ მოწყობილობაზე, რომ ფორმების შევსებაში დაგეხმაროთ</translation>
-<translation id="25568951186001797">შემოღობილი ფრეიმი: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">იხილეთ აქ თქვენი ყველა სანიშნე</translation>
 <translation id="2563924218974330506">თქვენი ჩანართების ჯგუფების მართვა უკვე აქ შეგიძლიათ. ამ ამოცანის ჩამაგრების გაუქმება ნებისმიერ დროს შეგიძლიათ.</translation>
 <translation id="2564520396658920462">AppleScript-ის მეშვეობით JavaScript-ის შესრულების ფუნქცია გამორთულია. მის ჩასართავად მენიუს ზოლიან გადადით აქ: ხედი &gt; დეველოპერი &gt; Apple-ის მოვლენებიდან JavaScript-ის დაშვება. დამატებითი ინფორმაციისთვის იხილეთ: https://support.google.com/chrome/?p=applescript</translation>
@@ -2112,7 +2108,6 @@
 <translation id="2626746300781063303">საიტები, Google-ის ჩათვლით, თავიანთი შეხედულებისამებრ იღებს გადაწყვეტილებას ამ მოთხოვნაზე რეაგირებისას</translation>
 <translation id="2626799779920242286">მოგვიანებით სცადეთ.</translation>
 <translation id="2627424346328942291">გაზიარება ვერ ხერხდება</translation>
-<translation id="2627970398976286795">Gemini Spark-ის რისკების მიმოხილვა</translation>
 <translation id="2628258844236035475">ამოიშალოს თქვენი სახლის მისამართი Chrome-ის ავტომატური შევსებიდან?</translation>
 <translation id="2628770867680720336">ADB გამართვის ჩასართავად საჭიროა ამ Chromebook-ის ქარხნულ პარამეტრებზე დაბრუნება. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini-სთან ახალი ჩეთის დაწყება</translation>
@@ -2421,7 +2416,6 @@
 <translation id="2845276301195220700">მეტი მოქმედება Google Calendar-ისთვის</translation>
 <translation id="2845382757467349449">ყოველთვის გამოჩნდეს სანიშნეების ზოლი</translation>
 <translation id="284581348330507117">შექმენით უნიკალური პაროლები</translation>
-<translation id="2846345106886298325">დავალება შესრულებულია და დაბრუნდა Gemini Spark-ში</translation>
 <translation id="284884486564166077">მოძებნეთ ნებისმიერი სურათი Lens-ით</translation>
 <translation id="2849035674501872372">ზევით აიხედეთ</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2483,7 +2477,6 @@
 <translation id="2893318819023133318">ხედების გაცვლა</translation>
 <translation id="2894596417096093634">ავარიულად გათიშვის ანგარიშის იდენტიფიკატორები</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
-<translation id="2895194086130800590">Gemini Spark-ს შეუძლია ავტომატური დათვალიერების გამოყენება ამ მოწყობილობაზე მხოლოდ იმ შემთხვევაში, თუ მოწყობილობა აქტიურია და Chrome გაშვებულია.</translation>
 <translation id="289695669188700754">გასაღების ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ეს მორგებული პარამეტრი გაუქმდება, როცა ყველა ინკოგნიტო ფანჯარას დახურავთ</translation>
 <translation id="2897878306272793870">ნამდვილად გსურთ გახსნათ <ph name="TAB_COUNT" /> ჩანართი?</translation>
@@ -2536,7 +2529,6 @@
 <translation id="2933653107553951760">ჯგუფის აღდგენა</translation>
 <translation id="2934225044529065415">კამერაზე წვდომა შეუძლებელია</translation>
 <translation id="2935314715123552088">აქტიური eSIM პროფილის გათიშვა</translation>
-<translation id="2936067606203230121">Gemini Spark გადაწყვეტს, რომელი მოქმედებები უნდა შეასრულოს თქვენ მიერ დაწყებული ან განახლებული ამოცანების საფუძველზე.</translation>
 <translation id="2936851848721175671">სარეზერვო კოპირება და აღდგენა</translation>
 <translation id="2938981087412273365">არ არის დაშვებული წაკითხვა და შეცვლა ამ საიტზე</translation>
 <translation id="2939005221756255562">დაუშვით შეტყობინებების მიღება შეტყობინებათა ცენტრში. გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" />.</translation>
@@ -3644,7 +3636,6 @@
 <translation id="3756578970075173856">დააყენეთ PIN-კოდი</translation>
 <translation id="3756806135608816820">საიტებს შეუძლია Bluetooth მოწყობილობების მოძიების მოთხოვნა</translation>
 <translation id="3756823472711156529">ჯგუფის აღდგენა</translation>
-<translation id="3757337311115630808">შეიტყვეთ მეტი Gemini Spark-ის შესახებ</translation>
 <translation id="3757567010566591880">ხელსაწყოთა ზოლიდან ჩამაგრების მოხსნა</translation>
 <translation id="3757645900890881944">ძიების ინსტრუმენტები</translation>
 <translation id="3757733214359997190">საიტები ვერ მოიძებნა</translation>
@@ -4768,6 +4759,7 @@
 <translation id="4631637535315947773">თქვენი ყველაზე ხშირად მონახულებული საიტების მალსახმობები ამოიშალა, რადგან ისინი ბოლო დროს არ გამოგიყენებიათ</translation>
 <translation id="4631955550884380853">ფოკუსირებული ხმა</translation>
 <translation id="4632655012900268062">ბარათების მორგება</translation>
+<translation id="4634719521235795064">Gemini ავტორიზაციისთვის გამოიყენებს Google პაროლების მმართველს. <ph name="BEGIN_LINK" />შეიტყვეთ, როგორ ამუშავებს Gemini თქვენს მონაცემებს<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini-ს დეინსტალაცია</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> მიუწვდომელია სტუმარი მომხმარებლებისთვის.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{ატვირთეთ 1 სურათი თქვენს შეკითხვასთან ერთად გამოსაყენებლად}other{ატვირთეთ მაქსიმუმ # სურათი თქვენს შეკითხვასთან ერთად გამოსაყენებლად}}</translation>
@@ -5255,7 +5247,6 @@
 <translation id="4989966318180235467">&amp;ფონური გვერდის შემოწმება</translation>
 <translation id="499016799952867794">ეს აპს აძლევს სათანადო მუშაობის საშუალებას.</translation>
 <translation id="4990673372047946816">ხელმისაწვდომი კამერა არ არის</translation>
-<translation id="499126848196136237">Gemini Spark-ს შეუძლია გამოიყენოს Chrome-ის ბრაუზერის ავტორეჟიმი ამ მოწყობილობაზე, რათა დაუკავშირდეს საიტებს და შეასრულოს დავალებები თქვენი სახელით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">ზედა სტრიქონის ღილაკების გამოყენება ფუნქციონალურ ღილაკებად</translation>
 <translation id="4991873517942703737">იკითხეთ ამ დოკუმენტის შესახებ</translation>
 <translation id="4992066212339426712">დადუმების მოხსნა</translation>
@@ -5512,7 +5503,6 @@
 <translation id="5189274947477567401">პროცესის გაზიარებაზე უარის თქმა საჭიროებს ბრაუზერის გადატვირთავს. ეს ბრაუზერი ახლა გადაიტვირთება.</translation>
 <translation id="5189404424758444348">სტიმპანკი</translation>
 <translation id="5190577235024772869">გამოიყენება <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">სანიშნეების ზოლი</translation>
 <translation id="5190926251776387065">პორტის გააქტიურება</translation>
 <translation id="5190959794678983197">მიკროფონი არ არის</translation>
 <translation id="5191094172448199359">თქვენ მიერ შეყვანილი PIN-კოდები არ ემთხვევა</translation>
@@ -6081,6 +6071,7 @@
 <translation id="5641715878999557094">გაფართოებამ „<ph name="EXTENSION_NAME" />“ თქვენ მიერ მთავარი ეკრანის ღილაკზე დაწკაპუნებისას საჩვენებელი გვერდი შეცვალა.</translation>
 <translation id="5643191124441701136">თქვენი უსაფრთხოების კოდი ბარათის წინა მხარესაა</translation>
 <translation id="5643321261065707929">ლიმიტირებული ქსელი</translation>
+<translation id="5645369002069651355">მიმდინარეობს ელფოსტის დადასტურება</translation>
 <translation id="5646376287012673985">მდებარეობა</translation>
 <translation id="5646558797914161501">ბიზნესმენი</translation>
 <translation id="564670806635578888">Google-ში ძიება: „<ph name="SEARCH_TERMS" />“</translation>
@@ -7012,7 +7003,6 @@
 <translation id="6393550101331051049">დაუცველი კონტენტის ჩვენება დაშვებულია</translation>
 <translation id="6394634179843537518">ფაილის დამატება</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />სისტემის ინფორმაციის<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />მეტრიკის<ph name="END_LINK2" /> გაგზავნა</translation>
-<translation id="6397586889873084061">დიახ, შეინახე ჩემი მონაცემები სკოლის მონაცემებისგან დამოუკიდებლად (რეკომენდებული)</translation>
 <translation id="6398715114293939307">Google Play Store-ის ამოშლა</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="639880411171387127">მონიშვნა Google Lens-ით. დააჭირეთ შეყვანის ან backspace ღილაკს, რომ Google Lens-ით მონიშვნა წაშალოთ</translation>
@@ -8371,7 +8361,6 @@
 <translation id="7421293530411019405">დატოვებთ ჩანართების ჯგუფს?</translation>
 <translation id="7421925624202799674">გვერდის წყაროს &amp;ნახვა</translation>
 <translation id="7422192691352527311">პარამეტრები…</translation>
-<translation id="7423381908337122792">ნებისმიერს, ვისაც აქვს წვდომა თქვენს Gemini Spark-ის აგენტზე, შეუძლია თქვენი Chrome ბრაუზერის მართვა.</translation>
 <translation id="7423425410216218516">ხილვადობა ჩართულია <ph name="MINUTES" /> წუთით</translation>
 <translation id="7423513079490750513">წაიშალოს <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">ქსელი დამატებულია</translation>
@@ -8496,6 +8485,7 @@
 <translation id="7517292544534877198">Google-ის ნაგულისხმევი დაშიფვრის გამოყენება თქვენს Google ანგარიშში შენახული პაროლებისთვის</translation>
 <translation id="7517959947270534934">თქვენს ოჯახის წევრს ამჟამად არ შეუძლია პაროლების მიღება. სთხოვეთ მას, განაახლოს Chrome და შეასრულოს თავისი პაროლების სინქრონიზაცია.</translation>
 <translation id="7518079994230200553">ეს ვარიანტი ამჟამად მიუწვდომელია.</translation>
+<translation id="7519506357537394422">ნებას დართავთ Gemini-ს, თქვენი სახელით გახსნას <ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">შენახული ინფორმაციისა და სხვა მონაცემების თქვენს ყველა მოწყობილობაზე მისაღებად შედით ანგარიშით <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">ინკოგნიტო პორტალი: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">მალსახმობების ჩვენება</translation>
@@ -8723,7 +8713,6 @@
 <translation id="769824636077131955">ეს დოკუმენტი ზედმეტად დიდია უსაფრთხოების შემოწმებისთვის. შესაძლებელია 50 მბაიტამდე ზომის დოკუმენტების ბეჭდვა.</translation>
 <translation id="7698507637739331665">ზოგიერთი ერთეული დაბლოკილია</translation>
 <translation id="7700516433658473670">პრინტერები და სკანერები</translation>
-<translation id="7700873336634517379">არა, განაგრძე ამ პროფილის გამოყენება სკოლისთვის</translation>
 <translation id="7701040980221191251">არცერთი</translation>
 <translation id="7701869757853594372">მომხმარებლის მარკერები</translation>
 <translation id="770231223935918661">იკითხეთ ამ სურათის შესახებ</translation>
@@ -9089,6 +9078,7 @@
 <translation id="7978450511781612192">ამ ქმედებით გამოხვალთ თქვენი Google ანგარიშებიდან. თქვენი სანიშნეები, ისტორია, პაროლები და სხვა კონტენტი აღარ იქნება სინქრონიზებული.</translation>
 <translation id="7980066177668669492">Base64-დაშიფრული ASCII, მრავალი სერტიფიკატი</translation>
 <translation id="7981410461060625406">გამოიყენეთ წვდომის გასაღები <ph name="APP_NAME" />-ისთვის</translation>
+<translation id="7981445433812028278">თქვენი ელფოსტა ვერ დადასტურდა</translation>
 <translation id="7981662863948574132">მოწყობილობის EID-ისა და QR კოდის ამომხტარი ფანჯრის ჩვენება</translation>
 <translation id="7982578888426609524">ამ ჯგუფში ბოლო სიახლეები</translation>
 <translation id="7982789257301363584">ქსელი</translation>
@@ -10385,7 +10375,6 @@
 <translation id="897525204902889653">კარანტინის სერვისი</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ და 1 სხვა ჩანართი}other{„<ph name="TAB_TITLE" />“ და # სხვა ჩანართი}}</translation>
 <translation id="897565255818387330">გსურთ, ნება დართოთ ამ საიტს, ნახოს და დააკოპიროს „<ph name="FILE_NAME" />“?</translation>
-<translation id="8977523125954274918">დააყენეთ სკოლის პროფილი, რომ შეინახოთ და გამოიყენოთ თქვენი პაროლები და სხვა მონაცემები თქვენს ანგარიშში</translation>
 <translation id="8977811652087512276">პაროლი არასწორია, ან დაზიანებულია ფაილი</translation>
 <translation id="8978154919215542464">ჩართული — ყველაფრის სინქრონიზაცია</translation>
 <translation id="8978670037548431647">ტეტერინგის შესაძლებლობების განახლება</translation>
@@ -10489,7 +10478,6 @@
 <translation id="9040661932550800571">გსურთ <ph name="ORIGIN" />-ის პაროლის განახლება?</translation>
 <translation id="9041560164471731796">ძლიერი პაროლების Google პაროლების მმართველში შესანახად საჭიროა, შეხვიდეთ Chrome-ში</translation>
 <translation id="9041692268811217999">თქვენს მოწყობილობაზე არსებულ ადგილობრივ ფაილებზე წვდომა გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
-<translation id="9041881059840744611">სკოლის პროფილების შესახებ</translation>
 <translation id="904224458472510106">ამ ოპერაციას ვერ გააუქმებთ</translation>
 <translation id="9042827002460091668">შეამოწმეთ ინტერნეტთან კავშირი და ცადეთ ხელახლა</translation>
 <translation id="9042893549633094279">კონფიდენციალურობა და უსაფრთხოება</translation>
@@ -10706,7 +10694,6 @@
 <translation id="9219103736887031265">გამოსახულებები</translation>
 <translation id="9219572436491982747">Google-თან გაგზავნილი მონაცემები შეიძლება ნახონ ადამიანმა მიმომხილველებმა, Chrome-ის ხელოვნური ინტელექტის ტექნოლოგიის გაუმჯობესების მიზნით</translation>
 <translation id="9219741625496141320">დათვალიერების მონაცემები ავტომატურად წაიშალა</translation>
-<translation id="9220484506568374422">Gemini Spark-ს ექნება წვდომა იმავე საიტებზე, რომლებზეც თქვენ, მათ შორის, საიტებზე, რომლებზეც ავტორიზაცია გაიარეთ. ის გაუზიარებს საჭირო ინფორმაციას მესამე მხარეებს, რაც შეიძლება მოიცავდეს თქვენთვის სენსიტიურ პერსონალურ ინფორმაციას.</translation>
 <translation id="9220525904950070496">ანგარიშის წაშლა</translation>
 <translation id="9220723036554088545">ატვირთეთ ფაილი</translation>
 <translation id="9220820413868316583">ასწიეთ და ცადეთ ხელახლა.</translation>

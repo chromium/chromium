@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">請花 1 分鐘填寫這份問卷調查，幫助我們提供更優質的無痕模式。</translation>
 <translation id="1065672644894730302">系統無法讀取你的偏好設定。部分功能可能無法使用，且系統也不會儲存任何偏好設定的變更。</translation>
 <translation id="1083934481477628225">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定</translation>
+<translation id="109026165963220603">Chromium 需要區域網路存取權，才能偵測及使用鄰近裝置</translation>
 <translation id="1090946077924227754">如要搜尋特定 Chromium 功能或擴充功能，請在網址列輸入其捷徑，然後按下你所選擇的鍵盤按鍵</translation>
 <translation id="1098493699368672217">在系統匣顯示「使用 Chromium 搜尋」，並開啟鍵盤快速鍵</translation>
 <translation id="1104942323762546749">Chromium 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
@@ -67,7 +68,7 @@
 <translation id="1793486931176048546">在 Windows 通知中點選<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />「是」，即可將 Chromium 釘選到工作列以便快速存取</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
-<translation id="1828328511398219809">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能存取<ph name="DEVICE" />中的擴充功能和其他資料。</translation>
+<translation id="1828328511398219809"><ph name="EXISTING_USER" />目前已登入。如果想分開儲存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能存取<ph name="DEVICE" />中的擴充功能和其他資料。</translation>
 <translation id="183031085822326697">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用 Google 密碼管理工具。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="18552579716432081">如果只要刪除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請<ph name="BEGIN_LINK" />登出 Chromium<ph name="END_LINK" />。</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
 <translation id="2135919691573380097">檢舉這個網站</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
+<translation id="2147218225094845757">隱藏側邊面板</translation>
 <translation id="215352261310130060">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chromium 已禁止下載</translation>
 <translation id="2170098639895543546">選取網頁上的任何內容</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
@@ -191,7 +193,7 @@
 <translation id="3038232873781883849">正在等待安裝...</translation>
 <translation id="3045032126857188731">譯文語言：<ph name="LANGUAGE" /></translation>
 <translation id="3047590466164881923">關閉意見回饋對話方塊</translation>
-<translation id="3064717200427679322">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能存取<ph name="DEVICE" />中的閱讀清單和其他資料。</translation>
+<translation id="3064717200427679322"><ph name="EXISTING_USER" />目前已登入。如果想分開儲存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能存取<ph name="DEVICE" />中的閱讀清單和其他資料。</translation>
 <translation id="3068187312562070417">其他 Chromium 設定檔</translation>
 <translation id="3068290154869370196">擴充功能是外掛程式，可用來自訂 Chromium。無論是整理資料或簡化日常工作，都能用擴充功能打造個人化的 Chromium。</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Chromium 更臻完美</translation>
@@ -292,7 +294,7 @@
 <translation id="4147856324248078748">自訂 Chromium(&amp;U)</translation>
 <translation id="4148957013307229264">正在安裝...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 網路登入 - Chromium</translation>
-<translation id="4208652172235621272">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取閱讀清單和其他資料。</translation>
+<translation id="4208652172235621272"><ph name="EXISTING_USER" />目前已登入。如果想分開儲存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取閱讀清單和其他資料。</translation>
 <translation id="421369550622382712">探索 Chromium 專用的優質應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="4217080900579554343">如要在所有電腦上使用這個擴充功能及其他擴充功能，請登入 Chromium</translation>
 <translation id="4217972271355023382">為確保家長監護設定可以進一步守護你的上網安全，請切換至以 <ph name="USER_EMAIL_ADDRESS" /> 登入的 Chromium 設定檔</translation>
@@ -302,7 +304,6 @@
 <translation id="4251772536351901305">這項防護機制分析的網站資料比標準防護來得多，因此即使是 Google 不知道的網站，這項防護機制也能提供危險網站警告。你可以選擇略過 Chromium 的警告。</translation>
 <translation id="4269093074552541569">登出 Chromium</translation>
 <translation id="4271805377592243930">前往 Chromium 說明頁面</translation>
-<translation id="4275788652681621337">關閉側邊面板</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4285930937574705105">不明錯誤導致安裝失敗。如果目前 Chromium 正在執行，請關閉 Chromium，然後再試一次。</translation>
 <translation id="4298125729853015961">從 Chromium 匯出密碼</translation>
@@ -394,7 +395,7 @@
 <translation id="5382964351116519680">開啟「使用 Chromium 搜尋」</translation>
 <translation id="5383439451358640070">瞭解 Chromium 封鎖某些檔案的原因</translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="5387586787134731891">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取擴充功能和其他資料。</translation>
+<translation id="5387586787134731891"><ph name="EXISTING_USER" />目前已登入。如果想分開儲存你的瀏覽資料，請在 Chromium 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取擴充功能和其他資料。</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
 <translation id="5405650547142096840">從 Chromium 中移除</translation>
 <translation id="5424544524441439284">降低效能但提高 Chromium 防範攻擊的能力</translation>

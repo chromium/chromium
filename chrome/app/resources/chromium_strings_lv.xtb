@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Palīdziet mums uzlabot pārlūkošanu inkognito režīmā, aizpildot šo vienas minūtes aptauju.</translation>
 <translation id="1065672644894730302">Jūsu preferences nevar nolasīt. Dažas funkcijas var nebūt pieejamas, un preferenču izmaiņas netiks saglabātas</translation>
 <translation id="1083934481477628225">Viens no jūsu vecākiem ir izslēdzis iestatījumu “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium.</translation>
+<translation id="109026165963220603">Pārlūkam Chromium ir nepieciešama piekļuve jūsu lokālajam tīklam, lai atrastu un izmantotu tuvumā esošās ierīces.</translation>
 <translation id="1090946077924227754">Lai meklētu konkrētu Chromium funkciju vai paplašinājumu, adreses joslā ievadiet tā saīsni un pēc tam nospiediet izvēlēto īsinājumtaustiņu</translation>
 <translation id="1098493699368672217">Rādīt meklēšanu pārlūkā Chromium sistēmas teknē un ieslēgt īsinājumtaustiņu</translation>
 <translation id="1104942323762546749">Pārlūkā Chromium tiek mēģināts eksportēt jūsu paroles. Lai to atļautu, ievadiet savu Windows paroli.</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">Neizdevās verificēt lejupielādēto failu.</translation>
 <translation id="2135919691573380097">Ziņošana par šo vietni</translation>
 <translation id="2137162749895930932">Aizvērt tulkošanas ekrānu</translation>
+<translation id="2147218225094845757">Slēpt sānu paneli</translation>
 <translation id="215352261310130060">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo vietnē netiek izmantots drošs savienojums un, iespējams, failā ir veiktas izmaiņas.</translation>
 <translation id="2170098639895543546">Atlasīt jebkādu saturu lapā</translation>
 <translation id="2174178932569897599">Pielāgot pārlūkprogrammu Chromium</translation>
@@ -302,7 +304,6 @@
 <translation id="4251772536351901305">Tiek rādīts brīdinājums par bīstamām vietnēm (pat ja Google par tām iepriekš nezināja), analizējot vairāk datu no vietnēm, nekā analizē standarta aizsardzība. Varat izlaist Chromium brīdinājumus.</translation>
 <translation id="4269093074552541569">Izrakstīties no pārlūka Chromium</translation>
 <translation id="4271805377592243930">Saņemt palīdzību par Chromium</translation>
-<translation id="4275788652681621337">Aizvērt sānu paneli</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
 <translation id="4285930937574705105">Instalācija neizdevās nenoteiktas kļūdas dēļ. Ja Chromium šobrīd darbojas, aizveriet to un mēģiniet vēlreiz.</translation>
 <translation id="4298125729853015961">Paroļu eksportēšana no pārlūka Chromium</translation>

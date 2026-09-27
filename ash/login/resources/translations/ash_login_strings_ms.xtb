@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Kemas kini akan bermula apabila bateri mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Untuk menggunakan kawalan ibu bapa seperti kelulusan apl dan had masa skrin, kanak-kanak mesti mempunyai Google Account yang diurus oleh ibu/bapa. Akaun sekolah boleh ditambah kemudian untuk alatan seperti Google Classroom.</translation>
 <translation id="1375557162880614858">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS Flex?</translation>
-<translation id="1375938286942050085">Persediaan selesai! Sediakan peranti anda untuk permainan</translation>
 <translation id="1377600615067678409">Langkau pada masa ini</translation>
 <translation id="1399261165075500043">Tidak dapat memuatkan Syarat Perkhidmatan Google Play</translation>
 <translation id="1400243387594338234">Anda boleh menggunakan PIN ini untuk log masuk ke peranti anda</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Gunakan Google Account anda pada <ph name="DEVICE_TYPE" /> anda</translation>
 <translation id="3856800405688283469">Pilih zon waktu</translation>
 <translation id="3893630138897523026">ChromeVox (maklum balas dituturkan)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> anda dibina untuk permainan. Seterusnya apl Teroka akan dibuka, yang membolehkan anda mengakses ratusan permainan terbaharu, melihat tawaran permainan dan menemukan ciri permainan yang disertakan dengan peranti anda.</translation>
 <translation id="389901847090970821">Pilih papan kekunci</translation>
 <translation id="3910588685973519483">Buat hiasan latar dengan AI</translation>
 <translation id="3924259174674732591">Saiz paparan dan teks <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Kemas kini untuk perisian tegar Modul Platform Dipercayai perlu dipasang. Lihat <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Op, sesuatu telah berlaku dengan log masuk</translation>
 <translation id="5453829744223920473">Anak anda boleh menggunakan semua apl sekolah, penanda halaman dan sumber mereka seperti yang mereka lakukan di dalam kelas. Sekolah menetapkan peraturan asas.</translation>
-<translation id="5463450804024056231">Mendaftar untuk e-mel <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Dengan meneruskan penggunaan, anda bersetuju bahawa peranti ini juga mungkin memuat turun dan memasang kemas kini dan apl daripada Google, pembawa anak anda dan pengeluar peranti ini secara automatik dan mungkin menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl.</translation>
 <translation id="5502915260472117187">Anak</translation>
 <translation id="5511823366942919280">Adakah anda pasti ingin menyediakan peranti ini sebagai "Shark"?</translation>

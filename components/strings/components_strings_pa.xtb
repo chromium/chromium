@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨੰਬਰ ਨੂੰ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1455413310270022028">ਰਬੜ</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ਦੇਖਣ ਲਈ ਕੋਈ ਸਮੀਖਿਆ ਨਹੀਂ ਹੈ}=1{1 ਸਮੀਖਿਆ ਦੇਖੋ}other{ਸਾਰੀਆਂ # ਸਮੀਖਿਆਵਾਂ ਦੇਖੋ}}</translation>
-<translation id="1458770162980644530">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਵਾਲੀ ਸਕ੍ਰੀਨ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="1460317464907341501">ਕੀ ਇਸ ਈਮੇਲ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="1461041542809785877">ਪ੍ਰਦਰਸ਼ਨ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">ਕਨੈਕਸ਼ਨ ਸੰਬੰਧੀ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
 <translation id="2277949605527755300"><ph name="URL" /> ਤੁਹਾਡੇ ਹੱਥਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="22792995594807632">ਡਾਊਨਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="2279607542590042584">ਪਾਸਕੀ • Apple Passwords</translation>
 <translation id="2283340219607151381">ਪਤੇ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="2283599456633275070">ਯਾਤਰਾ</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073">ਕੀ <ph name="HANDLER_HOSTNAME" /> ਨੂੰ ਸਾਰੇ <ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="243815215670139125">ਇਸ ਕਾਰਡ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਇਸਦੀ ਬਜਾਏ ਇਸਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2438874542388153331">ਸੱਜੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
-<translation id="2441854154602066476">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੀਆਂ ਉਪਲਬਧ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦੀ ਸੂਚੀ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ਅੱਗੇ ਦਿੱਤੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰੇਗਾ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">ਸਰਵਰ ਦੇ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿੱਚ ਗੜਬੜੀਆਂ ਹਨ।</translation>
 <translation id="2491414235131909199">ਇਸ ਪੰਨੇ ਨੂੰ ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2493122313108999546">ਆਕਾਰ ਬਦਲਿਆ ਗਿਆ</translation>
-<translation id="249376477913017009">'Gmail ਅਤੇ ਹੋਰਾਂ ਤੋਂ ਆਟੋਫਿਲ' ਵਾਲਾ ਨੋਟਿਸ ਖੁੱਲ੍ਹ ਗਿਆ ਹੈ</translation>
 <translation id="2495083838625180221">JSON ਪਾਰਸਰ</translation>
+<translation id="2495909791227061512">ਕੀ ਨਜ਼ਦੀਕੀ ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2496402116964818747">ਤੁਸੀਂ ਇਸ ਚੀਜ਼ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ ਕਿ ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="2498091847651709837">ਨਵਾਂ ਕਾਰਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2501270939904835585">ਲੇਬਲ (ਸਾਟਿਨ)</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਸਾਈਟਾਂ ਨਾਲ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਕਨੈਕਟ ਕਰਦੇ ਹੋ, ਪਰ Chrome ਇਸ ਸਮੇਂ ਕੋਈ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਨਹੀਂ ਵਰਤ ਸਕਿਆ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਗੁਪਤ ਢੰਗ ਨਾਲ ਸੁਣਨ ਜਾਂ ਸੋਧਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੋਵੇ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
 <translation id="3053013834507634016">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਕੁੰਜੀ ਵਰਤੋਂ</translation>
-<translation id="3056660797732519147">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਗੜਬੜ ਵਾਲੀ ਸਕ੍ਰੀਨ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="3057844102210575426">ਯਾਤਰਾ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3061707000357573562">ਪੈਚ ਸੇਵਾ</translation>
 <translation id="3062655045399308513">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
@@ -1442,6 +1440,7 @@
 <translation id="3447884698081792621">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦਿਖਾਓ (<ph name="ISSUER" /> ਵੱਲੋਂ ਜਾਰੀ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="3450323514459570273">ਇਹ ਸਾਈਟ ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ</translation>
 <translation id="3452404311384756672">ਅੰਤਰਾਲ ਪ੍ਰਾਪਤ ਕਰੋ:</translation>
+<translation id="345268527248907593">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ</translation>
 <translation id="3453962258458347894">ਮੁੜ-ਕੋਸ਼ਿਸ਼ਾਂ ਦੀ ਗਿਣਤੀ</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ਦੀ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਲਿਖਤ ਨੂੰ ਦੇਖਣ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="3461824795358126837">ਉਜਾਗਰਕਰਤਾ</translation>
@@ -1971,6 +1970,7 @@
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4288101205645068104">ਵਾਹਨ ਮਿਟਾਓ</translation>
 <translation id="4290920330097335010">ਕਦੇ ਵੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
+<translation id="4291909791598163333">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਤੁਹਾਨੂੰ ਅੱਗੇ ਦਿੱਤੀ ਸਾਈਟ 'ਤੇ ਜਾਣ ਤੋਂ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="4297502707443874121">ਪੰਨਾ <ph name="THUMBNAIL_PAGE" /> ਲਈ ਲਘੂ-ਚਿੱਤਰ</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4298148761711700950">QR ਅੱਪਲੋਡ ਕੀਤੇ ਬਿਨਾਂ ਤੁਰੰਤ ਭੁਗਤਾਨ ਕਰੋ</translation>
@@ -2083,7 +2083,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">ਸਿੰਕ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="4493480324863638523">ਅਵੈਧ URL ਕਿਸੇ ਮਿਆਰੀ ਸਕੀਮ ਵਾਲਾ URL ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈੇ, ਜਿਵੇਂ ਕਿ http://example.com ਜਾਂ https://example.com</translation>
-<translation id="4497010149473852018">ਸਪਰਸ਼ ਕਰ ਕੇ ਭਰੇ ਜਾਣ ਵਾਲੇ ਵਫ਼ਾਦਾਰੀ ਕਾਰਡ ਉਪਲਬਧ ਹਨ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="4497843134750481377">ਪੇਸ਼ਕਸ਼ਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4500587658229086076">ਅਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ</translation>
 <translation id="4501939680615452918">ਪ੍ਰਚਲਿਤ ਰੈਸਟੋਰੈਂਟਾਂ ਵਿੱਚ ਖਾਲੀ ਪਈਆਂ ਸੀਟਾਂ ਦੇਖੋ</translation>
@@ -2150,7 +2149,6 @@
 <translation id="4628948037717959914">ਫ਼ੋਟੋ</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749"><ph name="CLOUD_PROVIDER" /> 'ਤੇ ਤੁਹਾਡੀ ਫ਼ਾਈਲ ਨੂੰ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ <ph name="HOURS" /> ਘੰਟਿਆਂ ਵਿੱਚ ਸ਼ੁਰੂ ਹੋਵੇਗੀ</translation>
-<translation id="4631881646528206880">ਆਭਾਸੀ ਕਾਰਡ ਦਰਜ ਕਰਨਾ</translation>
 <translation id="4635278307999235413">ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਨੂੰ ਡਾਟਾ ਭੇਜਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4636930964841734540">ਜਾਣਕਾਰੀ</translation>
 <translation id="4640225694041297329">ਪਿਛਲੇ 7 ਦਿਨਾਂ ਦੇ ਨਤੀਜੇ ਦਿਖਾਓ</translation>
@@ -2533,7 +2531,6 @@
 <translation id="5255583962255635076">ਤੁਹਾਡੇ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਲਾਗੂ ਕੀਤੀਆਂ ਬ੍ਰਾਊਜ਼ਰ ਨੀਤੀਆਂ</translation>
 <translation id="5255690596502591079">ਫਿਰ ਵੀ ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="5255771248404149177">ਤੁਹਾਡਾ ਕਾਰਡ ਪ੍ਰਦਾਨਕ ਤੁਹਾਡੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
-<translation id="525579853540851404">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਪ੍ਰਗਤੀ ਸਕ੍ਰੀਨ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="5255833070095767006">350 x 460 ਮਿ.ਮੀ.</translation>
 <translation id="5257739419779698609">{0,plural, =1{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}one{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਸ ਫ਼ਾਈਲ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}other{ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="DESTINATION_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ਟੈਬ ਗਰੁੱਪ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
@@ -2652,6 +2649,7 @@
 <translation id="5452923259299906094">ਈ-ਵਾਲੇਟ ਅਤੇ Pix ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="5455374756549232013">ਖ਼ਰਾਬ ਨੀਤੀ ਟਾਈਮਸਟੈਂਪ</translation>
 <translation id="5456428544444655325">ਕਦੇ ਨਾ ਦਿਖਾਓ</translation>
+<translation id="5457082343331641453">ਆਪਣੀ ਖੋਜ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}other{<ph name="CONTACT_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ਹੋਰ}}</translation>
 <translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
 <translation id="5465128270485645058">ਜੇ ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਇਸ ਥ੍ਰੈੱਡ ਨਾਲ ਸੰਬੰਧਿਤ ਹਨ, ਤਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਇਸ ਵਿੰਡੋ ਵਿੱਚ ਆਪਣੇ ਆਪ ਸਾਂਝਾ ਕਰ ਕੇ ਜ਼ਿਆਦਾ ਵਿਉਂਤਬੱਧ ਜਵਾਬ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
@@ -3136,6 +3134,7 @@
 <translation id="6264485186158353794">ਸੁਰੱਖਿਆ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="6264636978858465832">Password Manager ਨੂੰ ਹੋਰ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ਨੀਤੀ ਦਾ ਮੁੱਲ ਕਾਪੀ ਕਰੋ</translation>
+<translation id="6271264012613848937">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਕਰਕੇ ਤੁਹਾਨੂੰ <ph name="URL" /> 'ਤੇ ਜਾਣ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਸੀ। ਜੇ ਇਹ ਅਣਕਿਆਸਿਆ ਹੈ, ਤਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="6272088941196661550">ਆਪਣੇ Chrome ਇਤਿਹਾਸ ਵਿੱਚ ਢੁਕਵੀਂ ਸਰਗਰਮੀ ਦੇਖਣ ਲਈ ਆਪਣੇ ਖੋਜ ਸਫ਼ਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="6272383483618007430">Google ਅੱਪਡੇਟ</translation>
 <translation id="6278015583149890680">Google Drive ਅਤੇ OneDrive</translation>
@@ -3416,6 +3415,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">ਨੀਤੀ ਦਾ ਮੁੱਲ</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ਇੰਦਰਾਜ ਮਿਟਾਓ</translation>
+<translation id="6753460329812070808">Chrome ਤੋਂ ਸੁਝਾਅ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="6757797048963528358">ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਸਲੀਪ ਵਿੱਚ ਚਲੀ ਗਈ।</translation>
 <translation id="6758934187792712102"><ph name="URL" /> ਤੁਹਾਡੇ ਮੋਸ਼ਨ ਅਤੇ ਲਾਈਟ ਸੈਂਸਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="6770747695101757579">ਪੇਪਰ (ਕੌਟਨ)</translation>
@@ -3495,6 +3495,7 @@
 <translation id="6897140037006041989">ਵਰਤੋਂਕਾਰ ਏਜੰਟ</translation>
 <translation id="6898699227549475383">ਕੰਪਨੀ (O)</translation>
 <translation id="6900702165119149418">ਤੁਸੀਂ ਸਾਈਨ-ਆਊਟ ਹੋ</translation>
+<translation id="6902049722133977432">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="6910211073230771657">ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="691024665142758461">ਕਈ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="691046363691324218">Redress ਨੰਬਰ</translation>
@@ -3708,6 +3709,7 @@
 <translation id="7266094331715305887">ਡੀਵਾਈਸ 'ਤੇ ਐਪਾਂ</translation>
 <translation id="7268742523336093718">Google Wallet ਵਿੱਚ ਪਾਸਪੋਰਟ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="7269151392155523061">ਸ਼ਾਰਟਕੱਟ ਅਤੇ <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਖੋਜ ਇਕੱਤਰਕ ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ ਇੱਕੋ ਜਿਹੇ ਨਹੀਂ ਹੋ ਸਕਦੇ: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਸੈੱਟ ਕੀਤੀਆਂ ਸੁਰੱਖਿਆਵਾਂ ਜਾਂ ਨੀਤੀਆਂ ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="7273111226200291353">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਵਿਸ਼ਲੇਸ਼ਣ ਲਈ Google ਕਲਾਊਡ ਜਾਂ ਤੀਜੀਆਂ ਧਿਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਉਨ੍ਹਾਂ ਨੂੰ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਜਾਂ ਮਾਲਵੇਅਰ ਲਈ ਸਕੈਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ ਅਤੇ ਕੰਪਨੀ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ ਸਟੋਰ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਲਈ ਦਿਖਾਈ ਦੇਣਯੋਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7275334191706090484">ਵਿਵਸਥਿਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="7278933725460302617">ਤੁਸੀਂ ਹੁਣ ਆਈਸੋਲੇਟਿਡ ਮੋਡ ਵਿੱਚ ਹੋ</translation>
@@ -4062,7 +4064,6 @@
 <translation id="7839192898639727867">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵਿਸ਼ਾ ਕੁੰਜੀ ID</translation>
 <translation id="7840103971441592723">ਸਕ੍ਰੀਨ ਕੈਪਚਰ ਕਰਨਾ ਸ਼ੁਰੂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="784137052867620416">ਖਰੀਦਦਾਰੀ ਸੰਬੰਧੀ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ</translation>
-<translation id="7841633276323004751">ਭੁਗਤਾਨ ਕਰਨ ਲਈ, ਚੋਣ ਕਰਨ ਵਾਸਤੇ ਉਪਲਬਧ ਭੁਗਤਾਨ ਵਿਧੀਆਂ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਐਪ (<ph name="EXAMPLE_APP_1" />)}=2{2 ਐਪਾਂ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# ਐਪਾਂ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="784623644169604270">ਕੋਈ ਹਾਲੀਆ ਸਰਗਰਮੀ ਨਹੀਂ</translation>
@@ -4141,7 +4142,6 @@
 <translation id="79682505114836835">ਮੁੱਲ "<ph name="VALUE" />" ਇੱਕ ਅਵੈਧ ਹੈਕਸ ਰੰਗ ਹੈ।</translation>
 <translation id="7968982339740310781">ਵੇਰਵੇ ਦੇਖੋ</translation>
 <translation id="7972714317346275248">RSA ਐਨਕ੍ਰਿਪਸ਼ਨ ਨਾਲ PKCS #1 SHA-384</translation>
-<translation id="7976053965094442846">ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, 'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਸੁਵਿਧਾ ਦੇਣ ਵਾਲੇ ਜਾਰੀਕਰਤਾਵਾਂ ਦੀ ਸੂਚੀ ਉਪਲਬਧ ਹੈ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="7976214039405368314">ਬਹੁਤ ਸਾਰੀਆਂ ਬੇਨਤੀਆਂ</translation>
 <translation id="7977029776654598145">ਜਦੋਂ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7977538094055660992">ਆਊਟਪੁੱਟ ਡੀਵਾਈਸ</translation>
@@ -4151,6 +4151,7 @@
 <translation id="7984945080620862648">ਤੁਸੀਂ ਇਸ ਵੇਲੇ <ph name="SITE" /> ਤੇ ਵਿਜਿਟ ਨਹੀਂ ਕਰ ਸਕਦੇ ਕਿਉਂਕਿ ਵੈੱਬਸਾਈਟ ਨੇ ਸਕ੍ਰੈਂਬਲ ਕੀਤੇ ਕ੍ਰੈਡੈਂਸ਼ੀਅਲਸ ਭੇਜੇ ਸਨ ਜਿਹਨਾਂ ਨਾਲ Chrome ਪ੍ਰਕਿਰਿਆ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਨੈਟਵਰਕ ਅਸ਼ੁੱਧੀਆਂ ਅਤੇ ਹਮਲੇ ਆਮ ਤੌਰ ਤੇ ਅਸਥਾਈ ਹੁੰਦੇ ਹਨ, ਇਸਲਈ ਇਹ ਸਫ਼ਾ ਸ਼ਾਇਦ ਬਾਅਦ ਵਿੱਚ ਕੰਮ ਕਰੇਗਾ।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">ਕਿਸ਼ਤਾਂ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰਨ ਲਈ, 'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੀ ਸੁਵਿਧਾ ਦੇਣ ਵਾਲੇ ਜਾਰੀਕਰਤਾਵਾਂ ਦੀ ਸੂਚੀ, ਸਕ੍ਰੀਨ 'ਤੇ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
+<translation id="7990290316254726169">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਖਾਈ ਦੇ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਅਤੇ ਤੁਸੀਂ ਆਇਸੋਲੇਟਿਡ ਮੋਡ ਵਿੱਚ ਹੋ। <ph name="BEGIN_LEARN_MORE_LINK" />ਇਸ ਚਿਤਾਵਨੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">ਜਿਲਦਬੰਦ</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> ਨਾਲ ਸਕ੍ਰੀਨ ਸਾਂਝਾਕਰਨ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="799384093520583425">ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੇ ਇਸ ਪੰਨੇ 'ਤੇ DevTools ਦੀ ਵਰਤੋਂ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
@@ -4448,7 +4449,6 @@
 <translation id="8522552481199248698">Chrome ਤੁਹਾਡੇ Google ਖਾਤੇ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਅਤੇ ਪਾਸਵਰਡ ਬਦਲਣ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8523574453888018351">ਮੈਨੂੰ ਕੋਈ ਨਵੀਂ ਭਾਸ਼ਾ ਸਿਖਾਓ</translation>
 <translation id="852450791482410042">ਹੁਣੇ ਭੁਗਤਾਨ ਕਰੋ</translation>
-<translation id="8528479410903501741">IBAN ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">ਸਟੀਕ ਟਿਕਾਣਾ ਵਰਤੋ</translation>
 <translation id="8533619373899488139">ਬਲਾਕ ਕੀਤੇ URL ਅਤੇ ਤੁਹਾਡੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤੀਆਂ ਹੋਰ ਨੀਤੀਆਂ ਦੀ ਸੂਚੀ ਦੇਖਣ ਲਈ &lt;strong&gt;chrome://policy&lt;/strong&gt; 'ਤੇ ਜਾਓ।</translation>
@@ -4492,6 +4492,7 @@
 <translation id="860043288473659153">ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ</translation>
 <translation id="8601206103050338563">TLS WWW ਕਲਾਇੰਟ ਪ੍ਰਮਾਣੀਕਰਨ</translation>
 <translation id="8604103095921958091">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਵਾਲੀ ਸਕ੍ਰੀਨ ਪੂਰੀ ਲੰਬਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ।</translation>
+<translation id="8605014984308506350">ਤੁਹਾਨੂੰ ਇਹ ਚਿਤਾਵਨੀ ਇਸ ਲਈ ਦਿਖਾਈ ਦੇ ਰਹੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਸਾਈਟ HTTPS ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ ਅਤੇ ਤੁਸੀਂ ਆਇਸੋਲੇਟਿਡ ਮੋਡ ਵਿੱਚ ਹੋ। <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ</translation>
 <translation id="8619130384334725124">ਮੌਜੂਦਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ</translation>
 <translation id="8620276786115098679">ਕਾਕੂ 7 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -4645,6 +4646,7 @@
 <translation id="8883863364960302898">Google Drive ਫੋਲਡਰ</translation>
 <translation id="8884537526797090108">ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8889525327610245418">Google Wallet ਵਿੱਚ ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="8890516388109605451">ਸਰੋਤ</translation>
 <translation id="8891031436559779793">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ।</translation>
 <translation id="8891727572606052622">ਅਵੈਧ ਪ੍ਰੌਕਸੀ ਮੋਡ।</translation>
 <translation id="8894794286471754040">ਪਹਿਲਾਂ ਵੱਡੇ ਕਿਨਾਰੇ ਵਾਲੇ</translation>

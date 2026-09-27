@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">请花 1 分钟时间填写调查问卷，帮助我们改进无痕模式。</translation>
 <translation id="1065672644894730302">系统无法读取您的偏好设置。某些功能可能无法使用，并且对偏好设置所做的更改不会保存。</translation>
 <translation id="1083934481477628225">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”</translation>
+<translation id="109026165963220603">Chromium 需要访问您的本地网络，才能发现和使用附近的设备</translation>
 <translation id="1090946077924227754">若要在特定的 Chromium 功能或扩展程序中进行搜索，请先在地址栏中输入相应的快捷字词，然后按下您选择的键盘按键</translation>
 <translation id="1098493699368672217">在系统任务栏中显示“使用 Chromium 搜索”并开启键盘快捷键</translation>
 <translation id="1104942323762546749">Chromium 想导出您的密码。请输入您的 Windows 密码以允许此操作。</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2135919691573380097">举报此网站</translation>
 <translation id="2137162749895930932">关闭翻译屏幕</translation>
+<translation id="2147218225094845757">隐藏侧边栏</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
 <translation id="2170098639895543546">选择页面上的任何内容</translation>
 <translation id="2174178932569897599">自定义 Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">通过比“标准保护”机制分析更多的网站数据，针对危险网站（甚至是 Google 未曾得知的网站）向您发出警告。您可以选择忽略 Chromium 警告。</translation>
 <translation id="4269093074552541569">退出 Chromium</translation>
 <translation id="4271805377592243930">获取有关 Chromium 的帮助</translation>
-<translation id="4275788652681621337">关闭侧边栏</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4285930937574705105">未知错误导致安装失败。如果 Chromium 正在运行，请将其关闭，然后重试。</translation>
 <translation id="4298125729853015961">从 Chromium 导出密码</translation>

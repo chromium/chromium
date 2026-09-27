@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Aktualizácia sa začne, keď sa batéria dobije na <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Ak chcete používať rodičovskú kontrolu, napríklad schvaľovať aplikácie a limity času používania, musí mať dieťa účet Google spravovaný rodičom. Školský účet, ktorý sa bude dať používať s nástrojmi, ako je Učebňa Google, môžete pridať neskôr.</translation>
 <translation id="1375557162880614858">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS Flex?</translation>
-<translation id="1375938286942050085">Nastavenie je dokončené. Pripravte svoje zariadenie na hranie.</translation>
 <translation id="1377600615067678409">Zatiaľ preskočiť</translation>
 <translation id="1399261165075500043">Zmluvné podmienky služby Google Play sa nedajú načítať</translation>
 <translation id="1400243387594338234">Týmto kódom PIN sa môžete prihlasovať do svojho zariadenia</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Používajte svoj účet Google v zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Výber časového pásma</translation>
 <translation id="3893630138897523026">ChromeVox (hlasová spätná väzba)</translation>
-<translation id="3897746662269329507">Zariadenie <ph name="DEVICE_TYPE" /> je vytvorené pre hry. Otvorí sa aplikácia Preskúmať, kde budete mať prístup k stovkám najnovších hier, pričom si budete môcť pozrieť herné ponuky a objaviť herné funkcie, ktoré sú súčasťou zariadenia.</translation>
 <translation id="389901847090970821">Výber klávesnice</translation>
 <translation id="3910588685973519483">Vytvárajte tapety pomocou umelej inteligencie</translation>
 <translation id="3924259174674732591">Veľkosť zobrazenia a textu: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Musíte nainštalovať aktualizáciu firmvéru Trusted Platform Module. Pozrite si <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Hops, pri prihlásení sa niečo pokazilo</translation>
 <translation id="5453829744223920473">Vaše dieťa môže používať všetky svoje školské aplikácie, záložky a zdroje rovnako ako v triede. Základné pravidlá určuje škola.</translation>
-<translation id="5463450804024056231">Prihlásiť sa na odber správ o zariadení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora vášho dieťaťa a výrobcu tohto zariadenia a v prípade potreby pritom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
 <translation id="5502915260472117187">Dieťa</translation>
 <translation id="5511823366942919280">Naozaj chcete toto zariadenie nastaviť ako zariadenie Shark?</translation>

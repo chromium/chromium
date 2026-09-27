@@ -889,7 +889,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4535755320005483982">Sameiginlegur flipahópur: <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Val um að fá tilkynningar um ráð opnað í fullri hæð</translation>
 <translation id="4537987892902330164">Þú varst áfram skráð(ur) inn sem <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Blaðið „Engir aðgangslyklar“</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> flipi}one{<ph name="TAB_COUNT_MANY" /> flipi, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipi}other{<ph name="TAB_COUNT_MANY" /> flipar, <ph name="TAB_COUNT_INCOGNITO" /> huliðsflipar}}</translation>
 <translation id="4558311620361989323">Flýtilyklar vefsíðu</translation>
 <translation id="4572422548854449519">Innskráning á stýrðan reikning</translation>
@@ -934,6 +933,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4719927025381752090">Boð um þýðingu</translation>
 <translation id="4720556299488643018">Hætta áskrift</translation>
 <translation id="4732120983431207637">Afstöflun</translation>
+<translation id="4734965478015604180">Lárétt</translation>
 <translation id="4736934858538408121">Sýndarkort</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4738065825338914557">Segir upp áskrift...</translation>
@@ -982,6 +982,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="488187801263602086">Endurnefna skrá</translation>
 <translation id="4885273946141277891">Óstuddur fjöldi Chrome tilvika.</translation>
 <translation id="4890973535105146893">Engin vistuð aðgangsorð á Google-reikningnum þínum</translation>
+<translation id="490375751687810070">Lóðrétt</translation>
 <translation id="4905823827770127520">Hafa með tengil á síðuna</translation>
 <translation id="4910889077668685004">Greiðsluforrit</translation>
 <translation id="4911042367886397055">Velkomin(n) til baka, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="6192907950379606605">Fá myndlýsingar</translation>
 <translation id="6193448654517602979">Velja flipa</translation>
 <translation id="6196315980958524839">Aðgangsorð eru vistuð í Google aðgangsorðastjórnun í þessu tæki.</translation>
+<translation id="6200780647297916498">Staðsetning flipa</translation>
 <translation id="6204781143409202534">Chrome greindi mögulegt ruslefni frá <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Forskoðun á þessari síðu.</translation>
 <translation id="6212567362666004597">Bæta flipa við hóp</translation>

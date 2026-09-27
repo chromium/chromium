@@ -469,6 +469,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1341701348342335220">Selamat!</translation>
 <translation id="1342886103232377846">Untuk memeriksa sandi yang telah dibobol, buka Pengelola Sandi Google</translation>
 <translation id="1343920184519992513">Lanjutkan dari halaman terakhir yang dibuka dan buka rangkaian halaman tertentu</translation>
+<translation id="1344216785734288669">Kata Sandi Apple</translation>
 <translation id="1346630054604077329">Konfirmasi dan mulai ulang</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1347512539447549782">Penyimpanan Linux</translation>
@@ -797,7 +798,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="160689647589417224">Aplikasi dibatasi di wilayah ini.</translation>
 <translation id="1607139524282324606">Hapus entri</translation>
 <translation id="1608668830839595724">Tindakan lainnya untuk item terpilih</translation>
-<translation id="1609603645228231640">Gemini Spark bersifat eksperimental dan dapat melakukan tindakan seperti membagikan info Anda atau melakukan pembelian tanpa meminta izin terlebih dahulu. <ph name="LINK_BEGIN" />Tinjau risikonya<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Setelan Aplikasi</translation>
 <translation id="161042844686301425">Sian</translation>
 <translation id="1611649489706141841">maju</translation>
@@ -1063,7 +1063,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1808805149659872686">Entri baru</translation>
 <translation id="1809201888580326312">Anda telah memilih untuk tidak menyimpan sandi untuk situs dan aplikasi ini</translation>
 <translation id="1809734401532861917">Tambahkan bookmark, histori, sandi, dan setelan saya lainnya ke <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Frame Fence Samaran: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> tidak dapat melanjutkan dengan menggunakan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Mentransmisikan <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Layanan</translation>
@@ -1296,7 +1295,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1983612835086592681">Anda buka dalam seminggu terakhir</translation>
 <translation id="1984087999855033707">nomor telepon</translation>
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
-<translation id="1984683754853869253">Ingin membuat profil baru untuk sekolah?</translation>
 <translation id="198507684520034826">Bantuan</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Setelan lokasi lanjutan</translation>
@@ -1329,7 +1327,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2010501376126504057">Perangkat yang kompatibel</translation>
 <translation id="2010636492623189611">Dipilih.</translation>
 <translation id="2012935757369720523">Hapus file</translation>
-<translation id="2014495120525813351">Izinkan Gemini Spark menjelajah di perangkat ini</translation>
+<translation id="2014191284313949173">Tutup Tab Terisolasi</translation>
 <translation id="2016473077102413275">Fitur yang memerlukan gambar tidak akan berfungsi</translation>
 <translation id="2017334798163366053">Nonaktifkan koleksi data kinerja</translation>
 <translation id="2017770349934140286">Google Play dan aplikasi yang telah Anda download dari Google Play akan dihapus dari Chromebook ini.
@@ -1461,6 +1459,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2121825465123208577">Ubah ukuran</translation>
 <translation id="2122446694240899610">Keahlian Anda disimpan ke Akun Google Anda,</translation>
 <translation id="2123766928840368256">Pilih file yang berbeda</translation>
+<translation id="2124153808069020510">Untuk menghapus data, tutup semua jendela Terisolasi</translation>
 <translation id="2124930039827422115">{1,plural, =1{Diberi rating <ph name="AVERAGE_RATING" /> oleh satu pengguna.}other{Diberi rating <ph name="AVERAGE_RATING" /> oleh # pengguna.}}</translation>
 <translation id="2125715366913703594">Pelajari &amp;Ekstensi</translation>
 <translation id="2126167708562367080">Sinkronisasi dinonaktifkan oleh administrator Anda.</translation>
@@ -1603,6 +1602,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2227179592712503583">Hapus saran</translation>
 <translation id="222931766245975952">File terpotong</translation>
 <translation id="2229342031987138128">Pemberian teks tertutup</translation>
+<translation id="22294739381015133">Situs yang Anda buka tidak disimpan dalam mode Terisolasi</translation>
 <translation id="2231351769755997720">Saran tidak tersedia. Coba ajukan pertanyaan Anda sendiri tentang halaman ini.</translation>
 <translation id="2232751457155581899">Situs dapat meminta untuk melacak posisi kamera Anda</translation>
 <translation id="2233502537820838181">Infor&amp;masi selengkapnya</translation>
@@ -2042,7 +2042,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2554553592469060349">File yang dipilih terlalu besar (ukuran maksimum: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> dari <ph name="TOTAL_NUM_APPS" /> aplikasi dapat mengirim notifikasi</translation>
 <translation id="2555855727505718984">Isi otomatis tidak akan memiliki info ini di perangkat ini untuk membantu mengisi formulir</translation>
-<translation id="25568951186001797">Frame Fence: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Lihat semua bookmark Anda di sini</translation>
 <translation id="2563924218974330506">Anda kini dapat mengelola grup tab di sini. Lepaskan kapan saja.</translation>
 <translation id="2564520396658920462">Eksekusi JavaScript melalui AppleScript dinonaktifkan. Untuk mengaktifkannya, buka panel menu lalu pilih View &gt; Developer &gt; Allow JavaScript from Apple Events. Untuk informasi selengkapnya: https://support.google.com/chrome/?p=applescript</translation>
@@ -2121,7 +2120,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2626746300781063303">Situs, termasuk Google, menggunakan pertimbangannya sendiri saat merespons permintaan ini</translation>
 <translation id="2626799779920242286">Coba lagi nanti.</translation>
 <translation id="2627424346328942291">Tidak dapat berbagi</translation>
-<translation id="2627970398976286795">Tinjau risiko Gemini Spark</translation>
 <translation id="2628258844236035475">Hapus alamat rumah Anda dari isi otomatis Chrome?</translation>
 <translation id="2628770867680720336">Perlu melakukan reset Chromebook ke setelan pabrik untuk mengaktifkan proses debug ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Mulai Percakapan Baru dengan Gemini</translation>
@@ -2430,7 +2428,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2845276301195220700">Tindakan lainnya untuk Google Kalender</translation>
 <translation id="2845382757467349449">Selalu Tampilkan Bilah Bookmark</translation>
 <translation id="284581348330507117">Buat sandi yang unik</translation>
-<translation id="2846345106886298325">Tugas selesai dan kembali ke Gemini Spark</translation>
 <translation id="284884486564166077">Telusuri gambar apa pun dengan Lens</translation>
 <translation id="2849035674501872372">Cari</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2492,7 +2489,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2893318819023133318">Tampilan terbalik</translation>
 <translation id="2894596417096093634">ID Laporan Error</translation>
 <translation id="2894757982205307093">Tab baru di grup</translation>
-<translation id="2895194086130800590">Gemini Spark hanya dapat menggunakan penjelajahan otomatis di perangkat ini jika perangkat aktif dan Chrome berjalan.</translation>
 <translation id="289695669188700754">ID Kunci: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Setelan khusus ini akan dihapus saat Anda menutup semua jendela Samaran</translation>
 <translation id="2897878306272793870">Anda yakin ingin membuka <ph name="TAB_COUNT" /> tab?</translation>
@@ -2545,7 +2541,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2933653107553951760">Pulihkan Grup</translation>
 <translation id="2934225044529065415">Tidak dapat mengakses kamera</translation>
 <translation id="2935314715123552088">Nonaktifkan profil eSIM aktif</translation>
-<translation id="2936067606203230121">Gemini Spark akan memutuskan tindakan yang akan diambil berdasarkan tugas yang Anda mulai atau perbarui.</translation>
 <translation id="2936851848721175671">Pencadangan &amp; pemulihan</translation>
 <translation id="2938981087412273365">Tidak diizinkan membaca &amp; mengubah situs ini</translation>
 <translation id="2939005221756255562">Aktifkan notifikasi di Pusat Notifikasi. Buka <ph name="BEGIN_LINK" />Setelan Sistem<ph name="END_LINK" />.</translation>
@@ -2925,6 +2920,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3213681682237645841">Mendownload suara <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Buat pintasan?</translation>
 <translation id="3220494908385619295">Tampilkan Berdampingan</translation>
+<translation id="3220541426929880850">Untuk menghapus histori penjelajahan Terisolasi dari perangkat Anda, tutup semua tab Terisolasi</translation>
 <translation id="3220943972464248773">Untuk menyinkronkan sandi, verifikasi diri Anda</translation>
 <translation id="3222066309010235055">Tampilan sebelumnya: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Hubungkan ke <ph name="USB_VM_NAME" /></translation>
@@ -3423,6 +3419,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3600956933576601730">Anda harus meninjau dan menyetujui persyaratan untuk menggunakan fitur ini</translation>
 <translation id="3601374594714740284">Untuk suara dengan kualitas lebih tinggi, kosongkan ruang penyimpanan di perangkat Anda</translation>
 <translation id="360180734785106144">Menawarkan fitur baru setelah tersedia</translation>
+<translation id="3601988315287782413">Tindakan ini hanya memengaruhi jendela Terisolasi</translation>
 <translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3602495161941872610">Perbaiki &amp;masalah sinkronisasi</translation>
 <translation id="3602894439067790744">Baca angka sebagai</translation>
@@ -3651,7 +3648,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3756578970075173856">Setel PIN</translation>
 <translation id="3756806135608816820">Situs dapat meminta untuk mencari perangkat Bluetooth</translation>
 <translation id="3756823472711156529">Pulihkan grup</translation>
-<translation id="3757337311115630808">Pelajari lebih lanjut Gemini Spark</translation>
 <translation id="3757567010566591880">Lepaskan sematan dari Toolbar</translation>
 <translation id="3757645900890881944">Alat penelusuran</translation>
 <translation id="3757733214359997190">Tidak ada situs yang ditemukan</translation>
@@ -4775,6 +4771,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4631637535315947773">Pintasan untuk situs yang paling sering dikunjungi telah dihapus karena Anda tidak menggunakannya baru-baru ini</translation>
 <translation id="4631955550884380853">Suara fokus</translation>
 <translation id="4632655012900268062">Sesuaikan kartu</translation>
+<translation id="4634719521235795064">Gemini dapat menggunakan Pengelola Sandi Google untuk membantu Anda login. <ph name="BEGIN_LINK" />Pelajari cara Gemini menangani data Anda<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Uninstal Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> tidak tersedia bagi pengguna Tamu.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Upload 1 gambar untuk digunakan dengan pertanyaan Anda}other{Upload hingga # gambar untuk digunakan dengan pertanyaan Anda}}</translation>
@@ -5262,7 +5259,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4989966318180235467">Periksa halaman latar &amp;belakang</translation>
 <translation id="499016799952867794">Tindakan ini memungkinkan aplikasi berjalan seperti yang diharapkan.</translation>
 <translation id="4990673372047946816">Tidak ada kamera yang tersedia</translation>
-<translation id="499126848196136237">Gemini Spark dapat menggunakan fitur penjelajahan otomatis Chrome di perangkat ini untuk berinteraksi dengan situs dan menyelesaikan tugas atas nama Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Gunakan tombol baris atas sebagai tombol fungsi</translation>
 <translation id="4991873517942703737">Tanyakan info tentang dokumen ini</translation>
 <translation id="4992066212339426712">Bunyikan</translation>
@@ -5519,7 +5515,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5189274947477567401">Memilih tidak berbagi proses mengharuskan browser dimulai ulang. Browser ini akan dimulai ulang sekarang.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Menggunakan <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="5190926251776387065">Aktifkan port</translation>
 <translation id="5190959794678983197">Tidak ada mikrofon</translation>
 <translation id="5191094172448199359">PIN yang Anda masukkan tidak cocok</translation>
@@ -6088,6 +6083,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" telah mengubah halaman yang ditampilkan saat Anda mengklik tombol Beranda.</translation>
 <translation id="5643191124441701136">Kode keamanan ada di bagian depan kartu</translation>
 <translation id="5643321261065707929">Jaringan berbayar</translation>
+<translation id="5645369002069651355">Memverifikasi email</translation>
 <translation id="5646376287012673985">Lokasi</translation>
 <translation id="5646558797914161501">Pengusaha</translation>
 <translation id="564670806635578888">Telusuri “<ph name="SEARCH_TERMS" />” di Google</translation>
@@ -7019,7 +7015,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6393550101331051049">Diizinkan menampilkan konten yang tidak aman</translation>
 <translation id="6394634179843537518">Tambahkan file</translation>
 <translation id="6395423953133416962">Kirim <ph name="BEGIN_LINK1" />informasi sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Ya, pisahkan data saya dari profil sekolah (direkomendasikan)</translation>
 <translation id="6398715114293939307">Hapus Google Play Store</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="639880411171387127">Pilihan Google Lens Anda. Tekan enter atau backspace untuk menghapus pilihan Google Lens</translation>
@@ -8379,7 +8374,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7421293530411019405">Keluar dari grup tab?</translation>
 <translation id="7421925624202799674">&amp;Lihat Sumber Halaman</translation>
 <translation id="7422192691352527311">Preferensi...</translation>
-<translation id="7423381908337122792">Siapa pun yang memiliki akses ke agen Gemini Spark Anda dapat mengontrol browser Chrome Anda.</translation>
 <translation id="7423425410216218516">Visibilitas aktif selama <ph name="MINUTES" /> menit</translation>
 <translation id="7423513079490750513">Hapus <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Jaringan ditambahkan</translation>
@@ -8504,6 +8498,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7517292544534877198">Gunakan enkripsi default Google untuk sandi di Akun Google Anda</translation>
 <translation id="7517959947270534934">Anggota keluarga Anda saat ini tidak dapat menerima sandi. Minta anggota keluarga untuk mengupdate Chrome dan menyinkronkan sandi.</translation>
 <translation id="7518079994230200553">Opsi ini tidak tersedia untuk saat ini.</translation>
+<translation id="7519506357537394422">Izinkan Gemini login ke <ph name="DOMAIN" /> untuk Anda?</translation>
 <translation id="752021853309481824">Untuk mendapatkan info tersimpan dan data lainnya di semua perangkat Anda, login sebagai <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal Samaran: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Tampilkan pintasan</translation>
@@ -8731,7 +8726,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="769824636077131955">Dokumen ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mencetak dokumen berukuran hingga 50 MB.</translation>
 <translation id="7698507637739331665">Beberapa item diblokir</translation>
 <translation id="7700516433658473670">Printer dan pemindai</translation>
-<translation id="7700873336634517379">Tidak, terus gunakan profil ini untuk sekolah</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7701869757853594372">Penangan PENGGUNA</translation>
 <translation id="770231223935918661">Tanya Info Tentang Gambar Ini</translation>
@@ -9097,6 +9091,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7978450511781612192">Tindakan ini akan membuat Anda logout dari Akun Google. Bookmark, histori, sandi, dan lainnya tidak akan disinkronkan lagi.</translation>
 <translation id="7980066177668669492">ASCII yang dienkode dengan base64, beberapa sertifikat</translation>
 <translation id="7981410461060625406">Gunakan kunci sandi tersimpan untuk <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Tidak dapat memverifikasi email Anda</translation>
 <translation id="7981662863948574132">Tampilkan pop-up EID perangkat dan Kode QR</translation>
 <translation id="7982578888426609524">Pembaruan terbaru untuk grup ini</translation>
 <translation id="7982789257301363584">Jaringan</translation>
@@ -10156,6 +10151,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="878862491037637275">Grup Tab Ini Penuh</translation>
 <translation id="8791157330927639737">Pelajari lebih lanjut cara mengupdate</translation>
 <translation id="8791534160414513928">Kirim permintaan "Do Not Track" bersama dengan traffic akses internet</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Terisolasi)</translation>
 <translation id="8793390639824829328">Situs menggunakan fitur ini untuk men-scroll dan memperbesar/memperkecil tab yang dibagikan</translation>
 <translation id="8793895150509408038">Lihat detail situs untuk <ph name="SITE" /> dari daftar <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Saat hotspot aktif, <ph name="PHONE_NAME" /> Anda akan:</translation>
@@ -10392,7 +10388,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="897525204902889653">Layanan Karantina</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dan 1 tab lainnya}other{"<ph name="TAB_TITLE" />" dan # tab lainnya}}</translation>
 <translation id="897565255818387330">Izinkan situs ini melihat dan menyalin <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Siapkan profil sekolah untuk menyimpan serta menggunakan sandi dan lainnya di akun Anda</translation>
 <translation id="8977811652087512276">Sandi salah atau file rusak</translation>
 <translation id="8978154919215542464">Aktif - sinkronkan semuanya</translation>
 <translation id="8978670037548431647">Refresh Kemampuan Tethering</translation>
@@ -10496,7 +10491,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9040661932550800571">Perbarui sandi untuk <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Untuk menyimpan sandi kuat dengan Pengelola Sandi Google, login ke Chrome</translation>
 <translation id="9041692268811217999">Akses ke file lokal di komputer Anda dinonaktifkan oleh administrator</translation>
-<translation id="9041881059840744611">Tentang profil sekolah</translation>
 <translation id="904224458472510106">Operasi ini tidak dapat diurungkan</translation>
 <translation id="9042827002460091668">Periksa koneksi internet Anda, lalu coba lagi</translation>
 <translation id="9042893549633094279">Privasi dan keamanan</translation>
@@ -10713,7 +10707,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="9219572436491982747">Data yang dikirim ke Google mungkin dilihat oleh petugas peninjau untuk meningkatkan kualitas teknologi AI Chrome</translation>
 <translation id="9219741625496141320">Data penjelajahan otomatis dihapus</translation>
-<translation id="9220484506568374422">Gemini Spark akan memiliki akses ke situs yang sama dengan Anda, termasuk situs yang Anda gunakan untuk login. Gemini akan membagikan info yang diperlukan kepada pihak ketiga, yang dapat mencakup info pribadi yang mungkin Anda anggap sensitif.</translation>
 <translation id="9220525904950070496">Hapus akun</translation>
 <translation id="9220723036554088545">upload file</translation>
 <translation id="9220820413868316583">Angkat, lalu coba lagi.</translation>

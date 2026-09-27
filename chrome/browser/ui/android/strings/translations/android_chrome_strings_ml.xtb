@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">പങ്കിട്ട <ph name="GROUP_TITLE" /> ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="4537137366307982887">നുറുങ്ങുകളുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ഓപ്റ്റ് ഇൻ ചെയ്യൽ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="4537987892902330164">നിങ്ങൾ മുമ്പേ <ph name="NAME_OR_EMAIL" /> എന്നതായി സൈൻ ഇൻ ചെയ്തിട്ടുണ്ട്.</translation>
-<translation id="4543131175509360848">പാസ്‌കീകളുടെ ഷീറ്റൊന്നുമില്ല</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4558311620361989323">വെബ്‌പേജ് കുറുക്കുവഴികൾ</translation>
 <translation id="4572422548854449519">മാനേജ് ചെയ്‌ത അക്കൗണ്ടിലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="4720556299488643018">ഒഴിവാക്കൂ</translation>
 <translation id="4732120983431207637">സ്‌റ്റാക്ക് അൺവൈൻഡർ</translation>
+<translation id="4734965478015604180">സമാന്തരം</translation>
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4738065825338914557">വരിക്കാരല്ലാതാകുന്നു…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ഫയലിന്റെ പേര് മാറ്റുക</translation>
 <translation id="4885273946141277891">പിന്തുണയ്‌ക്കാത്തത്ര Chrome പതിപ്പുകൾ</translation>
 <translation id="4890973535105146893">നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ച പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
+<translation id="490375751687810070">ലംബം</translation>
 <translation id="4905823827770127520">പേജിലേക്ക് ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="4910889077668685004">പേയ്‌മെന്റ് ആപ്പുകൾ</translation>
 <translation id="4911042367886397055">തിരികെ സ്വാഗതം, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ചിത്ര വിവരണങ്ങൾ നേടുക</translation>
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6196315980958524839">ഈ ഉപകരണത്തിലെ Google Password Manager-ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നു</translation>
+<translation id="6200780647297916498">ടാബ് സ്ഥാനം</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> എന്നതിൽ നിന്നുള്ള, സ്‌പാം ആകാനിടയുള്ള അറിയിപ്പ് Chrome കണ്ടെത്തി.</translation>
 <translation id="6211386937064921208">ഈ പേജ് പ്രിവ്യു ചെയ്യുന്നു</translation>
 <translation id="6212567362666004597">ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>

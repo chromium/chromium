@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Yaddaş doludur</translation>
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1190609913194133056">Bildiriş Mərkəzi</translation>
-<translation id="1195433173321863960">Limitiniz <ph name="RESET_TIME" /> tarixində sıfırlandıqda şəkillər yenidən əlçatan olacaq</translation>
 <translation id="1196534270480620381">Səhifənin qısa xülasəsini yarat</translation>
 <translation id="1199631150313925648">Manual daxil edin</translation>
 <translation id="1199963004393929848">Yaşıl tema</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Tapın və doldurun</translation>
 <translation id="1483493594462132177">Göndərin</translation>
 <translation id="1486096554574027028">Parolları axtarın</translation>
-<translation id="1486593497476255523">Tab qrupları tamamlandı!</translation>
 <translation id="1491277525950327607">Ayarı dəyişmək üçün iki dəfə klikləyin</translation>
 <translation id="1492417797159476138">Hazırda bu istifadəçi adını bu sayt üçün yadda saxlamısınız</translation>
 <translation id="1497590942294823549">Menyu → Parol meneceri</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Başqa profilə keçin</translation>
 <translation id="1741219894094057085">Ağıllı saat</translation>
 <translation id="1743244221910283364">Dəyişiklikləri ləğv edin</translation>
-<translation id="1744234754703485302">Ödəniş metodlarının idarə edilməsi tamamlandı!</translation>
 <translation id="1748975028205587434">Fayl seçin</translation>
 <translation id="1749733017156547309">Parol tələb olunur</translation>
 <translation id="174998178145075354">{count,plural, =1{Ünvan üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Ünvan üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">1 ay sonra silin</translation>
 <translation id="2161446265348023004">Açıq pəncərəyə keçirin</translation>
 <translation id="2164946989711475905">Daxil olun…</translation>
-<translation id="2165110345209765380">Sİ rejimi ilə axtarış tamamlandı!</translation>
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2180338296831857171">Ünvanları silin</translation>
 <translation id="218350106843433823">Parol və giriş açarlarını avtomatik doldurun</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">Məhsulun səhifəsinə keçin</translation>
 <translation id="2219935992754556187">Chrome Üz ID-si ilə həssas datanı güvənli saxlayır</translation>
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
+<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" saytının kameranıza daxil olması bloklanıb</translation>
 <translation id="2223461067862937305">QR kodu yaradın</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2236949375853147973">Fəaliyyətim</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Gmail və Foto kimi tətbiqlərdən məlumatları avtomatik doldurun. Şəxsi Zəka tərəfindən dəstəklənir.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Bu ünvan bu cihazdan silinəcək.}other{Bu ünvanlar bu cihazdan silinəcək.}}</translation>
 <translation id="2295236662082735391">Gemini ilə redaktə etmək üçün vebdə şəklə basıb saxlayın</translation>
-<translation id="2296360194694387941">Chrome-da Gemini-dan istifadə tamamlandı!</translation>
 <translation id="2297989278479054870">Çıxdıqdan sonra əlfəcin, parol və Google Hesabındakı digər data bu cihazdan silinəcək.</translation>
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını göstərin</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">Təhlükəsiz Axtarış (Sizi və cihazınızı təhlükəli saytlardan qoruyur)</translation>
 <translation id="3183362380688692618">Yeni tab qrupu...</translation>
 <translation id="3185000827934321633">Keçid edir</translation>
-<translation id="3185760469172949183">Kamera ilə axtarış tamamlandı!</translation>
 <translation id="3186796054637504691">Tarixçəni və veb-sayt datasını silin</translation>
 <translation id="3190558889382726167">Yadda saxlanılmış Parol</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">Səhifə haqqında sual vermək, yüksək səslə fikir mübadiləsi aparmaq və qarşılıqlı danışmaq üçün Gemini Live rejiminə keçin.</translation>
 <translation id="3462768334899086950">Bu o deməkdir ki, yadda saxlanılmamış faylınızı və cari tablarınızı itirəcəksiniz</translation>
 <translation id="3464194322481586217">Qiyməti izləmək mümkün olmadı.</translation>
-<translation id="346831467152294287">Parollar və Avtodoldurma tamamlandı!</translation>
 <translation id="3469117812148449995">Parolu yadda saxlamaq üçün seçimlər</translation>
 <translation id="3472469028191701821">Yeni tabda açılır</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} sayt və ya tətbiq üçün}other{{COUNT} sayt və ya tətbiq üçün}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> güncəllənsin?</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
+<translation id="3585482760087850407">Bu sayt üçün kameraya giriş</translation>
 <translation id="3587482841069643663">Hamısı</translation>
 <translation id="3587885837929752825">Təşkilat Google Hesabında yadda saxlanan datanı məhdudlaşdırır.</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">Axtarışı yaxşılaşdıran və asanlaşdıran faydalı təkliflər</translation>
 <translation id="3818293389945649617">Növbətini Tapın</translation>
 <translation id="3819183753496523827">Oflaynsınız. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
-<translation id="3826034723896327540">Tabların bərkidilməsi tamamlandı!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ödəniş metodu}other{# ödəniş metodu}}</translation>
 <translation id="3831560640878483188">Xəbərdarlıq ötürülsün?</translation>
 <translation id="3832419617903252251">Parol yalnız bu cihazda saxlanıldı</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">Növbəti dəfə müvafiq formanı doldurduğunuz zaman bu məlumatı Pulqabıda yadda saxlamaq şansınız olacaq.</translation>
 <translation id="3868495844258915202">Tam URL-i göstərin</translation>
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
+<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" saytının mikrofona girişi bloklanıb</translation>
 <translation id="3878657761594430423">Vərəq tutucu</translation>
 <translation id="3885587018298784481">Ailə qrupuna qoşulun</translation>
 <translation id="3888230626190453136">Anonim rejimdə axtarın</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">Təhlükəsizliyi riskə atan bir neçə parol problemi var.</translation>
 <translation id="422477017457571619">Google-a göndərilən axtarış datasına əsasən təhlükəli sayt, endirmə və artırmalardan real zamanda Sİ dəstəkli qorunma</translation>
 <translation id="4231395118547300571">Təhlükəsizlik yoxlanışı bildirişləri yandırıldı</translation>
-<translation id="4232376164796433044">Parollar və avto-doldurma</translation>
 <translation id="4232817129213135694">Bu cihaz üçün giriş açarlarını quraşdırın</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Defolt Brauzer Tətbiqi<ph name="END_BOLD" /> seçiminə toxunun</translation>
 <translation id="424063167283213501">Məlum səyahətçi nömrəsini yadda saxlayın</translation>
@@ -1820,6 +1814,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6750456911389438250">{count,plural, =1{İmport edilmiş {count} tarixçə elementi}other{İmport edilmiş {count} tarixçə elementi}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Giriş məlumatları üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}other{Giriş məlumatları üçün {count} seçim klaviaturanızın yuxarısında əlçatandır.}}</translation>
+<translation id="6753460329812070808">Təklif Chrome-dan silindi</translation>
 <translation id="6755200887046212842">Hesabları İdarə edin</translation>
 <translation id="6757899787818440812">Orta hündürlük</translation>
 <translation id="6759709389246683070">Daha sonra yenidən daxil olmaq üçün xatırladıcı ayarlamaq məqsədilə bu taba toxunub saxlaya bilərsiniz</translation>
@@ -1905,6 +1900,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ayarlarda defolt edin…</translation>
 <translation id="7007970306646738803">Bu cihazda tablar, tarixçə və parollar kimi mövcud axtarış datası ilə nə edəcəyinizi seçin.</translation>
+<translation id="701134422972919485">Bu sayt üçün mikrofona giriş</translation>
 <translation id="7012978439516925343">Giriş açarı yaratmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="7015418667643980944">Bölünmüş görüntü</translation>
 <translation id="7016070607649558507">1 zəif parol var. Təhlükəsizlik üçün bunu indi həll edin.</translation>
@@ -2077,7 +2073,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7603308509262646847">Kart sahibinin adını (<ph name="NAME" />) avtomatik doldurun</translation>
 <translation id="7603852183842204213">Popuplar bloklandı (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinxronizasiya işləmir</translation>
-<translation id="7606639338662398635">Tab qrupları</translation>
 <translation id="760667371114328991">Təhlükəsizlik yoxlanışı üçün Bildirişləri söndürün</translation>
 <translation id="7612619742409846846">Google'a bu cür daxil olunub</translation>
 <translation id="7612849887607288481">Sİ Prototipləmə Menyusunu açın</translation>
@@ -2285,7 +2280,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8240217649914883113">Bunu təqvimimə əlavə et</translation>
 <translation id="824379025871762038">Heç vaxt icazə verilməsin</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
-<translation id="8252980988000695656">Google Linza tamamlandı!</translation>
 <translation id="8258734532103758067">Datamı eksport etdim</translation>
 <translation id="8258999165172757081">Əlavə edilib</translation>
 <translation id="8261506727792406068">Silin</translation>
@@ -2336,6 +2330,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8393700583063109961">Mesaj göndərin</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> gün istifadə edilməmiş tablar</translation>
 <translation id="8395180897620197612">Qeydiyyatı dayandırın</translation>
+<translation id="8399253661151100858">Bu sayta daxil olduğunuz zaman "<ph name="SITE_DOMAIN" />" mikrofonunuza daxil ola bilər</translation>
 <translation id="8407669440184693619">Bu sayt üçün parol tapılmadı</translation>
 <translation id="8407831512155324054">Parolunuz güclü görünür</translation>
 <translation id="8414283596511250978">Parollarınızı unutmayın</translation>
@@ -2350,6 +2345,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8439758443371991593">"Oxu siyahısına əlavə edin" seçimini gizlədin</translation>
 <translation id="8443986842926457191">Keçid 2048 simvoldan uzundur</translation>
 <translation id="8449869326050867919">Parol paylaşıldı</translation>
+<translation id="8458009459729013424">Bu sayta daxil olduğunuz zaman "<ph name="SITE_DOMAIN" />" kameranıza daxil ola bilər</translation>
 <translation id="8461708300275916315">18 yaşınız tamam olmayıbsa</translation>
 <translation id="8473815223723723001">Şəkli Gemini ilə redaktə edin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>

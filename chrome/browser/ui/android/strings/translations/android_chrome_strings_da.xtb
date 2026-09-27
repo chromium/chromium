@@ -889,7 +889,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4535755320005483982">Delt <ph name="GROUP_TITLE" />-fanegruppe</translation>
 <translation id="4537137366307982887">Tilvalg af notifikationer med tips er åbnet i fuld højde</translation>
 <translation id="4537987892902330164">Du er stadig logget ind som <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Feltet "Ingen tilgængelige adgangsnøgler"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4558311620361989323">Genveje på websider</translation>
 <translation id="4572422548854449519">Log ind på managerstyret konto</translation>
@@ -934,6 +933,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4719927025381752090">Tilbyd at oversætte</translation>
 <translation id="4720556299488643018">Afmeld</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Vandret</translation>
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4738065825338914557">Afmelder…</translation>
@@ -982,6 +982,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="488187801263602086">Omdøb fil</translation>
 <translation id="4885273946141277891">Der er flere forekomster af Chrome, end der understøttes.</translation>
 <translation id="4890973535105146893">Ingen gemte adgangskoder på din Google-konto</translation>
+<translation id="490375751687810070">Lodret</translation>
 <translation id="4905823827770127520">Medtag et link til siden</translation>
 <translation id="4910889077668685004">Betalingsapps</translation>
 <translation id="4911042367886397055">Velkommen tilbage, <ph name="USER_NAME" />.</translation>
@@ -1287,6 +1288,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6192907950379606605">Få billedbeskrivelser</translation>
 <translation id="6193448654517602979">Vælg faner</translation>
 <translation id="6196315980958524839">Adgangskoder gemmes i Google Adgangs­kode­admin­istrator på denne enhed</translation>
+<translation id="6200780647297916498">Faneposition</translation>
 <translation id="6204781143409202534">Chrome har registreret muligt spam fra <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Forhåndsvisning af denne side</translation>
 <translation id="6212567362666004597">Føj fane til gruppe</translation>

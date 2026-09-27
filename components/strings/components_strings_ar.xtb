@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">‏حفظ رقم التعويض في "محفظة Google"</translation>
 <translation id="1455413310270022028">ممحاة</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{ما مِن مراجعات لعرضها}=1{عرض مراجعة واحدة}two{عرض كل المراجعات البالغ عددها #}few{عرض كل المراجعات البالغ عددها #}many{عرض كل المراجعات البالغ عددها #}other{عرض كل المراجعات البالغ عددها #}}</translation>
-<translation id="1458770162980644530">‏تم فتح شاشة بنود خدمة "الدفع الآجل" (BNPL). لوحة المفاتيح مخفية.</translation>
 <translation id="1460317464907341501">تأكيد هذا البريد الإلكتروني تلقائيًا؟</translation>
 <translation id="1461041542809785877">الأداء</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">إظهار تفاصيل الاتصال</translation>
 <translation id="2277949605527755300">يريد الموقع الإلكتروني <ph name="URL" /> تتبُّع حركات يديك</translation>
 <translation id="22792995594807632">يجب مراجعة الملفات قبل تنزيلها</translation>
+<translation id="2279607542590042584">‏مفتاح المرور • "كلمات السر" في Apple</translation>
 <translation id="2283340219607151381">حفظ العناوين وملؤها</translation>
 <translation id="2283447177162560884">تم حذف "<ph name="PAGE_TITLE" />".</translation>
 <translation id="2283599456633275070">السفر</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="243815215670139125">‏تعذَّر حفظ هذه البطاقة في حسابك على Google، وتم حفظها في Chrome على هذا الجهاز بدلاً من ذلك.</translation>
 <translation id="2438874542388153331">عمل أربعة ثقوب يمينًا</translation>
-<translation id="2441854154602066476">تم فتح قائمة طرق الدفع التي يمكن ملء بياناتها باللمس. لوحة المفاتيح مخفية.</translation>
 <translation id="2442865686365739754">‏<ph name="BEGIN_EMPHASIS" />لن يحفظ<ph name="END_EMPHASIS" /> Chrome ما يلي:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />سجلّ التصفُّح
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">تحتوي شهادة الخادم على أخطاء.</translation>
 <translation id="2491414235131909199">تم حظر هذه الصفحة بواسطة إحدى الإضافات.</translation>
 <translation id="2493122313108999546">تم تغيير الحجم</translation>
-<translation id="249376477913017009">‏تم فتح إشعار "الملء التلقائي من Gmail والمزيد"</translation>
 <translation id="2495083838625180221">‏محلل JSON اللغوي</translation>
+<translation id="2495909791227061512">الاتصال بالأجهزة المجاورة؟</translation>
 <translation id="2496402116964818747">في "<ph name="SETTINGS" />"، يمكنك تغيير خيار استخدام بصمة إصبعك لملء كلمات المرور</translation>
 <translation id="2498091847651709837">مسح بطاقة جديدة ضوئيًا</translation>
 <translation id="2501270939904835585">تصنيفات (برّاقة)</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3053013834507634016">استخدام مفتاح الشهادة</translation>
-<translation id="3056660797732519147">‏تم فتح شاشة خطأ عملية "الدفع الآجل" (BNPL). لوحة المفاتيح مخفية.</translation>
 <translation id="3057844102210575426">إدارة معلومات السفر</translation>
 <translation id="3061707000357573562">خدمة رمز التصحيح</translation>
 <translation id="3062655045399308513">حذف بيانات التصفّح…</translation>
@@ -1444,6 +1442,7 @@
 <translation id="3447884698081792621">عرض الشهادة (من إصدار <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">‏السماح للموقع الإلكتروني بطلب التحكُّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="3452404311384756672">الفاصل الزمني للجلب:</translation>
+<translation id="345268527248907593">تعذَّر الوصول إلى الموقع الإلكتروني هذا</translation>
 <translation id="3453962258458347894">عدد مرات إعادة المحاولة</translation>
 <translation id="3461266716147554923">يريد <ph name="URL" /> الاطلاع على النصوص والصور التي تم نسخها إلى الحافظة.</translation>
 <translation id="3461824795358126837">أداة تمييز</translation>
@@ -1974,6 +1973,7 @@
 <translation id="4284885181066817063">لقد منع <ph name="DOMAIN" /> هذا الإجراء</translation>
 <translation id="4288101205645068104">حذف بيانات المركبة</translation>
 <translation id="4290920330097335010">عدم السماح مطلقًا</translation>
+<translation id="4291909791598163333">حظرت مؤسستك انتقالك إلى هذا الموقع الإلكتروني</translation>
 <translation id="4297502707443874121">صورة مصغّرة لصفحة <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">تم تعديل <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">الدفع على الفور بدون تحميل رمز الاستجابة السريعة</translation>
@@ -2086,7 +2086,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
 <translation id="4493480324863638523">‏عنوان URL غير صحيح. يجب أن يحتوي عنوان URL على نظام عادي، مثل http://example.com أو https://example.com.</translation>
-<translation id="4497010149473852018">تم فتح قائمة بطاقات الولاء التي يمكن ملء بياناتها باللمس. لوحة المفاتيح مخفية.</translation>
 <translation id="4497843134750481377">إدارة العروض</translation>
 <translation id="4500587658229086076">المحتوى غير الآمن</translation>
 <translation id="4501939680615452918">أريد البحث عن طاولات متاحة في مطاعم رائجة</translation>
@@ -2153,7 +2152,6 @@
 <translation id="4628948037717959914">صورة</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">سيبدأ تحميل الملف إلى <ph name="CLOUD_PROVIDER" /> بعد <ph name="HOURS" /> ساعة</translation>
-<translation id="4631881646528206880">تسجيل البطاقة الافتراضية</translation>
 <translation id="4635278307999235413">جارٍ إرسال البيانات إلى وحدة تحكّم المشرف</translation>
 <translation id="4636930964841734540">معلومات</translation>
 <translation id="4640225694041297329">عرض النتائج من آخر 7 أيام</translation>
@@ -2536,7 +2534,6 @@
 <translation id="5255583962255635076">سياسات المتصفّح المطبَّقة في ملف العمل</translation>
 <translation id="5255690596502591079">التقاط على أي حال</translation>
 <translation id="5255771248404149177">يريد مقدِّم بطاقتك التأكّد من هويتك</translation>
-<translation id="525579853540851404">‏تم فتح شاشة التقدّم في عملية "الدفع الآجل" (BNPL). لوحة المفاتيح مخفية.</translation>
 <translation id="5255833070095767006">350 × 460 ملم</translation>
 <translation id="5257739419779698609">{0,plural, =1{لا تنصح سياسة المشرف بنسخ هذا الملف إلى <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بنسخ هذين الملفين إلى <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بنسخ هذه الملفات إلى <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="5258473597674772367">لم تَعُد مجموعة علامات التبويب "<ph name="GROUP_NAME" />" متوفّرة</translation>
@@ -2655,6 +2652,7 @@
 <translation id="5452923259299906094">‏الدفع باستخدام المحفظة الإلكترونية وPix</translation>
 <translation id="5455374756549232013">الطابع الزمني للسياسة سيئ</translation>
 <translation id="5456428544444655325">عدم الإظهار مطلقًا</translation>
+<translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> وجهة اتصال <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> أخرى}two{<ph name="CONTACT_PREVIEW" /> وجهتا اتصال (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />) أخريان}few{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال أخرى}many{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}other{<ph name="CONTACT_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال أخرى}}</translation>
 <translation id="5463625433003343978">جارٍ البحث عن أجهزة...</translation>
 <translation id="5465128270485645058">يمكنك الحصول على ردود مخصصة أكثر لك من خلال المشاركة التلقائية لعلامات التبويب المفتوحة في هذه النافذة إذا كانت مرتبطة بسلسلة المحادثات هذه.</translation>
@@ -3140,6 +3138,7 @@
 <translation id="6264485186158353794">الرجوع</translation>
 <translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="6265794661083428563">نسخ قيمة السياسة <ph name="POLICY_NAME" /></translation>
+<translation id="6271264012613848937">تم حظر الانتقال إلى <ph name="URL" /> بسبب سياسات مؤسستك. إذا كان هذا غير متوقع، يُرجى التواصل مع المشرف.</translation>
 <translation id="6272088941196661550">‏يمكنك استئناف سجلّ أنشطة البحث والتصفُّح للاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="6272383483618007430">‏تحديث Google</translation>
 <translation id="6278015583149890680">‏Google Drive وOneDrive</translation>
@@ -3420,6 +3419,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">قيمة السياسة</translation>
 <translation id="6753434778807740853">حذف إدخال "<ph name="ENTRY_VOICEOVER" />"</translation>
+<translation id="6753460329812070808">‏تمت إزالة الاقتراح من Chrome</translation>
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
 <translation id="6758934187792712102">يريد "<ph name="URL" />" استخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="6770747695101757579">ورق (قطني)</translation>
@@ -3499,6 +3499,7 @@
 <translation id="6897140037006041989">وكيل المستخدم</translation>
 <translation id="6898699227549475383">‏المؤسسة (O)</translation>
 <translation id="6900702165119149418">لقد سجّلت الخروج من حسابك</translation>
+<translation id="6902049722133977432">تراجع</translation>
 <translation id="6910211073230771657">تم الحذف</translation>
 <translation id="691024665142758461">تنزيل ملفات متعددة</translation>
 <translation id="691046363691324218">رقم التعويض</translation>
@@ -3713,6 +3714,7 @@
 <translation id="7266094331715305887">التطبيقات على الجهاز</translation>
 <translation id="7268742523336093718">‏إضافة بيانات جواز السفر بأمان إلى "محفظة Google"</translation>
 <translation id="7269151392155523061">يجب ألا يكون الاختصار مطابِقًا للكلمة الرئيسية لمُجمِّع البحث التي حدّدتها <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />‏: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">حدث خطأ في إجراءات الحماية أو السياسات التي وضعتها مؤسستك. يُرجى إعادة المحاولة لاحقًا أو التواصل مع المشرف.</translation>
 <translation id="7273111226200291353">‏يتم إرسال الملفات التي تنزِّلها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة وتخزينها استنادًا إلى سياسات الشركة، وقد تظهر للمشرف.</translation>
 <translation id="7275334191706090484">الإشارات المرجعية المُدارة</translation>
 <translation id="7278933725460302617">يتم التصفُّح الآن في "الوضع المعزول"</translation>
@@ -4067,7 +4069,6 @@
 <translation id="7839192898639727867">معرّف مفتاح صاحب الشهادة</translation>
 <translation id="7840103971441592723">تم تفعيل ميزة "لقطة الشاشة".</translation>
 <translation id="784137052867620416">ميزة "إحصاءات التسوّق"</translation>
-<translation id="7841633276323004751">تمّ فتح قائمة طرق الدفع التي يمكن اختيارها للمتابعة بطول الشاشة. لوحة المفاتيح مخفية.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{لا تتوفَّر تطبيقات}=1{تطبيق واحد (<ph name="EXAMPLE_APP_1" />)}=2{تطبيقان (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />)}few{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}many{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}other{# تطبيقات (<ph name="EXAMPLE_APP_1" />، و<ph name="EXAMPLE_APP_2" />، و<ph name="AND_MORE" /> من التطبيقات الأخرى)}}</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="784623644169604270">ما من أنشطة حديثة</translation>
@@ -4146,7 +4147,6 @@
 <translation id="79682505114836835">القيمة "<ph name="VALUE" />" هي لون سداسي عشري غير صالح.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
 <translation id="7972714317346275248">‏PKCS #1 SHA-384 مع ترميز RSA</translation>
-<translation id="7976053965094442846">‏يتم عرض قائمة بمقدّمي خدمة "الدفع الآجل" (BNPL) المتاح لديهم خيار التقسيط. لوحة المفاتيح مخفية.</translation>
 <translation id="7976214039405368314">عدد الطلبات كبير جدًا.</translation>
 <translation id="7977029776654598145">عند الاستخدام</translation>
 <translation id="7977538094055660992">جهاز إخراج</translation>
@@ -4156,6 +4156,7 @@
 <translation id="7984945080620862648">‏لا يمكنك زيارة <ph name="SITE" /> الآن لأن الموقع الإلكتروني أرسل بيانات اعتماد مختلطة يتعذر على Chrome معالجتها. أخطاء الشبكة والهجمات عليها عادةً ما تكون مؤقتة، لذا ستعمل هذه الصفحة لاحقًا على الأرجح.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">‏تم فتح قائمة مقدّمي خدمة "الدفع الآجل" (BNPL) المتاح لديهم خيار التقسيط بطول الشاشة.</translation>
+<translation id="7990290316254726169">‏يظهر لك هذا التحذير لأنّ هذا الموقع لا يتوافق مع بروتوكول HTTPS ولأنّك في "الوضع المعزول". <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات حول هذا التحذير<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">التجليد</translation>
 <translation id="7992044431894087211">تم استئناف "مشاركة الشاشة" مع <ph name="APPLICATION_TITLE" />.</translation>
 <translation id="799384093520583425">حظرت مؤسستك استخدام "أدوات مطوري البرامج" على هذه الصفحة</translation>
@@ -4455,7 +4456,6 @@
 <translation id="8522552481199248698">‏يمكن أن يساعدك Chrome على حماية حسابك على Google وتغيير كلمة المرور.</translation>
 <translation id="8523574453888018351">أريد تعلُّم لغة جديدة</translation>
 <translation id="852450791482410042">الدفع الآن</translation>
-<translation id="8528479410903501741">‏حفظ رقم الحساب بصيغة IBAN</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">استخدام الموقع الدقيق</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>
@@ -4500,6 +4500,7 @@
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8601206103050338563">‏مصادقة TLS (بروتوكول أمان طبقة النقل) لشبكة الإنترنت العالمية (WWW)</translation>
 <translation id="8604103095921958091">‏تم فتح صفحة بنود خدمة "الدفع الآجل" (BNPL) على كامل الشاشة.</translation>
+<translation id="8605014984308506350">‏يظهر لك هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS ولأنّك تستخدم "الوضع المعزول". <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">استخدامك للجهاز</translation>
 <translation id="8619130384334725124">محرك البحث التلقائي الحالي</translation>
 <translation id="8620276786115098679">‏ظرف Kaku 7</translation>
@@ -4653,6 +4654,7 @@
 <translation id="8883863364960302898">‏مجلّد Google Drive</translation>
 <translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="8889525327610245418">‏تعديل معلومات رخصة القيادة بأمان في "محفظة Google"</translation>
+<translation id="8890516388109605451">المصادر</translation>
 <translation id="8891031436559779793">سيتم إرسال إشعار إليك في حال انخفاض السعر على أي موقع إلكتروني.</translation>
 <translation id="8891727572606052622">وضع الخادم الوكيل غير صالح.</translation>
 <translation id="8894794286471754040">الحافة الطويلة أولًا</translation>

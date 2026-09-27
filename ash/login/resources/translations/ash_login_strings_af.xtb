@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Die opdatering sal begin wanneer die battery <ph name="BATTERY_LEVEL" />% bereik.</translation>
 <translation id="1353275871123211385">Om ouerkontroles soos programgoedkeuring en skermtydlimiete te gebruik, moet 'n kind 'n Google-rekening hê wat deur 'n ouer bestuur word. 'n Skoolrekening kan later bygevoeg word vir nutsgoed soos Google Klaskamer.</translation>
 <translation id="1375557162880614858">Wil jy ChromeVox, Chrome OS Flex se ingeboude skermleser, aktiveer?</translation>
-<translation id="1375938286942050085">Opstelling is voltooi! Kry volgende jou toestel vir speletjies gereed</translation>
 <translation id="1377600615067678409">Slaan voorlopig oor</translation>
 <translation id="1399261165075500043">Kan nie Google Play se diensbepalings laai nie</translation>
 <translation id="1400243387594338234">Jy kan hierdie PIN gebruik om by jou toestel aan te meld</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Gebruik jou Google-rekening op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Kies tydsone</translation>
 <translation id="3893630138897523026">ChromeVox (gesproke terugvoer)</translation>
-<translation id="3897746662269329507">Jou <ph name="DEVICE_TYPE" /> is gebou vir speletjies. Die Verken-app sal volgende oopmaak; hier kan jy toegang tot honderde van die jongste speletjies kry, speletjie-aanbiedings sien, en speletjiekenmerke ontdek wat op jou toestel is.</translation>
 <translation id="389901847090970821">Kies sleutelbord</translation>
 <translation id="3910588685973519483">Skep muurpapiere met KI</translation>
 <translation id="3924259174674732591">Skerm- en teksgrootte <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">'n Opdatering van die Trusted Platform Module-fermware moet geïnstalleer word. Sien <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oeps, kon nie aanmeld nie</translation>
 <translation id="5453829744223920473">Jou kind kan al hul skoolapps, boekmerke en hulpbronne net soos in die klas gebruik. Die skool stel die grondreëls.</translation>
-<translation id="5463450804024056231">Teken in op <ph name="DEVICE_TYPE" />-e-posse</translation>
 <translation id="5473099001878321374">Deur voort te gaan, stem jy in dat hierdie toestel ook outomaties opdaterings en apps van Google, jou kind se diensverskaffer en hierdie toestel se vervaardiger af kan aflaai en installeer – moontlik met gebruik van sellulêre data. Sommige van hierdie apps kan inappaankope aanbied.</translation>
 <translation id="5502915260472117187">'n Kind</translation>
 <translation id="5511823366942919280">Is jy seker jy wil hierdie toestel as 'n "Haai" opstel?</translation>

@@ -10,6 +10,7 @@
 
 Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak ez dira aldatuko.</translation>
 <translation id="1083934481477628225">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu du Chromium-en</translation>
+<translation id="109026165963220603">Chromium-ek sare lokalerako sarbidea behar du inguruko gailuak aurkitu eta erabiltzeko</translation>
 <translation id="1090946077924227754">Chromium-en eginbide edo luzapen zehatz bat bilatzeko, idatzi haren lasterbidea helbide-barran eta, ondoren, sakatu hautatutako tekla</translation>
 <translation id="1098493699368672217">Erakutsi Chromium-ekin bilatzeko aukera sistema-erretiluan eta aktibatu lasterbidea</translation>
 <translation id="1104942323762546749">Chromium-ek pasahitzak esportatu nahi ditu. Hori baimentzeko, idatzi Windows pasahitza.</translation>
@@ -105,6 +106,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2126108037660393668">Deskargatutako fitxategia ezin izan da egiaztatu.</translation>
 <translation id="2135919691573380097">Salatu webgunea</translation>
 <translation id="2137162749895930932">Itxi itzultzeko pantaila</translation>
+<translation id="2147218225094845757">Ezkutatu alboko panela</translation>
 <translation id="215352261310130060">Chromium-ek deskarga hau blokeatu du, webgunearen konexioa segurua ez delako eta agian fitxategia manipulatu delako</translation>
 <translation id="2170098639895543546">Hautatu orriko edozein gauza</translation>
 <translation id="2174178932569897599">Pertsonalizatu Chromium</translation>
@@ -304,7 +306,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4251772536351901305">Webgune arriskutsuen berri ematen dizu, Google-k ezagutzen ez zituenak barne, webguneetan babes estandarrak baino datu gehiago aztertuz. Chromium-en abisuak saltatzea aukera dezakezu.</translation>
 <translation id="4269093074552541569">Amaitu Chromium-eko saioa</translation>
 <translation id="4271805377592243930">Lortu Chromium erabiltzeko laguntza</translation>
-<translation id="4275788652681621337">Itxi alboko panela</translation>
 <translation id="4281844954008187215">Zerbitzu-baldintzak</translation>
 <translation id="4285930937574705105">Instalazioak huts egin du zehaztu gabeko errore batengatik. Chromium abian bada, itxi eta ireki berriro.</translation>
 <translation id="4298125729853015961">Esportatu pasahitzak Chromium-etik</translation>

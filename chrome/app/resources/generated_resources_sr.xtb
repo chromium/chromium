@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Одлично!</translation>
 <translation id="1342886103232377846">Да бисте проверили да ли има угрожених лозинки, идите у Google менаџер лозинки</translation>
 <translation id="1343920184519992513">Наставите где сте стали и отворите одређену групу страница</translation>
+<translation id="1344216785734288669">Apple лозинке</translation>
 <translation id="1346630054604077329">Потврди и рестартуј</translation>
 <translation id="1346748346194534595">Удесно</translation>
 <translation id="1347512539447549782">Linux меморијски простор</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">Апликација је ограничена у овом региону.</translation>
 <translation id="1607139524282324606">Обриши унос</translation>
 <translation id="1608668830839595724">Још радњи за изабране ставке</translation>
-<translation id="1609603645228231640">Gemini Spark је експерименталан и може да ради ствари као што су дељење ваших података или куповина без питања. <ph name="LINK_BEGIN" />Прегледајте ризике<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Подешавања апликације</translation>
 <translation id="161042844686301425">Плавозелена</translation>
 <translation id="1611649489706141841">кретање напред</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">Нов унос</translation>
 <translation id="1809201888580326312">Одабрали сте да не чувате лозинке за ове сајтове и апликације</translation>
 <translation id="1809734401532861917">Додај обележиваче, историју, лозинке и друга подешавања на <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Затворени оквир без архивирања: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да настави да користи услугу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Пребацивање картице <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Услуге</translation>
@@ -1287,7 +1286,6 @@
 <translation id="1983612835086592681">Отворили сте претходне недеље</translation>
 <translation id="1984087999855033707">број телефона</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
-<translation id="1984683754853869253">Желите ли да направите нов профил за школу?</translation>
 <translation id="198507684520034826">Помоћ</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Напредна подешавања локације</translation>
@@ -1320,7 +1318,7 @@
 <translation id="2010501376126504057">Компатибилни уређаји</translation>
 <translation id="2010636492623189611">Изабрано је.</translation>
 <translation id="2012935757369720523">Избриши фајл</translation>
-<translation id="2014495120525813351">Дозволите да Gemini Spark прегледа на овом уређају</translation>
+<translation id="2014191284313949173">Затвори изоловани режим</translation>
 <translation id="2016473077102413275">Функције којима требају слике неће радити</translation>
 <translation id="2017334798163366053">Онемогући прикупљање података о учинку</translation>
 <translation id="2017770349934140286">Google Play и апликације које сте преузели са Google Play-а ће бити избрисани са овог Chromebook-а.
@@ -1451,6 +1449,7 @@
 <translation id="2121825465123208577">Промени величину</translation>
 <translation id="2122446694240899610">Вештине се чувају на Google налогу,</translation>
 <translation id="2123766928840368256">Одаберите другу датотеку</translation>
+<translation id="2124153808069020510">Да бисте избрисали податке, затворите све изоловане прозоре</translation>
 <translation id="2124930039827422115">{1,plural, =1{Један корисник је оценио са <ph name="AVERAGE_RATING" />.}one{# корисник је оценио са <ph name="AVERAGE_RATING" />.}few{# корисника су оценила са <ph name="AVERAGE_RATING" />.}other{# корисника је оценило са <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2125715366913703594">Истражите додатке</translation>
 <translation id="2126167708562367080">Администратор је онемогућио синхронизацију.</translation>
@@ -1593,6 +1592,7 @@
 <translation id="2227179592712503583">Уклони предлог</translation>
 <translation id="222931766245975952">Датотека је скраћена</translation>
 <translation id="2229342031987138128">Опционални титл</translation>
+<translation id="22294739381015133">Сајтови које посећујете не чувају се у изолованом режиму</translation>
 <translation id="2231351769755997720">Нема доступних предлога. Питајте нешто о овој страници.</translation>
 <translation id="2232751457155581899">Сајтови могу да траже да прате положај камере</translation>
 <translation id="2233502537820838181">&amp;Више информација</translation>
@@ -2029,7 +2029,6 @@
 <translation id="2554553592469060349">Изабрана датотека је превелика (максимална величина: 3 MB).</translation>
 <translation id="2555802059188792472">Број апликација које могу да шаљу обавештења: <ph name="NUM_ALLOWED_APPS" /> од <ph name="TOTAL_NUM_APPS" /></translation>
 <translation id="2555855727505718984">Аутоматско попуњавање неће имати ове информације на овом уређају да би вам помогло да попуњавате обрасце</translation>
-<translation id="25568951186001797">Затворени оквир: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Прегледајте све обележиваче овде</translation>
 <translation id="2563924218974330506">Сада можете да управљате групама картица овде. То окно можете да откачите у било ком тренутку.</translation>
 <translation id="2564520396658920462">Извршавање JavaScript-а помоћу AppleScript-а је искључено. Да бисте га укључили, на траци менија изаберите View &gt; Developer &gt; Allow JavaScript from Apple Events (Приказ &gt; Програмер &gt; Дозволи JavaScript из Apple Events-а). Додатне информације: https://support.google.com/chrome/?p=applescript</translation>
@@ -2108,7 +2107,6 @@
 <translation id="2626746300781063303">Сајтови, укључујући Google, одговарају на овај захтев по сопственом нахођењу</translation>
 <translation id="2626799779920242286">Пробајте поново касније.</translation>
 <translation id="2627424346328942291">Дељење није успело</translation>
-<translation id="2627970398976286795">Прегледајте ризике Gemini Spark-а</translation>
 <translation id="2628258844236035475">Желите да уклоните кућну адресу из Chrome аутоматског попуњавања?</translation>
 <translation id="2628770867680720336">Chromebook мора да се врати на фабричка подешавања да би се омогућило ADB отклањање грешака <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Започни нови чет са Gemini-јем</translation>
@@ -2417,7 +2415,6 @@
 <translation id="2845276301195220700">Још радњи за Google календар</translation>
 <translation id="2845382757467349449">Увек приказуј траку са обележивачима</translation>
 <translation id="284581348330507117">Направите јединствене лозинке</translation>
-<translation id="2846345106886298325">Задатак је обављен и враћен у Gemini Spark</translation>
 <translation id="284884486564166077">Претражите било коју слику помоћу Објектива</translation>
 <translation id="2849035674501872372">Потражите</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2479,7 +2476,6 @@
 <translation id="2893318819023133318">Обрни приказе</translation>
 <translation id="2894596417096093634">Идентификатори извештаја о отказивању</translation>
 <translation id="2894757982205307093">Нова картица у групи</translation>
-<translation id="2895194086130800590">Gemini Spark може да користи аутоматско прегледање на овом уређају само ако је уређај активан и Chrome је покренут.</translation>
 <translation id="289695669188700754">ИД кључа: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ово прилагођено подешавање се уклања када затворите све прозоре без архивирања</translation>
 <translation id="2897878306272793870">Желите ли стварно да отворите <ph name="TAB_COUNT" /> картицa?</translation>
@@ -2532,7 +2528,6 @@
 <translation id="2933653107553951760">Врати групу</translation>
 <translation id="2934225044529065415">Приступ камери није успео</translation>
 <translation id="2935314715123552088">Онемогући активни eSIM профил</translation>
-<translation id="2936067606203230121">Gemini Spark ће одлучити које радње треба да предузме на основу задатака које покренете или ажурирате.</translation>
 <translation id="2936851848721175671">Прављење резервне копије и враћање</translation>
 <translation id="2938981087412273365">Није дозвољено читање и мењање овог сајта</translation>
 <translation id="2939005221756255562">Омогућите обавештења у Центру за обавештења. Отворите <ph name="BEGIN_LINK" />подешавања система<ph name="END_LINK" />.</translation>
@@ -2912,6 +2907,7 @@
 <translation id="3213681682237645841">Преузимају се гласови на језику <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Желите ли да направите пречицу?</translation>
 <translation id="3220494908385619295">Прикажи упоредо</translation>
+<translation id="3220541426929880850">Да бисте избрисали изоловану историју прегледања са уређаја, затворите све изоловане картице</translation>
 <translation id="3220943972464248773">Да бисте синхронизовали лозинке, потврдите свој идентитет</translation>
 <translation id="3222066309010235055">Претприказивање: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Повежите се са <ph name="USB_VM_NAME" /></translation>
@@ -3410,6 +3406,7 @@
 <translation id="3600956933576601730">Морате да прегледате и прихватите услове да бисте користили ове функције</translation>
 <translation id="3601374594714740284">Да бисте добили квалитетније гласове, ослободите простор на уређају</translation>
 <translation id="360180734785106144">да нуди нове функције када постану доступне</translation>
+<translation id="3601988315287782413">Ово утиче само на изоловане прозоре</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602495161941872610">Реши проблем са синхронизацијом</translation>
 <translation id="3602894439067790744">Читај бројеве као</translation>
@@ -3638,7 +3635,6 @@
 <translation id="3756578970075173856">Подесите PIN</translation>
 <translation id="3756806135608816820">Сајтови имају дозволу да траже Bluetooth уређаје</translation>
 <translation id="3756823472711156529">Врати групу</translation>
-<translation id="3757337311115630808">Сазнајте више о Gemini Spark-у</translation>
 <translation id="3757567010566591880">Откачи са траке с алаткама</translation>
 <translation id="3757645900890881944">Алатке за претрагу</translation>
 <translation id="3757733214359997190">Није пронађен ниједан сајт</translation>
@@ -4762,6 +4758,7 @@
 <translation id="4631637535315947773">Пречице за најпосећеније сајтове су уклоњене јер их нисте недавно користили</translation>
 <translation id="4631955550884380853">Фокусиран глас</translation>
 <translation id="4632655012900268062">Прилагодите картице</translation>
+<translation id="4634719521235795064">Gemini може да користи Google менаџер лозинки да би вас пријавио. <ph name="BEGIN_LINK" />Сазнајте како Gemini поступа са вашим подацима<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Деинсталирајте Crostini</translation>
 <translation id="4635398712689569051">Страница <ph name="PAGE_NAME" /> није доступна корисницима у режиму госта.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Отпремите 1 слику који ћете користити уз питање}one{Отпремите највише # слику коју ћете користити уз питање}few{Отпремите највише # слике које ћете користити уз питање}other{Отпремите највише # слика које ћете користити уз питање}}</translation>
@@ -5249,7 +5246,6 @@
 <translation id="4989966318180235467">Провери страницу &amp;позадине</translation>
 <translation id="499016799952867794">То омогућава да апликација ради на очекивани начин.</translation>
 <translation id="4990673372047946816">Нема доступних камера</translation>
-<translation id="499126848196136237">Gemini Spark може да користи Chrome аутоматско прегледање на овом уређају да би ступао у интеракцију са сајтовима и обављао задатке у ваше име. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Третирај тастере из горњег реда као функцијске тастере</translation>
 <translation id="4991873517942703737">Поставите питање о овом документу</translation>
 <translation id="4992066212339426712">Укључи звук</translation>
@@ -5506,7 +5502,6 @@
 <translation id="5189274947477567401">Ако онемогућите дељење процеса, треба да рестартујете прегледач. Овај прегледач ће се сада рестартовати.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869">Користи се <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="5190926251776387065">Активирај порт</translation>
 <translation id="5190959794678983197">Нема микрофона</translation>
 <translation id="5191094172448199359">Унети PIN-ови се не подударају</translation>
@@ -6074,6 +6069,7 @@
 <translation id="5641715878999557094">Додатак <ph name="EXTENSION_NAME" /> је променио страницу која се приказује када кликнете на дугме Почетна.</translation>
 <translation id="5643191124441701136">Безбедносни кôд се налази на предњој страни картице</translation>
 <translation id="5643321261065707929">Мрежа са ограничењем</translation>
+<translation id="5645369002069651355">Верификује се имејл</translation>
 <translation id="5646376287012673985">Локација</translation>
 <translation id="5646558797914161501">Бизнисмен</translation>
 <translation id="564670806635578888">Претражи „<ph name="SEARCH_TERMS" />“ на Google-у</translation>
@@ -7005,7 +7001,6 @@
 <translation id="6393550101331051049">Дозвољено им је приказивање небезбедног садржаја</translation>
 <translation id="6394634179843537518">Додајте фајл</translation>
 <translation id="6395423953133416962">Шаљи <ph name="BEGIN_LINK1" />информације<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатеље<ph name="END_LINK2" /> о систему</translation>
-<translation id="6397586889873084061">Да, не обједињуј моје податке са школским профилом (препоручено)</translation>
 <translation id="6398715114293939307">Уклоните Google Play продавницу</translation>
 <translation id="6398765197997659313">Изађи из режима целог екрана</translation>
 <translation id="639880411171387127">Избор Google објектива. Притисните Enter или backspace да бисте избрисали избор Google објектива</translation>
@@ -8369,7 +8364,6 @@
 <translation id="7421293530411019405">Желите да напустите групу картица?</translation>
 <translation id="7421925624202799674">&amp;Прикажи извор странице</translation>
 <translation id="7422192691352527311">Подешавања...</translation>
-<translation id="7423381908337122792">Свако ко има приступ Gemini Spark агенту може да контролише Chrome прегледач.</translation>
 <translation id="7423425410216218516">Видљивост је укључена <ph name="MINUTES" /> минут/а</translation>
 <translation id="7423513079490750513">Уклоните метод уноса <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Мрежа је додата</translation>
@@ -8495,6 +8489,7 @@
 <translation id="7517292544534877198">Користите Google подразумевано шифровање за лозинке на Google налогу</translation>
 <translation id="7517959947270534934">Члан породице тренутно не може да прима лозинке. Затражите му да ажурира Chrome и синхронизује лозинке.</translation>
 <translation id="7518079994230200553">Ова опција тренутно није доступна.</translation>
+<translation id="7519506357537394422">Желите да дозволите Gemini-ју да вас пријављује на домен <ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">Да би вам сачуване информације и други садржај били доступни на свим уређајима, пријавите се као <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Портал у режиму без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Прикажи пречице</translation>
@@ -8722,7 +8717,6 @@
 <translation id="769824636077131955">Овај документ је превелик за безбедносну проверу. Можете да штампате документе величине до 50 MB.</translation>
 <translation id="7698507637739331665">Неке ставке су блокиране</translation>
 <translation id="7700516433658473670">Штампачи и скенери</translation>
-<translation id="7700873336634517379">Не, настави да користиш за школу на овом профилу</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7701869757853594372">КОРИСНИЧКИ надимци</translation>
 <translation id="770231223935918661">Поставите питање о овој слици</translation>
@@ -9088,6 +9082,7 @@
 <translation id="7978450511781612192">Овим ћете се одјавити са Google налога. Обележивачи, историја, лозинке и додатни садржај се више неће синхронизовати.</translation>
 <translation id="7980066177668669492">ASCII фајл шифрован методом „Base64“, више сертификата</translation>
 <translation id="7981410461060625406">Користите сачувани приступни кључ за апликацију <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Верификација имејла није успела</translation>
 <translation id="7981662863948574132">Прикажи искачући прозор са EID бројем и QR кодом уређаја</translation>
 <translation id="7982578888426609524">Најновије промене ове групе</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -10147,6 +10142,7 @@
 <translation id="878862491037637275">Ова група картица је пуна</translation>
 <translation id="8791157330927639737">Сазнајте више о ажурирању</translation>
 <translation id="8791534160414513928">Шаљи захтев „Do Not Track“ уз саобраћај прегледања</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (изоловано)</translation>
 <translation id="8793390639824829328">Сајтови користе ову функцију да би скроловали и зумирали дељене картице</translation>
 <translation id="8793895150509408038">Прегледајте детаље сајта <ph name="SITE" /> са листе <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Када је хотспот укључен, <ph name="PHONE_NAME" /> ће:</translation>
@@ -10383,7 +10379,6 @@
 <translation id="897525204902889653">Услуга карантина</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и још 1 картица}one{„<ph name="TAB_TITLE" />“ и још # картица}few{„<ph name="TAB_TITLE" />“ и још # картице}other{„<ph name="TAB_TITLE" />“ и још # картица}}</translation>
 <translation id="897565255818387330">Желите да дозволите овом сајту да прегледа и копира <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Подесите школски профил да бисте сачували и користили лозинке и друго на налогу</translation>
 <translation id="8977811652087512276">Нетачна лозинка или оштећена датотека</translation>
 <translation id="8978154919215542464">Укључено – синхронизуј све</translation>
 <translation id="8978670037548431647">Освежи могућности привезивања</translation>
@@ -10487,7 +10482,6 @@
 <translation id="9040661932550800571">Желите ли да ажурирате лозинку за <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Пријавите се у Chrome да бисте чували јаке лозинке помоћу Google менаџера лозинки</translation>
 <translation id="9041692268811217999">Администратор је онемогућио приступ локалним датотекама на рачунару</translation>
-<translation id="9041881059840744611">О школским профилима</translation>
 <translation id="904224458472510106">Ова операција не може да се опозове</translation>
 <translation id="9042827002460091668">Проверите интернет везу и пробајте поново</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
@@ -10704,7 +10698,6 @@
 <translation id="9219103736887031265">Слике</translation>
 <translation id="9219572436491982747">Особе које прегледају могу да виде податке послате Google-у ради побољшања технологије Chrome вештачке интелигенције</translation>
 <translation id="9219741625496141320">Подаци прегледања су аутоматски избрисани</translation>
-<translation id="9220484506568374422">Gemini Spark ће имати приступ истим сајтовима као и ви, укључујући сајтове на којима сте пријављени. Делиће неопходне податке са трећим странама, што може да обухвата личне податке које сматрате осетљивим.</translation>
 <translation id="9220525904950070496">Уклањање налога</translation>
 <translation id="9220723036554088545">отпремите фајл</translation>
 <translation id="9220820413868316583">Подигните, па пробајте поново.</translation>

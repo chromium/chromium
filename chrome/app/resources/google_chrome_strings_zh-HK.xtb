@@ -130,6 +130,7 @@
 <translation id="2128411189117340671">管理 Chrome 設定檔</translation>
 <translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="2139300032719313227">重新啟動 Chrome OS</translation>
+<translation id="2147218225094845757">隱藏側面板</translation>
 <translation id="2151406531797534936">請立即重新啟動 Chrome</translation>
 <translation id="2163089732491971196">如要將 Chrome 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
 <translation id="2170098639895543546">選取頁面上的任何內容</translation>
@@ -761,6 +762,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8196526165798579689">使用 Chrome 開發人員版搜尋</translation>
 <translation id="8221491193165283816">您通常會封鎖通知。如要允許此網站向您傳送通知，請按這裡。</translation>
 <translation id="8227493674161801700">使用 Chrome Beta 版搜尋</translation>
+<translation id="8233224921566021881">Chrome 需要取用你的區域網絡，才能探索和使用附近的裝置</translation>
 <translation id="8253851811470049684">你可以用 Chrome 開啟任何應用程式的連結，並將瀏覽器釘選在工作列方便隨時取用</translation>
 <translation id="8255190535488645436">Google Chrome 正在使用您的相機和麥克風。</translation>
 <translation id="8260086374035800939">建立新分頁時，如果 Chrome 版 Gemini 已開啟，側面板亦會保持開啟</translation>

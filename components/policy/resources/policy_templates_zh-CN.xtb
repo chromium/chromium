@@ -541,6 +541,7 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
       此政策会覆盖 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。</translation>
 <translation id="1413768951234456918">清除浏览记录</translation>
 <translation id="1413936351612032792">报告有关 Linux 应用使用情况的信息</translation>
+<translation id="1417591892602709307">设备上存储的用户个人资料数量上限</translation>
 <translation id="1417776888841750570">此政策用于控制浏览器在受管理的账号登录内容区域后的行为。
 
 此政策会覆盖 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />。
@@ -2062,6 +2063,11 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       此政策仅会对通过 WebUSB API 访问 USB 设备产生影响。若要通过 Web Serial API 授权访问 USB 设备，请参见 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="2318353380372431186">允许用户安装 IWA</translation>
 <translation id="2318583605563438459">允许家长添加受监督的账号</translation>
+<translation id="2323318142178972965">控制设备上保留的用户个人资料数量上限。
+
+如果此政策设为正整数 <ph name="MAX_USERS" />，<ph name="PRODUCT_OS_NAME" /> 将在设备上最多保留 <ph name="MAX_USERS" /> 份常规用户个人资料。当新用户登录且超出上限时，系统会自动删除最久未使用的用户个人资料（当前活跃用户除外）及其本地存储空间，以释放磁盘空间。
+
+如果此政策未设置或设为 0，则可添加到设备的用户个人资料数量不受限制。如要完全不在设备上保留任何用户个人资料，请改用 <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="2326031114717677574">音频数据的取样和收集时间间隔。所允许的最短时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
@@ -2379,24 +2385,6 @@ PAC 样式的字符串：
 <translation id="2521581787935130926">在书签栏中显示应用快捷方式</translation>
 <translation id="2522304491589804974">配置扩展程序安装许可名单</translation>
 <translation id="2523511232831599126">为登录屏幕启用无障碍快捷方式</translation>
-<translation id="252611686271192278">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点通信。
-如需了解详情，请访问 https://github.com/WICG/direct-sockets。
-
-专用网络端点是指那些使用来自专用 IP 地址空间的 IP 地址的端点；如需了解什么是专用 IP 地址空间，请访问 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-通过设置此政策，您可以创建一个网址格式列表，用于指定禁止哪些网站通过 Direct Sockets API 访问专用网络。
-有效格式仅限于独立式 Web 应用。
-
-如果您未设置此政策，但 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站。
-
-网址格式不得与 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址同时符合这两项政策，系统将不会优先应用任何一项政策。
-
-如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
-
-请注意，仅在允许源使用 Direct Sockets API 时，此政策才适用。
-如需了解详情，请查看 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。
-
-此政策仅适用于新的连接尝试，不会使现有连接失效。</translation>
 <translation id="252742292004421898">允许在这些网站上使用 Direct Sockets API</translation>
 <translation id="2528762900096510743">启用自动退出账号服务</translation>
 <translation id="2529880111512635313">配置强制安装的应用和扩展程序的列表</translation>
@@ -3109,6 +3097,13 @@ PAC 样式的字符串：
 <translation id="2953447815703785478">指定应使用设备管理协议注册的设备级客户端证书。
 
 从 <ph name="PRODUCT_OS_NAME" /> 132 版开始支持 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 密钥算法选项。</translation>
+<translation id="2953620259874711778">此政策已在 M156 中弃用，请改用 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />。
+
+若要维持当前停用 <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> 的行为，请配置 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />，并将“url_pattern”设置为“*”，同时将“blocked_types”设置为 ["contact_info", "identity_docs", "travel"]。
+
+如果此政策设为 True 或未设置，用户可以控制是否在界面中自动填充地址。
+
+如果此政策设为 False，“自动填充”功能一律不会建议或填充地址信息，也不会保存用户在浏览网页时提交的其他地址信息。</translation>
 <translation id="2957506574938329824">不允许任何网站通过 Web Bluetooth API 请求访问蓝牙设备</translation>
 <translation id="2957513448235202597">进行 <ph name="HTTP_NEGOTIATE" />身份验证时使用的账号类型</translation>
 <translation id="2959469725686993410">解析时区时一律将 Wi-Fi 接入点发送给服务器</translation>
@@ -5927,7 +5922,6 @@ JavaScript 优化政策的例外情况仅在网站级别 (eTLD+1) 上强制执�
 如果此政策设为 False，系统将使用默认行为。</translation>
 <translation id="4820432864264617413">禁止用户运行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">拒绝向这些网站授予窗口放置权限</translation>
-<translation id="4825653993105771848">控制通过 Direct Sockets API 对专用网络的访问</translation>
 <translation id="4825777333376170738">停用设备自助服务终端会话报告功能</translation>
 <translation id="4826326557828204741">当闲置延迟时间已过且使用电池供电时应执行的操作</translation>
 <translation id="4826701474986856664">在用户登录期间显示人体存在传感器界面</translation>
@@ -8673,7 +8667,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="647645276885673708">启用 <ph name="LACROS_NAME" /> 并将其设为主要浏览器</translation>
 <translation id="647698599569353771">允许启用“附近分享”功能。</translation>
 <translation id="6477685422297715670">键盘背光颜色：绿色</translation>
-<translation id="6477933144150138501">允许独立式 Web 应用源通过 Direct Sockets API 与专用网络端点通信</translation>
 <translation id="6478258366184919502">登录和屏幕来源</translation>
 <translation id="6478261301433199402">通过设置此政策，您可以指定用户的 <ph name="PLUGIN_VM_NAME" /> 映像。此政策应指定为一个 JSON 格式字符串：使用 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 指明相应映像的下载位置，并使用 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 指定用于验证下载内容是否完整的 SHA-256 哈希值。</translation>
 <translation id="6481245670325946423">允许使用无头模式</translation>
@@ -9045,20 +9038,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
       注意：虽然此政策可以接受“<ph name="ENTRIES_FIELD_NAME" />”中的多个项，但除第一项之外的所有其他项都会被忽略。
       警告：设置此政策可能会延迟应用软件更新。</translation>
 <translation id="6695441448686167614">网络打印设置</translation>
-<translation id="6695983959768914375">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点通信。
-如需了解详情，请参阅 https://github.com/WICG/direct-sockets。
-
-专用网络端点是指那些使用来自专用 IP 地址空间的 IP 地址的端点；如需了解什么是专用 IP 地址空间，请参阅 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-如果此政策设为 1 或未设置，则独立式 Web 应用源可以通过 Direct Sockets API 与专用网络端点通信。
-
-如果此政策设为 2，系统会禁止独立式 Web 应用源通过 Direct Sockets API 与专用网络端点通信。
-
-请注意，仅在允许源使用 Direct Sockets API 时，此政策才适用。
-如需了解详情，请参阅 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。
-您还可以使用 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> 为匹配的网址覆盖默认值。
-
-此政策仅适用于新的连接尝试，不会使现有连接失效。</translation>
 <translation id="6698632841807204978">启用单色打印</translation>
 <translation id="6699740789657890714">指定是否允许网站以不安全方式向更专用网络端点发送请求</translation>
 <translation id="6699880231565102694">为远程访问主机启用双重身份验证</translation>
@@ -10392,22 +10371,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="7512514325152952954"><ph name="PRODUCT_OS_NAME" /> 上的自动更新载荷可通过 HTTP 而非 HTTPS 下载。这允许对 HTTP 下载内容进行透明 HTTP 缓存。
 
 如果此政策设置为 True，<ph name="PRODUCT_OS_NAME" /> 将尝试通过 HTTP 下载自动更新载荷。如果此政策设置为 False 或未设置，操作系统将使用 HTTPS 下载自动更新载荷。</translation>
-<translation id="7512603255315110634">Direct Sockets API 允许使用 TCP 和 UDP 与任意端点通信。
-如需了解详情，请访问 https://github.com/WICG/direct-sockets。
-
-专用网络端点是指那些使用来自专用 IP 地址空间的 IP 地址的端点；如需了解什么是专用 IP 地址空间，请访问 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-通过设置此政策，您可以创建一个网址格式列表，用于指定允许哪些网站通过 Direct Sockets API 与专用网络端点通信。
-有效格式仅限于独立式 Web 应用。
-
-未设置此政策时，如果 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站。
-
-网址格式不得与 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任何一项政策。
-
-如需详细了解有效的网址格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。
-
-请注意，仅在允许源使用 Direct Sockets API 时，此政策才适用。
-如需了解详情，请查看 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="7515953732107149296">在 RC4 从 <ph name="PRODUCT_NAME" /> 中移除后，此政策已从 M53 中移除。
 
       如果此政策设为 false 或未设置，系统将不会启用 TLS 中的 RC4 加密套件。您也可将此政策设为 true，以便与过时的服务器保持兼容。这只是一种权宜之计，正确的做法是重新配置服务器。</translation>
@@ -10875,7 +10838,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期扫描系统并停用人工扫描</translation>
 <translation id="7833148823006528332">Android 应用标识符，例如“com.google.android.gm”是 Gmail 的标识符</translation>
 <translation id="7835218570504220753">禁止自动点击</translation>
-<translation id="7836591982756027878">允许在这些网站上通过 Direct Sockets API 访问专用网络</translation>
 <translation id="7839124608155212387">针对已关联的用户，在已注册的设备上收集应用使用情况遥测数据的时间间隔。所允许的最短时间间隔为 5 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
@@ -11048,7 +11010,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="7937766917976512374">是否允许视频捕获</translation>
 <translation id="7941528208359969119">允许执行在线 <ph name="OCSP_CRL_LABEL" /> 检查</translation>
 <translation id="7941975817681987555">采用任何网络连接时，均不预测网络操作</translation>
-<translation id="794447754389837404">禁止在这些网站上通过 Direct Sockets API 访问专用网络</translation>
 <translation id="7945445169067895719">允许在设备休眠或合盖时锁定设备</translation>
 <translation id="7945744599423774764">允许为代理随机化套接字池大小</translation>
 <translation id="7946350455013548764">如果此政策设为 3，系统会允许网站请求对 HID 设备的访问权限。如果此政策设为 2，系统会禁止网站访问 HID 设备。
@@ -12579,7 +12540,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8963464192296208229">F11 设置使用包含 Alt 辅助键的快捷键</translation>
-<translation id="8966888925105658202">不允许独立式 Web 应用源通过 Direct Sockets API 与专用网络端点通信</translation>
 <translation id="8973579598359969188">选择是否可向用户显示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示</translation>
 <translation id="8974457039656761249">控制实体键盘的预测性撰写功能</translation>
 <translation id="8974588819713914715">此政策已被弃用且不再受支持，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。</translation>
@@ -12966,6 +12926,13 @@ HTTPS-Only 模式最初会设置为“严格”或“平衡”，但用户可以
       如果此政策设为 false，只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中列出的用户才能登录。
 
       如果此政策设为 true 或未配置，所有用户都将能够登录。</translation>
+<translation id="963342674988073839">此政策已在 M156 中弃用，请改用 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />。
+
+若要维持当前停用 <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> 的行为，请配置 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />，并将“url_pattern”设置为“*”，同时将“blocked_types”设置为 ["payments"]。
+
+如果此政策设为 True 或未设置，用户可以控制界面中的信用卡信息自动填充建议。
+
+如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="966425658642788645">应用默认行为</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>

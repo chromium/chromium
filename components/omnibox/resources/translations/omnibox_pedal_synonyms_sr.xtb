@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="132297926492792130">контролисање google налога, исправљање google налога, управљање google налогом, управљање мојим google налогом</translation>
-<translation id="1455865776268085776">покретање режима без архивирања, нови прозор без архивирања, отварање картице без архивирања</translation>
 <translation id="1545931455576308147">дељење ове странице, дељење ове картице</translation>
 <translation id="1912698329644085067">промена подешавања chrome-а, управљање подешавањима</translation>
 <translation id="1938436187879863297">прављење google keep белешке, прављење google белешке, прављење нове google keep белешке, нова google белешка, покретање google белешке</translation>
@@ -36,7 +35,6 @@
 <translation id="7992725801741093524">промена подешавања google приватности, управљање google приватношћу</translation>
 <translation id="8189600756055704659">промена подешавања синхронизације chrome прегледача, промена chrome синхронизације, измена синхронизације, измена подешавања синхронизације, управљање синхронизацијом</translation>
 <translation id="8307473667919507216">покретање chrome провере безбедности, покретање провере безбедности</translation>
-<translation id="8319253638505741466">затварање прозора без архивирања, излазак из режима без архивирања</translation>
 <translation id="8350110529112037703">управљање лозинкама у chrome-у, приказ лозинке у chrome-у</translation>
 <translation id="9015559449837241926">chrome функције, истраживање google chrome функција, нове google chrome функције, приказ савета за chrome</translation>
 </translationbundle>

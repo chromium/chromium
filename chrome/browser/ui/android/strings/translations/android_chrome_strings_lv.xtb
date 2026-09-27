@@ -889,7 +889,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4535755320005483982">Kopīgotā ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
 <translation id="4537137366307982887">Padomu paziņojumu izvēles ekrāns ir atvērts pilna ekrāna augstumā</translation>
 <translation id="4537987892902330164">Jūs joprojām esat pierakstījies kā <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Lapa “Nav piekļuves atslēgu”</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}one{<ph name="TAB_COUNT_MANY" /> cilne, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{<ph name="TAB_COUNT_MANY" /> cilnes, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Tīmekļa lapu īsinājumtaustiņi</translation>
 <translation id="4572422548854449519">Pierakstīšanās pārvaldītā kontā</translation>
@@ -934,6 +933,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4719927025381752090">Piedāvāt tulkot</translation>
 <translation id="4720556299488643018">Anulēt abonementu</translation>
 <translation id="4732120983431207637">Steka atbrīvotājs</translation>
+<translation id="4734965478015604180">Horizontāli</translation>
 <translation id="4736934858538408121">Virtuāla karte</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4738065825338914557">Notiek abonementa anulēšana…</translation>
@@ -982,6 +982,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="488187801263602086">Faila pārdēvēšana</translation>
 <translation id="4885273946141277891">Neatbalstīts Chrome instanču skaits</translation>
 <translation id="4890973535105146893">Jūsu Google kontā nav saglabātu paroļu</translation>
+<translation id="490375751687810070">Vertikāli</translation>
 <translation id="4905823827770127520">Iekļaut saiti uz lapu</translation>
 <translation id="4910889077668685004">Maksājumu lietotnes</translation>
 <translation id="4911042367886397055">Laipni lūdzam atpakaļ, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6192907950379606605">Iegūt attēlu aprakstus</translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
 <translation id="6196315980958524839">Paroles tiek saglabātas Google paroļu pārvaldniekā šajā ierīcē</translation>
+<translation id="6200780647297916498">Cilnes pozīcija</translation>
 <translation id="6204781143409202534">Chrome noteica iespējami nevēlamu saturu no domēna <ph name="DOMAIN" /></translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
 <translation id="6212567362666004597">Pievienot cilni grupai</translation>

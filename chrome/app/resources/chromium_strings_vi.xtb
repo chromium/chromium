@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
 <translation id="1083934481477628225">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium</translation>
+<translation id="109026165963220603">Chromium cần có quyền truy cập vào mạng cục bộ của bạn để tìm và sử dụng thiết bị ở gần</translation>
 <translation id="1090946077924227754">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chromium, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="1098493699368672217">Hiện tính năng tìm kiếm bằng Chromium trên khay hệ thống và bật phím tắt</translation>
 <translation id="1104942323762546749">Chromium muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2135919691573380097">Báo cáo trang web này</translation>
 <translation id="2137162749895930932">Đóng màn hình dịch</translation>
+<translation id="2147218225094845757">Ẩn bảng điều khiển bên</translation>
 <translation id="215352261310130060">Chromium đã chặn tệp tải xuống này vì trang web không sử dụng kết nối an toàn và tệp có thể đã bị can thiệp</translation>
 <translation id="2170098639895543546">Chọn nội dung bất kỳ trên trang</translation>
 <translation id="2174178932569897599">Tùy chỉnh Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Cảnh báo cho bạn về các trang web nguy hiểm, kể cả trang web mà Google chưa từng biết, bằng cách phân tích nhiều dữ liệu trên các trang web hơn so với chế độ bảo vệ tiêu chuẩn. Bạn có thể chọn bỏ qua cảnh báo của Chromium.</translation>
 <translation id="4269093074552541569">Đăng xuất khỏi Chromium</translation>
 <translation id="4271805377592243930">Nhận trợ giúp về Chromium</translation>
-<translation id="4275788652681621337">Đóng bảng điều khiển bên</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="4285930937574705105">Không thể cài đặt do lỗi chưa xác định. Nếu Chromium hiện đang chạy, hãy đóng Chromium và thử lại.</translation>
 <translation id="4298125729853015961">Xuất mật khẩu từ Chromium</translation>
@@ -374,7 +375,7 @@
 <translation id="5187123684706427865">Tài khoản Chromium cần được xác thực lại</translation>
 <translation id="5223510345050543907">Tiếp tục ngay tại nơi bạn đã dừng lại với Chromium trên iOS.</translation>
 <translation id="5231355151045086930">Đăng xuất khỏi Chromium</translation>
-<translation id="5234764350956374838">Bỏ qua</translation>
+<translation id="5234764350956374838">Đóng</translation>
 <translation id="5249261924633168472">Mở đường liên kết trong cửa sổ ẩn d&amp;anh của Chromium</translation>
 <translation id="5276305953263010518">Tải ứng dụng Chromium để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="5277894862589591112">Để áp dụng các mục thay đổi của bạn, hãy chạy lại Chromium</translation>

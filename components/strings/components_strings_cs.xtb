@@ -282,7 +282,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1449251255954293933">Uložte si nápravné číslo (redress number) do Peněženky Google</translation>
 <translation id="1455413310270022028">Guma</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Zobrazit 0 recenzí}=1{Zobrazit 1 recenzi}few{Zobrazit všechny # recenze}many{Zobrazit všech # recenze}other{Zobrazit všech # recenzí}}</translation>
-<translation id="1458770162980644530">Obrazovka se smluvními podmínkami platební metody Koupit teď, zaplatit později. Klávesnice je skrytá.</translation>
 <translation id="1460317464907341501">Ověřit tento e‑mail automaticky?</translation>
 <translation id="1461041542809785877">Výkon</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -861,7 +860,6 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2436186046335138073">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Tuto kartu se nepodařilo uložit do vašeho účtu Google. Místo toho je uložena v Chromu na tomto zařízení.</translation>
 <translation id="2438874542388153331">Čtyři otvory vpravo</translation>
-<translation id="2441854154602066476">Platební metody dostupné k vyplnění dotykem. Klávesnice je skrytá.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />vaši historii prohlížení,
@@ -901,7 +899,6 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2491120439723279231">Certifikát serveru obsahuje chyby.</translation>
 <translation id="2491414235131909199">Tato stránka je blokována rozšířením</translation>
 <translation id="2493122313108999546">Změněna velikost</translation>
-<translation id="249376477913017009">Oznámení o automatickém vyplňování z Gmailu a dalších služeb je otevřené</translation>
 <translation id="2495083838625180221">Analyzátor souborů JSON</translation>
 <translation id="2495909791227061512">Připojit k zařízením v okolí?</translation>
 <translation id="2496402116964818747">Používání otisku prstu k vyplňování hesel můžete změnit v <ph name="SETTINGS" /></translation>
@@ -1209,7 +1206,6 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="3052868890529250114">K webům se obvykle připojujete zabezpečeně, ale tentokrát Chrome zabezpečené připojení použít nemohl. Je možné, že se nějaký útočník pokouší sledovat nebo upravovat vaše připojení k síti. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">U produktu <ph name="PRODUCT_NAME" /> klesla cena o <ph name="PRICE_DROP" /></translation>
 <translation id="3053013834507634016">Použití klíče certifikátu</translation>
-<translation id="3056660797732519147">Obrazovka s chybou procesu Koupit teď, zaplatit později. Klávesnice je skrytá.</translation>
 <translation id="3057844102210575426">Spravovat cestovní informace</translation>
 <translation id="3061707000357573562">Služba oprav</translation>
 <translation id="3062655045399308513">Vymazat údaje o prohlížení…</translation>
@@ -2083,7 +2079,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
 <translation id="4493480324863638523">Neplatná adresa URL. Je třeba použít adresu URL se standardním protokolem, např. http://example.com nebo https://example.com.</translation>
-<translation id="4497010149473852018">Věrnostní karty dostupné k vyplnění dotykem. Klávesnice je skrytá.</translation>
 <translation id="4497843134750481377">Správa nabídek</translation>
 <translation id="4500587658229086076">nezabezpečený obsah</translation>
 <translation id="4501939680615452918">Najdi mi volná místa v oblíbených restauracích</translation>
@@ -2150,7 +2145,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4628948037717959914">Fotka</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">Nahrávání vašeho souboru do <ph name="CLOUD_PROVIDER" /> začne za <ph name="HOURS" /> hodin</translation>
-<translation id="4631881646528206880">Registrace virtuální karty</translation>
 <translation id="4635278307999235413">Odesílání dat do administrátorské konzole</translation>
 <translation id="4636930964841734540">Informace</translation>
 <translation id="4640225694041297329">Zobrazit výsledky z posledních 7 dní</translation>
@@ -2533,7 +2527,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5255583962255635076">Použité zásady prohlížeče ve vašem pracovním profilu</translation>
 <translation id="5255690596502591079">Přesto pořídit</translation>
 <translation id="5255771248404149177">Poskytovatel karty se chce ujistit, že jste to vy</translation>
-<translation id="525579853540851404">Obrazovka s ukazatelem průběhu procesu „Koupit teď, zaplatit později“. Klávesnice je skrytá.</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Zásady administrátora nedoporučují kopírovat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují kopírovat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">Skupina karet „<ph name="GROUP_NAME" />“ už není k dispozici</translation>
@@ -2652,6 +2645,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5452923259299906094">Platit pomocí elektronické peněženky a služby Pix</translation>
 <translation id="5455374756549232013">Chybné časové razítko zásady</translation>
 <translation id="5456428544444655325">Nikdy nezobrazovat</translation>
+<translation id="5457082343331641453">Přidat k vyhledávání</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
 <translation id="5463625433003343978">Hledání zařízení…</translation>
 <translation id="5465128270485645058">Automatickým sdílením otevřených karet v tomto okně, pokud souvisejí s tímto vláknem, můžete získat relevantnější odpovědi.</translation>
@@ -4062,7 +4056,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7839192898639727867">ID klíče subjektu certifikátu</translation>
 <translation id="7840103971441592723">Byl spuštěn záznam obrazovky</translation>
 <translation id="784137052867620416">Statistiky nakupování</translation>
-<translation id="7841633276323004751">Dostupné platební metody k provedení platby. Klávesnice je skrytá.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Žádné}=1{1 aplikace (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}few{# aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}many{# aplikace (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikací (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="784623644169604270">Žádná nedávná aktivita</translation>
@@ -4141,7 +4134,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="79682505114836835">„<ph name="VALUE" />“ není platná hexadecimální hodnota barvy.</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
 <translation id="7972714317346275248">Šifrování PKCS #1 SHA-384 s RSA</translation>
-<translation id="7976053965094442846">Dostupní poskytovatelé financování na splátky. Klávesnice je skrytá.</translation>
 <translation id="7976214039405368314">Příliš mnoho požadavků</translation>
 <translation id="7977029776654598145">Použití</translation>
 <translation id="7977538094055660992">Výstupní zařízení</translation>
@@ -4448,7 +4440,6 @@ Další podrobnosti:
 <translation id="8522552481199248698">Chrome vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
 <translation id="8523574453888018351">Nauč mě nový jazyk</translation>
 <translation id="852450791482410042">Zaplatit</translation>
-<translation id="8528479410903501741">Uložit číslo IBAN</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Použít přesnou polohu</translation>
 <translation id="8533619373899488139">Na stránce &lt;strong&gt;chrome://policy&lt;/strong&gt; naleznete seznam blokovaných adres URL a další zásady vynucené vaším administrátorem systému.</translation>
@@ -4646,6 +4637,7 @@ Další podrobnosti:
 <translation id="8883863364960302898">Složka Disku Google</translation>
 <translation id="8884537526797090108">Důvěrný obsah zaznamenat nelze</translation>
 <translation id="8889525327610245418">Bezpečně si aktualizujte řidičský průkaz v Peněžence Google</translation>
+<translation id="8890516388109605451">Zdroje</translation>
 <translation id="8891031436559779793">Pokud cena na některém webu klesne, obdržíte oznámení.</translation>
 <translation id="8891727572606052622">Neplatný režim proxy serveru.</translation>
 <translation id="8894794286471754040">Dlouhou stranou napřed</translation>

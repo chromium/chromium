@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">शेअर केलेला <ph name="GROUP_TITLE" /> टॅब गट</translation>
 <translation id="4537137366307982887">टिपा यांसाठीच्या नोटिफिकेशनची निवड पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="4537987892902330164">तुम्ही <ph name="NAME_OR_EMAIL" /> म्हणून साइन इन केलेले आहे.</translation>
-<translation id="4543131175509360848">कोणतीही पासकी शीट नाही</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त मोड}}</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
 <translation id="4572422548854449519">व्यवस्थापित केलेल्या खात्यामध्ये साइन इन करा</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="4720556299488643018">सदस्यत्व रद्द करा</translation>
 <translation id="4732120983431207637">स्टॅक अनवाइंडर</translation>
+<translation id="4734965478015604180">आडवा</translation>
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4738065825338914557">सदस्यत्व रद्द करत आहे…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">फाइलला पुन्हा नाव द्या</translation>
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
 <translation id="4890973535105146893">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड नाहीत</translation>
+<translation id="490375751687810070">उभा</translation>
 <translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4911042367886397055">तुमचे पुन्हा स्वागत आहे, <ph name="USER_NAME" /> !</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">इमेजची वर्णने मिळवा</translation>
 <translation id="6193448654517602979">टॅब निवडा</translation>
 <translation id="6196315980958524839">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये या डिव्हाइसवर सेव्ह केले जातात</translation>
+<translation id="6200780647297916498">टॅबचे स्थान</translation>
 <translation id="6204781143409202534">Chrome ने <ph name="DOMAIN" /> कडील संभाव्य स्पॅम डिटेक्ट केले आहे.</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
 <translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>

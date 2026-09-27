@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
 <translation id="1083934481477628225">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja</translation>
+<translation id="109026165963220603">Chromium vajab juurdepääsu teie kohalikule võrgule, et läheduses olevaid seadmeid avastada ja kasutada.</translation>
 <translation id="1090946077924227754">Konkreetse Chromiumi funktsiooni või laienduse otsimiseks sisestage selle otsetee aadressiribale ja lisage enda valitud klaviatuuriklahv.</translation>
 <translation id="1098493699368672217">Kuva Chromiumiga otsimine süsteemisalves ja lülita sisse klaviatuuri otsetee</translation>
 <translation id="1104942323762546749">Chromium soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Allalaaditud faili kinnitamine ebaõnnestus.</translation>
 <translation id="2135919691573380097">Teavitage sellest saidist</translation>
 <translation id="2137162749895930932">Sulgege tõlkeekraan</translation>
+<translation id="2147218225094845757">Peida külgpaneel</translation>
 <translation id="215352261310130060">Chromium blokeeris selle allalaadimise, kuna sait ei kasuta turvalist ühendust ja faili võidi muuta</translation>
 <translation id="2170098639895543546">Valige lehel mis tahes element.</translation>
 <translation id="2174178932569897599">Chromiumi kohandamine</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Hoiatab teid ohtlike saitide eest, isegi nende eest, millest Google varem ei teadnud, analüüsides standardse kaitsega võrreldes rohkem saitidelt pärinevaid andmeid. Soovi korral saate Chromiumi hoiatused vahele jätta.</translation>
 <translation id="4269093074552541569">Logi Chromiumist välja</translation>
 <translation id="4271805377592243930">Chromiumi puhul abi hankimine</translation>
-<translation id="4275788652681621337">Sule külgpaneel</translation>
 <translation id="4281844954008187215">Teenusetingimused</translation>
 <translation id="4285930937574705105">Installimine ebaõnnestus tundmatu vea tõttu. Kui Chromium praegu töötab, siis sulgege see ja proovige uuesti.</translation>
 <translation id="4298125729853015961">Paroolide eksportimine Chromiumist</translation>
@@ -779,7 +780,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="897581876605952338">Chromium Enterprise'i logo</translation>
 <translation id="8980139959902937527">Võtke Google'i turvalisus liikvel olles kaasa, kasutades oma seadmes <ph name="DEVICE_TYPE" /> Chromiumi rakendust</translation>
 <translation id="8981150672034878610">Chromiumi ei saa käivitada, kuna teie profiili avamisel läks midagi valesti. Proovige Chromium taaskäivitada.</translation>
-<translation id="8981886272598860786">Chromiumiga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks</translation>
+<translation id="8981886272598860786">Chromiumiga otsimiseks või <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" /> kohandamiseks.</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>
 <translation id="8993855408334954620">Kasutage klaviatuuri, et navigeerida Chromiumi Gemini ja avatud vahelehe vahel.</translation>
 <translation id="9018218886431812662">Installimine lõpetati</translation>

@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Opdateringen starter, når batteriniveauet er på <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Hvis du vil bruge indstillinger for børnesikring såsom godkendelse af apps og grænser for skærmtid, skal barnet have en Google-konto, som administreres af en forælder. Der kan tilføjes en skolekonto senere, som kan bruges til værktøjer som f.eks. Google Classroom.</translation>
 <translation id="1375557162880614858">Vil du aktivere ChromeVox, som er den indbyggede skærmlæser til ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Konfigurationen er fuldført. Gør nu din enhed klar til gaming</translation>
 <translation id="1377600615067678409">Vent til senere</translation>
 <translation id="1399261165075500043">Servicevilkårene for Google Play kan ikke indlæses</translation>
 <translation id="1400243387594338234">Du kan bruge denne pinkode til at logge ind på din enhed</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Brug din Google-konto på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Vælg tidszone</translation>
 <translation id="3893630138897523026">ChromeVox (talefeedback)</translation>
-<translation id="3897746662269329507">Din <ph name="DEVICE_TYPE" /> er udviklet til gaming. Appen Udforsk åbnes som det næste, og deri har du adgang til hundredvis af de nyeste spil, du kan se spiltilbud, og du kan benytte gamingrelaterede funktioner, som følger med din enhed.</translation>
 <translation id="389901847090970821">Vælg tastatur</translation>
 <translation id="3910588685973519483">Opret baggrunde med AI</translation>
 <translation id="3924259174674732591">Skærm- og tekststørrelse: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Der skal installeres en opdatering til Trusted Platform Module-firmwaren. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Ups! Noget gik galt under login</translation>
 <translation id="5453829744223920473">Dit barn kan bruge alle sine skoleapps, bogmærker og ressourcer, ligesom barnet gør i skolen. Skolen opstiller de grundlæggende regler.</translation>
-<translation id="5463450804024056231">Tilmeld dig mails vedrørende <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit barns mobilselskab og producenten af enheden, eventuelt ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen.</translation>
 <translation id="5502915260472117187">Et barn</translation>
 <translation id="5511823366942919280">Er du sikker på, at du vil konfigurere denne enhed som en "Shark"?</translation>

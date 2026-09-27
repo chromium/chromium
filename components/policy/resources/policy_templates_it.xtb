@@ -550,6 +550,7 @@ Le policy di Chrome avranno la precedenza su questa policy, ad esempio se l'este
       Questa policy esegue l'override di <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e delle preferenze dell'utente.</translation>
 <translation id="1413768951234456918">Cancella la cronologia di navigazione</translation>
 <translation id="1413936351612032792">Segnala informazioni sull'utilizzo delle app Linux</translation>
+<translation id="1417591892602709307">Numero massimo di profili utente archiviati sul dispositivo</translation>
 <translation id="1417776888841750570">Questa policy consente di controllare il comportamento del browser dopo che un account gestito ha eseguito l'accesso all'area dei contenuti.
 
 Questa policy sostituisce <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -2115,6 +2116,11 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       Questa policy viene applicata soltanto per l'accesso ai dispositivi USB tramite l'API WebUSB. Per concedere l'accesso ai dispositivi USB tramite l'API Web Serial, vedi la policy <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Abilita l'installazione di IWA da parte dell'utente</translation>
 <translation id="2318583605563438459">Consenti ai genitori di aggiungere account supervisionati</translation>
+<translation id="2323318142178972965">Controlla il numero massimo di profili utente memorizzati sul dispositivo.
+
+Se questa policy viene impostata su un numero intero positivo <ph name="MAX_USERS" />, <ph name="PRODUCT_OS_NAME" /> manterrà al massimo <ph name="MAX_USERS" /> profili utente standard sul dispositivo. Quando un nuovo utente accede e il limite viene superato, i profili utente utilizzati meno di recente (escluso l'utente attualmente attivo) verranno eliminati automaticamente insieme al relativo spazio di archiviazione locale per mantenere disponibile lo spazio su disco.
+
+Se questa policy non viene configurata o se viene impostata su 0, non esiste alcun limite al numero di profili utente che è possibile aggiungere al dispositivo. Per non conservare alcun profilo utente sul dispositivo, utilizza invece la policy <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se la policy non viene configurata, viene applicata la frequenza predefinita di 15 minuti.</translation>
@@ -2438,24 +2444,6 @@ Se la policy viene disattivata, la funzionalità di codifica dei contenuti di <p
 <translation id="2521581787935130926">Mostra la scorciatoia per le app nella barra dei Preferiti</translation>
 <translation id="2522304491589804974">Configura la lista consentita per l'installazione delle estensioni</translation>
 <translation id="2523511232831599126">Attiva le scorciatoie di accessibilità nella schermata di accesso</translation>
-<translation id="252611686271192278">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Visita la pagina https://github.com/WICG/direct-sockets per informazioni dettagliate.
-
-Gli endpoint di rete privata sono quelli che utilizzano indirizzi IP provenienti dallo spazio indirizzo IP privato, definito in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-La configurazione della policy consente di elencare i pattern URL che specificano i siti per cui è bloccato l'accesso alla rete privata nell'API Direct Sockets.
-I pattern validi sono limitati alle app web isolate.
-
-Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata.
-
-I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.
-
-Tieni presente che questa policy si applica solo se l'origine è autorizzata a utilizzare l'API Direct Sockets.
-Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Questa policy si applica solo ai nuovi tentativi di connessione e non invalida le connessioni esistenti.</translation>
 <translation id="252742292004421898">Consenti l'API Direct Sockets su questi siti</translation>
 <translation id="2528762900096510743">Abilita il servizio di disconnessione automatica</translation>
 <translation id="2529880111512635313">Configura l'elenco di estensioni e app con installazione imposta</translation>
@@ -3176,6 +3164,13 @@ La policy <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> ha 
 protocollo di gestione del dispositivo.
 
 L'opzione dell'algoritmo chiave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> è supportata a partire dalla versione 132 di <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2953620259874711778">Questa policy è deprecata a partire dalla versione M156; usa <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> al suo posto.
+
+Per mantenere il comportamento attuale di disattivazione di <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" />, configura <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> con "url_pattern" impostato su "*" e "blocked_types" impostato su ["contact_info", "identity_docs", "travel"].
+
+Se la policy è impostata su True o se non viene configurata, gli utenti possono controllare la compilazione automatica per gli indirizzi nella UI.
+
+Se la policy è impostata su False, la compilazione automatica non fornisce mai suggerimenti né compila le informazioni relative agli indirizzi, né salva le nuove informazioni inviate dagli utenti durante la navigazione sul web.</translation>
 <translation id="2957506574938329824">Non consentire ad alcun sito di richiedere l'accesso ai dispositivi Bluetooth tramite l'API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo di account per l'autenticazione <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Invia sempre i punti di accesso Wi-Fi al server durante le operazioni per stabilire il fuso orario</translation>
@@ -6061,7 +6056,6 @@ Questa policy è temporanea e verrà rimossa non appena verrà lanciata la funzi
 Se la policy viene impostata su False, verrà utilizzato il comportamento predefinito.</translation>
 <translation id="4820432864264617413">È vietata l'esecuzione di <ph name="BOREALIS_NAME" /> per un utente</translation>
 <translation id="4821987881803903281">Blocca l'autorizzazione per il posizionamento delle finestre su questi siti</translation>
-<translation id="4825653993105771848">Controlla l'accesso alla rete privata nell'API Direct Sockets</translation>
 <translation id="4825777333376170738">Disattiva i report sulle sessioni kiosk del dispositivo</translation>
 <translation id="4826326557828204741">Azione da compiere quando il ritardo di inattività viene raggiunto durante l'utilizzo della batteria</translation>
 <translation id="4826701474986856664">Visualizza la schermata del sensore della presenza di persone durante l'accesso</translation>
@@ -8874,7 +8868,6 @@ NOTA: il comportamento predefinito per i dispositivi di consumatori e aziende è
 <translation id="647645276885673708">Attiva <ph name="LACROS_NAME" /> e impostalo come browser principale</translation>
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
 <translation id="6477685422297715670">Colore della retroilluminazione della tastiera verde</translation>
-<translation id="6477933144150138501">Consenti alle origini delle app web isolate di comunicare con gli endpoint di rete privata nell'API Direct Sockets</translation>
 <translation id="6478258366184919502">Origini della schermata di accesso</translation>
 <translation id="6478261301433199402">La configurazione della policy consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare la policy come stringa in formato JSON, con <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> che specifica da dove viene scaricata l'immagine e l'hash SHA-256 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> utilizzato per verificare l'integrità del download.</translation>
 <translation id="6481245670325946423">È consentito l'uso della modalità headless</translation>
@@ -9247,20 +9240,6 @@ Se la policy viene attivata, la funzionalità di aggiornamento del client hint d
       Nota: anche se per il campo <ph name="ENTRIES_FIELD_NAME" /> della policy sono accettati più valori, vengono ignorati tutti tranne il primo.
       Avviso: la configurazione di questa policy potrebbe ritardare l'applicazione degli aggiornamenti software.</translation>
 <translation id="6695441448686167614">Impostazioni di WebPrinting</translation>
-<translation id="6695983959768914375">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Visita la pagina https://github.com/WICG/direct-sockets per informazioni dettagliate.
-
-Gli endpoint di rete privata sono quelli che utilizzano indirizzi IP provenienti dallo spazio indirizzo IP privato, definito in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Se la policy viene impostata su 1 o se non viene configurata, le origini delle app web isolate possono comunicare con gli endpoint di rete privata nell'API Direct Sockets.
-
-Se viene impostata su 2, le origini delle app web isolate non possono comunicare con gli endpoint di rete privata nell'API Direct Sockets.
-
-Tieni presente che questa policy si applica solo se l'origine è autorizzata a utilizzare l'API Direct Sockets.
-Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-È possibile eseguire l'override del valore predefinito anche per gli URL corrispondenti utilizzando <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Questa policy si applica solo ai nuovi tentativi di connessione e non invalida le connessioni esistenti.</translation>
 <translation id="6698632841807204978">Attiva la stampa monocromatica</translation>
 <translation id="6699740789657890714">Consente di specificare se consentire ai siti web di effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro</translation>
 <translation id="6699880231565102694">Abilita autenticazione a due fattori per gli host di accesso remoto</translation>
@@ -10637,22 +10616,6 @@ L'attivazione di Gemini non è disponibile in tutti i paesi o in tutte le lingue
 <translation id="7512514325152952954">I payload di aggiornamento automatico su <ph name="PRODUCT_OS_NAME" /> posso essere scaricati tramite HTTP anziché tramite HTTPS. Questo permette memorizzazione nella cache HTTP trasparente dei download HTTP.
 
 Se questa policy viene impostata su true, <ph name="PRODUCT_OS_NAME" /> tenterà di scaricare payload di aggiornamento automatico tramite HTTP. Se viene impostata su false o se non viene configurata, verrà utilizzato HTTPS per il download di payload di aggiornamento automatico.</translation>
-<translation id="7512603255315110634">L'API Direct Sockets consente la comunicazione con endpoint arbitrari che utilizzano TCP e UDP.
-Per informazioni dettagliate, visita la pagina https://github.com/WICG/direct-sockets.
-
-Gli endpoint di rete privata sono quelli che utilizzano indirizzi IP provenienti dallo spazio indirizzo IP privato, definito in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-La configurazione della policy consente di elencare i pattern URL che specificano i siti autorizzati a comunicare con gli endpoint di rete privata nell'API Direct Sockets.
-I pattern validi sono limitati alle app web isolate.
-
-Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostata.
-
-I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
-
-Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.
-
-Tieni presente che questa policy si applica solo se l'origine è autorizzata a utilizzare l'API Direct Sockets.
-Per maggiori dettagli, consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7515953732107149296">Questa policy è stata rimossa da M53 dopo la rimozione di RC4 da <ph name="PRODUCT_NAME" />.
 
       Se la policy non viene configurata o se viene impostata su False, le suite di crittografia RC4 in TLS non verranno attivate. In caso contrario, potrebbe essere impostata su True per mantenere la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.</translation>
@@ -11123,7 +11086,6 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="7832225468415136704">Impedisci a Chrome Software Cleaner di eseguire scansioni periodiche del sistema e disattiva le scansioni manuali</translation>
 <translation id="7833148823006528332">Identificatore dell'app Android, ad esempio "com.google.android.gm" per Gmail.</translation>
 <translation id="7835218570504220753">Disattiva i clic automatici</translation>
-<translation id="7836591982756027878">Consenti l'accesso alla rete privata nell'API Direct Sockets su questi siti</translation>
 <translation id="7839124608155212387">La frequenza di raccolta della telemetria di utilizzo delle app sui dispositivi registrati per gli utenti affiliati. Il valore minimo consentito è 5 minuti.
 
       Se la policy non viene configurata, viene applicata la frequenza predefinita di 15 minuti.</translation>
@@ -11306,7 +11268,6 @@ Se la policy <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> viene impostata su Di
 <translation id="7937766917976512374">Consenti o nega acquisizione video</translation>
 <translation id="7941528208359969119">Consenti l'esecuzione dei controlli <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">Non prevedere le azioni di rete su qualsiasi connessione di rete</translation>
-<translation id="794447754389837404">Blocca l'accesso alla rete privata nell'API Direct Sockets su questi siti</translation>
 <translation id="7945445169067895719">Attiva il blocco quando il dispositivo viene sospeso o il coperchio viene chiuso</translation>
 <translation id="7945744599423774764">Consenti la randomizzazione della dimensione del pool di socket per i proxy</translation>
 <translation id="7946350455013548764">Se la policy viene impostata su 3, i siti web possono richiedere l'accesso ai dispositivi HID. Se la policy viene impostata su 2, viene negato l'accesso ai dispositivi HID.
@@ -12887,7 +12848,6 @@ Se la policy non viene impostata, non è possibile navigare nel browser se è at
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
 <translation id="8963464192296208229">Le impostazioni di F11 usano la scorciatoia che contiene il tasto di modifica Alt</translation>
-<translation id="8966888925105658202">Non consentire alle origini delle app web isolate di comunicare con gli endpoint di rete privata nell'API Direct Sockets</translation>
 <translation id="8973579598359969188">Scegli se è possibile o meno mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> ai tuoi utenti</translation>
 <translation id="8974457039656761249">Controlla la funzionalità di scrittura predittiva sulla tastiera fisica</translation>
 <translation id="8974588819713914715">Questa policy è stata deprecata e non è supportata. Utilizza la policy <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -13280,6 +13240,13 @@ Consente di determinare se un utente può configurare il nome host del dispositi
       Se la policy è impostata su False, solo gli utenti presenti nella lista consentita <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> potranno eseguire l'accesso.
 
       Se la policy è impostata su True o non viene configurata, tutti gli utenti potranno accedere.</translation>
+<translation id="963342674988073839">Questa policy è deprecata a partire dalla versione M156; usa <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> al suo posto.
+
+Per mantenere il comportamento attuale di disattivazione di <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />, configura <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> con "url_pattern" impostato su "*" e "blocked_types" impostato su ["payments"].
+
+Se la policy è impostata su True o se non viene configurata, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
+
+Se la policy è impostata su False, la compilazione automatica non fornisce mai suggerimenti, né compila i dati della carta di credito, né salva dati aggiuntivi della carta di credito che gli utenti potrebbero inviare durante la navigazione sul web.</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>

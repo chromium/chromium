@@ -282,7 +282,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1449251255954293933">Redress Number in Google Wallet speichern</translation>
 <translation id="1455413310270022028">Radierer</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{0 Rezensionen ansehen}=1{1 Rezension ansehen}other{Alle # Rezensionen ansehen}}</translation>
-<translation id="1458770162980644530">Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="1460317464907341501">Diese E‑Mail-Adresse automatisch bestätigen?</translation>
 <translation id="1461041542809785877">Leistung</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -861,7 +860,6 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
 <translation id="243815215670139125">Diese Karte konnte nicht in deinem Google-Konto gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert.</translation>
 <translation id="2438874542388153331">Vierfache Lochung rechts</translation>
-<translation id="2441854154602066476">Zahlungsmethoden, die bei Berührung ausgefüllt werden. Tastatur ausgeblendet.</translation>
 <translation id="2442865686365739754">Folgende Daten werden <ph name="BEGIN_EMPHASIS" />nicht<ph name="END_EMPHASIS" /> von Chrome gespeichert:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Den Browserverlauf
@@ -901,8 +899,8 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="2491120439723279231">Das Serverzertifikat enthält Fehler.</translation>
 <translation id="2491414235131909199">Diese Seite wurde von einer Erweiterung blockiert</translation>
 <translation id="2493122313108999546">Größe geändert</translation>
-<translation id="249376477913017009">Hinweis zum automatischen Ausfüllen aus Gmail und anderen Quellen geöffnet</translation>
 <translation id="2495083838625180221">JSON-Parser</translation>
+<translation id="2495909791227061512">Mit Geräten in der Nähe verbinden?</translation>
 <translation id="2496402116964818747">Du kannst in den <ph name="SETTINGS" /> ändern, ob dein Fingerabdruck zum Ausfüllen von Passwörtern verwendet werden soll</translation>
 <translation id="2498091847651709837">Neue Karte scannen</translation>
 <translation id="2501270939904835585">Etiketten (Satin)</translation>
@@ -1208,7 +1206,6 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="3052868890529250114">Normalerweise verbindest du dich auf sichere Weise mit Websites, aber Chrome konnte dieses Mal keine verschlüsselte Verbindung herstellen. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3053013834507634016">Zertifikatschlüsselverwendung</translation>
-<translation id="3056660797732519147">Fehlerbildschirm für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="3057844102210575426">Reiseinformationen verwalten</translation>
 <translation id="3061707000357573562">Patchdienst</translation>
 <translation id="3062655045399308513">Browserdaten löschen...</translation>
@@ -2084,7 +2081,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
 <translation id="4493480324863638523">Ungültige URL. Dies muss eine URL mit einem Standardschema sein, z. B. "http://example.com" oder "https://example.com".</translation>
-<translation id="4497010149473852018">Kundenkarten, deren Daten bei Berührung eingefügt werden. Tastatur ausgeblendet.</translation>
 <translation id="4497843134750481377">Angebote verwalten</translation>
 <translation id="4500587658229086076">Unsichere Inhalte</translation>
 <translation id="4501939680615452918">Suche nach freien Tischen in angesagten Restaurants</translation>
@@ -2151,7 +2147,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">Der Dateiupload in <ph name="CLOUD_PROVIDER" /> beginnt in <ph name="HOURS" /> Stunden</translation>
-<translation id="4631881646528206880">Registrierung einer virtuellen Karte</translation>
 <translation id="4635278307999235413">Daten an Admin-Konsole senden</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4640225694041297329">Ergebnisse der letzten 7 Tage anzeigen</translation>
@@ -2534,7 +2529,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5255583962255635076">Auf dein Arbeitsprofil angewandte Browserrichtlinien</translation>
 <translation id="5255690596502591079">Trotzdem aufnehmen</translation>
 <translation id="5255771248404149177">Der Kartenanbieter muss deine Identität bestätigen</translation>
-<translation id="525579853540851404">Fortschrittsbildschirm für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu kopieren}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu kopieren}}</translation>
 <translation id="5258473597674772367">Die Tabgruppe „<ph name="GROUP_NAME" />“ ist nicht mehr verfügbar</translation>
@@ -2653,6 +2647,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5452923259299906094">Mit E‑Wallet und Pix bezahlen</translation>
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
 <translation id="5456428544444655325">Nie anzeigen</translation>
+<translation id="5457082343331641453">Suchanfrage ergänzen</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weiterer}other{<ph name="CONTACT_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5465128270485645058">Wenn du geöffnete Tabs in diesem Fenster automatisch teilst, wenn sie mit diesem Thread zusammenhängen, erhältst du besser auf dich zugeschnittene Antworten.</translation>
@@ -4065,7 +4060,6 @@ Weitere Details:
 <translation id="7839192898639727867">Schlüssel-ID des Zertifikatsinhabers</translation>
 <translation id="7840103971441592723">Bildschirmaufnahme wurde gestartet</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
-<translation id="7841633276323004751">Verfügbare Zahlungsmethoden, die ausgewählt werden können, um mit der Zahlung fortzufahren. Tastatur ausgeblendet.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Keine}=1{1 App (<ph name="EXAMPLE_APP_1" />)}=2{2 Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# Apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
 <translation id="784623644169604270">Keine neuen Aktivitäten</translation>
@@ -4144,7 +4138,6 @@ Weitere Details:
 <translation id="79682505114836835">Der Wert „<ph name="VALUE" />“ ist kein gültiger Hex-Farbcode.</translation>
 <translation id="7968982339740310781">Details ansehen</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 mit RSA-Verschlüsselung</translation>
-<translation id="7976053965094442846">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind. Tastatur ausgeblendet.</translation>
 <translation id="7976214039405368314">Zu viele Anfragen</translation>
 <translation id="7977029776654598145">Bei Verwendung</translation>
 <translation id="7977538094055660992">Ausgabegerät</translation>
@@ -4451,7 +4444,6 @@ Weitere Details:
 <translation id="8522552481199248698">Mithilfe von Chrome kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
 <translation id="8523574453888018351">Bring mir eine neue Sprache bei</translation>
 <translation id="852450791482410042">Jetzt bezahlen</translation>
-<translation id="8528479410903501741">IBAN speichern</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Genauen Standort verwenden</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
@@ -4649,6 +4641,7 @@ Weitere Details:
 <translation id="8883863364960302898">Google Drive-Ordner</translation>
 <translation id="8884537526797090108">Vertrauliche Inhalte können nicht aufgezeichnet werden</translation>
 <translation id="8889525327610245418">Führerschein sicher in Google Wallet aktualisieren</translation>
+<translation id="8890516388109605451">Quellen</translation>
 <translation id="8891031436559779793">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="8891727572606052622">Ungültiger Proxymodus</translation>
 <translation id="8894794286471754040">Lange Seite zuerst</translation>

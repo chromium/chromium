@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Atjaunināšana tiks sākta, kad akumulatora uzlādes līmenis būs <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Lai varētu izmantot vecāku kontroli, piemēram, lietotņu apstiprināšanu un izmantošanas ilguma ierobežojumus, bērnam ir nepieciešams Google konts, ko pārvalda vecāki. Vēlāk var pievienot mācību iestādes kontu izmantošanai ar tādiem rīkiem kā Google Classroom.</translation>
 <translation id="1375557162880614858">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox?</translation>
-<translation id="1375938286942050085">Iestatīšana ir pabeigta! Tagad ierīce jāsagatavo spēlēšanai</translation>
 <translation id="1377600615067678409">Pašlaik izlaist</translation>
 <translation id="1399261165075500043">Nevar ielādēt Google Play pakalpojumu sniegšanas noteikumus</translation>
 <translation id="1400243387594338234">Varat izmantot šo PIN, lai pierakstītos savā ierīcē.</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Google konta izmantošana ierīcē <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Laika joslas atlasīšana</translation>
 <translation id="3893630138897523026">ChromeVox (balss komentāri)</translation>
-<translation id="3897746662269329507">Ierīce <ph name="DEVICE_TYPE" /> ir radīta spēlēšanai. Tiks atvērta lietotne Izpēte, kurā varēsiet piekļūt simtiem jaunāko spēļu, skatīt spēļu piedāvājumus un atklāt ierīces komplektācijā ietvertās spēļu funkcijas.</translation>
 <translation id="389901847090970821">Tastatūras atlasīšana</translation>
 <translation id="3910588685973519483">Fona tapešu izveide, izmantojot MI</translation>
 <translation id="3924259174674732591">Attēlojuma un teksta lielums: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Ir jāinstalē uzticama platformas moduļa aparātprogrammatūras atjauninājums. Skatiet: <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Diemžēl pierakstīšanās neizdevās</translation>
 <translation id="5453829744223920473">Bērns var izmantot visas savas mācību iestādes lietotnes, grāmatzīmes un resursus tieši tāpat, kā to var darīt klasē. Mācību iestāde nosaka pamatnoteikumus.</translation>
-<translation id="5463450804024056231">Reģistrēties <ph name="DEVICE_TYPE" /> e-pasta ziņojumiem</translation>
 <translation id="5473099001878321374">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes no Google, jūsu bērna mobilo sakaru operatora un šīs ierīces ražotāja, iespējams, izmantojot mobilos datus. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
 <translation id="5502915260472117187">Bērns</translation>
 <translation id="5511823366942919280">Vai tiešām vēlaties iestatīt šai ierīcei nosaukumu “Shark”?</translation>

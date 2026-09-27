@@ -889,7 +889,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4535755320005483982">Zdieľaná skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Prihlásenie na odber upozornení na tipy je otvorené na celú výšku</translation>
 <translation id="4537987892902330164">Zostali ste prihlásený/-á ako <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Hárok so žiadnymi prístupovými kľúčmi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> kariet, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Skratky pre webové stránky</translation>
 <translation id="4572422548854449519">Prihlásenie do spravovaného účtu</translation>
@@ -934,6 +933,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4719927025381752090">Ponúkať preklad</translation>
 <translation id="4720556299488643018">Zrušiť odb.</translation>
 <translation id="4732120983431207637">Modul na rozvinutie zásobníka</translation>
+<translation id="4734965478015604180">Na šírku</translation>
 <translation id="4736934858538408121">Virtuálna karta</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4738065825338914557">Ruší sa odber…</translation>
@@ -982,6 +982,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="488187801263602086">Premenovanie súboru</translation>
 <translation id="4885273946141277891">Nepodporovaný počet inštancií prehliadača Chrome.</translation>
 <translation id="4890973535105146893">Vo svojom účte Google nemáte uložené žiadne heslá</translation>
+<translation id="490375751687810070">Na výšku</translation>
 <translation id="4905823827770127520">Zahrnúť odkaz na stránku</translation>
 <translation id="4910889077668685004">Platobné aplikácie</translation>
 <translation id="4911042367886397055">Vitajte späť, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6192907950379606605">Získať popisy obrázkov</translation>
 <translation id="6193448654517602979">Vyberte karty</translation>
 <translation id="6196315980958524839">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
+<translation id="6200780647297916498">Umiestnenie kariet</translation>
 <translation id="6204781143409202534">Chrome zistil možný spam z webu <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Je zobrazená ukážka tejto stránky</translation>
 <translation id="6212567362666004597">Pridať kartu do skupiny</translation>

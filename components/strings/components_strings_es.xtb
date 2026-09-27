@@ -282,7 +282,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1449251255954293933">Guarda tu número Redress en Google Wallet</translation>
 <translation id="1455413310270022028">Goma de borrar</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Ver 0 reseñas}=1{Ver 1 reseña}other{Ver las # reseñas}}</translation>
-<translation id="1458770162980644530">Pantalla de Términos del Servicio del pago aplazado. Teclado oculto.</translation>
 <translation id="1460317464907341501">¿Verificar este correo automáticamente?</translation>
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2277753418458118549">Mostrar detalles de la conexión</translation>
 <translation id="2277949605527755300"><ph name="URL" /> quiere hacer un seguimiento de tus manos</translation>
 <translation id="22792995594807632">Los archivos deben revisarse antes de descargarse</translation>
+<translation id="2279607542590042584">Llave de acceso • Contraseñas de Apple</translation>
 <translation id="2283340219607151381">Guardar y autocompletar direcciones</translation>
 <translation id="2283447177162560884">"<ph name="PAGE_TITLE" />" eliminado</translation>
 <translation id="2283599456633275070">Viajes</translation>
@@ -861,7 +861,6 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2436186046335138073">¿Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los enlaces de <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">No se ha podido guardar esta tarjeta en tu cuenta de Google. Se ha guardado en Chrome en este dispositivo.</translation>
 <translation id="2438874542388153331">Perforado cuádruple en la parte derecha</translation>
-<translation id="2441854154602066476">Métodos de pago que puedes rellenar con un toque. Teclado oculto.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Tu historial de navegación
@@ -901,8 +900,8 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
 <translation id="2491414235131909199">Una extensión ha bloqueado esta página</translation>
 <translation id="2493122313108999546">Se ha cambiado el tamaño</translation>
-<translation id="249376477913017009">Aviso de Autocompletar desde Gmail y más abierto</translation>
 <translation id="2495083838625180221">Analizador de archivos JSON</translation>
+<translation id="2495909791227061512">¿Conectar con dispositivos cercanos?</translation>
 <translation id="2496402116964818747">En <ph name="SETTINGS" /> puedes elegir si usar tu huella digital para rellenar contraseñas</translation>
 <translation id="2498091847651709837">Escanear nueva tarjeta</translation>
 <translation id="2501270939904835585">Etiquetas (satinado)</translation>
@@ -1208,7 +1207,6 @@ Puedes eliminar esta sugerencia de Chrome. Tu fuente original no se eliminará. 
 <translation id="3052868890529250114">Sueles conectarte a sitios de forma segura, pero Chrome no ha podido usar una conexión segura esta vez. Puede que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
 <translation id="3053013834507634016">Uso de claves de certificado</translation>
-<translation id="3056660797732519147">Pantalla de error de pago aplazado. Teclado oculto.</translation>
 <translation id="3057844102210575426">Gestionar información de viaje</translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
 <translation id="3062655045399308513">Eliminar datos de navegación...</translation>
@@ -1444,6 +1442,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Puede solicitar permiso para controlar y reprogramar tus dispositivos MIDI</translation>
 <translation id="3452404311384756672">Intervalo de comprobación:</translation>
+<translation id="345268527248907593">No se ha podido acceder a este sitio</translation>
 <translation id="3453962258458347894">Número de intentos</translation>
 <translation id="3461266716147554923"><ph name="URL" /> quiere ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
 <translation id="3461824795358126837">Subrayador</translation>
@@ -1974,6 +1973,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">Eliminar vehículo</translation>
 <translation id="4290920330097335010">No permitir nunca</translation>
+<translation id="4291909791598163333">Tu organización te ha bloqueado el acceso al sitio que quieres visitar</translation>
 <translation id="4297502707443874121">Miniatura de la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Se ha actualizado <ph name="ATTRIBUTE_NAME" /></translation>
 <translation id="4298148761711700950">Paga al instante sin subir un QR</translation>
@@ -2086,7 +2086,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Cifrar contraseñas sincronizadas con tu cuenta de Google</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con una estructura estándar, como "http://example.com" o "https://example.com".</translation>
-<translation id="4497010149473852018">Tarjetas de fidelización que puedes rellenar con un toque. Teclado oculto.</translation>
 <translation id="4497843134750481377">Gestionar ofertas</translation>
 <translation id="4500587658229086076">contenido no seguro</translation>
 <translation id="4501939680615452918">Busca mesas libres en restaurantes de moda</translation>
@@ -2153,7 +2152,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4628948037717959914">Foto</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">La subida de archivos a <ph name="CLOUD_PROVIDER" /> empezará dentro de <ph name="HOURS" /> horas</translation>
-<translation id="4631881646528206880">Registro de tarjeta virtual</translation>
 <translation id="4635278307999235413">Enviando datos a la consola de administración</translation>
 <translation id="4636930964841734540">Información</translation>
 <translation id="4640225694041297329">Mostrar resultados de los últimos 7 días</translation>
@@ -2536,7 +2534,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5255583962255635076">Las políticas del navegador aplicadas en tu perfil de trabajo</translation>
 <translation id="5255690596502591079">Capturar de todos modos</translation>
 <translation id="5255771248404149177">El proveedor de tu tarjeta quiere verificar que eres tú</translation>
-<translation id="525579853540851404">Pantalla de progreso de pago aplazado. Teclado oculto.</translation>
 <translation id="5255833070095767006">350x460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{La política del administrador no recomienda copiar este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda copiar estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">El grupo de pestañas <ph name="GROUP_NAME" /> ya no está disponible</translation>
@@ -2655,6 +2652,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5452923259299906094">Pagar con cartera electrónica y Pix</translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
 <translation id="5456428544444655325">No mostrar nunca</translation>
+<translation id="5457082343331641453">Añade algo a tu búsqueda</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="5463625433003343978">Buscando dispositivos...</translation>
 <translation id="5465128270485645058">Obtén respuestas más personalizadas compartiendo automáticamente las pestañas abiertas en esta ventana si están relacionadas con esta conversación.</translation>
@@ -3140,6 +3138,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6264485186158353794">Volver a un sitio seguro</translation>
 <translation id="6264636978858465832">El Gestor de contraseñas necesita más acceso</translation>
 <translation id="6265794661083428563">Copia el valor de la política <ph name="POLICY_NAME" /></translation>
+<translation id="6271264012613848937">Se te ha bloqueado el acceso a <ph name="URL" /> debido a las políticas de tu organización. Si no es lo que esperabas, ponte en contacto con tu administrador.</translation>
 <translation id="6272088941196661550">Reanuda tu recorrido para ver la actividad relevante de tu historial de Chrome</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive y OneDrive</translation>
@@ -3420,6 +3419,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Valor de la política</translation>
 <translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
+<translation id="6753460329812070808">Sugerencia eliminada de Chrome</translation>
 <translation id="6757797048963528358">El dispositivo se ha suspendido.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> quiere usar tus sensores de luz y movimiento</translation>
 <translation id="6770747695101757579">Papel (algodón)</translation>
@@ -3499,6 +3499,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
 <translation id="6900702165119149418">Se ha cerrado tu sesión</translation>
+<translation id="6902049722133977432">Deshacer</translation>
 <translation id="6910211073230771657">Eliminados</translation>
 <translation id="691024665142758461">Descargar varios archivos</translation>
 <translation id="691046363691324218">Número Redress</translation>
@@ -3713,6 +3714,7 @@ Más información:
 <translation id="7266094331715305887">aplicaciones en el dispositivo</translation>
 <translation id="7268742523336093718">Añadir pasaporte de forma segura a Google Wallet</translation>
 <translation id="7269151392155523061">El acceso directo no puede ser el mismo que la palabra clave del agregador de búsqueda definida en <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Se ha producido un error con las protecciones o políticas definidas por tu organización. Vuelve a intentarlo más tarde o ponte en contacto con tu administrador.</translation>
 <translation id="7273111226200291353">Los archivos que descargas se envían a Google Cloud o a terceros para que se analicen. Por ejemplo, puede que se analicen para buscar datos sensibles o software malicioso, que se almacenen de acuerdo con las políticas de la empresa y que tu administrador pueda verlos.</translation>
 <translation id="7275334191706090484">Marcadores administrados</translation>
 <translation id="7278933725460302617">Ahora estás en el modo Aislado</translation>
@@ -4067,7 +4069,6 @@ Más información:
 <translation id="7839192898639727867">ID de clave de la entidad receptora del certificado</translation>
 <translation id="7840103971441592723">Captura de pantalla iniciada</translation>
 <translation id="784137052867620416">Seguimiento de productos</translation>
-<translation id="7841633276323004751">Métodos de pago disponibles para seleccionarlos y realizar el pago. Teclado oculto.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicaciones (<ph name="EXAMPLE_APP_1" /> y <ph name="EXAMPLE_APP_2" />)}other{# aplicaciones (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="784623644169604270">No hay actividad reciente</translation>
@@ -4146,7 +4147,6 @@ Más información:
 <translation id="79682505114836835">El valor "<ph name="VALUE" />" no es un color hexadecimal válido.</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 con cifrado RSA</translation>
-<translation id="7976053965094442846">Emisores de pago aplazado disponibles para pagar a plazos. Teclado oculto.</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977029776654598145">Cuándo se usa</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
@@ -4156,6 +4156,7 @@ Más información:
 <translation id="7984945080620862648">No puedes acceder a <ph name="SITE" /> en este momento porque el sitio web ha enviado credenciales codificadas que Chrome no puede procesar. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Los emisores de pago aplazado disponibles para pagar a plazos están abiertos a altura completa.</translation>
+<translation id="7990290316254726169">Si ves esta advertencia, significa que este sitio no es compatible con HTTPS y estás en modo Aislado. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Encuadernar</translation>
 <translation id="7992044431894087211">Se ha reanudado la pantalla compartida con <ph name="APPLICATION_TITLE" /></translation>
 <translation id="799384093520583425">Tu organización ha bloqueado el uso de DevTools en esta página</translation>
@@ -4453,7 +4454,6 @@ Más información:
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu cuenta de Google y a cambiar tu contraseña.</translation>
 <translation id="8523574453888018351">Enséñame un idioma nuevo</translation>
 <translation id="852450791482410042">Pagar ahora</translation>
-<translation id="8528479410903501741">Guardar IBAN</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Usar ubicación precisa</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL boloqueadas y otras políticas implementadas por el administrador del sistema.</translation>
@@ -4497,6 +4497,7 @@ Más información:
 <translation id="860043288473659153">Titular de la tarjeta</translation>
 <translation id="8601206103050338563">Autenticación de cliente WWW TLS</translation>
 <translation id="8604103095921958091">Pantalla de Términos del Servicio del pago aplazado abierta a altura completa.</translation>
+<translation id="8605014984308506350">Si ves esta advertencia, significa que este sitio no es compatible con HTTPS y estás en modo Aislado. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">uso de tu dispositivo</translation>
 <translation id="8619130384334725124">Predeterminado</translation>
 <translation id="8620276786115098679">Sobre Kaku 7</translation>
@@ -4650,6 +4651,7 @@ Más información:
 <translation id="8883863364960302898">Carpeta de Google Drive</translation>
 <translation id="8884537526797090108">No se puede grabar contenido confidencial</translation>
 <translation id="8889525327610245418">Actualiza el carné de conducir de forma segura en Google Wallet</translation>
+<translation id="8890516388109605451">Fuentes</translation>
 <translation id="8891031436559779793">Recibirás una notificación si el precio baja en algún sitio.</translation>
 <translation id="8891727572606052622">El modo de proxy no es válido.</translation>
 <translation id="8894794286471754040">Borde largo primero</translation>

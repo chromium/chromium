@@ -10,6 +10,7 @@
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
 <translation id="1083934481477628225">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium</translation>
+<translation id="109026165963220603">Chromium potrebuje dostop do lokalnega omrežja, da lahko odkrije in uporablja naprave v bližini</translation>
 <translation id="1090946077924227754">Če želite iskati po določeni funkciji ali razširitvi Chromiuma, v naslovni vrstici vnesite ustrezno bližnjico in nato izbrano tipko na tipkovnici</translation>
 <translation id="1098493699368672217">Prikaz iskanja s Chromiumom v sistemski vrstici in vklop bližnjičnih tipk</translation>
 <translation id="1104942323762546749">Chromium želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
@@ -106,6 +107,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2126108037660393668">Napaka pri preverjanju prenesene datoteke.</translation>
 <translation id="2135919691573380097">Prijava tega spletnega mesta</translation>
 <translation id="2137162749895930932">Zapiranje zaslona za prevajanje</translation>
+<translation id="2147218225094845757">Skrij stransko podokno</translation>
 <translation id="215352261310130060">Chromium je blokiral ta prenos, ker spletno mesto ne uporablja varne povezave in so v datoteko morda posegali</translation>
 <translation id="2170098639895543546">Izberite kar koli na strani</translation>
 <translation id="2174178932569897599">Prilagodi Chromium</translation>
@@ -305,7 +307,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4251772536351901305">Opozori vas o nevarnih spletnih mestih, celo tistih, za katere Google prej ni vedel, in sicer tako, da analizira več podatkov s spletnih mest kot standardna zaščita. Izberete lahko, da preskočite opozorila za Chromium.</translation>
 <translation id="4269093074552541569">Odjava iz Chromiuma</translation>
 <translation id="4271805377592243930">Pomoč za Chromium</translation>
-<translation id="4275788652681621337">Zapiranje stranskega podokna</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4285930937574705105">Namestitev ni bila izvedena zaradi nedoločene napake. Če se Chromium trenutno izvaja, ga zaprite in poskusite znova.</translation>
 <translation id="4298125729853015961">Izvoz gesel iz Chromiuma</translation>

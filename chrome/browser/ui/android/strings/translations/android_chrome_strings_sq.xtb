@@ -889,7 +889,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4535755320005483982">Grupi i ndarë i skedave "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">Regjistrimi për njoftimet e këshillave u hap në lartësi të plotë</translation>
 <translation id="4537987892902330164">Qëndrove i identifikuar si <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Asnjë fletë e çelësave të kalimit</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda, <ph name="TAB_COUNT_INCOGNITO" /> të fshehta}}</translation>
 <translation id="4558311620361989323">Shkurtoret e faqes së uebit</translation>
 <translation id="4572422548854449519">Identifikohu në llogarinë e menaxhuar</translation>
@@ -934,6 +933,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4719927025381752090">Ofro që t'i përkthesh</translation>
 <translation id="4720556299488643018">Çabonohu</translation>
 <translation id="4732120983431207637">Moduli i zbërthimit të stivës</translation>
+<translation id="4734965478015604180">Horizontal</translation>
 <translation id="4736934858538408121">Karta virtuale</translation>
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4738065825338914557">Po çabonohet…</translation>
@@ -982,6 +982,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="488187801263602086">Riemërto skedarin</translation>
 <translation id="4885273946141277891">Numër i pambështetur i versioneve të Chrome.</translation>
 <translation id="4890973535105146893">Nuk ka fjalëkalime të ruajtura në "Llogarinë tënde të Google"</translation>
+<translation id="490375751687810070">Vertikal</translation>
 <translation id="4905823827770127520">Përfshi një lidhje për te faqja</translation>
 <translation id="4910889077668685004">Aplikacionet e pagesës</translation>
 <translation id="4911042367886397055">Mirë se u ktheve, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="6192907950379606605">Merr përshkrimet e imazheve</translation>
 <translation id="6193448654517602979">Zgjidh skedat</translation>
 <translation id="6196315980958524839">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
+<translation id="6200780647297916498">Pozicioni i skedës</translation>
 <translation id="6204781143409202534">Chrome zbuloi një përmbajtje të mundshme të bezdisshme nga <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Po shikon paraprakisht këtë faqe</translation>
 <translation id="6212567362666004597">Shto skedën te grupi</translation>

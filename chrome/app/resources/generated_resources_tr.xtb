@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Tebrikler!</translation>
 <translation id="1342886103232377846">Sızdırılmış şifre olup olmadığını kontrol etmek için Google Şifre Yöneticisi'ne gidin</translation>
 <translation id="1343920184519992513">Kaldığım yerden devam et ve belirli bir sayfa grubunu aç</translation>
+<translation id="1344216785734288669">Apple Parolalar</translation>
 <translation id="1346630054604077329">Onayla ve yeniden başlat</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1347512539447549782">Linux depolama alanı</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">Uygulamanın bu bölgede kullanımı kısıtlandı.</translation>
 <translation id="1607139524282324606">Girişi temizle</translation>
 <translation id="1608668830839595724">Seçilen öğeler için daha fazla işlem</translation>
-<translation id="1609603645228231640">Gemini Spark deneysel bir teknoloji olduğundan bilgilerinizi paylaşma veya satın alma işlemi gerçekleştirme gibi bazı işlemleri size sormadan yapabilir. <ph name="LINK_BEGIN" />Risklere göz atın<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Uygulama Ayarları</translation>
 <translation id="161042844686301425">Camgöbeği</translation>
 <translation id="1611649489706141841">ileri</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">Yeni giriş</translation>
 <translation id="1809201888580326312">Bu siteler ve uygulamalar için şifrelerin kaydedilmemesini seçtiniz</translation>
 <translation id="1809734401532861917">Yer işaretlerimi, geçmişimi ve diğer ayarlarımı <ph name="USER_EMAIL_ADDRESS" /> adresine ekle</translation>
-<translation id="1811908311154949291">Gizli Kısıtlanmış Çerçeve: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" />, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kullanarak devam edemiyor</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> yayınlanıyor</translation>
 <translation id="1813278315230285598">Hizmetler</translation>
@@ -1287,7 +1286,6 @@
 <translation id="1983612835086592681">Geçen hafta açtınız</translation>
 <translation id="1984087999855033707">telefon numarası</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
-<translation id="1984683754853869253">Okul için yeni bir profil oluşturmak istiyor musunuz?</translation>
 <translation id="198507684520034826">Yardım</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Gelişmiş konum ayarları</translation>
@@ -1320,7 +1318,7 @@
 <translation id="2010501376126504057">Uyumlu cihazlar</translation>
 <translation id="2010636492623189611">Seçildi.</translation>
 <translation id="2012935757369720523">Dosyayı sil</translation>
-<translation id="2014495120525813351">Gemini Spark'ın bu cihazda internette gezinmesine izin ver</translation>
+<translation id="2014191284313949173">Yalıtılmış sekmeleri kapat</translation>
 <translation id="2016473077102413275">Resimlerin kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="2017334798163366053">Performans verisi toplamayı devre dışı bırak</translation>
 <translation id="2017770349934140286">Google Play ve Google Play'den indirdiğiniz uygulamalar bu Chromebook'tan silinir.
@@ -1452,6 +1450,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2121825465123208577">Yeniden Boyutlandır</translation>
 <translation id="2122446694240899610">Becerileriniz şu Google Hesabınıza kaydedilir:</translation>
 <translation id="2123766928840368256">Farklı bir dosya seç</translation>
+<translation id="2124153808069020510">Verileri silmek için tüm yalıtılmış pencereleri kapatın</translation>
 <translation id="2124930039827422115">{1,plural, =1{Bir kullanıcıdan <ph name="AVERAGE_RATING" /> puan aldı.}other{# kullanıcıdan <ph name="AVERAGE_RATING" /> puan aldı.}}</translation>
 <translation id="2125715366913703594">Keşfet ve Uzantılar</translation>
 <translation id="2126167708562367080">Senkronizasyon, yöneticiniz tarafından devre dışı bırakıldı.</translation>
@@ -1594,6 +1593,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2227179592712503583">Öneriyi kaldır</translation>
 <translation id="222931766245975952">Dosya kesilmiş</translation>
 <translation id="2229342031987138128">Altyazı</translation>
+<translation id="22294739381015133">Ziyaret ettiğiniz siteler, Yalıtılmış modda kaydedilmez</translation>
 <translation id="2231351769755997720">Öneri yok. Bu sayfa hakkında kendi sorunuzu sormayı deneyin.</translation>
 <translation id="2232751457155581899">Siteler, kameranızın konumunu izlemek isteyebilir</translation>
 <translation id="2233502537820838181">&amp;Daha fazla bilgi</translation>
@@ -2030,7 +2030,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2554553592469060349">Seçili dosya çok büyük (maks. boyut: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> uygulamadan <ph name="NUM_ALLOWED_APPS" /> tanesi bildirim gönderebilir</translation>
 <translation id="2555855727505718984">Otomatik doldurma özelliği, bu cihazda formları doldurmak için bu bilgileri kullanmayacak.</translation>
-<translation id="25568951186001797">Kısıtlanmış Çerçeve: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Tüm yer işaretlerinizi burada görebilirsiniz</translation>
 <translation id="2563924218974330506">Artık sekme gruplarınızı buradan yönetebilirsiniz. Dilediğiniz zaman bunun sabitlemesini kaldırabilirsiniz.</translation>
 <translation id="2564520396658920462">JavaScript'i AppleScript üzerinden çalıştırma seçeneği kapalı. Bunu açmak için menü çubuğundan Görünüm &gt; Geliştirici &gt; Apple Events'ten JavaScript'e izin ver'e gidin. Daha fazla bilgi için: https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2108,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2626746300781063303">Google dahil olmak üzere siteler bu isteğe yanıt verirken şahsi karar verme yetkisini kullanır</translation>
 <translation id="2626799779920242286">Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="2627424346328942291">Paylaşılamıyor</translation>
-<translation id="2627970398976286795">Gemini Spark'ın risklerini inceleyin</translation>
 <translation id="2628258844236035475">Ev adresiniz, Chrome otomatik doldurma özelliğinden kaldırılsın mı?</translation>
 <translation id="2628770867680720336">ADB hata ayıklama işlevinin etkinleştirilmesi için bu Chromebook'un fabrika ayarlarına sıfırlanması gerekir. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini ile yeni sohbet başlat</translation>
@@ -2418,7 +2416,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2845276301195220700">Google Takvim için diğer işlemler</translation>
 <translation id="2845382757467349449">Yer İşareti Çubuğunu Her Zaman Göster</translation>
 <translation id="284581348330507117">Benzersiz şifreler oluşturun</translation>
-<translation id="2846345106886298325">Görev tamamlandı ve Gemini Spark'a geri gönderildi</translation>
 <translation id="284884486564166077">Lens ile istediğiniz resmi arayın</translation>
 <translation id="2849035674501872372">Araştır</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2477,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2893318819023133318">Görünümleri ters çevir</translation>
 <translation id="2894596417096093634">Kilitlenme Raporu Tanımlayıcıları</translation>
 <translation id="2894757982205307093">Grupta yeni sekme</translation>
-<translation id="2895194086130800590">Gemini Spark, bu cihazda otomatik gezinme özelliğini yalnızca cihaz uyanıkken ve Chrome çalışırken kullanabilir.</translation>
 <translation id="289695669188700754">Anahtar Kimliği: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Tüm Gizli pencerelerinizi kapattığınızda bu özel ayar kaldırılır</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> sekmeyi açmak istediğinizden emin misiniz?</translation>
@@ -2533,7 +2529,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="2933653107553951760">Grubu Geri Yükle</translation>
 <translation id="2934225044529065415">Kameraya erişilemiyor</translation>
 <translation id="2935314715123552088">Etkin eSIM profilini devre dışı bırak</translation>
-<translation id="2936067606203230121">Gemini Spark, başlattığınız veya güncellediğiniz görevlere göre hangi işlemlerin yapılacağına karar verir.</translation>
 <translation id="2936851848721175671">Yedekleme ve geri yükleme</translation>
 <translation id="2938981087412273365">Bu siteyi okumasına ve değiştirmesine izin verilmiyor</translation>
 <translation id="2939005221756255562">Bildirim Merkezi'nde bildirimleri etkinleştirin. <ph name="BEGIN_LINK" />Sistem Ayarları<ph name="END_LINK" />'nı açın.</translation>
@@ -2911,6 +2906,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> sesler indiriliyor...</translation>
 <translation id="3217843140356091325">Kısayol oluşturulsun mu?</translation>
 <translation id="3220494908385619295">Yan yana göster</translation>
+<translation id="3220541426929880850">Yalıtılmış tarama geçmişini cihazınızdan silmek için tüm Yalıtılmış sekmelerini kapatın</translation>
 <translation id="3220943972464248773">Şifrelerinizi senkronize etmek için kimliğinizi doğrulayın</translation>
 <translation id="3222066309010235055">Ön oluşturucu: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> ağına bağlan</translation>
@@ -3409,6 +3405,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3600956933576601730">Bu özellikleri kullanmak için şartları inceleyip kabul etmeniz gerekir</translation>
 <translation id="3601374594714740284">Daha yüksek kaliteli sesler için cihazınızda yer açın</translation>
 <translation id="360180734785106144">Kullanıma sunuldukça yeni özellikleri teklif etme</translation>
+<translation id="3601988315287782413">Bu işlem, yalnızca yalıtılmış pencereleri etkiler</translation>
 <translation id="3602290021589620013">Önizleme</translation>
 <translation id="3602495161941872610">&amp;Senkronizasyon sorununu düzeltin</translation>
 <translation id="3602894439067790744">Numaraları şu şekilde oku:</translation>
@@ -3637,7 +3634,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">PIN ayarlayın</translation>
 <translation id="3756806135608816820">Siteler, Bluetooth cihazları aramak isteyebilir</translation>
 <translation id="3756823472711156529">Grubu geri yükle</translation>
-<translation id="3757337311115630808">Gemini Spark hakkında daha fazla bilgi edinin</translation>
 <translation id="3757567010566591880">Sabitlemeyi araç çubuğundan kaldır</translation>
 <translation id="3757645900890881944">Arama araçları</translation>
 <translation id="3757733214359997190">Hiç site bulunamadı</translation>
@@ -4761,6 +4757,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4631637535315947773">Son zamanlarda kullanmadığınız için en çok ziyaret ettiğiniz sitelerin kısayolları kaldırıldı</translation>
 <translation id="4631955550884380853">Odaklanmış ses</translation>
 <translation id="4632655012900268062">Kartları özelleştir</translation>
+<translation id="4634719521235795064">Gemini, sizin yerinize oturum açmak için Google Şifre Yöneticisi'ni kullanabilir. <ph name="BEGIN_LINK" />Gemini'ın verilerinizi nasıl işlediğini öğrenin<ph name="END_LINK" />.</translation>
 <translation id="4635072447747973225">Crostini'yi kaldır</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" />, Davetli kullanıcılar için geçerli değildir.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Sorunuzda kullanmak için 1 dosya yükleyin}other{Sorunuzla birlikte kullanmak için en fazla # dosya yükleyin}}</translation>
@@ -5248,7 +5245,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4989966318180235467">&amp;Arka plan sayfasını incele</translation>
 <translation id="499016799952867794">Bu işlem, uygulamanın beklendiği gibi çalışmasını sağlar.</translation>
 <translation id="4990673372047946816">Kullanılabilir kamera yok</translation>
-<translation id="499126848196136237">Gemini Spark, sitelerle etkileşimde bulunmak ve sizin adınıza görevleri tamamlamak için bu cihazda Chrome otomatik gezinme özelliğini kullanabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="4991420928586866460">Üst satırdaki tuşları işlev tuşları olarak kullan</translation>
 <translation id="4991873517942703737">Bu belge hakkında soru sorun</translation>
 <translation id="4992066212339426712">Sesi aç</translation>
@@ -5505,7 +5501,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5189274947477567401">İşlem paylaşımını devre dışı bırakmak için tarayıcının yeniden başlatılması gerekiyor. Bu tarayıcı şimdi yeniden başlatılacak.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> kullanılıyor</translation>
-<translation id="5190835502935405962">Yer İşaretleri Çubuğu</translation>
 <translation id="5190926251776387065">Bağlantı noktasını etkinleştir</translation>
 <translation id="5190959794678983197">Mikrofon yok</translation>
 <translation id="5191094172448199359">Girdiğiniz PIN'ler eşleşmiyor</translation>
@@ -6074,6 +6069,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />", Ana Sayfa düğmesini tıkladığınızda gösterilen sayfayı değiştirdi.</translation>
 <translation id="5643191124441701136">Güvenlik kodunuz, kartınızın ön tarafında yer alır</translation>
 <translation id="5643321261065707929">Sayaçlı ağ</translation>
+<translation id="5645369002069651355">E-posta adresi doğrulanıyor</translation>
 <translation id="5646376287012673985">Konum</translation>
 <translation id="5646558797914161501">İş adamı</translation>
 <translation id="564670806635578888">Google'da "<ph name="SEARCH_TERMS" />" için arama yap</translation>
@@ -7005,7 +7001,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6393550101331051049">Güvenli olmayan içerik göstermesine izin verilenler</translation>
 <translation id="6394634179843537518">Dosya ekle</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Sistem bilgileri<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />metrikleri<ph name="END_LINK2" /> gönder</translation>
-<translation id="6397586889873084061">Evet, verilerimi okul profilinden ayrı tut (önerilir)</translation>
 <translation id="6398715114293939307">Google Play Store'u kaldır</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
 <translation id="639880411171387127">Google Lens seçiminiz. Google Lens seçiminizi silmek için Enter veya geri tuşuna basın</translation>
@@ -8365,7 +8360,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7421293530411019405">Sekme grubundan ayrılmak istiyor musunuz?</translation>
 <translation id="7421925624202799674">Sayfa Kaynağını &amp;Görüntüle</translation>
 <translation id="7422192691352527311">Tercihler...</translation>
-<translation id="7423381908337122792">Gemini Spark ajanınıza erişimi olan herkes Chrome tarayıcınızı kontrol edebilir.</translation>
 <translation id="7423425410216218516"><ph name="MINUTES" /> dakikalık görünürlük</translation>
 <translation id="7423513079490750513">Kaldır: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Ağ eklendi</translation>
@@ -8490,6 +8484,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7517292544534877198">Google Hesabınızdaki şifreler için Google'ın varsayılan şifrelemesini kullanın</translation>
 <translation id="7517959947270534934">Aile üyeniz şu anda şifre alamıyor. Bu kişiden Chrome'u güncellemesini ve şifrelerini senkronize etmesini isteyin.</translation>
 <translation id="7518079994230200553">Bu seçenek şu anda kullanılamıyor.</translation>
+<translation id="7519506357537394422">Gemini'ın sizin adınıza <ph name="DOMAIN" /> uygulamasında oturum açmasına izin verilsin mi?</translation>
 <translation id="752021853309481824">Kayıtlı bilgilerinize ve diğer öğelere tüm cihazlarınızdan erişmek için <ph name="EMAIL" /> olarak oturum açın</translation>
 <translation id="7520766081042531487">Gizli Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Kısayolları göster</translation>
@@ -8717,7 +8712,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="769824636077131955">Bu doküman güvenlik kontrolü için çok büyük. 50 MB'a kadar dokümanları yazdırabilirsiniz.</translation>
 <translation id="7698507637739331665">Bazı öğeler engellendi</translation>
 <translation id="7700516433658473670">Yazıcı ve tarayıcılar</translation>
-<translation id="7700873336634517379">Hayır, bu profili okul için kullanmaya devam et</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
 <translation id="770231223935918661">Bu Görsel Hakkında Soru Sorun</translation>
@@ -9083,6 +9077,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7978450511781612192">Bu işlem Google hesaplarınızın oturumunu kapatacak. Yer işaretleriniz, şifreleriniz ve diğer içerikler artık senkronize edilmeyecek.</translation>
 <translation id="7980066177668669492">Base64 kodlu ASCII, birden fazla sertifika</translation>
 <translation id="7981410461060625406"><ph name="APP_NAME" /> için kayıtlı bir geçiş anahtarı kullanın</translation>
+<translation id="7981445433812028278">E-posta adresiniz doğrulanamadı</translation>
 <translation id="7981662863948574132">Cihaz EID numarası ve QR kodu pop-up'ını göster</translation>
 <translation id="7982578888426609524">Bu grupta yapılan son güncellemeler</translation>
 <translation id="7982789257301363584">Ağ</translation>
@@ -10142,6 +10137,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="878862491037637275">Bu sekme grubu dolu</translation>
 <translation id="8791157330927639737">Güncelleme hakkında daha fazla bilgi</translation>
 <translation id="8791534160414513928">Göz atma trafiğimle birlikte bir "Do Not Track" isteği gönder</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Yalıtılmış)</translation>
 <translation id="8793390639824829328">Siteler, paylaşılan sekmeleri kaydırmak ve yakınlaştırmak için bu özelliği kullanır</translation>
 <translation id="8793895150509408038"><ph name="SECTION_HEADER" /> listesindeki <ph name="SITE" /> ile ilgili site ayrıntılarını göster</translation>
 <translation id="879413103056696865">Hotspot açıkken <ph name="PHONE_NAME" /> telefonunuz:</translation>
@@ -10378,7 +10374,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="897525204902889653">Karantina Hizmeti</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ve 1 diğer sekme}other{"<ph name="TAB_TITLE" />" ve # diğer sekme}}</translation>
 <translation id="897565255818387330">Bu sitenin <ph name="FILE_NAME" /> dosyasını görüntülemesine ve kopyalamasına izin verilsin mi?</translation>
-<translation id="8977523125954274918">Şifrelerinizi ve diğer öğelerinizi hesabınızda saklayıp kullanmak için okul profili oluşturun</translation>
 <translation id="8977811652087512276">Yanlış şifre veya bozuk dosya</translation>
 <translation id="8978154919215542464">Açık - her şeyi senkronize et</translation>
 <translation id="8978670037548431647">Tethering Özelliklerini Yenile</translation>
@@ -10482,7 +10477,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9040661932550800571"><ph name="ORIGIN" /> için şifre güncellensin mi?</translation>
 <translation id="9041560164471731796">Güçlü şifreleri Google Şifre Yöneticisi'ne kaydetmek için Chrome'da oturum açın</translation>
 <translation id="9041692268811217999">Makinenizde yerel dosyalara erişim, yöneticiniz tarafından devre dışı bırakılmış durumda</translation>
-<translation id="9041881059840744611">Okul profilleri hakkında</translation>
 <translation id="904224458472510106">Bu işlem geri alınamaz</translation>
 <translation id="9042827002460091668">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
@@ -10699,7 +10693,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="9219103736887031265">Resimler</translation>
 <translation id="9219572436491982747">Google'a gönderilen veriler, Chrome yapay zeka teknolojisinin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir.</translation>
 <translation id="9219741625496141320">Tarama verileri otomatik olarak silindi</translation>
-<translation id="9220484506568374422">Gemini Spark, oturum açtığınız siteler de dahil olmak üzere sizinle aynı sitelere erişebilir. Gerekli bilgileri üçüncü taraflarla paylaşır. Bu bilgiler, hassas olabileceğini düşündüğünüz kişisel bilgileri de içerebilir.</translation>
 <translation id="9220525904950070496">Hesabı kaldır</translation>
 <translation id="9220723036554088545">dosya yükleyin</translation>
 <translation id="9220820413868316583">Kaldırın, ardından tekrar deneyin.</translation>

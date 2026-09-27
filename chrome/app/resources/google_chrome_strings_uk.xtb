@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">Керувати профілями Chrome</translation>
 <translation id="2137162749895930932">Закрити екран перекладу</translation>
 <translation id="2139300032719313227">Перезапустіть ОС Chrome</translation>
+<translation id="2147218225094845757">Сховати бічну панель</translation>
 <translation id="2151406531797534936">Перезапустіть Chrome</translation>
 <translation id="2163089732491971196">Щоб зберігати й використовувати дані Chrome в обліковому записі Google, введіть парольну фразу</translation>
 <translation id="2170098639895543546">Виберіть будь-що на сторінці</translation>
@@ -754,6 +755,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8196526165798579689">Шукати в Chrome для розробників</translation>
 <translation id="8221491193165283816">Зазвичай ви блокуєте сповіщення. Натисніть тут, щоб дозволити сайту показувати їх.</translation>
 <translation id="8227493674161801700">Шукати в бета-версії Chrome</translation>
+<translation id="8233224921566021881">Вебпереглядачу Chrome потрібен доступ до локальної мережі, щоб знаходити й використовувати пристрої поблизу</translation>
 <translation id="8253851811470049684">Відкривайте посилання з будь-якого додатка у вебпереглядачі Chrome і закріпіть його на панелі завдань для зручності</translation>
 <translation id="8255190535488645436">Google Chrome використовує вашу камеру та мікрофон.</translation>
 <translation id="8260086374035800939">Якщо Gemini у Chrome відкрито, бічна панель не закривається, коли ви відкриваєте нові вкладки</translation>

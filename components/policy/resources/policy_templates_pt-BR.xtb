@@ -550,6 +550,7 @@ ou <ph name="EXTENSION_INSTALL_FORCED_POLICY_NAME" />.</translation>
       Esta política substitui <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="1413768951234456918">Limpar histórico de navegação</translation>
 <translation id="1413936351612032792">Enviar informações sobre o uso de apps Linux</translation>
+<translation id="1417591892602709307">Número máximo de perfis de usuário armazenados no dispositivo</translation>
 <translation id="1417776888841750570">Esta política controla o comportamento do navegador após o login de uma conta gerenciada na área de conteúdo.
 
 Ela substitui a <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -1862,6 +1863,7 @@ Para usuários comuns, deixar de definir a política tem a mesma função que at
       Se esta política não for definida, o navegador só começará a economizar memória quando detectar que a quantidade de memória física da máquina está baixa.</translation>
 <translation id="2161348910646846717">Permitir que os usuários mudem o canal de lançamento</translation>
 <translation id="2162703823039992020">Integrações contextuais dos Serviços do Google no <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">O URL do aplicativo da web da instância do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para esta organização. Precisa ser um URL https válido.</translation>
 <translation id="2166155400701622446">Há uma lista de portas restritas integrada ao <ph name="PRODUCT_NAME" />. Qualquer tentativa de conexão com essas portas falhará. Esta configuração permite ignorar a lista. O valor é uma lista separada por vírgulas de zero ou mais portas em que conexões de saída serão permitidas.
 
       As portas são restritas para evitar que o <ph name="PRODUCT_NAME" /> seja usado como vetor para explorar diversas vulnerabilidades de rede. Se a política for definida, sua rede poderá ficar exposta a ataques. Esta política visa ser uma solução temporária para erros com o código "ERR_UNSAFE_PORT" ao mesmo tempo em que migra um serviço executado em uma porta bloqueada para uma porta padrão (por exemplo, a porta 80 ou 443).
@@ -2136,6 +2138,11 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
       Ela afeta apenas o acesso aos dispositivos USB pela API WebUSB. Para conceder acesso a dispositivos USB pela API Web Serial, consulte a política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Permite que usuários instalem AIWs</translation>
 <translation id="2318583605563438459">Permitir que os pais adicionem contas supervisionadas</translation>
+<translation id="2323318142178972965">Controla o número máximo de perfis de usuário retidos no dispositivo.
+
+Quando esta política é definida como um número inteiro positivo <ph name="MAX_USERS" />, o <ph name="PRODUCT_OS_NAME" /> mantém no máximo <ph name="MAX_USERS" /> perfis de usuário comuns no dispositivo. Quando um novo usuário faz login e o limite é excedido, os perfis de usuário usados menos recentemente (exceto o usuário ativo no momento) são excluídos automaticamente, junto com o armazenamento local, para manter o espaço em disco disponível.
+
+Se esta política não for definida ou for definida como 0, não haverá limite para o número de perfis de usuário que podem ser adicionados ao dispositivo. Para não manter nenhum perfil de usuário no dispositivo, use a política <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
 
       Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
@@ -2487,24 +2494,6 @@ recurso de codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> será de
 <translation id="2521581787935130926">Exibir os atalhos de aplicativos na barra de favoritos</translation>
 <translation id="2522304491589804974">Configurar a lista de permissões para instalação de extensões</translation>
 <translation id="2523511232831599126">Ativar atalhos de acessibilidade na tela de login</translation>
-<translation id="252611686271192278">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Os endpoints de rede particulares são aqueles que usam endereços IP do espaço de endereços IP particulares, definido em https://wicg.github.io/private-network-access/#ip-address-space-private (link em inglês).
-
-Se a política for definida, você poderá listar os padrões de URL que especificam quais sites são impedidos de acessar a rede particular na API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.
-
-Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
-Para mais detalhes, consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Esta política se aplica apenas a novas tentativas de conexão e não invalida as conexões atuais.</translation>
 <translation id="252742292004421898">Permitir a API Direct Sockets nestes sites</translation>
 <translation id="2528762900096510743">Ativar serviço automático de encerramento de sessão</translation>
 <translation id="2529880111512635313">Configurar a lista de extensões e aplicativos instalados forçadamente</translation>
@@ -3240,6 +3229,13 @@ A política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> t
 protocolo de gerenciamento do dispositivo.
 
 Há suporte à opção de algoritmo de chave <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> desde a versão 132 do <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="2953620259874711778">Esta política foi descontinuada na versão M156. Use a <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />.
+
+Para manter o comportamento atual de desativar <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" />, configure <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> com "url_pattern" definido como "*" e "blocked_types" definido como ["contact_info", "identity_docs", "travel"].
+
+Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar o preenchimento automático de endereços na IU.
+
+Se ela for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de endereço nem salvará outros dados desse tipo que os usuários enviarem ao navegar na web.</translation>
 <translation id="2957506574938329824">Não permite que nenhum site solicite acesso a dispositivos Bluetooth por meio da API Web Bluetooth</translation>
 <translation id="2957513448235202597">Tipo de conta para autenticação <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Sempre enviar pontos de acesso Wi-Fi para o servidor ao determinar o fuso horário</translation>
@@ -6173,7 +6169,6 @@ Esta política é temporária e será removida assim que o cancelamento de eco d
 Se a política for definida como "false", o comportamento padrão será usado.</translation>
 <translation id="4820432864264617413">Evitar que a <ph name="BOREALIS_NAME" /> seja executada para um usuário</translation>
 <translation id="4821987881803903281">Bloquear a permissão para posicionamento de janelas nesses sites</translation>
-<translation id="4825653993105771848">Controlar o acesso à rede particular na API Direct Sockets</translation>
 <translation id="4825777333376170738">Desativar relatórios sobre sessões de quiosque do dispositivo</translation>
 <translation id="4826326557828204741">Ação a ser executada quando o tempo de inatividade for atingido durante execução com bateria</translation>
 <translation id="4826701474986856664">Mostra a tela do sensor de presença humana durante o login</translation>
@@ -9085,7 +9080,6 @@ OBSERVAÇÃO: o comportamento padrão para dispositivos corporativos ou de consu
 <translation id="647645276885673708">Ativar o <ph name="LACROS_NAME" /> e defini-lo como o navegador principal</translation>
 <translation id="647698599569353771">Permitir a ativação do recurso "Compartilhar por proximidade"</translation>
 <translation id="6477685422297715670">Luz de fundo verde do teclado</translation>
-<translation id="6477933144150138501">Permitir que as origens de Apps Isolados da Web se comuniquem com endpoints de rede particulares na API Direct Sockets</translation>
 <translation id="6478258366184919502">Origens de login e de tela</translation>
 <translation id="6478261301433199402">A definição da política especifica a imagem do <ph name="PLUGIN_VM_NAME" /> para um usuário. Especifique essa política como uma string de formato JSON, com um <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> informando onde fazer o download da imagem e <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> como um hash SHA-256 usado para verificar a integridade do download.</translation>
 <translation id="6481245670325946423">Permitir o uso do modo headless</translation>
@@ -9461,20 +9455,6 @@ Quando ativada, a atualização do recurso de dicas de cliente HTTP do user agen
       Observação: ainda que a política possa aceitar vários itens em <ph name="ENTRIES_FIELD_NAME" />, todos eles serão ignorados, com exceção do primeiro.
       Aviso: a configuração dessa política pode atrasar as atualizações de software.</translation>
 <translation id="6695441448686167614">Configurações da impressão na Web</translation>
-<translation id="6695983959768914375">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Os endpoints de rede particulares são aqueles que usam endereços IP do espaço de endereços IP particulares, definido em https://wicg.github.io/private-network-access/#ip-address-space-private (link em inglês).
-
-Se a política for definida como 1 ou deixada sem definição, as origens de Apps Isolados da Web poderão se comunicar com endpoints de rede particulares na API Direct Sockets.
-
-Se for definida como 2, as origens de Apps Isolados da Web não poderão se comunicar com os endpoints de rede particulares na API Direct Sockets.
-
-Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
-Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para mais detalhes.
-O padrão também pode ser substituído para URLs correspondentes usando as políticas <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Essa política se aplica apenas a novas tentativas de conexão e não invalida as conexões atuais.</translation>
 <translation id="6698632841807204978">Ativar impressão monocromática</translation>
 <translation id="6699740789657890714">Especifica se os sites têm permissão para fazer solicitações para endpoints de rede mais particulares de forma não segura</translation>
 <translation id="6699880231565102694">Ativar autenticação de dois fatores para hosts de acesso remoto</translation>
@@ -10894,22 +10874,6 @@ O acionamento do Gemini só está disponível em alguns países e idiomas. Defin
 <translation id="7512514325152952954">Os payloads de atualização automática no <ph name="PRODUCT_OS_NAME" /> podem ser baixados via HTTP, em vez de por HTTPS. Isso permite o armazenamento em cache de HTTP transparente dos downloads de HTTP.
 
 Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> vai tentar baixar os payloads de atualização automática via HTTP. Se a política for definida como falsa ou não for definida, o HTTPS será usado para o download dos payloads de atualização automática.</translation>
-<translation id="7512603255315110634">A API Direct Sockets permite a comunicação com endpoints arbitrários usando TCP e UDP.
-Consulte https://github.com/WICG/direct-sockets (link em inglês) para saber mais.
-
-Os endpoints de rede particulares são aqueles que usam endereços IP do espaço de endereços IP particulares, definido em https://wicg.github.io/private-network-access/#ip-address-space-private (link em inglês).
-
-Se a política for definida, será possível listar os padrões de URL que especificam quais sites têm permissão para se comunicar com endpoints de rede privados na API Direct Sockets.
-Os padrões válidos são limitados a Apps Isolados da Web.
-
-Se a política não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida.
-
-Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
-
-Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.
-
-Ela só é válida se a origem tiver permissão para usar a API Direct Sockets.
-Consulte <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> e <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para mais detalhes.</translation>
 <translation id="7515953732107149296">Essa política foi removida na versão M53 após a remoção do RC4 do produto <ph name="PRODUCT_NAME" />.
 
       Se a política for deixada sem definição ou for definida como falsa, os pacotes de criptografia RC4 no TLS não vão ser ativados. Caso contrário, ela pode ser definida como verdadeira para manter a compatibilidade com um servidor desatualizado. Essa é uma medida provisória, e o servidor deve ser reconfigurado.</translation>
@@ -11166,6 +11130,21 @@ Quando ela estiver desativada, o visualizador de PDF vai usar o renderizador AGG
 
 Quando ela for deixada sem definição, o renderizador de PDF será escolhido pelo navegador.</translation>
 <translation id="7704244074621846004">Ativar ciclo de vida estendido para SharedWorkers</translation>
+<translation id="7705886216383850895">Define as configurações de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no <ph name="PRODUCT_NAME" />.
+
+Para configurar o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, os admins precisam fornecer:
+* O URL do aplicativo da web do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OU
+* Os três parâmetros legados juntos: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> e <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Especificar apenas um subconjunto parcial desses três parâmetros sem um URL deixa o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sem configuração.
+
+O parâmetro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> precisa ser um URL válido que use o esquema https e não inclua um nome de usuário ou senha. Se ele não atender a esses requisitos, a política será ignorada e o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ficará sem configuração.
+
+Se o parâmetro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> e os parâmetros legados estiverem configurados, o <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> terá precedência.
+
+Se esta política for definida, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> será configurado para os usuários que fizerem login com uma conta ou um navegador gerenciados.
+
+Se esta política for deixada sem definição, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será configurado.
+
+Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Ativar o recurso de sons de carregamento.
 
           Esse recurso é responsável por reproduzir os sons de carregamento no dispositivo.
@@ -11383,7 +11362,6 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="7832225468415136704">Impedir que a Varredura do Chrome verifique o sistema periodicamente e desativar as verificações manuais</translation>
 <translation id="7833148823006528332">Identificador do app Android, por exemplo, "com.google.android.gm" para o Gmail.</translation>
 <translation id="7835218570504220753">Desativar clique automático</translation>
-<translation id="7836591982756027878">Permitir o acesso à rede particular na API Direct Sockets nestes sites</translation>
 <translation id="7839124608155212387">Frequência em que a telemetria de uso do app é coletada em dispositivos registrados para usuários afiliados. O mínimo permitido é de 5 minutos.
 
       Se deixada sem definição, a frequência padrão de 15 minutos será usada.</translation>
@@ -11567,7 +11545,6 @@ Se a política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> for definida como d
 <translation id="7937766917976512374">Permitir ou negar captura de vídeo</translation>
 <translation id="7941528208359969119">Permitir a realização de verificações on-line de <ph name="OCSP_CRL_LABEL" /></translation>
 <translation id="7941975817681987555">Não prever ações da rede em nenhuma conexão de rede</translation>
-<translation id="794447754389837404">Bloquear o acesso à rede particular na API Direct Sockets nestes sites</translation>
 <translation id="7945445169067895719">Ativar o bloqueio quando o dispositivo for suspenso ou a tampa for fechada</translation>
 <translation id="7945744599423774764">Permitir a aleatorização do tamanho do pool de soquetes para proxies</translation>
 <translation id="7946350455013548764">Se a política for definida como "3", os sites vão poder pedir acesso aos dispositivos HID. Se a política for definida como "2", o acesso a dispositivos HID vai ser negado.
@@ -13188,7 +13165,6 @@ Se a política for deixada sem definição, a navegação será bloqueada enquan
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>
 <translation id="8963464192296208229">As configurações F11 usam o atalho que contém a tecla modificadora Alt</translation>
-<translation id="8966888925105658202">Não permitir que as origens de Apps Isolados da Web se comuniquem com endpoints de rede particulares na API Direct Sockets</translation>
 <translation id="8973579598359969188">Definir se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> pode ser mostrada aos usuários</translation>
 <translation id="8974457039656761249">Controlar o recurso de escrita preditiva no teclado físico</translation>
 <translation id="8974588819713914715">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -13581,6 +13557,13 @@ Determine se um usuário tem permissão para configurar o nome do host do dispos
       Se a política for definida como falsa, apenas os usuários presentes na <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> poderão fazer login.
 
       Se a política for definida como verdadeira ou for deixada sem definição, todos os usuários poderão fazer login.</translation>
+<translation id="963342674988073839">Esta política foi descontinuada na versão M156. Use a <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />.
+
+Para manter o comportamento atual de desativar o <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />, configure <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> com "url_pattern" definido como "*" e "blocked_types" definido como ["payments"].
+
+Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
+
+Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na web.</translation>
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>

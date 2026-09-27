@@ -889,7 +889,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4535755320005483982">Udostępniona grupa kart (<ph name="GROUP_TITLE" />)</translation>
 <translation id="4537137366307982887">Opcja wyrażenia zgody na powiadomienia o wskazówkach otwarta na całą wysokość</translation>
 <translation id="4537987892902330164">Korzystasz nadal z konta <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Arkusz braku kluczy dostępu</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> incognito}many{<ph name="TAB_COUNT_MANY" /> kart, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Skróty stron internetowych</translation>
 <translation id="4572422548854449519">Zaloguj się na konto zarządzane</translation>
@@ -934,6 +933,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4719927025381752090">Proponuj tłumaczenie</translation>
 <translation id="4720556299488643018">Zrezygnuj</translation>
 <translation id="4732120983431207637">Moduł rozwijania stosu</translation>
+<translation id="4734965478015604180">Poziomo</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4738065825338914557">Anuluję subskrypcję…</translation>
@@ -982,6 +982,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="488187801263602086">Zmień nazwę pliku</translation>
 <translation id="4885273946141277891">Nieobsługiwana liczba wystąpień Chrome.</translation>
 <translation id="4890973535105146893">Na swoim koncie Google nie masz zapisanych haseł</translation>
+<translation id="490375751687810070">Pionowo</translation>
 <translation id="4905823827770127520">Dołącz link do strony</translation>
 <translation id="4910889077668685004">Aplikacje do płatności</translation>
 <translation id="4911042367886397055">Witaj ponownie, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6192907950379606605">Pobieraj opisy obrazów</translation>
 <translation id="6193448654517602979">Wybierz karty</translation>
 <translation id="6196315980958524839">Hasła są zapisywane w Menedżerze haseł Google na tym urządzeniu.</translation>
+<translation id="6200780647297916498">Pozycja karty</translation>
 <translation id="6204781143409202534">Przeglądarka Chrome wykryła możliwy spam z adresu <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
 <translation id="6212567362666004597">Dodaj kartę do grupy</translation>

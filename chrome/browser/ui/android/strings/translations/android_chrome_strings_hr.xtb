@@ -889,7 +889,6 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4535755320005483982">Dijeljena grupa kartica <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Uključivanje obavijesti o savjetima otvoreno je u punoj visini</translation>
 <translation id="4537987892902330164">Ostali ste prijavljeni kao <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Nema lista s pristupnim ključevima</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> u anonimnom načinu}}</translation>
 <translation id="4558311620361989323">Prečaci web-stranice</translation>
 <translation id="4572422548854449519">Prijava na upravljani račun</translation>
@@ -934,6 +933,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720556299488643018">Otkaži pretplatu</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Vodoravno</translation>
 <translation id="4736934858538408121">Virtualna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738065825338914557">Otkazivanje pretplate…</translation>
@@ -982,6 +982,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="488187801263602086">Promijenite naziv datoteke</translation>
 <translation id="4885273946141277891">Nepodržan broj različitih verzija Chromea.</translation>
 <translation id="4890973535105146893">Na vašem Google računu nema spremljenih zaporki</translation>
+<translation id="490375751687810070">Okomito</translation>
 <translation id="4905823827770127520">Uključite vezu na stranicu</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />, dobro došli natrag!</translation>
@@ -1287,6 +1288,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6192907950379606605">Primajte opise slike</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6196315980958524839">Zaporke se spremaju u Google upravitelj zaporki na ovom uređaju.</translation>
+<translation id="6200780647297916498">Položaj kartice</translation>
 <translation id="6204781143409202534">Chrome je otkrio mogući neželjeni sadržaj s domene <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Pregledavanje ove stranice</translation>
 <translation id="6212567362666004597">Dodaj karticu grupi</translation>

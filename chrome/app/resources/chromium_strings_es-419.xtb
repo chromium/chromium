@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responde esta encuesta de 1 minuto para ayudarnos a mejorar la navegación de Incógnito.</translation>
 <translation id="1065672644894730302">No se pueden leer tus preferencias. Es posible que algunas funciones no estén disponibles y que no se guarden los cambios realizados a las preferencias.</translation>
 <translation id="1083934481477628225">Tu madre o padre desactivaron la opción "Permisos para sitios, apps y extensiones" para Chromium.</translation>
+<translation id="109026165963220603">Chromium necesita acceso a tu red local para detectar y usar dispositivos cercanos</translation>
 <translation id="1090946077924227754">Para buscar una función o extensión específica de Chromium, escribe su atajo en la barra de direcciones, seguido de la tecla que seleccionaste</translation>
 <translation id="1098493699368672217">Mostrar la búsqueda con Chromium en la bandeja del sistema y activar la combinación de teclas</translation>
 <translation id="1104942323762546749">Chromium desea exportar tus contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Falló la verificación del archivo descargado.</translation>
 <translation id="2135919691573380097">Denunciar este sitio</translation>
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="215352261310130060">Chromium bloqueó esta descarga porque el sitio no usa una conexión segura y el archivo puede haber sido manipulado</translation>
 <translation id="2170098639895543546">Selecciona cualquier elemento de la página</translation>
 <translation id="2174178932569897599">Personalizar Chromium</translation>
@@ -301,7 +303,6 @@
 <translation id="4251772536351901305">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chromium.</translation>
 <translation id="4269093074552541569">Salir de Chromium</translation>
 <translation id="4271805377592243930">Obtener ayuda con Chromium</translation>
-<translation id="4275788652681621337">Cerrar el panel lateral</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="4285930937574705105">No se pudo completar la instalación debido a un error no identificado. Si Chromium se está ejecutando en este momento, ciérralo e intenta nuevamente.</translation>
 <translation id="4298125729853015961">Exportar contraseñas de Chromium</translation>

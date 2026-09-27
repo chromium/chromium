@@ -542,6 +542,7 @@ Las políticas de Chrome prevalecerán sobre esta política, por ejemplo, si la 
       Esta política anula las políticas <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, así como las preferencias del usuario.</translation>
 <translation id="1413768951234456918">Borrar historial de navegación</translation>
 <translation id="1413936351612032792">Proporcionar información sobre el uso de aplicaciones de Linux</translation>
+<translation id="1417591892602709307">Número máximo de perfiles de usuario almacenados en el dispositivo</translation>
 <translation id="1417776888841750570">Esta política controla el comportamiento del navegador después de que una cuenta gestionada inicie sesión en el área de contenido.
 
 Esta política anula la política <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -2077,6 +2078,11 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
       Esta política solo afecta al acceso a los dispositivos USB a través de la API WebUSB. Para conceder acceso a dispositivos USB a través de la API Web Serial, consulta la política <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Habilitar la instalación de IWA para el usuario</translation>
 <translation id="2318583605563438459">Permitir que los padres añadan cuentas supervisadas</translation>
+<translation id="2323318142178972965">Controla el número máximo de perfiles de usuario que se conservan en el dispositivo.
+
+Si se asigna un número entero positivo <ph name="MAX_USERS" /> a esta política, <ph name="PRODUCT_OS_NAME" /> conservará un máximo de <ph name="MAX_USERS" /> perfiles de usuario normales en el dispositivo. Cuando un usuario nuevo inicia sesión y se supera el límite, los perfiles de usuario que se hayan usado hace más tiempo (excepto el usuario activo en ese momento) se eliminarán automáticamente junto con su almacenamiento local para que haya espacio libre en disco.
+
+Si no se define esta política o se le asigna el valor 0, no habrá límite en el número de perfiles de usuario que se pueden añadir al dispositivo. Si no quieres que haya ningún perfil de usuario en el dispositivo, usa la política <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">Intervalo con el que los datos de audio se muestrean y recogen. El valor mínimo permitido es 1 minuto.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
@@ -2394,24 +2400,6 @@ Si se inhabilita esta política, se desactivará la función <ph name="ZSTANDARD
 <translation id="2521581787935130926">Mostrar el acceso directo de aplicaciones en la barra de marcadores</translation>
 <translation id="2522304491589804974">Configura la lista de extensiones de instalación permitidas</translation>
 <translation id="2523511232831599126">Habilitar los accesos directos de accesibilidad en la pantalla de inicio de sesión</translation>
-<translation id="252611686271192278">La API Direct Sockets permite la comunicación con endpoints arbitrarios mediante TCP y UDP.
-Consulta https://github.com/WICG/direct-sockets para obtener más información.
-
-Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Si se establece la política, podrás indicar patrones de URL que especifiquen qué sitios no pueden acceder a la red privada en la API Direct Sockets.
-Los patrones válidos se limitan a las aplicaciones web aisladas.
-
-Si no se establece la política, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido.
-
-Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-Ten en cuenta que esta política solo se aplica si el origen tiene permiso para usar la API Direct Sockets.
-Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más información.
-
-Esta política solo se aplica a los nuevos intentos de conexión y no anula las conexiones existentes.</translation>
 <translation id="252742292004421898">Permitir la API Direct Sockets en estos sitios</translation>
 <translation id="2528762900096510743">Habilitar el servicio de cierre de sesión automático</translation>
 <translation id="2529880111512635313">Configura la lista de aplicaciones y extensiones de instalación forzada</translation>
@@ -5991,7 +5979,6 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
 Si se asigna el valor False a esta política, se usará el comportamiento predeterminado.</translation>
 <translation id="4820432864264617413">Impedir que un usuario ejecute <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">Bloquea el permiso de colocación de ventanas en estos sitios</translation>
-<translation id="4825653993105771848">Controlar el acceso a la red privada en la API Direct Sockets</translation>
 <translation id="4825777333376170738">Inhabilitar los informes sobre las sesiones de kiosco del dispositivo</translation>
 <translation id="4826326557828204741">Acción a emprender si se alcanza el retraso de inactividad mientras el dispositivo está usando la batería</translation>
 <translation id="4826701474986856664">Mostrar la pantalla del detector de presencia humana durante el inicio de sesión</translation>
@@ -8798,7 +8785,6 @@ NOTA: El comportamiento predeterminado de los dispositivos de usuarios particula
 <translation id="647645276885673708">Habilitar <ph name="LACROS_NAME" /> y convertirlo en el navegador principal</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6477685422297715670">Color verde para la retroiluminación del teclado</translation>
-<translation id="6477933144150138501">Permitir que los orígenes de aplicaciones web aisladas se comuniquen con endpoints de red privados en la API Direct Sockets</translation>
 <translation id="6478258366184919502">Orígenes de pantalla de inicio de sesión</translation>
 <translation id="6478261301433199402">Si se asigna un valor a esta política, especificará la imagen de <ph name="PLUGIN_VM_NAME" /> de un usuario. Esta política se debe especificar como una cadena con formato JSON, en la que <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> indicará dónde se debe descargar la imagen y <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> será un hash SHA‑256 que se usará para verificar la integridad de la descarga.</translation>
 <translation id="6481245670325946423">Permite el uso del modo sin interfaz gráfica</translation>
@@ -9170,20 +9156,6 @@ Si se habilita, la función User-Agent Client Hints GREASE Update ajustará el a
       Nota: Aunque la política pueda aceptar varios elementos en <ph name="ENTRIES_FIELD_NAME" />, se ignorarán todos menos el primero.
       Advertencia: Si se establece esta política, es posible que se retrase la aplicación de actualizaciones de software.</translation>
 <translation id="6695441448686167614">Configuración de impresión web</translation>
-<translation id="6695983959768914375">La API Direct Sockets permite la comunicación con endpoints arbitrarios mediante TCP y UDP.
-Consulta https://github.com/WICG/direct-sockets para obtener más información.
-
-Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Si se le asigna el valor 1 a esta política o no se define, los orígenes de aplicaciones web aisladas podrán comunicarse con endpoints de red privados en la API Direct Sockets.
-
-Si se le asigna el valor 2 a esta política, se impedirá que los orígenes de aplicaciones web aisladas se comuniquen con los endpoints de red privados en la API Direct Sockets.
-
-Ten en cuenta que esta política solo se aplica si el origen tiene permiso para usar la API Direct Sockets.
-Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más información.
-El valor predeterminado también se puede anular para las URLs que coincidan usando <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Esta política solo se aplica a los nuevos intentos de conexión y no invalida las conexiones existentes.</translation>
 <translation id="6698632841807204978">Habilitar la impresión en monocromo</translation>
 <translation id="6699740789657890714">Especifica si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura</translation>
 <translation id="6699880231565102694">Habilitar la autenticación de dos factores para hosts de acceso remoto</translation>
@@ -10533,22 +10505,6 @@ La activación de Gemini no está disponible en todos los países ni en todos lo
 <translation id="7512514325152952954">Las cargas útiles de actualizaciones automáticas de <ph name="PRODUCT_OS_NAME" /> se pueden descargar a través de HTTP en lugar de HTTPS, lo que permite el almacenamiento en caché HTTP transparente de las descargas HTTP.
 
 Si a esta política se le asigna el valor true, <ph name="PRODUCT_OS_NAME" /> intentará descargar cargas útiles de actualizaciones automáticas a través de HTTP. Si se le asigna el valor false o no se establece, se utilizará HTTPS para descargar cargas útiles de actualizaciones automáticas.</translation>
-<translation id="7512603255315110634">La API Direct Sockets permite la comunicación con endpoints arbitrarios mediante TCP y UDP.
-Consulta https://github.com/WICG/direct-sockets para obtener más información.
-
-Los endpoints de red privada son aquellos que usan direcciones IP del espacio de direcciones IP privadas, que se define en https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Si se define esta política, podrás indicar patrones de URL que especifiquen qué sitios pueden comunicarse con endpoints de red privados en la API Direct Sockets.
-Los patrones válidos se limitan a las aplicaciones web aisladas.
-
-Si no se establece la política, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido.
-
-Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL está incluida en ambas políticas, no tendrá preferencia ninguna política.
-
-Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.
-
-Ten en cuenta que esta política solo se aplica si el origen tiene permiso para usar la API Direct Sockets.
-Consulta <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> para obtener más información.</translation>
 <translation id="7515953732107149296">Esta política se retiró en la versión M53 después de que RC4 se retirase de <ph name="PRODUCT_NAME" />.
 
       Si esta política no se define o se le asigna el valor false, no se habilitarán los paquetes de cifrado RC4 en TLS. De lo contrario, se le podrá asignar el valor true para mantener la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.</translation>
@@ -11024,7 +10980,6 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="7832225468415136704">Impedir que Limpiador de Chrome analice periódicamente el sistema e inhabilitar los análisis manuales</translation>
 <translation id="7833148823006528332">Identificador de la aplicación Android (por ejemplo, "com.google.android.gm" para Gmail)</translation>
 <translation id="7835218570504220753">Inhabilitar el clic automático</translation>
-<translation id="7836591982756027878">Permitir el acceso a la red privada en la API Direct Sockets en estos sitios</translation>
 <translation id="7839124608155212387">Intervalo en el que se recogen datos de telemetría sobre el uso de aplicaciones en dispositivos registrados de usuarios afiliados. El valor mínimo permitido es 5 minutos.
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 15 minutos.</translation>
@@ -11197,7 +11152,6 @@ Si se inhabilita la política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />, el 
 <translation id="7937766917976512374">Permitir o denegar captura de vídeo</translation>
 <translation id="7941528208359969119">Permitir que se hagan comprobaciones de <ph name="OCSP_CRL_LABEL" /> online</translation>
 <translation id="7941975817681987555">No predecir las acciones de red en ninguna conexión de red</translation>
-<translation id="794447754389837404">Bloquear el acceso a la red privada en la API Direct Sockets en estos sitios</translation>
 <translation id="7945445169067895719">Bloquear el dispositivo al suspenderlo o al cerrar la tapa</translation>
 <translation id="7945744599423774764">Permitir la aleatorización del tamaño del grupo de sockets para proxies</translation>
 <translation id="7946350455013548764">Si se asigna el valor 3 a esta política, los sitios web podrán solicitar acceso a los dispositivos HID. Si se le asigna el valor 2, se denegará el acceso a los dispositivos HID.
@@ -12761,7 +12715,6 @@ Si no se define esta política, no se podrá navegar en el navegador mientras la
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
 <translation id="8963464192296208229">Los ajustes de F11 usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
-<translation id="8966888925105658202">No permitir que los orígenes de aplicaciones web aisladas se comuniquen con endpoints de red privados en la API Direct Sockets</translation>
 <translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974457039656761249">Controlar la función de escritura predictiva en el teclado físico</translation>
 <translation id="8974588819713914715">Esta política está obsoleta y no se admite. Usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>

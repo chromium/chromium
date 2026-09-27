@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">શેર કરેલું <ph name="GROUP_TITLE" /> ટૅબનું ગ્રૂપ</translation>
 <translation id="4537137366307982887">ટિપ સંબંધિત નોટિફિકેશન પસંદ કરવાનો વિકલ્પ પૂરી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="4537987892902330164">તમે <ph name="NAME_OR_EMAIL" /> તરીકે સાઇન ઇન કરેલું રાખ્યું.</translation>
-<translation id="4543131175509360848">કોઈ પાસકી શીટ નથી</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
 <translation id="4572422548854449519">મેનેજ એકાઉન્ટમાં સાઇન ઇન કરો</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="4720556299488643018">અનસબ્સ્ક્રાઇબ</translation>
 <translation id="4732120983431207637">સ્ટૅક અનવાઇન્ડર</translation>
+<translation id="4734965478015604180">હોરિઝોન્ટલ</translation>
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4738065825338914557">અનસબ્સ્ક્રાઇબ કરી રહ્યાં છીએ…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ફાઇલનું નામ બદલો</translation>
 <translation id="4885273946141277891">અસમર્થિત સંખ્યામાં Chrome આવૃત્તિઓ.</translation>
 <translation id="4890973535105146893">તમારા Google એકાઉન્ટમાં કોઈ સાચવેલા પાસવર્ડ નથી</translation>
+<translation id="490375751687810070">વર્ટિકલ</translation>
 <translation id="4905823827770127520">આ પેજની લિંક શામેલ કરો</translation>
 <translation id="4910889077668685004">ચુકવણી ઍપ્લિકેશનો</translation>
 <translation id="4911042367886397055">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">છબીના વર્ણનો મેળવો</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
 <translation id="6196315980958524839">પાસવર્ડ આ ડિવાઇસના Google Password Managerમાં સાચવવામાં આવે છે</translation>
+<translation id="6200780647297916498">ટૅબની સ્થિતિ</translation>
 <translation id="6204781143409202534">Chromeને <ph name="DOMAIN" /> પાસેથી મળેલા સંભવિત સ્પામની ભાળ મળી છે.</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6212567362666004597">ગ્રૂપમાં ટૅબ ઉમેરો</translation>

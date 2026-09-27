@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Dadfygiwr wedi'i seibio mewn tab arall, cliciwch i newid i'r tab hwnnw.</translation>
 <translation id="1171774979989969504">Rhowch gyfeiriad e-bost.</translation>
 <translation id="1178581264944972037">Seibio</translation>
+<translation id="1254779809141342904">Mae'r rhybudd CAP hwn yn defnyddio technoleg o'r enw XSLT; mae'r swyddogaeth honno'n cael ei <ph name="REMOVAL_LINK" />. Pan fydd hynny'n digwydd, bydd y rhybudd hwn yn cael ei ddangos fel data XML crai. Mae'n bosib y gallwch <ph name="EXTENSION_LINK" /> sy'n caniatáu i chi barhau i'w weld.</translation>
 <translation id="1306460908038601864">Diffodd</translation>
 <translation id="1311894908970423688">Rhaid i'r gwerth fod <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Danfon</translation>
 <translation id="2746543609216772311">Rhaid i'r gwerth fod yn <ph name="MINIMUM_DATE_OR_TIME" /> neu'n hwyrach.</translation>
 <translation id="2761667185364618470">Ticiwch y blwch hwn os hoffech barhau.</translation>
+<translation id="2854734116215697908">dynnu o'r porwr hwn</translation>
 <translation id="2908441821576996758">Rhowch gyfeiriadau e-bost sydd wedi'u gwahanu gan atalnodau.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Rhowch werth dilys. Mae'r maes yn anghyflawn neu mae ganddo ddyddiad annilys.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Castio</translation>
 <translation id="5630795885300617244">Tapiwch ddwywaith i'r chwith neu'r dde i neidio 10 eiliad</translation>
 <translation id="57838592816432529">Distewi</translation>
+<translation id="5855560023261018690">dynnu o'r porwr hwn yn fuan iawn</translation>
 <translation id="5868587040512539609">Traciau Fideo</translation>
 <translation id="588258955323874662">Sgrîn lawn</translation>
 <translation id="5888666972993069672">Nawr yn castio i <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Gadael llun-mewn-llun</translation>
 <translation id="6484738902856791350">Argraffu pert</translation>
 <translation id="6550675742724504774">Dewisiadau</translation>
+<translation id="65574987622079584">gosod estyniad porwr</translation>
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6661136971638885481">Trac #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Arall...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Yr wythnos hon</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">bbbb</translation>
+<translation id="8243989288843872594">Peidiwch byth â dangos y rhybudd hwn</translation>
 <translation id="8284326494547611709">Capsiynau</translation>
 <translation id="835897206747267392">Gwerth annilys.</translation>
 <translation id="839593075537728968">Rhaid i'r gwerth fod rhwng <ph name="MINIMUM_TIME" /> a <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">Amlapio llinell</translation>
 <translation id="8750798805984357768">Dewiswch un o'r dewisiadau hyn.</translation>
+<translation id="8753001114009816390">Mae'r wefan hon yn defnyddio XSLT; mae'r swyddogaeth honno'n cael ei <ph name="REMOVAL_LINK" />. Pan fydd hynny'n digwydd, mae'n debyg na fydd y dudalen hon yn cael ei harddangos yn gywir mwyach. Mae'n bosib y gallwch <ph name="EXTENSION_LINK" /> sy'n caniatáu i chi barhau i'w weld. Fel arall, dylech gysylltu â chynhaliwr y wefan am ragor o wybodaeth.</translation>
 <translation id="8845239796550121995">Wrthi'n castio i'ch teledu</translation>
 <translation id="8875657656876809964">Bu gwall chwarae fideo</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

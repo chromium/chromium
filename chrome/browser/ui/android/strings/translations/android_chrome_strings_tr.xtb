@@ -889,7 +889,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4535755320005483982">Paylaşılan <ph name="GROUP_TITLE" /> sekme grubu</translation>
 <translation id="4537137366307982887">İpucu bildirimlerini etkinleştirme sayfası tam ekranda açıldı</translation>
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> olarak oturumunuz açık kaldı.</translation>
-<translation id="4543131175509360848">Geçiş anahtarı yok sayfası</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme, <ph name="TAB_COUNT_INCOGNITO" /> gizli mod}}</translation>
 <translation id="4558311620361989323">Web sayfası kısayolları</translation>
 <translation id="4572422548854449519">Yönetilen hesapta oturum açın</translation>
@@ -934,6 +933,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4719927025381752090">Çevirmeyi öner</translation>
 <translation id="4720556299488643018">Abonelikten çık</translation>
 <translation id="4732120983431207637">Yığın Açma Aracı</translation>
+<translation id="4734965478015604180">Yatay</translation>
 <translation id="4736934858538408121">Sanal kart</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4738065825338914557">Abonelik iptal ediliyor…</translation>
@@ -982,6 +982,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="488187801263602086">Dosyayı yeniden adlandırın</translation>
 <translation id="4885273946141277891">Desteklenmeyen sayıda Chrome örneği var.</translation>
 <translation id="4890973535105146893">Google Hesabınızda kayıtlı şifre yok</translation>
+<translation id="490375751687810070">Dikey</translation>
 <translation id="4905823827770127520">Sayfaya bağlantı ver</translation>
 <translation id="4910889077668685004">Ödeme uygulamaları</translation>
 <translation id="4911042367886397055">Tekrar hoş geldiniz <ph name="USER_NAME" />,</translation>
@@ -1287,6 +1288,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6192907950379606605">Resim açıklaması al</translation>
 <translation id="6193448654517602979">Sekmeleri seç</translation>
 <translation id="6196315980958524839">Şifreler bu cihazda Google Şifre Yöneticisi'ne kaydedilir</translation>
+<translation id="6200780647297916498">Sekme konumu</translation>
 <translation id="6204781143409202534">Chrome, <ph name="DOMAIN" /> adresinden gelen olası bir spam mesajını algıladı.</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
 <translation id="6212567362666004597">Sekmeyi gruba ekle</translation>
@@ -1969,7 +1971,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8683039184091909753">resim</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Seçili sekme</translation>
 <translation id="8694622119922491927"><ph name="APP_NAME" /> uygulamasının bu sitede insan arabirim cihazlarına (HID) erişmesi için izin gerekiyor. Bu ayarı daha sonra Ayarlar &gt; Uygulamalar &gt; Özel uygulama erişimi bölümünden değiştirebilirsiniz.</translation>
-<translation id="8696297579102085705">Cihazıma gönder</translation>
+<translation id="8696297579102085705">Cihazıma Gönder</translation>
 <translation id="8699120352855309748">Şu dilleri çevirmeyi önerme</translation>
 <translation id="8700565880437506364">Chrome'da Gemini ile tanışın</translation>
 <translation id="8712637175834984815">Anladım</translation>

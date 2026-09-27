@@ -533,6 +533,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
       這項政策會覆寫 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />、<ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />、<ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。</translation>
 <translation id="1413768951234456918">清除瀏覽記錄</translation>
 <translation id="1413936351612032792">回報 Linux 應用程式使用情形資訊</translation>
+<translation id="1417591892602709307">裝置儲存的使用者設定檔數量上限</translation>
 <translation id="1417776888841750570">這項政策可控管代管帳戶登入內容區域後的瀏覽器行為。
 
 這項政策會覆寫 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />。
@@ -2021,6 +2022,9 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
       這項政策只會影響透過 WebUSB API 存取 USB 裝置的權限。如要授予透過 Web Serial API 存取 USB 裝置的權限，請參閱 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="2318353380372431186">啟用 IWA 使用者安裝程式</translation>
 <translation id="2318583605563438459">允許家長新增受監護的帳戶</translation>
+<translation id="2323318142178972965">控管裝置上保留的使用者設定檔數量上限。
+
+如果將這項政策設為正整數 <ph name="MAX_USERS" />，<ph name="PRODUCT_OS_NAME" /> 會在裝置上保留最多 <ph name="MAX_USERS" /> 個一般使用者設定檔。當新使用者登入且超過上限時，系統會自動刪除最久未使用的使用者設定檔 (不包括目前使用者) 及其本機儲存空間，以釋出可用的磁碟空間。如果未設定這項政策或設為 0，裝置可新增的使用者設定檔數量就不受限制。如果完全不想在裝置上保留任何使用者設定檔，請改用 <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> 政策。</translation>
 <translation id="2326031114717677574">系統取樣和收集音訊資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 15 分鐘的預設頻率。</translation>
@@ -2330,24 +2334,6 @@ PAC 樣式的字串：
 <translation id="2521581787935130926">在書籤列中顯示應用程式捷徑</translation>
 <translation id="2522304491589804974">設定擴充功能安裝許可清單</translation>
 <translation id="2523511232831599126">在登入畫面上啟用無障礙捷徑</translation>
-<translation id="252611686271192278">Direct Sockets API 可以使用 TCP 和 UDP 與任意端點通訊。
-詳情請參閱 https://github.com/WICG/direct-sockets。
-
-私人網路端點會使用私人 IP 位址空間中的 IP 位址，定義資訊請參閱 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-設定這項政策後，你可以使用網址模式清單，指定哪些網站不得使用 Direct Sockets API 存取私人網路。
-有效的網址模式僅限於隔離網頁應用程式。
-
-如果未設定這項政策，系統會將 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> 政策套用至所有網站 (如果已設定)。
-
-網址模式不得與 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。
-
-請注意，只有來源可使用 Direct Sockets API 時，才適用這項政策。
-詳情請參閱 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。
-
-這項政策只會套用至新的連線嘗試，不會導致現有連線失效。</translation>
 <translation id="252742292004421898">允許這些網站使用 Direct Sockets API</translation>
 <translation id="2528762900096510743">啟用自動登出服務</translation>
 <translation id="2529880111512635313">設定強制安裝的應用程式和擴充功能清單</translation>
@@ -3053,6 +3039,13 @@ PAC 樣式的字串：
 
 <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 政策的優先順序最高。</translation>
 <translation id="2953447815703785478">指定應使用裝置管理通訊協定註冊的裝置通用用戶端憑證。<ph name="PRODUCT_OS_NAME" /> 132 版起支援 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 金鑰演算法選項。</translation>
+<translation id="2953620259874711778">這項政策已在 M156 中淘汰，請改用 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />。
+
+如要維持目前停用 <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> 的行為，請設定 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />，將「url_pattern」設為「*」，並將「blocked_types」設為 ["contact_info", "identity_docs", "travel"]。
+
+如果將這項政策設為 True 或未設定，使用者就能在 UI 中開啟或關閉地址自動填入功能。
+
+如果設為 False，系統就完全不會提供地址建議或自動填入這類資訊，也不會儲存使用者在網頁上輸入的新地址。</translation>
 <translation id="2957506574938329824">不允許任何網站透過 Web Bluetooth API 要求存取藍牙裝置</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 驗證模式的帳戶類型</translation>
 <translation id="2959469725686993410">解析時區時一律將 Wi-Fi 存取點傳送至伺服器</translation>
@@ -5836,7 +5829,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果將這項政策設為 False，系統將使用預設行為。</translation>
 <translation id="4820432864264617413">禁止使用者執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">禁止這些網站取得視窗放置權限</translation>
-<translation id="4825653993105771848">透過 Direct Sockets API 控管私人網路的存取權</translation>
 <translation id="4825777333376170738">停用裝置資訊站工作階段回報功能</translation>
 <translation id="4826326557828204741">使用電池電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
 <translation id="4826701474986856664">在登入時顯示人體存在感應器畫面</translation>
@@ -8532,7 +8524,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="647645276885673708">啟用 <ph name="LACROS_NAME" /> 並設為主要瀏覽器</translation>
 <translation id="647698599569353771">允許啟用鄰近分享功能。</translation>
 <translation id="6477685422297715670">綠色鍵盤背光顏色</translation>
-<translation id="6477933144150138501">允許隔離網頁應用程式來源透過 Direct Sockets API 與私人網路端點通訊</translation>
 <translation id="6478258366184919502">登入及螢幕來源</translation>
 <translation id="6478261301433199402">你可以透過這項政策，指定使用者的 <ph name="PLUGIN_VM_NAME" /> 映像檔。請使用 JSON 格式字串指定這項政策，其中 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 可指定要下載映像檔的位置，而 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 可做為 SHA-256 雜湊，用於驗證下載內容的完整性。</translation>
 <translation id="6481245670325946423">允許使用無頭模式</translation>
@@ -8903,20 +8894,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       注意：雖然這項政策可接受 <ph name="ENTRIES_FIELD_NAME" /> 中的多個項目，但除了第一個項目外，其他項目都會遭到忽略。
       警告：設定這項政策可能導致軟體更新延遲套用。</translation>
 <translation id="6695441448686167614">網路列印設定</translation>
-<translation id="6695983959768914375">Direct Sockets API 可以使用 TCP 和 UDP 與任意端點通訊。
-詳情請參閱 https://github.com/WICG/direct-sockets。
-
-私人網路端點是指使用私人 IP 位址空間中 IP 位址的端點，定義資訊請參閱 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-如果將這項政策設為 1 或不設定，隔離網頁應用程式來源就能透過 Direct Sockets API 與私人網路端點通訊。
-
-如果將這項政策設為 2，系統會禁止隔離網頁應用程式來源與 Direct Sockets API 中的私人網路端點通訊。
-
-請注意，只有來源可使用 Direct Sockets API 時，才適用這項政策。
-詳情請參閱 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。
-你也可以使用 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> 覆寫相符網址的預設設定。
-
-這項政策只會套用至新的連線嘗試，不會導致現有連線失效。</translation>
 <translation id="6698632841807204978">啟用單色列印</translation>
 <translation id="6699740789657890714">指定是否允許網站以不安全的方式，向更私密的網路端點傳送要求</translation>
 <translation id="6699880231565102694">為遠端存取主機啟用雙重驗證機制</translation>
@@ -10221,22 +10198,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 <translation id="7512514325152952954">系統可透過 HTTP (而非 HTTPS) 下載 <ph name="PRODUCT_OS_NAME" /> 的自動更新酬載。這可讓 HTTP 以未加密方式快取 HTTP 下載內容。
 
 如果將這項政策設為 True，<ph name="PRODUCT_OS_NAME" /> 將嘗試透過 HTTP 下載自動更新酬載。如果設為 False 或未設定，系統則會透過 HTTPS 下載自動更新酬載。</translation>
-<translation id="7512603255315110634">Direct Sockets API 可以使用 TCP 和 UDP 與任意端點通訊。
-詳情請參閱 https://github.com/WICG/direct-sockets。
-
-私人網路端點會使用私人 IP 位址空間中的 IP 位址，定義資訊請參閱 https://wicg.github.io/private-network-access/#ip-address-space-private。
-
-設定這項政策後，你可以使用網址模式清單，指定哪些網站能透過 Direct Sockets API 與私人網路端點通訊。
-有效的網址模式僅限於隔離網頁應用程式。
-
-如果未設定這項政策，系統會將 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> 政策套用至所有網站 (如果已設定)。
-
-網址模式不得與 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策衝突。如果網址同時符合兩項政策，系統不會優先採用任何一項政策。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。
-
-請注意，只有來源可使用 Direct Sockets API 時，才適用這項政策。
-詳情請參閱 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="7515953732107149296">由於 <ph name="PRODUCT_NAME" /> 已移除 RC4，因此這項政策已在 M53 中移除。
 
       如果未設定這項政策或設為 False，系統將不會啟用傳輸層安全標準 (TLS) 中的 RC4 加密套件。如要啟用這個套件，可將政策值設為 True，以便與過時伺服器維持相容性。這種做法只是權宜之計，正確的做法是重新設定伺服器。</translation>
@@ -10699,7 +10660,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 <translation id="7832225468415136704">禁止 Chrome 清理功能定期執行系統掃描，並停用手動掃描</translation>
 <translation id="7833148823006528332">Android 應用程式的 ID，例如 Gmail 的 ID 為「com.google.android.gm」</translation>
 <translation id="7835218570504220753">停用自動點擊功能</translation>
-<translation id="7836591982756027878">允許這些網站透過 Direct Sockets API 存取私人網路</translation>
 <translation id="7839124608155212387">對關聯使用者的已註冊裝置，執行應用程式使用情況遙測的收集率。下限值是 5 分鐘。
 
       如果未設定，系統會套用 15 分鐘的預設頻率。</translation>
@@ -10865,7 +10825,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="7937766917976512374">允許或拒絕擷取視訊</translation>
 <translation id="7941528208359969119">允許執行線上 <ph name="OCSP_CRL_LABEL" /> 檢查</translation>
 <translation id="7941975817681987555">無論使用任何網路連線，皆不預測網路動作</translation>
-<translation id="794447754389837404">禁止這些網站透過 Direct Sockets API 存取私人網路</translation>
 <translation id="7945445169067895719">在裝置暫停或機蓋蓋上時啟用鎖定功能</translation>
 <translation id="7945744599423774764">允許隨機調整 Proxy 的通訊端集區大小</translation>
 <translation id="7946350455013548764">如果將這項政策設為 3，網站即可要求存取 HID 裝置。如果將這項政策設為 2，系統會拒絕網站存取 HID 裝置。如果不設定，網站可要求存取權，但使用者可以變更這項設定。
@@ -12388,7 +12347,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
 <translation id="8963464192296208229">F11 設定採用含有 Alt 輔助鍵的快速鍵</translation>
-<translation id="8966888925105658202">禁止隔離網頁應用程式來源透過 Direct Sockets API 與私人網路端點通訊</translation>
 <translation id="8973579598359969188">選擇是否可向使用者顯示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示</translation>
 <translation id="8974457039656761249">控制實體鍵盤預測書寫建議功能</translation>
 <translation id="8974588819713914715">這項政策已淘汰，因此系統不再支援，請改用「<ph name="URL_ALLOWLIST_POLICY_NAME" />」政策。</translation>
@@ -12772,6 +12730,13 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       如果將這項政策設為 false，代表只有 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> 中的使用者才能登入。
 
       如果將這項政策設為 true 或不設定，則所有使用者都能登入。</translation>
+<translation id="963342674988073839">這項政策已在 M156 中淘汰，請改用 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />。
+
+如要維持目前停用 <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> 的行為，請設定 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />，將「url_pattern」設為「*」，並將「blocked_types」設為 ["payments"]。
+
+如果將這項政策設為 True 或未設定，使用者就能在 UI 中開啟或關閉信用卡自動填入功能。
+
+如果設為 False，系統就完全不會提供信用卡資訊建議或自動填入這類內容，也不會儲存使用者在網頁上輸入的新信用卡資訊。</translation>
 <translation id="966425658642788645">套用預設行為</translation>
 <translation id="971677226939413180">使用者無法選擇「以圖片形式列印」選項。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>

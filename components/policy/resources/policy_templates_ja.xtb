@@ -2312,24 +2312,6 @@ URL スタイルの指定子:
 <translation id="2521581787935130926">ブックマーク バーでアプリのショートカットを表示する</translation>
 <translation id="2522304491589804974">拡張機能インストールの許可リストを設定する</translation>
 <translation id="2523511232831599126">ログイン画面でユーザー補助のショートカットを有効にする</translation>
-<translation id="252611686271192278">Direct Sockets API は TCP と UDP を使用して任意のエンドポイントと通信できます。
-詳細については、https://github.com/WICG/direct-sockets をご覧ください。
-
-プライベート ネットワークのエンドポイントは、https://wicg.github.io/private-network-access/#ip-address-space-private で定義されているプライベート IP アドレス空間の IP アドレスを使用するエンドポイントです。
-
-このポリシーでは、Direct Sockets API でプライベート ネットワークへのアクセスをブロックするサイトの URL パターンのリストを指定できます。
-有効なパターンは、独立したウェブアプリにのみ適用されます。
-
-このポリシーを未設定のままにした場合、<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用されます。
-
-URL パターンは、<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。
-
-このポリシーは、オリジンに Direct Sockets API の使用が許可されている場合にのみ適用されます。
-詳しくは、<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> をご覧ください。
-
-このポリシーは新しい接続の試行にのみ適用され、既存の接続を無効にするものではありません。</translation>
 <translation id="252742292004421898">Direct Sockets API を許可するサイトを指定する</translation>
 <translation id="2528762900096510743">自動ログアウト サービスを有効にする</translation>
 <translation id="2529880111512635313">自動インストールするアプリと拡張機能のリストの設定</translation>
@@ -3029,6 +3011,13 @@ PIN とパスワードの複雑さの各レベルについて、詳しくはヘ�
 <translation id="2953447815703785478">デバイス管理プロトコルを使用した登録が必要なデバイス共通のクライアント証明書を指定します。
 
 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 鍵アルゴリズム オプションは、<ph name="PRODUCT_OS_NAME" /> バージョン 132 以降でサポートされています。</translation>
+<translation id="2953620259874711778">このポリシーは M156 でサポートが終了しています。代わりに <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> を使用してください。
+
+<ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> を無効にする現在の動作を維持するには、<ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> を設定し、"url_pattern" を "*" に、"blocked_types" を ["contact_info", "identity_docs", "travel"] に設定します。
+
+このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI で住所の自動入力を制御できます。
+
+このポリシーを False に設定した場合、住所情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中に送信した住所情報が追加で保存されることもありません。</translation>
 <translation id="2957506574938329824">すべてのサイトに対して Web Bluetooth API による Bluetooth デバイスへのアクセスを許可しない</translation>
 <translation id="2957513448235202597">「<ph name="HTTP_NEGOTIATE" />」認証用のアカウントの種類</translation>
 <translation id="2959469725686993410">タイムゾーンを解決する際、常に Wi-Fi アクセス ポイントをサーバーに送信する</translation>
@@ -5832,7 +5821,6 @@ JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（
 このポリシーを False に設定した場合は、デフォルトの動作が使用されます。</translation>
 <translation id="4820432864264617413">ユーザーに対して <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="4821987881803903281">ウィンドウの配置に関する権限を拒否するサイトを指定する</translation>
-<translation id="4825653993105771848">Direct Sockets API でのプライベート ネットワークへのアクセスを制御する</translation>
 <translation id="4825777333376170738">デバイスのキオスク セッションの報告を無効にする</translation>
 <translation id="4826326557828204741">バッテリー電源での実行時、アイドル時間に到達したときに行う操作</translation>
 <translation id="4826701474986856664">ログイン時に人感センサーの画面を表示する</translation>
@@ -8473,7 +8461,6 @@ False に設定すると、P2P は使用されません。
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> を有効にし、メインのブラウザとして設定する</translation>
 <translation id="647698599569353771">ニアバイシェアを有効にできるようにします。</translation>
 <translation id="6477685422297715670">緑色のキーボード バックライト</translation>
-<translation id="6477933144150138501">Direct Sockets API での独立したウェブアプリのオリジンとプライベート ネットワークのエンドポイントとの通信を許可する</translation>
 <translation id="6478258366184919502">ログインと画面のオリジン</translation>
 <translation id="6478261301433199402">このポリシーでは、ユーザーの <ph name="PLUGIN_VM_NAME" /> 画像を指定できます。画像のダウンロード場所を示す <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> と、ダウンロードの整合性の確認に使用する SHA-256 ハッシュとして <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> を JSON 形式の文字列として指定します。</translation>
 <translation id="6481245670325946423">ヘッドレス モードの使用を許可する</translation>
@@ -8838,20 +8825,6 @@ False に設定すると、P2P は使用されません。
       注: ポリシーの <ph name="ENTRIES_FIELD_NAME" /> には複数の項目を指定できますが、最初の項目以外は無視されます。
       警告: このポリシーを設定した場合、ソフトウェア更新の適用が遅れる可能性があります。</translation>
 <translation id="6695441448686167614">ウェブ印刷の設定</translation>
-<translation id="6695983959768914375">Direct Sockets API は TCP と UDP を使用して任意のエンドポイントと通信できます。
-詳細については、https://github.com/WICG/direct-sockets をご覧ください。
-
-プライベート ネットワークのエンドポイントは、https://wicg.github.io/private-network-access/#ip-address-space-private で定義されているプライベート IP アドレス空間の IP アドレスを使用するエンドポイントです。
-
-このポリシーを 1 に設定するか未設定のままにした場合、Direct Sockets API での独立したウェブアプリのオリジンとプライベート ネットワークのエンドポイントとの通信が許可されます。
-
-このポリシーを 2 に設定した場合、Direct Sockets API での独立したウェブアプリのオリジンとプライベート ネットワークのエンドポイントとの通信がブロックされます。
-
-このポリシーは、オリジンに Direct Sockets API の使用が許可されている場合にのみ適用されます。
-詳しくは、<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> をご覧ください。
-<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> と <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> を使用して、一致する URL に対してデフォルトをオーバーライドすることもできます。
-
-このポリシーは新しい接続の試行にのみ適用され、既存の接続を無効にするものではありません。</translation>
 <translation id="6698632841807204978">白黒印刷を有効にする</translation>
 <translation id="6699740789657890714">より限定されたプライベート ネットワークのエンドポイントに対して、ウェブサイトからの安全でない方法でのリクエストを許可するかどうかを指定する</translation>
 <translation id="6699880231565102694">リモート アクセス ホストの 2 段階認証プロセスを有効にする</translation>
@@ -10119,22 +10092,6 @@ Gemini による操作は、一部の国や言語ではご利用いただけま�
 <translation id="7512514325152952954"><ph name="PRODUCT_OS_NAME" /> での自動更新ペイロードは HTTPS ではなく HTTP でダウンロードされます。これにより、HTTP ダウンロードの透過 HTTP キャッシングが可能になります。
 
 このポリシーを true に設定すると、<ph name="PRODUCT_OS_NAME" /> は HTTP 経由で自動更新ペイロードをダウンロードしようとします。このポリシーを false に設定するか、設定しない場合は、自動更新ペイロードのダウンロードに HTTPS が使用されます。</translation>
-<translation id="7512603255315110634">Direct Sockets API は TCP と UDP を使用して任意のエンドポイントと通信できます。
-詳細については、https://github.com/WICG/direct-sockets をご覧ください。
-
-プライベート ネットワークのエンドポイントは、https://wicg.github.io/private-network-access/#ip-address-space-private で定義されているプライベート IP アドレス空間の IP アドレスを使用するエンドポイントです。
-
-このポリシーでは、Direct Sockets API でプライベート ネットワークのエンドポイントとの通信を許可するサイトの URL パターンのリストを指定できます。
-有効なパターンは、独立したウェブアプリにのみ適用されます。
-
-このポリシーを未設定のままにした場合、<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> が設定されていればその設定がすべてのサイトで使用されます。
-
-URL パターンは、<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" /> と競合しないようにする必要があります。URL が両方のポリシーの URL パターンと一致する場合、どちらのポリシーも優先されません。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。
-
-このポリシーは、オリジンに Direct Sockets API の使用が許可されている場合にのみ適用されます。
-詳しくは、<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />、<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> をご覧ください。</translation>
 <translation id="7515953732107149296">このポリシーは、RC4 が <ph name="PRODUCT_NAME" /> から削除された後、M53 で削除されました。
 
       このポリシーを設定しない場合や false に設定した場合は、TLS の RC4 暗号スイートは有効になりません。また、true に設定して古いサーバーとの互換性を維持できます。これは暫定的な措置であり、サーバーの再設定が必要です。</translation>
@@ -10595,7 +10552,6 @@ Internet Explorer の <ph name="IEEM_SITELIST_POLICY" /> ポリシーについ�
 <translation id="7832225468415136704">Chrome クリーンアップによるシステムの定期的なスキャンを許可せず、手動スキャンを無効にする</translation>
 <translation id="7833148823006528332">Android アプリの識別子（例: Gmail の場合は "com.google.android.gm"）</translation>
 <translation id="7835218570504220753">自動クリックを無効にする</translation>
-<translation id="7836591982756027878">Direct Sockets API でプライベート ネットワーク アクセスを許可するサイトを指定する</translation>
 <translation id="7839124608155212387">登録済みデバイスで、関連付けられたユーザーのアプリ使用状況のテレメトリーを収集する間隔を指定します。指定できる最小値は 5 分です。
 
       設定しない場合は、デフォルトの 15 分が適用されます。</translation>
@@ -10758,7 +10714,6 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="7937766917976512374">動画キャプチャを許可または拒否する</translation>
 <translation id="7941528208359969119">オンラインの <ph name="OCSP_CRL_LABEL" /> チェックを許可する</translation>
 <translation id="7941975817681987555">ネットワーク接続でネットワーク動作を予測しない</translation>
-<translation id="794447754389837404">Direct Sockets API でプライベート ネットワーク アクセスをブロックするサイトを指定する</translation>
 <translation id="7945445169067895719">デバイスが一時停止されるかディスプレイが閉じられたときのロックを有効にする</translation>
 <translation id="7945744599423774764">プロキシのソケットプール サイズのランダム化を許可する</translation>
 <translation id="7946350455013548764">このポリシーを 3 に設定した場合、ウェブサイトは、HID デバイスへのアクセスを要求できます。このポリシーを 2 に設定した場合、HID デバイスへのアクセスは許可されません。
@@ -12280,7 +12235,6 @@ M119 よりデフォルトで無効になります）。
 <translation id="8955719471735800169">トップへ戻る</translation>
 <translation id="8956312248048980644">オリジンキー エージェント クラスタリングをデフォルトで許可します。</translation>
 <translation id="8963464192296208229">F11 の設定で Alt 修飾キーを含むショートカットを使用する</translation>
-<translation id="8966888925105658202">Direct Sockets API での独立したウェブアプリのオリジンとプライベート ネットワークのエンドポイントとの通信を許可しない</translation>
 <translation id="8973579598359969188"><ph name="PRIVACY_SANDBOX_NAME" /> のプロンプトをユーザーに表示するかどうかを指定します</translation>
 <translation id="8974457039656761249">物理キーボードの予測入力機能を制御する</translation>
 <translation id="8974588819713914715">このポリシーは非推奨で、サポートされていません。代わりに「<ph name="URL_ALLOWLIST_POLICY_NAME" />」ポリシーを使用してください。</translation>
@@ -12667,6 +12621,13 @@ HTTPS 優先モードは、初期設定では厳格モードまたはバラン�
       このポリシーを false に設定した場合、<ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />　に登録されているユーザーのみログインできます。
 
       このポリシーを true に設定するか、未設定のままにした場合、すべてのユーザーがログインできます。</translation>
+<translation id="963342674988073839">このポリシーは M156 でサポートが終了しています。代わりに <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> を使用してください。
+
+<ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" /> を無効にする現在の動作を維持するには、<ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> を構成し、"url_pattern" を "*" に、"blocked_types" を ["payments"] に設定します。
+
+このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI でクレジット カードの自動入力候補を制御できます。
+
+このポリシーを False に設定した場合、クレジット カード情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中にクレジット カード情報を送信した場合もその情報が追加で保存されることはありません。</translation>
 <translation id="966425658642788645">デフォルトの動作を適用する</translation>
 <translation id="971677226939413180">ユーザーは「画像として印刷する」オプションを選択できない。</translation>
 <translation id="974349541138387272">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定する</translation>

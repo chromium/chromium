@@ -889,7 +889,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4535755320005483982">공유된 <ph name="GROUP_TITLE" /> 탭 그룹</translation>
 <translation id="4537137366307982887">팁 알림 수신 동의가 전체 높이로 열림</translation>
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> 계정으로 로그인된 상태를 유지했습니다</translation>
-<translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4558311620361989323">웹페이지 단축키</translation>
 <translation id="4572422548854449519">관리 계정에 로그인</translation>
@@ -934,6 +933,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4719927025381752090">번역 옵션 제공</translation>
 <translation id="4720556299488643018">수신 거부</translation>
 <translation id="4732120983431207637">스택 언와인더</translation>
+<translation id="4734965478015604180">가로</translation>
 <translation id="4736934858538408121">가상 카드</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4738065825338914557">구독 취소 중…</translation>
@@ -982,6 +982,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="488187801263602086">파일 이름 변경</translation>
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
 <translation id="4890973535105146893">Google 계정에 저장된 비밀번호 없음</translation>
+<translation id="490375751687810070">세로</translation>
 <translation id="4905823827770127520">페이지 링크 포함</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
@@ -1287,6 +1288,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6192907950379606605">이미지 설명 보기</translation>
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6196315980958524839">비밀번호가 이 기기의 Google 비밀번호 관리자에 저장됩니다.</translation>
+<translation id="6200780647297916498">탭 위치</translation>
 <translation id="6204781143409202534">Chrome에서 <ph name="DOMAIN" />의 스팸 가능성이 감지되었습니다.</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6212567362666004597">그룹에 탭 추가</translation>
@@ -1352,7 +1354,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6401458660421980302">이 탭을 다른 기기로 보내려면 해당 기기에서 Chrome에 로그인하세요.</translation>
 <translation id="6404511346730675251">북마크 수정</translation>
 <translation id="6408370409308816490"><ph name="TAB_TITLE" />, 선택되고 고정되고 공유 중인 시크릿 탭</translation>
-<translation id="6410883413783534063">탭을 열어 동시에 여러 페이지를 방문할 수 있습니다.</translation>
+<translation id="6410883413783534063">탭을 열어 동시에 여러 페이지를 방문할 수 있습니다</translation>
 <translation id="6411009031428071896">피드 듣기</translation>
 <translation id="6411219469806822692">더 이상 위로 올라갈 수 없습니다. 페이지 더 위쪽에서 시작해 보세요.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, 여러 개 선택된 탭</translation>
@@ -2000,6 +2002,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8816556050903368450">포함된 링크: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">미리보기 탭 콘텐츠를 볼 수 없습니다.</translation>
 <translation id="8820817407110198400">북마크</translation>
+<translation id="8822533681006532064">Gemini와 대화하려면 Gemini에 마이크 사용 권한을 부여하세요. 이 옵션은 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서도 관리할 수 있습니다.</translation>
 <translation id="8840953339110955557">이 페이지는 온라인 버전과 다를 수 있습니다.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">숨김</translation>

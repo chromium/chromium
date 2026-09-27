@@ -889,7 +889,6 @@
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> – споделена група раздели</translation>
 <translation id="4537137366307982887">Долният лист за включване на известията със съвети е отворен на пълната височина</translation>
 <translation id="4537987892902330164">Продължихте да сте влезли като <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
 <translation id="4572422548854449519">Вход в управляван профил</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">Предложения за превод</translation>
 <translation id="4720556299488643018">Отписване</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4738065825338914557">Отписвате се…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">Преименуване на файла</translation>
 <translation id="4885273946141277891">Неподдържан брой екземпляри на Chrome.</translation>
 <translation id="4890973535105146893">В профила ви в Google няма запазени пароли</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4905823827770127520">Включване на връзка към страницата</translation>
 <translation id="4910889077668685004">Приложения за плащане</translation>
 <translation id="4911042367886397055">Добре дошли отново, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">Описания на изображенията</translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
 <translation id="6196315980958524839">Паролите се запазват в Google Мениджър на пароли на това устройство</translation>
+<translation id="6200780647297916498">Позиция на раздела</translation>
 <translation id="6204781143409202534">Chrome откри възможен спам от <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
 <translation id="6212567362666004597">Добавяне на раздела към група</translation>

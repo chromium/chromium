@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Uppfærsla hefst þegar rafhlaðan nær <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Til að nota barnalæsingar á borð við samþykki forrita og takmörkun á skjátíma þarf barn að vera með Google-reikning í umsjá foreldris. Hægt er að bæta skólareikningi við síðar fyrir verkfæri á borð við Google Classroom.</translation>
 <translation id="1375557162880614858">Viltu kveikja á ChromeVox, innbyggða skjálesaranum fyrir ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Uppsetningu er lokið! Undirbúðu tækið þitt fyrir leikjaspilun næst</translation>
 <translation id="1377600615067678409">Sleppa þessu í bili</translation>
 <translation id="1399261165075500043">Ekki tókst að hlaða þjónustuskilmálum Google Play</translation>
 <translation id="1400243387594338234">Þú getur notað þetta PIN-númer til að skrá þig inn í tækið þitt</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Nota Google-reikninginn þinn í <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Veldu tímabelti</translation>
 <translation id="3893630138897523026">ChromeVox (raddsvörun)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> tækið þitt er búið til fyrir leikjaspilun. Næst opnast forritið „Kanna“ þar sem þú hefur aðgang að hundruðum nýrra leikja, getur skoðað leikjatilboð og uppgötvað leikjaeiginleika sem fylgja tækinu þínu.</translation>
 <translation id="389901847090970821">Velja lyklaborð</translation>
 <translation id="3910588685973519483">Búa til veggfóður með gervigreind</translation>
 <translation id="3924259174674732591">Stærð skjás og texta <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Setja þarf upp uppfærslu fyrir TPM-fastbúnaðinn (Trusted Platform Module). Sjá <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Úbbs. Eitthvað fór úrskeiðis við innskráningu.</translation>
 <translation id="5453829744223920473">Barnið þitt getur notað öll forrit, bókamerki og tilföng skólans rétt eins og það gerir í tímum. Skólinn setur grundvallarreglurnar.</translation>
-<translation id="5463450804024056231">Skráðu þig til að fá tölvupóst um <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Með því að halda áfram samþykkirðu að þetta tæki geti sjálfkrafa sótt og sett upp uppfærslur og forrit frá Google, símafyrirtæki barnsins og framleiðanda tækisins, mögulega með því að nota farsímagögn. Einhver þessara forrita kunna að bjóða upp á innkaup í forriti.</translation>
 <translation id="5502915260472117187">Barn</translation>
 <translation id="5511823366942919280">Ertu viss um að þú viljir setja upp þetta tæki sem „Shark“?</translation>

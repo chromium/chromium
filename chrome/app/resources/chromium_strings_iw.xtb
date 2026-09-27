@@ -104,6 +104,7 @@
 <translation id="2126108037660393668">נכשל האימות של הקובץ שהורד.</translation>
 <translation id="2135919691573380097">דיווח על האתר הזה</translation>
 <translation id="2137162749895930932">סגירת המסך לתרגום</translation>
+<translation id="2147218225094845757">הסתרת החלונית הצדדית</translation>
 <translation id="215352261310130060">‏Chromium חסם את ההורדה הזאת כי האתר לא משתמש בחיבור מאובטח ויכול להיות שבוצעו שינויים לא מורשים בקובץ</translation>
 <translation id="2170098639895543546">צריך לבחור משהו מהדף</translation>
 <translation id="2174178932569897599">‏התאמה אישית של Chromium</translation>
@@ -301,7 +302,6 @@
 <translation id="4251772536351901305">‏מקבלים אזהרות לגבי אתרים מסוכנים, גם כאלה שלא היו ידועים ל-Google לפני כן, בעזרת ניתוח של יותר נתונים מאתרים בהשוואה להגנה הרגילה. אפשר לדלג על האזהרות מ-Chromium.</translation>
 <translation id="4269093074552541569">‏יציאה מ-Chromium</translation>
 <translation id="4271805377592243930">‏עזרה בנושא Chromium</translation>
-<translation id="4275788652681621337">סגירת החלונית הצדדית</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="4285930937574705105">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Chromium פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4298125729853015961">‏ייצוא סיסמאות מ-Chromium</translation>
@@ -591,6 +591,7 @@
 <translation id="7213407614656404070">‏שימוש ב-Chromium בכל פעם שלוחצים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="7216228761061470870">‏כשמשתמשים ב"חיפוש תמונות" במחשב, כותרת הדף, כתובת ה-URL והתוכן שלו, כולל קובצי PDF, נשלחים לשרת</translation>
 <translation id="7223968959479464213">‏מנהל המשימות - Chromium</translation>
+<translation id="7226331818892775989">‏אפשר לשאול על תוכן מחוץ ל-Chromium, כמו אפליקציות או קבצים אחרים</translation>
 <translation id="7227958669698166857">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. המידע השמור ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="7252276985725323153">‏רוצה לגלוש מיד? עכשיו אפשר להגדיר את Chromium להתחיל לפעול יחד עם Windows.</translation>
 <translation id="7274695763216404502">התכונה הוצמדה. מעכשיו אפשר להשתמש בתכונה 'חיפוש תמונות' דרך סרגל הכלים</translation>

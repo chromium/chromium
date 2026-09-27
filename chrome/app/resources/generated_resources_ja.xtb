@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">おつかれさまでした！</translation>
 <translation id="1342886103232377846">Google パスワード マネージャーに移動して、不正使用されたパスワードを確認してください。</translation>
 <translation id="1343920184519992513">前回中断したところから再開して、特定のページを開く</translation>
+<translation id="1344216785734288669">Apple パスワード</translation>
 <translation id="1346630054604077329">確定して再起動</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1347512539447549782">Linux ストレージ</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">アプリケーションは、この地域では制限されています。</translation>
 <translation id="1607139524282324606">エラー項目を消去</translation>
 <translation id="1608668830839595724">選択した項目のその他の操作</translation>
-<translation id="1609603645228231640">Gemini Spark は試験運用版であり、ユーザーに確認することなく情報の共有や購入などを行うことがあります。<ph name="LINK_BEGIN" />リスクを確認<ph name="LINK_END" />。</translation>
 <translation id="1610272688494140697">アプリの設定</translation>
 <translation id="161042844686301425">シアン</translation>
 <translation id="1611649489706141841">進む</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">新しいエントリ</translation>
 <translation id="1809201888580326312">このサイトやアプリのパスワードは保存しないよう設定しています</translation>
 <translation id="1809734401532861917">自分のブックマーク、履歴、パスワード、その他の設定を <ph name="USER_EMAIL_ADDRESS" /> に追加します</translation>
-<translation id="1811908311154949291">シークレット モードのフェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> を使用して <ph name="SITE_ETLD_PLUS_ONE" /> で続行できません</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> をキャストしています</translation>
 <translation id="1813278315230285598">サービス</translation>
@@ -1286,7 +1285,6 @@
 <translation id="1983612835086592681">過去 1 週間以内に開きました</translation>
 <translation id="1984087999855033707">電話番号</translation>
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
-<translation id="1984683754853869253">学校用のプロフィールを新しく作成しますか？</translation>
 <translation id="198507684520034826">ヘルプ</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">位置情報の詳細設定</translation>
@@ -1320,7 +1318,6 @@
 <translation id="2010636492623189611">選択しました。</translation>
 <translation id="2012935757369720523">ファイルを削除</translation>
 <translation id="2014191284313949173">アイソレートを閉じる</translation>
-<translation id="2014495120525813351">このデバイスで Gemini Spark にブラウジングを許可する</translation>
 <translation id="2016473077102413275">画像を必要とする機能は動作しなくなります</translation>
 <translation id="2017334798163366053">パフォーマンス データの収集を無効にする</translation>
 <translation id="2017770349934140286">Google Play と Google Play からダウンロードしたアプリはこの Chromebook から削除されます。
@@ -2032,7 +2029,6 @@
 <translation id="2554553592469060349">選択したファイルが大きすぎます（最大サイズ: 3 MB）。</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> 個中 <ph name="NUM_ALLOWED_APPS" /> 個のアプリが通知を送信可能</translation>
 <translation id="2555855727505718984">自動入力によるフォームの記入で、デバイスのこの情報は使用されなくなります</translation>
-<translation id="25568951186001797">フェンス付きフレーム: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">すべてのブックマークをこちらで確認できます</translation>
 <translation id="2563924218974330506">ここでタブグループを管理できるようになりました。固定はいつでも解除できます。</translation>
 <translation id="2564520396658920462">AppleScript からの JavaScript の実行がオフになっています。オンにするには、メニューバーから [表示] &gt; [デベロッパー] &gt; [Apple Events からの JavaScript を許可] を選択してください。詳しくは、https://support.google.com/chrome/?p=applescript をご覧ください。</translation>
@@ -2111,7 +2107,6 @@
 <translation id="2626746300781063303">このリクエストへの対応は、サイト（Google を含む）が自らの裁量で決定します</translation>
 <translation id="2626799779920242286">しばらくしてからもう一度お試しください。</translation>
 <translation id="2627424346328942291">共有できません</translation>
-<translation id="2627970398976286795">Gemini Spark のリスクを確認する</translation>
 <translation id="2628258844236035475">Chrome の自動入力から自宅の住所を削除しますか？</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini との新しいチャットを開始</translation>
@@ -2420,7 +2415,6 @@
 <translation id="2845276301195220700">Google カレンダーのその他の操作</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
-<translation id="2846345106886298325">タスクが完了し、Gemini Spark に戻りました</translation>
 <translation id="284884486564166077">Google レンズで画像を検索</translation>
 <translation id="2849035674501872372">調べる</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" />（<ph name="UNICODE_NAME" />）</translation>
@@ -2482,7 +2476,6 @@
 <translation id="2893318819023133318">ビューを反転</translation>
 <translation id="2894596417096093634">障害レポート ID</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
-<translation id="2895194086130800590">Gemini Spark は、デバイスが起動していて Chrome が実行されている場合にのみ、このデバイスで自動ブラウジングを使用できます。</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
@@ -2535,7 +2528,6 @@
 <translation id="2933653107553951760">グループを復元</translation>
 <translation id="2934225044529065415">カメラにアクセスできません</translation>
 <translation id="2935314715123552088">アクティブな eSIM プロファイルを無効にする</translation>
-<translation id="2936067606203230121">Gemini Spark は、開始または更新するタスクに基づいて、実行するアクションを決定します。</translation>
 <translation id="2936851848721175671">バックアップと復元</translation>
 <translation id="2938981087412273365">このサイトの読み取りと変更を拒否しました</translation>
 <translation id="2939005221756255562">通知センターで通知を有効にします。<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />を開きます。</translation>
@@ -3641,7 +3633,6 @@
 <translation id="3756578970075173856">PIN を設定</translation>
 <translation id="3756806135608816820">サイトが Bluetooth デバイスの検出を要求できるようにする</translation>
 <translation id="3756823472711156529">グループを復元</translation>
-<translation id="3757337311115630808">Gemini Spark の詳細</translation>
 <translation id="3757567010566591880">ツールバーの固定を解除</translation>
 <translation id="3757645900890881944">検索ツール</translation>
 <translation id="3757733214359997190">サイトが見つかりません</translation>
@@ -4765,6 +4756,7 @@
 <translation id="4631637535315947773">最近使用していないため、よくアクセスするサイトのショートカットを削除しました</translation>
 <translation id="4631955550884380853">音声フォーカス</translation>
 <translation id="4632655012900268062">カードをカスタマイズする</translation>
+<translation id="4634719521235795064">Gemini は Google パスワード マネージャーを使用して、ユーザーに代わってログイン操作を行えます。<ph name="BEGIN_LINK" />Gemini でのデータの取り扱い<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini のアンインストール</translation>
 <translation id="4635398712689569051">ゲストユーザーは <ph name="PAGE_NAME" /> を利用できません。</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{質問で使用する画像を 1 個アップロードできます}other{質問で使用する画像を # 個までアップロードできます}}</translation>
@@ -5251,7 +5243,6 @@
 <translation id="4989966318180235467">バックグラウンド ページの検証(&amp;B)</translation>
 <translation id="499016799952867794">これにより、アプリは想定どおりに動作します。</translation>
 <translation id="4990673372047946816">使用できるカメラがありません</translation>
-<translation id="499126848196136237">Gemini Spark は、このデバイスで Chrome の自動ブラウジングを使用してサイトを操作し、ユーザーに代わってタスクを完了できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">キーボードの最上段のキーをファンクション キーとして使用する</translation>
 <translation id="4991873517942703737">このドキュメントについて質問</translation>
 <translation id="4992066212339426712">ミュートを解除</translation>
@@ -5507,7 +5498,6 @@
 <translation id="5189274947477567401">共有プロセスを無効にするにはブラウザの再起動が必要です。このブラウザは今すぐ再起動されます。</translation>
 <translation id="5189404424758444348">スチームパンク</translation>
 <translation id="5190577235024772869">使用量: <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="5190926251776387065">ポートを有効にする</translation>
 <translation id="5190959794678983197">マイクがありません</translation>
 <translation id="5191094172448199359">入力した PIN が一致しません</translation>
@@ -6074,6 +6064,7 @@
 <translation id="5641715878999557094">「<ph name="EXTENSION_NAME" />」により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="5643191124441701136">セキュリティ コードはカードの表面に記載されています</translation>
 <translation id="5643321261065707929">従量制ネットワーク</translation>
+<translation id="5645369002069651355">メールアドレスを確認中</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5646558797914161501">ビジネスマン</translation>
 <translation id="564670806635578888">Google で「<ph name="SEARCH_TERMS" />」を検索</translation>
@@ -7005,7 +6996,6 @@
 <translation id="6393550101331051049">安全でないコンテンツの表示を許可するサイト</translation>
 <translation id="6394634179843537518">ファイルを追加</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />システム情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標データ<ph name="END_LINK2" />を送信する</translation>
-<translation id="6397586889873084061">はい、自分のデータを学校用とは別に保持します（推奨）</translation>
 <translation id="6398715114293939307">Google Play ストアを削除</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="639880411171387127">Google レンズの選択内容です。Google レンズの選択内容を削除するには、Enter キーまたは Backspace キーを押します</translation>
@@ -8365,7 +8355,6 @@
 <translation id="7421293530411019405">タブグループから退出しますか？</translation>
 <translation id="7421925624202799674">ページのソースを表示(&amp;V)</translation>
 <translation id="7422192691352527311">環境設定...</translation>
-<translation id="7423381908337122792">Gemini Spark エージェントにアクセスできるすべてのユーザーが Chrome ブラウザを操作できます。</translation>
 <translation id="7423425410216218516">公開設定は <ph name="MINUTES" /> 分間有効です</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> を削除</translation>
 <translation id="7424818322350938336">ネットワークを追加しました</translation>
@@ -8491,6 +8480,7 @@
 <translation id="7517292544534877198">Google アカウントのパスワードに Google のデフォルトの暗号化を使用する</translation>
 <translation id="7517959947270534934">現在、ファミリー メンバーはパスワードを受信できません。Chrome を更新してパスワードを同期するようメンバーに依頼してください。</translation>
 <translation id="7518079994230200553">このオプションは現在使用できません。</translation>
+<translation id="7519506357537394422">ユーザーに代わって <ph name="DOMAIN" /> にログインすることを Gemini に許可しますか？</translation>
 <translation id="752021853309481824">すべてのデバイスで保存した情報などを使用するには、<ph name="EMAIL" /> としてログインしてください</translation>
 <translation id="7520766081042531487">シークレット ポータル: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">ショートカットを表示</translation>
@@ -8718,7 +8708,6 @@
 <translation id="769824636077131955">このドキュメントはセキュリティ チェックには大きすぎます。印刷できるドキュメントは 50 MB までです。</translation>
 <translation id="7698507637739331665">一部のアイテムはブロックされています</translation>
 <translation id="7700516433658473670">プリンタとスキャナ</translation>
-<translation id="7700873336634517379">いいえ、このプロフィールを学校用にも使用します</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7701869757853594372">USER の操作</translation>
 <translation id="770231223935918661">この画像について質問</translation>
@@ -9083,6 +9072,7 @@
 <translation id="7978450511781612192">この操作を行うと Google アカウントからログアウトし、ブックマーク、履歴、パスワードなどの設定は同期されなくなります。</translation>
 <translation id="7980066177668669492">Base64 エンコード ASCII 形式、複数の証明書</translation>
 <translation id="7981410461060625406">保存した <ph name="APP_NAME" /> のパスキーを使用する</translation>
+<translation id="7981445433812028278">メールアドレスを確認できませんでした</translation>
 <translation id="7981662863948574132">デバイスの EID と QR コードのポップアップを表示します</translation>
 <translation id="7982578888426609524">このグループの最終更新</translation>
 <translation id="7982789257301363584">ネットワーク</translation>
@@ -10379,7 +10369,6 @@
 <translation id="897525204902889653">検疫サービス</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{「<ph name="TAB_TITLE" />」}=1{「<ph name="TAB_TITLE" />」と他 1 個のタブ}other{「<ph name="TAB_TITLE" />」と他 # 個のタブ}}</translation>
 <translation id="897565255818387330">このサイトに <ph name="FILE_NAME" /> の表示とコピーを許可しますか？</translation>
-<translation id="8977523125954274918">学校用プロフィールを設定すると、パスワードなどをアカウントに保存して使用できます</translation>
 <translation id="8977811652087512276">パスワードが間違っているか、ファイルが壊れています</translation>
 <translation id="8978154919215542464">オン - すべて同期</translation>
 <translation id="8978670037548431647">テザリング機能を更新</translation>
@@ -10483,7 +10472,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
 <translation id="9041560164471731796">Google パスワード マネージャーで安全なパスワードを保存するには、Chrome にログインしてください</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
-<translation id="9041881059840744611">学校用プロフィールについて</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
@@ -10700,7 +10688,6 @@
 <translation id="9219103736887031265">画像</translation>
 <translation id="9219572436491982747">Google に送信されたデータは、Chrome の AI 技術の改善のために人間のレビュアーによって確認される場合があります</translation>
 <translation id="9219741625496141320">閲覧データが自動的に削除されました</translation>
-<translation id="9220484506568374422">Gemini Spark は、ログインしているサイトを含め、ユーザーと同じサイトにアクセスできます。必要に応じてサードパーティと情報を共有することがあり、これにはセンシティブな個人情報も含まれます。</translation>
 <translation id="9220525904950070496">アカウントを削除</translation>
 <translation id="9220723036554088545">ファイルをアップロードします</translation>
 <translation id="9220820413868316583">いったん指を放してもう一度お試しください。</translation>

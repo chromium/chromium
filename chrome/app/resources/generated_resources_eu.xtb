@@ -796,7 +796,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="160689647589417224">Aplikazioa murriztuta dago lurralde honetan.</translation>
 <translation id="1607139524282324606">Garbitu sarrera</translation>
 <translation id="1608668830839595724">Ekintza gehiago hautatutako elementuetarako</translation>
-<translation id="1609603645228231640">Gemini Spark esperimentala da eta baliteke zure informazioa partekatzea edo erosketak egitea baimenik eskatu gabe. <ph name="LINK_BEGIN" />Berrikusi arriskuak<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Aplikazioen ezarpenak</translation>
 <translation id="161042844686301425">Ziana</translation>
 <translation id="1611649489706141841">aurrera</translation>
@@ -1054,7 +1053,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1808805149659872686">Sarrera berria</translation>
 <translation id="1809201888580326312">Webgune eta aplikazio hauetako pasahitzak ez gordetzea aukeratu duzu</translation>
 <translation id="1809734401532861917">Gehitu laster-markak, historia, pasahitzak eta ezarpenak <ph name="USER_EMAIL_ADDRESS" /> profilean</translation>
-<translation id="1811908311154949291">Ezkutuko moduko marko mugarritua (<ph name="FENCEDFRAME_SITE" />)</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> webguneak ezin du egin aurrera <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> igortzen</translation>
 <translation id="1813278315230285598">Zerbitzuak</translation>
@@ -1286,7 +1284,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1983612835086592681">Azken astean ireki duzu</translation>
 <translation id="1984087999855033707">telefono-zenbakia</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
-<translation id="1984683754853869253">Eskolarako profil berri bat sortu nahi duzu?</translation>
 <translation id="198507684520034826">Laguntza</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Kokapen-ezarpen aurreratuak</translation>
@@ -1319,7 +1316,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="2010501376126504057">Gailu bateragarriak</translation>
 <translation id="2010636492623189611">Hautatuta.</translation>
 <translation id="2012935757369720523">Ezabatu fitxategia</translation>
-<translation id="2014495120525813351">Eman gailu honetan arakatzeko baimena Gemini Spark-i</translation>
 <translation id="2016473077102413275">Irudiak behar dituzten eginbideek ez dute funtzionatuko</translation>
 <translation id="2017334798163366053">Desgaitu errendimendu-datuen bilketa</translation>
 <translation id="2017770349934140286">Google Play eta bertatik deskargatu dituzun aplikazioak Chromebook honetatik ezabatuko dira.
@@ -2029,7 +2025,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2554553592469060349">Hautatutako fitxategia handiegia da (3 MB gehienez).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" />/<ph name="TOTAL_NUM_APPS" /> aplikaziok jakinarazpenak bidal ditzakete</translation>
 <translation id="2555855727505718984">Betetze automatikoak ez du izango informazio hori gailuan inprimakiak betetzen laguntzeko</translation>
-<translation id="25568951186001797">Marko mugarritua (<ph name="FENCEDFRAME_SITE" />)</translation>
 <translation id="2561211427862644160">Ikusi laster-marka guztiak hemen</translation>
 <translation id="2563924218974330506">Orain, hemen kudea ditzakezu fitxa taldeak. Edonoiz kendu ahal izango diozu aingura.</translation>
 <translation id="2564520396658920462">Desaktibatuta dago AppleScript bitartez JavaScript exekutatzeko aukera. Aktibatzeko, joan menu-barrara eta sakatu Ikusi &gt; Garatzailea &gt; Baimendu JavaScript Apple gertaeretan. Informazio gehiago lortzeko, joan https://support.google.com/chrome/?p=applescript helbidera.</translation>
@@ -2108,7 +2103,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2626746300781063303">Webguneek, Google barne, beren erabakimenaren arabera erantzuten diote eskaera honi</translation>
 <translation id="2626799779920242286">Saiatu berriro geroago.</translation>
 <translation id="2627424346328942291">Ezin da partekatu</translation>
-<translation id="2627970398976286795">Berrikusi Gemini Spark-en arriskuak</translation>
 <translation id="2628258844236035475">Chrome-ren betetze automatikotik etxeko helbidea kendu nahi duzu?</translation>
 <translation id="2628770867680720336">ADB arazketa gaitzeko, Chromebook honen jatorrizko ezarpenak berrezarri behar dira. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Hasi elkarrizketa bat Gemini-rekin</translation>
@@ -2417,7 +2411,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2845276301195220700">Ekintza gehiago Google Calendar-en</translation>
 <translation id="2845382757467349449">Erakutsi beti laster-marken barra</translation>
 <translation id="284581348330507117">Sortu pasahitz esklusiboak</translation>
-<translation id="2846345106886298325">Zeregina amaitu da eta Gemini Spark-era itzuli zara</translation>
 <translation id="284884486564166077">Bilatu edozein irudi Lens-ekin</translation>
 <translation id="2849035674501872372">Bilatu</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2479,7 +2472,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2893318819023133318">Alderantzikatu ikuspegiak</translation>
 <translation id="2894596417096093634">Hutsegite-txostenen identifikatzaileak</translation>
 <translation id="2894757982205307093">Gehitu fitxa bat taldean</translation>
-<translation id="2895194086130800590">Gailua esna badago eta Chrome exekutatzen ari bada soilik erabil dezake arakatze automatikoa gailu honetan Gemini Spark-ek.</translation>
 <translation id="289695669188700754">Gako-identifikatzailea: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ezarpen pertsonalizatu hau kendu egingo da ezkutuko moduko leiho guztiak ixten dituzunean</translation>
 <translation id="2897878306272793870">Ziur <ph name="TAB_COUNT" /> fitxa ireki nahi dituzula?</translation>
@@ -2532,7 +2524,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2933653107553951760">Leheneratu taldea</translation>
 <translation id="2934225044529065415">Ezin da erabili kamera</translation>
 <translation id="2935314715123552088">Desgaitu eSIMaren profil aktiboa</translation>
-<translation id="2936067606203230121">Gemini Spark-ek zer ekintza egin behar diren erabakiko du hasi edo eguneratzen dituzun zereginen arabera.</translation>
 <translation id="2936851848721175671">Babeskopiak eta leheneratzea</translation>
 <translation id="2938981087412273365">Ez du webgunea irakurtzeko eta aldatzeko baimenik</translation>
 <translation id="2939005221756255562">Gaitu jakinarazpenak jakinarazpen-zentroan. Ireki <ph name="BEGIN_LINK" />sistemaren ezarpenak<ph name="END_LINK" />.</translation>
@@ -3636,7 +3627,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3756578970075173856">Ezarri PINa</translation>
 <translation id="3756806135608816820">Webguneek Bluetooth bidezko gailuak bilatzeko baimena eska dezakete</translation>
 <translation id="3756823472711156529">Leheneratu taldea</translation>
-<translation id="3757337311115630808">Lortu Gemini Spark-i buruzko informazio gehiago</translation>
 <translation id="3757567010566591880">Kendu aingura tresna-barratik</translation>
 <translation id="3757645900890881944">Bilaketa-tresnak</translation>
 <translation id="3757733214359997190">Ez da aurkitu webgunerik</translation>
@@ -5246,7 +5236,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4989966318180235467">Ikuskatu &amp;atzeko planoko orria</translation>
 <translation id="499016799952867794">Horrela, aplikazioa espero bezala exekutatuko da.</translation>
 <translation id="4990673372047946816">Ez dago kamerarik erabilgarri</translation>
-<translation id="499126848196136237">Gemini Spark-ek Chrome-ren arakatze automatikoa erabil dezake gailu honetan webguneekin interakzioan jarduteko eta zure izenean zereginak egiteko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tratatu goiko errenkadako teklak funtzio-tekla gisa</translation>
 <translation id="4991873517942703737">Galdetu dokumentu honi buruz</translation>
 <translation id="4992066212339426712">Aktibatu audioa</translation>
@@ -5503,7 +5492,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5189274947477567401">Prozesuak partekatzeko aukera ez erabiltzea aukeratzeko, arakatzailea berrabiarazi behar da. Orain berrabiaraziko da arakatzailea.</translation>
 <translation id="5189404424758444348">Steampunk-a</translation>
 <translation id="5190577235024772869">Erabilitako tokia: <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Laster-marken barra</translation>
 <translation id="5190926251776387065">Aktibatu ataka</translation>
 <translation id="5190959794678983197">Ez dago mikrofonorik</translation>
 <translation id="5191094172448199359">Idatzi dituzun PINak ez datoz bat</translation>
@@ -6999,7 +6987,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6393550101331051049">Segurua ez den edukia erakuts dezakete</translation>
 <translation id="6394634179843537518">Gehitu fitxategi bat</translation>
 <translation id="6395423953133416962">Bidali <ph name="BEGIN_LINK1" />sistemari buruzko informazioa<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />estatistikak<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Bai, mantendu nire datuak eskolatik bereizita (gomendatuta)</translation>
 <translation id="6398715114293939307">Kendu Google Play Store</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
 <translation id="639880411171387127">Google Lens-eko hautapena. Sakatu Sartu edo Atzera tekla Google Lens-eko hautapena ezabatzeko.</translation>
@@ -8358,7 +8345,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7421293530411019405">Fitxa taldetik irten nahi duzu?</translation>
 <translation id="7421925624202799674">&amp;Ikusi orriaren iturburua</translation>
 <translation id="7422192691352527311">Hobespenak…</translation>
-<translation id="7423381908337122792">Gemini Spark-eko agentea atzitu ahal duen edonork Chrome arakatzailea kontrola dezake.</translation>
 <translation id="7423425410216218516">Ikusgai egongo da <ph name="MINUTES" /> minutuz</translation>
 <translation id="7423513079490750513">Kendu <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Gehitu da sarea</translation>
@@ -8710,7 +8696,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="769824636077131955">Dokumentua handiegia da haren segurtasuna egiaztatzeko. Gehienez 50 MB-ko dokumentuak inprima ditzakezu.</translation>
 <translation id="7698507637739331665">Zenbait elementu blokeatuta daude</translation>
 <translation id="7700516433658473670">Inprimagailuak eta eskanerrak</translation>
-<translation id="7700873336634517379">Ez, jarraitu eskolarako erabiltzen profil honetan</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701869757853594372">Erabiltzailearen heldulekuak</translation>
 <translation id="770231223935918661">Galdetu irudi honi buruz</translation>
@@ -10371,7 +10356,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="897525204902889653">Berrogeialdi-zerbitzua</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" eta beste fitxa bat}other{"<ph name="TAB_TITLE" />" eta beste # fitxa}}</translation>
 <translation id="897565255818387330"><ph name="FILE_NAME" /> ikusteko eta kopiatzeko baimena eman nahi diozu webguneari?</translation>
-<translation id="8977523125954274918">Konfiguratu eskolako profila pasahitzak eta gauza gehiago gordetzeko eta erabiltzeko zure kontuan</translation>
 <translation id="8977811652087512276">Pasahitza okerra da edo fitxategia hondatuta dago</translation>
 <translation id="8978154919215542464">Aktibatuta: sinkronizatu guztia</translation>
 <translation id="8978670037548431647">Freskatu konexioa partekatzeko aukeraren gaitasunak</translation>
@@ -10475,7 +10459,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9040661932550800571"><ph name="ORIGIN" /> webguneko pasahitza eguneratu nahi duzu?</translation>
 <translation id="9041560164471731796">Google-ren Pasahitz-kudeatzailea zerbitzuarekin pasahitz konplexuak gordetzeko, hasi saioa Chrome-n</translation>
 <translation id="9041692268811217999">Administratzaileak ordenagailuko fitxategi lokaletarako sarbidea desgaitu du</translation>
-<translation id="9041881059840744611">Eskolako profilei buruz</translation>
 <translation id="904224458472510106">Ezin da desegin eragiketa</translation>
 <translation id="9042827002460091668">Egiaztatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="9042893549633094279">Pribatutasuna eta segurtasuna</translation>
@@ -10692,7 +10675,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="9219572436491982747">Baliteke Google-ri bidalitako datuak gizakiak diren berrikusleek ikustea, Chrome-ren AAren teknologia hobetzeko.</translation>
 <translation id="9219741625496141320">Arakatze-datuak automatikoki ezabatu dira</translation>
-<translation id="9220484506568374422">Gemini Spark-ek zure webgune berdinak atzitu ahalko ditu, zure saioa hasita daukaten webguneak barne. Beharrezko informazioa partekatuko du hirugarrenekin, agian kontuzkoa iruditzen zaizun informazio pertsonala barne.</translation>
 <translation id="9220525904950070496">Kendu kontua</translation>
 <translation id="9220723036554088545">kargatu fitxategi bat</translation>
 <translation id="9220820413868316583">Jaso hatza eta saiatu berriro.</translation>

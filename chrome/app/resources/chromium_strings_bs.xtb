@@ -10,6 +10,7 @@
 
 Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.</translation>
 <translation id="1083934481477628225">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium</translation>
+<translation id="109026165963220603">Chromiumu treba pristup vašoj lokalnoj mreži da otkrije i koristi uređaje u blizini</translation>
 <translation id="1090946077924227754">Da pretražite određenu funkciju ili ekstenziju Chromiuma, unesite prečicu te funkcije ili ekstenzije na traci za adresu, a zatim pritisnite odabranu tipku na tastaturi</translation>
 <translation id="1098493699368672217">Prikaži pretraživanje putem Chromiuma na sistemskoj traci i uključi prečicu na tastaturi</translation>
 <translation id="1104942323762546749">Chromium želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da to dozvolite.</translation>
@@ -106,6 +107,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2126108037660393668">Potvrda preuzetog fajla nije uspjela.</translation>
 <translation id="2135919691573380097">Prijavite ovu web lokaciju</translation>
 <translation id="2137162749895930932">Zatvaranje ekrana prevoda</translation>
+<translation id="2147218225094845757">Sakrivanje bočne ploče</translation>
 <translation id="215352261310130060">Chromium je blokirao ovo preuzimanje jer web lokacija ne koristi sigurnu vezu i fajl je možda neovlašteno izmijenjen</translation>
 <translation id="2170098639895543546">Odaberite bilo šta na stranici</translation>
 <translation id="2174178932569897599">Prilagodite Chromium</translation>
@@ -305,7 +307,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4251772536351901305">Upozorava vas o opasnim web lokacijama, čak i onim za koje Google nije ranije znao, analizirajući više podataka s web lokacija nego što se analizira standardnom zaštitom. Možete odabrati preskakanje Chromiumovih upozorenja.</translation>
 <translation id="4269093074552541569">Odjava iz Chromiuma</translation>
 <translation id="4271805377592243930">Potražite pomoć s Chromiumom</translation>
-<translation id="4275788652681621337">Zatvori bočnu ploču</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
 <translation id="4285930937574705105">Instalacija nije uspjela zbog neodređene greške. Ako je Chromium trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4298125729853015961">Izvezite lozinke iz Chromiuma</translation>

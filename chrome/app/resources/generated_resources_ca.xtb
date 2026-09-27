@@ -469,6 +469,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1341701348342335220">Ben fet!</translation>
 <translation id="1342886103232377846">Per comprovar si hi ha contrasenyes en perill, ves al gestor de contrasenyes de Google</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
+<translation id="1344216785734288669">Contrasenyes d'Apple</translation>
 <translation id="1346630054604077329">Confirma i reinicia</translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1347512539447549782">Emmagatzematge de Linux</translation>
@@ -796,7 +797,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="160689647589417224">L'aplicació està restringida en aquesta regió.</translation>
 <translation id="1607139524282324606">Esborra l'entrada</translation>
 <translation id="1608668830839595724">Més accions per als elements seleccionats</translation>
-<translation id="1609603645228231640">Gemini Spark és experimental i pot fer coses com ara compartir la teva informació o fer compres sense demanar-te permís. <ph name="LINK_BEGIN" />Revisa els riscos<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Configuració de l'aplicació</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611649489706141841">avança</translation>
@@ -1054,7 +1054,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1808805149659872686">Entrada nova</translation>
 <translation id="1809201888580326312">Has triat no desar les contrasenyes d'aquests llocs web i aplicacions</translation>
 <translation id="1809734401532861917">Afegeix les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Marc delimitat d'incògnit: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no pot continuar utilitzant <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">S'està emetent <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Serveis</translation>
@@ -1287,7 +1286,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1983612835086592681">L'has obert durant la darrera setmana</translation>
 <translation id="1984087999855033707">número de telèfon</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
-<translation id="1984683754853869253">Vols crear un perfil nou per al centre educatiu?</translation>
 <translation id="198507684520034826">Ajuda</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Configuració d'ubicació avançada</translation>
@@ -1320,7 +1318,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2010501376126504057">Dispositius compatibles</translation>
 <translation id="2010636492623189611">Seleccionat.</translation>
 <translation id="2012935757369720523">Suprimeix el fitxer</translation>
-<translation id="2014495120525813351">Permet que Gemini Spark navegui en aquest dispositiu</translation>
+<translation id="2014191284313949173">Tanca les aïllades</translation>
 <translation id="2016473077102413275">Les funcions que necessitin imatges no funcionaran</translation>
 <translation id="2017334798163366053">Desactiva la recollida de dades de rendiment</translation>
 <translation id="2017770349934140286">Google Play i les aplicacions que hagis baixat de Google Play se suprimiran d'aquest Chromebook.
@@ -1452,6 +1450,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2121825465123208577">Canvia la mida</translation>
 <translation id="2122446694240899610">Les habilitats es desen al Compte de Google,</translation>
 <translation id="2123766928840368256">Tria un altre fitxer</translation>
+<translation id="2124153808069020510">Per suprimir les dades, tanca totes les finestres aïllades</translation>
 <translation id="2124930039827422115">{1,plural, =1{Puntuació mitjana d'1 usuari: <ph name="AVERAGE_RATING" />}other{Puntuació mitjana de # usuaris: <ph name="AVERAGE_RATING" />}}</translation>
 <translation id="2125715366913703594">Explora les &amp;extensions</translation>
 <translation id="2126167708562367080">L'administrador ha desactivat la sincronització.</translation>
@@ -1594,6 +1593,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="222931766245975952">Fitxer truncat</translation>
 <translation id="2229342031987138128">Subtítols</translation>
+<translation id="22294739381015133">Els llocs web que visites no es desen en mode aïllat</translation>
 <translation id="2231351769755997720">No hi ha cap suggeriment disponible. Prova de fer la teva pròpia pregunta sobre aquesta pàgina.</translation>
 <translation id="2232751457155581899">Els llocs web poden demanar permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="2233502537820838181">&amp;Més informació</translation>
@@ -2030,7 +2030,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2554553592469060349">El fitxer seleccionat és massa gran (mida màxima: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /> aplicacions poden enviar notificacions</translation>
 <translation id="2555855727505718984">Emplenament automàtic no disposarà d'aquesta informació en aquest dispositiu per ajudar-te a emplenar formularis</translation>
-<translation id="25568951186001797">Marc delimitat: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Consulta totes les teves adreces d'interès aquí</translation>
 <translation id="2563924218974330506">Ara pots gestionar els teus grups de pestanyes aquí. Deixa de fixar-ho en qualsevol moment.</translation>
 <translation id="2564520396658920462">L'execució de JavaScript amb AppleScript està desactivada. Per activar-la, ves a la barra de menú i selecciona Visualitza &gt; Desenvolupador &gt; Permet JavaScript des d'Apple Events. Per obtenir més informació, consulta: https://support.google.com/chrome/?p=applescript.</translation>
@@ -2109,7 +2108,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2626746300781063303">Els llocs web, inclòs Google, faran servir el seu propi criteri a l'hora de respondre a aquesta sol·licitud</translation>
 <translation id="2626799779920242286">Torneu-ho a provar més tard.</translation>
 <translation id="2627424346328942291">No es pot compartir</translation>
-<translation id="2627970398976286795">Revisa els riscos de Gemini Spark</translation>
 <translation id="2628258844236035475">Vols suprimir l'adreça de casa de l'emplenament automàtic de Chrome?</translation>
 <translation id="2628770867680720336">Cal restablir les dades de fàbrica del dispositiu Chromebook per activar la depuració d'ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Inicia un xat nou amb Gemini</translation>
@@ -2418,7 +2416,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2845276301195220700">Més accions per a Google Calendar</translation>
 <translation id="2845382757467349449">Mostra la barra d'adreces d'interès</translation>
 <translation id="284581348330507117">Crea contrasenyes úniques</translation>
-<translation id="2846345106886298325">S'ha fet la tasca i s'ha tornat a Gemini Spark</translation>
 <translation id="284884486564166077">Cerca qualsevol imatge amb Lens</translation>
 <translation id="2849035674501872372">Cerca</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2477,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2893318819023133318">Inverteix les visualitzacions</translation>
 <translation id="2894596417096093634">Identificadors d'informes d'error</translation>
 <translation id="2894757982205307093">Pestanya nova al grup</translation>
-<translation id="2895194086130800590">Gemini Spark només pot utilitzar la navegació automàtica en aquest dispositiu si el dispositiu està activat i Chrome s'està executant.</translation>
 <translation id="289695669188700754">Identificador de clau: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Aquesta configuració personalitzada se suprimirà quan tanquis totes les finestres d'incògnit</translation>
 <translation id="2897878306272793870">Confirmes que vols obrir <ph name="TAB_COUNT" /> pestanyes?</translation>
@@ -2533,7 +2529,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2933653107553951760">Restaura el grup</translation>
 <translation id="2934225044529065415">No es pot accedir a la càmera</translation>
 <translation id="2935314715123552088">Desactiva el perfil d'eSIM actiu</translation>
-<translation id="2936067606203230121">Gemini Spark decidirà quines accions cal dur a terme en funció de les tasques que iniciïs o actualitzis.</translation>
 <translation id="2936851848721175671">Còpia de seguretat i restauració</translation>
 <translation id="2938981087412273365">Sense permís per llegir i canviar aquest lloc web</translation>
 <translation id="2939005221756255562">Activa les notificacions al Centre de notificacions. Obre <ph name="BEGIN_LINK" />Configuració del Sistema<ph name="END_LINK" />.</translation>
@@ -2911,6 +2906,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3213681682237645841">S'estan baixant les veus en <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Vols crear una drecera?</translation>
 <translation id="3220494908385619295">Mostra en paral·lel</translation>
+<translation id="3220541426929880850">Per suprimir l'historial de navegació aïllada del dispositiu, tanca totes les pestanyes aïllades</translation>
 <translation id="3220943972464248773">Per sincronitzar les contrasenyes, verifica la teva identitat</translation>
 <translation id="3222066309010235055">Renderitzador previ: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connecta a <ph name="USB_VM_NAME" /></translation>
@@ -3409,6 +3405,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3600956933576601730">Per utilitzar aquestes funcions, has de revisar i acceptar les condicions</translation>
 <translation id="3601374594714740284">Per a veus de més qualitat, allibera espai al dispositiu</translation>
 <translation id="360180734785106144">Oferir funcions noves a mesura que estiguin disponibles.</translation>
+<translation id="3601988315287782413">Això només afecta les finestres aïllades</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3602495161941872610">Corregeix el problema de &amp;sincronització</translation>
 <translation id="3602894439067790744">Llegeix els números com a</translation>
@@ -3637,7 +3634,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3756578970075173856">Defineix el PIN</translation>
 <translation id="3756806135608816820">Els llocs web poden demanar permís per cercar dispositius Bluetooth</translation>
 <translation id="3756823472711156529">Restaura el grup</translation>
-<translation id="3757337311115630808">Més informació sobre Gemini Spark</translation>
 <translation id="3757567010566591880">Deixa de fixar a la barra d'eines</translation>
 <translation id="3757645900890881944">Eines de cerca</translation>
 <translation id="3757733214359997190">No s'ha trobat cap lloc web</translation>
@@ -4760,6 +4756,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4631637535315947773">S'han suprimit les dreceres dels llocs web que més visites perquè no els has utilitzat recentment</translation>
 <translation id="4631955550884380853">Veu enfocada</translation>
 <translation id="4632655012900268062">Personalitza les targetes</translation>
+<translation id="4634719521235795064">Gemini pot utilitzar el gestor de contrasenyes de Google per iniciar la sessió en nom teu. <ph name="BEGIN_LINK" />Informació sobre com gestiona Gemini les teves dades<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Desinstal·la Crostini</translation>
 <translation id="4635398712689569051">La pàgina <ph name="PAGE_NAME" /> no està disponible per als usuaris convidats.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Penja 1 imatge per utilitzar-la amb la pregunta}other{Penja fins a # imatges per utilitzar-les amb la teva pregunta}}</translation>
@@ -5246,7 +5243,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="4989966318180235467">Inspecciona la &amp;pàgina de fons</translation>
 <translation id="499016799952867794">Això permet que l'aplicació s'executi de la manera prevista.</translation>
 <translation id="4990673372047946816">No hi ha cap càmera disponible</translation>
-<translation id="499126848196136237">Gemini Spark pot utilitzar la navegació automàtica de Chrome en aquest dispositiu per interaccionar amb llocs web i completar tasques en nom teu. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tracta les tecles de la fila superior com a tecles de funció</translation>
 <translation id="4991873517942703737">Pregunta sobre aquest document</translation>
 <translation id="4992066212339426712">Deixa de silenciar</translation>
@@ -5503,7 +5499,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5189274947477567401">Cal reiniciar el navegador per desactivar la compartició de processos. Aquest navegador es reiniciarà ara.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Fan servir <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Barra d'adreces d'interès</translation>
 <translation id="5190926251776387065">Activa el port</translation>
 <translation id="5190959794678983197">No hi ha cap micròfon</translation>
 <translation id="5191094172448199359">Els codis PIN que has introduït no coincideixen</translation>
@@ -6071,6 +6066,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" ha canviat la pàgina que es mostra quan fas clic al botó d'inici.</translation>
 <translation id="5643191124441701136">El codi de seguretat és a l'anvers de la targeta</translation>
 <translation id="5643321261065707929">Xarxa d'ús mesurat</translation>
+<translation id="5645369002069651355">S'està verificant l'adreça electrònica</translation>
 <translation id="5646376287012673985">Ubicació</translation>
 <translation id="5646558797914161501">Home de negocis</translation>
 <translation id="564670806635578888">Cerca "<ph name="SEARCH_TERMS" />" a Google</translation>
@@ -7001,7 +6997,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6393550101331051049">Amb permís per mostrar contingut no segur</translation>
 <translation id="6394634179843537518">Afegeix un fitxer</translation>
 <translation id="6395423953133416962">Envia les <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /> i la <ph name="BEGIN_LINK1" />informació del sistema<ph name="END_LINK1" /></translation>
-<translation id="6397586889873084061">Sí, mantén les meves dades separades de les del centre educatiu (opció recomanada)</translation>
 <translation id="6398715114293939307">Suprimeix Google Play Store</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
 <translation id="639880411171387127">La teva selecció de Google Lens. Prem Retorn o Retrocés per suprimir-la.</translation>
@@ -8361,7 +8356,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7421293530411019405">Vols sortir del grup de pestanyes?</translation>
 <translation id="7421925624202799674">&amp;Visualitza l'origen de la pàgina</translation>
 <translation id="7422192691352527311">Preferències...</translation>
-<translation id="7423381908337122792">Qualsevol persona amb accés al teu agent de Gemini Spark podria controlar el teu navegador Chrome.</translation>
 <translation id="7423425410216218516">La visibilitat estarà activada durant <ph name="MINUTES" /> minuts</translation>
 <translation id="7423513079490750513">Suprimeix <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">S'ha afegit la xarxa</translation>
@@ -8487,6 +8481,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7517292544534877198">Utilitza l'encriptació predeterminada de Google per a les contrasenyes del meu Compte de Google</translation>
 <translation id="7517959947270534934">El membre de la teva família no pot rebre contrasenyes en aquest moment. Demana-li que actualitzi Chrome i que sincronitzi les seves contrasenyes.</translation>
 <translation id="7518079994230200553">Aquesta opció no està disponible en aquests moments.</translation>
+<translation id="7519506357537394422">Vols permetre que Gemini iniciï la sessió a <ph name="DOMAIN" /> en nom teu?</translation>
 <translation id="752021853309481824">Per obtenir la informació desada i altres dades de tots els teus dispositius, inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal d'incògnit: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostra les dreceres</translation>
@@ -8714,7 +8709,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="769824636077131955">Aquest document és massa gran per fer-hi una comprovació de seguretat. Pots imprimir documents de fins a 50 MB.</translation>
 <translation id="7698507637739331665">Alguns elements estan bloquejats</translation>
 <translation id="7700516433658473670">Impressores i escàners</translation>
-<translation id="7700873336634517379">No, continua utilitzant-lo per al centre educatiu en aquest perfil</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
 <translation id="770231223935918661">Pregunta sobre aquesta imatge</translation>
@@ -9080,6 +9074,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7978450511781612192">Aquesta acció tancarà la sessió dels Comptes de Google. Les adreces d'interès, l'historial, les contrasenyes i altres opcions es deixaran de sincronitzar.</translation>
 <translation id="7980066177668669492">ASCII codificat en Base64, diversos certificats</translation>
 <translation id="7981410461060625406">Utilitza una clau d'accés desada per a <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">No s'ha pogut verificar l'adreça electrònica</translation>
 <translation id="7981662863948574132">Mostra la finestra emergent amb el codi QR i amb l'EID del dispositiu</translation>
 <translation id="7982578888426609524">Darreres actualitzacions d'aquest grup</translation>
 <translation id="7982789257301363584">Xarxa</translation>
@@ -10139,6 +10134,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="878862491037637275">Aquest grup de pestanyes és ple</translation>
 <translation id="8791157330927639737">Més informació sobre les actualitzacions</translation>
 <translation id="8791534160414513928">Envia una sol·licitud "Do Not Track" amb el trànsit de navegació</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (aïllada)</translation>
 <translation id="8793390639824829328">Els llocs web utilitzen aquesta funció per desplaçar-se i fer zoom a les pestanyes compartides</translation>
 <translation id="8793895150509408038">Mostra els detalls del lloc web <ph name="SITE" /> a la llista <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Mentre el punt d'accés Wi-Fi estigui activat, el telèfon <ph name="PHONE_NAME" />:</translation>
@@ -10375,7 +10371,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="897525204902889653">Servei de quarantena</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" i 1 pestanya més}other{"<ph name="TAB_TITLE" />" i # pestanyes més}}</translation>
 <translation id="897565255818387330">Vols permetre que aquest lloc web visualitzi i copiï <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Configura un perfil de centre educatiu per desar i utilitzar les teves contrasenyes i altres dades al teu compte</translation>
 <translation id="8977811652087512276">Contrasenya incorrecta o fitxer malmès</translation>
 <translation id="8978154919215542464">Activat: se sincronitza tot</translation>
 <translation id="8978670037548431647">Actualitza les capacitats de la compartició de xarxa</translation>
@@ -10479,7 +10474,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="9040661932550800571">Vols actualitzar la contrasenya per a <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Per desar contrasenyes segures amb el gestor de contrasenyes de Google, inicia la sessió a Chrome</translation>
 <translation id="9041692268811217999">L'administrador ha desactivat l'accés als fitxers locals de l'ordinador</translation>
-<translation id="9041881059840744611">Sobre els perfils de centre educatiu</translation>
 <translation id="904224458472510106">Aquesta operació no es pot desfer</translation>
 <translation id="9042827002460091668">Comprova la connexió a Internet i torna-ho a provar</translation>
 <translation id="9042893549633094279">Privadesa i seguretat</translation>
@@ -10696,7 +10690,6 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="9219572436491982747">És possible que revisors humans vegin les dades enviades a Google per millorar la tecnologia de la IA de Chrome</translation>
 <translation id="9219741625496141320">Les dades de navegació s'han suprimit automàticament</translation>
-<translation id="9220484506568374422">Gemini Spark tindrà accés als mateixos llocs web que tu, inclosos els llocs web en què tinguis la sessió iniciada. Compartirà la informació necessària amb tercers, la qual podria incloure informació personal que podries considerar sensible.</translation>
 <translation id="9220525904950070496">Suprimir el compte</translation>
 <translation id="9220723036554088545">penja un fitxer</translation>
 <translation id="9220820413868316583">Aixeca el dit i torna-ho a provar.</translation>

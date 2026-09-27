@@ -889,7 +889,6 @@ Google налог можда има друге облике историје п�
 <translation id="4535755320005483982">Дељена група картица <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Опција за омогућавање обавештења о саветима је отворена на целом екрану</translation>
 <translation id="4537987892902330164">Остали сте пријављени као <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Нема табеле са приступним кључевима</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картица}one{<ph name="TAB_COUNT_MANY" /> картица, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}few{<ph name="TAB_COUNT_MANY" /> картице, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}other{<ph name="TAB_COUNT_MANY" /> картица, <ph name="TAB_COUNT_INCOGNITO" /> без архивирања}}</translation>
 <translation id="4558311620361989323">Пречице за веб-странице</translation>
 <translation id="4572422548854449519">Пријавите се на налог којим се управља</translation>
@@ -934,6 +933,7 @@ Google налог можда има друге облике историје п�
 <translation id="4719927025381752090">Понуди превод</translation>
 <translation id="4720556299488643018">Откажи пријаву</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4736934858538408121">Виртуелна картица</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4738065825338914557">Отказује се пријава…</translation>
@@ -982,6 +982,7 @@ Google налог можда има друге облике историје п�
 <translation id="488187801263602086">Преименујте датотеку</translation>
 <translation id="4885273946141277891">Неподржан број Chrome инстанци.</translation>
 <translation id="4890973535105146893">Нема сачуваних лозинки на Google налогу</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4905823827770127520">Уврстите линк до странице</translation>
 <translation id="4910889077668685004">Апликације за плаћање</translation>
 <translation id="4911042367886397055">Добро нам дошли поново, <ph name="USER_NAME" />.</translation>
@@ -1287,6 +1288,7 @@ Google налог можда има друге облике историје п�
 <translation id="6192907950379606605">Преузимај описе слика</translation>
 <translation id="6193448654517602979">Изаберите картице</translation>
 <translation id="6196315980958524839">Лозинке се чувају у Google менаџеру лозинки на овом уређају</translation>
+<translation id="6200780647297916498">Положај картице</translation>
 <translation id="6204781143409202534">Chrome је открио могући непожељан садржај са домена <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Преглед ове странице</translation>
 <translation id="6212567362666004597">Додај картицу у групу</translation>

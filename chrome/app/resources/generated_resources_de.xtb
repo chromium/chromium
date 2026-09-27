@@ -796,7 +796,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="160689647589417224">Die Anwendung ist in dieser Region eingeschränkt.</translation>
 <translation id="1607139524282324606">Eintrag löschen</translation>
 <translation id="1608668830839595724">Weitere Aktionen für ausgewählte Elemente</translation>
-<translation id="1609603645228231640">Gemini Spark ist experimentell und kann Aktionen durchführen, ohne dich zu fragen, beispielsweise deine Daten teilen oder etwas kaufen. <ph name="LINK_BEGIN" />Informationen zu den Risiken<ph name="LINK_END" /></translation>
 <translation id="1610272688494140697">App-Einstellungen</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611649489706141841">Weiter</translation>
@@ -1054,7 +1053,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1808805149659872686">Neuer Eintrag</translation>
 <translation id="1809201888580326312">Für diese Websites und Apps möchtest du keine Passwörter speichern</translation>
 <translation id="1809734401532861917">Meine Lesezeichen, den Verlauf, Passwörter und andere Einstellungen zu <ph name="USER_EMAIL_ADDRESS" /> hinzufügen</translation>
-<translation id="1811908311154949291">Umgrenzter Inkognito-Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kann <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> nicht mehr verwenden</translation>
 <translation id="1812284620455788548">„<ph name="TAB_NAME" />“ wird gestreamt</translation>
 <translation id="1813278315230285598">Dienste</translation>
@@ -1287,7 +1285,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1983612835086592681">Von dir in der letzten Woche geöffnet</translation>
 <translation id="1984087999855033707">Telefonnummer</translation>
 <translation id="1984417487208496350">Kein Schutz (nicht empfohlen)</translation>
-<translation id="1984683754853869253">Möchtest du ein neues Profil einer Bildungseinrichtung erstellen?</translation>
 <translation id="198507684520034826">Hilfe</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Erweiterte Standorteinstellungen</translation>
@@ -1320,7 +1317,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2010501376126504057">Kompatible Geräte</translation>
 <translation id="2010636492623189611">Ausgewählt.</translation>
 <translation id="2012935757369720523">Datei löschen</translation>
-<translation id="2014495120525813351">Gemini Spark auf diesem Gerät das automatische Browsen verwenden lassen</translation>
+<translation id="2014191284313949173">Isoliertes Fenster schließen</translation>
 <translation id="2016473077102413275">Funktionen, die Bilder erfordern, funktionieren dann nicht</translation>
 <translation id="2017334798163366053">Erfassung von Leistungsdaten deaktivieren</translation>
 <translation id="2017770349934140286">Google Play und Apps, die du von Google Play heruntergeladen hast, werden von diesem Chromebook gelöscht.
@@ -1452,6 +1449,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2121825465123208577">Größe anpassen</translation>
 <translation id="2122446694240899610">Deine Skills werden in deinem Google-Konto gespeichert:</translation>
 <translation id="2123766928840368256">Andere Datei auswählen</translation>
+<translation id="2124153808069020510">Schließe alle isolierten Fenster, um die Daten zu löschen</translation>
 <translation id="2124930039827422115">{1,plural, =1{Von 1 Nutzer als <ph name="AVERAGE_RATING" /> bewertet.}other{Von # Nutzern als <ph name="AVERAGE_RATING" /> bewertet.}}</translation>
 <translation id="2125715366913703594">Entdecken &amp; Erweiterungen</translation>
 <translation id="2126167708562367080">Synchronisierung wurde von deinem Administrator deaktiviert.</translation>
@@ -1594,6 +1592,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2227179592712503583">Vorschlag entfernen</translation>
 <translation id="222931766245975952">Datei gekürzt</translation>
 <translation id="2229342031987138128">Untertitelung</translation>
+<translation id="22294739381015133">Von dir besuchte Websites werden nicht im isolierten Modus gespeichert</translation>
 <translation id="2231351769755997720">Keine Vorschläge verfügbar. Formuliere deine eigene Frage zu dieser Seite.</translation>
 <translation id="2232751457155581899">Websites dürfen nachfragen, wenn sie meine Kameraposition erfassen möchten</translation>
 <translation id="2233502537820838181">&amp;Weitere Informationen</translation>
@@ -2030,7 +2029,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2554553592469060349">Die ausgewählte Datei ist zu groß. Maximale Größe: 3 MB</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> von <ph name="TOTAL_NUM_APPS" /> Apps können Benachrichtigungen senden</translation>
 <translation id="2555855727505718984">Autofill kann diese Informationen dann auf diesem Gerät nicht mehr zum Ausfüllen von Formularen verwenden</translation>
-<translation id="25568951186001797">Umgrenzter Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Hier findest du alle deine Lesezeichen</translation>
 <translation id="2563924218974330506">Du kannst jetzt deine Tabgruppen hier verwalten. Du kannst sie jederzeit loslösen.</translation>
 <translation id="2564520396658920462">Die Ausführung von JavaScript über AppleScript ist deaktiviert. Wenn du diese Funktion aktivieren möchtest, gehe zu „Ansicht“ &gt; „Entwickler“ &gt; „JavaScript von Apple Events erlauben“. Weitere Informationen findest du unter https://support.google.com/chrome/?p=applescript.</translation>
@@ -2109,7 +2107,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2626746300781063303">Websites, einschließlich Google, reagieren auf diese Anfrage nach eigenem Ermessen</translation>
 <translation id="2626799779920242286">Versuche es später erneut.</translation>
 <translation id="2627424346328942291">Teilen nicht möglich</translation>
-<translation id="2627970398976286795">Risiken von Gemini Spark ansehen</translation>
 <translation id="2628258844236035475">Deine Privatadresse aus Chrome Autofill entfernen?</translation>
 <translation id="2628770867680720336">Zur Aktivierung der ADB-Fehlerbehebung muss dieses Chromebook auf die Werkseinstellungen zurückgesetzt werden. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Neuen Chat mit Gemini starten</translation>
@@ -2418,7 +2415,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2845276301195220700">Weitere Aktionen für Google Kalender</translation>
 <translation id="2845382757467349449">Lesezeichenleiste immer anzeigen</translation>
 <translation id="284581348330507117">Erstelle unterschiedliche Passwörter</translation>
-<translation id="2846345106886298325">Aufgabe erledigt und zu Gemini Spark zurückgekehrt</translation>
 <translation id="284884486564166077">Mit Lens in einem Bild suchen</translation>
 <translation id="2849035674501872372">Nachsehen</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2476,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2893318819023133318">Ansichten umkehren</translation>
 <translation id="2894596417096093634">IDs von Absturzberichten</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
-<translation id="2895194086130800590">Gemini Spark kann das automatische Browsen auf diesem Gerät nur verwenden, wenn das Gerät aktiv ist und Chrome ausgeführt wird.</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
@@ -2533,7 +2528,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2933653107553951760">Gruppe wiederherstellen</translation>
 <translation id="2934225044529065415">Zugriff auf die Kamera nicht möglich</translation>
 <translation id="2935314715123552088">Aktives eSIM-Profil deaktivieren</translation>
-<translation id="2936067606203230121">Gemini Spark entscheidet anhand der Aufgaben, die du startest oder aktualisierst, welche Aktionen ausgeführt werden.</translation>
 <translation id="2936851848721175671">Sicherung &amp; Wiederherstellung</translation>
 <translation id="2938981087412273365">Nicht zum Lesen und Ändern dieser Website berechtigt</translation>
 <translation id="2939005221756255562">Du kannst Benachrichtigungen im Benachrichtigungscenter aktivieren. Öffne dazu die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" />.</translation>
@@ -2911,6 +2905,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3213681682237645841">Stimmen auf <ph name="LANGUAGE" /> werden heruntergeladen…</translation>
 <translation id="3217843140356091325">Verknüpfung erstellen?</translation>
 <translation id="3220494908385619295">Nebeneinander anzeigen</translation>
+<translation id="3220541426929880850">Schließe alle isolierten Tabs, um den isolierten Browserverlauf vom Gerät zu löschen</translation>
 <translation id="3220943972464248773">Bestätige deine Identität, um deine Passwörter zu synchronisieren</translation>
 <translation id="3222066309010235055">Vorab rendern: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Mit <ph name="USB_VM_NAME" /> verbinden</translation>
@@ -3409,6 +3404,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3600956933576601730">Wenn du diese Funktionen verwenden möchtest, musst du die Nutzungsbedingungen lesen und akzeptieren</translation>
 <translation id="3601374594714740284">Gib Speicherplatz auf deinem Gerät frei, um hochwertigere Stimmen herunterzuladen</translation>
 <translation id="360180734785106144">Neue Funktionen anbieten, sobald sie verfügbar sind</translation>
+<translation id="3601988315287782413">Dies wirkt sich nur auf isolierte Fenster aus</translation>
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3602495161941872610">Problem mit &amp;Synchronisierung beheben</translation>
 <translation id="3602894439067790744">Nummern vorlesen als</translation>
@@ -3637,7 +3633,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">PIN festlegen</translation>
 <translation id="3756806135608816820">Websites dürfen darum bitten, nach Bluetooth-Geräten zu suchen</translation>
 <translation id="3756823472711156529">Gruppe wiederherstellen</translation>
-<translation id="3757337311115630808">Weitere Informationen zu Gemini Spark</translation>
 <translation id="3757567010566591880">Von Symbolleiste loslösen</translation>
 <translation id="3757645900890881944">Suchoptionen</translation>
 <translation id="3757733214359997190">Keine Websites gefunden</translation>
@@ -5247,7 +5242,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4989966318180235467">&amp;Hintergrundseite prüfen</translation>
 <translation id="499016799952867794">Dadurch kann die App wie erwartet ausgeführt werden.</translation>
 <translation id="4990673372047946816">Keine Kamera verfügbar</translation>
-<translation id="499126848196136237">Gemini Spark kann das automatische Browsen in Chrome auf diesem Gerät verwenden, um mit Websites zu interagieren und Aufgaben in deinem Namen zu erledigen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tasten der obersten Reihe als Funktionstasten nutzen</translation>
 <translation id="4991873517942703737">Frage zu diesem Dokument stellen</translation>
 <translation id="4992066212339426712">Stummschaltung aufheben</translation>
@@ -5504,7 +5498,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5189274947477567401">Zum Deaktivieren der Prozessfreigabe muss der Browser neu gestartet werden. Dieser Browser wird jetzt neu gestartet.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> werden verwendet</translation>
-<translation id="5190835502935405962">Lesezeichenleiste</translation>
 <translation id="5190926251776387065">Port aktivieren</translation>
 <translation id="5190959794678983197">Kein Mikrofon</translation>
 <translation id="5191094172448199359">Die eingegebenen PINs stimmen nicht überein</translation>
@@ -7000,7 +6993,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
 <translation id="6394634179843537518">Datei hinzufügen</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Systeminformationen<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />Messwerte<ph name="END_LINK2" /> senden</translation>
-<translation id="6397586889873084061">Ja, meine Daten vom Profil einer Bildungseinrichtung getrennt halten (empfohlen)</translation>
 <translation id="6398715114293939307">Google Play Store entfernen</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
 <translation id="639880411171387127">Deine Google Lens-Auswahl. Drücke die Eingabetaste oder die Rücktaste, um deine Google Lens-Auswahl zu löschen.</translation>
@@ -8360,7 +8352,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7421293530411019405">Tabgruppe verlassen?</translation>
 <translation id="7421925624202799674">Seitenquelltext &amp;anzeigen</translation>
 <translation id="7422192691352527311">Einstellungen...</translation>
-<translation id="7423381908337122792">Jeder, der Zugriff auf deinen Gemini Spark-KI-Agenten hat, kann deinen Chrome-Browser steuern.</translation>
 <translation id="7423425410216218516">Sichtbarkeit ist <ph name="MINUTES" /> Minuten lang aktiviert</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> entfernen</translation>
 <translation id="7424818322350938336">Netzwerk hinzugefügt</translation>
@@ -8713,7 +8704,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="769824636077131955">Dieses Dokument ist zu groß für eine Sicherheitsprüfung. Du kannst Dokumente bis zu einer Größe von 50 MB ausdrucken.</translation>
 <translation id="7698507637739331665">Einige Elemente sind blockiert</translation>
 <translation id="7700516433658473670">Drucker und Scanner</translation>
-<translation id="7700873336634517379">Nein, dieses Profil für die Bildungseinrichtung verwenden</translation>
 <translation id="7701040980221191251">Keine Einträge</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
 <translation id="770231223935918661">Nach Infos zu diesem Bild fragen</translation>
@@ -10138,6 +10128,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="878862491037637275">Diese Tabgruppe ist voll</translation>
 <translation id="8791157330927639737">Weitere Informationen zum Aktualisieren</translation>
 <translation id="8791534160414513928">Bei Browserzugriffen eine „Do Not Track“-Anforderung mitsenden</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (isoliert)</translation>
 <translation id="8793390639824829328">Websites nutzen diese Funktion zum Scrollen und Zoomen auf geteilten Tabs</translation>
 <translation id="8793895150509408038">Websitedetails zu <ph name="SITE" /> aus der Liste „<ph name="SECTION_HEADER" />“ ansehen</translation>
 <translation id="879413103056696865">Während der Hotspot aktiviert ist, wird dein <ph name="PHONE_NAME" /> Folgendes tun:</translation>
@@ -10374,7 +10365,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="897525204902889653">Quarantänedienst</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" und 1 weiterer Tab}other{"<ph name="TAB_TITLE" />" und # weitere Tabs}}</translation>
 <translation id="897565255818387330">Möchtest du dieser Website erlauben, auf die Datei „<ph name="FILE_NAME" />“ zuzugreifen und sie zu kopieren?</translation>
-<translation id="8977523125954274918">Mit einem Profil einer Bildungseinrichtung kannst du Passwörter und andere Daten in deinem Konto speichern und verwenden</translation>
 <translation id="8977811652087512276">Falsches Passwort oder beschädigte Datei</translation>
 <translation id="8978154919215542464">An – alles synchronisieren</translation>
 <translation id="8978670037548431647">Tethering-Funktionen aktualisieren</translation>
@@ -10478,7 +10468,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="9040661932550800571">Passwort für <ph name="ORIGIN" /> aktualisieren?</translation>
 <translation id="9041560164471731796">Melde dich in Chrome an, um starke Passwörter mit dem Google Passwortmanager zu speichern</translation>
 <translation id="9041692268811217999">Der Zugriff auf lokale Dateien auf deinem Gerät wurde von deinem Administrator deaktiviert</translation>
-<translation id="9041881059840744611">Informationen zu Profilen einer Bildungseinrichtung</translation>
 <translation id="904224458472510106">Dieser Vorgang kann nicht rückgängig gemacht werden</translation>
 <translation id="9042827002460091668">Prüfe deine Internetverbindung und versuch es noch einmal</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
@@ -10695,7 +10684,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219572436491982747">An Google gesendete Daten können von Prüfern eingesehen werden, um die Technologie der Chrome-KI zu verbessern</translation>
 <translation id="9219741625496141320">Browserdaten wurden automatisch gelöscht</translation>
-<translation id="9220484506568374422">Gemini Spark hat Zugriff auf dieselben Websites wie du, einschließlich der Websites, auf denen du angemeldet bist. Dabei werden erforderliche Informationen mit Drittanbietern geteilt. Dazu können personenbezogene Daten gehören, die du möglicherweise als sensibel empfindest.</translation>
 <translation id="9220525904950070496">Konto entfernen</translation>
 <translation id="9220723036554088545">Datei hochladen</translation>
 <translation id="9220820413868316583">Finger hochheben und dann Versuch wiederholen.</translation>

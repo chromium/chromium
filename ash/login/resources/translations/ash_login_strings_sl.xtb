@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Posodobitev se bo začela, ko bo akumulator dosegel <ph name="BATTERY_LEVEL" /> % napolnjenosti.</translation>
 <translation id="1353275871123211385">Če želite uporabljati starševski nadzor, na primer odobritve aplikacij in omejitve časa uporabe, mora otrok imeti račun Google, ki ga upravlja starš. Šolski račun je pozneje mogoče dodati za uporabo orodij, kot je Učilnica Google.</translation>
 <translation id="1375557162880614858">Ali želite aktivirati ChromeVox, vgrajeni bralnik zaslona za ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Namestitev je končana. Napravo zdaj pripravite za igranje iger.</translation>
 <translation id="1377600615067678409">Za zdaj preskoči</translation>
 <translation id="1399261165075500043">Pogojev storitve za Google Play ni mogoče naložiti</translation>
 <translation id="1400243387594338234">To kodo PIN lahko uporabite za prijavo v napravo</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Uporaba računa Google v napravi <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Izbira časovnega pasu</translation>
 <translation id="3893630138897523026">ChromeVox (izgovorjava povratnih informacij)</translation>
-<translation id="3897746662269329507">Naprava <ph name="DEVICE_TYPE" /> je zasnovana za igranje iger. Najprej se bo odprla Raziskovanje, kjer lahko dostopate do več sto najnovejših iger, si ogledate ponudbe za igranje iger in odkrivate funkcije za igre, ki jih dobite z napravo.</translation>
 <translation id="389901847090970821">Izbira tipkovnice</translation>
 <translation id="3910588685973519483">Ustvarjanje zaslonskih ozadij z umetno inteligenco</translation>
 <translation id="3924259174674732591">Velikost prikaza in besedila: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Namestiti morate posodobitev za vdelano programsko opremo modula Trusted Platform Module. Oglejte si <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Nekaj je šlo narobe pri prijavi</translation>
 <translation id="5453829744223920473">Otrok lahko uporablja vse svoje šolske aplikacije, zaznamke in vire enako kot v razredu. Šola določa osnovna pravila.</translation>
-<translation id="5463450804024056231">Prijava za e-poštna sporočila glede naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenaša in namešča posodobitve in aplikacije Googla, operaterja in proizvajalca te otrokove naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="5502915260472117187">Otrok</translation>
 <translation id="5511823366942919280">Ali ste prepričani, da želite to napravo nastaviti kot »Morski pes«?</translation>

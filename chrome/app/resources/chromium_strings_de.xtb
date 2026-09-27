@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Hilf uns, den Inkognitomodus zu verbessern, indem du dir 1 Minute Zeit für diese Umfrage nimmst.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="1083934481477628225">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chromium deaktiviert</translation>
+<translation id="109026165963220603">Chromium benötigt Zugriff auf dein lokales Netzwerk, um Geräte in der Nähe zu erkennen und zu verwenden</translation>
 <translation id="1090946077924227754">Wenn du nach einer bestimmten Chromium-Funktion oder ‑Erweiterung suchen möchtest, gib das Kürzel in die Adressleiste ein und drücke die von dir ausgewählte Taste</translation>
 <translation id="1098493699368672217">Suche mit Chromium in der Taskleiste anzeigen und die Tastenkombination aktivieren</translation>
 <translation id="1104942323762546749">Chromium möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">Die heruntergeladene Datei konnte nicht verifiziert werden.</translation>
 <translation id="2135919691573380097">Diese Website melden</translation>
 <translation id="2137162749895930932">Bildschirm „Übersetzen“ schließen</translation>
+<translation id="2147218225094845757">Seitenleiste ausblenden</translation>
 <translation id="215352261310130060">Chromium hat diesen Download blockiert, weil die Website keine verschlüsselte Verbindung verwendet und die Datei möglicherweise manipuliert wurde</translation>
 <translation id="2170098639895543546">Beliebigen Inhalt auf der Seite auswählen</translation>
 <translation id="2174178932569897599">Chromium anpassen</translation>
@@ -302,7 +304,6 @@
 <translation id="4251772536351901305">Warnt dich vor schädlichen Websites, auch solchen, die Google vorher nicht bekannt waren, indem mehr Daten von Websites analysiert werden als beim Standardschutz. Du kannst festlegen, dass Warnungen von Chromium übersprungen werden.</translation>
 <translation id="4269093074552541569">Von Chromium abmelden</translation>
 <translation id="4271805377592243930">Hilfe für Chromium aufrufen</translation>
-<translation id="4275788652681621337">Seitenleiste schließen</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="4285930937574705105">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Falls Chromium derzeit ausgeführt wird, schließe es bitte und versuche es erneut.</translation>
 <translation id="4298125729853015961">Passwörter aus Chromium exportieren</translation>

@@ -469,6 +469,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1341701348342335220">Bravo!</translation>
 <translation id="1342886103232377846">Pentru a verifica dacă există parole compromise, accesează Managerul de parole Google</translation>
 <translation id="1343920184519992513">Continuă de unde ai rămas și deschide un anumit set de pagini</translation>
+<translation id="1344216785734288669">Parole Apple</translation>
 <translation id="1346630054604077329">Confirmă și repornește</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1347512539447549782">Stocare Linux</translation>
@@ -796,7 +797,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="160689647589417224">Aplicația este restricționată în această regiune.</translation>
 <translation id="1607139524282324606">Șterge intrarea</translation>
 <translation id="1608668830839595724">Mai multe acțiuni pentru elementele selectate</translation>
-<translation id="1609603645228231640">Gemini Spark este experimental și poate să trimită informațiile tale sau să facă achiziții fără să te întrebe. <ph name="LINK_BEGIN" />Examinează riscurile<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Setările aplicației</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611649489706141841">înainte</translation>
@@ -1054,7 +1054,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1808805149659872686">Intrare nouă</translation>
 <translation id="1809201888580326312">Ai ales să nu salvezi parolele pentru aceste site-uri și aplicații</translation>
 <translation id="1809734401532861917">Adaugă marcajele, istoricul, parolele și alte setări în <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Cadru izolat incognito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nu poate folosi <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Se proiectează <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servicii</translation>
@@ -1287,7 +1286,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1983612835086592681">Deschis de tine în ultima săptămână</translation>
 <translation id="1984087999855033707">număr de telefon</translation>
 <translation id="1984417487208496350">Fără protecție (nerecomandat)</translation>
-<translation id="1984683754853869253">Vrei să creezi un profil nou pentru școală?</translation>
 <translation id="198507684520034826">Ajutor</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Setări avansate privind locația</translation>
@@ -1320,7 +1318,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2010501376126504057">Dispozitive compatibile</translation>
 <translation id="2010636492623189611">Selectat.</translation>
 <translation id="2012935757369720523">Șterge fișierul</translation>
-<translation id="2014495120525813351">Permite ca Gemini Spark să navigheze pe acest dispozitiv</translation>
+<translation id="2014191284313949173">Închide modul Izolat</translation>
 <translation id="2016473077102413275">Opțiunile care au nevoie de imagini nu vor funcționa</translation>
 <translation id="2017334798163366053">Dezactivați culegerea datelor privind performanța</translation>
 <translation id="2017770349934140286">Google Play și aplicațiile pe care le-ai descărcat de pe Google Play se vor șterge de pe acest Chromebook.
@@ -1452,6 +1450,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2121825465123208577">Redimensionează</translation>
 <translation id="2122446694240899610">Abilitățile tale sunt salvate în Contul Google.</translation>
 <translation id="2123766928840368256">Alege alt fișier</translation>
+<translation id="2124153808069020510">Pentru a șterge date, închide toate ferestrele izolate</translation>
 <translation id="2124930039827422115">{1,plural, =1{Evaluat cu <ph name="AVERAGE_RATING" /> de 1 utilizator.}few{Evaluat cu <ph name="AVERAGE_RATING" /> de # utilizatori.}other{Evaluat cu <ph name="AVERAGE_RATING" /> de # de utilizatori.}}</translation>
 <translation id="2125715366913703594">Explorează &amp;Extensii</translation>
 <translation id="2126167708562367080">Sincronizarea este dezactivată de administrator.</translation>
@@ -1594,6 +1593,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2227179592712503583">Elimină sugestia</translation>
 <translation id="222931766245975952">Fișier trunchiat</translation>
 <translation id="2229342031987138128">Subtitrări</translation>
+<translation id="22294739381015133">Site-urile pe care le accesezi nu sunt salvate în modul izolat</translation>
 <translation id="2231351769755997720">Nicio sugestie disponibilă. Încearcă să pui o întrebare despre această pagină.</translation>
 <translation id="2232751457155581899">Site-urile pot solicita permisiunea de a urmări poziția camerei</translation>
 <translation id="2233502537820838181">&amp;Mai multe informații</translation>
@@ -2030,7 +2030,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2554553592469060349">Fișierul selectat este prea mare (dimensiune maximă: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> din <ph name="TOTAL_NUM_APPS" /> aplicații pot trimite notificări</translation>
 <translation id="2555855727505718984">Completarea automată nu va avea la dispoziție informațiile pe acest dispozitiv pentru a ajuta la completarea formularelor</translation>
-<translation id="25568951186001797">Cadru izolat: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Vezi toate marcajele aici</translation>
 <translation id="2563924218974330506">Acum poți gestiona grupurile de file aici. Anulează oricând fixarea.</translation>
 <translation id="2564520396658920462">Rularea JavaScript prin AppleScript este dezactivată. Pentru a o activa, din bara de meniu, accesează Vizualizare &gt; Dezvoltator &gt; Permite JavaScript de la Apple Events. Pentru mai multe informații: https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2108,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2626746300781063303">Site-urile, inclusiv Google, aleg dacă răspund la această solicitare</translation>
 <translation id="2626799779920242286">Încercați din nou mai târziu.</translation>
 <translation id="2627424346328942291">Nu se poate trimite</translation>
-<translation id="2627970398976286795">Analizează riscurile asociate cu Gemini Spark</translation>
 <translation id="2628258844236035475">Elimini adresa de acasă din completarea automată din Chrome?</translation>
 <translation id="2628770867680720336">Pentru a activa remedierea erorilor prin ADB, acest Chromebook trebuie adus la setările din fabrică. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Începe un chat nou cu Gemini</translation>
@@ -2418,7 +2416,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2845276301195220700">Mai multe acțiuni pentru Google Calendar</translation>
 <translation id="2845382757467349449">Afișează mereu bara de marcaje</translation>
 <translation id="284581348330507117">Creează parole unice</translation>
-<translation id="2846345106886298325">Activitatea a fost finalizată și s-a revenit la Gemini Spark</translation>
 <translation id="284884486564166077">Caută orice imagine cu Lens</translation>
 <translation id="2849035674501872372">Ridică privirea</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2477,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2893318819023133318">Inversează vizualizările</translation>
 <translation id="2894596417096093634">Identificatori ai rapoartelor de blocare</translation>
 <translation id="2894757982205307093">Filă nouă în grup</translation>
-<translation id="2895194086130800590">Gemini Spark poate folosi navigarea automată pe acest dispozitiv numai dacă dispozitivul este activ și Chrome rulează.</translation>
 <translation id="289695669188700754">ID cheie: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Această setare personalizată va fi eliminată când închizi toate ferestrele incognito</translation>
 <translation id="2897878306272793870">Sigur dorești să deschizi <ph name="TAB_COUNT" /> file?</translation>
@@ -2533,7 +2529,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2933653107553951760">Restabilește grupul</translation>
 <translation id="2934225044529065415">Nu se poate accesa camera foto</translation>
 <translation id="2935314715123552088">Dezactivează profilul eSIM activ</translation>
-<translation id="2936067606203230121">Gemini Spark va decide ce măsuri să ia în funcție de sarcinile pe care le începi sau le actualizezi.</translation>
 <translation id="2936851848721175671">Backup și restabilire</translation>
 <translation id="2938981087412273365">Nu are permisiunea să citească și să modifice acest site</translation>
 <translation id="2939005221756255562">Activează notificările în Centrul de notificări. Deschide <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" /> (Setări de sistem).</translation>
@@ -2912,6 +2907,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3213681682237645841">Se descarcă vocile în <ph name="LANGUAGE" />…</translation>
 <translation id="3217843140356091325">Creezi o comandă rapidă?</translation>
 <translation id="3220494908385619295">Afișează alăturat</translation>
+<translation id="3220541426929880850">Pentru a șterge istoricul de navigare izolată de pe dispozitiv, închide toate filele izolate</translation>
 <translation id="3220943972464248773">Pentru a sincroniza parolele, confirmă-ți identitatea</translation>
 <translation id="3222066309010235055">Program de redare în avans: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Conectează-te la <ph name="USB_VM_NAME" /></translation>
@@ -3410,6 +3406,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3600956933576601730">Trebuie să consulți și să accepți condițiile pentru a folosi aceste funcții</translation>
 <translation id="3601374594714740284">Pentru voci de calitate mai bună, eliberează spațiu pe dispozitiv</translation>
 <translation id="360180734785106144">să ofere noi caracteristici pe măsură ce devin disponibile;</translation>
+<translation id="3601988315287782413">Acțiunea afectează numai ferestrele izolate</translation>
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3602495161941872610">Remediază problema de &amp;sincronizare</translation>
 <translation id="3602894439067790744">Citește numerele ca</translation>
@@ -3638,7 +3635,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">Setează codul PIN</translation>
 <translation id="3756806135608816820">Site-urile pot solicita permisiunea de a căuta dispozitive Bluetooth</translation>
 <translation id="3756823472711156529">Restabilește grupul</translation>
-<translation id="3757337311115630808">Află mai multe despre Gemini Spark</translation>
 <translation id="3757567010566591880">Anulează fixarea în bara de instrumente</translation>
 <translation id="3757645900890881944">Instrumente de căutare</translation>
 <translation id="3757733214359997190">Nu a fost găsit niciun site</translation>
@@ -4762,6 +4758,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4631637535315947773">Comenzile rapide pentru cele mai accesate site-uri au fost eliminate deoarece nu le-ai folosit recent</translation>
 <translation id="4631955550884380853">Voce concentrată</translation>
 <translation id="4632655012900268062">Personalizează cardurile</translation>
+<translation id="4634719521235795064">Gemini poate folosi Managerul de parole Google pentru a te conecta. <ph name="BEGIN_LINK" />Află cum îți gestionează Gemini datele<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Dezinstalează Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> nu este disponibilă pentru utilizatorii invitați.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Încarcă o imagine pe care să o folosești cu întrebarea ta}few{Încarcă până la # imagini pe care să le folosești cu întrebarea ta}other{Încarcă până la # de imagini pe care să le folosești cu întrebarea ta}}</translation>
@@ -5248,7 +5245,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4989966318180235467">Inspectați pagina de fun&amp;dal</translation>
 <translation id="499016799952867794">Astfel, aplicația poate funcționa conform așteptărilor.</translation>
 <translation id="4990673372047946816">Nu este disponibilă nicio cameră foto</translation>
-<translation id="499126848196136237">Gemini Spark poate folosi navigarea automată în Chrome pe acest dispozitiv pentru a interacționa cu site-uri și a finaliza activități în numele tău. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tastele din rândul de sus sunt considerate taste pentru funcții</translation>
 <translation id="4991873517942703737">Întreabă despre acest document</translation>
 <translation id="4992066212339426712">Activează sunetul</translation>
@@ -5505,7 +5501,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5189274947477567401">Pentru a renunța la distribuirea proceselor, trebuie să repornești browserul. Acest browser va reporni acum.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Folosești <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Bară de marcaje</translation>
 <translation id="5190926251776387065">Activează portul</translation>
 <translation id="5190959794678983197">Niciun microfon</translation>
 <translation id="5191094172448199359">Codurile PIN introduse nu sunt identice</translation>
@@ -6073,6 +6068,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5641715878999557094"><ph name="EXTENSION_NAME" /> a modificat pagina afișată când dai clic pe butonul Ecran de pornire.</translation>
 <translation id="5643191124441701136">Codul de securitate se află pe partea din față a cardului</translation>
 <translation id="5643321261065707929">Rețea contorizată</translation>
+<translation id="5645369002069651355">Se confirmă adresa de e-mail</translation>
 <translation id="5646376287012673985">Locație</translation>
 <translation id="5646558797914161501">Om de afaceri</translation>
 <translation id="564670806635578888">Caută <ph name="SEARCH_TERMS" /> pe Google</translation>
@@ -7004,7 +7000,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6393550101331051049">Au permisiunea de a afișa conținut nesigur</translation>
 <translation id="6394634179843537518">Adaugă un fișier</translation>
 <translation id="6395423953133416962">Trimiteți <ph name="BEGIN_LINK2" />valori<ph name="END_LINK2" /> și <ph name="BEGIN_LINK1" />informații de sistem<ph name="END_LINK1" /></translation>
-<translation id="6397586889873084061">Da, păstrează datele separat de cele de la școală (recomandat)</translation>
 <translation id="6398715114293939307">Elimină Magazinul Google Play</translation>
 <translation id="6398765197997659313">Ieși din ecranul complet</translation>
 <translation id="639880411171387127">Selecția ta din Google Lens. Apasă pe Enter sau pe Backspace pentru a șterge selecția Google Lens</translation>
@@ -8366,7 +8361,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7421293530411019405">Ieși din grupul de file?</translation>
 <translation id="7421925624202799674">&amp;Afișează sursa paginii</translation>
 <translation id="7422192691352527311">Preferințe...</translation>
-<translation id="7423381908337122792">Orice persoană care are acces la agentul tău Gemini Spark îți poate controla browserul Chrome.</translation>
 <translation id="7423425410216218516">Vizibilitatea este activată pentru <ph name="MINUTES" /> minute</translation>
 <translation id="7423513079490750513">Elimină <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Rețeaua a fost adăugată</translation>
@@ -8492,6 +8486,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7517292544534877198">Folosește criptarea prestabilită de la Google pentru parolele din Contul Google</translation>
 <translation id="7517959947270534934">Momentan, membrul familiei nu poate primi parole. Solicită-i să actualizeze Chrome și să-și sincronizeze parolele.</translation>
 <translation id="7518079994230200553">Momentan, opțiunea nu este disponibilă.</translation>
+<translation id="7519506357537394422">Permiți ca Gemini să se conecteze la <ph name="DOMAIN" /> pentru tine?</translation>
 <translation id="752021853309481824">Pentru a accesa informațiile salvate și alte date pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Afișează comenzile rapide</translation>
@@ -8719,7 +8714,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="769824636077131955">Acest document este prea mare pentru verificarea de securitate. Poți să printezi documente de până la 50 MB.</translation>
 <translation id="7698507637739331665">Unele elemente sunt blocate</translation>
 <translation id="7700516433658473670">Imprimante și scanere</translation>
-<translation id="7700873336634517379">Nu, continuă să folosești pentru școală în acest profil</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7701869757853594372">Ghidaje UTILIZATOR</translation>
 <translation id="770231223935918661">Întreabă despre această imagine</translation>
@@ -9085,6 +9079,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7978450511781612192">Astfel, te vei deconecta de la Conturile Google. Marcajele, istoricul, parolele și alte setări nu vor mai fi sincronizate.</translation>
 <translation id="7980066177668669492">ASCII codificat cu Base64, certificate multiple</translation>
 <translation id="7981410461060625406">Folosește o cheie de acces salvată pentru <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Nu am putut să-ți confirmăm adresa de e-mail</translation>
 <translation id="7981662863948574132">Arată codul EID al dispozitivului și un pop-up cu codul QR</translation>
 <translation id="7982578888426609524">Cele mai recente modificări ale acestui grup</translation>
 <translation id="7982789257301363584">Rețea</translation>
@@ -10144,6 +10139,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="878862491037637275">Acest grup de file este plin</translation>
 <translation id="8791157330927639737">Află mai multe despre actualizare</translation>
 <translation id="8791534160414513928">Trimite o solicitare „Do Not Track” odată cu traficul de navigare</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (izolată)</translation>
 <translation id="8793390639824829328">Site-urile folosesc această funcție pentru a derula și a face zoom în filele la care s-a permis accesul</translation>
 <translation id="8793895150509408038">Vezi detaliile site-ului pentru <ph name="SITE" /> din lista <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Cât timp hotspotul este activat, <ph name="PHONE_NAME" />:</translation>
@@ -10380,7 +10376,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="897525204902889653">Serviciu de carantină</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />”}=1{„<ph name="TAB_TITLE" />” și încă o filă}few{„<ph name="TAB_TITLE" />” și încă # file}other{„<ph name="TAB_TITLE" />” și încă # de file}}</translation>
 <translation id="897565255818387330">Permiți ca acest site să vadă și să copieze <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Configurează un profil școlar pentru a salva și a folosi parolele și altele în contul tău</translation>
 <translation id="8977811652087512276">Parola nu este corectă sau fișierul este deteriorat</translation>
 <translation id="8978154919215542464">Activată – sincronizează tot</translation>
 <translation id="8978670037548431647">Actualizează capacitățile de tethering</translation>
@@ -10484,7 +10479,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9040661932550800571">Actualizezi parola pentru <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Pentru a salva parole puternice cu Managerul de parole Google, conectează-te la Chrome</translation>
 <translation id="9041692268811217999">Accesul la fișierele de pe computer este dezactivat de administrator</translation>
-<translation id="9041881059840744611">Despre profilurile școlare</translation>
 <translation id="904224458472510106">Această operație nu poate fi anulată</translation>
 <translation id="9042827002460091668">Verifică-ți conexiunea la internet și încearcă din nou</translation>
 <translation id="9042893549633094279">Confidențialitate și securitate</translation>
@@ -10701,7 +10695,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219572436491982747">Datele trimise la Google pot fi examinate de evaluatori umani pentru a îmbunătăți tehnologia AI Chrome</translation>
 <translation id="9219741625496141320">Datele de navigare au fost șterse automat</translation>
-<translation id="9220484506568374422">Gemini Spark va avea acces la aceleași site-uri ca tine, inclusiv la cele la care te-ai conectat. Va trimite informațiile necesare terțelor părți, care ar putea include informații cu caracter personal pe care le-ai putea considera sensibile.</translation>
 <translation id="9220525904950070496">Eliminați contul</translation>
 <translation id="9220723036554088545">încarcă un fișier</translation>
 <translation id="9220820413868316583">Ridică, apoi încearcă din nou.</translation>

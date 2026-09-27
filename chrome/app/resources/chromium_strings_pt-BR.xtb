@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responda a esta pesquisa de um minuto e ajude a melhorar a navegação anônima.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1083934481477628225">Seu familiar responsável desativou "Permissões para sites, apps e extensões" no Chromium</translation>
+<translation id="109026165963220603">O Chromium precisa de acesso à sua rede local para descobrir e usar dispositivos por perto</translation>
 <translation id="1090946077924227754">Para pesquisar recursos ou extensões específicos do Chromium, digite o atalho na barra de endereço, seguido da tecla escolhida</translation>
 <translation id="1098493699368672217">Mostrar a pesquisa com o Chromium na bandeja do sistema e ativar o atalho do teclado</translation>
 <translation id="1104942323762546749">O Chromium quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
 <translation id="2135919691573380097">Denunciar este site</translation>
 <translation id="2137162749895930932">Fechar o tradutor</translation>
+<translation id="2147218225094845757">Ocultar painel lateral</translation>
 <translation id="215352261310130060">O Chromium bloqueou o download porque o site não está usando uma conexão segura e o arquivo pode ter sido adulterado</translation>
 <translation id="2170098639895543546">Selecione o que quiser na página</translation>
 <translation id="2174178932569897599">Personalizar o Chromium</translation>
@@ -301,7 +303,6 @@
 <translation id="4251772536351901305">Avisa você sobre sites perigosos, mesmo aqueles que o Google não conhecia, analisando mais dados de sites do que a proteção padrão. Você pode ignorar os avisos do Chromium.</translation>
 <translation id="4269093074552541569">Sair do Chromium</translation>
 <translation id="4271805377592243930">Ajuda com o Chromium</translation>
-<translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
 <translation id="4285930937574705105">Ocorreu uma falha na instalação devido a um erro não especificado. Se o Chromium estiver sendo executado, feche-o e tente novamente.</translation>
 <translation id="4298125729853015961">Exportar senhas do Chromium</translation>

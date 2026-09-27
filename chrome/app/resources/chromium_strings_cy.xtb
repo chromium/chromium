@@ -10,6 +10,7 @@
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
 <translation id="1083934481477628225">Mae dy riant wedi diffodd "Caniatâd ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium</translation>
+<translation id="109026165963220603">Mae angen mynediad at eich rhwydwaith lleol ar Chromium i ddarganfod a defnyddio dyfeisiau cyfagos</translation>
 <translation id="1090946077924227754">I chwilio nodwedd neu estyniad Chromium penodol, teipiwch ei lwybr byr yn y bar cyfeiriad, ac yna'r allwedd bysellfwrdd a ddewiswyd gennych</translation>
 <translation id="1098493699368672217">Dangos chwilio gyda Chromium yn yr hambwrdd system a throi'r llwybr byr bysellfwrdd ymlaen</translation>
 <translation id="1104942323762546749">Mae Chromium am allforio eich cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
@@ -106,6 +107,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2126108037660393668">Mae'r ffeil a lawrlwythwyd wedi methu â dilysu.</translation>
 <translation id="2135919691573380097">Adroddwch am y wefan hon</translation>
 <translation id="2137162749895930932">Cau'r sgrîn cyfieithu</translation>
+<translation id="2147218225094845757">Cuddio'r panel ochr</translation>
 <translation id="215352261310130060">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd nad yw'r wefan yn defnyddio cysylltiad diogel ac mae'n bosib bod y ffeil wedi'i hymyrryd â hi</translation>
 <translation id="2170098639895543546">Dewiswch unrhyw beth ar y dudalen</translation>
 <translation id="2174178932569897599">Personoleiddio Chromium</translation>
@@ -305,7 +307,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4251772536351901305">Yn eich rhybuddio am wefannau peryglus, hyd yn oed rhai nad oedd Google yn gwybod amdanynt o'r blaen, trwy ddadansoddi mwy o ddata o wefannau na diogelwch safonol. Gallwch ddewis hepgor rhybuddion Chromium.</translation>
 <translation id="4269093074552541569">Allgofnodi o Chromium</translation>
 <translation id="4271805377592243930">Cael help gyda Chromium</translation>
-<translation id="4275788652681621337">Cau'r panel ochr</translation>
 <translation id="4281844954008187215">Telerau Gwasanaeth</translation>
 <translation id="4285930937574705105">Methwyd y gosodiad oherwydd gwall amhenodol. Os yw Chromium yn rhedeg ar hyn o bryd, caewch ef a rhowch gynnig arall arni.</translation>
 <translation id="4298125729853015961">Allforio Cyfrineiriau o Chromium</translation>

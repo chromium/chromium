@@ -49,7 +49,6 @@
 <translation id="1347975661240122359">Güncelleme işlemi, pil gücü %<ph name="BATTERY_LEVEL" /> düzeyine ulaştığında başlayacak.</translation>
 <translation id="1353275871123211385">Uygulama onayı ve ekran başında kalma süresi sınırları gibi ebeveyn denetimlerini kullanmak için çocuğun ebeveyn tarafından yönetilen Google Hesabı olmalıdır. Okul hesabı, Google Classroom gibi araçlar için daha sonra eklenebilir.</translation>
 <translation id="1375557162880614858">ChromeOS Flex'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz?</translation>
-<translation id="1375938286942050085">Kurulum tamamlandı. Sonraki adımda cihazınızı oyun oynamaya hazırlayın</translation>
 <translation id="1377600615067678409">Şimdilik atla</translation>
 <translation id="1399261165075500043">Google Play Hizmet Şartları yüklenemiyor</translation>
 <translation id="1400243387594338234">Cihazınızda oturum açmak için bu PIN'i kullanabilirsiniz</translation>
@@ -257,7 +256,6 @@
 <translation id="3856470183388031602">Google Hesabınızı <ph name="DEVICE_TYPE" /> cihazınızda kullanma</translation>
 <translation id="3856800405688283469">Saat dilimi seçin</translation>
 <translation id="3893630138897523026">ChromeVox (sesli geri bildirim)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" />, oyun oynamaya yönelik tasarlanmıştır. Sonraki adımda Keşfet uygulaması açılacaktır. Bu uygulamadan yüzlerce yeni oyuna erişebilir, oyun tekliflerini görebilir ve cihazınızda bulunan oyun özelliklerini keşfedebilirsiniz.</translation>
 <translation id="389901847090970821">Klavye seçin</translation>
 <translation id="3910588685973519483">Yapay zeka ile duvar kağıdı üretin</translation>
 <translation id="3924259174674732591">Görüntü ve metin boyutu %<ph name="DISPLAY_ZOOM" /></translation>
@@ -408,7 +406,6 @@
 <translation id="542948651837270806">Güvenilir Platform Modülü donanım yazılımı için bir güncellemenin yüklenmesi gerekiyor. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> ürününe göz atın</translation>
 <translation id="5448293924669608770">Hata! Oturum açarken bir hata oluştu</translation>
 <translation id="5453829744223920473">Çocuğunuz tüm okul uygulamaları, yer işaretleri ve kaynaklarını sınıftaki gibi kullanabilir. Temel kuralları okul belirler.</translation>
-<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> e-postalarına kaydolun</translation>
 <translation id="5473099001878321374">Devam ederek bu cihazın Google'dan, çocuğunuzun operatöründen ve bu cihazın üreticisinden güncellemeleri ve uygulamaları, muhtemelen hücresel veri üzerinden otomatik olarak indirip yükleyebileceğini kabul etmiş olursunuz. Bu uygulamalardan bazıları uygulama içi satın alma seçenekleri sunabilir.</translation>
 <translation id="5502915260472117187">Çocuk</translation>
 <translation id="5511823366942919280">Bu cihazı bir "Köpekbalığı" olarak ayarlamak istediğinizden emin misiniz?</translation>

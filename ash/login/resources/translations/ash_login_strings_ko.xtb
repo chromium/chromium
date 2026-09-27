@@ -51,7 +51,6 @@
 <translation id="1347975661240122359">배터리 잔량이 <ph name="BATTERY_LEVEL" />%가 되면 업데이트가 시작됩니다.</translation>
 <translation id="1353275871123211385">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 도구를 사용할 수 있습니다.</translation>
 <translation id="1375557162880614858">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
-<translation id="1375938286942050085">설정이 완료되었습니다. 기기에서 게임을 즐길 준비를 하세요</translation>
 <translation id="1377600615067678409">건너뛰기</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
 <translation id="1400243387594338234">이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
@@ -261,7 +260,6 @@
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" />에서 Google 계정 사용하기</translation>
 <translation id="3856800405688283469">시간대 선택</translation>
 <translation id="3893630138897523026">ChromeVox(음성 피드백)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" />은 게임용으로 빌드되었습니다. 살펴보기 앱이 열리면 수백 가지의 최신 게임에 액세스하고, 게임 혜택을 확인하고, 기기와 함께 제공되는 게임 기능을 살펴볼 수 있습니다.</translation>
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3910588685973519483">AI로 배경화면 만들기</translation>
 <translation id="3924259174674732591">디스플레이 및 텍스트 크기 <ph name="DISPLAY_ZOOM" />%</translation>
@@ -414,7 +412,6 @@
 <translation id="542948651837270806">신뢰할 수 있는 플랫폼 모듈 펌웨어 업데이트를 설치해야 합니다. <ph name="TPM_FIRMWARE_UPDATE_LINK" /> 보기</translation>
 <translation id="5448293924669608770">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="5453829744223920473">자녀는 수업 시간과 마찬가지로 모든 학교 앱, 북마크, 리소스를 사용할 수 있습니다. 기본 규칙은 학교에서 정합니다.</translation>
-<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> 이메일 가입</translation>
 <translation id="5473099001878321374">계속하면 이 기기에서 Google, 자녀의 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수도 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
 <translation id="5502915260472117187">자녀</translation>
 <translation id="5511823366942919280">이 기기를 'Shark'로 설정하시겠습니까?</translation>

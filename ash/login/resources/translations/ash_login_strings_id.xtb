@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Update akan dimulai jika baterai mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Untuk menggunakan kontrol orang tua seperti persetujuan aplikasi dan batas waktu pemakaian perangkat, anak harus memiliki Akun Google yang dikelola oleh orang tua. Akun sekolah dapat ditambahkan nanti untuk alat seperti Google Classroom.</translation>
 <translation id="1375557162880614858">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Penyiapan selesai. Siapkan perangkat Anda untuk bermain game</translation>
 <translation id="1377600615067678409">Lewati untuk saat ini</translation>
 <translation id="1399261165075500043">Tidak dapat memuat Persyaratan Layanan Google Play</translation>
 <translation id="1400243387594338234">Anda dapat menggunakan PIN ini untuk login ke perangkat</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Gunakan Akun Google Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Pilih zona waktu</translation>
 <translation id="3893630138897523026">ChromeVox (respons lisan)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> Anda dibuat untuk bermain game. Aplikasi Jelajahi akan terbuka pada halaman berikutnya. Di sana Anda bisa mengakses ratusan game terbaru, melihat penawaran game, dan menemukan fitur game yang disertakan dengan perangkat.</translation>
 <translation id="389901847090970821">Pilih keyboard</translation>
 <translation id="3910588685973519483">Buat wallpaper dengan AI</translation>
 <translation id="3924259174674732591">Ukuran tampilan dan teks <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Update untuk firmware Trusted Platform Module yang perlu diinstal. Lihat <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Ups, ada yang tidak beres dengan proses masuk</translation>
 <translation id="5453829744223920473">Anak Anda dapat menggunakan semua aplikasi, bookmark, dan materi sekolahnya seperti halnya di kelas. Sekolah menetapkan aturan dasar.</translation>
-<translation id="5463450804024056231">Daftar untuk menerima email <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Dengan melanjutkan, Anda setuju bahwa perangkat ini juga dapat otomatis mendownload serta menginstal update dan aplikasi dari Google, operator anak Anda, dan produsen perangkat ini, yang kemungkinan menggunakan data seluler. Beberapa aplikasi ini mungkin menawarkan pembelian dalam aplikasi.</translation>
 <translation id="5502915260472117187">Anak</translation>
 <translation id="5511823366942919280">Yakin ingin menyiapkan perangkat ini sebagai "Shark"?</translation>

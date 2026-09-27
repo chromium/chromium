@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Bateriaren gutxienez % <ph name="BATTERY_LEVEL" /> duzunean hasiko da eguneratzen.</translation>
 <translation id="1353275871123211385">Guraso-murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke gero, Google Classroom-en eta antzeko tresnetan erabiltzeko.</translation>
 <translation id="1375557162880614858">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
-<translation id="1375938286942050085">Konfiguratu da. Ondoren, prestatu gailua bideojokoetan aritzeko.</translation>
 <translation id="1377600615067678409">Saltatu, momentuz</translation>
 <translation id="1399261165075500043">Ezin dira kargatu Google Play-ren Zerbitzu-baldintzak</translation>
 <translation id="1400243387594338234">Gailuan saioa hasteko erabil dezakezu PIN hau</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Erabili Google-ko kontua <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="3856800405688283469">Hautatu ordu-zona</translation>
 <translation id="3893630138897523026">ChromeVox (ahozko argibideak)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> gailua bideojokoak erabiltzeko dago diseinatuta. Orain, "Arakatu" aplikazioa irekiko da; bertan, ehunka bideojoko berri atzi ditzakezu, bai eta bideojokoen eskaintzak ikusi eta gailuak bideojokoetarako dakartzan eginbideak ezagutu ere.</translation>
 <translation id="389901847090970821">Hautatu teklatua</translation>
 <translation id="3910588685973519483">Sortu horma-paperak AA bidez</translation>
 <translation id="3924259174674732591">Pantailaren eta testuaren tamaina: % <ph name="DISPLAY_ZOOM" /></translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Trusted Platform Module firmwarearen eguneratze bat instalatu behar da. Ikusi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Arazo bat izan da saioa hastean</translation>
 <translation id="5453829744223920473">Haurrak ikastetxean darabiltzan aplikazio, laster-marka eta baliabide guztiak erabil ditzake, ikasgelan bezalaxe. Ikastetxeak ezartzen ditu oinarrizko arauak.</translation>
-<translation id="5463450804024056231">Erregistratu <ph name="DEVICE_TYPE" />-ari buruzko mezu elektronikoak jasotzeko</translation>
 <translation id="5473099001878321374">Aurrera eginez gero, onartu egingo duzu litekeena dela gailuak automatikoki deskargatu eta instalatzea Google-ren, haurraren operadorearen eta fabrikatzailearen eguneratzeak eta aplikazioak, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea.</translation>
 <translation id="5502915260472117187">Haur bat</translation>
 <translation id="5511823366942919280">Ziur gailua "Shark" gailu gisa ezarri nahi duzula?</translation>

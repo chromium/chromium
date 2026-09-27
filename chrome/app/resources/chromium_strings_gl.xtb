@@ -10,6 +10,7 @@
 
 É posible que algunhas funcións non estean dispoñibles e que non se garden os cambios nas preferencias.</translation>
 <translation id="1083934481477628225">O teu pai ou nai desactivou en Chromium a opción Permisos para sitios, aplicacións e extensións</translation>
+<translation id="109026165963220603">Chromium necesita acceso á túa rede local para detectar e usar dispositivos próximos</translation>
 <translation id="1090946077924227754">Para buscar unha extensión ou función específica de Chromium, escribe o seu atallo na barra de enderezos, seguido da tecla que seleccionases</translation>
 <translation id="1098493699368672217">Mostrar busca con Chromium na bandexa do sistema e activar atallo de teclado</translation>
 <translation id="1104942323762546749">Chromium quere exportar os teus contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
@@ -106,6 +107,7 @@
 <translation id="2126108037660393668">Produciuse un erro ao verificar o ficheiro descargado.</translation>
 <translation id="2135919691573380097">Informar deste sitio</translation>
 <translation id="2137162749895930932">Pechar a pantalla de tradución</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="215352261310130060">Chromium bloqueou esta descarga porque a conexión que usa o sitio non é segura, polo que é posible que o ficheiro se manipulase</translation>
 <translation id="2170098639895543546">Selecciona calquera cousa da páxina</translation>
 <translation id="2174178932569897599">Personalizar Chromium</translation>
@@ -305,7 +307,6 @@
 <translation id="4251772536351901305">Analiza máis datos de sitios que a protección estándar para avisarte sobre os que sexan perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chromium.</translation>
 <translation id="4269093074552541569">Pechar sesión en Chromium</translation>
 <translation id="4271805377592243930">Obter axuda sobre Chromium</translation>
-<translation id="4275788652681621337">Pechar o panel lateral</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
 <translation id="4285930937574705105">Non se puido efectuar a instalación debido a un erro non especificado. Se se está executando Chromium actualmente, péchao e téntao de novo.</translation>
 <translation id="4298125729853015961">Exportar os contrasinais de Chromium</translation>

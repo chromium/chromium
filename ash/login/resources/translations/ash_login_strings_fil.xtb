@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Magsisimula ang pag-update kapag umabot na ang baterya sa <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para gumamit ng parental controls gaya ng pag-apruba ng app at mga limitasyon sa tagal ng paggamit, dapat ay mayroong Google Account ang bata na pinapamahalaan ng magulang. Puwedeng magdagdag ng pampaaralang account sa ibang pagkakataon para sa mga tool gaya ng Google Classroom.</translation>
 <translation id="1375557162880614858">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Tapos na ang pag-set up! Sunod na ihanda ang iyong device para sa gaming</translation>
 <translation id="1377600615067678409">Lumaktaw muna ngayon</translation>
 <translation id="1399261165075500043">Hindi ma-load ang Mga Tuntunin ng Serbisyo ng Google Play</translation>
 <translation id="1400243387594338234">Puwede mong gamitin ang PIN na ito para mag-sign in sa iyong device</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Gamitin ang iyong Google Account sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="3856800405688283469">Pumili ng timezone</translation>
 <translation id="3893630138897523026">ChromeVox (pasalitang feedback)</translation>
-<translation id="3897746662269329507">Ginawa ang iyong <ph name="DEVICE_TYPE" /> para sa gaming. Susunod na magbubukas ang Explore app kung saan magagawa mong mag-access ng daan-daan sa mga pinakabagong laro, tumingin ng mga alok sa gaming, at tumuklas ng mga feature sa gaming na kasama sa iyong device.</translation>
 <translation id="389901847090970821">Pumili ng keyboard</translation>
 <translation id="3910588685973519483">Gumawa ng mga wallpaper gamit ang AI</translation>
 <translation id="3924259174674732591">Laki ng display at text na <ph name="DISPLAY_ZOOM" /></translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">May kailangang i-install na update para sa Trusted Platform Module firmware. Tingnan ang <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oops, nagkaproblema sa pag-sign in</translation>
 <translation id="5453829744223920473">Puwedeng gamitin ng iyong anak ang lahat ng kanyang mga pampaaralang app, bookmark, at resource tulad ng ginagawa niya sa klase. Ang paaralan ang nagtatakda ng mga panuntunan.</translation>
-<translation id="5463450804024056231">Mag-sign up para sa mga email sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang ang device na ito ay posible ring awtomatikong mag-download at mag-install ng mga update at app mula sa Google, carrier ng iyong anak, at manufacturer ng device na ito, na posibleng gamit ang cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili.</translation>
 <translation id="5502915260472117187">Bata</translation>
 <translation id="5511823366942919280">Sigurado ka bang gusto mong i-set up ang device na ito bilang "Shark"?</translation>

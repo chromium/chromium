@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Përditësimi do të fillojë kur bateria të arrijë në <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Për të përdorur kontrolle prindërore si miratimin e aplikacioneve dhe kufijtë e kohës para ekranit, një fëmijë duhet të ketë një "Llogari të Google" të menaxhuar nga një prind. Mund të shtohet më vonë një llogari shkolle për vegla si Google Classroom.</translation>
 <translation id="1375557162880614858">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex?</translation>
-<translation id="1375938286942050085">Konfigurimi përfundoi! Përgatite pajisjen për lojërat më pas</translation>
 <translation id="1377600615067678409">Kapërceje tani</translation>
 <translation id="1399261165075500043">"Kushtet e shërbimit" të Google Play nuk mund të ngarkohen</translation>
 <translation id="1400243387594338234">Mund ta përdorësh këtë kod PIN për t'u identifikuar në pajisjen tënde</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Përdor "Llogarinë tënde të Google" në pajisjen tënde <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Zgjidh zonën orare</translation>
 <translation id="3893630138897523026">ChromeVox (komente të thëna me gojë)</translation>
-<translation id="3897746662269329507">Pajisja jote <ph name="DEVICE_TYPE" /> është ndërtuar për lojëra. Më pas do të hapet aplikacioni "Eksploro", ku mund të qasesh në qindra prej lojërave më të fundit, mund të shikosh oferta për lojërat dhe të zbulosh veçoritë e lojërave që janë të përfshira në pajisjen tënde.</translation>
 <translation id="389901847090970821">Zgjidh tastierën</translation>
 <translation id="3910588685973519483">Krijo imazhe sfondi me inteligjencën artificiale</translation>
 <translation id="3924259174674732591">Madhësia e ekranit dhe e tekstit <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Duhet të instalohet një përditësim për firmuerin e "Modulit të platformës së besuar". Shiko <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Mos! Ndodhi një gabim me identifikimin</translation>
 <translation id="5453829744223920473">Fëmija yt mund të përdorë të gjitha aplikacionet, faqeshënuesit dhe burimet e veta të shkollës ashtu si vepron në klasë. Shkolla vendos rregullat bazë.</translation>
-<translation id="5463450804024056231">Regjistrohu për email-et në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori celular i fëmijës dhe nga prodhuesi i kësaj pajisjeje, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
 <translation id="5502915260472117187">Një fëmijë</translation>
 <translation id="5511823366942919280">Je i sigurt që dëshiron ta konfigurosh këtë pajisje si një "Peshkaqen"?</translation>

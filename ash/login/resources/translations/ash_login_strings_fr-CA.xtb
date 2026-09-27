@@ -50,7 +50,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1347975661240122359">La mise à jour commencera lorsque la pile atteindra <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Pour que vous puissiez utiliser des contrôles parentaux comme l'approbation d'applications et les limites de temps d'utilisation des écrans, votre enfant doit posséder un compte Google géré par un parent. Un compte scolaire peut être ajouté par la suite pour des outils comme Google Classroom.</translation>
 <translation id="1375557162880614858">Voulez-vous activer ChromeVox, le lecteur d'écran intégré de Chrome OS Flex?</translation>
-<translation id="1375938286942050085">La configuration est terminée! Préparez maintenant votre appareil pour le jeu</translation>
 <translation id="1377600615067678409">Passer pour l'instant</translation>
 <translation id="1399261165075500043">Impossible de charger les conditions d'utilisation de Google Play</translation>
 <translation id="1400243387594338234">Vous pouvez utiliser ce NIP pour vous connecter à votre appareil</translation>
@@ -260,7 +259,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3856470183388031602">Utilisez votre compte Google sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Sélectionner un fuseau horaire</translation>
 <translation id="3893630138897523026">ChromeVox (commentaires audio)</translation>
-<translation id="3897746662269329507">Votre <ph name="DEVICE_TYPE" /> est conçu pour les jeux vidéo. L'application Explorer va s'ouvrir, et vous pourrez l'utiliser pour accéder à des centaines de jeux récents, voir les offres de jeux et découvrir les fonctionnalités de jeu fournies avec votre appareil.</translation>
 <translation id="389901847090970821">Sélectionner un clavier</translation>
 <translation id="3910588685973519483">Créer des fonds d'écran avec l'IA</translation>
 <translation id="3924259174674732591">Affichage et taille du texte : <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="542948651837270806">Une mise à jour pour le micrologiciel du module de plateforme de confiance doit être installée. Consultez <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oups... Une erreur s'est produite lors de la connexion.</translation>
 <translation id="5453829744223920473">Votre enfant peut utiliser ses applications, ses favoris et ses ressources scolaires, comme il le fait en classe. L'école établit les règles de base.</translation>
-<translation id="5463450804024056231">Inscrivez-vous pour recevoir des courriels à propos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">En continuant, vous acceptez que cet appareil puisse également recevoir et installer automatiquement des mises à jour et des applications de Google, du fournisseur de services de votre enfant, et de son fabricant (et utiliser les données cellulaires, le cas échéant). Certaines de ces applications offrent des achats au moyen de l'application.</translation>
 <translation id="5502915260472117187">Un enfant</translation>
 <translation id="5511823366942919280">Voulez-vous vraiment configurer cet appareil en tant que « Requin »?</translation>

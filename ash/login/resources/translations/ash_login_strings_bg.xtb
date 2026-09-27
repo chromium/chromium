@@ -50,7 +50,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1347975661240122359">Актуализацията ще започне, когато нивото на батерията достигне <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">За да използвате родителските контроли, като например одобрението на приложения и ограниченията за време на ползване, детето ви трябва да има профил в Google, който се управлява от родител. По-късно може да бъде добавен училищен профил за достъп до инструменти като Google Classroom.</translation>
 <translation id="1375557162880614858">Искате ли да активирате ChromeVox – вградения екранен четец на ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Настройването завърши! Сега подгответе устройството си за игри</translation>
 <translation id="1377600615067678409">Пропускане засега</translation>
 <translation id="1399261165075500043">Общите условия на Google Play не могат да се заредят</translation>
 <translation id="1400243387594338234">Можете да използвате този ПИН код, за да влезете в профила си на устройството си</translation>
@@ -260,7 +259,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3856470183388031602">Използване на профила ви в Google на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Изберете часова зона</translation>
 <translation id="3893630138897523026">ChromeVox (обратна връзка с говор)</translation>
-<translation id="3897746662269329507">Устройството ви <ph name="DEVICE_TYPE" /> е създадено за игри. Сега ще се отвори приложението Explore. То ви дава възможност да осъществявате достъп до стотици от най-новите игри, да преглеждате оферти за тях и да откривате функции за игри, които се предлагат с устройството ви.</translation>
 <translation id="389901847090970821">Изберете клавиатура</translation>
 <translation id="3910588685973519483">Създаване на тапети с AI</translation>
 <translation id="3924259174674732591">Размер на текста и елементите на екрана: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="542948651837270806">Трябва да бъде инсталирана актуализация на фърмуера на модула за надеждна платформа. Вижте информацията на адрес <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Ами сега! Нещо се обърка при влизане</translation>
 <translation id="5453829744223920473">Детето ви може да използва всичките си училищни приложения, отметки и ресурси, както в класната стая. Учебното заведение определя правилата.</translation>
-<translation id="5463450804024056231">Регистрация за имейли относно <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора на детето ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки.</translation>
 <translation id="5502915260472117187">Дете</translation>
 <translation id="5511823366942919280">Наистина ли искате да настроите това устройство като Shark?</translation>

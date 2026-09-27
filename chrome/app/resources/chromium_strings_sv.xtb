@@ -107,6 +107,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2126108037660393668">Den nedladdade filen gick inte att verifiera.</translation>
 <translation id="2135919691573380097">Rapportera webbplatsen</translation>
 <translation id="2137162749895930932">Stäng översättningsskärmen</translation>
+<translation id="2147218225094845757">Dölj sidopanel</translation>
 <translation id="215352261310130060">Den här nedladdningen blockerades av Chromium eftersom webbplatsen inte använder en säker anslutning och filen kan ha manipulerats</translation>
 <translation id="2170098639895543546">Välj vad som helst på sidan</translation>
 <translation id="2174178932569897599">Anpassa Chromium</translation>
@@ -306,7 +307,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4251772536351901305">Varnar dig om farliga webbplatser, även sådana som Google inte kände till tidigare, genom att analysera mer data från webbplatser än standardskyddet. Du kan välja att hoppa över Chromium-varningar.</translation>
 <translation id="4269093074552541569">Logga ut från Chromium</translation>
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
-<translation id="4275788652681621337">Stäng sidopanelen</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
 <translation id="4298125729853015961">Exportera lösenord från Chromium</translation>

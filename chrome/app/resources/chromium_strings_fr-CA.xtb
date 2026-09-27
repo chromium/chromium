@@ -10,6 +10,7 @@
 
 Certaines fonctionnalités ne seront peut-être pas disponibles et les modifications apportées à vos préférences ne seront pas enregistrées.</translation>
 <translation id="1083934481477628225">Ton parent a désactivé le paramètre « Autorisations pour les sites, les applications et les extensions » dans Chromium</translation>
+<translation id="109026165963220603">Chromium a besoin d'accéder à votre réseau local pour découvrir et utiliser les appareils à proximité</translation>
 <translation id="1090946077924227754">Pour rechercher une fonctionnalité ou une extension Chromium en particulier, entrez son raccourci dans la barre d'adresse, suivi de la touche de clavier que vous avez sélectionnée</translation>
 <translation id="1098493699368672217">Afficher la recherche avec Chromium dans la barre d'état système et activer le raccourci-clavier</translation>
 <translation id="1104942323762546749">Chromium veut exporter vos mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
@@ -105,6 +106,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2126108037660393668">La vérification du fichier téléchargé a échoué.</translation>
 <translation id="2135919691573380097">Signaler ce site</translation>
 <translation id="2137162749895930932">Fermer l'écran de traduction</translation>
+<translation id="2147218225094845757">Masquer le panneau latéral</translation>
 <translation id="215352261310130060">Chromium a bloqué ce téléchargement, car le site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="2170098639895543546">Sélectionnez n'importe quel élément sur la page</translation>
 <translation id="2174178932569897599">Personnaliser Chromium</translation>
@@ -304,7 +306,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4251772536351901305">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chromium.</translation>
 <translation id="4269093074552541569">Se déconnecter de Chromium</translation>
 <translation id="4271805377592243930">Obtenir de l'aide pour Chromium</translation>
-<translation id="4275788652681621337">Fermer le panneau latéral</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="4285930937574705105">Échec de l'installation suite à une erreur non spécifiée. Si Chromium est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
 <translation id="4298125729853015961">Exporter des mots de passe à partir de Chromium</translation>

@@ -10,6 +10,7 @@
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
 <translation id="1083934481477628225">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium.</translation>
+<translation id="109026165963220603">Chromium needs access to your local network to discover and use nearby devices</translation>
 <translation id="1090946077924227754">To search a specific Chromium feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="1098493699368672217">Show search with Chromium in system tray and turn on keyboard shortcut</translation>
 <translation id="1104942323762546749">Chromium wants to export your passwords. Type your Windows password to allow this.</translation>
@@ -106,6 +107,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2135919691573380097">Report this site</translation>
 <translation id="2137162749895930932">Close translate screen</translation>
+<translation id="2147218225094845757">Hide side panel</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="2170098639895543546">Select anything on page</translation>
 <translation id="2174178932569897599">Customise Chromium</translation>
@@ -305,7 +307,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4251772536351901305">Warns you about dangerous sites, even ones that Google didn't know about before, by analysing more data from sites than standard protection. You can choose to skip Chromium warnings.</translation>
 <translation id="4269093074552541569">Sign out of Chromium</translation>
 <translation id="4271805377592243930">Get help with Chromium</translation>
-<translation id="4275788652681621337">Close side panel</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4298125729853015961">Export passwords from Chromium</translation>

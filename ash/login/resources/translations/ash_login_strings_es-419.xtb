@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">La actualización comenzará cuando el nivel de la batería alcance el <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para usar los controles parentales, como la aprobación de apps y los límites de tiempo de uso, el niño debe tener una Cuenta de Google que administre el padre o la madre. Para usar herramientas como Google Classroom, se puede agregar una cuenta de institución educativa en otro momento.</translation>
 <translation id="1375557162880614858">¿Deseas activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Se completó la configuración; prepara tu dispositivo para jugar</translation>
 <translation id="1377600615067678409">Omitir por ahora</translation>
 <translation id="1399261165075500043">No se pueden cargar las Condiciones del Servicio de Google Play</translation>
 <translation id="1400243387594338234">Puedes usar este PIN para acceder a tu dispositivo</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Usa tu Cuenta de Google en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Seleccionar zona horaria</translation>
 <translation id="3893630138897523026">ChromeVox (descripciones por voz)</translation>
-<translation id="3897746662269329507">Tu <ph name="DEVICE_TYPE" /> se diseñó para los videojuegos. A continuación, se abrirá la app de Explorar, donde podrás acceder a cientos de juegos nuevos, ver ofertas y descubrir las funciones dedicadas para videojuegos que incluye tu dispositivo.</translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3910588685973519483">Crea fondos de pantalla con IA</translation>
 <translation id="3924259174674732591">Tamaño de la pantalla y el texto <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Debe instalarse una actualización del firmware del Módulo de plataforma de confianza. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Se produjo un error al acceder</translation>
 <translation id="5453829744223920473">Tu hijo o hija puede usar todos los recursos, apps y favoritos de su institución educativa tal como lo hace en clase. La institución establece las reglas básicas.</translation>
-<translation id="5463450804024056231">Regístrate para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Si continúas, aceptas que este dispositivo pueda descargar e instalar automáticamente actualizaciones y apps de Google, del operador de tu hijo y del fabricante del dispositivo, y que incluso use datos móviles para ello. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
 <translation id="5502915260472117187">Un niño</translation>
 <translation id="5511823366942919280">¿Confirmas que quieres configurar este dispositivo como "Shark"?</translation>

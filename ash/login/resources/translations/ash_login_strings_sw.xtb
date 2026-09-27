@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Usasishaji utaanza betri itakapofika <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Ili uweze kutumia vidhibiti vya wazazi kama vile uidhinishaji wa programu na vikomo vya muda wa kutumia vifaa, ni lazima mtoto awe na Akaunti ya Google inayodhibitiwa na mzazi. Akaunti ya shule inaweza kuongezwa baadaye ili itumike kwenye huduma kama vile Google Darasani.</translation>
 <translation id="1375557162880614858">Je, ungependa kuwasha ChromeVox, kisoma skrini kilichojumuishwa ndani ya kifaa kwa ajili ya ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Uwekaji mipangilio umekamilika! Andaa kifaa chako kwa ajili ya michezo ya video inayofuata</translation>
 <translation id="1377600615067678409">Ruka kwa sasa</translation>
 <translation id="1399261165075500043">Imeshindwa kupakia Sheria na Masharti ya Google Play</translation>
 <translation id="1400243387594338234">Unaweza kutumia PIN hii kuingia katika kifaa chako</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Tumia Akaunti yako ya Google kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="3856800405688283469">Chagua saa za eneo</translation>
 <translation id="3893630138897523026">ChromeVox (majibu yanayotamkwa)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> yako imeundwa maalum kwa ajili ya michezo ya video. Programu ya Gundua itafunguka ambapo utaweza kufikia mamia ya michezo mipya, kuona ofa za michezo ya video na kufahamu vipengele vya michezo vilivyojumuishwa kwenye kifaa chako.</translation>
 <translation id="389901847090970821">Chagua kibodi</translation>
 <translation id="3910588685973519483">Tayarisha mandhari ukitumia AI</translation>
 <translation id="3924259174674732591">Ukubwa wa skrini na maandishi asilmia <ph name="DISPLAY_ZOOM" /></translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Unahitaji kusakinisha sasisho la programu dhibiti ya Trusted Platform Module. Angalia <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Lo! hitilafu imetokea wakati wa kuingia kwenye akaunti</translation>
 <translation id="5453829744223920473">Mtoto wako anaweza kutumia programu zake zote za shule, alamisho na nyenzo kama vile afanyavyo darasani. Shule huweka sheria za msingi</translation>
-<translation id="5463450804024056231">Jisajili kwa ajili ya barua pepe za <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Kwa kuendelea, unakubali kwamba kifaa hiki pia kinaweza kupakua na kusakinisha masasisho na programu kiotomatiki kutoka Google, kampuni inayompa mtoto wako huduma za simu na mtengenezaji wa kifaa hiki, kwa kutumia data ya mtandao wa simu (panapowezekana). Huenda baadhi ya programu hizi zikawa na ununuzi wa ndani ya programu.</translation>
 <translation id="5502915260472117187">Mtoto</translation>
 <translation id="5511823366942919280">Je, una uhakika unataka kusanidi kifaa hiki kama "Shark"?</translation>

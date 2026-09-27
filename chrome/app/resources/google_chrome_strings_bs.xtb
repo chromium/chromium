@@ -130,6 +130,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2128411189117340671">Upravljajte profilima u Chromeu</translation>
 <translation id="2137162749895930932">Zatvaranje ekrana prevoda</translation>
 <translation id="2139300032719313227">Ponovo pokrenite ChromeOS</translation>
+<translation id="2147218225094845757">Sakrivanje bočne ploče</translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome sada</translation>
 <translation id="2163089732491971196">Da koristite i sačuvate podatke Chromea na Google računu, unesite pristupni izraz</translation>
 <translation id="2170098639895543546">Odaberite bilo šta na stranici</translation>
@@ -762,6 +763,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8196526165798579689">Pretražujte putem Chrome Deva</translation>
 <translation id="8221491193165283816">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite ovdje.</translation>
 <translation id="8227493674161801700">Pretražujte putem Chrome Bete</translation>
+<translation id="8233224921566021881">Chrome treba pristup lokalnoj mreži da otkrije i koristi uređaje u blizini</translation>
 <translation id="8253851811470049684">Otvarajte linkove u Chromeu iz bilo koje aplikacije i držite preglednik dostupnim na traci zadataka</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8260086374035800939">Ako je Gemini u Chromeu otvoren, bočna ploča ostaje otvorena prilikom kreiranja novih kartica</translation>

@@ -50,7 +50,6 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="1347975661240122359">A actualización comezará cando a batería alcance o <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Para poder usar controis parentais, como os límites do tempo diante da pantalla e a aprobación de aplicacións, o neno ou nena debe ter unha Conta de Google xestionada por seu pai ou súa nai. Máis tarde pódese engadir unha conta de centro educativo para usala con ferramentas como Google Classroom.</translation>
 <translation id="1375557162880614858">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS Flex?</translation>
-<translation id="1375938286942050085">Completouse a configuración. Agora prepara o dispositivo para xogar</translation>
 <translation id="1377600615067678409">Omitir polo momento</translation>
 <translation id="1399261165075500043">Non se puideron cargar as Condicións de servizo de Google Play</translation>
 <translation id="1400243387594338234">Podes usar este PIN para iniciar sesión no teu dispositivo</translation>
@@ -260,7 +259,6 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="3856470183388031602">Usa a túa Conta de Google en <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecciona un fuso horario</translation>
 <translation id="3893630138897523026">ChromeVox (comentarios orais)</translation>
-<translation id="3897746662269329507">O dispositivo (<ph name="DEVICE_TYPE" />) está deseñado para xogar. Vaise abrir a aplicación Explorar. Nela poderás acceder a centos dos xogos máis recentes, ver ofertas de xogos e descubrir as funcións para xogar que ten o teu dispositivo.</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3910588685973519483">Crea fondos de pantalla con IA</translation>
 <translation id="3924259174674732591">Tamaño de visualización e do texto: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="542948651837270806">É necesario instalar unha actualización do firmware de Trusted Platform Module (Módulo de plataforma fiable). Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Produciuse un erro ao iniciar sesión</translation>
 <translation id="5453829744223920473">O teu fillo ou filla pode usar todas as aplicacións escolares, marcadores e recursos, tal e como o fai en clase. A escola define as normas básicas.</translation>
-<translation id="5463450804024056231">Iniciar sesión para recibir correos electrónicos de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do operador do teu fillo ou filla, e do fabricante deste dispositivo, posiblemente mediante datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas nelas.</translation>
 <translation id="5502915260472117187">Un neno ou nena</translation>
 <translation id="5511823366942919280">Seguro que queres configurar este dispositivo como "Shark"?</translation>

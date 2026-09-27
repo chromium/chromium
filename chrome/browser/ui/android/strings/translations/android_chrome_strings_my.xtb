@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">မျှဝေထားသည့် <ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="4537137366307982887">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်များ ရယူခြင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
 <translation id="4537987892902330164">သင်သည် <ph name="NAME_OR_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။</translation>
-<translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4558311620361989323">ဝဘ်စာမျက်နှာ ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="4572422548854449519">စီမံခန့်ခွဲထားသည့်အကောင့်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
 <translation id="4720556299488643018">ရပ်ဆိုင်းရန်</translation>
 <translation id="4732120983431207637">တည်းဖြတ်မှုကို နောက်ပြန်ဆုတ်သည့်စနစ်</translation>
+<translation id="4734965478015604180">အလျားလိုက်</translation>
 <translation id="4736934858538408121">ပကတိအသွင်ကတ်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4738065825338914557">မှာယူမှု ရပ်ဆိုင်းနေသည်…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ဖိုင်ကို အမည်ပြောင်းခြင်း</translation>
 <translation id="4885273946141277891">Chrome ဖြစ်စဉ်များ၏ အရေအတွက်ကို ပံ့ပိုးမပေးပါ။</translation>
 <translation id="4890973535105146893">သင့် Google Account တွင် သိမ်းထားသောစကားဝှက် မရှိပါ</translation>
+<translation id="490375751687810070">ဒေါင်လိုက်</translation>
 <translation id="4905823827770127520">စာမျက်နှာသို့ လင့်ခ်ထည့်ရန်</translation>
 <translation id="4910889077668685004">ငွေပေးချေ အက်ပ်များ</translation>
 <translation id="4911042367886397055">ပြန်လည်ကြိုဆိုပါသည် <ph name="USER_NAME" /></translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ပုံရှင်းလင်းချက်များ ရယူရန်</translation>
 <translation id="6193448654517602979">တဘ်ရွေးရန်</translation>
 <translation id="6196315980958524839">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်</translation>
+<translation id="6200780647297916498">တဘ်နေရာ</translation>
 <translation id="6204781143409202534">Chrome သည် <ph name="DOMAIN" /> မှ စပမ်းဖြစ်နိုင်သည်ကို တွေ့ရှိသည်။</translation>
 <translation id="6211386937064921208">ဤစာမျက်နှာကို အစမ်းကြည့်ရှုနေသည်</translation>
 <translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>

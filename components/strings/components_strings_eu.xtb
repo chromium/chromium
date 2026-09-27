@@ -282,7 +282,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1449251255954293933">Gorde Redress zenbakia Google Diru-zorroa zerbitzuan</translation>
 <translation id="1455413310270022028">Borragoma</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Ikusi 0 iritzi}=1{Ikusi 1 iritzi}other{Ikusi # iritziak}}</translation>
-<translation id="1458770162980644530">Epekako ordainketaren zerbitzu-baldintzen pantaila. Teklatua ezkutatuta dago.</translation>
 <translation id="1460317464907341501">Helbide elektronikoa automatikoki egiaztatu nahi duzu?</translation>
 <translation id="1461041542809785877">Errendimendua</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -861,7 +860,6 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2436186046335138073"><ph name="PROTOCOL" /> esteka guztiak irekitzeko baimena eman nahi diozu <ph name="HANDLER_HOSTNAME" /> maneiatzaileari?</translation>
 <translation id="243815215670139125">Ezin izan da gorde txartela Google-ko kontuan. Horren ordez, gailu honetako Chrome-n gorde da.</translation>
 <translation id="2438874542388153331">Lau zulo eskuinean</translation>
-<translation id="2441854154602066476">Haien eremuak sakatzean automatikoki beteko diren ordainketa-metodoak. Teklatua ezkutatuta dago.</translation>
 <translation id="2442865686365739754">Chrome-k <ph name="BEGIN_EMPHASIS" />ez ditu gordeko<ph name="END_EMPHASIS" /> hauek:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />arakatze-historia
@@ -901,8 +899,8 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="2491120439723279231">Zerbitzariaren ziurtagiriak erroreak dauzka.</translation>
 <translation id="2491414235131909199">Luzapen batek blokeatu du orria</translation>
 <translation id="2493122313108999546">Tamaina aldatu da</translation>
-<translation id="249376477913017009">Gmail-etik eta beste zerbitzu batzuetatik betetze automatikoa erabiltzeko oharra irekita dago</translation>
 <translation id="2495083838625180221">JSON analizatzailea</translation>
+<translation id="2495909791227061512">Inguruko gailuetara konektatu nahi duzu?</translation>
 <translation id="2496402116964818747"><ph name="SETTINGS" /> atalean alda dezakezu pasahitzak betetzeko hatz-marka erabiltzen duzun edo ez</translation>
 <translation id="2498091847651709837">Eskaneatu beste txartel bat</translation>
 <translation id="2501270939904835585">Etiketak (satina)</translation>
@@ -1208,7 +1206,6 @@ Iradokizun hau Chrome-tik ken dezakezu. Jatorrizko materiala ez da ezabatuko. <p
 <translation id="3052868890529250114">Normalean, modu seguruan konektatzen zara webguneetara, baina oraingoan Chrome-k ezin izan du erabili konexio segururik. Baliteke erasotzaile bat zure sareko konexioa zelatatzen edo aldatzen saiatzea. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu abisu honi buruzko informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> merkeagoa da <ph name="PRODUCT_NAME" /> produktua</translation>
 <translation id="3053013834507634016">Ziurtagiri-gakoaren erabilera</translation>
-<translation id="3056660797732519147">Epekako ordainketaren errorearen pantaila. Teklatua ezkutatuta dago.</translation>
 <translation id="3057844102210575426">Kudeatu bidaiari buruzko informazioa</translation>
 <translation id="3061707000357573562">Adabaki-zerbitzua</translation>
 <translation id="3062655045399308513">Ezabatu arakatze-datuak…</translation>
@@ -2082,7 +2079,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
 <translation id="4493480324863638523">URLak ez du balio. Eskema estandarreko URLa izan behar du, hala nola "http://example.com" edo "https://example.com".</translation>
-<translation id="4497010149473852018">Sakatze hutsarekin automatikoki beteko diren fideltasun-txartelak erabilgarri daude. Teklatua ezkutatuta dago.</translation>
 <translation id="4497843134750481377">Kudeatu eskaintzak</translation>
 <translation id="4500587658229086076">segurua ez den edukia</translation>
 <translation id="4501939680615452918">Bilatu pil-pilean dauden jatetxeetan libre dauden mahaiak</translation>
@@ -2149,7 +2145,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4628948037717959914">Argazkia</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">Fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzura kargatzeko prozesua <ph name="HOURS" /> ordu barru hasiko da</translation>
-<translation id="4631881646528206880">Txartel birtualaren erregistroa</translation>
 <translation id="4635278307999235413">Datuak administrazio-kontsolara bidaltzen</translation>
 <translation id="4636930964841734540">Informazioa</translation>
 <translation id="4640225694041297329">Erakutsi azken 7 egunetako emaitzak</translation>
@@ -2532,7 +2527,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5255583962255635076">laneko profilean aplikatutako arakatzaile-gidalerroak</translation>
 <translation id="5255690596502591079">Egin pantaila-argazki edo -grabaketa bat, halere</translation>
 <translation id="5255771248404149177">Txartelaren hornitzaileak zu zarela ziurtatu behar du</translation>
-<translation id="525579853540851404">Epekako ordainketaren garapenaren pantaila. Teklatua ezkutatuta dago.</translation>
 <translation id="5255833070095767006">350 × 460 mm</translation>
 <translation id="5257739419779698609">{0,plural, =1{Administratzailearen gidalerroek ez dute gomendatzen fitxategia hemen kopiatzea: <ph name="DESTINATION_NAME" />}other{Administratzailearen gidalerroek ez dute gomendatzen fitxategiak hemen kopiatzea: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" fitxa taldea jada ez dago erabilgarri</translation>
@@ -2651,6 +2645,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5452923259299906094">Ordaindu diru-zorro digitala eta Pix erabilita</translation>
 <translation id="5455374756549232013">Gidalerroaren denbora-zigiluak ez du balio</translation>
 <translation id="5456428544444655325">Ez erakutsi inoiz</translation>
+<translation id="5457082343331641453">Gehitu zerbait bilaketan</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
 <translation id="5465128270485645058">Lortu erantzun pertsonalizatuagoak leiho honetako irekitako fitxak automatikoki partekatuta, elkarrizketa-hari honekin erlazionatuta badaude.</translation>
@@ -4061,7 +4056,6 @@ Xehetasun gehiago:
 <translation id="7839192898639727867">Ziurtagiriaren gaiaren gako-identifikatzailea</translation>
 <translation id="7840103971441592723">Pantaila-kapturari ekin zaio</translation>
 <translation id="784137052867620416">Erosketen estatistikak</translation>
-<translation id="7841633276323004751">Ordainketarekin aurrera egiteko hauta daitezkeen ordainketa-metodoak. Teklatua ezkutatuta dago.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Bat ere ez}=1{1 aplikazio (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikazio (<ph name="EXAMPLE_APP_1" /> eta <ph name="EXAMPLE_APP_2" />)}other{# aplikazio (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> eta<ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Errore bat gertatu da. Saiatu berriro.</translation>
 <translation id="784623644169604270">Ez dago jarduerarik azken aldian</translation>
@@ -4140,7 +4134,6 @@ Xehetasun gehiago:
 <translation id="79682505114836835">"<ph name="VALUE" />" kolore hamaseitar baliogabea da.</translation>
 <translation id="7968982339740310781">Ikusi xehetasunak</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 RSA enkriptatzearekin</translation>
-<translation id="7976053965094442846">Epekako ordainketen jaulkitzaile erabilgarriak, denboran zehar ordaintzeko. Teklatua ezkutatuta dago.</translation>
 <translation id="7976214039405368314">Eskaera gehiegi daude</translation>
 <translation id="7977029776654598145">Erabiltzen denean</translation>
 <translation id="7977538094055660992">Irteera-gailua</translation>
@@ -4447,7 +4440,6 @@ Xehetasun gehiago:
 <translation id="8522552481199248698">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chrome-k.</translation>
 <translation id="8523574453888018351">Irakatsi beste hizkuntza bat</translation>
 <translation id="852450791482410042">Ordaindu</translation>
-<translation id="8528479410903501741">Gorde IBANa</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Erabili kokapen zehatza</translation>
 <translation id="8533619373899488139">Joan &lt;strong&gt;chrome://policy&lt;/strong&gt; orrira sistemaren administratzaileak blokeatutako URLen zerrenda eta aplikatutako gidalerroak ikusteko.</translation>
@@ -4644,6 +4636,7 @@ Xehetasun gehiago:
 <translation id="8883863364960302898">Google Drive-ko karpeta</translation>
 <translation id="8884537526797090108">Ezin da grabatu isilpeko edukirik</translation>
 <translation id="8889525327610245418">Eguneratu gidabaimena modu seguruan Google Diru-zorroa zerbitzuan</translation>
+<translation id="8890516388109605451">Iturburuak</translation>
 <translation id="8891031436559779793">Jakinarazpen bat jasoko duzu webguneren batean prezioa jaisten bada.</translation>
 <translation id="8891727572606052622">Proxy moduak ez du balio.</translation>
 <translation id="8894794286471754040">Ertz luzea lehendabizi</translation>

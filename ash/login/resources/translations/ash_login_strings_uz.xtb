@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Yangilanish batayeraning <ph name="BATTERY_LEVEL" />% quvvatida boshlanadi.</translation>
 <translation id="1353275871123211385">Ilovadan foydalanishga ruxsat va ekran vaqtini cheklash kabi ota-ona nazorati funksiyalari uchun farzand Google hisobi ota-ona boshqaruvida boʻlishi zarur. Google Classroom kabi vositalardan foydalanish uchun maktab hisobini keyinroq kiritish mumkin.</translation>
 <translation id="1375557162880614858">ChromeOS Flex tizimidagi ichiga oʻrnatilgan skrin rider – ChromeVox faollashtirilsinmi?</translation>
-<translation id="1375938286942050085">Sozlandi! Qurilma oʻyinlar uchun tayyorlanmoqda</translation>
 <translation id="1377600615067678409">Tashlab ketish</translation>
 <translation id="1399261165075500043">Google Play xizmat shartlari yuklanmadi</translation>
 <translation id="1400243387594338234">Bu PIN kod orqali qurilmadagi hisobga kirish mumkin</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> qurilmasida Google hisobidan foydalaning</translation>
 <translation id="3856800405688283469">Vaqt mintaqasini tanlang</translation>
 <translation id="3893630138897523026">ChromeVox (ovozli ta’rif)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> qurilmangiz oʻyinlar uchun mos ishlab chiqilgan. Tanishuv ilovasi orqali yuzlab yangi oʻyinlar, oʻyin takliflari va qurilmada mavjud oʻyin funksiyalari bilan tanishing.</translation>
 <translation id="389901847090970821">Klaviaturani tanlang</translation>
 <translation id="3910588685973519483">AI yordamida fon rasmlarini yaratish</translation>
 <translation id="3924259174674732591">Ekran va matn oʻlchami: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Ishonchli platforma modulining (TPM) ichki dasturi yangilanishi zarur. Batafsil: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Kirishda xatolik yuz berdi</translation>
 <translation id="5453829744223920473">Farzandingiz oʻzining barcha maktab ilovalari, bukmarklari va resurslaridan xuddi sinfdagi kabi foydalanishi mumkin. Maktab asosiy qoidalarni belgilaydi.</translation>
-<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> xatlariga yozilish</translation>
 <translation id="5473099001878321374">Davom etish orqali siz bu qurilma Google, aloqa operatoringiz va qurilma ishlab chiqaruvchisidan dasturiy yangilanish va ilovalarni mobil internet orqali ham avtomatik ravishda yuklab olishi va oʻrnatishiga rozilik bildirgan hisoblanasiz. Ayrim ilovalar ichki xaridlarni ham taklif etishi mumkin.</translation>
 <translation id="5502915260472117187">Bola</translation>
 <translation id="5511823366942919280">Haqiqatan ham bu qurilmani "Shark" sifatida sozlamoqchimisiz?</translation>

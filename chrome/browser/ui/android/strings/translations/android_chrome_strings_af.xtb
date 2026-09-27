@@ -889,7 +889,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4535755320005483982">Gedeelde <ph name="GROUP_TITLE" />-oortjiegroep</translation>
 <translation id="4537137366307982887">Intekening vir Wenke-kennisgewings is teen volle hoogte oopgemaak</translation>
 <translation id="4537987892902330164">Jy het as <ph name="NAME_OR_EMAIL" /> aangemeld gebly.</translation>
-<translation id="4543131175509360848">Geen toegangsleutelblad nie</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> oortjie}other{<ph name="TAB_COUNT_MANY" /> oortjies, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Webbladkortpaaie</translation>
 <translation id="4572422548854449519">Meld by 'n bestuurde rekening aan</translation>
@@ -934,6 +933,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4719927025381752090">Aanbieding om te vertaal</translation>
 <translation id="4720556299488643018">Teken uit</translation>
 <translation id="4732120983431207637">Stapellosdraaier</translation>
+<translation id="4734965478015604180">Horisontaal</translation>
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4738065825338914557">Teken tans uit …</translation>
@@ -982,6 +982,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="488187801263602086">Hernoem lêer</translation>
 <translation id="4885273946141277891">Ongesteunde aantal Chrome-gevalle.</translation>
 <translation id="4890973535105146893">Geen gestoorde wagwoorde in jou Google-rekening nie</translation>
+<translation id="490375751687810070">Vertikaal</translation>
 <translation id="4905823827770127520">Sluit 'n skakel na die bladsy toe in</translation>
 <translation id="4910889077668685004">Betalingprogramme</translation>
 <translation id="4911042367886397055">Welkom terug, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6192907950379606605">Kry prentbeskrywings</translation>
 <translation id="6193448654517602979">Kies oortjies</translation>
 <translation id="6196315980958524839">Wagwoorde word op hierdie toestel in Google Wagwoordbestuurder gestoor</translation>
+<translation id="6200780647297916498">Oortjieposisie</translation>
 <translation id="6204781143409202534">Chrome het moontlike strooipos van <ph name="DOMAIN" /> af bespeur.</translation>
 <translation id="6211386937064921208">Voorbeskou tans hierdie bladsy</translation>
 <translation id="6212567362666004597">Voeg oortjie by groep</translation>

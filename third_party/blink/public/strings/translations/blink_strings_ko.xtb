@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">디버거가 다른 탭에서 일시중지되었습니다. 해당 탭으로 전환하려면 클릭하세요.</translation>
 <translation id="1171774979989969504">이메일 주소를 입력하세요.</translation>
 <translation id="1178581264944972037">일시중지</translation>
+<translation id="1254779809141342904">이 CAP 알림은 XSLT라는 기술을 사용합니다. 이 기능은 <ph name="REMOVAL_LINK" />. 이 경우 이 알림은 원시 XML 데이터로 표시됩니다. <ph name="EXTENSION_LINK" />하면 계속 볼 수 있습니다.</translation>
 <translation id="1306460908038601864">꺼짐</translation>
 <translation id="1311894908970423688">값이 <ph name="VALUE_DATE_OR_TIME" />여야 합니다.</translation>
 <translation id="1588438908519853928">일반</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">제출</translation>
 <translation id="2746543609216772311">값은 <ph name="MINIMUM_DATE_OR_TIME" /> 이후여야 합니다.</translation>
 <translation id="2761667185364618470">계속하려면 이 확인란을 선택하세요.</translation>
+<translation id="2854734116215697908">이 브라우저에서 삭제됩니다</translation>
 <translation id="2908441821576996758">이메일 주소를 쉼표로 구분하여 입력하세요.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
 <translation id="3075154866155599887">유효한 값을 입력하세요. 입력을 완료하지 않았거나 날짜가 잘못되었습니다.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">전송</translation>
 <translation id="5630795885300617244">10초를 건너뛰려면 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="57838592816432529">음소거</translation>
+<translation id="5855560023261018690">곧 이 브라우저에서 삭제됩니다</translation>
 <translation id="5868587040512539609">동영상 트랙</translation>
 <translation id="588258955323874662">전체화면</translation>
 <translation id="5888666972993069672">현재 <ph name="DEVICE_FRIENDLY_NAME" />(으)로 전송 중</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">PIP 모드 종료</translation>
 <translation id="6484738902856791350">pretty print 적용</translation>
 <translation id="6550675742724504774">옵션</translation>
+<translation id="65574987622079584">브라우저 확장 프로그램을 설치</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6661136971638885481">트랙 #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">기타...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">이번 주</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">연도</translation>
+<translation id="8243989288843872594">이 경고를 다시 표시하지 않음</translation>
 <translation id="8284326494547611709">자막</translation>
 <translation id="835897206747267392">값이 잘못되었습니다.</translation>
 <translation id="839593075537728968">값은 <ph name="MINIMUM_TIME" />에서 <ph name="MAXIMUM_TIME" /> 사이여야 합니다.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">자동 줄바꿈</translation>
 <translation id="8750798805984357768">다음 옵션 중 하나를 선택하세요.</translation>
+<translation id="8753001114009816390">이 사이트는 XSLT를 사용합니다. 이 기능은 <ph name="REMOVAL_LINK" />. 이 경우 이 페이지가 더 이상 올바르게 표시되지 않을 수 있습니다. <ph name="EXTENSION_LINK" />하면 계속 볼 수 있습니다. 그렇지 않은 경우 사이트 관리자에게 자세한 내용을 문의하세요.</translation>
 <translation id="8845239796550121995">TV로 전송 중</translation>
 <translation id="8875657656876809964">동영상 재생 오류</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" />KB</translation>

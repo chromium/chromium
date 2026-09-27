@@ -889,7 +889,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> tab qrupu paylaşıldı</translation>
 <translation id="4537137366307982887">İpucu bildirişlərinə qoşulma pəncərəsi tam hündürlükdə açıldı</translation>
 <translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> kimi daxil olmağa davam edirsiniz.</translation>
-<translation id="4543131175509360848">Giriş açarı vərəqi yoxdur</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> anonim}}</translation>
 <translation id="4558311620361989323">Veb səhifə qısayolları</translation>
 <translation id="4572422548854449519">İdarə olunan hesablara daxil olun</translation>
@@ -934,6 +933,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4719927025381752090">Tərcümə təklif edin</translation>
 <translation id="4720556299488643018">Dayandırın</translation>
 <translation id="4732120983431207637">Stellaj Açıcı</translation>
+<translation id="4734965478015604180">Üfüqi</translation>
 <translation id="4736934858538408121">Virtual kart</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4738065825338914557">Abunəlik ləğv edilir…</translation>
@@ -982,6 +982,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="488187801263602086">Faylın adını dəyişin</translation>
 <translation id="4885273946141277891">Dəstəklənməyən Chrome nümunələrinin sayı.</translation>
 <translation id="4890973535105146893">Google Hesabınızda yadda saxlanılmış parol yoxdur</translation>
+<translation id="490375751687810070">Vertikal</translation>
 <translation id="4905823827770127520">Səhifəyə keçid daxil edin</translation>
 <translation id="4910889077668685004">Ödəniş tətbiqləri</translation>
 <translation id="4911042367886397055">Təkrar xoş gəldiniz, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6192907950379606605">Şəkil təsvirləri əldə edin</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
 <translation id="6196315980958524839">Parollar bu cihazda Google Parol Menecerində saxlanılır</translation>
+<translation id="6200780647297916498">Tabın mövqeyi</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" /> domenindən mümkün spam aşkarladı.</translation>
 <translation id="6211386937064921208">Bu səhifə önizlənir</translation>
 <translation id="6212567362666004597">Qrupa tab əlavə edin</translation>

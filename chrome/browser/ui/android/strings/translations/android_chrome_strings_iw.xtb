@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">קבוצת הכרטיסיות המשותפת "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">ההצעה להצטרפות לקבלת טיפים נפתחה בגובה מלא</translation>
 <translation id="4537987892902330164">החיבור של <ph name="NAME_OR_EMAIL" /> עדיין פעיל.</translation>
-<translation id="4543131175509360848">אין גיליון של מפתחות גישה</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4558311620361989323">קיצורי דרך בדפי אינטרנט</translation>
 <translation id="4572422548854449519">כניסה אל חשבון מנוהל</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
 <translation id="4720556299488643018">ביטול הרשמה</translation>
 <translation id="4732120983431207637">מודול התרת מחסניות</translation>
+<translation id="4734965478015604180">אופקי</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4738065825338914557">הרישום מתבטל…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">שינוי שם של קובץ</translation>
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
 <translation id="4890973535105146893">‏אין סיסמאות שמורות בחשבון שלך ב-Google</translation>
+<translation id="490375751687810070">אנכי</translation>
 <translation id="4905823827770127520">הוספת קישור לדף</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4911042367886397055">שמחים שחזרת, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ליצירת תיאורי תמונות</translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
 <translation id="6196315980958524839">‏סיסמאות נשמרות במנהל הסיסמאות של Google במכשיר הזה</translation>
+<translation id="6200780647297916498">מיקום הכרטיסייה</translation>
 <translation id="6204781143409202534">‏‫Chrome זיהה משהו שנראה כמו ספאם מהכתובת <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6212567362666004597">הוספת הכרטיסייה לקבוצה</translation>
@@ -2121,6 +2123,7 @@
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="948276827484905248">‏יצירת קוד QR</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
+<translation id="959544960061022767">‏לפי דרישת הארגון שלך, עליך להיכנס לחשבון כדי להשתמש ב-Chrome</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="963246339335003378">פתיחת מנהל המשימות</translation>
 <translation id="966337994629449077">‏נכנסת בתור <ph name="FROM_EMAIL" />.\n\nכדי להמשיך מהמחשב צריך לעבור אל <ph name="TO_EMAIL" />. הסיסמאות, הסימניות ועוד נתונים שלך מהחשבון הזה יופיעו שם.</translation>

@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">Ylläpidä Chrome-profiileja</translation>
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
+<translation id="2147218225094845757">Piilota sivupaneeli</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
 <translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
 <translation id="2170098639895543546">Valitse mitä tahansa sivulta</translation>
@@ -754,6 +755,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8196526165798579689">Hae Chrome Devillä</translation>
 <translation id="8221491193165283816">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla tätä.</translation>
 <translation id="8227493674161801700">Hae Chrome Betalla</translation>
+<translation id="8233224921566021881">Chrome tarvitsee pääsyn paikalliseen verkkoon, jotta se voi löytää ja käyttää lähellä olevia laitteita</translation>
 <translation id="8253851811470049684">Avaa linkit Chromessa mistä tahansa sovelluksesta ja pidä selain käytettävissä tehtäväpalkissa</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8260086374035800939">Jos Gemini in Chrome on auki, sivupaneeli pysyy auki, kun luot uusia välilehtiä</translation>

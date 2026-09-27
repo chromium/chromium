@@ -796,7 +796,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="160689647589417224">V této oblasti je aplikace omezena.</translation>
 <translation id="1607139524282324606">Vymazat položku</translation>
 <translation id="1608668830839595724">Další akce s vybranými položkami</translation>
-<translation id="1609603645228231640">Gemini Spark je experimentální a může dělat věci, například sdílet informace nebo nakupovat, i když ho o toho nepožádáte. <ph name="LINK_BEGIN" />Přečtěte si o rizicích<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Nastavení aplikací</translation>
 <translation id="161042844686301425">Azurová</translation>
 <translation id="1611649489706141841">vpřed</translation>
@@ -1054,7 +1053,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1808805149659872686">Nový záznam</translation>
 <translation id="1809201888580326312">Hesla pro tyto weby a aplikace jste se rozhodli neukládat.</translation>
 <translation id="1809734401532861917">Přidejte mé záložky, historii, hesla a další nastavení do účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Anonymní izolovaný rámec: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> již nemůže nadále používat <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Odesílání karty <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Služby</translation>
@@ -1287,7 +1285,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1983612835086592681">Minulý týden jste otevřeli</translation>
 <translation id="1984087999855033707">telefonní číslo</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
-<translation id="1984683754853869253">Chcete vytvořit nový profil pro školu?</translation>
 <translation id="198507684520034826">Nápověda</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Pokročilé geografické nastavení</translation>
@@ -1320,7 +1317,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2010501376126504057">Kompatibilní zařízení</translation>
 <translation id="2010636492623189611">Vybráno.</translation>
 <translation id="2012935757369720523">Smazat soubor</translation>
-<translation id="2014495120525813351">Nechat agenta Gemini Spark procházet na tomto zařízení internet</translation>
+<translation id="2014191284313949173">Zavřít izolované karty</translation>
 <translation id="2016473077102413275">Funkce vyžadující obrázky nebudou k dispozici</translation>
 <translation id="2017334798163366053">Deaktivovat shromažďování údajů o výkonu</translation>
 <translation id="2017770349934140286">Google Play a aplikace, které jste si stáhli z Google Play, budou z tohoto Chromebooku smazány.
@@ -1452,6 +1449,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2121825465123208577">Změnit velikost</translation>
 <translation id="2122446694240899610">Dovednosti se ukládají do vašeho účtu Google</translation>
 <translation id="2123766928840368256">Vybrat jiný soubor</translation>
+<translation id="2124153808069020510">Pokud chcete vymazat data, zavřete všechna izolovaná okna</translation>
 <translation id="2124930039827422115">{1,plural, =1{Hodnocení od jednoho uživatele: <ph name="AVERAGE_RATING" />.}few{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}many{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}other{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2125715366913703594">Prozkoumat &amp;rozšíření</translation>
 <translation id="2126167708562367080">Synchronizace je administrátorem zakázána.</translation>
@@ -1594,6 +1592,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2227179592712503583">Odebrat návrh</translation>
 <translation id="222931766245975952">Soubor byl zkrácen</translation>
 <translation id="2229342031987138128">Skryté titulky</translation>
+<translation id="22294739381015133">V izolovaném režimu se neukládají navštívené weby</translation>
 <translation id="2231351769755997720">Žádné návrhy nejsou k dispozici. Zkuste položit vlastní otázku ohledně této stránky.</translation>
 <translation id="2232751457155581899">Weby mohou žádat o sledování pozice kamery</translation>
 <translation id="2233502537820838181">&amp;Další informace</translation>
@@ -2030,7 +2029,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2554553592469060349">Vybraný soubor je příliš velký (maximální velikost je 3 MB).</translation>
 <translation id="2555802059188792472">Oznámení může odesílat tento počet aplikací: <ph name="NUM_ALLOWED_APPS" /> z <ph name="TOTAL_NUM_APPS" /></translation>
 <translation id="2555855727505718984">Automatické vyplňování nebude mít tyto informace na zařízení, aby vám mohlo pomáhat vyplňovat formuláře.</translation>
-<translation id="25568951186001797">Izolovaný rámec: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Zde uvidíte všechny své záložky</translation>
 <translation id="2563924218974330506">Své skupiny karet teď můžete spravovat tady. Tlačítko můžete kdykoli odepnout.</translation>
 <translation id="2564520396658920462">Spouštění JavaScriptu prostřednictvím AppleScriptu je vypnuto. Chcete-li jej zapnout, na liště s nabídkou přejděte na Zobrazení &gt; Vývojář &gt; Povolit JavaScript z událostí Apple. Další informace najdete na stránce https://support.google.com/chrome/?p=applescript.</translation>
@@ -2109,7 +2107,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2626746300781063303">Weby, včetně Googlu, reagují na tento požadavek podle vlastního uvážení</translation>
 <translation id="2626799779920242286">Zkuste to prosím znovu později.</translation>
 <translation id="2627424346328942291">Sdílení se nezdařilo</translation>
-<translation id="2627970398976286795">Přečtěte si o rizicích funkce Gemini Spark</translation>
 <translation id="2628258844236035475">Odebrat z automatického vyplňování v Chromu adresu domů?</translation>
 <translation id="2628770867680720336">K aktivaci ladění ADB je tento Chromebook potřeba resetovat do továrního nastavení. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Zahájit nový chat s Gemini</translation>
@@ -2418,7 +2415,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2845276301195220700">Další akce pro Kalendář Google</translation>
 <translation id="2845382757467349449">&amp;Vždy zobrazovat lištu záložek</translation>
 <translation id="284581348330507117">Vytvářejte unikátní hesla</translation>
-<translation id="2846345106886298325">Úkol byl dokončen a vrácen asistentovi Gemini Spark</translation>
 <translation id="284884486564166077">Vyhledejte jakýkoli obrázek pomocí aplikace Lens</translation>
 <translation id="2849035674501872372">Podívat se nahoru</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2476,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2893318819023133318">Obrátit zobrazení</translation>
 <translation id="2894596417096093634">Identifikátory zpráv o selhání</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
-<translation id="2895194086130800590">Gemini Spark může na tomto zařízení používat automatické procházení, pouze pokud je zařízení probuzené a je spuštěný Chrome.</translation>
 <translation id="289695669188700754">ID klíče: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Po zavření všech anonymních oken bude toto vlastní nastavení odstraněno</translation>
 <translation id="2897878306272793870">Určitě chcete otevřít <ph name="TAB_COUNT" /> karty (karet)?</translation>
@@ -2533,7 +2528,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2933653107553951760">Obnovit skupinu</translation>
 <translation id="2934225044529065415">Nepodařilo se získat přístup ke kameře</translation>
 <translation id="2935314715123552088">Deaktivovat aktivní profil eSIM karty</translation>
-<translation id="2936067606203230121">Gemini Spark na základě zadaných nebo aktualizovaných úkolů rozhodne, jaké akce se mají provést.</translation>
 <translation id="2936851848721175671">Záloha a obnovení</translation>
 <translation id="2938981087412273365">Nemá povoleno číst a měnit tento web</translation>
 <translation id="2939005221756255562">Povolit oznámení v oznamovacím centru. Otevřít <ph name="BEGIN_LINK" />Nastavení systému<ph name="END_LINK" />.</translation>
@@ -2911,6 +2905,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3213681682237645841">Stahování hlasů pro jazyk <ph name="LANGUAGE" />…</translation>
 <translation id="3217843140356091325">Vytvořit zástupce?</translation>
 <translation id="3220494908385619295">Zobrazit vedle sebe</translation>
+<translation id="3220541426929880850">Pokud ze zařízení budete chtít vymazat historii prohlížení v izolovaném režimu, stačí zavřít všechny izolované karty.</translation>
 <translation id="3220943972464248773">Pokud chcete synchronizovat hesla, ověřte svoji totožnost</translation>
 <translation id="3222066309010235055">Předběžně vykreslit: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Připojit k síti <ph name="USB_VM_NAME" /></translation>
@@ -3409,6 +3404,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3600956933576601730">Pokud chcete používat tyto funkce, musíte si přečíst podmínky a přijmout je</translation>
 <translation id="3601374594714740284">Pro kvalitnější hlasy uvolněte v zařízení místo</translation>
 <translation id="360180734785106144">Nabízet nové funkce, až budou k dispozici</translation>
+<translation id="3601988315287782413">Akce se vztahuje jen na izolovaná okna</translation>
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3602495161941872610">Vyřešte problém se &amp;synchronizací</translation>
 <translation id="3602894439067790744">Čísla číst jako</translation>
@@ -3637,7 +3633,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3756578970075173856">Nastavit PIN</translation>
 <translation id="3756806135608816820">Weby mohou žádat o vyhledání zařízení Bluetooth</translation>
 <translation id="3756823472711156529">Obnovit skupinu</translation>
-<translation id="3757337311115630808">Další informace o Gemini Spark</translation>
 <translation id="3757567010566591880">Odepnout z lišty</translation>
 <translation id="3757645900890881944">Vyhledávací nástroje</translation>
 <translation id="3757733214359997190">Nebyly nalezeny žádné weby</translation>
@@ -5246,7 +5241,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4989966318180235467">Prozkoumat stránku na &amp;pozadí</translation>
 <translation id="499016799952867794">Aplikaci to umožňuje fungovat podle očekávání.</translation>
 <translation id="4990673372047946816">Není k dispozici žádná kamera</translation>
-<translation id="499126848196136237">Gemini Spark může na tomto zařízení používat automatické procházení v Chromu k interakci s weby a dokončování úkolů vaším jménem. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Považovat klávesy v horní řadě za funkční klávesy</translation>
 <translation id="4991873517942703737">Zeptejte se na tenhle dokument</translation>
 <translation id="4992066212339426712">Zapnout zvuk</translation>
@@ -5503,7 +5497,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5189274947477567401">K odhlášení ze sdílení procesů je prohlížeč potřeba restartovat. Prohlížeč se teď restartuje.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Používá <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Lišta záložek</translation>
 <translation id="5190926251776387065">Aktivovat port</translation>
 <translation id="5190959794678983197">Žádný mikrofon</translation>
 <translation id="5191094172448199359">Zadané kódy PIN se neshodují</translation>
@@ -6999,7 +6992,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6393550101331051049">Povolení zobrazovat nezabezpečený obsah</translation>
 <translation id="6394634179843537518">Přidat soubor</translation>
 <translation id="6395423953133416962">Odesílat <ph name="BEGIN_LINK1" />informace o systému<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metriky<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Ano, uchovávat moje údaje odděleně od školních (doporučeno)</translation>
 <translation id="6398715114293939307">Odstranit Obchod Google Play</translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
 <translation id="639880411171387127">Váš výběr Google Lens. Stisknutím klávesy Enter nebo Backspace výběr Google Lens smažete</translation>
@@ -8363,7 +8355,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7421293530411019405">Opustit skupinu karet?</translation>
 <translation id="7421925624202799674">Zobrazit zdrojo&amp;vý kód stránky</translation>
 <translation id="7422192691352527311">Nastavení...</translation>
-<translation id="7423381908337122792">Kdokoli, kdo má přístup k vašemu agentovi Gemini Spark, by mohl ovládat váš prohlížeč Chrome.</translation>
 <translation id="7423425410216218516">Viditelnost je zapnutá na <ph name="MINUTES" /> min</translation>
 <translation id="7423513079490750513">Odstranit: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Síť byla přidána</translation>
@@ -8715,7 +8706,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="769824636077131955">Tento dokument je na bezpečnostní kontrolu příliš velký. Můžete vytisknout dokumenty až do velikosti 50 MB.</translation>
 <translation id="7698507637739331665">Některé položky jsou blokovány</translation>
 <translation id="7700516433658473670">Tiskárny a skenery</translation>
-<translation id="7700873336634517379">Ne, dál používat pro školu v tomhle profilu</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7701869757853594372">Popisovače – UŽIVATEL</translation>
 <translation id="770231223935918661">Zeptat se na tento obrázek</translation>
@@ -10139,6 +10129,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="878862491037637275">Tato skupina karet je plná</translation>
 <translation id="8791157330927639737">Další informace o aktualizaci</translation>
 <translation id="8791534160414513928">Posílat při procházení webů požadavek Do Not Track</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (izolováno)</translation>
 <translation id="8793390639824829328">Weby tuto funkci používají k posouvání a přibližování sdílených karet</translation>
 <translation id="8793895150509408038">Zobrazit podrobnosti o webu <ph name="SITE" /> ze seznamu <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Při zapnutém hotspotu váš telefon <ph name="PHONE_NAME" />:</translation>
@@ -10375,7 +10366,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="897525204902889653">Karanténní služba</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ a 1 další karta}few{„<ph name="TAB_TITLE" />“ a # další karty}many{„<ph name="TAB_TITLE" />“ a # další karty}other{„<ph name="TAB_TITLE" />“ a # dalších karet}}</translation>
 <translation id="897565255818387330">Povolit tomuto webu prohlížet si a kopírovat soubor <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Nastavte si školní profil, abyste mohli ukládat a používat hesla a další údaje ve svém účtu</translation>
 <translation id="8977811652087512276">Nesprávné heslo nebo poškozený soubor</translation>
 <translation id="8978154919215542464">Zapnuto – synchronizovat vše</translation>
 <translation id="8978670037548431647">Obnovit možnosti sdílení datového připojení</translation>
@@ -10479,7 +10469,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="9040661932550800571">Aktualizovat heslo pro web <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Přihlaste se do Chromu a ukládejte si silná hesla pomocí Správce hesel Google</translation>
 <translation id="9041692268811217999">Správce přístup k místním souborům v tomto počítači zakázal</translation>
-<translation id="9041881059840744611">O školních profilech</translation>
 <translation id="904224458472510106">Tuto akci nelze vrátit zpět</translation>
 <translation id="9042827002460091668">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
@@ -10696,7 +10685,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219572436491982747">Data odeslaná do Googlu mohou vidět kontroloři, kteří pomáhají zlepšovat AI technologie v Chromu</translation>
 <translation id="9219741625496141320">Údaje o prohlížení byly automaticky smazány</translation>
-<translation id="9220484506568374422">Gemini Spark bude mít přístup ke stejným webům jako vy, včetně webů, na kterých jste přihlášeni. Bude se třetími stranami sdílet nezbytné informace, v některých případech včetně osobních údajů, které můžete považovat za citlivé.</translation>
 <translation id="9220525904950070496">Odstranit účet</translation>
 <translation id="9220723036554088545">nahrajte soubor</translation>
 <translation id="9220820413868316583">Zdvihněte prst a zkuste to znovu.</translation>

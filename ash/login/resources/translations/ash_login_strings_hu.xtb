@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">A frissítés akkor kezdődik, amikor az akkumulátor töltöttsége legalább <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">A szülői felügyelet (mint például az alkamazásjóváhagyás és a képernyő előtt tölthető idő) beállításához a gyermeknek a szülő által felügyelt Google-fiókkal kell rendelkeznie. Iskolai fiók később is hozzáadható olyan eszközök használatára, mint a Google Tanterem.</translation>
 <translation id="1375557162880614858">Szeretné aktiválni a ChromeVoxot, a ChromeOS Flex beépített képernyőolvasóját?</translation>
-<translation id="1375938286942050085">A beállítás megtörtént. Most készítse fel eszközét a játékra</translation>
 <translation id="1377600615067678409">Most kihagyom</translation>
 <translation id="1399261165075500043">Nem sikerült betölteni a Google Play Általános Szerződési Feltételeit</translation>
 <translation id="1400243387594338234">Ezzel a PIN-kóddal bejelentkezhet eszközére</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">A Google-fiók használata a(z) <ph name="DEVICE_TYPE" /> eszközön</translation>
 <translation id="3856800405688283469">Időzóna kiválasztása</translation>
 <translation id="3893630138897523026">ChromeVox (beszélt visszajelzés)</translation>
-<translation id="3897746662269329507">A(z) <ph name="DEVICE_TYPE" /> játékra készült. Most megnyílik a Felfedezés alkalmazás, ahol a legújabb játékok százaihoz férhet hozzá, megtekintheti a játékajánlatokat és felfedezheti az eszközén található játékfunkciókat is.</translation>
 <translation id="389901847090970821">Billentyűzet kiválasztása</translation>
 <translation id="3910588685973519483">Létrehozhat háttérképeket AI segítségével</translation>
 <translation id="3924259174674732591">Megjelenítési és szövegméret: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Telepíteni kell a Megbízható platform modul (Trusted Platform Module) firmware-ének frissítését. Tekintse meg a következő webhelyet: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hoppá, hiba történt a bejelentkezés során</translation>
 <translation id="5453829744223920473">Gyermeke ugyanúgy használhatja az összes iskolai alkalmazását, könyvjelzőjét és forrását, mint az osztályban. Az alapvető szabályokat az iskola határozza meg.</translation>
-<translation id="5463450804024056231">Feliratkozás a(z) <ph name="DEVICE_TYPE" /> e-mailjeire</translation>
 <translation id="5473099001878321374">Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, gyermeke szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak.</translation>
 <translation id="5502915260472117187">Gyermek</translation>
 <translation id="5511823366942919280">Biztosan beállítja ezt az eszközt „Shark” eszközként?</translation>

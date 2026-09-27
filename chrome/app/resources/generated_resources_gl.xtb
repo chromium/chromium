@@ -796,7 +796,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="160689647589417224">A aplicación está restrinxida nesta rexión.</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1608668830839595724">Máis accións para os elementos seleccionados</translation>
-<translation id="1609603645228231640">Chispa de Gemini é un axente experimental capaz de realizar accións como compartir a túa información ou facer compras sen preguntar. <ph name="LINK_BEGIN" />Revisa os riscos<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Configuración da aplicación</translation>
 <translation id="161042844686301425">Ciano</translation>
 <translation id="1611649489706141841">adiante</translation>
@@ -1054,7 +1053,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1808805149659872686">Entrada nova</translation>
 <translation id="1809201888580326312">Decidiches non gardar os contrasinais destes sitios e aplicacións</translation>
 <translation id="1809734401532861917">Engade os meus marcadores, o historial, os contrasinais e outras opcións de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Marco delimitado do modo de incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> non pode continuar usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Emitindo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servizos</translation>
@@ -1287,7 +1285,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1983612835086592681">Abríchelo durante a última semana</translation>
 <translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sen protección (non recomendado)</translation>
-<translation id="1984683754853869253">Queres crear un novo perfil para o centro educativo?</translation>
 <translation id="198507684520034826">Axuda</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Configuración de localización avanzada</translation>
@@ -1320,7 +1317,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2010636492623189611">Seleccionouse.</translation>
 <translation id="2012935757369720523">Eliminar ficheiro</translation>
-<translation id="2014495120525813351">Deixa que Chispa de Gemini navegue neste dispositivo</translation>
+<translation id="2014191284313949173">Pechar ventás illadas</translation>
 <translation id="2016473077102413275">As funcións que necesiten mostrar imaxes non estarán dispoñibles</translation>
 <translation id="2017334798163366053">Desactivar a recompilación da datos de rendemento</translation>
 <translation id="2017770349934140286">Google Play e as aplicacións que descargases dese servizo eliminaranse deste Chromebook.
@@ -1452,6 +1449,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2121825465123208577">Cambiar tamaño</translation>
 <translation id="2122446694240899610">As túas habilidades gárdanse na túa Conta de Google,</translation>
 <translation id="2123766928840368256">Escoller un ficheiro diferente</translation>
+<translation id="2124153808069020510">Para eliminar os datos, pecha todas as ventás illadas</translation>
 <translation id="2124930039827422115">{1,plural, =1{Extensión valorada cun <ph name="AVERAGE_RATING" /> por un usuario.}other{Extensión valorada cun <ph name="AVERAGE_RATING" /> por # usuarios.}}</translation>
 <translation id="2125715366913703594">Explorar &amp;extensións</translation>
 <translation id="2126167708562367080">O administrador desactivou a sincronización.</translation>
@@ -1594,6 +1592,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="222931766245975952">Ficheiro truncado</translation>
 <translation id="2229342031987138128">Subtítulos</translation>
+<translation id="22294739381015133">Os sitios que visitas non se gardan no modo illado</translation>
 <translation id="2231351769755997720">Non hai ningunha suxestión. Proba a facer ti unha pregunta sobre esta páxina.</translation>
 <translation id="2232751457155581899">Os sitios poden pedirche permiso para facer un seguimento da posición da cámara</translation>
 <translation id="2233502537820838181">&amp;Máis información</translation>
@@ -2030,7 +2029,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2554553592469060349">O ficheiro seleccionado é demasiado grande (tamaño máximo: 3 MB).</translation>
 <translation id="2555802059188792472">Aplicacións que poden enviar notificacións: <ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /></translation>
 <translation id="2555855727505718984">A función de autocompletar non terá esta información neste dispositivo para axudarche a encher formularios</translation>
-<translation id="25568951186001797">Marco delimitado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Consulta todos os teus marcadores aquí</translation>
 <translation id="2563924218974330506">Xa podes xestionar os teus grupos de pestanas aquí. Podes deixar de fixar este elemento cando queiras.</translation>
 <translation id="2564520396658920462">Está desactivada a execución de JavaScript a través de AppleScript. Para activala, na barra de menú, accede a Ver &gt; Programador &gt; Permitir JavaScript desde eventos de Apple. Podes obter máis información en: https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2107,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2626746300781063303">Os sitios, como Google, usan a súa discrecionalidade á hora de responder a esta solicitude</translation>
 <translation id="2626799779920242286">Téntao de novo máis tarde.</translation>
 <translation id="2627424346328942291">Non se puido compartir o ficheiro</translation>
-<translation id="2627970398976286795">Revisar os riscos da Chispa de Gemini</translation>
 <translation id="2628258844236035475">Queres quitar o teu enderezo particular da función de autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">É necesario restablecer a configuración de fábrica deste Chromebook para poder activar a depuración de ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar novo chat con Gemini</translation>
@@ -2418,7 +2415,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2845276301195220700">Máis acción para Google Calendar</translation>
 <translation id="2845382757467349449">Mostrar sempre a barra de marcadores</translation>
 <translation id="284581348330507117">Crea contrasinais únicos</translation>
-<translation id="2846345106886298325">Tarefa completada; volveuse a Chispa de Gemini</translation>
 <translation id="284884486564166077">Busca calquera imaxe con Lens</translation>
 <translation id="2849035674501872372">Levanta a mirada</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2476,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2893318819023133318">Inverter vistas</translation>
 <translation id="2894596417096093634">Identificadores de informes de fallos</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
-<translation id="2895194086130800590">Chispa de Gemini só pode usar a navegación automática no dispositivo se está activo e Chrome está en execución.</translation>
 <translation id="289695669188700754">ID da clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Esta opción de configuración personalizada quitarase cando peches todas as ventás do modo de incógnito</translation>
 <translation id="2897878306272793870">Seguro que queres abrir <ph name="TAB_COUNT" /> pestanas?</translation>
@@ -2533,7 +2528,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2933653107553951760">Restaurar grupo</translation>
 <translation id="2934225044529065415">Non se pode acceder á cámara</translation>
 <translation id="2935314715123552088">Desactivar perfil de eSIM activo</translation>
-<translation id="2936067606203230121">Chispa de Gemini decidirá que accións realizar en función das tarefas que inicies ou actualices.</translation>
 <translation id="2936851848721175671">Copia de seguranza e restauración</translation>
 <translation id="2938981087412273365">Permiso denegado para ler e cambiar este sitio</translation>
 <translation id="2939005221756255562">Activa as notificacións en Notification Center (Centro de notificacións). Abre <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" /> (Configuración do sistema).</translation>
@@ -2913,6 +2907,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3213681682237645841">Descargando voces de <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Queres crear un atallo?</translation>
 <translation id="3220494908385619295">Mostrar en paralelo</translation>
+<translation id="3220541426929880850">Para eliminar o historial de navegación illada do dispositivo, pecha todas as pestanas illadas</translation>
 <translation id="3220943972464248773">Para sincronizar os contrasinais, verifica a túa identidade</translation>
 <translation id="3222066309010235055">Preprocesador: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Conectar con <ph name="USB_VM_NAME" /></translation>
@@ -3411,6 +3406,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3600956933576601730">Revisa e acepta as condicións para poder usar estas funcións</translation>
 <translation id="3601374594714740284">Para descargar voces de alta calidade, libera espazo no teu dispositivo</translation>
 <translation id="360180734785106144">Ofrecerche funcións novas a medida que estean dispoñibles</translation>
+<translation id="3601988315287782413">Esta acción só lles afecta ás ventás illadas</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3602495161941872610">Solucionar problema de &amp;sincronización</translation>
 <translation id="3602894439067790744">Ler números como</translation>
@@ -3642,7 +3638,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3756578970075173856">Establecer PIN</translation>
 <translation id="3756806135608816820">Os sitios poden pedirche permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
-<translation id="3757337311115630808">Máis información sobre a Chispa de Gemini</translation>
 <translation id="3757567010566591880">Deixar de fixar na barra de ferramentas</translation>
 <translation id="3757645900890881944">Ferramentas de busca</translation>
 <translation id="3757733214359997190">Non se atoparon sitios</translation>
@@ -5253,7 +5248,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4989966318180235467">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="499016799952867794">Isto permite que a aplicación se execute segundo o previsto.</translation>
 <translation id="4990673372047946816">Non hai ningunha cámara dispoñible</translation>
-<translation id="499126848196136237">Chispa de Gemini pode usar a navegación automática de Chrome no dispositivo para interactuar cos sitios e completar tarefas no teu nome. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tratar as teclas da fila superior como teclas de función</translation>
 <translation id="4991873517942703737">Fai unha pregunta sobre este documento</translation>
 <translation id="4992066212339426712">Activar o son</translation>
@@ -5510,7 +5504,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5189274947477567401">Para desactivar o uso compartido de procesos, é necesario reiniciar o navegador. Este reiniciarase agora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
-<translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5190926251776387065">Activar porto</translation>
 <translation id="5190959794678983197">Non hai ningún micrófono conectado</translation>
 <translation id="5191094172448199359">Os PIN que puxeches non coinciden</translation>
@@ -7007,7 +7000,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6393550101331051049">Permiso concedido para mostrar contido inseguro</translation>
 <translation id="6394634179843537518">Engadir ficheiro</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />información do sistema<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Si, manter os meus datos separados dos do centro educativo (opción recomendada)</translation>
 <translation id="6398715114293939307">Eliminar Google Play Store</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
 <translation id="639880411171387127">A túa selección de Google Lens. Preme Introducir ou Retroceso para eliminala</translation>
@@ -8366,7 +8358,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7421293530411019405">Queres saír do grupo de pestanas?</translation>
 <translation id="7421925624202799674">&amp;Ver fonte da páxina</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
-<translation id="7423381908337122792">Calquera persoa que teña acceso ao teu axente Chispa de Gemini podería controlar o teu navegador Chrome.</translation>
 <translation id="7423425410216218516">A visibilidade está activada durante <ph name="MINUTES" /> minutos</translation>
 <translation id="7423513079490750513">Quitar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Engadiuse a rede</translation>
@@ -8719,7 +8710,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="769824636077131955">Este documento é demasiado grande para realizar unha Comprobación de seguranza. Podes imprimir documentos de ata 50 MB.</translation>
 <translation id="7698507637739331665">Algúns elementos están bloqueados</translation>
 <translation id="7700516433658473670">Impresoras e escáneres</translation>
-<translation id="7700873336634517379">Non, continuar usando os datos do centro educativo neste perfil</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7701869757853594372">Controladores de USUARIO</translation>
 <translation id="770231223935918661">Preguntar acerca desta imaxe</translation>
@@ -10144,6 +10134,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="878862491037637275">Este grupo de pestanas está cheo</translation>
 <translation id="8791157330927639737">Máis información sobre a actualización</translation>
 <translation id="8791534160414513928">Enviar unha solicitude de "Do Not Track" co teu tráfico de navegación</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (illado)</translation>
 <translation id="8793390639824829328">Os sitios usan esta función para desprazarse e facer zoom nas pestanas compartidas</translation>
 <translation id="8793895150509408038">Ver os detalles do sitio <ph name="SITE" /> na lista <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Mentres a zona wifi estea activada, o teu teléfono <ph name="PHONE_NAME" />:</translation>
@@ -10380,7 +10371,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="897525204902889653">Servizo de corentena</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e 1 pestana máis}other{"<ph name="TAB_TITLE" />" e # pestanas máis}}</translation>
 <translation id="897565255818387330">Queres permitir que este sitio vexa e copie <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Configura un perfil de centro educativo para gardar e usar os contrasinais e moita outra información na túa conta</translation>
 <translation id="8977811652087512276">O contrasinal é incorrecto ou o ficheiro está danado</translation>
 <translation id="8978154919215542464">Activado: sincronizar todo</translation>
 <translation id="8978670037548431647">Actualizar funcións de conexión compartida</translation>
@@ -10484,7 +10474,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9040661932550800571">Queres actualizar o contrasinal de <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Para gardar contrasinais seguros co xestor de contrasinais de Google, inicia sesión en Chrome</translation>
 <translation id="9041692268811217999">O acceso aos ficheiros locais do teu equipo está desactivado polo teu administrador</translation>
-<translation id="9041881059840744611">Acerca dos perfís de centro educativo</translation>
 <translation id="904224458472510106">Esta operación non se pode desfacer</translation>
 <translation id="9042827002460091668">Comproba a conexión a Internet e téntao de novo</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
@@ -10701,7 +10690,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="9219572436491982747">Co fin de mellorar a tecnoloxía de IA de Chrome, os datos que se envíen a Google poden someterse a un proceso de revisión por parte do noso equipo</translation>
 <translation id="9219741625496141320">Os datos de navegación elimináronse automaticamente</translation>
-<translation id="9220484506568374422">Chispa de Gemini terá acceso aos mesmos sitios ca ti (por exemplo, nos que teñas a sesión iniciada). Compartirá os datos necesarios con terceiros, mesmo a información persoal que talvez consideres confidencial.</translation>
 <translation id="9220525904950070496">Quitar conta</translation>
 <translation id="9220723036554088545">carga un ficheiro</translation>
 <translation id="9220820413868316583">Levanta o dedo e téntao de novo.</translation>

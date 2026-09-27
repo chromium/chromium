@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Isibuyekezo sizoqala uma ibhethri lifika ku-<ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Ukuze isebenzise izilawuli zomzali njengokugunyazwa kwe-app nemikhawulo yesikhathi sesikrini, ingane kufanele ibe ne-akhawunti ye-Google ephethwe umzali. I-akhawunti yesikole ingangezwa ngemuva kwesikhathi ngamathuluzi afana nokuthi Ikilasi le-Google.</translation>
 <translation id="1375557162880614858">Ingabe ufuna ukwenza i-ChromeVox isebenze, isifundi sesikrini esakhelwe ngaphakathi se-ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Ukusetha kuphelile! Lungiselela idivayisi yakho ukudlala ngokulandelayo</translation>
 <translation id="1377600615067678409">Yeqa okwamanje</translation>
 <translation id="1399261165075500043">Ayikwazi ukulayisha Imigomo Yesevisi ye-Google Play</translation>
 <translation id="1400243387594338234">Ungasebenzisa le phinikhodi ukuze ungene ngemvume kudivayisi yakho</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Sebenzisa i-Google Account yakho eku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="3856800405688283469">Khetha indawo yesikhathi</translation>
 <translation id="3893630138897523026">I-ChromeVox (impendulo ekhulunywayo)</translation>
-<translation id="3897746662269329507">I-<ph name="DEVICE_TYPE" /> yakhelwe amageyimu. I-app ye-Explore izovuleka ngokulandelayo lapho ungafinyelela khona amakhulukhulu amageyimu akamuva, ubone imititilizo yamageyimu, futhi uthole izakhi zamageyimu eziza nedivayisi yakho.</translation>
 <translation id="389901847090970821">Khetha ikhibhodi</translation>
 <translation id="3910588685973519483">Sungula izithombe zangemuva nge-AI</translation>
 <translation id="3924259174674732591">Usayizi wesibonisi nombhalo <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Isibuyekezo se-Trusted Platform Module firmware sidinya ukufakwa. Bona i-<ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Eshu, kukhona okungahambanga kahle ngokungena ngemvume</translation>
 <translation id="5453829744223920473">Ingane yakho ingasebenzisa wonke ama-app ayo esikole, amabhukhimakhi, nezinsiza njengoba yenza ekilasini. Isikole sibeka imithetho eyisisekelo.</translation>
-<translation id="5463450804024056231">Bhalisela ama-imeyili e-<ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Ngokuqhubeka, uyavuma ukuthi le divayisi ingaphinda ilande ngokuzenzakalela iphinde ifake izibuyekezo nama-app avela ku-Google, inkampani yenethiwekhi yengane yakho, kanye nomkhiqizi wale divayisi, uma kungenzeka ngedatha yeselula. Amanye wala ma-app anganikeza ngokuthenga kwangaphakathi ne-app.</translation>
 <translation id="5502915260472117187">Ingane</translation>
 <translation id="5511823366942919280">Ingabe uqinisekile ukuthi ufuna ukusetha le divayisi njenge-"Shark"?</translation>

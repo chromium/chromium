@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Hjelp oss med å forbedre Inkognito ved å svare på denne undersøkelsen. Det tar ett minutt.</translation>
 <translation id="1065672644894730302">Kan ikke lese innstillingene. Enkelte funksjoner kan være utilgjengelige, og endringer av innstillingene blir ikke lagret.</translation>
 <translation id="1083934481477628225">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium</translation>
+<translation id="109026165963220603">Chromium trenger tilgang til det lokale nettverket for å oppdage og bruke enheter i nærheten</translation>
 <translation id="1090946077924227754">For å søke etter en bestemt Chromium-funksjon eller -utvidelse, skriv inn snarveien til den i adressefeltet, etterfulgt av tasten du har valgt på tastaturet</translation>
 <translation id="1098493699368672217">Vis søk med Chromium i systemfeltet, og slå på hurtigtasten</translation>
 <translation id="1104942323762546749">Chromium forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>
 <translation id="2135919691573380097">Rapportér dette nettstedet</translation>
 <translation id="2137162749895930932">Lukk oversettelsesskjermen</translation>
+<translation id="2147218225094845757">Skjul sidepanelet</translation>
 <translation id="215352261310130060">Chromium har blokkert denne nedlastingen fordi nettstedet ikke bruker en sikker tilkobling, så filen kan ha blitt tuklet med</translation>
 <translation id="2170098639895543546">Velg hva som helst på siden</translation>
 <translation id="2174178932569897599">Tilpass Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Advarer deg om farlige nettsteder, også nettsteder som Google ikke kjenner til fra før, ved å analysere mer data fra nettsteder enn ved standardbeskyttelse. Du kan velge å hoppe over Chromium-advarsler.</translation>
 <translation id="4269093074552541569">Logg av Chromium</translation>
 <translation id="4271805377592243930">Få hjelp med Chromium</translation>
-<translation id="4275788652681621337">Lukk sidepanelet</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="4285930937574705105">Installeringen mislyktes på grunn av en uspesifisert feil. Lukk Chromium hvis nettleseren kjører, og prøv på nytt.</translation>
 <translation id="4298125729853015961">Eksporter passord fra Chromium</translation>

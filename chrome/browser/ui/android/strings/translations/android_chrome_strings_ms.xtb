@@ -889,7 +889,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4535755320005483982">Kumpulan tab <ph name="GROUP_TITLE" /> dikongsi</translation>
 <translation id="4537137366307982887">Pilihan ikut serta pemberitahuan petua dibuka pada ketinggian penuh</translation>
 <translation id="4537987892902330164">Anda kekal log masuk sebagai <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Tiada helaian kunci laluan</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Pintasan halaman web</translation>
 <translation id="4572422548854449519">Log masuk ke akaun terurus</translation>
@@ -934,6 +933,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
 <translation id="4720556299488643018">Nyahlanggan</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
+<translation id="4734965478015604180">Mendatar</translation>
 <translation id="4736934858538408121">Kad maya</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4738065825338914557">Menyahlanggan…</translation>
@@ -982,6 +982,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="488187801263602086">Namakan semula fail</translation>
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
 <translation id="4890973535105146893">Tiada kata laluan yang disimpan dalam Google Account anda</translation>
+<translation id="490375751687810070">Menegak</translation>
 <translation id="4905823827770127520">Sertakan pautan kepada halaman</translation>
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4911042367886397055">Selamat kembali, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6192907950379606605">Dapatkan perihalan imej</translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6196315980958524839">Kata laluan disimpan pada Google Password Manager pada peranti ini</translation>
+<translation id="6200780647297916498">Kedudukan tab</translation>
 <translation id="6204781143409202534">Chrome mengesan kemungkinan spam daripada <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
 <translation id="6212567362666004597">Tambahkan tab pada kumpulan</translation>
@@ -2000,6 +2002,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8816556050903368450">Termasuk pautan: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Kandungan tab pratonton tidak boleh dilihat.</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
+<translation id="8822533681006532064">Untuk bercakap dengan Gemini, beri Gemini kebenaran untuk menggunakan mikrofon anda. Anda juga boleh mengurus pilihan ini dalam <ph name="BEGIN_LINK" />tetapan.<ph name="END_LINK" /></translation>
 <translation id="8840953339110955557">Halaman ini mungkin berbeza daripada versi dalam talian.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Disembunyikan</translation>

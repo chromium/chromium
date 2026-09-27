@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Auta meitä parantamaan Incognitoa vastaamalla tähän minuutin kestävään kyselyyn.</translation>
 <translation id="1065672644894730302">Asetuksiasi ei voi lukea. Kaikkia toimintoja ei voi välttämättä käyttää eikä asetuksiin tehtäviä muutoksia tallenneta.</translation>
 <translation id="1083934481477628225">Vanhempasi on laittanut Chromiumin "Sivustojen, sovellusten ja laajennusten käyttöluvat" pois päältä</translation>
+<translation id="109026165963220603">Chromium tarvitsee pääsyn lähiverkkoon, jotta se voi löytää ja käyttää lähellä olevia laitteita</translation>
 <translation id="1090946077924227754">Etsi tiettyä Chromiumin ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="1098493699368672217">Näytä "Hae Chromiumilla" ilmaisinalueella ja laita pikanäppäimet päälle</translation>
 <translation id="1104942323762546749">Chromium yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
 <translation id="2135919691573380097">Ilmoita sivustosta</translation>
 <translation id="2137162749895930932">Sulje käännösnäyttö</translation>
+<translation id="2147218225094845757">Piilota sivupaneeli</translation>
 <translation id="215352261310130060">Chromium on estänyt tämän latauksen, koska sivusto ei käytä suojattua yhteyttä ja tiedostoa on ehkä peukaloitu</translation>
 <translation id="2170098639895543546">Valitse mitä tahansa sivulta</translation>
 <translation id="2174178932569897599">Yksilöi Chromiumia</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Varoittaa vaarallisista sivustoista, myös niistä, joista Google ei ole tiennyt aiemmin, analysoimalla enemmän dataa sivustoilta kuin perustason suojaus. Voit ohittaa Chromiumin varoitukset.</translation>
 <translation id="4269093074552541569">Kirjaudu ulos Chromiumista</translation>
 <translation id="4271805377592243930">Ohjeita Chromiumin käyttöön</translation>
-<translation id="4275788652681621337">Sulje sivupaneeli</translation>
 <translation id="4281844954008187215">Käyttöehdot</translation>
 <translation id="4285930937574705105">Asennus epäonnistui tuntemattoman virheen takia. Jos Chromium on tällä hetkellä käynnissä, sulje se ja yritä uudelleen.</translation>
 <translation id="4298125729853015961">Vie salasanoja Chromiumista</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Segíthet nekünk az inkognitó mód továbbfejlesztésében, ha kitölti ezt az egyperces felmérést.</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="1083934481477628225">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását.</translation>
+<translation id="109026165963220603">A Chromiumnak hozzáférésre van szüksége az Ön helyi hálózatához a közeli eszközök felfedezéséhez és használatához</translation>
 <translation id="1090946077924227754">Ha egy adott Chromium-funkcióra vagy -bővítményre szeretne rákeresni, gépelje be a kapcsolódó gyorsparancsot a címsávba, majd nyomja le a kiválasztott billentyűt.</translation>
 <translation id="1098493699368672217">A Keresés a Chromiummal szolgáltatás megjelenítése a tálcán, valamint a billentyűparancs bekapcsolása</translation>
 <translation id="1104942323762546749">A Chromium exportálni szeretné a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">A letöltött fájl az ellenőrzés során hibásnak bizonyult.</translation>
 <translation id="2135919691573380097">Webhely bejelentése</translation>
 <translation id="2137162749895930932">Fordítási képernyő bezárása</translation>
+<translation id="2147218225094845757">Oldalsó panel elrejtése</translation>
 <translation id="215352261310130060">A Chromium letiltotta ezt a letöltést, mert a webhely nem használ biztonságos kapcsolatot, és előfordulhat, hogy a fájlt illetéktelenül módosították</translation>
 <translation id="2170098639895543546">Jelöljön ki bármit az oldalon</translation>
 <translation id="2174178932569897599">A Chromium személyre szabása</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chromium figyelmeztetéseinek kihagyását.</translation>
 <translation id="4269093074552541569">Kijelentkezés a Chromiumból</translation>
 <translation id="4271805377592243930">Segítség a Chromium használatával kapcsolatban</translation>
-<translation id="4275788652681621337">Oldalsó panel bezárása</translation>
 <translation id="4281844954008187215">Általános Szerződési Feltételek</translation>
 <translation id="4285930937574705105">A telepítés váratlan hiba miatt nem sikerült. Ha a Chromium jelenleg fut, zárja be, majd próbálkozzon újra.</translation>
 <translation id="4298125729853015961">Jelszavak exportálása a Chromiumból</translation>

@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">Google Wallet मा रिड्रेस नम्बर सेभ गर्नुहोस्</translation>
 <translation id="1455413310270022028">मेट्ने साधन</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{० रिभ्यू हेर्नुहोस्}=1{एउटा रिभ्यू हेर्नुहोस्}other{सबै # वटा रिभ्यू हेर्नुहोस्}}</translation>
-<translation id="1458770162980644530">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" का सेवाका सर्तहरू देखाइएको स्क्रिन। किबोर्ड लुकाइएको छ।</translation>
 <translation id="1460317464907341501">यो इमेल स्वतः पुष्टि गर्ने हो?</translation>
 <translation id="1461041542809785877">प्रदर्शन</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">कनेक्सनका विवरण देखाउनुहोस्</translation>
 <translation id="2277949605527755300"><ph name="URL" /> ले तपाईंका हात ट्र्याक गर्न चाहन्छ</translation>
 <translation id="22792995594807632">डाउनलोड गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
+<translation id="2279607542590042584">पासकी • Apple Passwords</translation>
 <translation id="2283340219607151381">ठेगाना सुरक्षित गरी फारम भर्नुहोस्</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मेटाइएको छ</translation>
 <translation id="2283599456633275070">यात्रा</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> लाई सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिने?</translation>
 <translation id="243815215670139125">यो कार्डसम्बन्धी जानकारी तपाईंको Google खातामा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ।</translation>
 <translation id="2438874542388153331">दायाँतिर चार प्वाल</translation>
-<translation id="2441854154602066476">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने भुक्तानी विधिहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
 <translation id="2442865686365739754">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सेभ गर्ने छैन<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />तपाईंको ब्राउजिङ हिस्ट्री
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">सर्भरको प्रमाणपत्रमा त्रुटिहरू छन्।</translation>
 <translation id="2491414235131909199">कुनै एक्स्टेन्सनले यो पेज ब्लक गरेको छ</translation>
 <translation id="2493122313108999546">आकार बदलिएको छ</translation>
-<translation id="249376477913017009">Gmail बाट अटोफिल गर्ने सुविधा र थप सूचना खोलिएको छ</translation>
 <translation id="2495083838625180221">JSON पार्सर</translation>
+<translation id="2495909791227061512">नजिकैका डिभाइसहरूमा कनेक्ट गर्ने हो?</translation>
 <translation id="2496402116964818747">तपाईं <ph name="SETTINGS" /> मा गई पासवर्ड हाल्दा फिंगरप्रिन्ट प्रयोग गर्ने कि नगर्ने भन्ने बदल्न सक्नुहुन्छ</translation>
 <translation id="2498091847651709837">नयाँ कार्ड स्क्यान गर्नुहोस्</translation>
 <translation id="2501270939904835585">लेबल (स्याटिन)</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">तपाईं प्रायः जसो साइटहरूमा सुरक्षित रूपमा कनेक्ट गर्नुहुन्छ तर Chrome ले अहिले सुरक्षित कनेक्सन प्रयोग गर्न सकेन। ह्याकरले तपाईंको नेटवर्क कनेक्सन निगरानी गर्न वा परिमार्जन गर्न खोजिरहेको हुन सक्छ। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3053013834507634016">प्रमाणपत्र कुञ्जी प्रयोग</translation>
-<translation id="3056660797732519147">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" मा त्रुटि देखिएको कुरा जानकारी दिने स्क्रिन। किबोर्ड लुकाइएको छ।</translation>
 <translation id="3057844102210575426">यात्रासम्बन्धी जानकारी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
 <translation id="3062655045399308513">ब्राउजिङ डेटा मेटाउनुहोस्...</translation>
@@ -1441,6 +1439,7 @@
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
 <translation id="3450323514459570273">यसले तपाईंका MIDI डिभाइसहरू नियन्त्रण तथा रिप्रोग्राम गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
+<translation id="345268527248907593">यो साइट एक्सेस गर्न सकिएन</translation>
 <translation id="3453962258458347894">कति पटक पुन: प्रयास गरियो</translation>
 <translation id="3461266716147554923"><ph name="URL" /> क्लिपबोर्डमा प्रतिलिपि गरिएको पाठ र फोटो हेर्न चाहन्छ</translation>
 <translation id="3461824795358126837">हाइलाइटर</translation>
@@ -1972,6 +1971,7 @@
 <translation id="4284885181066817063"><ph name="DOMAIN" /> ले ब्लक गरेको छ</translation>
 <translation id="4288101205645068104">सवारी साधनको जानकारी मेटाउनुहोस्</translation>
 <translation id="4290920330097335010">कहिल्यै पनि अनुमति नदिनुहोस्</translation>
+<translation id="4291909791598163333">तपाईंको सङ्गठनले तपाईंलाई तपाईंले खोल्न लाग्नुभएको साइट हेर्न रोक लगाएको छ</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> अपडेट गरिएको छ</translation>
 <translation id="4298148761711700950">QR अपलोड नगरिकनै तत्काल भुक्तानी गर्नुहोस्</translation>
@@ -2084,7 +2084,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">सिंक गरिएका पासवर्डहरू मेरो Google खाता प्रयोग गरी इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="4493480324863638523">अमान्य URL। अनिवार्य रूपमा मानक योजनाबमोजिमको URL हुनु पर्छ, जस्तै, http://example.com वा https://example.com।</translation>
-<translation id="4497010149473852018">एक पटक टच गरेकै भरमा विवरण भर्न मिल्ने लोयल्टी कार्डहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
 <translation id="4497843134750481377">अफरहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4500587658229086076">असुरक्षित सामग्री</translation>
 <translation id="4501939680615452918">ट्रेन्डिङ रेस्टुरेन्टहरूमा उपलब्ध सिटहरू खोज्नुहोस्</translation>
@@ -2151,7 +2150,6 @@
 <translation id="4628948037717959914">तस्बिर</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">तपाईंको फाइल <ph name="CLOUD_PROVIDER" /> मा अपलोड गर्ने प्रक्रिया <ph name="HOURS" /> घण्टामा सुरु हुने छ</translation>
-<translation id="4631881646528206880">भर्चुअल कार्ड दर्ता गर्नुहोस्</translation>
 <translation id="4635278307999235413">डेटा एड्मिन कन्सोलमा पठाइँदै छ</translation>
 <translation id="4636930964841734540">जानकारी</translation>
 <translation id="4640225694041297329">विगत ७ दिनदेखिका परिणामहरू देखाउनुहोस्</translation>
@@ -2534,7 +2532,6 @@
 <translation id="5255583962255635076">तपाईंको वर्क प्रोफाइलमा लागू गरिएका ब्राउजरसम्बन्धी नीतिहरू</translation>
 <translation id="5255690596502591079">जे भए पनि खिच्नुहोस्</translation>
 <translation id="5255771248404149177">तपाईंको कार्ड प्रदायक तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
-<translation id="525579853540851404">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" को प्रोग्रेस स्क्रिन। किबोर्ड लुकाइएको छ।</translation>
 <translation id="5255833070095767006">३५० x ४६० मिलिमिटर</translation>
 <translation id="5257739419779698609">{0,plural, =1{एड्मिनले तोकेको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा कपी गर्न सिफारिस गरिँदैन}other{एड्मिनले तोकेको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा कपी गर्न सिफारिस गरिँदैन}}</translation>
 <translation id="5258473597674772367">"<ph name="GROUP_NAME" />" ट्याब समूह उपलब्ध हुन छाडेको छ</translation>
@@ -2653,6 +2650,7 @@
 <translation id="5452923259299906094">इवालेट र Pix प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्ट्याम्प</translation>
 <translation id="5456428544444655325">कहिल्यै पनि नदेखाउनुहोस्</translation>
+<translation id="5457082343331641453">आफ्नो खोजमा हाल्नुहोस्</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">यन्त्रहरू पत्ता लगाइँदै छ...</translation>
 <translation id="5465128270485645058">यो विन्डोमा भएका खुला ट्याबहरू यो थ्रेडसँग सम्बन्धित छन् भने ती ट्याबहरू स्वतः सेयर गरेर अझ पर्सनलाइज गरिएका जवाफहरू प्राप्त गर्नुहोस्।</translation>
@@ -3138,6 +3136,7 @@
 <translation id="6264485186158353794">सुरक्षामा फर्कनुहोस्</translation>
 <translation id="6264636978858465832">पासवर्ड म्यानेजरलाई थप कुराको अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> नीतिको मान कपी गर्नुहोस्</translation>
+<translation id="6271264012613848937">तपाईंको सङ्गठनका नीतिहरूका कारण तपाईंलाई <ph name="URL" /> मा जान रोक लगाइएको छ। तपाईंले यस्तो अपेक्षा गर्नुभएको थिएन भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="6272088941196661550">तपाईं Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न चाहनुहुन्छ भने खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6272383483618007430">Google अपडेट</translation>
 <translation id="6278015583149890680">Google Drive र OneDrive</translation>
@@ -3418,6 +3417,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">नीति मूल्य</translation>
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> ले हाल्नुभएको जानकारी मेटाउनुहोस्</translation>
+<translation id="6753460329812070808">Chrome बाट सुझाव हटाइएको छ</translation>
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6758934187792712102"><ph name="URL" /> ले तपाईंको डिभाइसका मोसन तथा लाइट सेन्सरहरू प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="6770747695101757579">पेपर (कटन)</translation>
@@ -3497,6 +3497,7 @@
 <translation id="6897140037006041989">प्रयोगकर्ता एजेन्ट</translation>
 <translation id="6898699227549475383">संगठन (सं)</translation>
 <translation id="6900702165119149418">तपाईं साइन आउट हुनुभएको छ</translation>
+<translation id="6902049722133977432">अन्डू गर्नुहोस्</translation>
 <translation id="6910211073230771657">मेटाइएको</translation>
 <translation id="691024665142758461">बहुविध फाइलहरू डाउनलोड गर्नुहोस्।</translation>
 <translation id="691046363691324218">रिड्रेस नम्बर</translation>
@@ -3710,6 +3711,7 @@
 <translation id="7266094331715305887">यो डिभाइसमा इन्स्टल गरिएका एपहरू</translation>
 <translation id="7268742523336093718">Google Wallet मा राहदानी सुरक्षित तरिकाले हाल्नुहोस्</translation>
 <translation id="7269151392155523061">यो सर्टकट र <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> ले परिभाषित गरेको सर्च एग्रिगेटरको किवर्ड उही हुनु हुँदैन: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">तपाईंको सङ्गठनले तय गरेका सुरक्षा वा नीतिहरूमा कुनै समस्या आयो। पछि फेरि प्रयास गर्नुहोस् वा आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="7273111226200291353">तपाईंले डाउनलोड गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्ष समक्ष पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा फाइल भण्डारण गरिन सक्छ र ती फाइलहरू एडमिनले हेर्न मिल्छ।</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
 <translation id="7278933725460302617">तपाईं अहिले आइसोलेटेड मोडमा हुनुहुन्छ</translation>
@@ -4064,7 +4066,6 @@
 <translation id="7839192898639727867">प्रमाणपत्र विषय कुञ्जी आइडी</translation>
 <translation id="7840103971441592723">स्क्रिन क्याप्चर गर्ने कार्य सुरु भएको छ</translation>
 <translation id="784137052867620416">Shopping सम्बन्धी विश्लेषणात्मक डेटा</translation>
-<translation id="7841633276323004751">भुक्तानी प्रक्रिया अगाडि बढाउनका निम्ति चयन गर्न मिल्ने भुक्तानी विधिहरूको सूची। किबोर्ड लुकाइएको छ।</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{कुनै पनि होइन}=1{१ एप (<ph name="EXAMPLE_APP_1" />)}=2{२ एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# एपहरू (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="784623644169604270">हालसालै कुनै पनि क्रियाकलाप गरिएको छैन</translation>
@@ -4143,7 +4144,6 @@
 <translation id="79682505114836835">मान "<ph name="VALUE" />" वैध हेक्स कलर होइन।</translation>
 <translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>
 <translation id="7972714317346275248">RSA गुप्तिकरणको साथमा PKCS #1 SHA-384</translation>
-<translation id="7976053965094442846">"अहिले किन्नुहोस् पछि तिर्नुहोस्" सुविधा उपलब्ध गराउने संस्थाका सहायताले किस्तामा भुक्तानी गर्नुहोस्। किबोर्ड लुकाइएको छ।</translation>
 <translation id="7976214039405368314">अत्यन्त धेरै पटक अनुरोध गरियो</translation>
 <translation id="7977029776654598145">यो सुविधा प्रयोग गर्दा</translation>
 <translation id="7977538094055660992">आउटपुट यन्त्र</translation>
@@ -4153,6 +4153,7 @@
 <translation id="7984945080620862648">तपाईं अहिले नै <ph name="SITE" /> भ्रमण गर्न सक्नुहुन्न किनभने वेबसाइटले स्क्रेम्बल गरिएका पत्यारपत्रहरू पठायो जसलाई Chrome ले प्रक्रियामा लैजान सक्दैन। नेटवर्क त्रुटिहरू र आक्रमणहरू प्राय: अस्थायी हुने गर्दछन्, त्यसैले सम्भवत: यो पृष्ठले पछि कार्य गर्ने छ।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">"अहिले किन्नुहोस् पछि तिर्नुहोस्" सुविधा उपलब्ध गराउने संस्थाहरूको सूची पूर्ण स्क्रिनमा खोलिएको छ।</translation>
+<translation id="7990290316254726169">यो साइटमा HTTPS नचल्ने भएकाले र तपाईंले आइसोलेटेड मोड प्रयोग गरिरहनुभएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="BEGIN_LEARN_MORE_LINK" />यो चेतावनीका बारेमा थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">बाइन्ड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्ने कार्य सुचारु भएको छ</translation>
 <translation id="799384093520583425">तपाईंको सङ्गठनले यो पेजमा DevTools प्रयोग गर्न रोक लगाएको छ</translation>
@@ -4450,7 +4451,6 @@
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
 <translation id="8523574453888018351">मलाई नयाँ भाषा सिकाउनुहोस्</translation>
 <translation id="852450791482410042">अहिले नै भुक्तानी गर्नुहोस्</translation>
-<translation id="8528479410903501741">IBAN सेभ गर्नुहोस्</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">सटीक स्थान को प्रयोग गर्नुहोस्</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
@@ -4494,6 +4494,7 @@
 <translation id="860043288473659153">कार्डवालाको नाम</translation>
 <translation id="8601206103050338563">TLS WWW ग्राहक प्रमाणीकरण</translation>
 <translation id="8604103095921958091">"अहिले किन्नुहोस्, पछि तिर्नुहोस्" का सेवाका सर्तहरू देखाइएको स्क्रिन पूरै स्क्रिनमा खोलिएको छ।</translation>
+<translation id="8605014984308506350">यो साइटमा HTTPS नचल्ने भएकाले र तपाईंले आइसोलेटेड मोड प्रयोग गरिरहनुभएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="8619130384334725124">हालको डिफल्ट सर्च इन्जिन</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
@@ -4647,6 +4648,7 @@
 <translation id="8883863364960302898">Google Drive फोल्डर</translation>
 <translation id="8884537526797090108">गोप्य सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="8889525327610245418">Google Wallet मा सवारी चालक अनुमतिपत्रसम्बन्धी जानकारी सुरक्षित रूपमा अपडेट गर्नुहोस्</translation>
+<translation id="8890516388109605451">स्रोतहरू</translation>
 <translation id="8891031436559779793">कुनै साइटमा यो उत्पादनको मूल्य घटेका खण्डमा तपाईंलाई नोटिफिकेसन पठाइने छ।</translation>
 <translation id="8891727572606052622">अवैध प्रोक्सी मोड।</translation>
 <translation id="8894794286471754040">पहिले लामो किनारा</translation>

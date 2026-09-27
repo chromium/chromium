@@ -797,7 +797,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="160689647589417224">The application is restricted in this region.</translation>
 <translation id="1607139524282324606">Clear entry</translation>
 <translation id="1608668830839595724">More actions for selected items</translation>
-<translation id="1609603645228231640">Gemini Spark is experimental and may do things like share your info or make purchases without asking. <ph name="LINK_BEGIN" />Review the risks<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">App settings</translation>
 <translation id="161042844686301425">Cyan</translation>
 <translation id="1611649489706141841">forward</translation>
@@ -1063,7 +1062,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1808805149659872686">New entry</translation>
 <translation id="1809201888580326312">You’ve chosen not to save passwords for these sites and apps</translation>
 <translation id="1809734401532861917">Add my bookmarks, history, passwords and other settings to <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Incognito fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> can't continue using <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Casting <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Services</translation>
@@ -1297,7 +1295,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1983612835086592681">You opened in the past week</translation>
 <translation id="1984087999855033707">phone number</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
-<translation id="1984683754853869253">Do you want to create a new profile for school?</translation>
 <translation id="198507684520034826">Help</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Advanced location settings</translation>
@@ -1330,7 +1327,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2010501376126504057">Compatible devices</translation>
 <translation id="2010636492623189611">Selected.</translation>
 <translation id="2012935757369720523">Delete file</translation>
-<translation id="2014495120525813351">Let Gemini Spark browse on this device</translation>
+<translation id="2014191284313949173">Close Isolated</translation>
 <translation id="2016473077102413275">Features that need images won't work</translation>
 <translation id="2017334798163366053">Disable performance data collection</translation>
 <translation id="2017770349934140286">Google Play and apps you've downloaded from Google Play will be deleted from this Chromebook.
@@ -1462,6 +1459,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2121825465123208577">Re-size</translation>
 <translation id="2122446694240899610">Your skills get saved to your Google Account,</translation>
 <translation id="2123766928840368256">Choose a different file</translation>
+<translation id="2124153808069020510">To delete data, close all Isolated Windows</translation>
 <translation id="2124930039827422115">{1,plural, =1{Rated <ph name="AVERAGE_RATING" /> by one user.}other{Rated <ph name="AVERAGE_RATING" /> by # users.}}</translation>
 <translation id="2125715366913703594">Explore &amp;extensions</translation>
 <translation id="2126167708562367080">Sync is disabled by your administrator.</translation>
@@ -1604,6 +1602,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="222931766245975952">File truncated</translation>
 <translation id="2229342031987138128">Closed captioning</translation>
+<translation id="22294739381015133">Sites that you visit aren’t saved in Isolated</translation>
 <translation id="2231351769755997720">No suggestions available. Try asking your own question about this page.</translation>
 <translation id="2232751457155581899">Sites can ask to track your camera position</translation>
 <translation id="2233502537820838181">&amp;More information</translation>
@@ -2043,7 +2042,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2554553592469060349">Selected file is too big (max size: 3mb).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> of <ph name="TOTAL_NUM_APPS" /> apps can send notifications</translation>
 <translation id="2555855727505718984">Autofill won't have this info on this device to help fill in forms</translation>
-<translation id="25568951186001797">Fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">See all your bookmarks here</translation>
 <translation id="2563924218974330506">You can now manage your tab groups here. Unpin this at any time.</translation>
 <translation id="2564520396658920462">Executing JavaScript through AppleScript is turned off. To turn it on, from the menu bar, go to View &gt; Developer &gt; Allow JavaScript from Apple Events. For more information: https://support.google.com/chrome/?p=applescript</translation>
@@ -2122,7 +2120,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2626746300781063303">Sites, including Google, use their discretion when responding to this request</translation>
 <translation id="2626799779920242286">Please try again later.</translation>
 <translation id="2627424346328942291">Can't share</translation>
-<translation id="2627970398976286795">Review the risks of Gemini Spark</translation>
 <translation id="2628258844236035475">Remove your home address from Chrome autofill?</translation>
 <translation id="2628770867680720336">A factory reset of this Chromebook is required to enable ADB debugging. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Start new chat with Gemini</translation>
@@ -2431,7 +2428,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2845276301195220700">More actions for Google Calendar</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="284581348330507117">Create unique passwords</translation>
-<translation id="2846345106886298325">Task done and returned to Gemini Spark</translation>
 <translation id="284884486564166077">Search any image with Lens</translation>
 <translation id="2849035674501872372">Look up</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2493,7 +2489,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2893318819023133318">Reverse views</translation>
 <translation id="2894596417096093634">Crash report identifiers</translation>
 <translation id="2894757982205307093">New tab in group</translation>
-<translation id="2895194086130800590">Gemini Spark can only use auto browse on this device if the device is awake and Chrome is running.</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">This custom setting will be removed when you close all your incognito windows</translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
@@ -2546,7 +2541,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2933653107553951760">Restore group</translation>
 <translation id="2934225044529065415">Can't access camera</translation>
 <translation id="2935314715123552088">Disable active eSIM profile</translation>
-<translation id="2936067606203230121">Gemini Spark will decide which actions to take based on the tasks that you start or update.</translation>
 <translation id="2936851848721175671">Backup &amp; restore</translation>
 <translation id="2938981087412273365">Not allowed to read and change this site</translation>
 <translation id="2939005221756255562">Enable notifications in the Notification Centre. Open <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" />.</translation>
@@ -2926,6 +2920,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3213681682237645841">Downloading <ph name="LANGUAGE" /> voices…</translation>
 <translation id="3217843140356091325">Create shortcut?</translation>
 <translation id="3220494908385619295">Show side by side</translation>
+<translation id="3220541426929880850">To delete Isolated browsing history from your device, close all Isolated tabs</translation>
 <translation id="3220943972464248773">To sync your passwords, verify that it's you</translation>
 <translation id="3222066309010235055">Prerender: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Connect to <ph name="USB_VM_NAME" /></translation>
@@ -3424,6 +3419,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3600956933576601730">You need to review and accept terms to use these features</translation>
 <translation id="3601374594714740284">For higher-quality voices, clear space on your device</translation>
 <translation id="360180734785106144">Offer new features as they become available</translation>
+<translation id="3601988315287782413">This only affects Isolated Windows</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3602495161941872610">Fix &amp;sync issue</translation>
 <translation id="3602894439067790744">Read numbers as</translation>
@@ -3652,7 +3648,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3756578970075173856">Set PIN</translation>
 <translation id="3756806135608816820">Sites can ask to look for Bluetooth devices</translation>
 <translation id="3756823472711156529">Restore group</translation>
-<translation id="3757337311115630808">Learn more about Gemini Spark</translation>
 <translation id="3757567010566591880">Unpin from Toolbar</translation>
 <translation id="3757645900890881944">Search tools</translation>
 <translation id="3757733214359997190">No sites found</translation>
@@ -5263,7 +5258,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4989966318180235467">Inspect &amp;background page</translation>
 <translation id="499016799952867794">This allows the app to run as expected.</translation>
 <translation id="4990673372047946816">No camera available</translation>
-<translation id="499126848196136237">Gemini Spark can use Chrome auto browse on this device to interact with sites and complete tasks on your behalf. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Treat top-row keys as function keys</translation>
 <translation id="4991873517942703737">Ask about this document</translation>
 <translation id="4992066212339426712">Unmute</translation>
@@ -5520,7 +5514,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5189274947477567401">Opting out of process sharing requires a browser restart. This browser will restart now.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Using <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5190926251776387065">Activate port</translation>
 <translation id="5190959794678983197">No microphone</translation>
 <translation id="5191094172448199359">The PINs that you entered don't match</translation>
@@ -7020,7 +7013,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
 <translation id="6394634179843537518">Add file</translation>
 <translation id="6395423953133416962">Send <ph name="BEGIN_LINK1" />system information<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Yes, keep my data separate from school (recommended)</translation>
 <translation id="6398715114293939307">Remove Google Play Store</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="639880411171387127">Your Google Lens selection. Press enter or backspace to delete your Google Lens selection</translation>
@@ -8380,7 +8372,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7421293530411019405">Leave tab group?</translation>
 <translation id="7421925624202799674">&amp;View Page Source</translation>
 <translation id="7422192691352527311">Preferences...</translation>
-<translation id="7423381908337122792">Anybody with access to your Gemini Spark agent could control your Chrome browser.</translation>
 <translation id="7423425410216218516">Visibility is on for <ph name="MINUTES" /> minutes</translation>
 <translation id="7423513079490750513">Remove <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Network added</translation>
@@ -8733,7 +8724,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="769824636077131955">This document is too big for a security check. You can print documents of up to 50 MB.</translation>
 <translation id="7698507637739331665">Some items are blocked</translation>
 <translation id="7700516433658473670">Printers and scanners</translation>
-<translation id="7700873336634517379">No, continue to use for school in this profile</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7701869757853594372">USER Handles</translation>
 <translation id="770231223935918661">Ask about this image</translation>
@@ -10158,6 +10148,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="878862491037637275">This tab group is full</translation>
 <translation id="8791157330927639737">Learn more about updating</translation>
 <translation id="8791534160414513928">Send a ‘Do Not Track’ request with your browsing traffic</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Isolated)</translation>
 <translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="8793895150509408038">View site details for <ph name="SITE" /> from the <ph name="SECTION_HEADER" /> list</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
@@ -10394,7 +10385,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="897525204902889653">Quarantine Service</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" and 1 other tab}other{"<ph name="TAB_TITLE" />" and # other tabs}}</translation>
 <translation id="897565255818387330">Allow this site to view and copy <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Set up a school profile to save and use your passwords and more in your account</translation>
 <translation id="8977811652087512276">Incorrect password or corrupt file</translation>
 <translation id="8978154919215542464">On – sync everything</translation>
 <translation id="8978670037548431647">Refresh tethering capabilities</translation>
@@ -10498,7 +10488,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">To save strong passwords with Google Password Manager, sign in to Chrome</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
-<translation id="9041881059840744611">About school profiles</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
 <translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
@@ -10715,7 +10704,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219572436491982747">Data sent to Google may be seen by human reviewers to improve Chrome AI's technology</translation>
 <translation id="9219741625496141320">Browsing data was automatically deleted</translation>
-<translation id="9220484506568374422">Gemini Spark will have access to the same sites as you, including the sites that you’re signed in to. It will share necessary info with third parties, which could include personal info that you might find sensitive.</translation>
 <translation id="9220525904950070496">Remove account</translation>
 <translation id="9220723036554088545">upload a file</translation>
 <translation id="9220820413868316583">Lift then try again.</translation>

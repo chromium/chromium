@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">העדכון יתחיל כשהסוללה תיטען ל-%<ph name="BATTERY_LEVEL" />.</translation>
 <translation id="1353275871123211385">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או מגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בכלים כמו Google Classroom.</translation>
 <translation id="1375557162880614858">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex?</translation>
-<translation id="1375938286942050085">ההגדרה הושלמה. עכשיו אפשר להכין את המכשיר לגיימינג</translation>
 <translation id="1377600615067678409">דילוג לעת עתה</translation>
 <translation id="1399261165075500043">‏לא ניתן לטעון את התנאים וההגבלות של Google Play</translation>
 <translation id="1400243387594338234">אפשר להשתמש בקוד האימות הזה כדי להיכנס למכשיר</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">‏שימוש בחשבון Google ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">בחירת אזור זמן</translation>
 <translation id="3893630138897523026">‏ChromeVox (משוב קולי)</translation>
-<translation id="3897746662269329507">‏מכשיר <ph name="DEVICE_TYPE" /> מיועד למשחקים. בשלב הבא, תיפתח האפליקציה 'מה חדש ב-Chromebook', ובה תהיה לך גישה למאות משחקים עדכניים, למבצעים על משחקים ולתכונות הגיימינג של המכשיר.</translation>
 <translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3910588685973519483">‏יצירת טפטים באמצעות AI</translation>
 <translation id="3924259174674732591">גודל הטקסט והתצוגה: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">‏צריך להתקין עדכון לקושחה של Trusted Platform Module. יש לעיין בכתובת <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">אופס. משהו השתבש בכניסה לחשבון</translation>
 <translation id="5453829744223920473">הילד או הילדה יכולים להשתמש בכל האפליקציות, הסימניות והמשאבים של בית הספר, בדיוק כמו שהם משתמשים בכיתה. בית הספר קובע את הכללים המנחים.</translation>
-<translation id="5463450804024056231">הרשמה לקבלת אימיילים לגבי <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">‏המשך הפעולה מבטא את הסכמתך לכך שהמכשיר הזה יוכל גם להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק של הילד או הילדה שלך ומיצרן המכשיר, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מתוך האפליקציה.</translation>
 <translation id="5502915260472117187">ילד או ילדה</translation>
 <translation id="5511823366942919280">בטוח שברצונך להגדיר מכשיר זה כ'כריש'?</translation>

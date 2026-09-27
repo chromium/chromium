@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Värskendamine algab, kui akutase jõuab <ph name="BATTERY_LEVEL" />%-ni.</translation>
 <translation id="1353275871123211385">Kui soovite kasutada vanemlikku järelevalvet, nt rakenduste heakskiitmist ja ekraaniaja piiranguid, peab lapsel olema vanema hallatav Google'i konto. Koolikonto saab lisada hiljem, et kasutada tööriistu, nagu Google Classroom.</translation>
 <translation id="1375557162880614858">Kas soovite aktiveerida Chrome OS Flexi sisseehitatud ekraanilugeja ChromeVox?</translation>
-<translation id="1375938286942050085">Seadistamine on lõpetatud! Valmistage nüüd oma seade mängude jaoks ette</translation>
 <translation id="1377600615067678409">Jäta praegu vahele</translation>
 <translation id="1399261165075500043">Google Play teenusetingimusi ei saa laadida</translation>
 <translation id="1400243387594338234">Saate seda PIN-koodi kasutada oma seadmesse sisselogimiseks</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Google’i konto kasutamine seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Ajavööndi valimine</translation>
 <translation id="3893630138897523026">ChromeVox (kõnena esitatud tagasiside)</translation>
-<translation id="3897746662269329507">Teie seade <ph name="DEVICE_TYPE" /> on mängude jaoks loodud. Jätkamisel avatakse rakendus Avastamine, mille kaudu pääsete juurde sadadele uusimatele mängudele, näete mängude pakkumisi ja saate avastada oma seadme mängufunktsioone.</translation>
 <translation id="389901847090970821">Klaviatuuri valimine</translation>
 <translation id="3910588685973519483">Looge AI abil taustapilte</translation>
 <translation id="3924259174674732591">Ekraanikuva ja teksti suurus <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Installida tuleb usaldusväärse platvormi mooduli püsivara. Kuva <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Vabandust! Sisselogimisel läks midagi valesti</translation>
 <translation id="5453829744223920473">Teie laps võib kasutada kõiki oma kooli rakendusi, järjehoidjaid ja ressursse täpselt nii, nagu ta teeb seda tunnis. Põhireeglid määrab kool.</translation>
-<translation id="5463450804024056231">Registreeru seadme <ph name="DEVICE_TYPE" /> meilide jaoks</translation>
 <translation id="5473099001878321374">Jätkamisel nõustute, et see seade võib Google'i, teie lapse operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste.</translation>
 <translation id="5502915260472117187">Laps</translation>
 <translation id="5511823366942919280">Kas soovite kindlasti seadistada seadme Sharkina?</translation>

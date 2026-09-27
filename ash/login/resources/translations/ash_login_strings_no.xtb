@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Oppdateringen starter når batteriet når <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Hvis du vil bruke foreldrekontroller som appgodkjenning og grenser for skjermtid, må barnet ha en Google-konto som administreres av en forelder. Senere kan det legges til en skolekonto for verktøy som Google Classroom.</translation>
 <translation id="1375557162880614858">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Konfigureringen er fullført. Nå kan du gjøre enheten klar for gaming</translation>
 <translation id="1377600615067678409">Hopp over</translation>
 <translation id="1399261165075500043">Kan ikke laste inn vilkårene for bruk av Google Play</translation>
 <translation id="1400243387594338234">Du kan bruke denne PIN-koden til å logge på enheten din</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Bruk Google-kontoen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Velg tidssone</translation>
 <translation id="3893630138897523026">ChromeVox (muntlig tilbakemelding)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> er laget for gaming. Nå åpnes straks Utforsk-appen, hvor du kan få tilgang til hundrevis av de nyeste spillene, se gamingtilbud og oppdage gamingfunksjoner som følger med enheten din.</translation>
 <translation id="389901847090970821">Velg tastatur</translation>
 <translation id="3910588685973519483">Lag bakgrunner med AI</translation>
 <translation id="3924259174674732591">Visnings- og tekststørrelse: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">En oppdatering for Trusted Platform Module-fastvaren må installeres. Se <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Noe gikk galt under påloggingen</translation>
 <translation id="5453829744223920473">Barnet ditt kan bruke alle skoleappene, bokmerkene og ressursene sine på samme måte som i klasserommet. Skolen fastsetter grunnreglene.</translation>
-<translation id="5463450804024056231">Meld deg på e-poster om <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Hvis du fortsetter, godtar du at apper og oppdateringer fra Google, barnets operatør og enhetsprodusenten også kan lastes ned og installeres på enheten automatisk – muligens via mobildata. Noen av disse appene kan tilby kjøp i appen.</translation>
 <translation id="5502915260472117187">Et barn</translation>
 <translation id="5511823366942919280">Er du sikker på at du ønsker å konfigurere denne enheten som en «hai» («shark»)?</translation>

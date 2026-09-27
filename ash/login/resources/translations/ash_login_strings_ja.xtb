@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">更新は、<ph name="BATTERY_LEVEL" />% まで充電されたときに開始されます。</translation>
 <translation id="1353275871123211385">アプリの許可や利用時間の上限など、保護者による使用制限を設定するには、保護者が管理するお子様用の Google アカウントが必要です。Google Classroom などのツールを使用するための学校用アカウントは、後で追加できます。</translation>
 <translation id="1375557162880614858">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。</translation>
-<translation id="1375938286942050085">セットアップは完了です。デバイスでゲームをお楽しみください</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
 <translation id="1400243387594338234">この PIN を使用してデバイスにログインできます</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602"><ph name="DEVICE_TYPE" /> で Google アカウントを使用する</translation>
 <translation id="3856800405688283469">タイムゾーンを選択</translation>
 <translation id="3893630138897523026">ChromeVox（音声フィードバック）</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> はゲームに適した設計となっています。次に表示される「使い方・ヒント」アプリでは、何百種類もの最新ゲームにアクセスでき、ゲームに関する特典やデバイスに付属のゲームをご覧いただけます。</translation>
 <translation id="389901847090970821">キーボードを選択</translation>
 <translation id="3910588685973519483">AI で壁紙を作成</translation>
 <translation id="3924259174674732591">ディスプレイとテキストのサイズ <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Trusted Platform Module ファームウェアのアップデートをインストールする必要があります。<ph name="TPM_FIRMWARE_UPDATE_LINK" /> をご覧ください。</translation>
 <translation id="5448293924669608770">ログイン エラーが発生しました</translation>
 <translation id="5453829744223920473">お子様は、学校のすべてのアプリ、ブックマーク、リソースを授業と同じように利用できます。基本ルールは学校が設定します。</translation>
-<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> のメール通知に登録する</translation>
 <translation id="5473099001878321374">続行すると、Google、お子様がご利用の携帯通信会社、デバイス メーカーからアップデートやアプリをこのデバイスが自動的に（場合によってはモバイルデータ接続を使用して）ダウンロードし、インストールする場合があることに同意したことになります。一部のアプリでは、アプリ内購入をご利用いただけます。</translation>
 <translation id="5502915260472117187">お子様</translation>
 <translation id="5511823366942919280">このデバイスを「Shark」として設定してもよろしいですか？</translation>

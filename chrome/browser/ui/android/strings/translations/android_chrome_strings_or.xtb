@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">ସେୟାର କରାଯାଇଥିବା <ph name="GROUP_TITLE" /> ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4537137366307982887">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ଅପ୍ଟ ଇନ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
 <translation id="4537987892902330164">ଆପଣ <ph name="NAME_OR_EMAIL" /> ଭାବେ ସାଇନ ଇନ କରି ରହିଛନ୍ତି।</translation>
-<translation id="4543131175509360848">କୌଣସି ପାସକୀ ସିଟ ନାହିଁ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TAB_COUNT_MANY" />ଟି ଟାବ୍, <ph name="TAB_COUNT_INCOGNITO" />ଟି ଇନକଗ୍ନିଟୋ}}</translation>
 <translation id="4558311620361989323">ୱେବ୍‍ପୃଷ୍ଟା ସର୍ଟକଟ୍</translation>
 <translation id="4572422548854449519">ପରିଚାଳିତ ଆକାଉଣ୍ଟରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">ଅନୁବାଦ କରିବାକୁ ପ୍ରସ୍ତାବ ଦିଅନ୍ତୁ</translation>
 <translation id="4720556299488643018">ସଦସ୍ୟତା ତ୍ୟାଗ କରନ୍ତୁ</translation>
 <translation id="4732120983431207637">ଷ୍ଟାକ୍ ଅନ୍‌ୱାଇଣ୍ଡର୍</translation>
+<translation id="4734965478015604180">ଭୂସମାନ୍ତର</translation>
 <translation id="4736934858538408121">ଭର୍ଚୁଆଲ୍ କାର୍ଡ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4738065825338914557">ସଦସ୍ୟତା ତ୍ୟାଗ କରାଯାଉଛି…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ଫାଇଲ୍‌କୁ ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="4885273946141277891">Chrome ଇନ୍‌ଷ୍ଟାନ୍‌ସଗୁଡ଼ିକର ଅସମର୍ଥିତ ସଂଖ୍ୟା।</translation>
 <translation id="4890973535105146893">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ କୌଣସି ସେଭ ହୋଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
+<translation id="490375751687810070">ଭୂଲମ୍ଵ</translation>
 <translation id="4905823827770127520">ପୃଷ୍ଠାର ଏକ ଲିଙ୍କ୍ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="4910889077668685004">ପେମେଣ୍ଟ ଆପ୍ସ</translation>
 <translation id="4911042367886397055">ଆପଣଙ୍କୁ ପୁଣି ସ୍ୱାଗତ, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ଛବିର ବର୍ଣ୍ଣନା ପାଆନ୍ତୁ</translation>
 <translation id="6193448654517602979">ଟାବ୍‌ଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="6196315980958524839">ଏହି ଡିଭାଇସ Google Password Managerରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି</translation>
+<translation id="6200780647297916498">ଟାବ ସ୍ଥିତି</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />ରୁ ସମ୍ଭାବ୍ୟ ସ୍ପାମର ଚିହ୍ନଟ କରିଛି।</translation>
 <translation id="6211386937064921208">ଏହି ପୃଷ୍ଠା ପ୍ରିଭ୍ୟୁ କରାଯାଉଛି</translation>
 <translation id="6212567362666004597">ଗୋଷ୍ଠୀରେ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>

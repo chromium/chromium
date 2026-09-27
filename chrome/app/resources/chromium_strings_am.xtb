@@ -10,6 +10,7 @@
 
 አንዳንድ ባህሪያት ላይገኙ ይችላሉ፣ እና በአማራጮች ላይ የተደረጉ ለውጦች አይቀመጡም።</translation>
 <translation id="1083934481477628225">የእርስዎ ወላጅ ለChromium «የጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች ፈቃዶች» የሚለውን አጥፍተዋል።</translation>
+<translation id="109026165963220603">Chromium በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት እና ለመጠቀም የአካባቢያዊ አውታረ መረብዎ መዳረሻ ያስፈልገዋል</translation>
 <translation id="1090946077924227754">አንድን የተወሰነ የChromium ባህሪ ወይም ቅጥያ ለመፈለግ የእርስዎን የተመረጠ የቁልፍ ሰሌዳ ቁልፍ በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ</translation>
 <translation id="1098493699368672217">ፍለጋን በሥርዓት ትሪ ውስጥ በChromium አሳይ እና የቁልፍ ሰሌዳ አቋራጭን አብራ</translation>
 <translation id="1104942323762546749">Chromium የእርስዎን የይለፍ ቃላት ወደ ውጭ መላክ ይፈልጋል። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
@@ -106,6 +107,7 @@
 <translation id="2126108037660393668">የወረደው ፋይል ማረጋገጫን አላለፈም።</translation>
 <translation id="2135919691573380097">ይህን ጣቢያ ሪፖርት ያድርጉ</translation>
 <translation id="2137162749895930932">የመተርጎሚያ ማያ ገፅን ዝጋ</translation>
+<translation id="2147218225094845757">የጎን ፓነልን ደብቅ</translation>
 <translation id="215352261310130060">ጣቢያው ደህንነቱ የተጠበቀ ግንኙነት እየተጠቀመ ስላልሆነ እና ፋይሉ ተነካክቶ ሊሆን ስለሚችል Chromium ይህን ውርድ አግዷል</translation>
 <translation id="2170098639895543546">በገጽ ላይ ማንኛውንም ነገር ይምረጡ</translation>
 <translation id="2174178932569897599">Chromiumን አብጅ</translation>
@@ -305,7 +307,6 @@
 <translation id="4251772536351901305">ከመደበኛ ጥበቃ በላይ ተጨማሪ ውሂብ ከጣቢያዎች ትንታኔ በመስጠት Google እንኳን በፊት ስላላወቃቸው አደገኛ ጣቢያዎች ያስጠነቅቅዎታል። የChromium ማስጠንቀቂያዎችን ለመዝለል መምረጥ ይችላሉ።</translation>
 <translation id="4269093074552541569">ከChromium ዘግተህ ውጣ</translation>
 <translation id="4271805377592243930">Chromium ላይ እገዛ ያግኙ</translation>
-<translation id="4275788652681621337">የጎን ፓነልን ዝጋ</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
 <translation id="4285930937574705105">ተለይቶ ባልታወቀ ስህተት ምክንያት ጭነት ከሽፏል። Chromium አሁን እያሄደ ከሆነ እባክዎ ይዝጉትና እንደገና ይሞክሩ።</translation>
 <translation id="4298125729853015961">የይለፍ ቃላትን ከChromium ወደ ውጪ ይላኩ</translation>

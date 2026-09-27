@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Абдан жакшы!</translation>
 <translation id="1342886103232377846">Уурдалган сырсөздөрдү көрүү үчүн Сырсөздөрдү башкаргычка өтүңүз</translation>
 <translation id="1343920184519992513">Токтогон жериңизден улантып, барактардын белгилүү топтомун ачыңыз</translation>
+<translation id="1344216785734288669">Apple'деги сырсөздөр</translation>
 <translation id="1346630054604077329">Ырастоо жана өчүрүп күйгүзүү</translation>
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1347512539447549782">Linux сактагычы</translation>
@@ -797,7 +798,6 @@
 <translation id="160689647589417224">Колдонмо бул аймакта чектелген.</translation>
 <translation id="1607139524282324606">Киргизүүнү тазалоо</translation>
 <translation id="1608668830839595724">Тандалган нерселер үчүн дагы аракеттер</translation>
-<translation id="1609603645228231640">Gemini Spark сыналып жаткандыктан, уруксат сурабастан маалыматыңызды бөлүшүп же бир нерсе сатып алышы мүмкүн. <ph name="LINK_BEGIN" />Тобокелдиктерди карап чыгыңыз<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Колдонмо параметрлери</translation>
 <translation id="161042844686301425">Көгүлтүр</translation>
 <translation id="1611649489706141841">багыттоо</translation>
@@ -1063,7 +1063,6 @@
 <translation id="1808805149659872686">Жаңы маани</translation>
 <translation id="1809201888580326312">Бул сайттар менен колдонмолордун сырсөздөрү сакталбасын деп тандагансыз.</translation>
 <translation id="1809734401532861917">Кыстармаларым, таржымалым, сырсөздөрүм жана башка жөндөөлөрүм <ph name="USER_EMAIL_ADDRESS" /> дарегине кошулсун</translation>
-<translation id="1811908311154949291">Тосулган жашыруун алкак: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аркылуу уланта албайт</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> тышкы экранга чыгарылып турат</translation>
 <translation id="1813278315230285598">Кызматтар</translation>
@@ -1297,7 +1296,6 @@
 <translation id="1983612835086592681">Өткөн аптада ачтыңыз</translation>
 <translation id="1984087999855033707">телефон номери</translation>
 <translation id="1984417487208496350">Корголбойт (сунушталбайт)</translation>
-<translation id="1984683754853869253">Мектеп үчүн жаңы профиль түзүлсүнбү?</translation>
 <translation id="198507684520034826">Жардам</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Өркүндөтүлгөн жайгашкан жерди аныктоо жөндөөлөрү</translation>
@@ -1330,7 +1328,7 @@
 <translation id="2010501376126504057">Шайкеш түзмөктөр</translation>
 <translation id="2010636492623189611">Тандалды.</translation>
 <translation id="2012935757369720523">файлды өчүрүү</translation>
-<translation id="2014495120525813351">Gemini Spark'ка бул түзмөктө серептөөгө уруксат бериңиз</translation>
+<translation id="2014191284313949173">Окчундатылган терезени жабуу</translation>
 <translation id="2016473077102413275">Сүрөттөрдү колдонгон функциялар иштебей калат</translation>
 <translation id="2017334798163366053">Иштин майнаптуулугу жөнүндө дайындарды топтоо аракетин өчүрүү</translation>
 <translation id="2017770349934140286">Google Play жана Google Play'ден жүктөлүп алынган колдонмолор бул Chromebook'тан өчүрүлөт.
@@ -1462,6 +1460,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2121825465123208577">Өлчөмүн өзгөртүү</translation>
 <translation id="2122446694240899610">Жөндөмдөрүңүз Google аккаунтуңузга сакталат,</translation>
 <translation id="2123766928840368256">Башка файлды тандоо</translation>
+<translation id="2124153808069020510">Маалыматты өчүрүү үчүн бардык Окчундатылган терезелерди жабыңыз</translation>
 <translation id="2124930039827422115">{1,plural, =1{Бир колдонуучу <ph name="AVERAGE_RATING" /> деп баалады.}other{# колдонуучу <ph name="AVERAGE_RATING" /> деп баалады.}}</translation>
 <translation id="2125715366913703594">&amp;Extensions карап чыгуу</translation>
 <translation id="2126167708562367080">Шайкештирүү функциясын администраторуңуз өчүрүп койгон.</translation>
@@ -1604,6 +1603,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2227179592712503583">Сунушту өчүрүү</translation>
 <translation id="222931766245975952">Үзүл-кесил файл</translation>
 <translation id="2229342031987138128">Коштомо жазуулар</translation>
+<translation id="22294739381015133">Сиз баш баккан сайттар Окчундатылган режимде сакталбайт</translation>
 <translation id="2231351769755997720">Жеткиликтүү сунуштар жок. Бул бет жөнүндө өзүңүздүн сурооңузду берип көрүңүз.</translation>
 <translation id="2232751457155581899">Сайттар сиздин уруксатыңыз менен камеранын абалына көз сала алат</translation>
 <translation id="2233502537820838181">&amp;Көбүрөөк маалымат</translation>
@@ -2043,7 +2043,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2554553592469060349">Тандалган файл өтө чоң (эң чоң өлчөмү: 3 мб).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> колдонмонун ичинен <ph name="NUM_ALLOWED_APPS" /> билдирмелерди жөнөтө алат</translation>
 <translation id="2555855727505718984">Формаларды автоматтык түрдө толтуруу үчүн сакталган маалымат бул түзмөктөн өчүрүлөт</translation>
-<translation id="25568951186001797">Тосулган алкак: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Бардык кыстармаларыңыз бул жерде</translation>
 <translation id="2563924218974330506">Эми өтмөк топторун ушул жерден тескей аласыз. Муну каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="2564520396658920462">AppleScript аркылуу JavaScript файлдарын иштетүү өчүрүлгөн. Аны күйгүзүү үчүн меню тилкесинен Көрүнүш &gt; Иштеп чыгуучу &gt; Apple Events'теги JavaScript'ке уруксат берүү дегенди тандаңыз. Кеңири маалымат: https://support.google.com/chrome/?p=applescript</translation>
@@ -2122,7 +2121,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2626746300781063303">Сайттар, анын ичинде Google бул сурамга каалагандай жооп беришет</translation>
 <translation id="2626799779920242286">Бир аздан кийин аракет кылып көрүңүз.</translation>
 <translation id="2627424346328942291">Бөлүшүү мүмкүн эмес</translation>
-<translation id="2627970398976286795">Gemini Spark куралынын тобокелдиктерин карап чыгыңыз</translation>
 <translation id="2628258844236035475">Үй дарегин Chrome'до автотолтурула турган маалыматтардан өчүрөсүзбү?</translation>
 <translation id="2628770867680720336">ADB аркылуу мүчүлүштүктөрдү оңдоону иштетүү үчүн бул Chromebook'ту баштапкы абалга келтирүү талап кылынат. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini менен Жаңы чат баштаңыз</translation>
@@ -2431,7 +2429,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2845276301195220700">Google Жылнаама үчүн көбүрөөк аракеттер</translation>
 <translation id="2845382757467349449">Кыстармалар тилкеси ар дайым көрүнсүн</translation>
 <translation id="284581348330507117">Өзгөчө сырсөз түзүңүз</translation>
-<translation id="2846345106886298325">Тапшырма аткарылып, Gemini Spark'ка кайтарылды</translation>
 <translation id="284884486564166077">Lens аркылуу каалаган сүрөттү издеңиз</translation>
 <translation id="2849035674501872372">Издөө</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2493,7 +2490,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2893318819023133318">Көрүнүштөрдү тескери кылуу</translation>
 <translation id="2894596417096093634">Ката жөнүндө кабарлоо идентификаторлору</translation>
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
-<translation id="2895194086130800590">Gemini Spark бул түзмөктө авто серептөөнү түзмөк менен Chrome иштеп жатканда гана колдоно алат.</translation>
 <translation id="289695669188700754">Ачкычтын далдаштырма коду: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Бул жеке жөндөө бардык Жашыруун терезелер жабылганда өчүрүлөт</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> өтмөктү чын эле ачасызбы?</translation>
@@ -2546,7 +2542,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2933653107553951760">Топту калыбына келтирүү</translation>
 <translation id="2934225044529065415">Камерага кирүү мүмкүн болбой жатат</translation>
 <translation id="2935314715123552088">Жигердүү eSIM профилдерин өчүрүү</translation>
-<translation id="2936067606203230121">Gemini Spark сиз баштаган же жаңырткан тапшырмалардын негизинде эмне жасоону чечет.</translation>
 <translation id="2936851848721175671">Камдык көчүрмөнү сактоо жана калыбына келтирүү</translation>
 <translation id="2938981087412273365">Бул сайтты окуп же өзгөртүүгө уруксат берилген эмес</translation>
 <translation id="2939005221756255562">Билдирмелер борборунда билдирмелерди иштетиңиз. <ph name="BEGIN_LINK" />Тутумдун параметрлерин<ph name="END_LINK" /> ачыңыз.</translation>
@@ -2926,6 +2921,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> үндөр жүктөлүүдө...</translation>
 <translation id="3217843140356091325">Кыска жол түзүлсүнбү?</translation>
 <translation id="3220494908385619295">Жанаша көрсөтүү</translation>
+<translation id="3220541426929880850">Түзмөгүңүздөн окчундатылып көрүлгөн вебсайттарды өчүрүү үчүн бардык окчундатылган өтмөктөрдү жабыңыз</translation>
 <translation id="3220943972464248773">Сырсөздөрүңүздү шайкештирүү үчүн өзүңүз экениңизди ырастаңыз</translation>
 <translation id="3222066309010235055">Алдыртан визуалдаштыруу: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> түзмөгүнө туташуу</translation>
@@ -3424,6 +3420,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3600956933576601730">Бул функцияларды колдонуу үчүн шарттарды карап чыгып, кабыл алышыңыз керек</translation>
 <translation id="3601374594714740284">Жогорку сапаттагы үндөрдү жүктөп алуу үчүн түзмөгүңүздө орун бошотуңуз</translation>
 <translation id="360180734785106144">Жаңы функциялар чыкканда, аларды сунуштап турат</translation>
+<translation id="3601988315287782413">Бул Окчундатылган терезелерге гана таасир этет</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3602495161941872610">&amp;Шайкештирүү көйгөйүн оңдоо</translation>
 <translation id="3602894439067790744">Сандарды төмөнкүдөй окуу:</translation>
@@ -3652,7 +3649,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3756578970075173856">PIN код коюу</translation>
 <translation id="3756806135608816820">Сайттар Bluetooth түзмөктөрүн издөөнү сурай алышат</translation>
 <translation id="3756823472711156529">Топту калыбына келтирүү</translation>
-<translation id="3757337311115630808">Gemini Spark тууралуу кеңири маалымат</translation>
 <translation id="3757567010566591880">Куралдар тилкесинен бошотуу</translation>
 <translation id="3757645900890881944">Издөө куралдары</translation>
 <translation id="3757733214359997190">Эч бир сайт табылган жок</translation>
@@ -4776,6 +4772,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4631637535315947773">Акыркы убакта колдонбогонуңуз үчүн эң көп кирген сайттардын ыкчам баскычтары өчүрүлдү</translation>
 <translation id="4631955550884380853">Ынтаа коюлган үн</translation>
 <translation id="4632655012900268062">Кыйытмаларды ыңгайлаштыруу</translation>
+<translation id="4634719521235795064">Gemini аккаунтка сиздин атыңыздан кирүү үчүн Сырсөздөрдү башкаргычты колдонот. <ph name="BEGIN_LINK" />Gemini маалыматыңызды кантип иштетерин билип алыңыз<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini'ни чыгарып салуу</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> Конок режиминдеги колдонуучулар үчүн жеткиликсиз.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Сурооңуз менен кошо колдонуу үчүн 1 сүрөттү жүктөп бериңиз}other{Сурооңуз менен кошо колдонуу үчүн # сүрөткө чейин жүктөп бериңиз}}</translation>
@@ -5263,7 +5260,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4989966318180235467">&amp;Фон баракчасын иликтөө</translation>
 <translation id="499016799952867794">Бул колдонмого талаптагыдай иштөөгө мүмкүндүк берет.</translation>
 <translation id="4990673372047946816">Жеткиликтүү камера жок</translation>
-<translation id="499126848196136237">Gemini Spark бул түзмөктө Chrome'дун авто серептөө функциясын колдонуп, сайттар менен аракеттешип жана сиздин атыңыздан тапшырмаларды аткара алат. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Жогорку саптагы баскычтарды функция баскычтары катары колдонуу</translation>
 <translation id="4991873517942703737">Бул документ жөнүндө суроо берүү</translation>
 <translation id="4992066212339426712">Үнүн чыгаруу</translation>
@@ -5520,7 +5516,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5189274947477567401">Процессти бөлүшүүдөн баш тартуу үчүн серепчини өчүрүп күйгүзүү керек. Серепчи азыр өчүрүлүп күйгүзүлөт.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> колдонулууда</translation>
-<translation id="5190835502935405962">Кыстармалар тилкеси</translation>
 <translation id="5190926251776387065">Оюкчаны иштетүү</translation>
 <translation id="5190959794678983197">Микрофон жок</translation>
 <translation id="5191094172448199359">Киргизилген PIN коддор дал келген жок</translation>
@@ -6089,6 +6084,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" Башкы бет баскычы чыкылдатылганда көрүнө турган бетти өзгөрттү.</translation>
 <translation id="5643191124441701136">Коопсуздук кодуңуз картаңыздын маңдайкы бетинде жайгашкан</translation>
 <translation id="5643321261065707929">Тарифтелген тармак</translation>
+<translation id="5645369002069651355">Электрондук почта ырасталууда</translation>
 <translation id="5646376287012673985">Жайгашкан жер</translation>
 <translation id="5646558797914161501">Ишкер мырза</translation>
 <translation id="564670806635578888">Google'дан "<ph name="SEARCH_TERMS" />" издөө</translation>
@@ -7020,7 +7016,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6393550101331051049">Кооптуу мазмунду көрсөтө алат</translation>
 <translation id="6394634179843537518">Файл кошуу</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Система маалыматын<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />чендерди<ph name="END_LINK2" /> жөнөтүү</translation>
-<translation id="6397586889873084061">Ооба, маалыматтарым мектеп профилинен өзүнчө сакталсын (сунушталат)</translation>
 <translation id="6398715114293939307">Google Play Дүкөндү алып салуу</translation>
 <translation id="6398765197997659313">Толук экран режиминен чыгуу</translation>
 <translation id="639880411171387127">Google Lens тандооңуз. Google Lens тандооңузду өчүрүү үчүн enter же backspace баскычын басыңыз</translation>
@@ -8379,7 +8374,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7421293530411019405">Өтмөктөр тобунан чыгасызбы?</translation>
 <translation id="7421925624202799674">Барак булагын карап &amp;көрүү</translation>
 <translation id="7422192691352527311">Жеке параметрлер…</translation>
-<translation id="7423381908337122792">Gemini Spark агентиңизге кирүү мүмкүнчүлүгү бар адам Chrome серепчиңизди көзөмөлдөй алат.</translation>
 <translation id="7423425410216218516">Түзмөк <ph name="MINUTES" /> мүнөткө чейин көрүнөт</translation>
 <translation id="7423513079490750513">Өчүрүү: <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Тармак кошулду</translation>
@@ -8505,6 +8499,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7517292544534877198">Google аккаунтуңуздагы сырсөздөр үчүн Google'дун демейки шифрлөөсүн колдонуңуз</translation>
 <translation id="7517959947270534934">Үй-бүлөлүк тобуңуздун мүчөсү учурда сырсөздөрдү ала албайт. Андан Chrome'ду жаңыртуусун жана сырсөздөрдү шайкештирүүсүн сураныңыз.</translation>
 <translation id="7518079994230200553">Бул параметр учурда жеткиликсиз.</translation>
+<translation id="7519506357537394422">Gemini'га <ph name="DOMAIN" /> аккаунтуңузга кирүүгө уруксат бересизби?</translation>
 <translation id="752021853309481824">Бардык түзмөктөрүңүздө сакталган маалыматты жана башка нерселерди алуу үчүн <ph name="EMAIL" /> аккаунту менен кириңиз</translation>
 <translation id="7520766081042531487">Жашыруун портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Ыкчам баскычтарды көрсөтүү</translation>
@@ -8732,7 +8727,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="769824636077131955">Коопсуздукту текшерүү үчүн бул документтин көлөмү өтө чоң. 50 Мб кичирээк документтерди басып чыгара аласыз.</translation>
 <translation id="7698507637739331665">Айрым элементтер бөгөттөлгөн</translation>
 <translation id="7700516433658473670">Принтерлер жана сканерлер</translation>
-<translation id="7700873336634517379">Жок, ушул мектеп профили колдонула берсин</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7701869757853594372">КОЛДОНУУЧУ маркерлери</translation>
 <translation id="770231223935918661">Бул сүрөт жөнүндө суроо</translation>
@@ -9098,6 +9092,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7978450511781612192">Сиз Google аккаунтуңуздан чыгасыз. Кыстармаларыңыз, таржымалыңыз, сырсөздөрүңүз жана башка жөндөөлөр мындан ары шайкештирилбейт.</translation>
 <translation id="7980066177668669492">Base64-шифрленген ASCII, бир нече тастыктама</translation>
 <translation id="7981410461060625406"><ph name="APP_NAME" /> үчүн сакталган мүмкүндүк киргизүүчү ачкычты колдонуу</translation>
+<translation id="7981445433812028278">Электрондук почтаңыз ырасталган жок</translation>
 <translation id="7981662863948574132">Түзмөктүн EID номери жана QR код көрсөтүлгөн калкып чыгуучу терезени көрсөтүү</translation>
 <translation id="7982578888426609524">Бул топтун соңку жаңылыктары</translation>
 <translation id="7982789257301363584">Тармак</translation>
@@ -10157,6 +10152,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="878862491037637275">Бул өтмөктөр тобу толуп калды</translation>
 <translation id="8791157330927639737">Жаңыртуу жөнүндө кеңири маалымат</translation>
 <translation id="8791534160414513928">"Do Not Track" сурамын cерептөө трафигиңиз менен кошо жөнөтүңүз</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Окчундатылган)</translation>
 <translation id="8793390639824829328">Сайттар бөлүшүлгөн өтмөктөрдү сыдыруу жана чоңойтуп/кичирейтүү үчүн бул функцияны колдонушат</translation>
 <translation id="8793895150509408038"><ph name="SECTION_HEADER" /> тизмесинен <ph name="SITE" /> сайтынын чоо-жайын көрүңүз.</translation>
 <translation id="879413103056696865">Байланыш түйүнү күйүп турганда, сиздин <ph name="PHONE_NAME" /> төмөнкүлөрдү аткарат:</translation>
@@ -10393,7 +10389,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="897525204902889653">Карантин кызматы</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" жана башка 1 өтмөк}other{"<ph name="TAB_TITLE" />" жана башка # өтмөк}}</translation>
 <translation id="897565255818387330">Бул сайтка <ph name="FILE_NAME" /> файлын көрүп жана көчүрүүгө уруксат бересизби?</translation>
-<translation id="8977523125954274918">Мектеп профилин түзүп, сырсөздөрдү жана башка маалыматтарды аккаунтуңузда сактаңыз</translation>
 <translation id="8977811652087512276">Сырсөз туура эмес же файл бузук</translation>
 <translation id="8978154919215542464">Күйүк – баарын шайкештирүү</translation>
 <translation id="8978670037548431647">Телефонду модем катары колдонуу мүмкүнчүлүгүн жаңыртуу:</translation>
@@ -10497,7 +10492,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9040661932550800571"><ph name="ORIGIN" /> үчүн сырсөз жаңыртылсынбы?</translation>
 <translation id="9041560164471731796">Татаал сырсөздү Сырсөздөрдү башкаргычка сактоо үчүн Chrome'го кириңиз</translation>
 <translation id="9041692268811217999">Компьютериңиздеги файлдарды колдонуу мүмкүнчүлүгү администраторуңуз тарабынан өчүрүлдү</translation>
-<translation id="9041881059840744611">Мектеп профилдери жөнүндө</translation>
 <translation id="904224458472510106">Бул операцияны артка кайтаруу мүмкүн эмес</translation>
 <translation id="9042827002460091668">Интернет байланышыңызды текшерип, кайталап көрүңүз</translation>
 <translation id="9042893549633094279">Купуялык жана коопсуздук</translation>
@@ -10714,7 +10708,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9219103736887031265">Сүрөттөр</translation>
 <translation id="9219572436491982747">Google'га жөнөтүлгөн маалыматты адистерибиз Chrome'дун ЖИ технологиясын жакшыртуу үчүн карап көрүшү мүмкүн</translation>
 <translation id="9219741625496141320">Серептөө дайындары автоматтык түрдө өчүрүлдү</translation>
-<translation id="9220484506568374422">Gemini Spark сиз баш баккан сайттарга, анын ичинде аккаунтуңуз менен кирген сайттарга кире алат. Ал үчүнчү тараптар менен керектүү маалыматты бөлүшөт. Анын ичинде купуя деп эсептеген жеке маалыматыңыз да болушу мүмкүн.</translation>
 <translation id="9220525904950070496">Аккаунтту өчүрүү</translation>
 <translation id="9220723036554088545">файлды жүктөп бериңиз</translation>
 <translation id="9220820413868316583">Көтөрүп, кайталап көрүңүз.</translation>

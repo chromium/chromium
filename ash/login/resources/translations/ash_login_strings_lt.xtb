@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Atnaujinimo procesas prasidės, kai akumuliatoriaus įkrovos lygis bus <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Kad būtų galima naudoti tėvų kontrolės funkcijas, pvz., programų patvirtinimo ir įrenginio naudojimo laiko apribojimo funkcijas, vaikas turi turėti vieno iš tėvų valdomą „Google“ paskyrą. Vėliau galima pridėti mokyklos paskyrą, kad būtų galima naudoti tam tikrus įrankius, pvz., „Google Classroom“.</translation>
 <translation id="1375557162880614858">Ar norite suaktyvinti „ChromeVox“ – integruotą „ChromeOS Flex“ ekrano skaitytuvą?</translation>
-<translation id="1375938286942050085">Sąranka baigta! Toliau paruoškite įrenginį žaisti</translation>
 <translation id="1377600615067678409">Šį kartą praleisti</translation>
 <translation id="1399261165075500043">Nepavyksta įkelti „Google Play“ paslaugų teikimo sąlygų</translation>
 <translation id="1400243387594338234">Naudodami šį PIN kodą galite prisijungti prie savo įrenginio</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Naudokite „Google“ paskyrą „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="3856800405688283469">Pasirinkti laiko juostą</translation>
 <translation id="3893630138897523026">„ChromeVox“ (ekrano skaitymas balsu)</translation>
-<translation id="3897746662269329507">„<ph name="DEVICE_TYPE" />“ sukurtas žaidimams. Toliau bus atidaryta programa „Explore“, kur galėsite pasiekti daug naujausių žaidimų, peržiūrėti žaidimų pasiūlymus ir atrasti su įrenginiu teikiamas žaidimų funkcijas.</translation>
 <translation id="389901847090970821">Pasirinkti klaviatūrą</translation>
 <translation id="3910588685973519483">Ekrano fonų kūrimas naudojant DI</translation>
 <translation id="3924259174674732591">Pateikties ir teksto dydis <ph name="DISPLAY_ZOOM" /> proc.</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Reikia įdiegti patikimo platformos modulio programinės aparatinės įrangos naujinį. Žr. <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Oi, prisijungiant įvyko klaida</translation>
 <translation id="5453829744223920473">Vaikas gali naudoti visas mokyklos programas, žymes ir šaltinius, kaip daro per pamokas. Mokykla nustato pagrindines taisykles.</translation>
-<translation id="5463450804024056231">Prisiregistruoti gauti „<ph name="DEVICE_TYPE" />“ el. laiškus</translation>
 <translation id="5473099001878321374">Tęsdami sutinkate, kad šis įrenginys taip pat gali automatiškai atsisiųsti ir įdiegti naujinius bei programas iš „Google“, jūsų vaiko operatoriaus ir šio įrenginio gamintojo (gali būti naudojami mobiliojo ryšio duomenys). Kai kurios programos gali siūlyti įsigyti pirkinių programoje.</translation>
 <translation id="5502915260472117187">Vaikas</translation>
 <translation id="5511823366942919280">Ar tikrai norite nustatyti šį įrenginį kaip „Shark“?</translation>

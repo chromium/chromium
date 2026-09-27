@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">Administrar perfiles de Chrome</translation>
 <translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
+<translation id="2147218225094845757">Ocultar panel lateral</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
 <translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
 <translation id="2170098639895543546">Selecciona cualquier elemento de la página</translation>
@@ -754,6 +755,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="8196526165798579689">Buscar con Chrome Dev</translation>
 <translation id="8221491193165283816">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio las muestre, haz clic aquí.</translation>
 <translation id="8227493674161801700">Buscar con Chrome Beta</translation>
+<translation id="8233224921566021881">Chrome necesita acceso a tu red local para detectar y usar dispositivos cercanos</translation>
 <translation id="8253851811470049684">Abre vínculos en Chrome desde cualquier app y mantén el navegador accesible en la barra de tareas</translation>
 <translation id="8255190535488645436">Google Chrome está usando tu cámara y tu micrófono.</translation>
 <translation id="8260086374035800939">Si Gemini en Chrome está abierto, el panel lateral permanecerá abierto cuando se crean pestañas nuevas</translation>

@@ -889,7 +889,6 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4535755320005483982">Dijeljena grupa kartica <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Donja tabela uključivanja obavještenja o savjetima je otvorena u punoj visini</translation>
 <translation id="4537987892902330164">Ostali ste prijavljeni kao <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Nema nijedne tabele pristupnih ključeva</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimna}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> anonimne}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimnih}}</translation>
 <translation id="4558311620361989323">Prečice web stranice</translation>
 <translation id="4572422548854449519">Prijava na upravljani račun</translation>
@@ -934,6 +933,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4719927025381752090">Ponudi prijevod</translation>
 <translation id="4720556299488643018">Otkaži pr.</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
+<translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4736934858538408121">Virtuelna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738065825338914557">Otkazivanje pretplate…</translation>
@@ -982,6 +982,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="488187801263602086">Promjena naziva fajla</translation>
 <translation id="4885273946141277891">Nepodržani broj Chrome instanci.</translation>
 <translation id="4890973535105146893">Nema sačuvanih lozinki na Google računu</translation>
+<translation id="490375751687810070">Vertikalno</translation>
 <translation id="4905823827770127520">Uvrstite link do stranice</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4911042367886397055">Dobro došli nazad, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6192907950379606605">Preuzmi opise slika</translation>
 <translation id="6193448654517602979">Odaberite kartice</translation>
 <translation id="6196315980958524839">Lozinke se pohranjuju u Googleovom Upravitelju lozinki na ovom uređaju.</translation>
+<translation id="6200780647297916498">Položaj kartice</translation>
 <translation id="6204781143409202534">Chrome je otkrio moguće neželjeno obavještenje sa <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Pregledanje ove stranice</translation>
 <translation id="6212567362666004597">Dodaj karticu u grupu</translation>

@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Дұрыс!</translation>
 <translation id="1342886103232377846">Құпия сөздердің ұрланған-ұрланбағанын тексеру үшін Google Password Manager-ге өтіңіз.</translation>
 <translation id="1343920184519992513">Тоқтаған жерден жалғастыру және арнайы беттер жинағын ашу</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">Растау және қайта бастау</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1347512539447549782">Linux жад көлемі</translation>
@@ -796,7 +797,6 @@
 <translation id="160689647589417224">Қолданба бұл аймақта шектелген.</translation>
 <translation id="1607139524282324606">Жазбаны өшіру</translation>
 <translation id="1608668830839595724">Таңдалған бетбелгілерге арналған басқа әрекеттер</translation>
-<translation id="1609603645228231640">Gemini Spark — эксперименттік құрал және ол ақпаратыңызды бөлісу немесе сізден рұқсат сұрамай-ақ сатып алу сияқты әрекеттерді орындауы мүмкін. <ph name="LINK_BEGIN" />Қауіптерді қарап шығыңыз<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Қолданба параметрлері</translation>
 <translation id="161042844686301425">Көгілдір</translation>
 <translation id="1611649489706141841">алға</translation>
@@ -1054,7 +1054,6 @@
 <translation id="1808805149659872686">Жаңа жазба</translation>
 <translation id="1809201888580326312">Бұл сайттар мен қолданбалар үшін құпия сөздерді сақтамау таңдалған.</translation>
 <translation id="1809734401532861917">Бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді <ph name="USER_EMAIL_ADDRESS" /> профиліне енгізу</translation>
-<translation id="1811908311154949291">Инкогнито режиміндегі Fenced Frame элементі: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> сайты <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> провайдерін пайдалануды жалғастыра алмайды.</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> трансляциялануда</translation>
 <translation id="1813278315230285598">Қызметтер</translation>
@@ -1287,7 +1286,6 @@
 <translation id="1983612835086592681">Өткен аптада аштыңыз</translation>
 <translation id="1984087999855033707">телефон нөмірі</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
-<translation id="1984683754853869253">Мектепке арналған жаңа профиль жасағыңыз келе ме?</translation>
 <translation id="198507684520034826">Анықтама</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Қосымша локация параметрлері</translation>
@@ -1320,7 +1318,7 @@
 <translation id="2010501376126504057">Үйлесімді құрылғылар</translation>
 <translation id="2010636492623189611">Таңдалды.</translation>
 <translation id="2012935757369720523">Файлды жою</translation>
-<translation id="2014495120525813351">Gemini Spark-қа осы құрылғыда шолуға рұқсат беру</translation>
+<translation id="2014191284313949173">Оқшау қойындыларды жабу</translation>
 <translation id="2016473077102413275">Суреттерді қажет ететін функциялар жұмыс істемейді.</translation>
 <translation id="2017334798163366053">Өнімділік деректерінің жинағын өшіру</translation>
 <translation id="2017770349934140286">Google Play және одан жүктеп алынған қолданбалар бұл Chromebook-тан жойылады.
@@ -1452,6 +1450,7 @@
 <translation id="2121825465123208577">Өлшемін өзгерту</translation>
 <translation id="2122446694240899610">Дағдыларыңыз Google аккаунтыңызға сақталады:</translation>
 <translation id="2123766928840368256">Басқа файлды таңдау</translation>
+<translation id="2124153808069020510">Деректерді жою үшін барлық оқшау терезені жабыңыз.</translation>
 <translation id="2124930039827422115">{1,plural, =1{Бір пайдаланушы <ph name="AVERAGE_RATING" /> деген баға берді.}other{# пайдаланушы <ph name="AVERAGE_RATING" /> деген баға берді.}}</translation>
 <translation id="2125715366913703594">Кеңейтімдерді зерттеу</translation>
 <translation id="2126167708562367080">Синхрондауды әкімшіңіз өшірген.</translation>
@@ -1594,6 +1593,7 @@
 <translation id="2227179592712503583">Ұсынысты өшіру</translation>
 <translation id="222931766245975952">Файл бүлінген</translation>
 <translation id="2229342031987138128">Субтитр</translation>
+<translation id="22294739381015133">Сіз кірген сайттар оқшау режимде сақталмайды</translation>
 <translation id="2231351769755997720">Ұсыныстар жоқ. Осы бет жайында өзіңіз сұрақ қойып көріңіз.</translation>
 <translation id="2232751457155581899">Сайттар камераңыздың орнын қадағалауға рұқсат сұрай алады.</translation>
 <translation id="2233502537820838181">&amp;Қосымша ақпарат</translation>
@@ -2030,7 +2030,6 @@
 <translation id="2554553592469060349">Таңдалған файл тым үлкен (макс. көлем: 3 МБ).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" />/<ph name="TOTAL_NUM_APPS" /> қолданба хабарландыру жібере алады.</translation>
 <translation id="2555855727505718984">Автотолтыру функциясы бұл ақпаратты осы құрылғыдағы үлгілерді толтыру үшін пайдалана алмайтын болады.</translation>
-<translation id="25568951186001797">Fenced Frame элементі: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Барлық бетбелгіні осы жерден көре аласыз.</translation>
 <translation id="2563924218974330506">Енді қойындылар топтарын осы жерден басқара аласыз. Мұны кез келген уақытта босатуға болады.</translation>
 <translation id="2564520396658920462">JavaScript сценарийін AppleScript арқылы орындау мүмкіндігі өшірулі. Оны қосу үшін мәзір жолағында "Көрініс &gt; Әзірлеуші &gt; JavaScript сценарийін Apple Events қызметінен рұқсат ету" тармағына өтіңіз. Толығырақ ақпарат мына бетте берілген: https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2108,6 @@
 <translation id="2626746300781063303">Сайттар, соның ішінде Google бұл сұрауға жауап бермеуді таңдауы мүмкін.</translation>
 <translation id="2626799779920242286">Әрекетті кейінірек қайталаңыз.</translation>
 <translation id="2627424346328942291">Бөлісу мүмкін емес</translation>
-<translation id="2627970398976286795">Gemini Spark қауіптерін қарап шығу</translation>
 <translation id="2628258844236035475">Үй мекенжайын Chrome-ның автотолтыру функциясынан өшіру қажет пе?</translation>
 <translation id="2628770867680720336">ADB түзетуін қосу үшін осы Chromebook құрылғысын зауыттық күйге қайтару қажет. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini-мен жаңа чат бастау</translation>
@@ -2418,7 +2416,6 @@
 <translation id="2845276301195220700">Google Calendar-ға арналған басқа әрекеттер</translation>
 <translation id="2845382757467349449">Әрқашан бетбелгілер жолағын көрсету</translation>
 <translation id="284581348330507117">Бірегей құпия сөздер жасаңыз.</translation>
-<translation id="2846345106886298325">Тапсырма орындалды және Gemini Spark-қа қайтарылды.</translation>
 <translation id="284884486564166077">Lens көмегімен кез келген суретті іздеңіз</translation>
 <translation id="2849035674501872372">Іздеу</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2477,6 @@
 <translation id="2893318819023133318">Кері көріністер</translation>
 <translation id="2894596417096093634">Бұзылу туралы есеп идентификаторлары</translation>
 <translation id="2894757982205307093">Топқа жаңа қойынды енгізу</translation>
-<translation id="2895194086130800590">Gemini Spark бұл құрылғыда автоматты түрде шолу функциясын құрылғы ояу және Chrome іске қосылған кезде ғана пайдалана алады.</translation>
 <translation id="289695669188700754">Кілт индентификаторы: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Сіз барлық инкогнито терезесін жапқан кезде, бұл арнаулы параметр өз күшін жояды.</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> қойындыны ашқыңыз келе ме?</translation>
@@ -2533,7 +2529,6 @@
 <translation id="2933653107553951760">Топты қалпына келтіру</translation>
 <translation id="2934225044529065415">Камераны пайдалану мүмкін емес</translation>
 <translation id="2935314715123552088">Белсенді eSIM профилін өшіру</translation>
-<translation id="2936067606203230121">Gemini Spark сіз бастаған немесе өзгерткен тапсырмаларға сүйене отырып, қандай әрекеттерді орындау керектігін шешеді.</translation>
 <translation id="2936851848721175671">Сақтық көшірме жасау және қалпына келтіру</translation>
 <translation id="2938981087412273365">Бұл сайтты оқуға және өзгертуге рұқсаты жоқ</translation>
 <translation id="2939005221756255562">Хабарландыру орталығында хабарландыруларды қосады. <ph name="BEGIN_LINK" />Жүйе параметрлерін<ph name="END_LINK" /> ашыңыз.</translation>
@@ -2911,6 +2906,7 @@
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> тіліндегі дауыстар жүктеп алынып жатыр...</translation>
 <translation id="3217843140356091325">Таңбаша жасалсын ба?</translation>
 <translation id="3220494908385619295">Қатар көрсету</translation>
+<translation id="3220541426929880850">Құрылғыдан оқшау браузерді қолдану тарихын жою үшін барлық оқшау қойындыны жабыңыз.</translation>
 <translation id="3220943972464248773">Құпия сөздеріңізді синхрондау үшін жеке басыңызды растаңыз.</translation>
 <translation id="3222066309010235055">Алдын ала кескіндеу: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> желісіне қосылу</translation>
@@ -3409,6 +3405,7 @@
 <translation id="3600956933576601730">Бұл функцияларды пайдалану үшін шарттарды тексеріп, қабылдау қажет.</translation>
 <translation id="3601374594714740284">Жоғары сапалы дауыстарды жүктеп алу үшін құрылғы жадын тазалаңыз</translation>
 <translation id="360180734785106144">Жаңа функцияларды бірден ұсыну</translation>
+<translation id="3601988315287782413">Бұл тек оқшау терезелерге әсер етеді.</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3602495161941872610">&amp;Синхрондау мәселесін шешу</translation>
 <translation id="3602894439067790744">Сандардың оқылуы</translation>
@@ -3637,7 +3634,6 @@
 <translation id="3756578970075173856">PIN кодын орнату</translation>
 <translation id="3756806135608816820">Сайттар Bluetooth құрылғыларын іздеуді сұрай алады.</translation>
 <translation id="3756823472711156529">Топты қалпына келтіру</translation>
-<translation id="3757337311115630808">Gemini Spark туралы толық ақпарат</translation>
 <translation id="3757567010566591880">Құралдар тақтасынан босату</translation>
 <translation id="3757645900890881944">Іздеу құралдары</translation>
 <translation id="3757733214359997190">Ешқандай сайт табылмады.</translation>
@@ -4761,6 +4757,7 @@
 <translation id="4631637535315947773">Сіз соңғы уақытта пайдаланбағандықтан, көп кіретін сайттардың таңбашалары өшірілді.</translation>
 <translation id="4631955550884380853">Дауысты айқындау</translation>
 <translation id="4632655012900268062">Карталарды реттеу</translation>
+<translation id="4634719521235795064">Gemini сіздің атыңыздан кіру үшін Google Password Manager-ді пайдалана алады. <ph name="BEGIN_LINK" />Gemini деректеріңізді қалай өңдейтіні туралы ақпарат<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini жүйесін жою</translation>
 <translation id="4635398712689569051">Қонақ пайдаланушылар <ph name="PAGE_NAME" /> бетіне кіре алмайды.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Сұрағыңызға қосу үшін 1 сурет жүктеп салыңыз.}other{Сұрағыңызға қосу үшін # суретке дейін жүктеп салыңыз.}}</translation>
@@ -5247,7 +5244,6 @@
 <translation id="4989966318180235467">&amp;Фондық бетті тексеру</translation>
 <translation id="499016799952867794">Бұл қолданбаның ойдағыдай істеп тұруына мүмкіндік береді.</translation>
 <translation id="4990673372047946816">Қолжетімді камера жоқ</translation>
-<translation id="499126848196136237">Gemini Spark осы құрылғыдағы Chrome-ның автоматты түрде шолу функциясын сайттармен әрекеттесу және тапсырмаларды сіздің атыңыздан орындау үшін пайдалана алады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Жоғарғы қатар пернелерін функционалдық пернелер ретінде пайдалану</translation>
 <translation id="4991873517942703737">Бұл құжат туралы сұрақ қою</translation>
 <translation id="4992066212339426712">Дыбысын қосу</translation>
@@ -5504,7 +5500,6 @@
 <translation id="5189274947477567401">Процесті бөлісуден бас тарту үшін браузерді өшіріп қосу қажет. Бұл браузер қазір өшіп қосылады.</translation>
 <translation id="5189404424758444348">Стимпанк</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> пайдаланылып жатыр</translation>
-<translation id="5190835502935405962">Бетбелгілер жолағы</translation>
 <translation id="5190926251776387065">Портты іске қосу</translation>
 <translation id="5190959794678983197">Микрофон жоқ</translation>
 <translation id="5191094172448199359">Енгізген PIN кодтарыңыз сәйкес келмейді.</translation>
@@ -6070,6 +6065,7 @@
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" кеңейтімі "Негізгі экран" түймесін басқан кезде көрсетілетін бетті өзгертті.</translation>
 <translation id="5643191124441701136">Қауіпсіздік коды картаңыздың алдыңғы жағында</translation>
 <translation id="5643321261065707929">Шектелген желі</translation>
+<translation id="5645369002069651355">Электрондық пошта расталып жатыр.</translation>
 <translation id="5646376287012673985">Орын</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="564670806635578888">Google-дан "<ph name="SEARCH_TERMS" />" деп іздеу</translation>
@@ -7000,7 +6996,6 @@
 <translation id="6393550101331051049">Қорғалмаған контент көрсетуге рұқсаты барлар</translation>
 <translation id="6394634179843537518">Файл қосу</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />Жүйе ақпараты<ph name="END_LINK1" /> мен <ph name="BEGIN_LINK2" />көрсеткіштерді<ph name="END_LINK2" /> жіберу</translation>
-<translation id="6397586889873084061">Иә, деректерімді мектеп деректерінен бөлек сақтау (ұсынылады)</translation>
 <translation id="6398715114293939307">Google Play Store дүкенін жою</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="639880411171387127">Google Lens-дегі таңдауыңыз. Оны жою үшін Enter немесе Backspace пернесін басыңыз.</translation>
@@ -8359,7 +8354,6 @@
 <translation id="7421293530411019405">Қойындылар тобынан шығу қажет пе?</translation>
 <translation id="7421925624202799674">&amp;Бет дереккөзін көру</translation>
 <translation id="7422192691352527311">Реттеулер…</translation>
-<translation id="7423381908337122792">Gemini Spark агентіне кіру рұқсаты бар кез келген адам Chrome браузерін басқара алады.</translation>
 <translation id="7423425410216218516">Көріну мүмкіндігі <ph name="MINUTES" /> минутқа қосулы.</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> контентін өшіру</translation>
 <translation id="7424818322350938336">Желі қосылды</translation>
@@ -8484,6 +8478,7 @@
 <translation id="7517292544534877198">Google аккаунтындағы құпия сөздер үшін Google-дың әдепкі шифрлау әдісін пайдалану</translation>
 <translation id="7517959947270534934">Отбасы мүшесі дәл қазір құпия сөздерді ала алмайды. Одан Chrome браузерін жаңартуын және құпия сөздерін синхрондауын сұраңыз.</translation>
 <translation id="7518079994230200553">Бұл опция қазір қолжетімді емес.</translation>
+<translation id="7519506357537394422">Gemini-ға <ph name="DOMAIN" /> аккаунтына сіздің орныңызға кіруге рұқсат беру керек пе?</translation>
 <translation id="752021853309481824">Сақталған ақпарат пен басқа деректерді барлық құрылғыдан алу үшін <ph name="EMAIL" /> ретінде кіріңіз.</translation>
 <translation id="7520766081042531487">Инкогнито порталы: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Жылдам пәрмендерді көрсету</translation>
@@ -8711,7 +8706,6 @@
 <translation id="769824636077131955">Бұл құжат қауіпсіздік тексерісін жүргізу үшін тым үлкен. 50 МБ-қа дейінгі құжаттарды басып шығаруға болады.</translation>
 <translation id="7698507637739331665">Кейбір элемент бөгелді</translation>
 <translation id="7700516433658473670">Принтерлер мен сканерлер</translation>
-<translation id="7700873336634517379">Жоқ, осы профильде мектеп үшін пайдалануды жалғастыру</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701869757853594372">USER өңдегіштері</translation>
 <translation id="770231223935918661">Осы сурет жайында сұрау</translation>
@@ -9077,6 +9071,7 @@
 <translation id="7978450511781612192">Google аккаунттарыңыздан шығарыласыз. Бетбелгілер, тарих, құпия сөздер, т.б. синхрондалмайтын болады.</translation>
 <translation id="7980066177668669492">Base64 арқылы шифрланған ASCII, бірнеше сертификат</translation>
 <translation id="7981410461060625406"><ph name="APP_NAME" /> веб-сайты үшін сақталған кіру кілтін пайдаланыңыз</translation>
+<translation id="7981445433812028278">Электрондық поштаңыз расталмады.</translation>
 <translation id="7981662863948574132">Құрылғының EID нөмірі және QR коды бар қалқымалы терезесін көрсету</translation>
 <translation id="7982578888426609524">Бұл топтағы соңғы өзгерістер</translation>
 <translation id="7982789257301363584">Желі</translation>
@@ -10136,6 +10131,7 @@
 <translation id="878862491037637275">Бұл қойындылар тобында орын жоқ</translation>
 <translation id="8791157330927639737">Жаңарту туралы толық ақпарат алыңыз</translation>
 <translation id="8791534160414513928">Интернет шолу трафигі арқылы "Do Not Track" сұрауын жіберу</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (оқшау)</translation>
 <translation id="8793390639824829328">Сайттар ортақ қойындыларды айналдыру және масштабтау үшін осы функцияны қолданады</translation>
 <translation id="8793895150509408038"><ph name="SITE" /> сайтының мәліметтерін <ph name="SECTION_HEADER" /> тізімінен көру</translation>
 <translation id="879413103056696865">Хотспот қосулы кезде, <ph name="PHONE_NAME" />:</translation>
@@ -10372,7 +10368,6 @@
 <translation id="897525204902889653">Карантин қызметі</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" және тағы 1 қойынды}other{"<ph name="TAB_TITLE" />" және тағы # қойынды}}</translation>
 <translation id="897565255818387330">Бұл сайтқа <ph name="FILE_NAME" /> файлын көруге және көшіруге рұқсат беру қажет пе?</translation>
-<translation id="8977523125954274918">Құпия сөздеріңіз бен басқа ақпаратты аккаунтыңызда сақтау және пайдалану үшін мектеп профилін реттеңіз.</translation>
 <translation id="8977811652087512276">Құпия сөз дұрыс емес немесе файл бүлінген</translation>
 <translation id="8978154919215542464">Қосулы – барлығын синхрондау</translation>
 <translation id="8978670037548431647">Тетеринг мүмкіндіктерін жаңарту</translation>
@@ -10476,7 +10471,6 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> құпия сөзі жаңартылсын ба?</translation>
 <translation id="9041560164471731796">Google Password Manager-ге күрделі құпия сөздерді сақтау үшін Chrome-ға кіріңіз.</translation>
 <translation id="9041692268811217999">Құрылғыңыздағы жергілікті файлдарға кіру мүмкіндігін әкімші өшіріп қойды.</translation>
-<translation id="9041881059840744611">Мектеп профильдері туралы ақпарат</translation>
 <translation id="904224458472510106">Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="9042827002460091668">Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="9042893549633094279">Құпиялық және қауіпсіздік</translation>
@@ -10693,7 +10687,6 @@
 <translation id="9219103736887031265">Кескіндер</translation>
 <translation id="9219572436491982747">Chrome-ның жасанды интеллект технологиясын жақсарту үшін Google-ға жіберілетін ақпаратты тексерушілер қарауы мүмкін.</translation>
 <translation id="9219741625496141320">Браузерді пайдалану деректері автоматты түрде жойылады</translation>
-<translation id="9220484506568374422">Gemini Spark сіз кірген сайттарды қоса алғанда, сіз пайдаланатын сайттарды қолдана алады. Ол қажетті ақпаратты үшінші тараптарға жібереді. Бұл ақпаратқа сіз құпия деп санайтын жеке ақпарат кіруі мүмкін.</translation>
 <translation id="9220525904950070496">Аккаунтты жою</translation>
 <translation id="9220723036554088545">файл жүктеп салыңыз</translation>
 <translation id="9220820413868316583">Саусағыңызды көтеріп, қайта басып көріңіз.</translation>

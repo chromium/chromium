@@ -469,6 +469,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1341701348342335220">Shumë mirë!</translation>
 <translation id="1342886103232377846">Për të kontrolluar për fjalëkalimet e komprometuara, shko te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">Konfirmo dhe rinis</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1347512539447549782">Hapësira ruajtëse e Linux</translation>
@@ -796,7 +797,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="160689647589417224">Aplikacioni është i kufizuar në këtë rajon.</translation>
 <translation id="1607139524282324606">Pastro regjistrimin</translation>
 <translation id="1608668830839595724">Veprime të tjera për artikujt e zgjedhur</translation>
-<translation id="1609603645228231640">Gemini Spark është eksperimental dhe mund të bëjë gjëra të tilla si ndarja e informacioneve të tua ose kryerja e blerjeve pa të pyetur. <ph name="LINK_BEGIN" />Rishiko rreziqet<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Cilësimet e aplikacionit</translation>
 <translation id="161042844686301425">E bruztë</translation>
 <translation id="1611649489706141841">përpara</translation>
@@ -1054,7 +1054,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1808805149659872686">Hyrje e re</translation>
 <translation id="1809201888580326312">Ke zgjedhur që të mos i ruash fjalëkalimet për këto sajte dhe aplikacione</translation>
 <translation id="1809734401532861917">Shto faqeshënuesit, historinë, fjalëkalimet dhe cilësimet e mia të tjera te <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Korniza e fshehtë e izoluar: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nuk mund të vazhdojë të përdorë <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> po transmetohet</translation>
 <translation id="1813278315230285598">Shërbimet</translation>
@@ -1286,7 +1285,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1983612835086592681">E hape gjatë javës së kaluar</translation>
 <translation id="1984087999855033707">numri i telefonit</translation>
 <translation id="1984417487208496350">Asnjë mbrojtje (nuk rekomandohet)</translation>
-<translation id="1984683754853869253">Dëshiron të krijosh një profil të ri për shkollën?</translation>
 <translation id="198507684520034826">Ndihma</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Cilësimet e përparuara të vendndodhjes</translation>
@@ -1319,7 +1317,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2010501376126504057">Pajisjet e pajtueshme</translation>
 <translation id="2010636492623189611">Zgjedhur.</translation>
 <translation id="2012935757369720523">Fshi skedarin</translation>
-<translation id="2014495120525813351">Lejo që Gemini Spark të shfletojë në këtë pajisje</translation>
 <translation id="2016473077102413275">Veçoritë që kanë nevojë për imazhet nuk do të funksionojnë</translation>
 <translation id="2017334798163366053">Çaktivizo mbledhjen e të dhënave të aktivitetit</translation>
 <translation id="2017770349934140286">Google Play dhe aplikacionet që ke shkarkuar nga Google Play do të fshihen nga ky Chromebook.
@@ -2030,7 +2027,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2554553592469060349">Skedari i zgjedhur është tepër i madh (madhësia maksimale: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> nga <ph name="TOTAL_NUM_APPS" /> aplikacione mund të dërgojnë njoftime</translation>
 <translation id="2555855727505718984">Plotësimi automatik nuk do t'i ketë këto informacione në pajisje për të ndihmuar në plotësimin e formularëve</translation>
-<translation id="25568951186001797">Korniza e izoluar: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Shiko të gjithë faqeshënuesit këtu</translation>
 <translation id="2563924218974330506">Tani mund t'i menaxhosh grupet e skedave këtu. Zhgozhdoje këtë në çdo kohë.</translation>
 <translation id="2564520396658920462">Ekzekutimi i JavaScript nëpërmjet AppleScript është çaktivizuar. Për ta aktivizuar, nga shiriti i menysë, shko te Pamja &gt; Zhvilluesi &gt; Lejo JavaScript nga ngjarjet e Apple. Për më shumë informacione: https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2105,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2626746300781063303">Sajtet, duke përfshirë Google, përdorin gjykimin e tyre kur i përgjigjen kësaj kërkese</translation>
 <translation id="2626799779920242286">Provo përsëri më vonë.</translation>
 <translation id="2627424346328942291">Nuk mund të ndahet</translation>
-<translation id="2627970398976286795">Rishiko rreziqet e Gemini Spark</translation>
 <translation id="2628258844236035475">Të hiqet adresa jote e shtëpisë nga plotësimi automatik i Chrome?</translation>
 <translation id="2628770867680720336">Kërkohet një rivendosje në cilësimet e fabrikës për këtë Chromebook për të aktivizuar korrigjimin e ADB-së. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Nis një bisedë të re me Gemini</translation>
@@ -2418,7 +2413,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2845276301195220700">Më shumë veprime për "Kalendarin e Google"</translation>
 <translation id="2845382757467349449">Shfaq gjithmonë shiritin e faqeshënuesve</translation>
 <translation id="284581348330507117">Krijo fjalëkalime unike</translation>
-<translation id="2846345106886298325">Detyra u krye dhe u kthye te Gemini Spark</translation>
 <translation id="284884486564166077">Kërko për çdo imazh me "Lenten"</translation>
 <translation id="2849035674501872372">Shiko</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2474,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2893318819023133318">Anasill pamjet</translation>
 <translation id="2894596417096093634">Identifikuesit e raportit të ndërprerjeve aksidentale</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
-<translation id="2895194086130800590">Gemini Spark mund të përdorë shfletimin automatik në këtë pajisje vetëm nëse pajisja është e ndezur dhe Chrome po ekzekutohet.</translation>
 <translation id="289695669188700754">ID-ja e çelësit: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Ky cilësim i parazgjedhur do të hiqet kur të mbyllësh të gjitha dritaret "e fshehta"</translation>
 <translation id="2897878306272793870">Je i sigurt se dëshiron të hapësh <ph name="TAB_COUNT" /> skeda?</translation>
@@ -2533,7 +2526,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2933653107553951760">Restauro grupin</translation>
 <translation id="2934225044529065415">Nuk mund të qasesh te kamera</translation>
 <translation id="2935314715123552088">Çaktivizo profilin aktiv të kartës eSIM</translation>
-<translation id="2936067606203230121">Gemini Spark do të vendosë se cilat veprime do të kryejë bazuar në detyrat që ti fillon ose përditëson.</translation>
 <translation id="2936851848721175671">Rezervo dhe restauro</translation>
 <translation id="2938981087412273365">Nuk lejohet të lexojë dhe të ndryshojë këtë sajt</translation>
 <translation id="2939005221756255562">Aktivizo njoftimet në "Qendrën e njoftimeve". Hap <ph name="BEGIN_LINK" />Cilësimet e sistemit<ph name="END_LINK" />.</translation>
@@ -3639,7 +3631,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3756578970075173856">Cakto kodin PIN</translation>
 <translation id="3756806135608816820">Sajtet mund të pyesin që të kërkojnë për pajisjet me Bluetooth</translation>
 <translation id="3756823472711156529">Restauro grupin</translation>
-<translation id="3757337311115630808">Mëso më shumë rreth Gemini Spark</translation>
 <translation id="3757567010566591880">Zhgozhdo nga shiriti i veglave</translation>
 <translation id="3757645900890881944">Kërko veglat</translation>
 <translation id="3757733214359997190">Nuk u gjet asnjë sajt</translation>
@@ -4763,6 +4754,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4631637535315947773">Shkurtoret për sajtet e tua më të vizituara u hoqën sepse nuk i ke përdorur së fundi</translation>
 <translation id="4631955550884380853">Zëri i fokusuar</translation>
 <translation id="4632655012900268062">Personalizo kartat</translation>
+<translation id="4634719521235795064">Gemini mund të përdorë "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar për ty. <ph name="BEGIN_LINK" />Mëso se si i administron Gemini të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Çinstalo Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> nuk ofrohet për përdoruesit vizitorë.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Ngarko 1 imazh për ta përdorur me pyetjen tënde}other{Ngarko deri në # imazhe për t'i përdorur me pyetjen tënde}}</translation>
@@ -5249,7 +5241,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4989966318180235467">Inspekto &amp;faqen e sfondit</translation>
 <translation id="499016799952867794">Kjo lejon që aplikacioni të ekzekutohet siç pritet.</translation>
 <translation id="4990673372047946816">Nuk ka asnjë kamerë të disponueshme</translation>
-<translation id="499126848196136237">Gemini Spark mund të përdorë shfletimin automatik të Chrome në këtë pajisje për të ndërvepruar me sajtet dhe për të përfunduar detyrat në emrin tënd. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Trajtoji tastet e rreshtit të sipërm si taste të funksioneve</translation>
 <translation id="4991873517942703737">Pyet rreth këtij dokumenti</translation>
 <translation id="4992066212339426712">Aktivizo zërin</translation>
@@ -5506,7 +5497,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5189274947477567401">Tërheqja nga ndarja e procesit kërkon rinisjen e shfletuesit. Ky shfletues do të riniset tani.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869">Po përdor <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Shiriti i faqeshënuesve</translation>
 <translation id="5190926251776387065">Aktivizo portën</translation>
 <translation id="5190959794678983197">Nuk ka mikrofon</translation>
 <translation id="5191094172448199359">Kodet PIN që fute nuk përputhen</translation>
@@ -6074,6 +6064,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur klikon te butoni i faqes kryesore.</translation>
 <translation id="5643191124441701136">Kodi yt i sigurisë është në pjesën e përparme të kartës sate</translation>
 <translation id="5643321261065707929">Rrjet me matje</translation>
+<translation id="5645369002069651355">Email-i po verifikohet</translation>
 <translation id="5646376287012673985">Vendndodhja</translation>
 <translation id="5646558797914161501">Biznesmen</translation>
 <translation id="564670806635578888">Kërko në Google për "<ph name="SEARCH_TERMS" />"</translation>
@@ -7005,7 +6996,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6393550101331051049">Lejohen të shfaqin përmbajtje të pasigurta</translation>
 <translation id="6394634179843537518">Shto një skedar</translation>
 <translation id="6395423953133416962">Dërgo <ph name="BEGIN_LINK1" />informacionin<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />matjet e sistemit<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Po, mbaji të dhënat e mia veçmas nga shkolla (rekomandohet)</translation>
 <translation id="6398715114293939307">Hiq "Dyqanin e Google Play"</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="639880411171387127">Përzgjedhja jote e "Lentes së Google". Shtyp tastin "Enter" ose "Backspace" për të fshirë përzgjedhjen e "Lentes së Google"</translation>
@@ -8364,7 +8354,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7421293530411019405">Dëshiron të largohesh nga grupi i skedave?</translation>
 <translation id="7421925624202799674">&amp;Shiko burimin e faqes</translation>
 <translation id="7422192691352527311">Preferencat...</translation>
-<translation id="7423381908337122792">Çdo person që ka qasje tek agjenti yt i Gemini Spark mund të kontrollojë shfletuesin tënd të Chrome.</translation>
 <translation id="7423425410216218516">Shikueshmëria është aktive për <ph name="MINUTES" /> minuta</translation>
 <translation id="7423513079490750513">Hiq <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Rrjeti u shtua</translation>
@@ -8490,6 +8479,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7517292544534877198">Përdor enkriptimin e parazgjedhur të Google për fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="7517959947270534934">Anëtari i familjes nuk mund t'i marrë fjalëkalimet në këtë moment. Kërkoji që të përditësojë Chrome dhe sinkronizo fjalëkalimet e atij anëtari.</translation>
 <translation id="7518079994230200553">Ky opsion nuk ofrohet për momentin.</translation>
+<translation id="7519506357537394422">Të lejohet Gemini të identifikohet në <ph name="DOMAIN" /> për ty?</translation>
 <translation id="752021853309481824">Për të marrë informacionet e ruajtura etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal i fshehtë: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Shfaq shkurtoret</translation>
@@ -8717,7 +8707,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="769824636077131955">Ky dokument është shumë i madh për një kontroll sigurie. Mund të printosh dokumente deri në 50 MB.</translation>
 <translation id="7698507637739331665">Disa artikuj janë bllokuar</translation>
 <translation id="7700516433658473670">Printerët dhe skanerët</translation>
-<translation id="7700873336634517379">Jo, vazhdo përdorimin për shkollën në këtë profil</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7701869757853594372">Profilet e PËRDORUESIT</translation>
 <translation id="770231223935918661">Pyet rreth këtij imazhi</translation>
@@ -9083,6 +9072,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7978450511781612192">Kjo do të të nxjerrë nga llogaritë e Google. Faqeshënuesit, historiku, fjalëkalimet dhe shumë të tjera nuk do të sinkronizohen më.</translation>
 <translation id="7980066177668669492">ASCII i koduar me Base64, shumë certifikata</translation>
 <translation id="7981410461060625406">Përdor një çelës të ruajtur kalimi për <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Email-i yt nuk mund të verifikohej</translation>
 <translation id="7981662863948574132">Shfaq dritaren kërcyese të numrit EID dhe kodit QR të pajisjes</translation>
 <translation id="7982578888426609524">Përditësimet më të fundit në këtë grup</translation>
 <translation id="7982789257301363584">Rrjeti</translation>
@@ -10378,7 +10368,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="897525204902889653">Shërbimi i karantinës</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" dhe 1 skedë tjetër}other{"<ph name="TAB_TITLE" />" dhe # skeda të tjera}}</translation>
 <translation id="897565255818387330">Të lejohet që ky sajt të shikojë dhe të kopjojë <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Konfiguro një profil shkolle për të ruajtur dhe përdorur fjalëkalimet e tua etj. në llogarinë tënde</translation>
 <translation id="8977811652087512276">Fjalëkalim i pasaktë ose skedar i dëmtuar</translation>
 <translation id="8978154919215542464">Aktiv - sinkronizo çdo gjë</translation>
 <translation id="8978670037548431647">Rifresko aftësitë e ndarjes së internetit</translation>
@@ -10482,7 +10471,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9040661932550800571">Të përditësohet fjalëkalimi për <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Për ta ruajtur fjalëkalimet e forta me "Menaxherin e fjalëkalimeve të Google", identifikohu në Chrome</translation>
 <translation id="9041692268811217999">Qasja në skedarët lokalë në kompjuterin tënd është çaktivizuar nga administratori yt</translation>
-<translation id="9041881059840744611">Rreth profileve të shkollës</translation>
 <translation id="904224458472510106">Ky operacion nuk mund të zhbëhet</translation>
 <translation id="9042827002460091668">Kontrollo lidhjen e internetit dhe provo përsëri</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
@@ -10699,7 +10687,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9219103736887031265">Imazhet</translation>
 <translation id="9219572436491982747">Të dhënat e dërguara te Google mund të shikohen nga shqyrtues njerëzorë për të përmirësuar teknologjinë e IA-së së Google</translation>
 <translation id="9219741625496141320">Të dhënat e shfletimit janë fshirë automaitkisht</translation>
-<translation id="9220484506568374422">Gemini Spark do të ketë qasje në të njëjtat sajte si ti, duke përfshirë sajtet ku je identifikuar. Ai do të ndajë informacionet e nevojshme me palët e treta, të cilat mund të përfshijnë informacione personale që mund t'i konsiderosh delikate.</translation>
 <translation id="9220525904950070496">Hiq llogarinë</translation>
 <translation id="9220723036554088545">ngarko një skedar</translation>
 <translation id="9220820413868316583">Ngrije dhe më pas provo përsëri.</translation>

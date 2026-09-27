@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Actualizarea va începe când bateria va ajunge la <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Pentru a folosi opțiunile de control parental, precum aprobarea aplicațiilor și limitele pentru durata de folosire a dispozitivului, copilul trebuie să aibă un Cont Google gestionat de un părinte. Mai târziu se poate adăuga un cont de la școală pentru instrumente cum ar fi Google Classroom.</translation>
 <translation id="1375557162880614858">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome Flex?</translation>
-<translation id="1375938286942050085">Configurarea este finalizată. Pregătește-ți dispozitivul pentru jocuri</translation>
 <translation id="1377600615067678409">Ignorați deocamdată</translation>
 <translation id="1399261165075500043">Nu pot să încarc Termenii și condițiile Google Play</translation>
 <translation id="1400243387594338234">Poți să folosești acest cod PIN pentru a te conecta la dispozitiv</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Folosește Contul Google pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selectează fusul orar</translation>
 <translation id="3893630138897523026">ChromeVox (feedback rostit)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> este creat pentru jocuri. Se va deschide aplicația Explorare, unde vei putea să accesezi sute dintre cele mai recente jocuri, să vezi oferte de jocuri și să descoperi funcțiile de joc preinstalate pe dispozitiv.</translation>
 <translation id="389901847090970821">Selectează tastatura</translation>
 <translation id="3910588685973519483">Creează imagini de fundal folosind AI</translation>
 <translation id="3924259174674732591">Dimensiunea afișării și a textului: <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Este necesară instalarea unei actualizări pentru firmware-ul Trusted Platform Module. Vezi <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hopa, a apărut o eroare la conectare</translation>
 <translation id="5453829744223920473">Copilul tău poate să folosească toate aplicațiile, marcajele și resursele de la școală la fel cum le folosește în sala de clasă. Școala stabilește regulile de bază.</translation>
-<translation id="5463450804024056231">Înscrie-te pentru e-mailuri de pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Dacă alegi să continui înseamnă că ești de acord ca dispozitivul să poată descărca și instala automat actualizări și aplicații de la Google, de la operatorul copilului și de la producătorul dispozitivului, probabil folosind datele mobile. Este posibil ca unele dintre aceste aplicații să ofere achiziții în aplicație.</translation>
 <translation id="5502915260472117187">Un copil</translation>
 <translation id="5511823366942919280">Sigur dorești să configurezi acest dispozitiv drept „Rechin”?</translation>

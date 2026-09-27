@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">Chrome-profilok kezelése</translation>
 <translation id="2137162749895930932">Fordítási képernyő bezárása</translation>
 <translation id="2139300032719313227">A ChromeOS újraindítása</translation>
+<translation id="2147218225094845757">Oldalsó panel elrejtése</translation>
 <translation id="2151406531797534936">Indítsa újra most a Chrome-ot</translation>
 <translation id="2163089732491971196">Ha Chrome-adatokat szeretne használni és tárolni Google-fiókjában, adja meg az összetett jelszavát</translation>
 <translation id="2170098639895543546">Jelöljön ki bármit az oldalon</translation>
@@ -754,6 +755,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8196526165798579689">Keresés a Chrome Devvel</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="8227493674161801700">Keresés a Chrome Bétával</translation>
+<translation id="8233224921566021881">A Chrome-nak hozzáférésre van szüksége az Ön helyi hálózatához a közeli eszközök felfedezéséhez és használatához</translation>
 <translation id="8253851811470049684">Bármelyik alkalmazásból megnyithatja a linkeket a Chrome-ban, és a böngésző a tálcán is hozzáférhető marad</translation>
 <translation id="8255190535488645436">A Google Chrome használja a kamerát és a mikrofont.</translation>
 <translation id="8260086374035800939">Ha a Gemini a Chrome-ban szolgáltatás meg van nyitva, az oldalsó panel megnyitva marad új lapok létrehozásakor</translation>

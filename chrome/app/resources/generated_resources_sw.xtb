@@ -469,6 +469,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1341701348342335220">Vizuri sana!</translation>
 <translation id="1342886103232377846">Ili ukague manenosiri yaliyoathiriwa, nenda kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="1343920184519992513">Endelea pale ulipoishia na ufungue kurasa kadhaa mahususi.</translation>
+<translation id="1344216785734288669">Manenosiri ya Apple</translation>
 <translation id="1346630054604077329">Thibitisha na uzime kisha uwashe kifaa</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1347512539447549782">Nafasi ya hifadhi ya Linux</translation>
@@ -797,7 +798,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="160689647589417224">Programu imezuiwa katika eneo hili.</translation>
 <translation id="1607139524282324606">Futa kipengele</translation>
 <translation id="1608668830839595724">Vitendo zaidi kwenye vipengee vilivyochaguliwa</translation>
-<translation id="1609603645228231640">Gemini Spark inafanyiwa majaribio na inaweza kufanya mambo kama vile kuruhusu ufikiaji wa maelezo yako au kufanya ununuzi bila kuomba ruhusa. <ph name="LINK_BEGIN" />Kagua hatari<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Mipangilio ya Programu</translation>
 <translation id="161042844686301425">Samawati-Kijani</translation>
 <translation id="1611649489706141841">sambaza</translation>
@@ -1063,7 +1063,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1808805149659872686">Maandishi mapya</translation>
 <translation id="1809201888580326312">Umechagua kutohifadhi manenosiri ya tovuti na programu hizi</translation>
 <translation id="1809734401532861917">Ongeza alamisho, historia, manenosiri na mipangilio yangu mingine kwenye <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Fremu yenye Uzio Fiche: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> haiwezi kuendelea kwa kutumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Inatuma <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Huduma</translation>
@@ -1296,7 +1295,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1983612835086592681">Uliifungua wiki iliyopita</translation>
 <translation id="1984087999855033707">namba ya simu</translation>
 <translation id="1984417487208496350">Hamna ulinzi (haipendekezwi)</translation>
-<translation id="1984683754853869253">Je, ungependa kufungua wasifu mpya wa shuleni?</translation>
 <translation id="198507684520034826">Usaidizi</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Mipangilio ya kina ya mahali</translation>
@@ -1329,7 +1327,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="2010501376126504057">Vifaa vinavyooana</translation>
 <translation id="2010636492623189611">Kimechaguliwa.</translation>
 <translation id="2012935757369720523">Futa faili</translation>
-<translation id="2014495120525813351">Ruhusu Gemini Spark ivinjari kwenye kifaa hiki</translation>
+<translation id="2014191284313949173">Funga Vichupo Huru</translation>
 <translation id="2016473077102413275">Vipengele vinavyohitaji picha havitafanya kazi</translation>
 <translation id="2017334798163366053">Zima ukusanyaji wa data ya utendaji</translation>
 <translation id="2017770349934140286">Google Play pamoja na programu ulizopakua kwenye Google Play vitafutwa kwenye Chromebook hii.
@@ -1461,6 +1459,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2121825465123208577">Badilisha ukubwa</translation>
 <translation id="2122446694240899610">Ujuzi wako huhifadhiwa kwenye Akaunti yako ya Google,</translation>
 <translation id="2123766928840368256">Chagua faili tofauti</translation>
+<translation id="2124153808069020510">Ili ufute data, funga madirisha yote Huru</translation>
 <translation id="2124930039827422115">{1,plural, =1{Imekadiriwa <ph name="AVERAGE_RATING" /> na mtumiaji mmoja.}other{Imekadiriwa <ph name="AVERAGE_RATING" /> na watumiaji #.}}</translation>
 <translation id="2125715366913703594">Gundua Viendelezi</translation>
 <translation id="2126167708562367080">Usawazishaji umezimwa na msimamizi wako.</translation>
@@ -1603,6 +1602,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2227179592712503583">Ondoa pendekezo</translation>
 <translation id="222931766245975952">Faili imepunguzwa</translation>
 <translation id="2229342031987138128">Kuweka manukuu yenye maelezo</translation>
+<translation id="22294739381015133">Tovuti unazotembelea hazihifadhiwi katika hali Huru</translation>
 <translation id="2231351769755997720">Hakuna mapendekezo yanayopatikana. Jaribu kuuliza swali kuhusu ukurasa huu.</translation>
 <translation id="2232751457155581899">Tovuti zinaweza kuomba ruhusa ya kufuatilia mkao wa kamera yako</translation>
 <translation id="2233502537820838181">&amp;Maelezo Zaidi</translation>
@@ -2042,7 +2042,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2554553592469060349">Faili iliyochaguliwa ni kubwa mno (Upeo wa juu wa ukubwa: MB 3).</translation>
 <translation id="2555802059188792472">Programu <ph name="NUM_ALLOWED_APPS" /> kati ya <ph name="TOTAL_NUM_APPS" /> zinaweza kutuma arifa</translation>
 <translation id="2555855727505718984">Kipengele cha kujaza kiotomatiki hakitakuwa na maelezo haya kwenye kifaa hiki ili kusaidia kujaza fomu</translation>
-<translation id="25568951186001797">Fremu yenye Uzio: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Angalia alamisho zako zote hapa</translation>
 <translation id="2563924218974330506">Sasa unaweza kudhibiti vikundi vyako vya vichupo hapa. Bandua wakati wowote.</translation>
 <translation id="2564520396658920462">Kipengele cha kutekeleza JavaScript kupitia AppleScript kimezimwa. Ili kukiwasha kutoka upau wa menyu, nenda kwenye Angalia &gt; Msanidi Programu &gt; Ruhusu JavaScript kutoka Matukio ya Apple. Kwa maelezo zaidi: https://support.google.com/chrome/?p=applescript</translation>
@@ -2121,7 +2120,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2626746300781063303">Tovuti, ikiwa ni pamoja na Google, hujibu ombi hili kwa hiari yazo</translation>
 <translation id="2626799779920242286">Tafadhali jaribu tena baadaye.</translation>
 <translation id="2627424346328942291">Imeshindwa kushiriki</translation>
-<translation id="2627970398976286795">Kagua hatari za Gemini Spark</translation>
 <translation id="2628258844236035475">Ungependa kuondoa anwani yako ya nyumbani katika kipengele cha kujaza kiotomatiki kwenye Chrome?</translation>
 <translation id="2628770867680720336">Unahitaji kurejesha mipangilio ambayo Chromebook hii ilitoka nayo kiwandani ili uwashe utatuzi wa ADB. <ph name="BEGIN_LINK_LEARN_MORE" />Pata maelezo zaidi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Anzisha Gumzo Jipya na Gemini</translation>
@@ -2430,7 +2428,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2845276301195220700">Vitendo zaidi vya Kalenda ya Google</translation>
 <translation id="2845382757467349449">Onyesha Upau wa Alamisho Kila Wakati</translation>
 <translation id="284581348330507117">Unda manenosiri ya kipekee</translation>
-<translation id="2846345106886298325">Jukumu limekamilika na kurejeshwa kwenye Gemini Spark</translation>
 <translation id="284884486564166077">Tafuta picha yoyote ukitumia Lenzi</translation>
 <translation id="2849035674501872372">Tafuta</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2492,7 +2489,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2893318819023133318">Batilisha mionekano</translation>
 <translation id="2894596417096093634">Vitambulishi vya Ripoti za Kuacha Kufanya Kazi</translation>
 <translation id="2894757982205307093">Kichupo kipya katika kikundi</translation>
-<translation id="2895194086130800590">Gemini Spark inaweza tu kutumia kipengele cha kuvinjari kiotomatiki kwenye kifaa hiki ikiwa kifaa kimewashwa na Chrome inatumika.</translation>
 <translation id="289695669188700754">Utambulisho wa Ufunguo: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Mipangilio hii maalum itaondolewa ukifunga madirisha fiche yako yote</translation>
 <translation id="2897878306272793870">Je, una hakika kuwa ungependa kufungua vichupo <ph name="TAB_COUNT" />?</translation>
@@ -2545,7 +2541,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2933653107553951760">Rejesha Kikundi</translation>
 <translation id="2934225044529065415">Imeshindwa kufikia kamera</translation>
 <translation id="2935314715123552088">Zima wasifu wa eSIM unaotumika</translation>
-<translation id="2936067606203230121">Gemini Spark itaamua hatua za kuchukua kulingana na majukumu unayoanzisha au kusasisha.</translation>
 <translation id="2936851848721175671">Hifadhi nakala na urejeshe</translation>
 <translation id="2938981087412273365">Hakiruhusiwi kusoma na kubadilisha tovuti hii</translation>
 <translation id="2939005221756255562">Washa arifa kwenye Kituo cha Arifa. Fungua <ph name="BEGIN_LINK" />Mipangilio ya Mfumo<ph name="END_LINK" />.</translation>
@@ -2925,6 +2920,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3213681682237645841">Inapakua sauti za <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Ungependa kuweka njia ya mkato?</translation>
 <translation id="3220494908385619295">Onyesha katika mwonekano wa upande kwa upande</translation>
+<translation id="3220541426929880850">Ili ufute historia ya kuvinjari katika hali Huru kwenye kifaa chako, funga vichupo vyote Huru</translation>
 <translation id="3220943972464248773">Ili uweze kusawazisha manenosiri yako, thibitisha kwamba ni wewe</translation>
 <translation id="3222066309010235055">Kionyeshi awali: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Unganisha kwenye <ph name="USB_VM_NAME" /></translation>
@@ -3423,6 +3419,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3600956933576601730">Unahitaji kusoma na kukubali sheria na masharti ili utumie vipengele hivi</translation>
 <translation id="3601374594714740284">Ili upate sauti zilizo na ubora wa hali ya juu zaidi, futa baadhi ya faili kwenye kifaa chako</translation>
 <translation id="360180734785106144">Kutoa vipengele vipya kadri vinavyopatikana</translation>
+<translation id="3601988315287782413">Hatua hii huathiri madirisha Huru pekee</translation>
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3602495161941872610">Rekebisha na usawazishe tatizo</translation>
 <translation id="3602894439067790744">Soma namba katika muundo wa</translation>
@@ -3651,7 +3648,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3756578970075173856">Weka PIN</translation>
 <translation id="3756806135608816820">Tovuti zinaweza kuomba ruhusa ya kutafuta vifaa vyenye Bluetooth</translation>
 <translation id="3756823472711156529">Rejesha kikundi</translation>
-<translation id="3757337311115630808">Pata maelezo zaidi kuhusu Gemini Spark</translation>
 <translation id="3757567010566591880">Bandua kwenye Upau wa vidhibiti</translation>
 <translation id="3757645900890881944">Zana za kutafuta</translation>
 <translation id="3757733214359997190">Hakuna tovuti zilizopatikana</translation>
@@ -4773,6 +4769,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4631637535315947773">Njia za mkato za tovuti unazotembelea sana zimeondolewa kwa sababu hujazitumia hivi majuzi</translation>
 <translation id="4631955550884380853">Sauti iliyolengwa</translation>
 <translation id="4632655012900268062">Weka kadi ziwe upendavyo</translation>
+<translation id="4634719521235795064">Gemini inaweza kutumia Kidhibiti cha Manenosiri cha Google kukuwezesha kuingia katika akaunti. <ph name="BEGIN_LINK" />Pata maelezo kuhusu jinsi Gemini inashughulikia data yako<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Ondoa Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> haipatikani kwa watumiaji Wageni</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Pakia picha 1 ili uitumie katika swali lako}other{Pakia hadi picha # ili uzitumie katika swali lako}}</translation>
@@ -5260,7 +5257,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4989966318180235467">Ukaguzi na ukurasa wa mandharinyuma</translation>
 <translation id="499016799952867794">Hatua hii huruhusu programu ifanye kazi inavyotarajiwa.</translation>
 <translation id="4990673372047946816">Hakuna kamera inayopatikana</translation>
-<translation id="499126848196136237">Gemini Spark inaweza kutumia kipengele cha kuvinjari kiotomatiki kwenye Chrome katika kifaa hiki ili kutembelea tovuti na kutekeleza majukumu kwa niaba yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Chukulia vitufe vya safu mlalo ya juu kama vitufe vya chaguo za kukokotoa</translation>
 <translation id="4991873517942703737">Uliza kuhusu hati hii</translation>
 <translation id="4992066212339426712">Rejesha sauti</translation>
@@ -5517,7 +5513,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5189274947477567401">Kujiondoa katika mchakato wa kutuma huhitaji uzime kisha uwashe kivinjari. Kivinjari hiki kitazima kisha kiwake sasa.</translation>
 <translation id="5189404424758444348">Sayansi dhahania ya mvuke</translation>
 <translation id="5190577235024772869">Inatumia <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Sehemu ya Alamisho</translation>
 <translation id="5190926251776387065">Washa mlango</translation>
 <translation id="5190959794678983197">Hakuna maikrofoni</translation>
 <translation id="5191094172448199359">PIN ulizoweka hazilingani</translation>
@@ -6086,6 +6081,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" kimebadilisha ukurasa unaonekana unapobofya Kitufe cha ukurasa wa mwanzo.</translation>
 <translation id="5643191124441701136">Msimbo wako wa usalama unapatikana mbele ya kadi yako</translation>
 <translation id="5643321261065707929">Mtandao unaopima data</translation>
+<translation id="5645369002069651355">Inathibitisha anwani ya barua pepe</translation>
 <translation id="5646376287012673985">Mahali</translation>
 <translation id="5646558797914161501">Mfanyabiashara</translation>
 <translation id="564670806635578888">Tafuta “<ph name="SEARCH_TERMS" />” kwenye Google</translation>
@@ -7017,7 +7013,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6393550101331051049">Zinazoruhusiwa kuonyesha maudhui yasiyo salama</translation>
 <translation id="6394634179843537518">Weka faili</translation>
 <translation id="6395423953133416962">Tuma <ph name="BEGIN_LINK1" />maelezo ya mfumo<ph name="END_LINK1" /> na <ph name="BEGIN_LINK2" />hesabu<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Ndiyo, hifadhi data yangu kando na wasifu wa shuleni (inapendekezwa)</translation>
 <translation id="6398715114293939307">Ondoa Duka la Google Play</translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
 <translation id="639880411171387127">Chaguo lako la Lenzi ya Google. Bonyeza 'enter' au 'backspace' ili kufuta chaguo lako la Lenzi ya Google</translation>
@@ -8377,7 +8372,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7421293530411019405">Ungependa kuondoka kwenye kikundi cha vichupo?</translation>
 <translation id="7421925624202799674">&amp;Tazama Asili ya Ukurasa</translation>
 <translation id="7422192691352527311">Mapendeleo...</translation>
-<translation id="7423381908337122792">Mtu yeyote anayeweza kufikia kiratibu chako cha Gemini Spark anaweza kudhibiti kivinjari chako cha Chrome.</translation>
 <translation id="7423425410216218516">Uonekanaji umewashwa kwa dakika <ph name="MINUTES" /></translation>
 <translation id="7423513079490750513">Ondoa <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Mtandao umewekwa</translation>
@@ -8503,6 +8497,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7517292544534877198">Tumia usimbaji fiche chaguomsingi wa Google kwa manenosiri katika Akaunti yako ya Google</translation>
 <translation id="7517959947270534934">Mwanafamilia hawezi kupokea manenosiri sasa hivi. Mwambie asasishe Chrome na asawazishe manenosiri yake.</translation>
 <translation id="7518079994230200553">Chaguo hili halipatikani kwa sasa.</translation>
+<translation id="7519506357537394422">Ungependa kuiruhusu Gemini ikusaidie kuingia katika akaunti ya <ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">Ili upate maelezo uliyohifadhi na mengineyo kwenye vifaa vyako vyote, ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Tovuti katika Hali Fiche: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Onyesha njia za mkato</translation>
@@ -8730,7 +8725,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="769824636077131955">Hati hii ni kubwa mno, hivyo haiwezi kufanyiwa ukaguzi wa usalama. Unaweza kuchapisha hati hadi za MB 50.</translation>
 <translation id="7698507637739331665">Baadhi ya vipengee vimezuiwa</translation>
 <translation id="7700516433658473670">Printa na skana</translation>
-<translation id="7700873336634517379">Hapana, endelea kutumia data ya shuleni katika wasifu huu</translation>
 <translation id="7701040980221191251">Hamna</translation>
 <translation id="7701869757853594372">Mishiko ya MTUMIAJI</translation>
 <translation id="770231223935918661">Uliza Kuhusu Picha Hii</translation>
@@ -9096,6 +9090,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7978450511781612192">Hatua hii itakuondoa kwenye Akaunti za Google. Alamisho, historia, manenosiri yako na mengineyo hayatasawazishwa tena.</translation>
 <translation id="7980066177668669492">ASCII iliyosimbwa kwa Base64, vyeti vingi</translation>
 <translation id="7981410461060625406">Kutumia ufunguo wa siri uliohifadhiwa kwenye <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Tumeshindwa kuthibitisha barua pepe yako</translation>
 <translation id="7981662863948574132">Onyesha dirisha ibukizi la EID na Msimbo wa QR wa kifaa</translation>
 <translation id="7982578888426609524">Masasisho ya hivi punde kwenye kikundi hiki</translation>
 <translation id="7982789257301363584">Mtandao</translation>
@@ -10155,6 +10150,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="878862491037637275">Kikundi Hiki Cha Vichupo Kimejaa</translation>
 <translation id="8791157330927639737">Pata maelezo zaidi kuhusu kusasisha</translation>
 <translation id="8791534160414513928">Tuma ombi la 'Do Not Track' pamoja na rekodi yako ya shughuli za kuvinjari</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (Huru)</translation>
 <translation id="8793390639824829328">Tovuti hutumia kipengele hiki kusogeza na kukuza vichupo unavyotumia na wengine</translation>
 <translation id="8793895150509408038">Angalia maelezo ya tovuti ya <ph name="SITE" /> kwenye orodha ya <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Mtandaopepe wako ukiwa umewashwa, kifaa chako cha <ph name="PHONE_NAME" />:</translation>
@@ -10391,7 +10387,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="897525204902889653">Huduma za Eneo la Ukaguzi Lililotengwa</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" na kichupo kingine 1}other{"<ph name="TAB_TITLE" />" na vichupo vingine #}}</translation>
 <translation id="897565255818387330">Ungependa kuruhusu tovuti hii ione na kunakili <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Fungua wasifu wa shuleni ili uhifadhi na utumie manenosiri yako na mengineyo kwenye akaunti yako</translation>
 <translation id="8977811652087512276">Nenosiri si sahihi au faili imeharibika</translation>
 <translation id="8978154919215542464">Imewashwa - sawazisha kila kitu</translation>
 <translation id="8978670037548431647">Onyesha Upya Vipengele vya Kusambaza Mtandao</translation>
@@ -10495,7 +10490,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9040661932550800571">Ungependa kusasisha nenosiri la <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Ili uhifadhi manenosiri thabiti ukitumia Kidhibiti cha Manenosiri cha Google, ingia katika Chrome</translation>
 <translation id="9041692268811217999">Ufikiaji wa faili za ndani kwenye mashine yako umezimwa na msimamizi wako</translation>
-<translation id="9041881059840744611">Kuhusu wasifu wa shuleni</translation>
 <translation id="904224458472510106">Kitendo hiki hakiwezi kutenduliwa</translation>
 <translation id="9042827002460091668">Angalia muunganisho wako wa intaneti na ujaribu tena</translation>
 <translation id="9042893549633094279">Faragha na usalama</translation>
@@ -10712,7 +10706,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu ulizoweka kwenye kifaa, faili, ki
 <translation id="9219103736887031265">Picha</translation>
 <translation id="9219572436491982747">Huenda wahakiki wanadamu wakaona data iliyotumwa kwa Google ili kuboresha teknolojia ya Chrome AI</translation>
 <translation id="9219741625496141320">Data ya kuvinjari ilifutwa kiotomatiki</translation>
-<translation id="9220484506568374422">Gemini Spark itafikia tovuti sawa na unazofikia, ikiwa ni pamoja na tovuti ulizoingia katika akaunti zake. Itaruhusu washirika wengine wafikie maelezo yanayofaa, ambayo yanaweza kujumuisha taarifa binafsi unazoweza kuona kuwa ni nyeti.</translation>
 <translation id="9220525904950070496">Ondoa akaunti</translation>
 <translation id="9220723036554088545">pakia faili</translation>
 <translation id="9220820413868316583">Inua kisha ujaribu tena.</translation>

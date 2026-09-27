@@ -469,6 +469,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1341701348342335220">Vel gert!</translation>
 <translation id="1342886103232377846">Opnaðu Google-aðgangsorðastjórnun til að leita að aðgangsorðum í hættu</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
+<translation id="1344216785734288669">Apple-aðgangsorð</translation>
 <translation id="1346630054604077329">Staðfesta og endurræsa</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1347512539447549782">Linux-geymslurými</translation>
@@ -797,7 +798,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="160689647589417224">Forritið er takmarkað á þessu svæði.</translation>
 <translation id="1607139524282324606">Hreinsa færslu</translation>
 <translation id="1608668830839595724">Fleiri aðgerðir fyrir valin atriði</translation>
-<translation id="1609603645228231640">Gemini Spark er á tilraunastigi og kann að gera hluti á borð við að deila upplýsingum þínum eða gera kaup án þess að spyrja. <ph name="LINK_BEGIN" />Farðu yfir áhætturnar<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Forritsstillingar</translation>
 <translation id="161042844686301425">Blár (cyan)</translation>
 <translation id="1611649489706141841">áfram</translation>
@@ -1063,7 +1063,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1808805149659872686">Ný færsla</translation>
 <translation id="1809201888580326312">Þú valdir að vista ekki aðgangsorð fyrir þessi vefsvæði og forrit</translation>
 <translation id="1809734401532861917">Bæta bókamerkjum, ferlinum, aðgangsorðum og öðrum stillingum við <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Lokaður rammi í huliðsstillingu: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> getur ekki haldið áfram að nota <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Sendir <ph name="TAB_NAME" /> út</translation>
 <translation id="1813278315230285598">Þjónusta</translation>
@@ -1297,7 +1296,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1983612835086592681">Þú opnaðir þetta í liðinni viku</translation>
 <translation id="1984087999855033707">símanúmer</translation>
 <translation id="1984417487208496350">Engin vörn (ekki mælt með)</translation>
-<translation id="1984683754853869253">Viltu búa til nýjan prófíl fyrir skólann?</translation>
 <translation id="198507684520034826">Hjálp</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Ítarlegar staðsetningarstillingar</translation>
@@ -1331,7 +1329,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2010636492623189611">Valið.</translation>
 <translation id="2012935757369720523">Eyða skrá</translation>
 <translation id="2014191284313949173">Loka einangruðum</translation>
-<translation id="2014495120525813351">Leyfa Gemini Spark að vafra í þessu tæki</translation>
 <translation id="2016473077102413275">Eiginleikar sem þarfnast mynda munu ekki virka</translation>
 <translation id="2017334798163366053">Slökkva á söfnun afkastagagna</translation>
 <translation id="2017770349934140286">Google Play og forritum sem þú hefur sótt frá Google Play verður eytt úr þessari Chromebook.
@@ -2046,7 +2043,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2554553592469060349">Valin skrá er of stór (hámarksstærð: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> af <ph name="TOTAL_NUM_APPS" /> forritum geta sent tilkynningar</translation>
 <translation id="2555855727505718984">Sjálfvirk útfylling mun ekki geta notað þessar upplýsingar í tækinu til að hjálpa þér að fylla út eyðublöð</translation>
-<translation id="25568951186001797">Lokaður rammi: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Hér sérðu öll bókamerkin þín</translation>
 <translation id="2563924218974330506">Nú geturðu stjórnað flipahópunum þínum hér. Þú getur losað þetta hvenær sem er.</translation>
 <translation id="2564520396658920462">Slökkt er á keyrslu JavaScript í gegnum AppleScript. Þú getur kveikt á henni með því að fara í valmyndarstikuna og velja Yfirlit &gt; Þróunaraðili &gt; Leyfa JavaScript úr Apple Events. Nánari upplýsingar eru á: https://support.google.com/chrome/?p=applescript</translation>
@@ -2125,7 +2121,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2626746300781063303">Vefsvæði, þar á meðal Google, svara þessari beiðni samkvæmt eigin ákvörðun</translation>
 <translation id="2626799779920242286">Reyndu aftur síðar.</translation>
 <translation id="2627424346328942291">Ekki er hægt að deila</translation>
-<translation id="2627970398976286795">Farðu yfir áhætturnar sem fylgja Gemini Spark</translation>
 <translation id="2628258844236035475">Fjarlægja heimilisfang úr sjálfvirkri útfyllingu Chrome?</translation>
 <translation id="2628770867680720336">Núllstilla þarf þetta Chromebook tæki til að kveikja á ADB-villuleit. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Byrja nýtt spjall við Gemini</translation>
@@ -2434,7 +2429,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2845276301195220700">Fleiri aðgerðir fyrir Google-dagatal</translation>
 <translation id="2845382757467349449">Sýna alltaf bókamerkjastikuna</translation>
 <translation id="284581348330507117">Búðu til einkvæm aðgangsorð</translation>
-<translation id="2846345106886298325">Verkefni lokið og skilað til Gemini Spark</translation>
 <translation id="284884486564166077">Leita á hvaða mynd sem er með Linsu</translation>
 <translation id="2849035674501872372">Horfðu upp</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2496,7 +2490,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2893318819023133318">Víxla yfirlitum</translation>
 <translation id="2894596417096093634">Auðkenni hrunskýrslu</translation>
 <translation id="2894757982205307093">Nýr flipi í hópi</translation>
-<translation id="2895194086130800590">Gemini Spark getur aðeins notað sjálfvirka vöfrun í þessu tæki ef tækið er virkt og Chrome er í gangi.</translation>
 <translation id="289695669188700754">Lykilsauðkenni: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Þessi sérstilling verður fjarlægð þegar þú lokar öllum huliðsgluggum</translation>
 <translation id="2897878306272793870">Viltu örugglega opna <ph name="TAB_COUNT" /> flipa?</translation>
@@ -2549,7 +2542,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2933653107553951760">Endurheimta hóp</translation>
 <translation id="2934225044529065415">Ekki er hægt að nota myndavélina</translation>
 <translation id="2935314715123552088">Slökkva á virkum eSIM-prófíl</translation>
-<translation id="2936067606203230121">Gemini Spark mun ákveða hvaða aðgerðir á að grípa til út frá verkefnunum sem þú byrjar eða uppfærir.</translation>
 <translation id="2936851848721175671">Afritun og endurheimt</translation>
 <translation id="2938981087412273365">Ekki leyft að lesa og breyta þessu vefsvæði</translation>
 <translation id="2939005221756255562">Kveiktu á tilkynningum í Tilkynningamiðstöðinni. Opna <ph name="BEGIN_LINK" />kerfisstillingar<ph name="END_LINK" />.</translation>
@@ -3657,7 +3649,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3756578970075173856">Stilla PIN-númer</translation>
 <translation id="3756806135608816820">Vefsvæði geta beðið um að leita að Bluetooth-tækjum</translation>
 <translation id="3756823472711156529">Endurheimta hóp</translation>
-<translation id="3757337311115630808">Nánar um Gemini Spark</translation>
 <translation id="3757567010566591880">Losa af tækjastiku</translation>
 <translation id="3757645900890881944">Leitarverkfæri</translation>
 <translation id="3757733214359997190">Engin vefsvæði fundust</translation>
@@ -4781,6 +4772,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4631637535315947773">Flýtileiðir á vefsvæði sem þú heimsækir oftast voru fjarlægðar vegna þess að þú hefur ekki notað þær nýlega</translation>
 <translation id="4631955550884380853">Áhersla á rödd</translation>
 <translation id="4632655012900268062">Sérsníða spjöld</translation>
+<translation id="4634719521235795064">Gemini getur notað Google-aðgangsorðastjórnun til að skrá þig inn. <ph name="BEGIN_LINK" />Kynntu þér hvernig Gemini meðhöndlar gögnin þín<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Fjarlægja Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> er ekki í boði fyrir gestanotendur.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Hladdu upp einni skrá til að senda með spurningunni þinni}one{Hladdu upp allt að # skrá til að senda með spurningunni þinni}other{Hladdu upp allt að # skrám til að senda með spurningunni þinni}}</translation>
@@ -5268,7 +5260,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4989966318180235467">Kanna &amp;bakgrunnssíðu</translation>
 <translation id="499016799952867794">Þetta gerir forritinu kleift að keyra sem skyldi.</translation>
 <translation id="4990673372047946816">Engin myndavél í boði</translation>
-<translation id="499126848196136237">Gemini Spark getur notað sjálfvirka vöfrun í Chrome í þessu tæki til að eiga samskipti við vefsvæði og ljúka verkefnum fyrir þína hönd. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Nota lykla í efstu röð sem aðgerðalykla</translation>
 <translation id="4991873517942703737">Spurðu út í þetta skjal</translation>
 <translation id="4992066212339426712">Hætta að þagga</translation>
@@ -5525,7 +5516,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5189274947477567401">Til að afþakka boð um deilingu þarf að endurræsa vafra. Vafrinn endurræsir sig núna.</translation>
 <translation id="5189404424758444348">Gufupönk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> af geymslurými í notkun</translation>
-<translation id="5190835502935405962">Bókamerkjastika</translation>
 <translation id="5190926251776387065">Virkja gátt</translation>
 <translation id="5190959794678983197">Enginn hljóðnemi</translation>
 <translation id="5191094172448199359">PIN-númerin sem þú færðir inn stemma ekki</translation>
@@ -6094,6 +6084,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5641715878999557094">„<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú smellir á heimahnappinn.</translation>
 <translation id="5643191124441701136">Öryggiskóðinn þinn er á framhlið kortsins.</translation>
 <translation id="5643321261065707929">Net með mældri notkun</translation>
+<translation id="5645369002069651355">Staðfestir netfang</translation>
 <translation id="5646376287012673985">Staðsetning</translation>
 <translation id="5646558797914161501">Viðskiptamaður</translation>
 <translation id="564670806635578888">Leita á Google að „<ph name="SEARCH_TERMS" />“</translation>
@@ -7025,7 +7016,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6393550101331051049">Mega birta óöruggt efni</translation>
 <translation id="6394634179843537518">Bæta við skrá</translation>
 <translation id="6395423953133416962">Senda <ph name="BEGIN_LINK1" />kerfisupplýsingar<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />mælingar<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Já, halda gögnunum mínum aðskildum frá skólaprófílnum (ráðlagt)</translation>
 <translation id="6398715114293939307">Fjarlægja Google Play Store</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
 <translation id="639880411171387127">Val þitt í Google-linsu. Ýttu á Enter eða á bakklykilinn til að eyða vali þínu í Google-linsu</translation>
@@ -8386,7 +8376,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7421293530411019405">Yfirgefa flipahóp?</translation>
 <translation id="7421925624202799674">Skoða frumkóða síðu</translation>
 <translation id="7422192691352527311">Kjörstillingar...</translation>
-<translation id="7423381908337122792">Allir sem hafa aðgang að Gemini Spark-fulltrúanum þínum geta stjórnað Chrome-vafranum þínum.</translation>
 <translation id="7423425410216218516">Kveikt er á sýnileika í <ph name="MINUTES" /> mínútur</translation>
 <translation id="7423513079490750513">Fjarlægja <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Netkerfi bætt við</translation>
@@ -8512,6 +8501,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7517292544534877198">Nota sjálfgefna dulkóðun Google fyrir aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="7517959947270534934">Fjölskyldumeðlimur þinn getur ekki tekið á móti aðgangsorðum eins og er. Biddu viðkomandi um að uppfæra Chrome og samstilla aðgangsorðin sín.</translation>
 <translation id="7518079994230200553">Þessi valkostur er ekki í boði eins og er.</translation>
+<translation id="7519506357537394422">Leyfa Gemini að skrá þig inn á <ph name="DOMAIN" />?</translation>
 <translation id="752021853309481824">Skráðu þig inn sem „<ph name="EMAIL" />“ til að fá aðgang að vistuðu upplýsingunum þínum og fleiru í öllum tækjunum þínum</translation>
 <translation id="7520766081042531487">Huliðsgátt: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Sýna flýtilykla</translation>
@@ -8739,7 +8729,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="769824636077131955">Þetta skjal er of stórt fyrir öryggisathugun. Hægt er að prenta skjöl sem eru allt að 50 MB.</translation>
 <translation id="7698507637739331665">Sum atriði eru á bannlista</translation>
 <translation id="7700516433658473670">Prentarar og skannar</translation>
-<translation id="7700873336634517379">Nei, halda áfram að nota þennan prófíl fyrir skólann</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7701869757853594372">Notendanöfn</translation>
 <translation id="770231223935918661">Spyrja um þessa mynd</translation>
@@ -9105,6 +9094,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7978450511781612192">Þetta skráir þig út af Google reikningnum þínum. Bókamerki, ferill, aðgangsorð og fleira verður ekki lengur samstillt.</translation>
 <translation id="7980066177668669492">Base64-kóðað ASCII, mörg vottorð</translation>
 <translation id="7981410461060625406">Notaðu vistaðan aðgangslykil fyrir <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Ekki tókst að staðfesta netfangið þitt</translation>
 <translation id="7981662863948574132">Sýna sprettiglugga EID- og QR-kóða</translation>
 <translation id="7982578888426609524">Nýlegar breytingar á þessum hópi</translation>
 <translation id="7982789257301363584">Net</translation>
@@ -10401,7 +10391,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="897525204902889653">Einangrunarþjónusta</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ og 1 flipi til viðbótar}one{„<ph name="TAB_TITLE" />“ og # flipi til viðbótar}other{„<ph name="TAB_TITLE" />“ og # flipar til viðbótar}}</translation>
 <translation id="897565255818387330">Viltu leyfa þessu vefsvæði að skoða og afrita <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Settu upp skólaprófíl til að vista og nota aðgangsorð og fleira á reikningnum þínum</translation>
 <translation id="8977811652087512276">Rangt aðgangsorð eða skemmd skrá</translation>
 <translation id="8978154919215542464">Kveikt – samstilla allt</translation>
 <translation id="8978670037548431647">Endurnýja tjóðrunareiginleika</translation>
@@ -10505,7 +10494,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9040661932550800571">Uppfæra aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Skráðu þig inn í Chrome til að vista traust aðgangsorð í Google-aðgangsorðastjórnun</translation>
 <translation id="9041692268811217999">Stjórnandi hefur lokað fyrir aðgang að staðbundnum skrám tölvunnar</translation>
-<translation id="9041881059840744611">Um skólaprófíla</translation>
 <translation id="904224458472510106">Ekki er hægt að afturkalla þessa aðgerð</translation>
 <translation id="9042827002460091668">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
@@ -10722,7 +10710,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="9219572436491982747">Mannlegir yfirlesarar geta séð gögn sem send eru til Google til að bæta tækni gervigreindar Chrome</translation>
 <translation id="9219741625496141320">Vefskoðunargögnum var eytt sjálfkrafa</translation>
-<translation id="9220484506568374422">Gemini Spark mun hafa aðgang að sömu vefsvæðum og þú, þar á meðal vefsvæðunum sem þú ert skráð(ur) inn á. Það mun deila nauðsynlegum upplýsingum með þriðju aðilum, sem gætu falið í sér persónuupplýsingar sem þú telur viðkvæmar.</translation>
 <translation id="9220525904950070496">Fjarlægja reikning</translation>
 <translation id="9220723036554088545">hladdu upp skrá</translation>
 <translation id="9220820413868316583">Lyftu og reyndu aftur.</translation>

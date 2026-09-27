@@ -890,7 +890,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4535755320005483982">Grŵp tabiau a rennir <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Optio i mewn i Hysbysiadau awgrymiadau wedi'i agor ar uchder llawn</translation>
 <translation id="4537987892902330164">Rydych wedi aros wedi'ch mewngofnodi fel <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Dalen dim codau pas</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}two{<ph name="TAB_COUNT_MANY" /> dab, <ph name="TAB_COUNT_INCOGNITO" /> dab anhysbys}few{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}many{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}}</translation>
 <translation id="4558311620361989323">Llwybrau byr tudalen we</translation>
 <translation id="4572422548854449519">Mewngofnodi i gyfrif a reolir</translation>
@@ -935,6 +934,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
 <translation id="4720556299488643018">Dad-danysgrifio</translation>
 <translation id="4732120983431207637">Dadweindiwr pentyrrau</translation>
+<translation id="4734965478015604180">Llorweddol</translation>
 <translation id="4736934858538408121">Cerdyn rhithwir</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4738065825338914557">Wrthi'n dad-danysgrifio…</translation>
@@ -983,6 +983,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="488187801263602086">Ailenwi ffeil</translation>
 <translation id="4885273946141277891">Nifer o achosion Chrome na chefnogir.</translation>
 <translation id="4890973535105146893">Dim cyfrineiriau sydd wedi'u cadw yn eich Cyfrif Google</translation>
+<translation id="490375751687810070">Fertigol</translation>
 <translation id="4905823827770127520">Cynhwyswch ddolen i'r dudalen</translation>
 <translation id="4910889077668685004">Apiau talu</translation>
 <translation id="4911042367886397055">Croeso'n ôl <ph name="USER_NAME" />!</translation>
@@ -1288,6 +1289,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6192907950379606605">Cael disgrifiadau lluniau</translation>
 <translation id="6193448654517602979">Dewis tabiau</translation>
 <translation id="6196315980958524839">Mae cyfrineiriau'n cael eu cadw i Rheolwr Cyfrineiriau Google ar y ddyfais hon.</translation>
+<translation id="6200780647297916498">Lleoliad tab</translation>
 <translation id="6204781143409202534">Canfu Chrome sothach posib o <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Wrthi'n dangos rhagolwg o'r dudalen hon</translation>
 <translation id="6212567362666004597">Ychwanegu tab at grŵp</translation>
@@ -2001,6 +2003,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8816556050903368450">Cynnwys y ddolen: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Nid oes modd gweld cynnwys y tab rhagweld.</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
+<translation id="8822533681006532064">I siarad â Gemini, rhowch ganiatâd iddo ddefnyddio'ch meicroffon. Gallwch hefyd reoli hyn yn y <ph name="BEGIN_LINK" />gosodiadau.<ph name="END_LINK" /></translation>
 <translation id="8840953339110955557">Gall y dudalen hon fod yn wahanol i'r fersiwn ar-lein.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Wedi'i chuddio</translation>

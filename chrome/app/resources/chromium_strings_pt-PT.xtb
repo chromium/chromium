@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responda a este inquérito de 1 minuto e ajude-nos a melhorar a Navegação anónima.</translation>
 <translation id="1065672644894730302">Não é possível ler as suas preferências. Algumas funcionalidades poderão estar indisponíveis e as alterações efetuadas às preferências não serão guardadas.</translation>
 <translation id="1083934481477628225">Um dos teus pais desativou as "Autorizações para sites, apps e extensões" para o Chromium</translation>
+<translation id="109026165963220603">O Chromium precisa de acesso à sua rede local para descobrir e usar dispositivos próximos</translation>
 <translation id="1090946077924227754">Para pesquisar uma extensão ou funcionalidade específica do Chromium, introduza o respetivo atalho na barra de endereço, seguido da tecla do teclado selecionada</translation>
 <translation id="1098493699368672217">Mostrar pesquisa com o Chromium no tabuleiro do sistema e ativar o atalho de teclado</translation>
 <translation id="1104942323762546749">O Chromium quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
@@ -104,6 +105,7 @@
 <translation id="2126108037660393668">O ficheiro transferido falhou na validação.</translation>
 <translation id="2135919691573380097">Denuncie este site</translation>
 <translation id="2137162749895930932">Fechar ecrã de tradução</translation>
+<translation id="2147218225094845757">Oculte o painel lateral</translation>
 <translation id="215352261310130060">O Chromium bloqueou esta transferência porque o site não está a usar uma ligação segura e o ficheiro pode ter sido adulterado</translation>
 <translation id="2170098639895543546">Selecione qualquer conteúdo na página</translation>
 <translation id="2174178932569897599">Personalizar o Chromium</translation>
@@ -303,7 +305,6 @@
 <translation id="4251772536351901305">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, analisando mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chromium.</translation>
 <translation id="4269093074552541569">Terminar sessão no Chromium</translation>
 <translation id="4271805377592243930">Obter ajuda relacionada com o Chromium</translation>
-<translation id="4275788652681621337">Feche o painel lateral</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4285930937574705105">A instalação falhou devido a um erro não especificado. Se o Chromium estiver em execução, feche-o e tente de novo.</translation>
 <translation id="4298125729853015961">Exporte palavras-passe do Chromium</translation>

@@ -889,7 +889,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> वाला टैब ग्रुप शेयर किया गया</translation>
 <translation id="4537137366307982887">सलाह से जुड़ी सूचनाओं के लिए ऑप्ट इन करने का विकल्प, पूरी स्क्रीन पर दिख रहा है</translation>
 <translation id="4537987892902330164">आप <ph name="NAME_OR_EMAIL" /> के तौर पर साइन इन हैं.</translation>
-<translation id="4543131175509360848">कोई पासकी शीट नहीं है</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टैब}one{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}other{<ph name="TAB_COUNT_MANY" /> टैब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त टैब}}</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
 <translation id="4572422548854449519">प्रबंधित खाते में साइन इन करें</translation>
@@ -934,6 +933,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
 <translation id="4720556299488643018">बंद करें</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
+<translation id="4734965478015604180">हॉरिजेंटल व्यू</translation>
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4738065825338914557">सदस्यता छोड़ी जा रही है…</translation>
@@ -982,6 +982,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="488187801263602086">फ़ाइल का नाम बदलें</translation>
 <translation id="4885273946141277891">Chrome इंस्टेंस की असमर्थित संख्या.</translation>
 <translation id="4890973535105146893">आपके Google खाते में कोई भी पासवर्ड सेव नहीं है</translation>
+<translation id="490375751687810070">वर्टिकल व्यू</translation>
 <translation id="4905823827770127520">पेज का लिंक जोड़ें</translation>
 <translation id="4910889077668685004">पेमेंट ऐप्लिकेशन</translation>
 <translation id="4911042367886397055">आपका फिर से स्वागत है, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6192907950379606605">ज़्यादा जानकारी पाएं</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
 <translation id="6196315980958524839">पासवर्ड, इस डिवाइस पर Google Password Manager में सेव किए गए हैं</translation>
+<translation id="6200780647297916498">टैब की पोज़िशन</translation>
 <translation id="6204781143409202534">Chrome को यह पता चला है कि <ph name="DOMAIN" /> से स्पैम हो सकता है.</translation>
 <translation id="6211386937064921208">इस पेज की झलक दिखाई जा रही है</translation>
 <translation id="6212567362666004597">टैब को ग्रुप में जोड़ें</translation>

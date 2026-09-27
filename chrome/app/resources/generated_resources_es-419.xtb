@@ -469,6 +469,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1341701348342335220">¡Bien hecho!</translation>
 <translation id="1342886103232377846">Para revisar si hay contraseñas hackeadas, ve al Administrador de contraseñas de Google</translation>
 <translation id="1343920184519992513">Continuar la sesión desde donde la dejaste y abrir un conjunto específico de páginas</translation>
+<translation id="1344216785734288669">Contraseñas de Apple</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1347512539447549782">Almacenamiento en Linux</translation>
@@ -796,7 +797,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="160689647589417224">La aplicación está restringida en esta región.</translation>
 <translation id="1607139524282324606">Borrar entrada</translation>
 <translation id="1608668830839595724">Más acciones para los elementos seleccionados</translation>
-<translation id="1609603645228231640">Gemini Spark es experimental y podría realizar acciones, como compartir tu información o realizar compras, sin preguntarte. <ph name="LINK_BEGIN" />Revisa los riesgos<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Configuración de la app</translation>
 <translation id="161042844686301425">Cian</translation>
 <translation id="1611649489706141841">adelante</translation>
@@ -1054,7 +1054,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1808805149659872686">Entrada nueva</translation>
 <translation id="1809201888580326312">Elegiste no guardar contraseñas para estos sitios y apps</translation>
 <translation id="1809734401532861917">Agregar mis favoritos, historial, contraseñas y otras opciones de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Marco vallado incógnito: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> no puede seguir usando <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Transmitiendo <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Servicios</translation>
@@ -1287,7 +1286,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1983612835086592681">Lo abriste la semana pasada</translation>
 <translation id="1984087999855033707">número de teléfono</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
-<translation id="1984683754853869253">¿Quieres crear un nuevo perfil para la institución educativa?</translation>
 <translation id="198507684520034826">Ayuda</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Configuración avanzada de ubicación</translation>
@@ -1320,7 +1318,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2010636492623189611">Seleccionado.</translation>
 <translation id="2012935757369720523">Borrar archivo</translation>
-<translation id="2014495120525813351">Permite que Gemini Spark navegue en este dispositivo</translation>
 <translation id="2016473077102413275">No se habilitarán las funciones que necesitan imágenes.</translation>
 <translation id="2017334798163366053">Inhabilitar recopilación de datos de rendimiento</translation>
 <translation id="2017770349934140286">Se borrarán de esta Chromebook Google Play y las apps que hayas descargado de Google Play.
@@ -2030,7 +2027,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2554553592469060349">El archivo seleccionado es demasiado grande (tamaño máximo: 3 MB).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> de <ph name="TOTAL_NUM_APPS" /> apps pueden enviar notificaciones</translation>
 <translation id="2555855727505718984">Autocompletar no tendrá esta información en este dispositivo para ayudarte a completar formularios</translation>
-<translation id="25568951186001797">Marco vallado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Ve todos tus favoritos aquí</translation>
 <translation id="2563924218974330506">Ahora puedes administrar tus grupos de pestañas aquí. Puedes dejar de fijar esto en cualquier momento.</translation>
 <translation id="2564520396658920462">La ejecución de JavaScript mediante AppleScript está desactivada. Para activarla, en la barra de menú, visita Ver &gt; Desarrollador &gt; Permitir JavaScript para eventos de Apple. Obtener más información en https://support.google.com/chrome/?p=applescript</translation>
@@ -2109,7 +2105,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2626746300781063303">Los sitios, incluido Google, usan su criterio cuando responden esta solicitud</translation>
 <translation id="2626799779920242286">Vuelve a intentarlo más tarde.</translation>
 <translation id="2627424346328942291">No se puede compartir</translation>
-<translation id="2627970398976286795">Revisar los riesgos de Gemini Spark</translation>
 <translation id="2628258844236035475">¿Quieres quitar tu dirección de casa de la función Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar un nuevo chat con Gemini</translation>
@@ -2418,7 +2413,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2845276301195220700">Más acciones para el Calendario de Google</translation>
 <translation id="2845382757467349449">Mostrar siempre la barra de favoritos</translation>
 <translation id="284581348330507117">Crea contraseñas únicas</translation>
-<translation id="2846345106886298325">Se completó la tarea y se devolvió a Gemini Spark</translation>
 <translation id="284884486564166077">Buscar cualquier imagen con Lens</translation>
 <translation id="2849035674501872372">Buscar</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2480,7 +2474,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2893318819023133318">Invertir vistas</translation>
 <translation id="2894596417096093634">Identificadores de informes de fallas</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
-<translation id="2895194086130800590">Gemini Spark solo puede usar la navegación automática en este dispositivo si se encuentra activo y Chrome está en ejecución.</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Se quitará esta configuración personalizada cuando cierres todas las ventanas de incógnito</translation>
 <translation id="2897878306272793870">¿Estás seguro de que deseas abrir <ph name="TAB_COUNT" /> pestañas?</translation>
@@ -2533,7 +2526,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2933653107553951760">Restablecer grupo</translation>
 <translation id="2934225044529065415">No se puede acceder a la cámara</translation>
 <translation id="2935314715123552088">Inhabilitar el perfil de eSIM activo</translation>
-<translation id="2936067606203230121">Gemini Spark decidirá qué acciones tomar en función de las tareas que inicies o actualices.</translation>
 <translation id="2936851848721175671">Crear copia de seguridad y restablecer</translation>
 <translation id="2938981087412273365">No puede leer ni modificar este sitio</translation>
 <translation id="2939005221756255562">Habilita las notificaciones en el Centro de notificaciones. Abre la <ph name="BEGIN_LINK" />Configuración del sistema<ph name="END_LINK" />.</translation>
@@ -3639,7 +3631,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3756578970075173856">Establecer un PIN</translation>
 <translation id="3756806135608816820">Permitir que los sitios soliciten permiso para buscar dispositivos Bluetooth</translation>
 <translation id="3756823472711156529">Restablecer grupo</translation>
-<translation id="3757337311115630808">Más información sobre Gemini Spark</translation>
 <translation id="3757567010566591880">Dejar de fijar en la Barra de herramientas</translation>
 <translation id="3757645900890881944">Herramientas de Búsqueda</translation>
 <translation id="3757733214359997190">No se encontraron sitios</translation>
@@ -4763,6 +4754,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4631637535315947773">Se quitaron los accesos directos a los sitios que más visitas porque no los usaste recientemente</translation>
 <translation id="4631955550884380853">Voz enfocada</translation>
 <translation id="4632655012900268062">Personalizar tarjetas</translation>
+<translation id="4634719521235795064">Gemini puede usar el Administrador de contraseñas de Google para acceder por ti. <ph name="BEGIN_LINK" />Más información sobre cómo Gemini maneja tus datos<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Desinstalar Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> no está disponible para los usuarios invitados.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Sube 1 imagen para usarla con tu pregunta}other{Sube hasta # imágenes para usarlas con tu pregunta}}</translation>
@@ -5250,7 +5242,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4989966318180235467">Inspeccionar página &amp;de fondo</translation>
 <translation id="499016799952867794">Esto permite que la app se ejecute como se debería.</translation>
 <translation id="4990673372047946816">No hay ninguna cámara disponible</translation>
-<translation id="499126848196136237">Gemini Spark puede usar la navegación automática de Chrome en este dispositivo para interactuar con sitios y completar tareas en tu nombre. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Tratar las teclas de la fila superior como teclas de función</translation>
 <translation id="4991873517942703737">Preguntar sobre este documento</translation>
 <translation id="4992066212339426712">Dejar de silenciar</translation>
@@ -5507,7 +5498,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5189274947477567401">Para inhabilitar el uso compartido de procesos, se debe reiniciar el navegador. El navegador se reiniciará ahora.</translation>
 <translation id="5189404424758444348">Steampunk</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> en uso</translation>
-<translation id="5190835502935405962">Barra de favoritos</translation>
 <translation id="5190926251776387065">Activar puerto</translation>
 <translation id="5190959794678983197">No hay micrófono</translation>
 <translation id="5191094172448199359">Los PIN que ingresaste no coinciden</translation>
@@ -6076,6 +6066,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" cambió la página que se muestra cuando haces clic en el botón de la página principal.</translation>
 <translation id="5643191124441701136">El código de seguridad está en el frente de la tarjeta</translation>
 <translation id="5643321261065707929">Red de uso medido</translation>
+<translation id="5645369002069651355">Verificando el correo electrónico</translation>
 <translation id="5646376287012673985">Ubicación</translation>
 <translation id="5646558797914161501">Empresario</translation>
 <translation id="564670806635578888">Buscar “<ph name="SEARCH_TERMS" />” en Google</translation>
@@ -7007,7 +6998,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
 <translation id="6394634179843537518">Agregar archivo</translation>
 <translation id="6395423953133416962">Enviar <ph name="BEGIN_LINK1" />información del sistema<ph name="END_LINK1" /> y <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Sí, mantener mis datos separados de los de la institución educativa (recomendado)</translation>
 <translation id="6398715114293939307">Quitar Google Play Store</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
 <translation id="639880411171387127">Tu selección de Google Lens. Presiona Intro o Retroceso para borrar la selección de Google Lens</translation>
@@ -8367,7 +8357,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7421293530411019405">¿Quieres abandonar el grupo de pestañas?</translation>
 <translation id="7421925624202799674">&amp;Ver el código fuente de la página</translation>
 <translation id="7422192691352527311">Preferencias...</translation>
-<translation id="7423381908337122792">Cualquier persona que tenga acceso a tu agente de Gemini Spark podría controlar tu navegador Chrome.</translation>
 <translation id="7423425410216218516">La visibilidad está activada durante <ph name="MINUTES" /> minutos.</translation>
 <translation id="7423513079490750513">Quitar <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Se agregó una red</translation>
@@ -8493,6 +8482,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7517292544534877198">Usar la encriptación predeterminada de Google para las contraseñas en tu Cuenta de Google</translation>
 <translation id="7517959947270534934">El miembro de tu familia no puede recibir contraseñas en este momento. Pídele que actualice Chrome y sincronice sus contraseñas.</translation>
 <translation id="7518079994230200553">Esta opción no está disponible en este momento.</translation>
+<translation id="7519506357537394422">¿Quieres permitir que Gemini acceda a <ph name="DOMAIN" /> por ti?</translation>
 <translation id="752021853309481824">Para obtener tu información guardada y más en todos tus dispositivos, accede como <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Portal en modo incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Mostrar los accesos directos</translation>
@@ -8720,7 +8710,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="769824636077131955">Este documento es demasiado grande para hacer un control de seguridad. Puedes imprimir documentos de hasta 50 MB.</translation>
 <translation id="7698507637739331665">Se bloquearon algunos elementos</translation>
 <translation id="7700516433658473670">Impresoras y escáneres</translation>
-<translation id="7700873336634517379">No, seguir usando este perfil para la institución educativa</translation>
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">Objetos USER</translation>
 <translation id="770231223935918661">Preguntar sobre esta imagen</translation>
@@ -9086,6 +9075,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7978450511781612192">Con esta acción, saldrás de tus cuentas de Google. Ya no se sincronizarán tus favoritos, historial ni contraseñas, entre otros datos.</translation>
 <translation id="7980066177668669492">Varios certificados ASCII con codificación Base64</translation>
 <translation id="7981410461060625406">Usa una llave de acceso guardada para <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">No se pudo verificar tu correo electrónico</translation>
 <translation id="7981662863948574132">Mostrar la ventana emergente del código QR y del EID del dispositivo</translation>
 <translation id="7982578888426609524">Novedades más recientes de este grupo</translation>
 <translation id="7982789257301363584">Red</translation>
@@ -10381,7 +10371,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="897525204902889653">Servicio de cuarentena</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" y 1 pestaña más}other{"<ph name="TAB_TITLE" />" y # pestañas más}}</translation>
 <translation id="897565255818387330">¿Quieres permitir que este sitio vea y copie <ph name="FILE_NAME" />?</translation>
-<translation id="8977523125954274918">Configura un perfil de institución educativa para guardar y usar tus contraseñas y otros elementos en tu cuenta</translation>
 <translation id="8977811652087512276">Contraseña incorrecta o archivo dañado</translation>
 <translation id="8978154919215542464">Activada: sincronizar todo</translation>
 <translation id="8978670037548431647">Actualizar funciones de conexión mediante dispositivo móvil</translation>
@@ -10485,7 +10474,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9040661932550800571">¿Quieres actualizar la contraseña para <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">Para guardar contraseñas seguras con el Administrador de contraseñas de Google, accede a Chrome</translation>
 <translation id="9041692268811217999">Tu administrador bloqueó el acceso a los archivos locales en tu máquina</translation>
-<translation id="9041881059840744611">Acerca de los perfiles de institución educativa</translation>
 <translation id="904224458472510106">Esta acción no se puede deshacer</translation>
 <translation id="9042827002460091668">Revisa la conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
@@ -10702,7 +10690,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219572436491982747">Es posible que los revisores humanos vean los datos enviados a Google para mejorar la tecnología de la IA de Chrome.</translation>
 <translation id="9219741625496141320">Se borraron automáticamente los datos de navegación</translation>
-<translation id="9220484506568374422">Gemini Spark tendrá acceso a los mismos sitios que tú, incluidos aquellos en los que hayas accedido a tu cuenta. Compartirá la información necesaria con terceros, lo que podría incluir información personal que consideres sensible.</translation>
 <translation id="9220525904950070496">Eliminar cuenta</translation>
 <translation id="9220723036554088545">sube un archivo</translation>
 <translation id="9220820413868316583">Levanta el dedo y vuelve a intentarlo.</translation>

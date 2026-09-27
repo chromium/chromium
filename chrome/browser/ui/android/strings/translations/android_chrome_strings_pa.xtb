@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ <ph name="GROUP_TITLE" /> ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="4537137366307982887">ਨੁਕਤਿਆਂ ਸੰਬੰਧੀ ਸੂਚਨਾਵਾਂ ਦੀ ਚੋਣ ਕਰਨ ਦਾ ਵਿਕਲਪ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
 <translation id="4537987892902330164">ਤੁਸੀਂ <ph name="NAME_OR_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਰਹੇ।</translation>
-<translation id="4543131175509360848">ਕਿਸੇ ਵੀ ਪਾਸਕੀ ਸ਼ੀਟ ਨੂੰ ਨਹੀਂ ਖੋਲ੍ਹਿਆ ਗਿਆ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਟੈਬ}one{<ph name="TAB_COUNT_MANY" /> ਟੈਬ, <ph name="TAB_COUNT_INCOGNITO" /> ਇਨਕੋਗਨਿਟੋ}other{<ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ, <ph name="TAB_COUNT_INCOGNITO" /> ਇਨਕੋਗਨਿਟੋ}}</translation>
 <translation id="4558311620361989323">ਵੈੱਬ ਪੰਨੇ ਦੇ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="4572422548854449519">ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">ਅਨੁਵਾਦ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="4720556299488643018">ਅਣਸਬਸਕ੍ਰਾਈਬ ਕਰੋ</translation>
 <translation id="4732120983431207637">ਸਟੈਕ ਅਨਵਾਈਂਡਰ</translation>
+<translation id="4734965478015604180">ਲੇਟਵਾਂ</translation>
 <translation id="4736934858538408121">ਆਭਾਸੀ ਕਾਰਡ</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="4738065825338914557">ਅਣਸਬਸਕ੍ਰਾਈਬ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ਫ਼ਾਈਲ ਦਾ ਨਾਮ ਬਦਲੋ</translation>
 <translation id="4885273946141277891">Chrome ਦੇ ਕਈ ਅਸਮਰਥਿਤ ਵਰਜਨ</translation>
 <translation id="4890973535105146893">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ ਹੈ</translation>
+<translation id="490375751687810070">ਖੜ੍ਹਵਾਂ</translation>
 <translation id="4905823827770127520">ਪੰਨੇ ਵਿੱਚ ਕੋਈ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4910889077668685004">ਭੁਗਤਾਨ ਐਪਾਂ</translation>
 <translation id="4911042367886397055">ਮੁੜ ਜੀ ਆਇਆਂ ਨੂੰ, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
 <translation id="6196315980958524839">ਪਾਸਵਰਡ ਇਸ ਡੀਵਾਈਸ ਦੇ Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ</translation>
+<translation id="6200780647297916498">ਟੈਬ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="6204781143409202534">Chrome ਨੇ <ph name="DOMAIN" /> ਤੋਂ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਸਪੈਮ ਦਾ ਪਤਾ ਲਗਾਇਆ।</translation>
 <translation id="6211386937064921208">ਇਸ ਪੰਨੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦਿਖਾਈ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="6212567362666004597">ਟੈਬ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>

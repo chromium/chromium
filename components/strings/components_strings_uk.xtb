@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">Збережіть ідентифікатор Redress Number у Google Гаманці</translation>
 <translation id="1455413310270022028">Гумка</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Переглянути 0 відгуків}=1{Переглянути 1 відгук}one{Переглянути всі відгуки (#)}few{Переглянути всі # відгуки}many{Переглянути всі # відгуків}other{Переглянути всі # відгуку}}</translation>
-<translation id="1458770162980644530">Екран умов використання способу оплати "Купуйте зараз, платіть пізніше". Клавіатуру сховано.</translation>
 <translation id="1460317464907341501">Підтверджувати цю електронну адресу автоматично?</translation>
 <translation id="1461041542809785877">Ефективність</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">Показати інформацію про з’єднання</translation>
 <translation id="2277949605527755300"><ph name="URL" /> хоче відстежувати ваші руки</translation>
 <translation id="22792995594807632">Перевірте файли, перш ніж завантажувати їх на пристрій</translation>
+<translation id="2279607542590042584">Ключ доступу • Паролі Apple</translation>
 <translation id="2283340219607151381">Зберігати й заповнювати адреси</translation>
 <translation id="2283447177162560884">Сторінку "<ph name="PAGE_TITLE" />" видалено</translation>
 <translation id="2283599456633275070">Подорожі</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Не вдалося зберегти цю картку у вашому обліковому записі Google. Натомість її збережено в Chrome на цьому пристрої.</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
-<translation id="2441854154602066476">Наявні способи оплати, дані яких заповнюються дотиком. Клавіатуру сховано.</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />історію веб-перегляду;
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">Сертифікат сервера містить помилки.</translation>
 <translation id="2491414235131909199">Розширення заблокувало цю сторінку</translation>
 <translation id="2493122313108999546">Розмір змінено</translation>
-<translation id="249376477913017009">Сповіщення "Автозаповнення з Gmail тощо" відкрито</translation>
 <translation id="2495083838625180221">Синтаксичний аналізатор файлів JSON</translation>
+<translation id="2495909791227061512">Підключитися до пристроїв поблизу?</translation>
 <translation id="2496402116964818747">Ви можете вимкнути цю функцію, перейшовши в розділ "<ph name="SETTINGS" />"</translation>
 <translation id="2498091847651709837">Сканувати нову картку</translation>
 <translation id="2501270939904835585">Етикетки (сатинові)</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">Зазвичай ви безпечно підключаєтеся до сайтів, проте цього разу Chrome не може застосувати захищене з’єднання. Можливо, зловмисник намагається підслухати або змінити ваше з’єднання з мережею. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
 <translation id="3053013834507634016">Використання ключа сертифіката</translation>
-<translation id="3056660797732519147">Екран помилки придбання з оплатою пізніше. Клавіатуру сховано.</translation>
 <translation id="3057844102210575426">Керувати інформацією про подорожі</translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
 <translation id="3062655045399308513">Видалити дані вебперегляду…</translation>
@@ -1444,6 +1442,7 @@
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Може просити дозвіл керувати пристроями MIDI й перепрограмовувати їх</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
+<translation id="345268527248907593">Немає зв’язку із сайтом</translation>
 <translation id="3453962258458347894">Кількість повторних спроб</translation>
 <translation id="3461266716147554923">Сайт <ph name="URL" /> хоче переглядати тексти й зображення в буфері обміну</translation>
 <translation id="3461824795358126837">Фломастер</translation>
@@ -1974,6 +1973,7 @@
 <translation id="4284885181066817063">Заблоковано адміністратором домену <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">Видалити транспортний засіб</translation>
 <translation id="4290920330097335010">Ніколи не дозволяти</translation>
+<translation id="4291909791598163333">Ваша організація заблокувала вам доступ до вказаного сайту</translation>
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Оновлено атрибут "<ph name="ATTRIBUTE_NAME" />"</translation>
 <translation id="4298148761711700950">Сплачуйте миттєво без завантаження QR-коду</translation>
@@ -2086,7 +2086,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Шифрувати синхронізовані паролі за допомогою облікових даних Google</translation>
 <translation id="4493480324863638523">Недійсна URL-адреса. Потрібно вказати URL-адресу зі стандартною схемою, як-от http://example.com або https://example.com.</translation>
-<translation id="4497010149473852018">Картки постійного покупця, дані яких заповнюються дотиком. Клавіатуру сховано.</translation>
 <translation id="4497843134750481377">Керувати пропозиціями</translation>
 <translation id="4500587658229086076">незахищений контент</translation>
 <translation id="4501939680615452918">Знайди вільні столики в популярних ресторанах</translation>
@@ -2153,7 +2152,6 @@
 <translation id="4628948037717959914">Фотографія</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">Завантаження файлів у сервіс <ph name="CLOUD_PROVIDER" /> почнеться через <ph name="HOURS" /> год</translation>
-<translation id="4631881646528206880">Реєстрація віртуальної картки</translation>
 <translation id="4635278307999235413">Надсилання даних у Консоль адміністратора</translation>
 <translation id="4636930964841734540">Інформація</translation>
 <translation id="4640225694041297329">Показати результати за останні 7 днів</translation>
@@ -2536,7 +2534,6 @@
 <translation id="5255583962255635076">правила вебпереглядача, застосовані до робочого профілю.</translation>
 <translation id="5255690596502591079">Усе одно записати</translation>
 <translation id="5255771248404149177">Емітенту картки потрібно підтвердити вашу особу</translation>
-<translation id="525579853540851404">Екран придбання з оплатою пізніше. Клавіатуру сховано.</translation>
 <translation id="5255833070095767006">350 x 460 мм</translation>
 <translation id="5257739419779698609">{0,plural, =1{Згідно з правилом адміністратора не рекомендовано копіювати цей файл у розташування "<ph name="DESTINATION_NAME" />"}one{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}few{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}many{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}other{Згідно з правилом адміністратора не рекомендовано копіювати ці файли в розташування "<ph name="DESTINATION_NAME" />"}}</translation>
 <translation id="5258473597674772367">Група вкладок "<ph name="GROUP_NAME" />" більше не доступна</translation>
@@ -2655,6 +2652,7 @@
 <translation id="5452923259299906094">Оплата через електронний гаманець і Pix</translation>
 <translation id="5455374756549232013">Недійсна мітка часу правила</translation>
 <translation id="5456428544444655325">Ніколи не показувати</translation>
+<translation id="5457082343331641453">Додати в пошуковий запит</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="5463625433003343978">Пошук пристроїв…</translation>
 <translation id="5465128270485645058">Щоб отримувати персоналізовані відповіді, автоматично надавайте доступ до відкритих вкладок у цьому вікні, якщо вони пов’язані з поточним ланцюжком.</translation>
@@ -3140,6 +3138,7 @@
 <translation id="6264485186158353794">Назад на безпечну сторінку</translation>
 <translation id="6264636978858465832">Менеджеру паролів потрібен додатковий доступ</translation>
 <translation id="6265794661083428563">Скопіювати значення правила <ph name="POLICY_NAME" /></translation>
+<translation id="6271264012613848937">Вам заблоковано доступ до сайту <ph name="URL" /> через правила вашої організації. Якщо це сталося помилково, зверніться до адміністратора.</translation>
 <translation id="6272088941196661550">Щоб бачити релевантні дії в історії Chrome, відновіть сеанс</translation>
 <translation id="6272383483618007430">Оновлення Google</translation>
 <translation id="6278015583149890680">Google Диск і OneDrive</translation>
@@ -3420,6 +3419,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Значення правила</translation>
 <translation id="6753434778807740853">Видалити запис "<ph name="ENTRY_VOICEOVER" />"</translation>
+<translation id="6753460329812070808">Пропозицію вилучено з Chrome</translation>
 <translation id="6757797048963528358">Ваш пристрій перейшов у режим сну.</translation>
 <translation id="6758934187792712102">Сайт <ph name="URL" /> хоче використовувати датчики руху й освітлення</translation>
 <translation id="6770747695101757579">Папір (бавовняний)</translation>
@@ -3499,6 +3499,7 @@
 <translation id="6897140037006041989">Агент користувача</translation>
 <translation id="6898699227549475383">Організація (О)</translation>
 <translation id="6900702165119149418">Ви вийшли з облікового запису</translation>
+<translation id="6902049722133977432">Відмінити</translation>
 <translation id="6910211073230771657">Видалено</translation>
 <translation id="691024665142758461">завантажити кілька файлів</translation>
 <translation id="691046363691324218">Номер оскарження</translation>
@@ -3713,6 +3714,7 @@
 <translation id="7266094331715305887">установлені додатки</translation>
 <translation id="7268742523336093718">Безпечно додайте паспортні дані в Google Гаманець</translation>
 <translation id="7269151392155523061">Швидка команда не може збігатися з ключовим словом агрегатора пошуку, визначеним правилом <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Сталася помилка, пов’язана із засобами захисту або правилами, налаштованими вашою організацією. Спробуйте пізніше або зверніться до адміністратора.</translation>
 <translation id="7273111226200291353">Файли, які ви завантажуєте, надсилаються на аналіз у Google Cloud або стороннім сервісам. Наприклад, їх можуть сканувати на наявність конфіденційних даних або зловмисного програмного забезпечення, а також зберігати відповідно до правил компанії. Крім того, їх може переглядати адміністратор.</translation>
 <translation id="7275334191706090484">Закладки, якими керує адміністратор</translation>
 <translation id="7278933725460302617">Увімкнено ізольований режим</translation>
@@ -4067,7 +4069,6 @@
 <translation id="7839192898639727867">Ідентифікатор ключа суб'єкта сертифіката</translation>
 <translation id="7840103971441592723">Запис екрана розпочато</translation>
 <translation id="784137052867620416">Статистика покупок</translation>
-<translation id="7841633276323004751">Список доступних способів оплати. Клавіатуру сховано.</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
 <translation id="784623644169604270">Немає останніх дій</translation>
@@ -4146,7 +4147,6 @@
 <translation id="79682505114836835">Значення "<ph name="VALUE" />" – недійсний колір у форматі hex.</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 із шифруванням RSA</translation>
-<translation id="7976053965094442846">Список емітентів, які пропонують придбання з оплатою пізніше. Клавіатуру сховано.</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
 <translation id="7977029776654598145">Призначення</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>
@@ -4156,6 +4156,7 @@
 <translation id="7984945080620862648">Зараз не можна перейти на сторінку <ph name="SITE" />, оскільки веб-сайт надіслав зашифровані облікові дані, які Chrome не може обробити. Помилки мережі й атаки зазвичай є тимчасовими, тому ця сторінка може працювати пізніше.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Список емітентів, які пропонують придбання з оплатою пізніше, відкрито на всю висоту.</translation>
+<translation id="7990290316254726169">Ви бачите це попередження, оскільки сайт не підтримує HTTPS і ви ввійшли в ізольованому режимі. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше про це попередження<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Зшити</translation>
 <translation id="7992044431894087211">Показ екрана за допомогою додатка <ph name="APPLICATION_TITLE" /> відновлено</translation>
 <translation id="799384093520583425">Адміністратор вашої організації заблокував використання Інструментів розробника на цій сторінці</translation>
@@ -4453,7 +4454,6 @@
 <translation id="8522552481199248698">Chrome допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="8523574453888018351">Допоможи мені вивчити нову мову</translation>
 <translation id="852450791482410042">Сплатити</translation>
-<translation id="8528479410903501741">Зберегти номер IBAN</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Використати моє місцезнаходження</translation>
 <translation id="8533619373899488139">Перейдіть на сторінку &lt;strong&gt;chrome://policy&lt;/strong&gt;, щоб переглянути список заблокованих URL-адрес та інші правила, які ввімкнув ваш системний адміністратор.</translation>
@@ -4498,6 +4498,7 @@
 <translation id="860043288473659153">Ім’я і прізвище власника картки</translation>
 <translation id="8601206103050338563">Автентифікація клієнта TLS WWW</translation>
 <translation id="8604103095921958091">Екран умов використання способу оплати "Купуйте зараз, платіть пізніше" відкрито на всю висоту.</translation>
+<translation id="8605014984308506350">Ви бачите це попередження, оскільки сайт не підтримує HTTPS і ви ввійшли в ізольованому режимі. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">дані про активний стан пристрою</translation>
 <translation id="8619130384334725124">Використовується за умовчанням</translation>
 <translation id="8620276786115098679">Конверт Kaku 7</translation>
@@ -4651,6 +4652,7 @@
 <translation id="8883863364960302898">Папка Google Диска</translation>
 <translation id="8884537526797090108">Не вдається записати конфіденційний контент</translation>
 <translation id="8889525327610245418">Безпечно оновіть дані посвідчення водія в Google Гаманці</translation>
+<translation id="8890516388109605451">Джерела</translation>
 <translation id="8891031436559779793">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення.</translation>
 <translation id="8891727572606052622">Недійсний режим проксі-сервера.</translation>
 <translation id="8894794286471754040">Спершу по довжині</translation>

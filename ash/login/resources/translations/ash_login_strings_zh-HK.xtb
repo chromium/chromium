@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">在電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
 <translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監控設定，就必須讓子女使用由家長管理的 Google 帳戶。如果子女需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
 <translation id="1375557162880614858">要啟用 ChromeOS Flex 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
-<translation id="1375938286942050085">設定完成！下一步只需裝置即可玩遊戲</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
 <translation id="1400243387594338234">你可以使用此 PIN 來登入裝置</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用 Google 帳戶</translation>
 <translation id="3856800405688283469">選取時區</translation>
 <translation id="3893630138897523026">ChromeVox (互動朗讀)</translation>
-<translation id="3897746662269329507">您的 <ph name="DEVICE_TYPE" /> 專為遊戲而設。「探索」應用程式會隨即開啟，讓您可存取數百個最新遊戲、查看遊戲優惠，並探索裝置內置的遊戲功能。</translation>
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3910588685973519483">以 AI 製作桌布</translation>
 <translation id="3924259174674732591">顯示和文字大小：<ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">需要安裝信任平台模組韌體的更新。請參閱 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
 <translation id="5453829744223920473">你的子女可以像在課堂般使用所有學校應用程式、書籤和資源。學校將設定基本規則。</translation>
-<translation id="5463450804024056231">訂閱 <ph name="DEVICE_TYPE" /> 電郵</translation>
 <translation id="5473099001878321374">如繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您子女的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會使用流動數據，部分應用程式可能會提供應用程式內購買。</translation>
 <translation id="5502915260472117187">兒童</translation>
 <translation id="5511823366942919280">您確定要將這部裝置設為 "Shark" 嗎？</translation>

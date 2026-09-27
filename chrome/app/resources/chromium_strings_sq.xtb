@@ -10,6 +10,7 @@
 
 Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruhen.</translation>
 <translation id="1083934481477628225">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chromium</translation>
+<translation id="109026165963220603">Chromium ka nevojë për qasje te rrjeti yt lokal për të zbuluar dhe përdorur pajisjet në afërsi</translation>
 <translation id="1090946077924227754">Për të kërkuar një veçori ose shtesë specifike të Chromium, shkruaj shkurtoren e saj në shiritin e adresave, të ndjekur nga tasti i zgjedhur i tastierës</translation>
 <translation id="1098493699368672217">Shfaq kërkimin me Chromium në tabakanë e sistemit dhe aktivizo shkurtoren e tastierës</translation>
 <translation id="1104942323762546749">Chromium dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -105,6 +106,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
 <translation id="2135919691573380097">Raportoje këtë sajt</translation>
 <translation id="2137162749895930932">Mbyll ekranin e përkthimit</translation>
+<translation id="2147218225094845757">Fshihe panelin anësor</translation>
 <translation id="215352261310130060">Chromium e bllokoi këtë shkarkim sepse sajti nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
 <translation id="2170098639895543546">Zgjidh çdo gjë në faqe</translation>
 <translation id="2174178932569897599">Personalizo Chromium</translation>
@@ -304,7 +306,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4251772536351901305">Të paralajmëron për sajtet e rrezikshme, edhe ato që Google nuk i ka njohur më parë, duke analizuar më shumë të dhëna nga sajtet sesa nga mbrojtja standarde. Mund të zgjedhësh që t'i kapërcesh paralajmërimet e Chromium.</translation>
 <translation id="4269093074552541569">Dil nga Chromium</translation>
 <translation id="4271805377592243930">Merr ndihmë me Chromium</translation>
-<translation id="4275788652681621337">Mbyll panelin anësor</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="4285930937574705105">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Chromium është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4298125729853015961">Eksporto fjalëkalimet nga Chromium</translation>

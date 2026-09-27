@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Жад толған</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1190609913194133056">Хабарландыру орталығы</translation>
-<translation id="1195433173321863960">Сізге қойылған шек <ph name="RESET_TIME" /> уақытында бастапқы қалпына келгенде, суреттер қайта қолжетімді болады.</translation>
 <translation id="1196534270480620381">Осы бетті қысқаша мазмұнда</translation>
 <translation id="1199631150313925648">Қолмен енгізу</translation>
 <translation id="1199963004393929848">Жасыл тақырып</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Табу және толтыру</translation>
 <translation id="1483493594462132177">Жіберу</translation>
 <translation id="1486096554574027028">Құпия сөздерді іздеу</translation>
-<translation id="1486593497476255523">Қойындылар топтары тапсырмасы аяқталды!</translation>
 <translation id="1491277525950327607">Параметрді ауыстыру үшін екі рет түртіңіз</translation>
 <translation id="1492417797159476138">Бұл сайт үшін осы пайдаланушы аты сақтап қойылған.</translation>
 <translation id="1497590942294823549">"Мәзір" → "Password Manager"</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Басқа профильге ауысу</translation>
 <translation id="1741219894094057085">Смарт сағат</translation>
 <translation id="1743244221910283364">Өзгертулерден бас тарту</translation>
-<translation id="1744234754703485302">Төлеу әдістерін басқару аяқталды!</translation>
 <translation id="1748975028205587434">Файл таңдау</translation>
 <translation id="1749733017156547309">Құпия сөз енгізу қажет.</translation>
 <translation id="174998178145075354">{count,plural, =1{Пернетақтаның үстінде мекенжайға арналған {count} опция қолжетімді.}other{Пернетақтаның үстінде мекенжайға арналған {count} опция қолжетімді.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">1 айдан кейін жою</translation>
 <translation id="2161446265348023004">Ашық терезеге ауысу</translation>
 <translation id="2164946989711475905">Кіру…</translation>
-<translation id="2165110345209765380">ЖИ режимімен іздеу аяқталды!</translation>
 <translation id="2175927920773552910">QR коды</translation>
 <translation id="2180338296831857171">Мекенжайларды жою</translation>
 <translation id="218350106843433823">Құпия сөздер мен кіру кілттерін автоматты түрде толтыру</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">Тауар бетіне өтіңіз.</translation>
 <translation id="2219935992754556187">Chrome браузері құпия деректеріңізді Face ID-мен қорғайды.</translation>
 <translation id="2220529011494928058">Ақау туралы хабарлау</translation>
+<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" камераңызды пайдалана алмайды.</translation>
 <translation id="2223461067862937305">QR кодын жасау</translation>
 <translation id="2230173723195178503">Веббет жүктелді</translation>
 <translation id="2236949375853147973">Әрекеттерім</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Gmail және Photos сияқты қолданбалардағы ақпаратты автоматты түрде толтырады. Personal Intelligence функциясымен істейді.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Бұл мекенжай осы құрылғыдан жойылады.}other{Бұл мекенжайлар осы құрылғыдан жойылады.}}</translation>
 <translation id="2295236662082735391">Gemini-мен өзгерту үшін интернеттегі суретті басып тұрыңыз.</translation>
-<translation id="2296360194694387941">Chrome-дағы Gemini-ды пайдалану тапсырмасы аяқталды!</translation>
 <translation id="2297989278479054870">Шыққаннан кейін, Google аккаунтыңыздағы бетбелгілер, құпия сөздер және т.б. осы құрылғыдан өшіріледі.</translation>
 <translation id="2299218006564889602">Құрылғыдағы құпия сөздер Google Құпия сөздер реттегішіне сақтамас бұрын шифрланады.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> мәліметтерін көрсету</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">Safe Browsing қызметі (сізді және құрылғыңызды қауіпті сайттардан қорғайды)</translation>
 <translation id="3183362380688692618">Жаңа қойындылар тобы...</translation>
 <translation id="3185000827934321633">Өтіп жатыр</translation>
-<translation id="3185760469172949183">Камерамен іздеу аяқталды!</translation>
 <translation id="3186796054637504691">Тарих пен веб-сайт деректерін өшіру</translation>
 <translation id="3190558889382726167">Құпия сөз сақталды</translation>
 <translation id="3190736958609431397">Бақылауды тоқтату</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">Бет туралы сұрақ қою, идеяларды талқыға салу және еркін әңгімелесу үшін Gemini-мен Live чатына өтіңіз.</translation>
 <translation id="3462768334899086950">Бұл жағдайда сақталмаған файл мен ашық қойындылар жоғалады.</translation>
 <translation id="3464194322481586217">Бағаны бақылау мүмкін болмады.</translation>
-<translation id="346831467152294287">Құпия сөздер мен автотолтыру тапсырмасы аяқталды!</translation>
 <translation id="3469117812148449995">Құпия сөзді сақтау опциялары</translation>
 <translation id="3472469028191701821">Жаңа қойындыда ашылады.</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} сайтқа немесе қолданбаға арналған}other{{COUNT} сайтқа немесе қолданбаға арналған}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ұйымыңыз басқарады.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> дерегін жаңарту керек пе?</translation>
 <translation id="3581564640715911333">Басқа тілдердегі беттердің аудармасын ұсыну</translation>
+<translation id="3585482760087850407">Бұл сайттың камераны пайдалану рұқсаты</translation>
 <translation id="3587482841069643663">Барлығы</translation>
 <translation id="3587885837929752825">Ұйымыңыз Google аккаунтыңызда сақтауға болатындарды шектейді.</translation>
 <translation id="3588820906588687999">Кескінді жаңа қойындыда ашу</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">Браузерді тиімді әрі оңай пайдалануға мүмкіндік беретін пайдалы ұсыныстар</translation>
 <translation id="3818293389945649617">Келесіні табу</translation>
 <translation id="3819183753496523827">Офлайн режимдесіз. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
-<translation id="3826034723896327540">Қойындыларды бекіту аяқталды!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 төлеу әдісі}other{# төлеу әдісі}}</translation>
 <translation id="3831560640878483188">Ескертуді жабу керек пе?</translation>
 <translation id="3832419617903252251">Құпия сөз тек осы құрылғыда сақталған</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">Келесі жолы тиісті үлгіні толтырған кезде, бұл ақпаратты Wallet-ке сақтау мүмкіндігіне ие боласыз.</translation>
 <translation id="3868495844258915202">Толық URL мекенжайын көрсету</translation>
 <translation id="3875783148670536197">Орындалуын көру</translation>
+<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" микрофоныңызды пайдалана алмайды.</translation>
 <translation id="3878657761594430423">Парақ қысқышы</translation>
 <translation id="3885587018298784481">Отбасылық топқа қосылу</translation>
 <translation id="3888230626190453136">Инкогнито режимінде шолу</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">Қауіпсіздігіңізге қауіп төндіруі мүмкін бірнеше құпия сөз мәселесі бар.</translation>
 <translation id="422477017457571619">Google-ға жіберілетін браузерді пайдалану деректеріне негізделген қауіпті сайттардан, жүктеп алынғандардан және кеңейтімдерден жасанды интеллект негізінде нақты уақытта қорғайды.</translation>
 <translation id="4231395118547300571">Қауіпсіздік тексерісінің хабарландырулары қосылды.</translation>
-<translation id="4232376164796433044">Құпия сөздер және автотолтыру</translation>
 <translation id="4232817129213135694">Бұл құрылғы үшін кіру кілттерін реттеңіз</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Әдепкі браузер қолданбасы<ph name="END_BOLD" /> түймесін түртіңіз.</translation>
 <translation id="424063167283213501">Белгілі жолаушы нөмірін (KTN) сақтаңыз</translation>
@@ -1820,6 +1814,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="6749473226660745022">Фотосуреттер</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} тарих элементі импортталды}other{{count} тарих элементі импортталды}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{Пернетақтаның үстінде тіркелу деректеріне арналған {count} опция қолжетімді.}other{Пернетақтаның үстінде тіркелу деректеріне арналған {count} опция қолжетімді.}}</translation>
+<translation id="6753460329812070808">Ұсыныс Chrome-нан өшірілді.</translation>
 <translation id="6755200887046212842">Аккаунттарды басқару</translation>
 <translation id="6757899787818440812">Орташа биіктік</translation>
 <translation id="6759709389246683070">Сайтқа кейінірек кіру туралы еске салғыш орнату үшін осы қойындыны түртіп, ұстап тұрыңыз.</translation>
@@ -1905,6 +1900,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Параметрлерде әдепкі браузер етіп орнату…</translation>
 <translation id="7007970306646738803">Бұл құрылғыдағы қойындылар, тарих және құпия сөздер сияқты бұрыннан бар браузерді пайдалану деректерімен не істеу керек екенін таңдаңыз.</translation>
+<translation id="701134422972919485">Бұл сайттың микрофонды пайдалану рұқсаты</translation>
 <translation id="7012978439516925343">Кіру кілтін жасау үшін жеке басыңызды растаңыз.</translation>
 <translation id="7015418667643980944">Бөлінген көрініс</translation>
 <translation id="7016070607649558507">1 оңай құпия сөзіңіз бар. Қауіпсіз қалу үшін оны қазір түзетіңіз.</translation>
@@ -2077,7 +2073,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="7603308509262646847">Карта иесін (<ph name="NAME" />) автотолтыру</translation>
 <translation id="7603852183842204213">Қалқымалы терезелерге тыйым салынды (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Синхрондау жұмыс істемейді</translation>
-<translation id="7606639338662398635">Қойындылар топтары</translation>
 <translation id="760667371114328991">Қауіпсіздік тексерісінің хабарландыруларын өшіру</translation>
 <translation id="7612619742409846846">Google жүйесіне келесі пайдаланушы атымен кірген:</translation>
 <translation id="7612849887607288481">"AI прототипі" мәзірін ашу</translation>
@@ -2285,7 +2280,6 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8240217649914883113">Мұны күнтізбеме қос</translation>
 <translation id="824379025871762038">Ешқашан рұқсат бермеу</translation>
 <translation id="8250920743982581267">Құжаттар</translation>
-<translation id="8252980988000695656">Google Lens тапсырмасы аяқталды!</translation>
 <translation id="8258734532103758067">Деректерді экспорттадым</translation>
 <translation id="8258999165172757081">Енгізілді</translation>
 <translation id="8261506727792406068">Жою</translation>
@@ -2336,6 +2330,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8393700583063109961">Хабар жіберу</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> күн бойы пайдаланылмаған қойындылар</translation>
 <translation id="8395180897620197612">Тіркеуді тоқтату</translation>
+<translation id="8399253661151100858">"<ph name="SITE_DOMAIN" />" осы сайтқа кірген сайын микрофоныңызды пайдалана алады.</translation>
 <translation id="8407669440184693619">Бұл сайт үшін ешқандай құпия сөз табылмады.</translation>
 <translation id="8407831512155324054">Құпия сөздеріңіз сенімді.</translation>
 <translation id="8414283596511250978">Құпия сөздерді ұмытпайсыз</translation>
@@ -2350,6 +2345,7 @@ Handoff функциясы параметрлердің жалпы бөлімі�
 <translation id="8439758443371991593">"Оқу тізіміне қосу" опциясын жасыру</translation>
 <translation id="8443986842926457191">URL мекенжайының ұзындығы 2048 таңба шегінен асып кеткен.</translation>
 <translation id="8449869326050867919">Құпия сөз жіберілді</translation>
+<translation id="8458009459729013424">"<ph name="SITE_DOMAIN" />" осы сайтқа кірген сайын камераңызды пайдалана алады.</translation>
 <translation id="8461708300275916315">18 жасқа толмаған болсаңыз</translation>
 <translation id="8473815223723723001">Суретті Gemini көмегімен өзгерту</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>

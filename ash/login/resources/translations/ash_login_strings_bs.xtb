@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Ažuriranje će početi kada baterija dosegne <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Da koristite kontrole roditeljskog nadzora, kao što su odobrenja za aplikacije i ograničenja vremena korištenja uređaja, dijete mora imati Google račun kojim upravlja roditelj. Školski račun se može dodati kasnije za korištenje s alatima kao što je Google Učionica.</translation>
 <translation id="1375557162880614858">Želite li aktivirati ChromeVox, ugrađeni čitač ekrana za ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Postavljanje je završeno! Sada pripremite uređaj za igre</translation>
 <translation id="1377600615067678409">Preskoči za sada</translation>
 <translation id="1399261165075500043">Nije moguće učitati Uslove korištenja usluge Google Play</translation>
 <translation id="1400243387594338234">Možete koristiti ovaj PIN da se prijavite na uređaj</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Koristite Google račun na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Izbor vremenske zone</translation>
 <translation id="3893630138897523026">ChromeVox (govorne povratne informacije)</translation>
-<translation id="3897746662269329507">Vaš uređaj <ph name="DEVICE_TYPE" /> je napravljen za igranje igara. Sljedeća će se otvoriti aplikacija Explore gdje možete pristupiti stotinama najnovijih igara, vidjeti ponude igara i otkriti funkcije igara koje dolaze s vašim uređajem.</translation>
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3910588685973519483">Kreirajte pozadinske slike pomoću AI-ja</translation>
 <translation id="3924259174674732591">Veličina ekrana i teksta <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Potrebno je instalirati ažuriranje za firmver modula pouzdane platforme. Pogledajte <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Ups, došlo je do greške prilikom prijave</translation>
 <translation id="5453829744223920473">Vaše dijete može koristiti sve školske aplikacije, oznake i izvore baš kao što to čini u razredu. Škola postavlja osnovna pravila.</translation>
-<translation id="5463450804024056231">Registrirajte se za <ph name="DEVICE_TYPE" /> e-poštu</translation>
 <translation id="5473099001878321374">Ako nastavite, slažete se da ovaj uređaj može također automatski preuzimati i instalirati ažuriranja i aplikacije od Googlea, mobilnog operatera vašeg djeteta i proizvođača ovog uređaja, uz mogući prijenos podataka na mobilnoj mreži. Moguće je da neke od tih aplikacija nude kupovinu unutar aplikacija.</translation>
 <translation id="5502915260472117187">Dijete</translation>
 <translation id="5511823366942919280">Jeste li sigurni da želite postaviti ovaj uređaj kao "Ajkulu"?</translation>

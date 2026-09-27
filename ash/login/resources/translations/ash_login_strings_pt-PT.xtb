@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">A atualização é iniciada quando a bateria chegar a <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para utilizar o controlo parental, como a aprovação de apps e os limites de tempo de utilização, uma criança tem de ter uma Conta Google gerida por um dos pais. É possível adicionar uma conta escolar mais tarde para ferramentas como o Google Classroom.</translation>
 <translation id="1375557162880614858">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex?</translation>
-<translation id="1375938286942050085">A configuração está concluída! Em seguida, prepare o seu dispositivo para jogar</translation>
 <translation id="1377600615067678409">Ignorar por enquanto</translation>
 <translation id="1399261165075500043">Não é possível carregar os Termos de Utilização do Google Play</translation>
 <translation id="1400243387594338234">Pode usar este PIN para iniciar sessão no seu dispositivo</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Use a sua Conta Google no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecionar fuso horário</translation>
 <translation id="3893630138897523026">ChromeVox (respostas faladas)</translation>
-<translation id="3897746662269329507">O seu <ph name="DEVICE_TYPE" /> foi concebido para jogos. A app Explore é apresentada a seguir, onde pode aceder a centenas de jogos mais recentes, ver ofertas de videojogos e descobrir funcionalidades de videojogos que os dispositivos oferecem.</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3910588685973519483">Crie imagens de fundo com IA</translation>
 <translation id="3924259174674732591">Tamanho do texto e visualização: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">É necessário instalar uma atualização do firmware Trusted Platform Module. Consulte <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Ups, ocorreu um erro ao iniciar sessão</translation>
 <translation id="5453829744223920473">A criança pode usar todos os recursos, marcadores e apps escolares como faz na sala de aula. A escola define as regras básicas.</translation>
-<translation id="5463450804024056231">Inscrever-se para receber emails sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Ao continuar, aceita que este dispositivo também pode transferir e instalar automaticamente atualizações e apps da Google, do operador da criança e do fabricante deste dispositivo, possivelmente através de dados móveis. Algumas destas apps podem oferecer compras na app.</translation>
 <translation id="5502915260472117187">Uma criança</translation>
 <translation id="5511823366942919280">Quer mesmo configurar este dispositivo como um "Tubarão"?</translation>

@@ -282,7 +282,6 @@
 <translation id="1449251255954293933">Պահեք Redress Number-ը Google Wallet-ում</translation>
 <translation id="1455413310270022028">Ռետին</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{Կարծիքներ չկան}=1{Դիտել 1 կարծիք}one{Դիտել բոլոր # կարծիքները}other{Դիտել բոլոր # կարծիքները}}</translation>
-<translation id="1458770162980644530">Ապառիկ գնման պայմանների էկրան։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="1460317464907341501">Ավտոմատ հաստատե՞լ այս էլ․ հասցեն</translation>
 <translation id="1461041542809785877">Կատարողականություն</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -766,6 +765,7 @@
 <translation id="2277753418458118549">Ցույց տալ միացման մանրամասները</translation>
 <translation id="2277949605527755300"><ph name="URL" /> կայքը հայցում է ձեր ձեռքերի շարժումները հետագծելու թույլտվություն</translation>
 <translation id="22792995594807632">Նախքան ներբեռնելը ստուգեք ֆայլերը</translation>
+<translation id="2279607542590042584">Մուտքի բանալի • Apple Passwords</translation>
 <translation id="2283340219607151381">Պահել և ավտոմատ լրացնել հասցեները</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» էջը ջնջվեց</translation>
 <translation id="2283599456633275070">Ճամփորդություն</translation>
@@ -861,7 +861,6 @@
 <translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="243815215670139125">Չհաջողվեց պահել քարտը ձեր Google հաշվում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
-<translation id="2441854154602066476">Վճարման հասանելի եղանակները, որոնք կարելի է լրացնել հպումով։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="2442865686365739754">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
@@ -901,8 +900,8 @@
 <translation id="2491120439723279231">Սերվերի վկայագիրը սխալներ է պարունակում:</translation>
 <translation id="2491414235131909199">Այս էջն արգելափակվել է ընդլայնման կողմից</translation>
 <translation id="2493122313108999546">Չափը փոխվեց</translation>
-<translation id="249376477913017009">Բացվել է ծանուցում այն մասին, որ ինքնալրացումը հասանելի է Gmail-ից և այլ ծառայություններից</translation>
 <translation id="2495083838625180221">JSON վերլուծիչ</translation>
+<translation id="2495909791227061512">Միանա՞լ մոտակա սարքերին</translation>
 <translation id="2496402116964818747">Անցեք <ph name="SETTINGS" />՝ ընտրելու, թե արդյոք ուզում եք օգտագործել մատնահետքը գաղտնաբառերի լրացման համար</translation>
 <translation id="2498091847651709837">Որոնել նոր քարտ</translation>
 <translation id="2501270939904835585">Պիտակներ (ատլաս)</translation>
@@ -1208,7 +1207,6 @@
 <translation id="3052868890529250114">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքերին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="3053013834507634016">Վկայագրի բանալու օգտագործումը</translation>
-<translation id="3056660797732519147">Ապառիկ գնման սխալի էկրան։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="3057844102210575426">Կառավարել ճանապարհորդության մասին տեղեկությունները</translation>
 <translation id="3061707000357573562">Խոցելիության շտկում</translation>
 <translation id="3062655045399308513">Ջնջել այցելությունների պատմությունը...</translation>
@@ -1444,6 +1442,7 @@
 <translation id="3447884698081792621">Ցուցադրել հավաստագիրը (թողարկող՝ <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Կարող է հայցել MIDI սարքերի վերահսկման և ծրագրավորման թույլտվություն</translation>
 <translation id="3452404311384756672">Քաշելու ժամանակամիջոցը`</translation>
+<translation id="345268527248907593">Այս կայքն անհասանելի է</translation>
 <translation id="3453962258458347894">Փորձերի քանակը</translation>
 <translation id="3461266716147554923"><ph name="URL" /> կայքն ուզում է տեսնել սեղմատախտակին պատճենված տեքստն ու պատկերները</translation>
 <translation id="3461824795358126837">Գունանշիչ</translation>
@@ -1972,6 +1971,7 @@
 <translation id="4284885181066817063">Արգելափակված է <ph name="DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="4288101205645068104">Ջնջել մեքենան</translation>
 <translation id="4290920330097335010">Երբեք չթույլատրել</translation>
+<translation id="4291909791598163333">Ձեր կազմակերպությունն արգելափակել է այս կայքը</translation>
 <translation id="4297502707443874121">Էջ <ph name="THUMBNAIL_PAGE" />-ի մանրապատկեր</translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" />․ տեղեկությունները թարմացվել են</translation>
 <translation id="4298148761711700950">Ակնթարթորեն վճարեք՝ առանց QR կոդ վերբեռնելու</translation>
@@ -2084,7 +2084,6 @@
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Գաղտնագրել համաժամացված գաղտնաբառերը Google հաշվի միջոցով</translation>
 <translation id="4493480324863638523">URL-ն անվավեր է: Պետք է լինի ստանդարտ սխեմայով URL, օր.՝ http://example.com կամ https://example.com։</translation>
-<translation id="4497010149473852018">Մշտական հաճախորդի քարտեր, որոնց տվյալները կարող են լրացվել մեկ կոճակի սեղմումով։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="4497843134750481377">Կառավարել առաջարկները</translation>
 <translation id="4500587658229086076">վտանգավոր բովանդակություն</translation>
 <translation id="4501939680615452918">Փնտրիր ազատ սեղաններ հայտնի ռեստորաններում</translation>
@@ -2151,7 +2150,6 @@
 <translation id="4628948037717959914">Լուսանկար</translation>
 <translation id="4629370161347991046">A4x6</translation>
 <translation id="462989688138616749">Ֆայլի վերբեռնումը <ph name="CLOUD_PROVIDER" /> կսկսվի <ph name="HOURS" /> ժամից</translation>
-<translation id="4631881646528206880">Վիրտուալ քարտի գրանցում</translation>
 <translation id="4635278307999235413">Տվյալներն ուղարկվում են ադմինիստրատորի վահանակին</translation>
 <translation id="4636930964841734540">Տեղեկություններ</translation>
 <translation id="4640225694041297329">Ցույց տալ վերջին 7 օրվա համար արդյունքները</translation>
@@ -2535,7 +2533,6 @@
 <translation id="5255583962255635076">Դիտարկիչի վերաբերյալ գործող կանոններ ձեր աշխատանքային պրոֆիլում</translation>
 <translation id="5255690596502591079">Լուսանկարել</translation>
 <translation id="5255771248404149177">Ձեր քարտի մատակարարին անհրաժեշտ է հաստատել ձեր ինքնությունը</translation>
-<translation id="525579853540851404">Ապառիկ գնման առաջընթացի էկրան։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="5255833070095767006">350 x 460 մմ</translation>
 <translation id="5257739419779698609">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը պատճենել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="5258473597674772367">«<ph name="GROUP_NAME" />» ներդիրների խումբն այլևս հասանելի չէ</translation>
@@ -2654,6 +2651,7 @@
 <translation id="5452923259299906094">Վճարեք էլեկտրոնային դրամապանակով և Pix-ով</translation>
 <translation id="5455374756549232013">Կանոնի սխալ ժամադրոշմ</translation>
 <translation id="5456428544444655325">Երբեք ցույց չտալ</translation>
+<translation id="5457082343331641453">Ավելացրեք մանրամասներ</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" /> ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="5463625433003343978">Սարքերի որոնում…</translation>
 <translation id="5465128270485645058">Ավելի անհատականացված պատասխաններ ստանալու համար ավտոմատ կիսվեք այս պատուհանի բաց ներդիրներով, եթե դրանք կապված են այս զրուցաշարի հետ։</translation>
@@ -3139,6 +3137,7 @@
 <translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
 <translation id="6264636978858465832">Գաղտնաբառերի կառավարչին ավելի շատ թույլտվություններ են հարկավոր</translation>
 <translation id="6265794661083428563">Պատճենել <ph name="POLICY_NAME" /> կանոնի արժեքը</translation>
+<translation id="6271264012613848937">Ձեր կազմակերպության կանոնները ձեզ արգելում են այցելել <ph name="URL" /> կայք։ Եթե դա անսպասելի է, դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="6272088941196661550">Շարունակել որոնումը՝ Chrome-ի պատմության մեջ նման հարցումները դիտելու համար</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive-ում և OneDrive-ում</translation>
@@ -3419,6 +3418,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Կանոնի արժեքը</translation>
 <translation id="6753434778807740853">Ջնջել <ph name="ENTRY_VOICEOVER" /> գրառումը</translation>
+<translation id="6753460329812070808">Առաջարկը հեռացվել է Chrome-ից</translation>
 <translation id="6757797048963528358">Ձեր սարքը մտել է քնի ռեժիմ:</translation>
 <translation id="6758934187792712102"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր շարժման և լուսավորության սենսորները</translation>
 <translation id="6770747695101757579">Թուղթ (բամբակյա)</translation>
@@ -3498,6 +3498,7 @@
 <translation id="6897140037006041989">Օգտատիրոջ գործակալ</translation>
 <translation id="6898699227549475383">Կազմակերպություն (O)</translation>
 <translation id="6900702165119149418">Դուք դուրս եք եկել հաշվից</translation>
+<translation id="6902049722133977432">Հետարկել</translation>
 <translation id="6910211073230771657">Ջնջված</translation>
 <translation id="691024665142758461">Ներբեռնել մի քանի ֆայլ</translation>
 <translation id="691046363691324218">Անձնական համարը</translation>
@@ -3711,6 +3712,7 @@
 <translation id="7266094331715305887">հավելվածներ սարքում</translation>
 <translation id="7268742523336093718">Ապահով կերպով ավելացրեք անձնագիր Google Wallet-ում</translation>
 <translation id="7269151392155523061">Դյուրանցումը չի կարող լինել նույնը, ինչ որոնման ագրեգատորի հիմնաբառն է, որը սահմանված է <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> պարամետրով՝ <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Ձեր կազմակերպության կողմից սահմանված պաշտպանության միջոցների կամ կանոնների հետ կապված սխալ առաջացավ։ Փորձեք ավելի ուշ կամ կապվեք ձեր ադմինիստրատորի հետ։</translation>
 <translation id="7273111226200291353">Ձեր ներբեռնած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել զգայուն տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն ու տեսանելի լինել ձեր ադմինիստրատորին։</translation>
 <translation id="7275334191706090484">Կառավարվող էջանիշներ</translation>
 <translation id="7278933725460302617">Դուք այժմ մեկուսացված ռեժիմում եք</translation>
@@ -4065,7 +4067,6 @@
 <translation id="7839192898639727867">Վկայագրի առարկայի բանալու ID</translation>
 <translation id="7840103971441592723">Էկրանի տեսագրումը սկսվել է</translation>
 <translation id="784137052867620416">Գնումների վիճակագրություն</translation>
-<translation id="7841633276323004751">Վճարման հասանելի եղանակները, որոնք պետք է ընտրվեն վճարումը շարունակելու համար։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Չկա}=1{1 հավելված (<ph name="EXAMPLE_APP_1" />)}=2{2 հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# հավելված (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="784623644169604270">Նոր գործողություններ չկան</translation>
@@ -4144,7 +4145,6 @@
 <translation id="79682505114836835">«<ph name="VALUE" />» արժեքը անվավեր HEX գույն է։</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384՝ RSA գաղտնագրումով</translation>
-<translation id="7976053965094442846">Հասանելի են ապառիկ գնման ծառայություններ։ Ստեղնաշարը թաքցված է։</translation>
 <translation id="7976214039405368314">Չափազանց շատ հարցումներ</translation>
 <translation id="7977029776654598145">Երբ օգտագործվում է</translation>
 <translation id="7977538094055660992">Արտածման սարք</translation>
@@ -4154,6 +4154,7 @@
 <translation id="7984945080620862648">Այս պահին չեք կարող այցելել <ph name="SITE" />, քանի որ կայքը կոդավորված հավատարմագրեր է ուղարկել, որոնք Chrome-ը չի կարող մշակել: Ցանցային սխալներն ու հարձակումները սովորաբար ժամանակավոր բնույթ են կրում, ուստի, հավանաբար, այս էջը մատչելի կլինի ավելի ուշ:</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Հասանելի են ապառիկ գնման ծառայություններ էկրանը բացված է ամբողջությամբ։</translation>
+<translation id="7990290316254726169">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ դուք մեկուսացված ռեժիմում եք։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Ամրակար</translation>
 <translation id="7992044431894087211">Էկրանի ցուցադրումը <ph name="APPLICATION_TITLE" /> հավելվածին վերականգնվել է</translation>
 <translation id="799384093520583425">Ձեր կազմակերպությունը արգելափակել է ծրագրավորողի գործիքների օգտագործումն այս էջում</translation>
@@ -4451,7 +4452,6 @@
 <translation id="8522552481199248698">Chrome-ը կօգնի պաշտպանել ձեր Google հաշիվը և փոխել գաղտնաբառը։</translation>
 <translation id="8523574453888018351">Նոր լեզու սովորեցրու ինձ</translation>
 <translation id="852450791482410042">Վճարել հիմա</translation>
-<translation id="8528479410903501741">Պահել IBAN-ը</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533587060884335451">Օգտագործել ճշգրիտ վայրը</translation>
 <translation id="8533619373899488139">Արգելափակված URL-ների ցուցակը և ձեր համակարգի ադմինիստրատորի կողմից կիրառված մյուս կանոնները տեսնելու համար այցելեք &lt;strong&gt;chrome://policy&lt;/strong&gt;։</translation>
@@ -4495,6 +4495,7 @@
 <translation id="860043288473659153">Քարտապանի անունը</translation>
 <translation id="8601206103050338563">TLS WWW սպասառուի նույնականացում</translation>
 <translation id="8604103095921958091">Ապառիկ գնման պայմանների էկրանն ամբողջությամբ բացված է։</translation>
+<translation id="8605014984308506350">Դուք տեսնում եք այս նախազգուշացումը, քանի որ այս կայքը չի աջակցում HTTPS-ը, իսկ դուք մեկուսացված ռեժիմում եք։ <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">սարքի օգտագործում</translation>
 <translation id="8619130384334725124">Օգտագործվում է ըստ կանխադրման</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
@@ -4648,6 +4649,7 @@
 <translation id="8883863364960302898">Google Drive-ի պանակ</translation>
 <translation id="8884537526797090108">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="8889525327610245418">Ապահով կերպով թարմացրեք վարորդական վկայականը Google Wallet-ում</translation>
+<translation id="8890516388109605451">Աղբյուրներ</translation>
 <translation id="8891031436559779793">Մենք կտեղեկացնենք ձեզ, երբ որևէ կայքում գները նվազեն։</translation>
 <translation id="8891727572606052622">Պրոքսի-սերվերի ռեժիմն անվավեր է:</translation>
 <translation id="8894794286471754040">Երկար եզրից սկսած</translation>

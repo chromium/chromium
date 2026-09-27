@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">चांगल्या प्रकारे पूर्ण केले आहे!</translation>
 <translation id="1342886103232377846">धोक्यात असलेले पासवर्ड तपासण्यासाठी, Google Password Manager वर जा</translation>
 <translation id="1343920184519992513">तुम्ही सोडले होते तेथून पुढे सुरू ठेवा आणि पेजचा विशिष्ट संच उघडा</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">निश्चित करा आणि रीस्टार्ट करा</translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1347512539447549782">Linux स्टोरेज</translation>
@@ -797,7 +798,6 @@
 <translation id="160689647589417224">हे अ‍ॅप्लिकेशन या प्रदेशामध्ये प्रतिबंधित आहे.</translation>
 <translation id="1607139524282324606">प्रवेश साफ करा</translation>
 <translation id="1608668830839595724">निवडलेल्या आयटमसाठी अधिक कृती</translation>
-<translation id="1609603645228231640">Gemini Spark हे प्रायोगिक स्वरूपाचे असून ते तुमची माहिती शेअर करणे किंवा तुम्हाला न विचारता खरेदी करणे यांसारख्या गोष्टी करू शकते. <ph name="LINK_BEGIN" />जोखमांचा आढावा घ्या<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">ॲप सेटिंग्ज</translation>
 <translation id="161042844686301425">निळसर</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
@@ -1063,7 +1063,6 @@
 <translation id="1808805149659872686">नवीन नोंद</translation>
 <translation id="1809201888580326312">तुम्ही या साइट आणि ॲप्ससाठी पासवर्ड सेव्ह करू नका, असे निवडले आहे</translation>
 <translation id="1809734401532861917">माझे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_EMAIL_ADDRESS" /> मध्ये जोडा</translation>
-<translation id="1811908311154949291">गुप्त मोड Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ला <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> वापरत राहता येणार नाही</translation>
 <translation id="1812284620455788548"><ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="1813278315230285598">सेवा</translation>
@@ -1297,7 +1296,6 @@
 <translation id="1983612835086592681">तुम्ही मागील आठवड्यामध्ये उघडल्या होत्या</translation>
 <translation id="1984087999855033707">फोन नंबर</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
-<translation id="1984683754853869253">शाळेसाठी तुम्हाला नवीन प्रोफाइल तयार करायची का?</translation>
 <translation id="198507684520034826">मदत</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">प्रगत स्थान सेटिंग्ज</translation>
@@ -1330,7 +1328,7 @@
 <translation id="2010501376126504057">कंपॅटिबल डिव्हाइस</translation>
 <translation id="2010636492623189611">निवडले आहे.</translation>
 <translation id="2012935757369720523">फाइल हटवा</translation>
-<translation id="2014495120525813351">Gemini Spark ला या डिव्हाइसवर ब्राउझ करू द्या</translation>
+<translation id="2014191284313949173">अलिप्त टॅब बंद करा</translation>
 <translation id="2016473077102413275">इमेजची आवश्यकता असलेली वैशिष्ट्ये काम करणार नाहीत</translation>
 <translation id="2017334798163366053">कार्यडिस्प्ले डेटा संकलन अक्षम करा</translation>
 <translation id="2017770349934140286">तुम्ही Google Play मधून डाउनलोड केलेले Google Play आणि अ‍ॅप्स या Chromebook मधून हटवली जातील.
@@ -1462,6 +1460,7 @@
 <translation id="2121825465123208577">आकार बदला</translation>
 <translation id="2122446694240899610">तुमची कौशल्ये तुमच्या Google खाते मध्ये सेव्ह केली जातात,</translation>
 <translation id="2123766928840368256">वेगळी फाइल निवडा</translation>
+<translation id="2124153808069020510">डेटा हटवण्यासाठी, सर्व अलिप्त विंडो बंद करा</translation>
 <translation id="2124930039827422115">{1,plural, =1{एका वापरकर्त्याने <ph name="AVERAGE_RATING" /> रेट केले.}other{# वापरकर्त्यांनी <ph name="AVERAGE_RATING" /> रेट केले.}}</translation>
 <translation id="2125715366913703594">&amp;Extensions एक्सप्लोर करा</translation>
 <translation id="2126167708562367080">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे.</translation>
@@ -1604,6 +1603,7 @@
 <translation id="2227179592712503583">सूचना काढून टाका</translation>
 <translation id="222931766245975952">फाईल कापली गेली</translation>
 <translation id="2229342031987138128">क्लोझ्ड कॅप्शन</translation>
+<translation id="22294739381015133">तुम्ही भेट देता त्या साइट अलिप्त मोडमध्ये सेव्ह केल्या जात नाहीत</translation>
 <translation id="2231351769755997720">कोणत्याही सूचना उपलब्ध नाहीत. या पेजविषयी तुमचा स्वत:चा प्रश्न विचारण्याचा प्रयत्न करा.</translation>
 <translation id="2232751457155581899">साइट तुमच्या कॅमेर्‍याचे स्थान ट्रॅक करण्यासाठी विचारू शकतात</translation>
 <translation id="2233502537820838181">&amp;अधिक माहिती</translation>
@@ -2043,7 +2043,6 @@
 <translation id="2554553592469060349">निवडलेली फाईल खूप मोठी आहे (कमाल आकार: 3mb).</translation>
 <translation id="2555802059188792472"><ph name="TOTAL_NUM_APPS" /> पैकी <ph name="NUM_ALLOWED_APPS" /> अ‍ॅप्सना सूचना पाठवू शकते</translation>
 <translation id="2555855727505718984">फॉर्म भरण्यात मदत करण्यासाठी ही माहिती या डिव्हाइसवरील ऑटोफिलमध्ये नसेल</translation>
-<translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">तुमचे सर्व बुकमार्क येथे पहा</translation>
 <translation id="2563924218974330506">तुम्ही आता इथे तुमचे टॅब गट व्यवस्थापित करू शकता. हे कधीही अनपिन करा.</translation>
 <translation id="2564520396658920462">AppleScript द्वारे JavaScript एक्झिक्युट करणे बंद केले आहे. ते सुरू करण्यासाठी, मेनू बारवरून, पहा &gt; डेव्हलपर &gt; Apple इव्‍हेंटवरून JavaScript चालवू द्या यावर जा. अधिक माहितीसाठी: https://support.google.com/chrome/?p=applescript</translation>
@@ -2122,7 +2121,6 @@
 <translation id="2626746300781063303">या विनंतीला प्रतिसाद देताना Google सह साइट त्यांची विवेकबुद्धी वापरतात</translation>
 <translation id="2626799779920242286">कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2627424346328942291">शेअर करू शकत नाही</translation>
-<translation id="2627970398976286795">Gemini Spark शी संबंधित धोक्यांचे पुनरावलोकन करा</translation>
 <translation id="2628258844236035475">Chrome मधून तुमच्या घराचा पत्ता काढून टाकायचा आहे का?</translation>
 <translation id="2628770867680720336">ADB डीबगिंग सुरू करण्यासाठी हे Chromebook फॅक्टरी रीसेट करणे आवश्यक आहे. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini सोबत नवीन चॅट सुरू करा</translation>
@@ -2431,7 +2429,6 @@
 <translation id="2845276301195220700">Google Calendar साठी आणखी कृती</translation>
 <translation id="2845382757467349449">नेहमी बुकमार्क बार दर्शवा</translation>
 <translation id="284581348330507117">युनिक पासवर्ड तयार करा</translation>
-<translation id="2846345106886298325">टास्क पूर्ण झाली असून Gemini Spark वर परत आली आहे</translation>
 <translation id="284884486564166077">Lens वापरून कोणतीही इमेज शोधा</translation>
 <translation id="2849035674501872372">वर पहा</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2493,7 +2490,6 @@
 <translation id="2893318819023133318">उलट दृश्य</translation>
 <translation id="2894596417096093634">क्रॅश अहवाल आयडेंटिफायर</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
-<translation id="2895194086130800590">हे डिव्हाइस ॲक्टिव्ह आणि Chrome सुरू असेल तेव्हाच Gemini Spark या डिव्हाइसवर ऑटोमॅटिक ब्राउझिंगचा वापर करू शकते.</translation>
 <translation id="289695669188700754">की आयडी: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">तुम्ही तुमच्या सर्व गुप्त विंडो बंद केल्यास, हे कस्टम सेटिंग काढून टाकले जाईल</translation>
 <translation id="2897878306272793870">तुम्हाला नक्की <ph name="TAB_COUNT" /> टॅब उघडायचा आहे का?</translation>
@@ -2546,7 +2542,6 @@
 <translation id="2933653107553951760">गट रिस्टोअर करा</translation>
 <translation id="2934225044529065415">कॅमेरा अ‍ॅक्सेस करू शकत नाही</translation>
 <translation id="2935314715123552088">अ‍ॅक्टिव्ह eSIM प्रोफाइल बंद करा</translation>
-<translation id="2936067606203230121">तुम्ही सुरू केलेल्या किंवा अपडेट केलेल्या टास्कनुसार कोणती कृती करावी हे Gemini Spark ठरवेल.</translation>
 <translation id="2936851848721175671">बॅकअप घ्या आणि रिस्टोअर करा</translation>
 <translation id="2938981087412273365">ही साइट वाचण्याची आणि तिच्यामध्ये बदल करण्याची अनुमती नाही</translation>
 <translation id="2939005221756255562">नोटिफिकेशन केंद्र मध्ये नोटिफिकेशन सुरू करा. <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> उघडा.</translation>
@@ -2926,6 +2921,7 @@
 <translation id="3213681682237645841"><ph name="LANGUAGE" /> मधील आवाज डाउनलोड करत आहे...</translation>
 <translation id="3217843140356091325">शॉर्टकट तयार करायचा?</translation>
 <translation id="3220494908385619295">बाजूबाजूला दाखवा</translation>
+<translation id="3220541426929880850">तुमच्या डिव्हाइसवरून अलिप्त ब्राउझिंग इतिहास हटवण्यासाठी सर्व अलिप्त टॅब बंद करा</translation>
 <translation id="3220943972464248773">तुमचे पासवर्ड सिंक करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="3222066309010235055">पूर्वप्रस्तुती: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> शी कनेक्ट करा</translation>
@@ -3424,6 +3420,7 @@
 <translation id="3600956933576601730">ही वैशिष्ट्ये वापरण्यासाठी तुम्हाला अटींचे पुनरावलोकन करणे आणि त्या स्वीकारणे आवश्यक आहे</translation>
 <translation id="3601374594714740284">आणखी उच्च गुणवत्तेच्या आवाजांसाठी, तुमच्या डिव्हाइसवरील जागा मोकळी करा</translation>
 <translation id="360180734785106144">नवीन वैशिष्ट्ये उपलब्ध होताच क्षणी ते ऑफर करते</translation>
+<translation id="3601988315287782413">हे फक्त अलिप्त विंडोवर परिणाम करते</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3602495161941872610">सिंकसंबंधित &amp;समस्येचे निराकरण करा</translation>
 <translation id="3602894439067790744">संख्या याप्रमाणे वाचा</translation>
@@ -3652,7 +3649,6 @@
 <translation id="3756578970075173856">पिन सेट करा</translation>
 <translation id="3756806135608816820">साइट या ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकतात</translation>
 <translation id="3756823472711156529">गट रिस्टोअर करा</translation>
-<translation id="3757337311115630808">Gemini Spark बद्दल अधिक जाणून घ्या</translation>
 <translation id="3757567010566591880">टूलबारवरून अनपिन करा</translation>
 <translation id="3757645900890881944">शोध साधने</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
@@ -4774,6 +4770,7 @@
 <translation id="4631637535315947773">तुम्ही अलीकडे तुमच्या सर्वाधिक भेट दिलेल्या साइटसाठी शॉर्टकट वापरले नसल्यामुळे ते काढून टाकण्यात आले आहेत</translation>
 <translation id="4631955550884380853">फोकस केलेला आवाज</translation>
 <translation id="4632655012900268062">कार्ड कस्टमाइझ करा</translation>
+<translation id="4634719521235795064">तुमच्यासाठी साइन इन करण्याकरिता Gemini हे Google Password Manager वापरू शकते. <ph name="BEGIN_LINK" />Gemini तुमचा डेटा कसा हाताळते हे जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini अनइंस्टॉल करा</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> हे अतिथी वापरकर्त्यांसाठी उपलब्ध नाही.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{तुमच्या प्रश्नासोबत वापरण्यासाठी १ इमेज अपलोड करा}other{तुमच्या प्रश्नासोबत वापरण्यासाठी कमाल # इमेज अपलोड करा}}</translation>
@@ -5261,7 +5258,6 @@
 <translation id="4989966318180235467">&amp;पार्श्वभूमी पृष्ठाचे निरीक्षण करा</translation>
 <translation id="499016799952867794">यामुळे ॲप अपेक्षेप्रमाणे रन होऊ शकते.</translation>
 <translation id="4990673372047946816">कोणताही कॅमेरा उपलब्ध नाही</translation>
-<translation id="499126848196136237">Gemini Spark या डिव्हाइसवर Chrome ऑटोमॅटिक ब्राउझिंग वापरून तुमच्या वतीने वेबसाइटशी संवाद साधू शकते आणि टास्क पूर्ण करू शकते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">कार्य की म्हणून शीर्ष-पंक्ती की हाताळा</translation>
 <translation id="4991873517942703737">या दस्तऐवजाविषयी विचारा</translation>
 <translation id="4992066212339426712">अनम्यूट करा</translation>
@@ -5518,7 +5514,6 @@
 <translation id="5189274947477567401">प्रक्रिया शेअर करण्याची निवड रद्द करण्यासाठी ब्राउझर रीस्टार्ट करणे आवश्यक आहे. हा ब्राउझर आता रीस्टार्ट होईल.</translation>
 <translation id="5189404424758444348">स्टीमपंक</translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> वापरत आहे</translation>
-<translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="5190926251776387065">पोर्ट सुरू करा</translation>
 <translation id="5190959794678983197">मायक्रोफोन नाही</translation>
 <translation id="5191094172448199359">तुम्ही एंटर केलेले पिन जुळत नाहीत</translation>
@@ -6087,6 +6082,7 @@
 <translation id="5641715878999557094">तुम्ही होम बटणावर क्लिक करता, तेव्हा कोणते पेज दाखवले जाते हे "<ph name="EXTENSION_NAME" />" यामुळे बदलले आहे.</translation>
 <translation id="5643191124441701136">तुमचा सुरक्षा कोड तुमच्या कार्डच्या समोरील बाजूस आहे</translation>
 <translation id="5643321261065707929">मर्यादित नेटवर्क</translation>
+<translation id="5645369002069651355">ईमेलची पडताळणी करत आहे</translation>
 <translation id="5646376287012673985">स्थान</translation>
 <translation id="5646558797914161501">व्यवसायी</translation>
 <translation id="564670806635578888">“<ph name="SEARCH_TERMS" />” साठी Google वर शोधा</translation>
@@ -7020,7 +7016,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6393550101331051049">असुरक्षित आशय दाखवण्याची अनुमती आहे</translation>
 <translation id="6394634179843537518">फाइल जोडा</translation>
 <translation id="6395423953133416962"><ph name="BEGIN_LINK1" />सिस्टीम माहिती<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पाठवा</translation>
-<translation id="6397586889873084061">होय, माझा डेटा शाळेपासून वेगळा ठेवा (शिफारस केलेले)</translation>
 <translation id="6398715114293939307">Google Play स्टोअर काढून टाका</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="639880411171387127">तुमची Google Lens निवड. तुमची Google Lens निवड हटवण्यासाठी एंटर किंवा बॅकस्पेस प्रेस करा</translation>
@@ -8380,7 +8375,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7421293530411019405">टॅब गटामधून बाहेर पडायचे आहे का?</translation>
 <translation id="7421925624202799674">पेज स्रोत &amp;पहा</translation>
 <translation id="7422192691352527311">प्राधान्ये...</translation>
-<translation id="7423381908337122792">तुमच्या Gemini Spark एजंटचा ॲक्सेस असलेल्या कोणत्याही व्यक्तीला तुमच्या Chrome ब्राउझरवर नियंत्रण मिळवता येऊ शकते.</translation>
 <translation id="7423425410216218516"><ph name="MINUTES" /> मिनिटांसाठी दृश्यमानता सुरू आहे</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> काढून टाका</translation>
 <translation id="7424818322350938336">नेटवर्क जोडले</translation>
@@ -8506,6 +8500,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7517292544534877198">तुमच्या Google खाते मधील पासवर्डसाठी Google चे डीफॉल्ट एन्क्रिप्शन वापरा</translation>
 <translation id="7517959947270534934">तुमच्या कुटुंबातील सदस्याला सध्या पासवर्ड मिळू शकत नाहीत. त्यांना Chrome अपडेट आणि त्यांचे पासवर्ड सिंक करण्यास सांगा.</translation>
 <translation id="7518079994230200553">हा पर्याय सध्या उपलब्ध नाही.</translation>
+<translation id="7519506357537394422">Gemini ला तुमच्यासाठी <ph name="DOMAIN" /> मध्ये साइन इन करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="752021853309481824">तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="7520766081042531487">गुप्त पोर्टल: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">शॉर्टकट दाखवा</translation>
@@ -8733,7 +8728,6 @@ I feel - विटांची इमारत</translation>
 <translation id="769824636077131955">सुरक्षा तपासणीसाठी हा दस्तऐवज खूप मोठा आहे. तुम्ही ५० MB पर्यंतचे दस्तऐवज प्रिंट करू शकता.</translation>
 <translation id="7698507637739331665">काही आयटम ब्लॉक केले आहेत</translation>
 <translation id="7700516433658473670">प्रिंटर आणि स्कॅनर</translation>
-<translation id="7700873336634517379">नाही, या प्रोफाइलमध्ये शाळेसाठी वापरणे सुरू ठेवा</translation>
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
 <translation id="770231223935918661">या इमेजविषयी विचारा</translation>
@@ -9099,6 +9093,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7978450511781612192">हे तुम्हाला तुमच्या Google खात्यामधून साइन आउट करेल. तुमचे बुकमार्क, इतिहास, पासवर्ड आणि बरेच काही आता सिंक होणार नाही.</translation>
 <translation id="7980066177668669492">Base64 एन्कोड केलेला ASCII, एकाहून अधिक सर्टिफिकेट</translation>
 <translation id="7981410461060625406"><ph name="APP_NAME" /> साठी सेव्ह केलेली पासकी वापरा</translation>
+<translation id="7981445433812028278">तुमच्या ईमेलची पडताळणी करता आली नाही</translation>
 <translation id="7981662863948574132">डिव्हाइस EID आणि QR कोड पॉपअप दाखवा</translation>
 <translation id="7982578888426609524">या गटासंबंधित नवीनतम अपडेट</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
@@ -10158,6 +10153,7 @@ I feel - विटांची इमारत</translation>
 <translation id="878862491037637275">हा टॅब गट पूर्ण भरला आहे</translation>
 <translation id="8791157330927639737">अपडेट करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="8791534160414513928">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (अलिप्त)</translation>
 <translation id="8793390639824829328">शेअर केलेले टॅब स्क्रोल आणि झूम करण्यासाठी साइट या वैशिष्ट्याचा वापर करतात</translation>
 <translation id="8793895150509408038"><ph name="SECTION_HEADER" /> सूचीमधून <ph name="SITE" /> साठी साइटचे तपशील पहा</translation>
 <translation id="879413103056696865">हॉटस्पॉट सुरू असताना, तुमचा <ph name="PHONE_NAME" /> हे करेल:</translation>
@@ -10394,7 +10390,6 @@ I feel - विटांची इमारत</translation>
 <translation id="897525204902889653">क्वारंटाइन सेवा</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" आणि इतर एक टॅब}other{"<ph name="TAB_TITLE" />" आणि इतर # टॅब}}</translation>
 <translation id="897565255818387330">या साइटला <ph name="FILE_NAME" /> पाहण्याची आणि कॉपी करण्याची अनुमती द्यायची आहे का?</translation>
-<translation id="8977523125954274918">तुमच्या खात्यामध्ये तुमचा पासवर्ड आणि आणखी बरेच काही सेव्ह करण्यासाठी आणि वापरण्यासाठी शाळेची प्रोफाइल सेट करा</translation>
 <translation id="8977811652087512276">चुकीचा पासवर्ड किंवा करप्ट फाइल</translation>
 <translation id="8978154919215542464">ऑन - सर्वकाही सिंक करत आहे</translation>
 <translation id="8978670037548431647">टेदरिंग क्षमता रिफ्रेश करा</translation>
@@ -10498,7 +10493,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9040661932550800571"><ph name="ORIGIN" /> साठी पासवर्ड अपडेट करायचा आहे का?</translation>
 <translation id="9041560164471731796">Google Password Manager वापरून क्लिष्ट पासवर्ड सेव्ह करण्यासाठी Chrome मध्ये साइन इन करा</translation>
 <translation id="9041692268811217999">तुमच्या ॲडमिनिस्ट्रेटरने तुमच्या मशीनवरील स्थानिक फायलीचा अ‍ॅक्सेस बंद केला आहे</translation>
-<translation id="9041881059840744611">शाळेच्या प्रोफाइलबद्दल</translation>
 <translation id="904224458472510106">हे ऑपरेशन पहिल्यासारखे केले जाऊ शकत नाही</translation>
 <translation id="9042827002460091668">तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="9042893549633094279">गोपनीयता आणि सुरक्षा</translation>
@@ -10715,7 +10709,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9219103736887031265">इमेज</translation>
 <translation id="9219572436491982747">Chrome AI च्या तंत्रज्ञानामध्ये सुधारणा करण्यासाठी Google ला पाठवलेला डेटा मानवी परीक्षणकर्त्यांद्वारे पाहिला जाऊ शकतो</translation>
 <translation id="9219741625496141320">ब्राउझिंग डेटा आपोआप हटवला गेला</translation>
-<translation id="9220484506568374422">तुम्हाला असतो त्याप्रमाणे Gemini Spark लादेखील तुम्ही साइन इन केलेल्या साइटसह इतर सर्व साइटचा ॲक्सेस असेल. हे तृतीय पक्षांसोबत आवश्यक माहिती शेअर करेल, ज्यामध्ये तुम्हाला संवेदनशील वाटू शकेल अशा वैयक्तिक माहितीचा समावेश असू शकतो.</translation>
 <translation id="9220525904950070496">खाते काढून टाका</translation>
 <translation id="9220723036554088545">फाइल अपलोड करा</translation>
 <translation id="9220820413868316583">उचला आणि नंतर पुन्हा प्रयत्न करा.</translation>

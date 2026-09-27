@@ -541,6 +541,7 @@ Chrome-beleid heeft voorrang op dit beleid, bijvoorbeeld als de extensie in <ph 
       Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.</translation>
 <translation id="1413768951234456918">Browsegeschiedenis wissen</translation>
 <translation id="1413936351612032792">Informatie over gebruik van Linux-apps rapporteren</translation>
+<translation id="1417591892602709307">Maximumaantal gebruikersprofielen dat op het apparaat is opgeslagen</translation>
 <translation id="1417776888841750570">Met dit beleid bepaal je het gedrag van de browser nadat een beheerd account inlogt in het contentgedeelte.
 
 Dit beleid overschrijft <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -2074,6 +2075,11 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
       Dit beleid heeft alleen effect op USB-apparaten via de WebUSB API. Zie het beleid <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de Web Serial API.</translation>
 <translation id="2318353380372431186">Gebruikersinstallatie van IWA aanzetten</translation>
 <translation id="2318583605563438459">Toestaan dat ouders accounts toevoegen die onder toezicht staan</translation>
+<translation id="2323318142178972965">Hiermee bepaal je het maximum aantal gebruikersprofielen dat op het apparaat wordt bewaard.
+
+Als je dit beleid instelt op een positief geheel getal <ph name="MAX_USERS" />, bewaart <ph name="PRODUCT_OS_NAME" /> maximaal <ph name="MAX_USERS" /> reguliere gebruikersprofielen op het apparaat. Als een nieuwe gebruiker inlogt en de limiet wordt overschreden, worden de minst recent gebruikte gebruikersprofielen (met uitzondering van de op dat moment actieve gebruiker) automatisch verwijderd, samen met hun lokale opslag, om vrije schijfruimte beschikbaar te houden.
+
+Als je dit beleid niet instelt of instelt op 0, is er geen limiet voor het aantal gebruikersprofielen dat aan het apparaat kan worden toegevoegd. Als je helemaal geen gebruikersprofielen op het apparaat wilt houden, gebruik je het beleid <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
@@ -2390,24 +2396,6 @@ Als je het beleid niet toepast, wordt de functie voor contentcodering met <ph na
 <translation id="2521581787935130926">De snelkoppeling voor apps tonen op de bookmarkbalk</translation>
 <translation id="2522304491589804974">Toelatingslijst voor installatie van extensies configureren</translation>
 <translation id="2523511232831599126">Snelkoppelingen voor toegankelijkheid op het inlogscherm aanzetten</translation>
-<translation id="252611686271192278">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
-Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
-
-Eindpunten van privénetwerken gebruiken IP-adressen uit de ruimte voor privé-IP-adressen, die is gedefinieerd in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven voor welke sites de toegang tot het privénetwerk wordt geblokkeerd in de Direct Sockets API.
-Geldige patronen zijn beperkt tot geïsoleerde web-apps.
-
-Als je het beleid niet instelt, is <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites.
-
-URL-patronen mogen geen conflict vormen met <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.
-
-Dit beleid is alleen van toepassing als de oorsprong de Direct Sockets API mag gebruiken.
-Ga naar <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> voor meer informatie.
-
-Dit beleid is alleen van toepassing op nieuwe verbindingspogingen en maakt bestaande verbindingen niet ongeldig.</translation>
 <translation id="252742292004421898">Direct Sockets API toestaan op deze sites</translation>
 <translation id="2528762900096510743">Service voor automatisch uitloggen aanzetten</translation>
 <translation id="2529880111512635313">De lijst met automatisch geïnstalleerde apps en extensies configureren</translation>
@@ -5960,7 +5948,6 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 Als je het beleid instelt op False, wordt het standaardgedrag gebruikt.</translation>
 <translation id="4820432864264617413">Voorkomen dat <ph name="BOREALIS_NAME" /> wordt uitgevoerd voor een gebruiker</translation>
 <translation id="4821987881803903281">Het recht voor vensterplaatsing weigeren voor deze sites</translation>
-<translation id="4825653993105771848">Toegang tot privénetwerk beheren in de Direct Sockets API</translation>
 <translation id="4825777333376170738">Rapportage voor kiosksessies op apparaat uitzetten</translation>
 <translation id="4826326557828204741">Actie die moet worden ondernomen wanneer de vertraging voor inactief wordt bereikt bij gebruik op accuvermogen</translation>
 <translation id="4826701474986856664">Het scherm van de sensor voor menselijke aanwezigheid tonen tijdens het inloggen</translation>
@@ -8012,7 +7999,7 @@ Als je het beleid toepast, wordt de API ondersteund.
 Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voor deze API problemen aan het licht brengt. Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Het beleid is beschikbaar via <ph name="PRODUCT_NAME" /> versie 114, waarna support voor deze API onvoorwaardelijk is beëindigd.
 
 OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
-<translation id="6083071443488983075">Bepaalt of <ph name="PRODUCT_NAME" /> inactieve achtergrondtabbladen vastzet om CPU en geheugen te besparen.
+<translation id="6083071443488983075">Bepaalt of <ph name="PRODUCT_NAME" /> inactieve achtergrondtabbladen vastzet om CPU-rekenkracht en geheugen te besparen.
 
 Als het vastzetten van tabbladen op de achtergrond actief is, worden tabbladen die een tijdje inactief zijn geweest op de achtergrond vastgezet door de uitvoering van JavaScript en timertaken te onderbreken. Vastgezette tabbladen blijven in het geheugen geladen en worden onmiddellijk hervat als de gebruiker ze selecteert. Tabbladen met actieve achtergrondtaken, zoals tabbladen die audio of video afspelen, scherm- of camerastreams vastleggen, actieve WebRTC-verbindingen onderhouden of Web Locks bevatten, komen niet in aanmerking voor vastzetten en blijven actief. Sites die zijn ingesteld in het beleid <ph name="TAB_DISCARDING_EXCEPTIONS_POLICY_NAME" /> of in de uitzonderingen voor het verwijderen van tabbladen van de gebruiker, zijn ook vrijgesteld van vastzetten.
 
@@ -8710,7 +8697,6 @@ OPMERKING: Het standaardgedrag voor consumenten- en zakelijke apparaten verschil
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> aanzetten en instellen als primaire browser</translation>
 <translation id="647698599569353771">Sta toe dat Dichtbij delen wordt aangezet.</translation>
 <translation id="6477685422297715670">Groene achtergrondverlichting van toetsenbord</translation>
-<translation id="6477933144150138501">Toestaan dat geïsoleerde web-app-oorsprongen communiceren met privénetwerkeindpunten in de Direct Sockets API</translation>
 <translation id="6478258366184919502">Herkomsten van login en scherm</translation>
 <translation id="6478261301433199402">Als je het beleid instelt, wordt de <ph name="PLUGIN_VM_NAME" />-image voor een gebruiker opgegeven. Geef dit beleid op als een tekenreeks met json-indeling, waarbij <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> aangeeft waar de image kan worden gedownload en <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als een SHA-256-hash die wordt gebruikt om de integriteit van de download te verifiëren.</translation>
 <translation id="6481245670325946423">Gebruik van de stand zonder interface toestaan</translation>
@@ -9081,20 +9067,6 @@ Dit beleid wordt in een toekomstige release verwijderd.</translation>
       Opmerking: Hoewel er met het beleid meerdere items kunnen worden geaccepteerd in <ph name="ENTRIES_FIELD_NAME" />, wordt alleen het eerste item gebruikt. De andere items worden genegeerd.
       Waarschuwing: Als je dit beleid instelt, kan de toepassing van software-updates worden vertraagd.</translation>
 <translation id="6695441448686167614">Instellingen voor WebPrinting</translation>
-<translation id="6695983959768914375">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
-Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
-
-Eindpunten van privénetwerken gebruiken IP-adressen uit de ruimte voor privé-IP-adressen, die is gedefinieerd in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Als je het beleid instelt op 1 of niet instelt, kunnen geïsoleerde web-app-oorsprongen communiceren met privénetwerkeindpunten in de Direct Sockets API.
-
-Als je het beleid instelt op 2, wordt voorkomen dat geïsoleerde web-app-oorsprongen communiceren met privénetwerkeindpunten in de Direct Sockets API.
-
-Dit beleid is alleen van toepassing als de oorsprong de Direct Sockets API mag gebruiken.
-Ga naar <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> voor meer informatie.
-De standaardinstelling kan ook worden overschreven voor overeenkomende URL's met <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />.
-
-Dit beleid is alleen van toepassing op nieuwe verbindingspogingen en maakt bestaande verbindingen niet ongeldig.</translation>
 <translation id="6698632841807204978">Monochroom afdrukken aanzetten</translation>
 <translation id="6699740789657890714">Hiermee kun je aangeven of websites op een onbeveiligde manier verzoeken mogen sturen naar netwerkeindpunten die meer privé zijn.</translation>
 <translation id="6699880231565102694">Tweefactorauthenticatie aanzetten voor hosts voor externe toegang</translation>
@@ -10441,22 +10413,6 @@ Activering van Gemini is niet in alle landen of talen beschikbaar. Als je dit be
 <translation id="7512514325152952954">Payloads voor automatische updates voor <ph name="PRODUCT_OS_NAME" /> kunnen worden gedownload via HTTP in plaats van HTTPS. Hierdoor kunnen HTTP-downloads transparant in het HTTP-cachegeheugen worden opgeslagen.
 
 Als je dit beleid instelt op True, probeert <ph name="PRODUCT_OS_NAME" /> payloads voor automatische updates te downloaden via HTTP. Als je het beleid instelt op False of niet instelt, wordt HTTPS gebruikt om payloads voor automatische updates te downloaden.</translation>
-<translation id="7512603255315110634">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
-Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
-
-Eindpunten van privénetwerken gebruiken IP-adressen uit de ruimte voor privé-IP-adressen, die is gedefinieerd in https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Als je het beleid instelt, kun je een lijst met URL-patronen maken om aan te geven welke sites mogen communiceren met privénetwerkeindpunten in de Direct Sockets API.
-Geldige patronen zijn beperkt tot geïsoleerde web-apps.
-
-Als je het beleid niet instelt, is <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites.
-
-URL-patronen mogen geen conflict vormen met <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Geen van beide beleidsregels krijgt voorrang als een URL met beide overeenkomt.
-
-Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.
-
-Dit beleid is alleen van toepassing als de oorsprong de Direct Sockets API mag gebruiken.
-Ga naar <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> en <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> voor meer informatie.</translation>
 <translation id="7515953732107149296">Dit beleid is verwijderd in M53 nadat RC4 is verwijderd uit <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet instelt of instelt op False, worden RC4 cipher suites in TLS niet aangezet. Anders kun je het instellen op True om compatibiliteit met een verouderde server te behouden. Dit is een tijdelijke oplossing. De server moet opnieuw worden ingesteld.</translation>
@@ -10926,7 +10882,6 @@ Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>
-<translation id="7836591982756027878">Toegang tot privénetwerk toestaan in de Direct Sockets API op deze sites</translation>
 <translation id="7839124608155212387">Snelheid waarmee telemetrie over app-gebruik wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 5 minuten.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
@@ -11099,7 +11054,6 @@ Als je het beleid <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> niet toepast, he
 <translation id="7937766917976512374">Het opnemen van video's toestaan of weigeren</translation>
 <translation id="7941528208359969119">Toestaan dat online <ph name="OCSP_CRL_LABEL" />-checks worden uitgevoerd</translation>
 <translation id="7941975817681987555">Geen netwerkacties voorspellen voor een netwerkverbinding</translation>
-<translation id="794447754389837404">Toegang tot privénetwerken blokkeren in de Direct Sockets API op deze sites</translation>
 <translation id="7945445169067895719">Vergrendeling aanzetten als het apparaat in de slaapstand wordt gezet of de klep wordt gesloten</translation>
 <translation id="7945744599423774764">Herschikking in willekeurige volgorde van de grootte van de socketgroep voor proxy's toestaan</translation>
 <translation id="7946350455013548764">Als je het beleid instelt op 3, kunnen websites toegang vragen tot HID-apparaten. Als je het beleid instelt op 2, wordt toegang tot HID-apparaten geweigerd.
@@ -12646,7 +12600,6 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
 <translation id="8963464192296208229">De instellingen voor F11 gebruiken de sneltoets met de functietoets Alt</translation>
-<translation id="8966888925105658202">Niet toestaan dat geïsoleerde web-app-oorsprongen communiceren met privénetwerkeindpunten in de Direct Sockets API</translation>
 <translation id="8973579598359969188">Kiezen of je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-prompt te zien kunnen krijgen</translation>
 <translation id="8974457039656761249">De functie voor voorspellend schrijven op het fysieke toetsenbord beheren</translation>
 <translation id="8974588819713914715">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>

@@ -469,6 +469,7 @@
 <translation id="1341701348342335220">Браво!</translation>
 <translation id="1342886103232377846">За да проверите за компрометирани пароли, отворете Google Мениджър на пароли</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">Потвърждаване и рестартиране</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1347512539447549782">Хранилище за Linux</translation>
@@ -797,7 +798,6 @@
 <translation id="160689647589417224">Приложението е ограничено в този регион.</translation>
 <translation id="1607139524282324606">Изчистване на записа</translation>
 <translation id="1608668830839595724">Още действия за избраните елементи</translation>
-<translation id="1609603645228231640">Gemini Spark е експериментална функция и може да прави различни неща, като например да споделя информацията ви или да извършва покупки, без да пита. <ph name="LINK_BEGIN" />Прегледайте рисковете<ph name="LINK_END" />.</translation>
 <translation id="1610272688494140697">Настройки за приложението</translation>
 <translation id="161042844686301425">синьозелено</translation>
 <translation id="1611649489706141841">напред</translation>
@@ -1062,7 +1062,6 @@
 <translation id="1808805149659872686">Нов запис</translation>
 <translation id="1809201888580326312">Избрахте да не запазвате паролите за тези сайтове и приложения</translation>
 <translation id="1809734401532861917">Добавяне на моите отметки, история, пароли и други настройки към <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Изолирана рамка в режим „инкогнито“: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> не може да продължи да използва <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1812284620455788548">Предава се <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">Услуги</translation>
@@ -1296,7 +1295,6 @@
 <translation id="1983612835086592681">Отворено от вас през последната седмица</translation>
 <translation id="1984087999855033707">телефонен номер</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
-<translation id="1984683754853869253">Искате ли да създадете нов потребителски профил за училище?</translation>
 <translation id="198507684520034826">Помощ</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">Разширени настройки за местоположението</translation>
@@ -1329,7 +1327,7 @@
 <translation id="2010501376126504057">Съвместими устройства</translation>
 <translation id="2010636492623189611">Избрано.</translation>
 <translation id="2012935757369720523">Изтриване на файла</translation>
-<translation id="2014495120525813351">Разрешаване на Gemini Spark да сърфира на това устройство</translation>
+<translation id="2014191284313949173">Затваряне на изолираните раздели</translation>
 <translation id="2016473077102413275">Функциите, за които са нужни изображения, няма да работят</translation>
 <translation id="2017334798163366053">Деактивиране на събирането на данни за ефективността</translation>
 <translation id="2017770349934140286">Услугата Google Play и приложенията, които сте изтеглили от нея, ще бъдат изтрити от този Chromebook.
@@ -1461,6 +1459,7 @@
 <translation id="2121825465123208577">Преоразмеряване</translation>
 <translation id="2122446694240899610">Уменията ви се запазват в профила ви в Google –</translation>
 <translation id="2123766928840368256">Избиране на друг файл</translation>
+<translation id="2124153808069020510">За да изтриете данните, затворете всички изолирани прозорци</translation>
 <translation id="2124930039827422115">{1,plural, =1{Оценка <ph name="AVERAGE_RATING" /> от един потребител.}other{Оценка <ph name="AVERAGE_RATING" /> от # потребители.}}</translation>
 <translation id="2125715366913703594">Разглеждане на разширенията</translation>
 <translation id="2126167708562367080">Синхронизирането е деактивирано от администратора ви.</translation>
@@ -1603,6 +1602,7 @@
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="222931766245975952">Файлът е скъсен</translation>
 <translation id="2229342031987138128">Надписи</translation>
+<translation id="22294739381015133">Сайтовете, които посещавате в изолиран режим, не се запазват</translation>
 <translation id="2231351769755997720">Няма налични предложения. Опитайте да зададете свой собствен въпрос за тази страница.</translation>
 <translation id="2232751457155581899">Сайтовете могат да извеждат запитвания за проследяване на позицията на камерата ви</translation>
 <translation id="2233502537820838181">&amp;Още информация</translation>
@@ -2042,7 +2042,6 @@
 <translation id="2554553592469060349">Избраният файл е твърде голям (максимален размер: 3 МБ).</translation>
 <translation id="2555802059188792472"><ph name="NUM_ALLOWED_APPS" /> от <ph name="TOTAL_NUM_APPS" /> приложения могат да изпращат известия</translation>
 <translation id="2555855727505718984">Автоматичното попълване няма да разполага с тази информация на това устройство, за да ви помага при попълването на формуляри</translation>
-<translation id="25568951186001797">Изолирана рамка: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Вижте всичките си отметки тук</translation>
 <translation id="2563924218974330506">Вече можете да управлявате групите си раздели оттук. Можете да освободите по всяко време.</translation>
 <translation id="2564520396658920462">Функцията за изпълнение на JavaScript чрез AppleScript е изключена. За да я включите, от лентата с менюта отворете View &gt; Developer &gt; Allow JavaScript from Apple Events. За повече информация: https://support.google.com/chrome/?p=applescript</translation>
@@ -2121,7 +2120,6 @@
 <translation id="2626746300781063303">Сайтовете, включително Google, отговарят на тази заявка по свое усмотрение</translation>
 <translation id="2626799779920242286">Моля, опитайте отново по-късно.</translation>
 <translation id="2627424346328942291">Споделянето не е възможно</translation>
-<translation id="2627970398976286795">Прегледайте рисковете от използването на Gemini Spark</translation>
 <translation id="2628258844236035475">Да се премахне ли домашният ви адрес от функцията на Chrome за автоматично попълване?</translation>
 <translation id="2628770867680720336">За да активирате отстраняването на грешки през ADB, трябва да възстановите фабричните настройки на този Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Започване на нов разговор с Gemini</translation>
@@ -2430,7 +2428,6 @@
 <translation id="2845276301195220700">Още действия за Google Календар</translation>
 <translation id="2845382757467349449">Непрекъснато показване на лентата на отметките</translation>
 <translation id="284581348330507117">Създайте уникални пароли</translation>
-<translation id="2846345106886298325">Задачата е изпълнена и отново сте в Gemini Spark</translation>
 <translation id="284884486564166077">Търсене на което и да е изображение с Обектив</translation>
 <translation id="2849035674501872372">Търсене</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2492,7 +2489,6 @@
 <translation id="2893318819023133318">Обратни изгледи</translation>
 <translation id="2894596417096093634">Идентификатори на сигналите за сривове</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
-<translation id="2895194086130800590">Gemini Spark може да използва функцията за автоматично сърфиране на това устройство само ако то е активно и Chrome работи.</translation>
 <translation id="289695669188700754">Идентификатор (ИД) на ключ: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Тази персонализирана настройка ще бъде премахната, когато затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="2897878306272793870">Наистина ли искате да отворите <ph name="TAB_COUNT" /> раздела?</translation>
@@ -2545,7 +2541,6 @@
 <translation id="2933653107553951760">Възстановяване на групата</translation>
 <translation id="2934225044529065415">Няма достъп до камерата</translation>
 <translation id="2935314715123552088">Деактивиране на активния потребителски профил за електронна SIM карта</translation>
-<translation id="2936067606203230121">Gemini Spark ще решава кои действия да предприеме въз основа на задачите, които стартирате или актуализирате.</translation>
 <translation id="2936851848721175671">Резервни копия и възстановяване</translation>
 <translation id="2938981087412273365">Няма разрешение за четене и промяна на този сайт</translation>
 <translation id="2939005221756255562">Активирайте известията от Notification Center. Отворете <ph name="BEGIN_LINK" />System Settings<ph name="END_LINK" />.</translation>
@@ -2925,6 +2920,7 @@
 <translation id="3213681682237645841">Изтеглят се гласовете за <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Да се създаде ли пряк път?</translation>
 <translation id="3220494908385619295">Показване един до друг</translation>
+<translation id="3220541426929880850">За да изтриете историята на сърфиране в изолиран режим на устройството си, затворете всички раздели в този режим</translation>
 <translation id="3220943972464248773">За да се синхронизират паролите ви, потвърдете, че сте вие</translation>
 <translation id="3222066309010235055">Предварително изобразяване: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Свързване с(ъс) <ph name="USB_VM_NAME" /></translation>
@@ -3423,6 +3419,7 @@
 <translation id="3600956933576601730">За да използвате тези функции, трябва да прегледате и приемете условията</translation>
 <translation id="3601374594714740284">За гласове с по-високо качество освободете място на устройството си</translation>
 <translation id="360180734785106144">Предлагане на нови функции, когато станат достъпни</translation>
+<translation id="3601988315287782413">Това засяга само изолираните прозорци</translation>
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3602495161941872610">Отстраняване на проблема със &amp;синхронизирането</translation>
 <translation id="3602894439067790744">Четене на числата като</translation>
@@ -3651,7 +3648,6 @@
 <translation id="3756578970075173856">Задаване на ПИН код</translation>
 <translation id="3756806135608816820">Сайтовете могат да извеждат запитвания за търсене на устройства с Bluetooth</translation>
 <translation id="3756823472711156529">Възстановяване на групата</translation>
-<translation id="3757337311115630808">Научете повече за Gemini Spark</translation>
 <translation id="3757567010566591880">Освобождаване от лентата с инструменти</translation>
 <translation id="3757645900890881944">Инструменти за търсене</translation>
 <translation id="3757733214359997190">Няма намерени сайтове</translation>
@@ -4775,6 +4771,7 @@
 <translation id="4631637535315947773">Преките пътища към най-посещаваните от вас сайтове бяха премахнати, защото не сте ги използвали скоро</translation>
 <translation id="4631955550884380853">Фокусиран глас</translation>
 <translation id="4632655012900268062">Персонализиране на картите</translation>
+<translation id="4634719521235795064">Gemini може да използва Google Мениджър на пароли, за да влезе в профила вместо вас. <ph name="BEGIN_LINK" />Научете как Gemini обработва данните ви<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Деинсталиране на Crostini</translation>
 <translation id="4635398712689569051">Страницата „<ph name="PAGE_NAME" />“ не е достъпна за гости.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Качете 1 изображение, което да използвате с въпроса си}other{Качете до # изображения, които да използвате с въпроса си}}</translation>
@@ -5262,7 +5259,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4989966318180235467">Инспектиране на &amp;фоновата страница</translation>
 <translation id="499016799952867794">Това дава възможност на приложението да се изпълнява според очакванията.</translation>
 <translation id="4990673372047946816">Няма налична камера</translation>
-<translation id="499126848196136237">Gemini Spark може да използва функцията за автоматично сърфиране в Chrome на това устройство, за да взаимодейства със сайтове и да изпълнява задачи вместо вас. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">Третиране на клавишите от най-горния ред като функционални</translation>
 <translation id="4991873517942703737">Задайте въпрос за този документ</translation>
 <translation id="4992066212339426712">Включване на звука</translation>
@@ -5519,7 +5515,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5189274947477567401">За да се откажете от споделянето на процеси, трябва да рестартирате браузъра. Браузърът ще се рестартира сега.</translation>
 <translation id="5189404424758444348">Стиймпънк</translation>
 <translation id="5190577235024772869">Използвате <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="5190926251776387065">Активиране на порта</translation>
 <translation id="5190959794678983197">Няма микрофон</translation>
 <translation id="5191094172448199359">Въведените от вас ПИН кодове не съвпадат</translation>
@@ -6089,6 +6084,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5641715878999557094"><ph name="EXTENSION_NAME" /> промени страницата, която се показва, когато кликнете върху бутона „Начална страница“.</translation>
 <translation id="5643191124441701136">Кодът за сигурност се намира на лицевата страна на картата ви</translation>
 <translation id="5643321261065707929">Мрежа с отчитане</translation>
+<translation id="5645369002069651355">Имейл адресът се потвърждава</translation>
 <translation id="5646376287012673985">Местоположение</translation>
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="564670806635578888">Търсене на „<ph name="SEARCH_TERMS" />“ с Google</translation>
@@ -7020,7 +7016,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6393550101331051049">Сайтове с разрешение за показване на незащитено съдържание</translation>
 <translation id="6394634179843537518">Добавяне на файл</translation>
 <translation id="6395423953133416962">Изпращане на <ph name="BEGIN_LINK1" />системна информация<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">Да, отделяне на данните ми от училищните (препоръчва се)</translation>
 <translation id="6398715114293939307">Премахване на Google Play Магазин</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="639880411171387127">Изборът ви за търсене с Google Обектив. Натиснете Enter или Backspace, за да го изтриете</translation>
@@ -8380,7 +8375,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7421293530411019405">Искате ли да напуснете групата раздели?</translation>
 <translation id="7421925624202799674">&amp;Преглед на изходния код на страницата</translation>
 <translation id="7422192691352527311">Предпочитания...</translation>
-<translation id="7423381908337122792">Всеки с достъп до вашия агент Gemini Spark може да контролира браузъра ви Chrome.</translation>
 <translation id="7423425410216218516">Видимостта е включена за <ph name="MINUTES" /> минути</translation>
 <translation id="7423513079490750513">Премахване на <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7424818322350938336">Мрежата е добавена</translation>
@@ -8506,6 +8500,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7517292544534877198">Използване на стандартното шифроване на Google за паролите в профила ви в Google</translation>
 <translation id="7517959947270534934">Понастоящем членът на семейството ви не може да получава пароли. Помолете го да актуализира Chrome и да синхронизира паролите си.</translation>
 <translation id="7518079994230200553">В момента тази опция не е налице.</translation>
+<translation id="7519506357537394422">Да се разреши ли на Gemini да влиза в профила ви в(ъв) <ph name="DOMAIN" /> вместо вас?</translation>
 <translation id="752021853309481824">Влезте с профила <ph name="EMAIL" />, за да получите достъп до запазената си информация и др. на всичките си устройства</translation>
 <translation id="7520766081042531487">Портал в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Показване на преки пътища</translation>
@@ -8733,7 +8728,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="769824636077131955">Този документ е твърде голям за проверка на сигурността. Можете да отпечатвате документи с размер до 50 МБ.</translation>
 <translation id="7698507637739331665">Някои елементи са блокирани</translation>
 <translation id="7700516433658473670">Принтери и скенери</translation>
-<translation id="7700873336634517379">Не, продължаване на използването на този потребителски профил за училище</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701869757853594372">Манипулатори за потребителски обекти</translation>
 <translation id="770231223935918661">Задаване на въпрос за това изображение</translation>
@@ -9099,6 +9093,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7978450511781612192">Така ще излезете от профилите си в Google. Вашите отметки, история, пароли и др. повече няма да се синхронизират.</translation>
 <translation id="7980066177668669492">ASCII с кодировка Base64, няколко сертификата</translation>
 <translation id="7981410461060625406">Използване на запазен ключ за достъп за <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Имейлът ви не бе потвърден</translation>
 <translation id="7981662863948574132">Показване на изскачащ прозорец с EID номера на устройството и QR код</translation>
 <translation id="7982578888426609524">Най-новите актуализации на тази група</translation>
 <translation id="7982789257301363584">Мрежа</translation>
@@ -10158,6 +10153,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="878862491037637275">Тази група раздели е пълна</translation>
 <translation id="8791157330927639737">Научете повече за актуализирането</translation>
 <translation id="8791534160414513928">Изпращане на заявка „Do Not Track“ с трафика ви на сърфиране</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (изолиран режим)</translation>
 <translation id="8793390639824829328">Сайтовете използват тази функция, за да превъртат и променят мащаба на споделените раздели</translation>
 <translation id="8793895150509408038">Преглед на подробностите за сайта <ph name="SITE" /> от списъка „<ph name="SECTION_HEADER" />“</translation>
 <translation id="879413103056696865">Докато точката за достъп е включена, устройството ви <ph name="PHONE_NAME" /> ще:</translation>
@@ -10394,7 +10390,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="897525204902889653">Услуга за поставяне под карантина</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и още 1 раздел}other{„<ph name="TAB_TITLE" />“ и още # раздела}}</translation>
 <translation id="897565255818387330">Да се разреши ли на този сайт да преглежда и копира „<ph name="FILE_NAME" />“?</translation>
-<translation id="8977523125954274918">Настройте училищен потребителски профил, за да запазвате и използвате паролите си и др. в профила си</translation>
 <translation id="8977811652087512276">Неправилна парола или повреден файл</translation>
 <translation id="8978154919215542464">Включено (всичко се синхронизира)</translation>
 <translation id="8978670037548431647">Опресняване на възможностите за тетъринг</translation>
@@ -10498,7 +10493,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9040661932550800571">Да се актуализира ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">За да запазвате надеждни пароли с Google Мениджър на пароли, влезте в профила си в Chrome</translation>
 <translation id="9041692268811217999">Достъпът до локални файлове на компютъра ви е деактивиран от администратора ви</translation>
-<translation id="9041881059840744611">Всичко за училищните потребителски профили</translation>
 <translation id="904224458472510106">Това действие не може да бъде отменено</translation>
 <translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
@@ -10715,7 +10709,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9219103736887031265">Изображения</translation>
 <translation id="9219572436491982747">Данните, изпратени до Google, може да бъдат видени от проверяващи лица с цел подобряване на технологията на AI на Chrome</translation>
 <translation id="9219741625496141320">Данните за сърфирането бяха изтрити автоматично</translation>
-<translation id="9220484506568374422">Gemini Spark ще има достъп до същите сайтове като вас, включително тези, в които сте влезли в профила си. Агентът ще споделя с трети страни необходимата информация, която може да включва лична информация, която според вас може да е поверителна.</translation>
 <translation id="9220525904950070496">Премахване на профила</translation>
 <translation id="9220723036554088545">качете файл</translation>
 <translation id="9220820413868316583">Вдигнете пръст и след това опитайте отново.</translation>

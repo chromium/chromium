@@ -10,6 +10,7 @@
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
 <translation id="1083934481477628225">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v prehliadači Chromium</translation>
+<translation id="109026165963220603">Chromium potrebuje prístup k vašej miestnej sieti, aby mohol vyhľadávať a používať zariadenia v okolí</translation>
 <translation id="1090946077924227754">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie prehliadača Chromium, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="1098493699368672217">Zobrazovať vyhľadávanie pomocou prehliadača Chromium v oblasti oznámení a zapnúť klávesovú skratku</translation>
 <translation id="1104942323762546749">Prehliadač Chromium sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
@@ -105,6 +106,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2126108037660393668">Stiahnutý súbor sa nepodarilo overiť.</translation>
 <translation id="2135919691573380097">Nahlásenie tohto webu</translation>
 <translation id="2137162749895930932">Zavrieť obrazovku prekladu</translation>
+<translation id="2147218225094845757">Skryť bočný panel</translation>
 <translation id="215352261310130060">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný web nepoužíva zabezpečené pripojenie a v súbore mohol niekto vykonať zmeny</translation>
 <translation id="2170098639895543546">Vyberte čokoľvek na stránke</translation>
 <translation id="2174178932569897599">Prispôsobiť Chromium</translation>
@@ -304,7 +306,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4251772536351901305">Analyzuje viac údajov z webov než štandardná ochrana a upozorňuje vás na nebezpečné weby, dokonca aj také, o ktorých Google predtým nevedel. Upozornenia z prehliadača Chromium môžete preskočiť.</translation>
 <translation id="4269093074552541569">Odhlásiť sa z prehliadača Chromium</translation>
 <translation id="4271805377592243930">Pomoc s prehliadačom Chromium</translation>
-<translation id="4275788652681621337">Zavrieť bočný panel</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4285930937574705105">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Chromium momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4298125729853015961">Exportovať heslá z prehliadača Chromium</translation>

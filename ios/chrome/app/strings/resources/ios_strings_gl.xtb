@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Tes o espazo de almacenamento cheo</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
-<translation id="1195433173321863960">As imaxes volverán estar dispoñibles cando se restableza o límite o <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Facer un resumo breve desta páxina</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Buscar e completar</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1486096554574027028">Buscar contrasinais</translation>
-<translation id="1486593497476255523">Completáronse os grupos de pestanas</translation>
 <translation id="1491277525950327607">Toca dúas veces para activar ou desactivar a configuración</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1497590942294823549">Menú → Xestor de contrasinais</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Cambiar a outro perfil</translation>
 <translation id="1741219894094057085">Reloxo intelixente</translation>
 <translation id="1743244221910283364">Descartar cambios</translation>
-<translation id="1744234754703485302">Completouse a xestión dos métodos de pago</translation>
 <translation id="1748975028205587434">Seleccionar o teu ficheiro</translation>
 <translation id="1749733017156547309">Necesítase un contrasinal</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opción de enderezo dispoñible sobre o teclado.}other{{count} opcións de enderezo dispoñibles sobre o teclado.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Eliminar dentro dun mes</translation>
 <translation id="2161446265348023004">Cambiar á ventá aberta</translation>
 <translation id="2164946989711475905">Iniciar sesión…</translation>
-<translation id="2165110345209765380">Completouse a busca co modo IA</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2180338296831857171">Eliminar enderezos</translation>
 <translation id="218350106843433823">Autocompletar os contrasinais e claves de acceso</translation>
@@ -426,7 +422,6 @@
 <translation id="2274179746480077483">Autocompleta información de aplicacións como Gmail e Fotos. Con tecnoloxía da Intelixencia personalizada.</translation>
 <translation id="2287614783861766820">{count,plural, =1{Este enderezo eliminarase do dispositivo.}other{Estes enderezos eliminaranse do dispositivo.}}</translation>
 <translation id="2295236662082735391">Mantén premida unha imaxe na web para editala con Gemini</translation>
-<translation id="2296360194694387941">Completouse a acción de usar Gemini en Chrome</translation>
 <translation id="2297989278479054870">Cando peches a sesión, os marcadores, os contrasinais e outros datos da túa Conta de Google quitaranse deste dispositivo.</translation>
 <translation id="2299218006564889602">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
 <translation id="2306265833370324042">Mostrar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -694,7 +689,6 @@
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
 <translation id="3183362380688692618">Novo grupo de pestanas...</translation>
 <translation id="3185000827934321633">Navegando</translation>
-<translation id="3185760469172949183">Completouse a busca coa cámara</translation>
 <translation id="3186796054637504691">Clear History and Website Data (Borrar datos dos sitios web e das aplicacións)</translation>
 <translation id="3190558889382726167">Gardouse o contrasinal</translation>
 <translation id="3190736958609431397">Deixar de facer seguimento</translation>
@@ -767,7 +761,6 @@
 <translation id="3459644598174926977">Usa Live con Gemini para facer preguntas sobre unha páxina, intercambiar ideas en voz alta e manter unha conversa.</translation>
 <translation id="3462768334899086950">Perderás o ficheiro sen gardar e as pestanas actuais</translation>
 <translation id="3464194322481586217">Non se puido facer un seguimento do prezo.</translation>
-<translation id="346831467152294287">Completouse a configuración de Contrasinais e Autocompletar</translation>
 <translation id="3469117812148449995">Opcións para gardar un contrasinal</translation>
 <translation id="3472469028191701821">Ábrese nunha pestana nova</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{de {COUNT} sitio ou aplicación}other{de {COUNT} sitios ou aplicacións}}</translation>
@@ -868,7 +861,6 @@
 <translation id="3813175908845379029">Suxestións útiles que facilitan e melloran a navegación</translation>
 <translation id="3818293389945649617">Buscar seguinte</translation>
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
-<translation id="3826034723896327540">Completáronse as pestanas fixadas</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 método de pago}other{# métodos de pago}}</translation>
 <translation id="3831560640878483188">Queres pechar a advertencia?</translation>
 <translation id="3832419617903252251">Contrasinal gardado só neste dispositivo</translation>
@@ -997,7 +989,6 @@
 <translation id="422474357428465195">Tes varios problemas cos contrasinais que poderían poñer en perigo a túa seguranza.</translation>
 <translation id="422477017457571619">Protección con tecnoloxía de IA e en tempo real contra sitios, descargas e extensións perigosos baseada nos teus datos de navegación enviados a Google</translation>
 <translation id="4231395118547300571">Activáronse as notificacións de Comprobación de seguranza</translation>
-<translation id="4232376164796433044">Contrasinais e autocompletado</translation>
 <translation id="4232817129213135694">Configura as claves de acceso deste dispositivo</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Default Browser App<ph name="END_BOLD" /> (Aplicación de navegador predeterminada)</translation>
 <translation id="424063167283213501">Garda o número de viaxeiro coñecido (KTN)</translation>
@@ -2077,7 +2068,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7603308509262646847">Autocompletar o titular da tarxeta <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Ventás emerxentes bloqueadas (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">A sincronización non funciona</translation>
-<translation id="7606639338662398635">Grupos de pestanas</translation>
 <translation id="760667371114328991">Desactivar notificacións de Comprobación de seguranza</translation>
 <translation id="7612619742409846846">Iniciaches sesión en Google como</translation>
 <translation id="7612849887607288481">Abrir menú de prototipos de IA</translation>
@@ -2285,7 +2275,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8240217649914883113">Engadir isto ao meu calendario</translation>
 <translation id="824379025871762038">Non permitir nunca</translation>
 <translation id="8250920743982581267">Documentos</translation>
-<translation id="8252980988000695656">Completouse Google Lens</translation>
 <translation id="8258734532103758067">Exportei os meus datos</translation>
 <translation id="8258999165172757081">Engadiuse</translation>
 <translation id="8261506727792406068">Eliminar</translation>

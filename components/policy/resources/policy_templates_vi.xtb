@@ -542,6 +542,7 @@ Các chính sách của Chrome sẽ được ưu tiên hơn chính sách này, c
       Chính sách này ghi đè <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> và các lựa chọn ưu tiên của người dùng.</translation>
 <translation id="1413768951234456918">Xoá nhật ký duyệt web</translation>
 <translation id="1413936351612032792">Báo cáo thông tin về việc sử dụng các ứng dụng Linux</translation>
+<translation id="1417591892602709307">Số lượng hồ sơ người dùng tối đa được lưu trữ trên thiết bị</translation>
 <translation id="1417776888841750570">Chính sách này kiểm soát hành vi của trình duyệt sau khi người dùng đăng nhập vào tài khoản được quản lý trong vùng nội dung.
 
 Chính sách này ghi đè <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />.
@@ -2089,6 +2090,11 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
       Chính sách này chỉ ảnh hưởng đến quyền truy cập vào thiết bị USB thông qua API WebUSB. Để cấp quyền truy cập vào thiết bị USB thông qua API Web Serial, hãy xem chính sách <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Cho phép người dùng cài đặt IWA</translation>
 <translation id="2318583605563438459">Cho phép cha mẹ thêm tài khoản được giám sát</translation>
+<translation id="2323318142178972965">Kiểm soát số lượng hồ sơ người dùng tối đa được giữ lại trên thiết bị.
+
+Khi bạn đặt chính sách này thành một số nguyên dương <ph name="MAX_USERS" />, <ph name="PRODUCT_OS_NAME" /> sẽ giữ lại tối đa <ph name="MAX_USERS" /> hồ sơ người dùng thông thường trên thiết bị. Khi một người dùng mới đăng nhập và vượt quá giới hạn, (các) hồ sơ người dùng ít được sử dụng gần đây nhất (ngoại trừ người dùng hiện đang đăng nhập) sẽ tự động bị xoá cùng với bộ nhớ cục bộ tương ứng để duy trì dung lượng ổ đĩa trống.
+
+Nếu bạn không đặt chính sách này hoặc đặt thành 0, thì sẽ không có giới hạn về số lượng hồ sơ người dùng có thể thêm vào thiết bị. Để không lưu giữ hồ sơ người dùng nào trên thiết bị, hãy chuyển sang sử dụng chính sách <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2326031114717677574">Chu kỳ hệ thống lấy mẫu và thu thập dữ liệu âm thanh. Thời gian tối thiểu cho phép là 1 phút.
 
       Nếu bạn không đặt chính sách này, thì chu kỳ mặc định là 15 phút sẽ được áp dụng.</translation>
@@ -2404,24 +2410,6 @@ Nếu bạn đặt chính sách này thành Tắt, tính năng mã hoá nội du
 <translation id="2521581787935130926">Hiển thị lối tắt ứng dụng trong thanh dấu trang</translation>
 <translation id="2522304491589804974">Định cấu hình danh sách cho phép cài đặt tiện ích</translation>
 <translation id="2523511232831599126">Bật lối tắt hỗ trợ tiếp cận trên màn hình đăng nhập</translation>
-<translation id="252611686271192278">Direct Sockets API cho phép giao tiếp với các điểm cuối tuỳ ý bằng TCP và UDP.
-Vui lòng truy cập vào https://github.com/WICG/direct-sockets để biết thông tin chi tiết.
-
-Điểm cuối trên mạng riêng tư là những điểm cuối sử dụng địa chỉ IP từ không gian địa chỉ IP riêng tư, được định nghĩa trong https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Nếu đặt chính sách này, bạn có thể lập danh sách các mẫu URL chỉ định những trang web bị chặn truy cập mạng riêng tư trong Direct Sockets API.
-Các mẫu hợp lệ được giới hạn ở Ứng dụng web tách biệt.
-
-Khi bạn không đặt chính sách này, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web.
-
-Các mẫu URL không được xung đột với <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />. Không chính sách nào được ưu tiên nếu một URL khớp với cả hai chính sách.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.
-
-Xin lưu ý rằng chính sách này chỉ áp dụng nếu nguồn gốc được phép sử dụng Direct Sockets API.
-Vui lòng tham khảo <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> để biết thêm thông tin chi tiết.
-
-Chính sách này chỉ áp dụng cho những lần kết nối mới và không vô hiệu hoá những kết nối hiện có.</translation>
 <translation id="252742292004421898">Cho phép Direct Sockets API trên các trang web này</translation>
 <translation id="2528762900096510743">Bật dịch vụ tự động đăng xuất</translation>
 <translation id="2529880111512635313">Định cấu hình danh sách các ứng dụng và tiện ích buộc phải cài đặt</translation>
@@ -3139,6 +3127,13 @@ Chính sách <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 quản lý thiết bị trên toàn thiết bị.
 
 Lựa chọn thuật toán khoá <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> được hỗ trợ kể từ phiên bản <ph name="PRODUCT_OS_NAME" /> 132.</translation>
+<translation id="2953620259874711778">Chính sách này không còn dùng trong phiên bản M156 nữa, vui lòng sử dụng <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />.
+
+Để duy trì hành vi hiện tại là tắt <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" /> hiện tại, hãy định cấu hình <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> với "url_pattern" được đặt thành "*" và "blocked_types" được đặt thành ["contact_info", "identity_docs", "travel"].
+
+Nếu bạn đặt chính sách này thành True hoặc không đặt chính sách này, thì người dùng sẽ có quyền kiểm soát tính năng Tự động điền cho địa chỉ trong giao diện người dùng.
+
+Nếu bạn đặt chính sách này thành False, thì tính năng Tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin địa chỉ hay lưu thông tin địa chỉ bổ sung mà người dùng gửi trong khi duyệt web.</translation>
 <translation id="2957506574938329824">Không cho phép bất kỳ trang web nào yêu cầu quyền truy cập vào thiết bị Bluetooth qua API Web Bluetooth</translation>
 <translation id="2957513448235202597">Loại tài khoản để xác thực <ph name="HTTP_NEGOTIATE" /></translation>
 <translation id="2959469725686993410">Luôn gửi điểm truy cập Wi-Fi tới máy chủ trong khi phân giải múi giờ</translation>
@@ -6033,7 +6028,6 @@ tức là một mô-đun xử lý âm thanh giúp loại bỏ âm thanh phát l�
 Nếu bạn đặt chính sách này thành False (Sai), thì chế độ mặc định sẽ được sử dụng.</translation>
 <translation id="4820432864264617413">Không cho phép một người dùng chạy <ph name="BOREALIS_NAME" /></translation>
 <translation id="4821987881803903281">Chặn quyền kiểm soát Vị trí cửa sổ trên những trang web này</translation>
-<translation id="4825653993105771848">Kiểm soát quyền truy cập vào mạng riêng tư trong Direct Sockets API</translation>
 <translation id="4825777333376170738">Tắt tính năng báo cáo phiên kiosk của thiết bị</translation>
 <translation id="4826326557828204741">Tác vụ sẽ thực hiện khi đạt độ trễ không hoạt động trong khi chạy bằng nguồn pin</translation>
 <translation id="4826701474986856664">Hiển thị màn hình cảm biến sự có mặt của con người trong quá trình đăng nhập</translation>
@@ -8906,7 +8900,6 @@ LƯU Ý: Các thiết bị dành cho người dùng thông thường và doanh n
 <translation id="647645276885673708">Bật <ph name="LACROS_NAME" /> và đặt trình duyệt này làm trình duyệt chính</translation>
 <translation id="647698599569353771">Cho phép bật tính năng Chia sẻ lân cận.</translation>
 <translation id="6477685422297715670">Đèn nền bàn phím màu xanh lục</translation>
-<translation id="6477933144150138501">Cho phép các nguồn gốc của Ứng dụng web tách biệt giao tiếp với điểm cuối trên mạng riêng tư trong Direct Sockets API</translation>
 <translation id="6478258366184919502">Nguồn gốc thông tin đăng nhập và màn hình</translation>
 <translation id="6478261301433199402">Việc đặt chính sách này sẽ chỉ định hình ảnh <ph name="PLUGIN_VM_NAME" /> cho một người dùng. Hãy chỉ định chính sách này làm một chuỗi định dạng JSON, trong đó <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> cho biết vị trí tải xuống hình ảnh đó và chỉ định <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> làm một hàm băm SHA-256 dùng để xác minh tính toàn vẹn của tệp tải xuống.</translation>
 <translation id="6481245670325946423">Cho phép sử dụng Chế độ không có giao diện người dùng</translation>
@@ -9278,20 +9271,6 @@ Khi bạn bật chính sách này, tính năng Cập nhật thuật toán GREASE
       Lưu ý: Mặc dù chính sách này có thể chấp nhận nhiều mục trong <ph name="ENTRIES_FIELD_NAME" />, nhưng ngoại trừ mục đầu tiên, tất cả các mục khác đều sẽ bị bỏ qua.
       Cảnh báo: Khi bạn đặt chính sách này, việc áp dụng các bản cập nhật phần mềm có thể bị chậm trễ.</translation>
 <translation id="6695441448686167614">Chế độ cài đặt In trên web</translation>
-<translation id="6695983959768914375">Direct Sockets API cho phép giao tiếp với các điểm cuối tuỳ ý bằng TCP và UDP.
-Vui lòng truy cập vào https://github.com/WICG/direct-sockets để biết thông tin chi tiết.
-
-Điểm cuối trên mạng riêng tư là những điểm cuối sử dụng địa chỉ IP từ không gian địa chỉ IP riêng tư, được định nghĩa trong https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Nếu bạn đặt chính sách này thành 1 hoặc không đặt thì hệ thống sẽ cho phép các nguồn gốc của Ứng dụng web tách biệt giao tiếp với điểm cuối trên mạng riêng tư trong Direct Sockets API.
-
-Nếu bạn đặt chính sách này thành 2 thì các nguồn gốc của Ứng dụng web tách biệt sẽ không được giao tiếp với điểm cuối trên mạng riêng tư trong Direct Sockets API.
-
-Xin lưu ý rằng chính sách này chỉ áp dụng nếu nguồn gốc được phép sử dụng Direct Sockets API.
-Vui lòng tham khảo <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> để biết thêm thông tin chi tiết.
-Bạn cũng có thể ghi đè giá trị mặc định đối với các URL khớp mẫu bằng cách sử dụng <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />
-
-Chính sách này chỉ áp dụng cho những lần kết nối mới và không vô hiệu hoá những kết nối hiện có.</translation>
 <translation id="6698632841807204978">Bật chế độ in đen trắng</translation>
 <translation id="6699740789657890714">Chỉ định xem có cho phép các trang web gửi yêu cầu theo cách không an toàn đến các điểm cuối trên mạng có mức độ riêng tư cao hơn hay không.</translation>
 <translation id="6699880231565102694">Bật xác thực hai bước cho máy chủ truy cập từ xa</translation>
@@ -10653,22 +10632,6 @@ Một số quốc gia hoặc một số ngôn ngữ không hỗ trợ việc kí
 <translation id="7512514325152952954">Các phần tải dữ liệu tự động cập nhật trên <ph name="PRODUCT_OS_NAME" /> có thể được tải xuống qua HTTP thay vì HTTPS. Điều này cho phép lưu các tài nguyên đã tải xuống qua HTTP vào bộ nhớ đệm HTTP thông suốt.
 
 Nếu bạn đặt chính sách này thành true, <ph name="PRODUCT_OS_NAME" /> sẽ cố gắng tải xuống các phần tải dữ liệu tự động cập nhật qua HTTP. Nếu bạn đặt chính sách này thành false hoặc không đặt, HTTPS sẽ được dùng để tải xuống các phần tải dữ liệu tự động cập nhật.</translation>
-<translation id="7512603255315110634">Direct Sockets API cho phép giao tiếp với các điểm cuối tuỳ ý bằng TCP và UDP.
-Vui lòng truy cập vào https://github.com/WICG/direct-sockets để biết thông tin chi tiết.
-
-Điểm cuối trên mạng riêng tư là những điểm cuối sử dụng địa chỉ IP từ không gian địa chỉ IP riêng tư, được định nghĩa trong https://wicg.github.io/private-network-access/#ip-address-space-private.
-
-Nếu đặt chính sách này, bạn có thể lập danh sách các mẫu URL chỉ định những trang web được phép giao tiếp với điểm cuối trên mạng riêng tư trong Direct Sockets API.
-Các mẫu hợp lệ được giới hạn ở Ứng dụng web tách biệt.
-
-Khi bạn không đặt chính sách này, <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" /> (nếu được đặt) sẽ áp dụng cho tất cả trang web.
-
-Các mẫu URL không được xung đột với <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />. Không chính sách nào được ưu tiên nếu một URL khớp với cả hai chính sách.
-
-Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.
-
-Xin lưu ý rằng chính sách này chỉ áp dụng nếu nguồn gốc được phép sử dụng Direct Sockets API.
-Vui lòng tham khảo <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" /> và <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" /> để biết thêm thông tin chi tiết.</translation>
 <translation id="7515953732107149296">Chính sách này đã bị xoá khỏi M53 sau khi RC4 bị xoá khỏi <ph name="PRODUCT_NAME" />.
 
       Nếu bạn đặt chính sách này thành sai hoặc không đặt, thì bộ thuật toán mật mã RC4 trong TLS (Bảo mật tầng truyền tải) sẽ không được kích hoạt. Nếu không, bạn có thể đặt chính sách này thành đúng để duy trì khả năng tương thích với máy chủ lỗi thời. Đây chỉ là giải pháp tạm thời nên bạn cần thiết lập lại máy chủ.</translation>
@@ -11144,7 +11107,6 @@ Chế độ này tương tự như <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_E
 <translation id="7832225468415136704">Không cho phép tính năng Làm sạch Chrome quét hệ thống theo định kỳ và không cho phép người dùng tự quét</translation>
 <translation id="7833148823006528332">Mã ứng dụng Android, chẳng hạn như "com.google.android.gm" cho Gmail</translation>
 <translation id="7835218570504220753">Tắt tính năng tự động nhấp</translation>
-<translation id="7836591982756027878">Cho phép truy cập mạng riêng tư trong Direct Sockets API trên các trang web này</translation>
 <translation id="7839124608155212387">Chu kỳ hệ thống thu thập dữ liệu sử dụng ứng dụng đo từ xa trên các thiết bị đã đăng ký của người dùng liên kết. Thời gian tối thiểu cho phép là 5 phút.
 
       Nếu bạn không đặt chính sách này, thì chu kỳ mặc định là 15 phút sẽ được áp dụng.</translation>
@@ -11320,7 +11282,6 @@ Nếu bạn đặt chính sách <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> th
 <translation id="7937766917976512374">Cho phép hoặc từ chối quay video</translation>
 <translation id="7941528208359969119">Cho phép thực hiện hoạt động kiểm tra <ph name="OCSP_CRL_LABEL" /> trực tuyến</translation>
 <translation id="7941975817681987555">Không dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
-<translation id="794447754389837404">Chặn quyền truy cập vào mạng riêng tư trong Direct Sockets API trên các trang web này</translation>
 <translation id="7945445169067895719">Bật khoá khi thiết bị tạm ngưng hoặc đóng nắp</translation>
 <translation id="7945744599423774764">Cho phép ngẫu nhiên hoá kích thước nhóm socket cho các máy chủ proxy</translation>
 <translation id="7946350455013548764">Khi bạn đặt chính sách này thành 3, các trang web có thể yêu cầu quyền truy cập vào thiết bị HID. Khi bạn đặt chính sách này thành 2, các trang web sẽ không truy cập được vào các thiết bị HID.
@@ -12894,7 +12855,6 @@ Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi 
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8956312248048980644">Cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.</translation>
 <translation id="8963464192296208229">Chế độ cài đặt phím F11 sử dụng phím tắt chứa phím bổ trợ alt</translation>
-<translation id="8966888925105658202">Không cho phép các nguồn gốc của Ứng dụng web tách biệt giao tiếp với điểm cuối trên mạng riêng tư trong Direct Sockets API.</translation>
 <translation id="8973579598359969188">Chọn có cho người dùng thấy lời nhắc của <ph name="PRIVACY_SANDBOX_NAME" /> hay không</translation>
 <translation id="8974457039656761249">Kiểm soát tính năng gợi ý khi viết bằng bàn phím vật lý</translation>
 <translation id="8974588819713914715">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="URL_ALLOWLIST_POLICY_NAME" />".</translation>
@@ -13290,6 +13250,13 @@ Xác định xem người dùng có được phép định cấu hình tên máy
       Nếu bạn đặt chính sách này thành tắt, thì chỉ những người dùng có tên trong <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> mới có thể đăng nhập.
 
       Nếu bạn đặt chính sách này thành bật hoặc không đặt, thì tất cả người dùng sẽ có thể đăng nhập.</translation>
+<translation id="963342674988073839">Chính sách này không còn dùng trong phiên bản M156 nữa, vui lòng sử dụng <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />.
+
+Để duy trì hành vi hiện tại là tắt <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />, hãy định cấu hình <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> với "url_pattern" được đặt thành "*" và "blocked_types" được đặt thành ["payments"].
+
+Nếu bạn đặt chính sách này thành True hoặc không đặt, thì người dùng có thể kiểm soát các nội dung đề xuất tự động điền cho thẻ tín dụng trong giao diện người dùng.
+
+Nếu bạn đặt chính sách này thành False, thì tính năng tự động điền sẽ không bao giờ gợi ý hoặc điền thông tin thẻ tín dụng hay lưu thông tin thẻ tín dụng bổ sung mà người dùng có thể gửi trong khi duyệt web.</translation>
 <translation id="966425658642788645">Áp dụng hành vi mặc định</translation>
 <translation id="971677226939413180">Lựa chọn In dưới dạng hình ảnh không có sẵn đối với người dùng.</translation>
 <translation id="974349541138387272">Chỉ định mẫu URI của trình phân giải DNS qua HTTPS mà bạn muốn</translation>

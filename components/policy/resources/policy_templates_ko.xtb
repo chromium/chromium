@@ -545,6 +545,7 @@ PromptInTab으로 설정하면, 사용자의 인증이 만료되는 즉시 Googl
       이 정책은 <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" />, 사용자의 환경설정에 우선하여 적용됩니다.</translation>
 <translation id="1413768951234456918">방문 기록 삭제</translation>
 <translation id="1413936351612032792">Linux 앱 사용에 관한 정보 보고</translation>
+<translation id="1417591892602709307">기기에 저장된 최대 사용자 프로필 수</translation>
 <translation id="1417776888841750570">이 정책은 관리 계정으로 콘텐츠 영역에 로그인한 후의 브라우저 동작을 제어합니다.
 
 이 정책은 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />보다 우선 적용됩니다.
@@ -1825,6 +1826,7 @@ URL로 입력된 측정항목 수집이 허용되거나 사용자가 이를 사�
       이 정책이 설정되지 않으면 컴퓨터의 물리적 메모리양이 부족하다고 감지된 후에만 브라우저에서 메모리 절약을 시도하기 시작합니다.</translation>
 <translation id="2161348910646846717">사용자가 출시 채널을 변경할 수 있도록 허용</translation>
 <translation id="2162703823039992020"><ph name="PRODUCT_OS_NAME" />에서 Google 서비스의 컨텍스트 통합</translation>
+<translation id="2163451780572451889">이 조직의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 인스턴스 웹 애플리케이션 URL입니다. 유효한 https URL이어야 합니다.</translation>
 <translation id="2166155400701622446"><ph name="PRODUCT_NAME" />에는 제한된 포트 목록이 내장되어 있습니다. 이 포트에는 연결이 되지 않습니다. 이 설정은 제한된 포트 목록을 우회하는 것을 허용합니다. 값은 쉼표로 구분된 목록으로, 발신 연결이 허용될 0개 이상의 포트가 나열됩니다.
 
       <ph name="PRODUCT_NAME" />이 여러 가지 네트워크 취약점을 오남용하기 위한 수단으로 이용되는 것을 방지하기 위해 포트 사용이 제한됩니다. 정책을 설정하면 네트워크가 공격에 노출될 수도 있습니다. 이 정책은 차단된 포트에서 실행되는 서비스를 일반 포트(포트 80 또는 443)로 이전하는 동안 발생하는 'ERR_UNSAFE_PORT' 코드 오류를 해결하기 위한 일시적인 방법으로 사용됩니다.
@@ -2096,6 +2098,11 @@ Chrome 앱은 ID(예: pjkljhegncpnkpknbcohdijeoejaedia)로, Android 앱은 패�
       이 정책은 WebUSB API를 통한 USB 기기 액세스에만 영향을 미칩니다. Web Serial API를 통한 USB 기기 액세스 권한을 부여하려면 <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" /> 정책을 확인하세요.</translation>
 <translation id="2318353380372431186">IWA 사용자 설치 사용 설정</translation>
 <translation id="2318583605563438459">부모가 감독 대상 계정을 추가하도록 허용</translation>
+<translation id="2323318142178972965">기기에 보관되는 최대 사용자 프로필 수를 제어합니다.
+
+이 정책을 양의 정수인 <ph name="MAX_USERS" />(으)로 설정하면 <ph name="PRODUCT_OS_NAME" />에서는 기기에 최대 <ph name="MAX_USERS" />명의 일반 사용자 프로필이 유지됩니다. 새 사용자가 로그인하고 한도를 초과하면 사용 가능한 디스크 공간을 유지하기 위해 가장 오래전에 사용한 사용자 프로필(현재 활성 사용자는 제외)이 해당 프로필의 로컬 저장소와 함께 자동으로 삭제됩니다.
+
+정책을 설정하지 않거나 0으로 설정하면 기기에 추가할 수 있는 사용자 프로필 수에 제한이 없어집니다. 기기에 사용자 프로필을 하나도 보관하지 않으려면 <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> 정책을 대신 사용하세요.</translation>
 <translation id="2326031114717677574">오디오 데이터가 샘플링 및 수집되는 속도입니다. 허용되는 최솟값은 1분입니다.
 
       정책을 설정하지 않으면 기본 속도인 15분이 적용됩니다.</translation>
@@ -2419,24 +2426,6 @@ URL과 유사한 지정자:
 <translation id="2521581787935130926">북마크바에 앱 단축키 표시</translation>
 <translation id="2522304491589804974">확장 프로그램 설치 허용 목록 구성</translation>
 <translation id="2523511232831599126">로그인 화면에서 접근성 바로가기 사용 설정</translation>
-<translation id="252611686271192278">Direct Sockets API를 사용하면 TCP 및 UDP를 사용하는 임의의 엔드포인트와 통신할 수 있습니다.
-자세한 내용은 https://github.com/WICG/direct-sockets를 참고하세요.
-
-비공개 네트워크 엔드포인트는 https://wicg.github.io/private-network-access/#ip-address-space-private에 정의된 비공개 IP 주소 공간의 IP 주소를 사용하는 엔드포인트입니다.
-
-정책을 설정하면 URL 패턴 목록을 작성하여 Direct Sockets API에서 비공개 네트워크에 액세스할 수 없도록 차단된 사이트를 지정할 수 있습니다.
-유효한 패턴은 분리형 웹 앱으로 제한됩니다.
-
-정책을 설정하지 않았을 때 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />이 설정되어 있으면 모든 사이트에 적용되며,
-
-URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />와 충돌하지 않아야 합니다. URL이 둘 모두와 일치하면 어떠한 정책도 우선 적용되지 않습니다.
-
-유효한 url 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.
-
-이 정책은 출처에서 Direct Sockets API를 사용할 수 있는 경우에만 적용됩니다.
-자세한 내용은 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />를 참고하세요.
-
-이 정책은 새 연결 시도에만 적용되며 기존 연결을 무효화하지 않습니다.</translation>
 <translation id="252742292004421898">이 사이트에서 Direct Sockets API 허용</translation>
 <translation id="2528762900096510743">자동 로그아웃 서비스 사용 설정</translation>
 <translation id="2529880111512635313">강제로 설치된 앱과 확장 프로그램 목록 구성</translation>
@@ -3156,6 +3145,13 @@ Chrome에서 퍼스트 파티 세트 관련 통합을 지원하는지 제어합�
 <translation id="2953447815703785478">기기 관리 프로토콜을 사용하여 등록해야 하는 기기 수준 클라이언트 인증서를 지정합니다.
 
 <ph name="EC_KEY_ALGORITHM_VALUE_NAME" /> 키 알고리즘 옵션은 <ph name="PRODUCT_OS_NAME" /> 버전 132부터 지원됩니다.</translation>
+<translation id="2953620259874711778">이 정책은 M156에서 지원 중단되었으므로 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> 정책을 대신 사용하세요.
+
+<ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" />을 사용 중지하는 현재 동작을 유지하려면 "url_pattern"을 "*"로 설정하고 "blocked_types"를 ["contact_info", "identity_docs", "travel"]로 설정하여 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />을 구성하세요.
+
+정책을 True로 설정하거나 설정하지 않으면 사용자가 UI의 주소 자동 완성을 제어할 수 있습니다.
+
+정책을 False로 설정하면 자동 완성에서 주소 정보를 제안하거나 채워 넣지 않고, 사용자가 웹을 탐색하는 동안 제출한 추가 주소 정보도 저장하지 않습니다.</translation>
 <translation id="2957506574938329824">어떤 사이트든지 Web Bluetooth API를 통해 블루투스 기기에 대한 액세스를 요청하도록 허용하지 않습니다.</translation>
 <translation id="2957513448235202597"><ph name="HTTP_NEGOTIATE" /> 인증의 계정 유형</translation>
 <translation id="2959469725686993410">시간대를 파악하는 동안 항상 Wi-Fi 액세스 포인트를 서버로 전송합니다.</translation>
@@ -6043,7 +6039,6 @@ JavaScript 최적화 정책 예외는 사이트 세부사항에서만 시행됩�
 정책을 False로 설정하면 기본 동작이 사용됩니다.</translation>
 <translation id="4820432864264617413">사용자가 <ph name="BOREALIS_NAME" />를 실행하지 못하도록 차단</translation>
 <translation id="4821987881803903281">사이트에 창 배치 권한 차단</translation>
-<translation id="4825653993105771848">Direct Sockets API에서 비공개 네트워크 액세스 제어</translation>
 <translation id="4825777333376170738">기기 키오스크 세션 보고 사용 중지</translation>
 <translation id="4826326557828204741">배터리 전원으로 기기를 실행하는 동안 유휴 지연 시간에 도달했을 때 실행할 작업입니다.</translation>
 <translation id="4826701474986856664">로그인 시 인기척 감지 센서 화면 표시</translation>
@@ -8878,7 +8873,6 @@ false로 설정하면 P2P가 사용되지 않습니다.
 <translation id="647645276885673708"><ph name="LACROS_NAME" />를 사용 설정하고 기본 브라우저로 지정</translation>
 <translation id="647698599569353771">Nearby Share를 사용 설정할 수 있도록 허용</translation>
 <translation id="6477685422297715670">키보드 백라이트 색상: 녹색</translation>
-<translation id="6477933144150138501">분리형 웹 앱 출처가 Direct Sockets API의 비공개 네트워크 엔드포인트와 통신하도록 허용합니다.</translation>
 <translation id="6478258366184919502">로그인 및 화면 원점</translation>
 <translation id="6478261301433199402">정책을 설정하면 사용자를 위한 <ph name="PLUGIN_VM_NAME" /> 이미지가 지정됩니다. 이 정책을 JSON 형식 스트링으로 지정하세요. 이때 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 필드에는 이미지 다운로드 위치를 명시하고 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 필드에는 SHA-256 해시를 지정하여 다운로드 파일의 무결성을 확인하는 데 사용되도록 합니다.</translation>
 <translation id="6481245670325946423">헤드리스 모드 사용 허용</translation>
@@ -9250,20 +9244,6 @@ false로 설정되면 Crostini 컨테이너로 포트 전달이 사용 중지됩
       참고: 정책에서 <ph name="ENTRIES_FIELD_NAME" />에 있는 여러 항목을 수용할 수 있지만, 첫 번째 항목을 제외한 모든 항목은 무시됩니다.
       경고: 정책을 설정하면 소프트웨어 업데이트 적용이 늦어질 수 있습니다.</translation>
 <translation id="6695441448686167614">웹 인쇄 설정</translation>
-<translation id="6695983959768914375">Direct Sockets API를 사용하면 TCP 및 UDP를 사용하는 임의의 엔드포인트와 통신할 수 있습니다.
-자세한 내용은 https://github.com/WICG/direct-sockets를 참고하세요.
-
-비공개 네트워크 엔드포인트는 https://wicg.github.io/private-network-access/#ip-address-space-private에 정의된 비공개 IP 주소 공간의 IP 주소를 사용하는 엔드포인트입니다.
-
-정책을 1로 설정하거나 설정하지 않으면 분리형 웹 앱 출처가 Direct Sockets API의 비공개 네트워크 엔드포인트와 통신할 수 있습니다.
-
-정책을 2로 설정하면 분리형 웹 앱 출처가 Direct Sockets API의 비공개 네트워크 엔드포인트와 통신하지 못하도록 차단됩니다.
-
-이 정책은 출처에서 Direct Sockets API를 사용할 수 있는 경우에만 적용됩니다.
-자세한 내용은 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />를 참고하세요.
-<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />을 사용하여 일치하는 URL의 경우 기본값을 재정의할 수도 있습니다.
-
-이 정책은 새 연결 시도에만 적용되며 기존 연결을 무효화하지 않습니다.</translation>
 <translation id="6698632841807204978">단색 인쇄 사용 설정</translation>
 <translation id="6699740789657890714">웹사이트가 안전하지 않은 방식으로 더 높은 수준의 비공개 네트워크 엔드포인트에 요청할 수 있도록 허용할지 지정</translation>
 <translation id="6699880231565102694">원격 액세스 호스트를 위한 2단계 인증 사용</translation>
@@ -10647,22 +10627,6 @@ Chrome의 Gemini에 관한 자세한 내용은 https://support.google.com/chrome
 <translation id="7512514325152952954"><ph name="PRODUCT_OS_NAME" />의 자동 업데이트 페이로드는 HTTPS 대신 HTTP에서 다운로드할 수 있습니다. 이를 통해 HTTP 다운로드에 대한 투명한 HTTP 캐싱이 가능해집니다.
 
 이 정책을 true로 설정하면 <ph name="PRODUCT_OS_NAME" />에서 HTTP를 통해 자동 업데이트 페이로드를 다운로드하려고 시도합니다. 이 정책이 false로 설정되어 있거나 아무런 설정이 되지 않은 경우 자동 업데이트 페이로드 다운로드 시 HTTPS를 사용합니다.</translation>
-<translation id="7512603255315110634">Direct Sockets API를 사용하면 TCP 및 UDP를 사용하는 임의의 엔드포인트와 통신할 수 있습니다.
-자세한 내용은 https://github.com/WICG/direct-sockets를 참고하세요.
-
-비공개 네트워크 엔드포인트는 https://wicg.github.io/private-network-access/#ip-address-space-private에 정의된 비공개 IP 주소 공간의 IP 주소를 사용하는 엔드포인트입니다.
-
-정책을 설정하면 URL 패턴 목록을 작성하여 Direct Sockets API에서 비공개 네트워크 엔드포인트와 통신할 수 있는 사이트를 지정할 수 있습니다.
-유효한 패턴은 분리형 웹 앱으로 제한됩니다.
-
-정책을 설정하지 않았을 때 <ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />이 설정되어 있으면 모든 사이트에 적용되며,
-
-URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />와 충돌하지 않아야 합니다. URL이 둘 모두와 일치하면 어떠한 정책도 우선 적용되지 않습니다.
-
-유효한 URL 패턴에 관한 자세한 내용은 https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세요. <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.
-
-이 정책은 출처에서 Direct Sockets API를 사용할 수 있는 경우에만 적용됩니다.
-자세한 내용은 <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />, <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />를 참고하세요.</translation>
 <translation id="7515953732107149296">이 정책은 RC4가 <ph name="PRODUCT_NAME" />에서 삭제된 후 M53에서 삭제되었습니다.
 
       정책이 설정되지 않거나 False로 설정되면 TLS의 RC4 암호화 스위트가 사용 설정되지 않습니다. 아니면 오래된 서버와의 호환성을 유지하기 위해 True로 설정될 수 있습니다. 임시방편이므로 서버를 다시 구성해야 합니다.</translation>
@@ -10921,6 +10885,21 @@ URL 패턴은 <ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> 정책과 
 
 정책을 설정하지 않으면 브라우저에서 PDF 렌더러를 선택합니다.</translation>
 <translation id="7704244074621846004">SharedWorker에 수명 연장 사용 설정</translation>
+<translation id="7705886216383850895"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
+
+<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품을 구성하려면 관리자가 다음 중 하나를 제공해야 합니다.
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL(<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) 또는
+* 기존 매개변수 3개 모두(<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />) URL 없이 이 세 매개변수의 일부 하위 집합만 지정하면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수는 https 스키마를 사용하고 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수와 기존 매개변수가 모두 구성된 경우 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 매개변수가 우선 적용됩니다.
+
+이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
+
+정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
+
+이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="7707869387893611318">충전음 기능을 사용 설정합니다.
 
           이 기능은 충전음을 재생합니다.
@@ -11137,7 +11116,6 @@ Internet Explorer의 <ph name="IEEM_SITELIST_POLICY" /> 정책(https://docs.micr
 <translation id="7832225468415136704">Chrome 정리도구의 정기적 시스템 검사를 차단하고 수동 검사 사용 안함</translation>
 <translation id="7833148823006528332">Android 앱 식별자(예: Gmail의 경우 'com.google.android.gm')입니다.</translation>
 <translation id="7835218570504220753">자동 클릭 사용 중지</translation>
-<translation id="7836591982756027878">이 사이트에서 Direct Sockets API의 비공개 네트워크 액세스 허용</translation>
 <translation id="7839124608155212387">등록된 기기에서 연결된 사용자의 앱 사용량 텔레메트리가 수집되는 속도입니다. 허용되는 최솟값은 5분입니다.
 
       정책을 설정하지 않으면 기본 속도인 15분이 적용됩니다.</translation>
@@ -11321,7 +11299,6 @@ https://chromeenterprise.google/policies/url-patterns를 참고하세요.
 <translation id="7937766917976512374">동영상 캡처 허용 또는 거부</translation>
 <translation id="7941528208359969119">온라인 <ph name="OCSP_CRL_LABEL" /> 검사 수행 허용</translation>
 <translation id="7941975817681987555">모든 네트워크 연결의 네트워크 활동 예측 안함</translation>
-<translation id="794447754389837404">이 사이트에서 Direct Sockets API의 비공개 네트워크 액세스 차단</translation>
 <translation id="7945445169067895719">기기가 정지되거나 덮개가 닫히면 잠금 사용 설정</translation>
 <translation id="7945744599423774764">프록시에 대한 소켓 풀 크기 무작위화 허용</translation>
 <translation id="7946350455013548764">이 정책을 3으로 설정하면 웹사이트에서 HID 기기 액세스를 요청할 수 있습니다. 정책을 2로 설정하면 HID 기기 액세스가 거부됩니다.
@@ -12902,7 +12879,6 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="8955719471735800169">맨위로</translation>
 <translation id="8956312248048980644">기본적으로 출처 관련 에이전트 클러스터링을 허용합니다.</translation>
 <translation id="8963464192296208229">F11 설정은 Alt 수정자가 포함된 단축키를 사용합니다.</translation>
-<translation id="8966888925105658202">분리형 웹 앱 출처가 Direct Sockets API의 비공개 네트워크 엔드포인트와 통신하도록 허용하지 않습니다.</translation>
 <translation id="8973579598359969188"><ph name="PRIVACY_SANDBOX_NAME" /> 메시지를 사용자에게 표시할지 선택합니다.</translation>
 <translation id="8974457039656761249">실제 키보드의 예측 작성 기능 제어</translation>
 <translation id="8974588819713914715">이 정책은 지원 중단되었으며 지원되지 않습니다. 대신 '<ph name="URL_ALLOWLIST_POLICY_NAME" />' 정책을 사용하세요.</translation>
@@ -13301,6 +13277,13 @@ HTTPS 우선 모드는 처음에는 엄격 또는 균형 모드로 설정되지�
       이 정책을 False로 설정하면 <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" />에 있는 사용자만 로그인할 수 있습니다.
 
       정책을 True로 설정하거나 설정하지 않으면 모든 사용자가 로그인할 수 있습니다.</translation>
+<translation id="963342674988073839">이 정책은 M156에서 지원 중단되었으므로 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" /> 정책을 대신 사용하세요.
+
+<ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />을 사용 중지하는 현재 동작을 유지하려면 "url_pattern"을 "*"로 설정하고 "blocked_types"를 ["payments"]로 설정하여 <ph name="AUTOFILL_SETTINGS_POLICY_NAME" />을 구성하세요.
+
+정책을 True로 설정하거나 설정하지 않으면 사용자가 UI에서 신용카드의 자동 완성 추천을 제어할 수 있습니다.
+
+정책을 False로 설정하면 자동 완성에서 신용카드 정보를 추천하거나 입력하지 않으며, 사용자가 웹 탐색 중 제출할 수 있는 추가 신용카드 정보를 저장하지도 않습니다.</translation>
 <translation id="966425658642788645">기본 동작 적용</translation>
 <translation id="971677226939413180">사용자가 이미지로 인쇄 옵션을 선택할 수 없음</translation>
 <translation id="974349541138387272">원하는 DNS-over-HTTPS 리졸버의 URI 템플릿 지정</translation>

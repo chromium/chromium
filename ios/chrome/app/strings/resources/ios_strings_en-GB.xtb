@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">Your storage is full</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1190609913194133056">Notification Centre</translation>
-<translation id="1195433173321863960">Images will be available again when your limit resets on <ph name="RESET_TIME" /></translation>
 <translation id="1196534270480620381">Give me a short summary of this page</translation>
 <translation id="1199631150313925648">Enter manually</translation>
 <translation id="1199963004393929848">Green theme</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">Find and fill</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1486096554574027028">Search passwords</translation>
-<translation id="1486593497476255523">Tab groups completed!</translation>
 <translation id="1491277525950327607">Double tap to toggle setting</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1497590942294823549">Menu → Password Manager</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">Switch to another profile</translation>
 <translation id="1741219894094057085">Smart watch</translation>
 <translation id="1743244221910283364">Discard changes</translation>
-<translation id="1744234754703485302">Manage payment methods completed.</translation>
 <translation id="1748975028205587434">Select your file</translation>
 <translation id="1749733017156547309">A password is required</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option for address available above your keyboard.}other{{count} options for address available above your keyboard.}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">Delete in 1 month</translation>
 <translation id="2161446265348023004">Switch to open window</translation>
 <translation id="2164946989711475905">Sign in…</translation>
-<translation id="2165110345209765380">Search with AI Mode completed!</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2180338296831857171">Delete addresses</translation>
 <translation id="218350106843433823">Autofill passwords and passkeys</translation>
@@ -426,7 +422,6 @@
 <translation id="2274179746480077483">Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.</translation>
 <translation id="2287614783861766820">{count,plural, =1{This address will be deleted from this device.}other{These addresses will be deleted from this device.}}</translation>
 <translation id="2295236662082735391">Long-press an image on the web to edit with Gemini</translation>
-<translation id="2296360194694387941">Use Gemini in Chrome completed!</translation>
 <translation id="2297989278479054870">After you sign out, the bookmarks, passwords and more in your Google Account will be removed from this device.</translation>
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
 <translation id="2306265833370324042">Show <ph name="SEARCH_ENGINE_NAME" /> details</translation>
@@ -694,7 +689,6 @@
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
 <translation id="3183362380688692618">New tab group…</translation>
 <translation id="3185000827934321633">Navigating</translation>
-<translation id="3185760469172949183">Search with camera completed!</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190558889382726167">Password saved</translation>
 <translation id="3190736958609431397">Untrack</translation>
@@ -767,7 +761,6 @@
 <translation id="3459644598174926977">Go Live with Gemini to ask about a page, brainstorm out loud and talk back and forth.</translation>
 <translation id="3462768334899086950">This means that you will lose your unsaved file and current tabs</translation>
 <translation id="3464194322481586217">Couldn't track the price.</translation>
-<translation id="346831467152294287">Passwords and autofill completed!</translation>
 <translation id="3469117812148449995">Options to save password</translation>
 <translation id="3472469028191701821">Opens in new tab</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{for {COUNT} site or app}other{for {COUNT} sites and apps}}</translation>
@@ -868,7 +861,6 @@
 <translation id="3813175908845379029">Helpful suggestions that make browsing better and easier</translation>
 <translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
-<translation id="3826034723896327540">Pin tabs completed!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="3831560640878483188">Dismiss warning?</translation>
 <translation id="3832419617903252251">Password saved only on this device</translation>
@@ -997,7 +989,6 @@
 <translation id="422474357428465195">You have several password issues that could put your security at risk.</translation>
 <translation id="422477017457571619">Real-time, AI-powered protection against dangerous sites, downloads and extensions that's based on your browsing data getting sent to Google</translation>
 <translation id="4231395118547300571">Safety Check notifications turned on</translation>
-<translation id="4232376164796433044">Passwords and autofill</translation>
 <translation id="4232817129213135694">Set up passkeys for this device</translation>
 <translation id="4237377247299956313">Tap <ph name="BEGIN_BOLD" />Default browser app<ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">Save known traveller number</translation>
@@ -2077,7 +2068,6 @@ You can restart at any time.</translation>
 <translation id="7603308509262646847">Autofill the cardholder <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
-<translation id="7606639338662398635">Tab groups</translation>
 <translation id="760667371114328991">Turn off notifications for Safety Check</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612849887607288481">Open AI prototyping menu</translation>
@@ -2285,7 +2275,6 @@ You can restart at any time.</translation>
 <translation id="8240217649914883113">Add this to my calendar</translation>
 <translation id="824379025871762038">Never allow</translation>
 <translation id="8250920743982581267">Documents</translation>
-<translation id="8252980988000695656">Google Lens completed!</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
 <translation id="8258999165172757081">Added</translation>
 <translation id="8261506727792406068">Delete</translation>

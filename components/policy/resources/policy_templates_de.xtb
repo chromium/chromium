@@ -542,6 +542,7 @@ Chrome-Richtlinien haben Vorrang vor dieser Richtlinie, z. B. wenn die Erweiter
       Diese Richtlinie überschreibt <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> und die Nutzereinstellungen.</translation>
 <translation id="1413768951234456918">Browserverlauf löschen</translation>
 <translation id="1413936351612032792">Informationen zur Nutzung von Linux-Apps senden</translation>
+<translation id="1417591892602709307">Maximale Anzahl der auf dem Gerät gespeicherten Nutzerprofile</translation>
 <translation id="1417776888841750570">Mit dieser Richtlinie wird festgelegt, wie sich der Browser verhält, wenn sich Nutzer mit einem verwalteten Konto im Inhaltsbereich anmelden.
 
 Diese Richtlinie überschreibt „<ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" />“.
@@ -2073,6 +2074,11 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Sie wirkt sich nur auf den Zugriff auf USB-Geräte über die WebUSB API aus. Für die Gewährung des Zugriffs auf USB-Geräte über die Web Serial API siehe Richtlinie <ph name="SERIAL_ALLOW_USB_DEVICES_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="2318353380372431186">Installation von isolierten Web-Apps (IWAs) für Nutzer aktivieren</translation>
 <translation id="2318583605563438459">Eltern dürfen gemeinsam verwaltete Konten hinzufügen</translation>
+<translation id="2323318142178972965">Steuert die maximale Anzahl von Nutzerprofilen, die auf dem Gerät gespeichert werden.
+
+Wenn diese Richtlinie auf eine positive Ganzzahl <ph name="MAX_USERS" /> festgelegt ist, behält <ph name="PRODUCT_OS_NAME" /> höchstens <ph name="MAX_USERS" /> reguläre Nutzerprofile auf dem Gerät bei. Wenn sich ein neuer Nutzer anmeldet und das Limit überschritten wird, werden die am längsten nicht verwendeten Nutzerprofile (mit Ausnahme des aktuell aktiven Nutzers) zusammen mit ihren lokal gespeicherten Daten automatisch gelöscht, um freien Speicherplatz bereitzustellen.
+
+Ist diese Richtlinie nicht konfiguriert oder auf „0“ gesetzt, gibt es keine Beschränkung für die Anzahl der Nutzerprofile, die dem Gerät hinzugefügt werden können. Wenn du überhaupt keine Nutzerprofile auf dem Gerät speichern möchtest, verwende stattdessen die Richtlinie „<ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" />“.</translation>
 <translation id="2326031114717677574">Häufigkeit, mit der Audiodaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
@@ -2390,24 +2396,6 @@ Ist die Richtlinie deaktiviert, wird die Funktion zur <ph name="ZSTANDARD_SHORTN
 <translation id="2521581787935130926">App-Verknüpfung in der Lesezeichenleiste anzeigen</translation>
 <translation id="2522304491589804974">Zulassungsliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="2523511232831599126">Kurzbefehle für Bedienungshilfen auf dem Anmeldebildschirm aktivieren</translation>
-<translation id="252611686271192278">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Private Netzwerkendpunkte sind solche, die IP‑Adressen aus dem privaten IP‑Adressbereich verwenden, der unter https://wicg.github.io/private-network-access/#ip-address-space-private definiert ist.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welchen Websites der Zugriff auf das private Netzwerk in der Direct Sockets API nicht gewährt wird.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL‑Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.
-
-Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
-Mehr erfährst du in den Informationen zu „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.
-
-Diese Richtlinie gilt nur für neue Verbindungsversuche und macht bestehende Verbindungen nicht ungültig.</translation>
 <translation id="252742292004421898">Direct Sockets API auf diesen Websites zulassen</translation>
 <translation id="2528762900096510743">Automatischen Abmeldedienst aktivieren</translation>
 <translation id="2529880111512635313">Liste der Apps und Erweiterungen konfigurieren, deren Installation erzwungen wurde</translation>
@@ -2723,7 +2711,7 @@ Wenn die Richtlinie auf „2“ (Deaktiviert) festgelegt wird, ist die Einbindun
 <translation id="2702023190395322609">Empfehlungen zu Medien aktivieren</translation>
 <translation id="2702682139813393777">Erzwingen, dass Windows-Hosts für natives Messaging über cmd.exe gestartet werden</translation>
 <translation id="270582584528242502">Keine Warnung anzeigen, wenn der Nutzer versucht, den Browser zu schließen</translation>
-<translation id="2706209533052022524">„Anprobieren“ ist eine KI-basierte Funktion, mit der Nutzer Bilder von Kleidung, die sie im Web finden, virtuell anprobieren können. Wenn Gemini in Chrome aktiviert ist, erhalten sie außerdem hilfreiche Shopping-Informationen.
+<translation id="2706209533052022524">„Anprobieren“ ist eine KI-basierte Funktion, mit der Nutzer Kleidung, die sie im Web finden, virtuell anprobieren können. Wenn Gemini in Chrome aktiviert ist, erhalten sie außerdem hilfreiche Shopping-Informationen.
 
 „0“ = Die Nutzung der Funktion wird zugelassen, wobei Google relevante Daten zur Verbesserung seiner KI-Modelle verwenden darf. Relevante Daten können je nach Funktion Bilder, Eingaben, Ausgaben, Quellenmaterial und Feedback sein. Diese Daten werden möglicherweise auch manuell überprüft, um KI-Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
 
@@ -3121,6 +3109,13 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 <translation id="2953447815703785478">Diese Richtlinie legt geräteübergreifende Clientzertifikate fest, die über das Geräteverwaltungsprotokoll registriert werden sollen.
 
 Die <ph name="EC_KEY_ALGORITHM_VALUE_NAME" />-Option für den Schlüssel-Algorithmus wird von <ph name="PRODUCT_OS_NAME" /> seit Version 132 unterstützt.</translation>
+<translation id="2953620259874711778">Diese Richtlinie wurde in M156 eingestellt. Bitte verwende stattdessen „<ph name="AUTOFILL_SETTINGS_POLICY_NAME" />“.
+
+Wenn du das aktuelle Verhalten, also das Deaktivieren von „<ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME" />“, beibehalten möchtest, konfiguriere „<ph name="AUTOFILL_SETTINGS_POLICY_NAME" />“ so, dass „url_pattern“ auf „*“ und „blocked_types“ auf [„contact_info“, „identity_docs“, „travel“] gesetzt ist.
+
+Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Funktion „AutoFill“ für Adressen in der UI steuern.
+
+Ist sie auf „False“ gesetzt, schlägt Autofill keine Adressinformationen vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Adressinformationen gespeichert, die Nutzer beim Surfen im Internet senden.</translation>
 <translation id="2957506574938329824">Keine Website darf Zugriff auf Bluetooth-Geräte über die Web Bluetooth API anfordern</translation>
 <translation id="2957513448235202597">Kontotyp für die <ph name="HTTP_NEGOTIATE" />-Authentifizierung</translation>
 <translation id="2959469725686993410">Beim Auflösen der Zeitzone immer WLAN-Zugangspunkte an den Server senden</translation>
@@ -5958,7 +5953,6 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
 Wenn die Richtlinie auf „False“ gesetzt ist, wird die Standardeinstellung verwendet.</translation>
 <translation id="4820432864264617413">Ausführung von <ph name="BOREALIS_NAME" /> für einen Nutzer verhindern</translation>
 <translation id="4821987881803903281">Berechtigung für die Fensterpositionierung auf diesen Websites blockieren</translation>
-<translation id="4825653993105771848">Zugriff auf privates Netzwerk in der Direct Sockets API steuern</translation>
 <translation id="4825777333376170738">Melden des Status für die Kiosksitzung auf Geräten deaktivieren</translation>
 <translation id="4826326557828204741">Auszuführende Aktion beim Erreichen der Leerlaufverzögerung während des Akkubetriebs</translation>
 <translation id="4826701474986856664">Bildschirm für den Sensor zur Erkennung der Anwesenheit von Personen bei der Anmeldung anzeigen</translation>
@@ -8731,7 +8725,6 @@ HINWEIS: Das Standardverhalten hängt davon ab, ob es sich um ein Verbraucherger
 <translation id="647645276885673708"><ph name="LACROS_NAME" /> aktivieren und als primären Browser festlegen</translation>
 <translation id="647698599569353771">Aktivieren von Nearby Share zulassen.</translation>
 <translation id="6477685422297715670">Tastaturbeleuchtungsfarbe „Grün“</translation>
-<translation id="6477933144150138501">Ursprüngen der isolierten Web-App erlauben, mit privaten Netzwerkendpunkten in der Direct Sockets API zu kommunizieren</translation>
 <translation id="6478258366184919502">Ursprünge für Anmeldebildschirm</translation>
 <translation id="6478261301433199402">Wenn diese Richtlinie konfiguriert ist, wird das <ph name="PLUGIN_VM_NAME" />-Bild für den Nutzer festgelegt. Gib diese Richtlinie als String im JSON-Format an, wobei <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> angibt, wo das Bild heruntergeladen werden kann. Zusätzlich wird <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als ein SHA-256-Hash-Wert festgelegt, mit dem die Integrität des Downloads bestätigt wird.</translation>
 <translation id="6481245670325946423">Verwendung des monitorlosen Modus erlauben</translation>
@@ -9103,20 +9096,6 @@ Wenn die Richtlinie aktiviert ist, aktualisiert die Funktion zur Aktualisierung 
       Hinweis: Auch wenn die Richtlinie mehrere Elemente unter <ph name="ENTRIES_FIELD_NAME" /> erlaubt, werden alle Elemente außer dem ersten ignoriert.
       Hinweis: Durch das Konfigurieren dieser Richtlinie kann sich die Anwendung von Softwareupdates verzögern.</translation>
 <translation id="6695441448686167614">Web-Printing-Einstellungen</translation>
-<translation id="6695983959768914375">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Private Netzwerkendpunkte sind solche, die IP-Adressen aus dem privaten IP-Adressbereich verwenden, der unter https://wicg.github.io/private-network-access/#ip-address-space-private definiert ist.
-
-Wenn die Richtlinie auf „1“ gesetzt oder nicht konfiguriert ist, dürfen Ursprünge der isolierten Web-App mit privaten Netzwerkendpunkten in der Direct Sockets API kommunizieren.
-
-Wenn die Richtlinie auf „2“ gesetzt ist, dürfen Ursprünge der isolierten Web-App nicht mit privaten Netzwerkendpunkten in der Direct Sockets API kommunizieren.
-
-Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
-Weitere Informationen findest du unter „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.
-Der Standardwert kann auch für übereinstimmende URLs mit „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />“ überschrieben werden.
-
-Diese Richtlinie gilt nur für neue Verbindungsversuche und macht vorhandene Verbindungen nicht ungültig.</translation>
 <translation id="6698632841807204978">Schwarz-Weiß-Druck aktivieren</translation>
 <translation id="6699740789657890714">Gibt an, ob Websites unsichere Anfragen an eher private Netzwerk-Endpunkte senden dürfen</translation>
 <translation id="6699880231565102694">2-Faktor-Authentifizierung für Remote-Zugriff-Hosts aktivieren</translation>
@@ -10463,22 +10442,6 @@ Gemini kann nicht in allen Ländern und Sprachen Aktionen ausführen. Auch wenn 
 <translation id="7512514325152952954">Die Nutzdaten automatischer Updates von <ph name="PRODUCT_OS_NAME" /> können über HTTP statt über HTTPS heruntergeladen werden. Dadurch wird transparentes HTTP-Caching von HTTP-Downloads zugelassen.
 
 Ist diese Richtlinie auf „true“ gesetzt, versucht <ph name="PRODUCT_OS_NAME" />, die Nutzdaten automatischer Updates über HTTP herunterzuladen. Ist die Richtlinie auf „false“ gesetzt oder nicht festgelegt, wird für solche Downloads HTTPS verwendet.</translation>
-<translation id="7512603255315110634">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
-Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
-
-Private Netzwerkendpunkte sind solche, die IP‑Adressen aus dem privaten IP‑Adressbereich verwenden, der unter https://wicg.github.io/private-network-access/#ip-address-space-private definiert ist.
-
-Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL‑Mustern erstellen, durch die angegeben wird, welche Websites in der Direct Sockets API mit privaten Netzwerkendpunkten kommunizieren dürfen.
-Gültige Muster sind auf isolierte Web-Apps beschränkt.
-
-Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert.
-
-URL‑Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.
-
-Diese Richtlinie gilt nur, wenn der Ursprung die Direct Sockets API verwenden darf.
-Mehr erfährst du in den Informationen zu „<ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME" />“, „<ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />“ und „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
 <translation id="7515953732107149296">Diese Richtlinie wurde in M53 entfernt, nachdem RC4 aus <ph name="PRODUCT_NAME" /> entfernt wurde.
 
       Wenn sie nicht konfiguriert oder auf „false“ festgelegt ist, werden RC4-Cipher Suites in TLS nicht aktiviert. Die Richtlinie kann auf „true“ eingestellt werden, um die Kompatibilität mit veralteten Servern zu gewährleisten. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.</translation>
@@ -10946,7 +10909,6 @@ Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="7832225468415136704">Verhindern, dass das Chrome Cleanup Tool das System regelmäßig scannt, und manuelle Scans deaktivieren</translation>
 <translation id="7833148823006528332">Android-App-ID, z. B. „com.google.android.gm“ für Gmail.</translation>
 <translation id="7835218570504220753">Automatisches Klicken deaktivieren</translation>
-<translation id="7836591982756027878">Privaten Netzwerkzugriff in der Direct Sockets API auf diesen Websites erlauben</translation>
 <translation id="7839124608155212387">Häufigkeit, mit der Telemetriedaten zur App-Nutzung auf registrierten Geräten für verknüpfte Nutzer erfasst wird. Die geringste zulässige Häufigkeit beträgt 5 Minuten.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
@@ -11119,7 +11081,6 @@ Wenn die Richtlinie „<ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" />“ deaktivi
 <translation id="7937766917976512374">Videoaufzeichnung gestatten oder ablehnen</translation>
 <translation id="7941528208359969119">Ausführung von Onlineprüfungen von <ph name="OCSP_CRL_LABEL" /> zulassen</translation>
 <translation id="7941975817681987555">Netzwerkaktionen nicht über Netzwerkverbindungen vervollständigen</translation>
-<translation id="794447754389837404">Privaten Netzwerkzugriff in der Direct Sockets API auf diesen Websites blockieren</translation>
 <translation id="7945445169067895719">Sperre aktivieren, wenn das Gerät in den Ruhemodus versetzt oder zugeklappt wird</translation>
 <translation id="7945744599423774764">Randomisierung der Socket-Poolgröße für Proxys zulassen</translation>
 <translation id="7946350455013548764">Wenn die Richtlinie auf 3 gesetzt ist, dürfen Websites um Zugriff auf HID-Geräte bitten. Ist sie auf 2 gesetzt, wird der Zugriff auf HID-Geräte verweigert.
@@ -12668,7 +12629,6 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
 <translation id="8963464192296208229">In den Einstellungen von F11 wird die Tastenkombination verwendet, die den Alt-Modifikator enthält</translation>
-<translation id="8966888925105658202">Ursprüngen der isolierten Web-App nicht erlauben, mit privaten Netzwerkendpunkten in der Direct Sockets API zu kommunizieren</translation>
 <translation id="8973579598359969188">Du kannst festlegen, ob Nutzern die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann</translation>
 <translation id="8974457039656761249">Wortvorschläge bei Nutzung der physischen Tastatur steuern</translation>
 <translation id="8974588819713914715">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.</translation>
@@ -13057,6 +13017,13 @@ Mit dieser Richtlinie wird festgelegt, ob ein Nutzer den Gerätehostnamen konfig
       Wenn diese Richtlinie auf „false“ gesetzt ist, können sich nur in <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> enthaltene Nutzer anmelden.
 
       Wenn die Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, können sich alle Nutzer anmelden.</translation>
+<translation id="963342674988073839">Diese Richtlinie wurde in M156 eingestellt. Bitte verwende stattdessen „<ph name="AUTOFILL_SETTINGS_POLICY_NAME" />“.
+
+Wenn du das aktuelle Verhalten, bei dem „<ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME" />“ deaktiviert ist, beibehalten möchtest, konfiguriere „<ph name="AUTOFILL_SETTINGS_POLICY_NAME" />“ so, dass „url_pattern“ auf „*“ und „blocked_types“ auf [„payments“] festgelegt ist.
+
+Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Autofill-Vorschläge für Kreditkarten in der UI steuern.
+
+Ist sie auf „False“ gesetzt, schlägt Autofill keine Kreditkartendaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Kreditkartendaten gespeichert, die Nutzer beim Surfen im Internet eventuell senden.</translation>
 <translation id="966425658642788645">Standardverhalten anwenden</translation>
 <translation id="971677226939413180">Macht die Option „Als Bild drucken“ nicht zur Auswahl durch den Nutzer verfügbar.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>

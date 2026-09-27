@@ -104,6 +104,7 @@
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
 <translation id="2135919691573380097">このサイトを報告する</translation>
 <translation id="2137162749895930932">翻訳画面を閉じる</translation>
+<translation id="2147218225094845757">サイドパネルを非表示</translation>
 <translation id="215352261310130060">このダウンロードは Chromium でブロックされました。サイトで安全な接続が使用されておらず、ファイルが改ざんされている可能性があります</translation>
 <translation id="2170098639895543546">ページ上のコンテンツを選択</translation>
 <translation id="2174178932569897599">Chromium をカスタマイズ</translation>
@@ -303,7 +304,6 @@
 <translation id="4251772536351901305">標準保護機能より多くのサイトデータを分析して、危険なサイト（Google が認識していなかったサイトも含む）について警告します。Chromium の警告をスキップすることもできます。</translation>
 <translation id="4269093074552541569">Chromium からログアウト</translation>
 <translation id="4271805377592243930">Chromium のヘルプを見る</translation>
-<translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4281844954008187215">利用規約</translation>
 <translation id="4285930937574705105">原因不明のエラーによりインストールが失敗しました。実行中の Chromium を終了してからもう一度お試しください。</translation>
 <translation id="4298125729853015961">Chromium からパスワードをエクスポート</translation>

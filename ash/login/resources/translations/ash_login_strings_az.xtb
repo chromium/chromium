@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Batareya <ph name="BATTERY_LEVEL" />% olduqda güncəlləmə başlayacaq.</translation>
 <translation id="1353275871123211385">Tətbiq təsdiqi və ekran vaxtı limitləri kimi valideyn nəzarətlərindən istifadə etmək üçün uşağın valideyn tərəfindən idarə edilən Google Hesabı olmalıdır. Google Classroom kimi alətlər üçün daha sonra bir məktəb hesabı əlavə edilə bilər.</translation>
 <translation id="1375557162880614858">ChromeOS Flex üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
-<translation id="1375938286942050085">Ayarlama tamamlandı! Cihazınızı oyuna hazırlayın</translation>
 <translation id="1377600615067678409">İndilik keçin</translation>
 <translation id="1399261165075500043">Google Play Xidmət Şərtlərini yükləmək olmur</translation>
 <translation id="1400243387594338234">Cihazınıza daxil olmaq üçün bu PIN-dən istifadə edə bilərsiniz</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Google Hesabını <ph name="DEVICE_TYPE" /> cihazında istifadə edin</translation>
 <translation id="3856800405688283469">Vaxt zonası seçin</translation>
 <translation id="3893630138897523026">ChromeVox (şifahi geri əlaqə)</translation>
-<translation id="3897746662269329507"><ph name="DEVICE_TYPE" /> cihazınız oyun üçün yaradılıb. Növbəti olaraq Araşdırma tətbiqi açıqlacaq - burada yüzlərlə ən son oyuna daxil ola, oyun təkliflərinə baxa və cihazınızla birlikdə gələn oyun funksiyalarını kəşf edə biləcəksiniz.</translation>
 <translation id="389901847090970821">Klaviatura seçin</translation>
 <translation id="3910588685973519483">Sİ ilə divar kağızı yaradın</translation>
 <translation id="3924259174674732591">Displey və mətn ölçüsü <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Etibarlı Platforma Modulu üzrə təhlükəsizlik divarı üçün yeniləmə quraşdırılmalıdır. Baxın: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hesaba girən zaman xəta oldu</translation>
 <translation id="5453829744223920473">Uşaq məktəbə aid tətbiq, əlfəcin və resurslardan sinifdəki kimi istifadə edə bilər. Əsas qaydaları məktəb təyin edir.</translation>
-<translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> e-məktubları üçün qeydiyyatdan keçin</translation>
 <translation id="5473099001878321374">Davam etməklə, bu cihazın mobil data istifadə edərək Google'dan, övladınızın operatorundan və bu cihazın istehsalçısından avtomatik yeniliklər və tətbiqlər endirməsi və quraşdırması ilə razılaşırsınız. Bu tətbiqlərdən bəziləri tətbiqdaxili satınalmalar təklif edə bilər.</translation>
 <translation id="5502915260472117187">Uşaq</translation>
 <translation id="5511823366942919280">Bu cihazı "Köpəkbalığı" olaraq quraşdırmaq istəyirsiniz?</translation>

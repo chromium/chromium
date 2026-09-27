@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">L'actualització començarà quan hi hagi un <ph name="BATTERY_LEVEL" />% de bateria.</translation>
 <translation id="1353275871123211385">Per utilitzar els controls parentals, com ara l'aprovació d'aplicacions i els límits de temps de pantalla, el nen ha de tenir un Compte de Google gestionat pel pare o per la mare. Més endavant, es pot afegir un compte de centre educatiu per utilitzar eines com, per exemple, Google Classroom.</translation>
 <translation id="1375557162880614858">Vols activar ChromeVox, el lector de pantalla integrat per a ChromeOS Flex?</translation>
-<translation id="1375938286942050085">S'ha completat la configuració. A continuació, prepara el dispositiu per jugar.</translation>
 <translation id="1377600615067678409">Omet per ara</translation>
 <translation id="1399261165075500043">No es poden carregar les condicions del servei de Google Play</translation>
 <translation id="1400243387594338234">Pots utilitzar aquest PIN per iniciar la sessió al dispositiu</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Utilitza el teu Compte de Google al <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Selecciona la zona horària</translation>
 <translation id="3893630138897523026">ChromeVox (avisos de veu)</translation>
-<translation id="3897746662269329507">El dispositiu <ph name="DEVICE_TYPE" /> està dissenyat per jugar. A continuació s'obrirà l'aplicació Explora, en què podràs accedir a centenars dels jocs més recents, veure ofertes de jocs i descobrir funcions de videojocs que s'inclouen al teu dispositiu.</translation>
 <translation id="389901847090970821">Selecciona el teclat</translation>
 <translation id="3910588685973519483">Crea fons de pantalla amb IA</translation>
 <translation id="3924259174674732591">Mida de la pantalla i del text establerta en un <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Cal instal·lar una actualització per al microprogramari del mòdul de plataforma de confiança. Consulta <ph name="TPM_FIRMWARE_UPDATE_LINK" />.</translation>
 <translation id="5448293924669608770">Hi ha hagut un problema en iniciar la sessió</translation>
 <translation id="5453829744223920473">El teu fill o filla pot utilitzar totes les aplicacions, les adreces d'interès i els recursos del centre educatiu tal com ho fa a classe. El centre educatiu estableix les regles bàsiques.</translation>
-<translation id="5463450804024056231">Registra't per rebre correus electrònics de <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">En continuar, acceptes que aquest dispositiu també pugui baixar i instal·lar automàticament actualitzacions i aplicacions de Google, de l'operador de telefonia mòbil i del fabricant del dispositiu del teu fill o filla, i que és possible que ho faci utilitzant dades mòbils. Pot ser que algunes d'aquestes aplicacions ofereixin compres des de l'aplicació.</translation>
 <translation id="5502915260472117187">Un nen</translation>
 <translation id="5511823366942919280">Confirmes que vols configurar aquest dispositiu com a "Tauró"?</translation>

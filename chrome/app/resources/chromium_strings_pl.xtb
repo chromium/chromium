@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Pomóż nam ulepszać tryb incognito, wypełniając tę 1-minutową ankietę.</translation>
 <translation id="1065672644894730302">Nie można odczytać ustawień. Niektóre funkcje mogą być niedostępne, a zmiany w ustawieniach nie zostaną zapisane.</translation>
 <translation id="1083934481477628225">Rodzic wyłączył „Uprawnienia stron, aplikacji i rozszerzeń” w Chromium</translation>
+<translation id="109026165963220603">Chromium potrzebuje dostępu do sieci lokalnej, aby wykrywać urządzenia w pobliżu i z nich korzystać</translation>
 <translation id="1090946077924227754">Aby wyszukać konkretną funkcję lub rozszerzenie Chromium, wpisz skrót do danego elementu na pasku adresu i naciśnij wybrany klawisz</translation>
 <translation id="1098493699368672217">Pokaż wyszukiwarkę w Chromium w obszarze powiadomień i włącz skrót klawiszowy</translation>
 <translation id="1104942323762546749">Chromium chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
 <translation id="2135919691573380097">Zgłoś tę witrynę</translation>
 <translation id="2137162749895930932">Zamknij ekran tłumaczenia</translation>
+<translation id="2147218225094845757">Ukryj panel boczny</translation>
 <translation id="215352261310130060">Pobieranie zostało zablokowane przez Chromium, ponieważ strona nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
 <translation id="2170098639895543546">Wybierz dowolny element na stronie</translation>
 <translation id="2174178932569897599">Dostosuj Chromium</translation>
@@ -300,7 +302,6 @@
 <translation id="4251772536351901305">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chromium.</translation>
 <translation id="4269093074552541569">Wyloguj z Chromium</translation>
 <translation id="4271805377592243930">Pomoc do Chromium</translation>
-<translation id="4275788652681621337">Zamknij panel boczny</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
 <translation id="4298125729853015961">Eksportuj hasła z Chromium</translation>

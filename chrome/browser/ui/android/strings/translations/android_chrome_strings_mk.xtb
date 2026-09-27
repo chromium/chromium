@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">Споделена група картички <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Долниот лист со прифаќањето на „Известувања за совети“ е отворен на целосна висина</translation>
 <translation id="4537987892902330164">Останавте најавени како <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Нема лист со криптографски клучеви</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка}one{<ph name="TAB_COUNT_MANY" /> картичка, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}other{<ph name="TAB_COUNT_MANY" /> картички, <ph name="TAB_COUNT_INCOGNITO" /> инкогнито}}</translation>
 <translation id="4558311620361989323">Кратенки на веб-страница</translation>
 <translation id="4572422548854449519">Најавете се на управувана сметка</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720556299488643018">Отпишете се</translation>
 <translation id="4732120983431207637">Модул за продолжување претходни задачи</translation>
+<translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4736934858538408121">Виртуелна картичка</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4738065825338914557">Се отпишува…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">Преименување датотеката</translation>
 <translation id="4885273946141277891">Неподдржан број примероци на Chrome.</translation>
 <translation id="4890973535105146893">Нема зачувани лозинки во вашата сметка на Google</translation>
+<translation id="490375751687810070">Вертикално</translation>
 <translation id="4905823827770127520">Додајте линк на страницата</translation>
 <translation id="4910889077668685004">Апликации за плаќање</translation>
 <translation id="4911042367886397055">Добре дојдовте пак, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">Добивајте описи на слики</translation>
 <translation id="6193448654517602979">Изберете картички</translation>
 <translation id="6196315980958524839">Лозинките се зачувани во „Управникот со лозинки на Google“ на уредов</translation>
+<translation id="6200780647297916498">Позиција на картичка</translation>
 <translation id="6204781143409202534">Chrome откри можен спам од <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
 <translation id="6212567362666004597">Додајте картичка во групата</translation>

@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">La mise à jour débutera lorsque la batterie atteindra <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Pour utiliser le contrôle parental (approbation des applis, limites de temps d'utilisation, etc.), vous devez gérer le compte Google de votre enfant. Vous pourrez ajouter un compte scolaire ultérieurement pour utiliser des outils comme Google Classroom.</translation>
 <translation id="1375557162880614858">Voulez-vous activer ChromeVox, le lecteur d'écran intégré pour ChromeOS Flex ?</translation>
-<translation id="1375938286942050085">La configuration est terminée ! Et si vous prépariez aussi votre appareil pour les jeux vidéo ?</translation>
 <translation id="1377600615067678409">Ignorer pour le moment</translation>
 <translation id="1399261165075500043">Impossible de charger les conditions d'utilisation de Google Play</translation>
 <translation id="1400243387594338234">Vous pouvez utiliser ce code pour vous connecter à votre appareil</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Utiliser votre compte Google sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Sélectionner un fuseau horaire</translation>
 <translation id="3893630138897523026">ChromeVox (lecture vocale)</translation>
-<translation id="3897746662269329507">Votre <ph name="DEVICE_TYPE" /> est conçu pour les jeux vidéo. L'appli Explorer qui va s'ouvrir vous permet d'accéder à des centaines de jeux récents, mais aussi de découvrir des offres relatives aux jeux et des fonctionnalités intégrées à votre appareil.</translation>
 <translation id="389901847090970821">Sélectionner un clavier</translation>
 <translation id="3910588685973519483">Créer des fonds d'écran avec l'IA</translation>
 <translation id="3924259174674732591">Taille de police et d'affichage : <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Vous devez mettre à jour le micrologiciel TPM (Trusted Platform Module). Consultez la page <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Un problème est survenu lors de la connexion</translation>
 <translation id="5453829744223920473">Votre enfant peut utiliser l'ensemble de ses applis, favoris et ressources scolaires comme il le fait en classe. L'établissement fixe les règles de base.</translation>
-<translation id="5463450804024056231">Inscrivez-vous pour recevoir des e-mails concernant votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">En continuant, vous acceptez que cet appareil puisse aussi télécharger et installer des mises à jour et applis de Google, de l'opérateur de votre enfant et du fabricant de cet appareil, probablement via le réseau mobile. Certaines de ces applis permettent d'y effectuer des achats.</translation>
 <translation id="5502915260472117187">Un enfant</translation>
 <translation id="5511823366942919280">Voulez-vous vraiment configurer cet appareil en tant que "requin" ?</translation>

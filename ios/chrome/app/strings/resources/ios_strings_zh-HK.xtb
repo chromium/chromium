@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">儲存空間已滿</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
-<translation id="1195433173321863960">用量額度在 <ph name="RESET_TIME" />重設後，就能再次生成圖像</translation>
 <translation id="1196534270480620381">幫我簡單總結呢頁內容</translation>
 <translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199963004393929848">綠色主題</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">尋找並填入</translation>
 <translation id="1483493594462132177">傳送</translation>
 <translation id="1486096554574027028">搜尋密碼</translation>
-<translation id="1486593497476255523">「分頁群組」已完成！</translation>
 <translation id="1491277525950327607">連扲兩下可以切換設定</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1497590942294823549">選單 → 密碼管理工具</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">切換至其他設定檔</translation>
 <translation id="1741219894094057085">智能手錶</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
-<translation id="1744234754703485302">「管理付款方法」已完成！</translation>
 <translation id="1748975028205587434">選取檔案</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="174998178145075354">{count,plural, =1{鍵盤上方顯示 {count} 個地址選項。}other{鍵盤上方顯示 {count} 個地址選項。}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">1 個月後刪除</translation>
 <translation id="2161446265348023004">切換至已開啟的視窗</translation>
 <translation id="2164946989711475905">登入…</translation>
-<translation id="2165110345209765380">「使用 AI 模式搜尋」已完成！</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="2180338296831857171">刪除地址</translation>
 <translation id="218350106843433823">自動填入密碼與密鑰</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">前往產品頁面</translation>
 <translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的敏感資料安全</translation>
 <translation id="2220529011494928058">報告問題</translation>
+<translation id="2222149859067335623">「<ph name="SITE_DOMAIN" />」無法取用你的鏡頭</translation>
 <translation id="2223461067862937305">建立 QR 碼</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2236949375853147973">我的活動</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">自動填入來自 Gmail 和「相片」等應用程式的資料。由「個人化智能」提供技術。</translation>
 <translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
 <translation id="2295236662082735391">長按網頁上的圖片，即可使用 Gemini 編輯</translation>
-<translation id="2296360194694387941">「使用 Chrome 版 Gemini」已完成！</translation>
 <translation id="2297989278479054870">登出後，系統會將 Google 帳戶中的書籤、密碼和其他資料從此裝置移除。</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
 <translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 詳情</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">安全瀏覽 (保護您和裝置免受危險網站攻擊)</translation>
 <translation id="3183362380688692618">新分頁群組…</translation>
 <translation id="3185000827934321633">正在導覽</translation>
-<translation id="3185760469172949183">「透過相機搜尋」已完成！</translation>
 <translation id="3186796054637504691">清除記錄和網站資料</translation>
 <translation id="3190558889382726167">密碼已儲存</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">「使用 Gemini Live」功能可讓你就網頁內容提問、盡情集思廣益，甚至與 Gemini 來回對話。</translation>
 <translation id="3462768334899086950">這樣會遺失未儲存的檔案和當前分頁</translation>
 <translation id="3464194322481586217">無法追蹤價格。</translation>
-<translation id="346831467152294287">「密碼和自動填入」已完成！</translation>
 <translation id="3469117812148449995">儲存密碼選項</translation>
 <translation id="3472469028191701821">喺新分頁度打開</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{來自 {COUNT} 個網站或應用程式}other{來自 {COUNT} 個網站或應用程式}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="3580448612293054698">要更新<ph name="ENTITY_TYPE" />嗎？</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
+<translation id="3585482760087850407">呢個網站嘅鏡頭存取權</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">提供實用建議，輕鬆提升瀏覽體驗</translation>
 <translation id="3818293389945649617">尋找下一個相符的項目</translation>
 <translation id="3819183753496523827">您已離線。請檢查您的互聯網連線，然後再試一次。</translation>
-<translation id="3826034723896327540">「固定分頁」已完成！</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 種付款方法}other{# 種付款方法}}</translation>
 <translation id="3831560640878483188">要關閉警告嗎？</translation>
 <translation id="3832419617903252251">密碼淨係會將密碼儲存去呢部裝置</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">下次填寫相關表格時，你可以選擇將資料儲存至「錢包」。</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
 <translation id="3875783148670536197">顯示方法</translation>
+<translation id="3877211858413020188">「<ph name="SITE_DOMAIN" />」無法取用你的麥克風</translation>
 <translation id="3878657761594430423">表格擷取器</translation>
 <translation id="3885587018298784481">加入家庭群組</translation>
 <translation id="3888230626190453136">在無痕模式中瀏覽</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">你有多個密碼問題，可能導致安全風險。</translation>
 <translation id="422477017457571619">系統會根據你向 Google 傳送的瀏覽資料，即時採用 AI 技術防範危險的網站、下載內容和擴充程式</translation>
 <translation id="4231395118547300571">「安全檢查」通知已開啟</translation>
-<translation id="4232376164796433044">密碼和自動填入</translation>
 <translation id="4232817129213135694">為此裝置設定密鑰</translation>
 <translation id="4237377247299956313">輕按 [預設瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="424063167283213501">儲存已知的旅客編號</translation>
@@ -1820,6 +1814,7 @@
 <translation id="6749473226660745022">相片</translation>
 <translation id="6750456911389438250">{count,plural, =1{已匯入 {count} 個記錄項目}other{已匯入 {count} 個記錄項目}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{鍵盤上面顯示 {count} 個憑證選項。}other{鍵盤上面顯示 {count} 個憑證選項。}}</translation>
+<translation id="6753460329812070808">已從 Chrome 移除建議</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
 <translation id="6757899787818440812">中等高度</translation>
 <translation id="6759709389246683070">按住此分頁即可設定提醒，方便日後再次瀏覽</translation>
@@ -1903,6 +1898,7 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在「設定」中設定為預設…</translation>
 <translation id="7007970306646738803">選擇如何處理此裝置上現有的瀏覽資料，例如分頁、記錄和密碼。</translation>
+<translation id="701134422972919485">呢個網站嘅麥克風存取權</translation>
 <translation id="7012978439516925343">驗證身分以建立密鑰</translation>
 <translation id="7015418667643980944">分割檢視模式</translation>
 <translation id="7016070607649558507">你有 1 個安全度低的密碼。請立即修正以確保安全。</translation>
@@ -2075,7 +2071,6 @@
 <translation id="7603308509262646847">自動填入持卡人 <ph name="NAME" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 個)</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
-<translation id="7606639338662398635">分頁群組</translation>
 <translation id="760667371114328991">關閉「安全檢查」通知</translation>
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612849887607288481">開啟 AI 原型選單</translation>
@@ -2283,7 +2278,6 @@
 <translation id="8240217649914883113">加入我的日曆</translation>
 <translation id="824379025871762038">絕不允許</translation>
 <translation id="8250920743982581267">文件</translation>
-<translation id="8252980988000695656">「Google 智能鏡頭」已完成！</translation>
 <translation id="8258734532103758067">我已匯出資料</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8261506727792406068">刪除</translation>
@@ -2334,6 +2328,7 @@
 <translation id="8393700583063109961">傳送訊息</translation>
 <translation id="8393889347136007944">分頁已有 <ph name="THRESHOLD" /> 日未曾使用</translation>
 <translation id="8395180897620197612">停止記錄</translation>
+<translation id="8399253661151100858">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的麥克風</translation>
 <translation id="8407669440184693619">找不到此網站的密碼</translation>
 <translation id="8407831512155324054">你密碼的安全度夠高</translation>
 <translation id="8414283596511250978">不再忘記密碼</translation>
@@ -2348,6 +2343,7 @@
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
 <translation id="8443986842926457191">網址超過 2048 個字元</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
+<translation id="8458009459729013424">每當你瀏覽此網站時，「<ph name="SITE_DOMAIN" />」都可取用你的鏡頭</translation>
 <translation id="8461708300275916315">如果你未滿 18 歲</translation>
 <translation id="8473815223723723001">使用 Gemini 編輯圖像</translation>
 <translation id="8473863474539038330">地址及其他資料</translation>

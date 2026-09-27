@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">Абагуленая група ўкладак "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">Прапанова ўключыць апавяшчэнні з парадамі адкрыта на ўсю вышыню</translation>
 <translation id="4537987892902330164">Вы засталіся ў сістэме як <ph name="NAME_OR_EMAIL" />.</translation>
-<translation id="4543131175509360848">Аркуш з інфармацыяй пра адсутнасць ключоў доступу</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4558311620361989323">Ярлыкі вэб-старонак</translation>
 <translation id="4572422548854449519">Увайдзіце ва ўліковы запіс пад кіраваннем</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">Прапаноўваць пераклад</translation>
 <translation id="4720556299488643018">Адпісацца</translation>
 <translation id="4732120983431207637">Размотчык стэка</translation>
+<translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4736934858538408121">Віртуальная картка</translation>
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4738065825338914557">Ідзе скасаванне падпіскі…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">Перайменаваць файл</translation>
 <translation id="4885273946141277891">Недапушчальная колькасць версій Chrome.</translation>
 <translation id="4890973535105146893">У вашым Уліковым запісе Google няма захаваных пароляў</translation>
+<translation id="490375751687810070">Вертыкальна</translation>
 <translation id="4905823827770127520">Дадаць спасылку на старонку</translation>
 <translation id="4910889077668685004">Плацежныя праграмы</translation>
 <translation id="4911042367886397055">З вяртаннем, <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">Атрымл. апісанні відарысаў</translation>
 <translation id="6193448654517602979">Выберыце ўкладкі</translation>
 <translation id="6196315980958524839">Паролі захоўваюцца ў Менеджары пароляў Google на гэтай прыладзе.</translation>
+<translation id="6200780647297916498">Пазіцыя ўкладкі</translation>
 <translation id="6204781143409202534">Браўзер Chrome выявіў магчымы спам з дамена <ph name="DOMAIN" />.</translation>
 <translation id="6211386937064921208">Паказваецца перадпрагляд гэтай старонкі</translation>
 <translation id="6212567362666004597">Дадаць укладку ў групу</translation>

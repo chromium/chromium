@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
-<translation id="1195433173321863960">آپ کی حد <ph name="RESET_TIME" /> کو ری سیٹ ہونے پر تصاویر دوبارہ دستیاب ہو جائیں گی</translation>
 <translation id="1196534270480620381">مجھے اس صفحہ کا مختصر خلاصہ دیں</translation>
 <translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199963004393929848">سبز تھیم</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">تلاش کریں اور پُر کریں</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
 <translation id="1486096554574027028">پاس ورڈز تلاش کریں</translation>
-<translation id="1486593497476255523">'ٹیب کے گروپس' مکمل ہو گئے!</translation>
 <translation id="1491277525950327607">ترتیبات کو ٹوگل کرنے کیلئے دو بار تھپتھپائیں</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
 <translation id="1497590942294823549">مینیو ← پاس ورڈ مینیجر</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">دوسری پروفائل پر سوئچ کریں</translation>
 <translation id="1741219894094057085">اسمارٹ گھڑی</translation>
 <translation id="1743244221910283364">تبدیلیاں مسترد کریں</translation>
-<translation id="1744234754703485302">ادائیگی کے طریقوں کا نظم مکمل ہو گیا!</translation>
 <translation id="1748975028205587434">اپنی فائل منتخب کریں</translation>
 <translation id="1749733017156547309">ایک پاس ورڈ درکار ہے</translation>
 <translation id="174998178145075354">{count,plural, =1{آپ کے کی بورڈ کے اوپر پتے کے لیے {count} اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر پتے کے لیے {count} اختیارات دستیاب ہیں۔}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">‫1 ماہ میں حذف کریں</translation>
 <translation id="2161446265348023004">کھلی ہوئی ونڈو پر سوئچ کریں</translation>
 <translation id="2164946989711475905">سائن ان کریں…</translation>
-<translation id="2165110345209765380">‏'‫AI وضع کے ساتھ تلاش' مکمل ہو گئی!</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
 <translation id="2180338296831857171">پتوں کو حذف کریں</translation>
 <translation id="218350106843433823">پاس ورڈز اور پاس کیز کو آٹو فل کریں</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">کسی پروڈکٹ کے صفحہ پر جائیں۔</translation>
 <translation id="2219935992754556187">‏‫Chrome آپ کے حساس ڈیٹا کو Face ID کے ساتھ محفوظ رکھتا ہے</translation>
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
+<translation id="2222149859067335623">‫"<ph name="SITE_DOMAIN" />" کو آپ کے کیمرے تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے</translation>
 <translation id="2223461067862937305">‏‫QR کوڈ تخلیق کریں</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="2236949375853147973">میری سرگرمی</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">‏‫Gmail اور تصاویر جیسی ایپس سے معلومات کو آٹو فل کریں۔ ذاتی ذہانت کے ذریعے تقویت یافتہ۔</translation>
 <translation id="2287614783861766820">{count,plural, =1{یہ پتہ اس آلے سے حذف ہو جائے گا۔}other{یہ پتے اس آلے سے حذف ہو جائیں گے۔}}</translation>
 <translation id="2295236662082735391">‏‫Gemini کے ساتھ ترمیم کرنے کے لیے ویب پر کسی تصویر کو لانگ پریس کریں</translation>
-<translation id="2296360194694387941">‏'‫Chrome میں Gemini کا استعمال' مکمل ہو گیا!</translation>
 <translation id="2297989278479054870">‏آپ کے سائن آؤٹ کرنے کے بعد، آپ کے Google اکاؤنٹ میں موجود بُک مارکس، پاس ورڈز اور بہت کچھ کو اس آلہ سے ہٹا دیا جائے گا۔</translation>
 <translation id="2299218006564889602">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو ہوتا ہے۔</translation>
 <translation id="2306265833370324042">‫<ph name="SEARCH_ENGINE_NAME" /> کی تفصیلات دکھائیں</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">محفوظ براؤزنگ (آپ اور آپ کے آلہ کی خطرناک سائٹس سے حفاظت کرتی ہے)</translation>
 <translation id="3183362380688692618">نیا ٹیب گروپ...</translation>
 <translation id="3185000827934321633">نیویگیٹ کر رہا ہے</translation>
-<translation id="3185760469172949183">'کیمرے کے ساتھ تلاش' مکمل ہو گئی!</translation>
 <translation id="3186796054637504691">سرگزشت اور ویب سائٹ کا ڈیٹا صاف کریں</translation>
 <translation id="3190558889382726167">پاس ورڈ محفوظ ہوگیا</translation>
 <translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">‏کسی صفحہ کے بارے میں پوچھنے، پرزور طریقے سے سوچ بچار کرنے اور دو طرفہ گفتگو کرنے کے لیے Gemini کے ساتھ لائیو ہوں۔</translation>
 <translation id="3462768334899086950">اس کا مطلب ہے کہ آپ اپنی غیر محفوظ کردہ فائل اور موجودہ ٹیبز سے محروم ہو جائیں گے</translation>
 <translation id="3464194322481586217">قیمت ٹریک نہیں کی جا سکی۔</translation>
-<translation id="346831467152294287">'پاس ورڈز اور آٹو فل' مکمل ہو گیا!</translation>
 <translation id="3469117812148449995">پاس ورڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="3472469028191701821">نئے ٹیب میں کھلتا ہے</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} سائٹ یا ایپ کے لیے}other{{COUNT} سائٹس یا ایپس کے لیے}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> اپ ڈیٹ کریں؟</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
+<translation id="3585482760087850407">اس سائٹ کے لیے کیمرے تک رسائی</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">مفید تجاویز جو براؤزنگ کو بہتر اور آسان بناتی ہیں</translation>
 <translation id="3818293389945649617">اگلا تلاش کریں</translation>
 <translation id="3819183753496523827">آپ آف لائن ہیں۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
-<translation id="3826034723896327540">'ٹیبز کو پن کرنا' مکمل ہو گیا!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ادائیگی کا طریقہ}other{# ادائیگی کے طریقے}}</translation>
 <translation id="3831560640878483188">وارننگ برخاست کریں؟</translation>
 <translation id="3832419617903252251">پاس ورڈ صرف اس آلہ پر محفوظ ہے</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">اگلی بار جب آپ کوئی متعلقہ فارم پُر کریں گے تو آپ کو اس معلومات کو والٹ میں محفوظ کرنے کا موقع ملے گا۔</translation>
 <translation id="3868495844258915202">‏مکمل URL دکھائیں</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
+<translation id="3877211858413020188">‫"<ph name="SITE_DOMAIN" />" کو آپ کے مائیکروفون تک رسائی سے مسدود کر دیا گیا ہے</translation>
 <translation id="3878657761594430423">شیٹ گریبر</translation>
 <translation id="3885587018298784481">فیملی گروپ میں شامل ہوں</translation>
 <translation id="3888230626190453136">پوشیدگی میں براؤز کریں</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">آپ کے پاس ورڈ میں مختلف مسائل ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
 <translation id="422477017457571619">‏‫Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں AI تقویت یافتہ حفاظت ملتی ہے</translation>
 <translation id="4231395118547300571">سیفٹی چیک کی اطلاعات آن ہیں</translation>
-<translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4232817129213135694">اس آلہ کے لیے پاس کیز سیٹ اپ کریں</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ڈیفالٹ براؤزر ایپ<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
 <translation id="424063167283213501">معلوم مسافر نمبر محفوظ کریں</translation>
@@ -1820,6 +1814,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6749473226660745022">تصاویر</translation>
 <translation id="6750456911389438250">{count,plural, =1{‫{count} سرگزشت آئٹم کو درآمد کیا گیا}other{‫{count} سرگزشت آئٹمز کو درآمد کیا گیا}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{آپ کے کی بورڈ کے اوپر اسناد کے لیے {count} اختیار دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر اسناد کے لیے {count} اختیارات دستیاب ہیں۔}}</translation>
+<translation id="6753460329812070808">‏‫Chrome سے تجویز ہٹا دی گئی</translation>
 <translation id="6755200887046212842">اکاؤنٹس کا نظم کریں</translation>
 <translation id="6757899787818440812">درمیانی اونچائی</translation>
 <translation id="6759709389246683070">آپ بعد میں ملاحظہ کرنے کی یاد دہانی سیٹ کرنے کیلئے اس ٹیب کو ٹچ کر کے اور دبا کر رکھ سکتے ہیں</translation>
@@ -1905,6 +1900,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ترتیبات میں ڈیفالٹ بنائیں…</translation>
 <translation id="7007970306646738803">منتخب کریں کہ اس آلے پر موجود براؤزنگ ڈیٹا جیسے ٹیبز، سرگزشت اور پاس ورڈز کا کیا کرنا ہے۔</translation>
+<translation id="701134422972919485">اس سائٹ کے لیے مائیکروفون تک رسائی</translation>
 <translation id="7012978439516925343">پاس کی تخلیق کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="7015418667643980944">اسپلٹ اسکرین</translation>
 <translation id="7016070607649558507">آپ کے پاس 1 کمزور پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
@@ -2077,7 +2073,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7603308509262646847">کارڈ کے حامل <ph name="NAME" /> کو آٹو فل کریں</translation>
 <translation id="7603852183842204213">پاپ اپس کو مسدود کر دیا گیا (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">مطابقت پذیری کام نہیں کر رہی ہے</translation>
-<translation id="7606639338662398635">ٹیب گروپس</translation>
 <translation id="760667371114328991">سیفٹی چیک کی اطلاعات کو آف کریں</translation>
 <translation id="7612619742409846846">‏Google میں سائن ان ہے بطور</translation>
 <translation id="7612849887607288481">‏‫AI پروٹو ٹائپنگ مینو کھولیں</translation>
@@ -2285,7 +2280,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8240217649914883113">اسے میرے کیلنڈر میں شامل کریں</translation>
 <translation id="824379025871762038">کبھی بھی اجازت نہ دیں</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
-<translation id="8252980988000695656">‏'‫Google لینز' مکمل ہو گیا!</translation>
 <translation id="8258734532103758067">میں نے اپنا ڈیٹا ایکسپورٹ کر لیا ہے</translation>
 <translation id="8258999165172757081">شامل کر دیا گیا</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
@@ -2336,6 +2330,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8393700583063109961">پیغام بھیجیں</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> دن تک ٹیبز کا استعمال نہیں کیا گیا</translation>
 <translation id="8395180897620197612">لاگ کرنا روکیں</translation>
+<translation id="8399253661151100858">جب بھی آپ اس سائٹ پر جائیں گے "<ph name="SITE_DOMAIN" />" آپ کے مائیکروفون تک رسائی حاصل کر سکتا ہے</translation>
 <translation id="8407669440184693619">اس سائٹ کے لیے کوئی پاس ورڈ نہیں ملا</translation>
 <translation id="8407831512155324054">آپ کے پاس ورڈز مضبوط لگ رہے ہیں</translation>
 <translation id="8414283596511250978">اپنے پاس ورڈز کبھی نہ بھولیں</translation>
@@ -2350,6 +2345,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>
 <translation id="8443986842926457191">‏URL ‏2048 حروف سے زیادہ ہے</translation>
 <translation id="8449869326050867919">پاس ورڈ کا اشتراک کر دیا گیا</translation>
+<translation id="8458009459729013424">جب بھی آپ اس سائٹ پر جائیں گے "<ph name="SITE_DOMAIN" />" آپ کے کیمرے تک رسائی حاصل کر سکتا ہے</translation>
 <translation id="8461708300275916315">اگر آپ کی عمر 18 سال سے کم ہے</translation>
 <translation id="8473815223723723001">‏‫Gemini کے ساتھ تصویر میں ترمیم کریں</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>

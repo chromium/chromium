@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">Das Update wird ausgeführt, sobald der Akkustand <ph name="BATTERY_LEVEL" /> % erreicht.</translation>
 <translation id="1353275871123211385">Wenn du Jugendschutzeinstellungen wie das Genehmigen von Apps und Limits für die Bildschirmzeit verwenden möchtest, muss das Kind ein Google-Konto haben, das von einem Elternteil verwaltet wird. Du kannst später das Konto einer Bildungseinrichtung hinzufügen, damit Tools wie Google Classroom genutzt werden können.</translation>
 <translation id="1375557162880614858">Möchtest du ChromeVox, den integrierten Screenreader für Chrome OS Flex, aktivieren?</translation>
-<translation id="1375938286942050085">Die Einrichtung ist abgeschlossen! Bereite dein Gerät als Nächstes aufs Gaming vor</translation>
 <translation id="1377600615067678409">Zunächst überspringen</translation>
 <translation id="1399261165075500043">Google Play-Nutzungsbedingungen können nicht geladen werden</translation>
 <translation id="1400243387594338234">Du kannst diese PIN verwenden, um dich auf deinem Gerät anzumelden</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Dein Google-Konto auf deinem <ph name="DEVICE_TYPE" /> verwenden</translation>
 <translation id="3856800405688283469">Zeitzone auswählen</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
-<translation id="3897746662269329507">Dein <ph name="DEVICE_TYPE" /> eignet sich perfekt zum Spielen. Als Nächstes öffnet sich die App „Entdecken“. Dort kannst du auf Hunderte von aktuellen Spielen zugreifen, dir Gaming-Angebote ansehen und Gaming-Funktionen entdecken, die auf deinem Gerät verfügbar sind.</translation>
 <translation id="389901847090970821">Tastatur auswählen</translation>
 <translation id="3910588685973519483">Hintergründe mit KI erstellen</translation>
 <translation id="3924259174674732591">Anzeige- und Textgröße <ph name="DISPLAY_ZOOM" /> %</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">Für das Trusted Platform Module muss ein Firmware-Update installiert werden. Weitere Informationen: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Hoppla, bei der Anmeldung ist ein Fehler aufgetreten.</translation>
 <translation id="5453829744223920473">Das Kind kann wie im Unterricht alle Apps, Lesezeichen und Ressourcen der Bildungseinrichtung nutzen. Die Schule legt die Grundregeln fest.</translation>
-<translation id="5463450804024056231">Für <ph name="DEVICE_TYPE" />-E-Mails anmelden</translation>
 <translation id="5473099001878321374">Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, vom Mobilfunkanbieter deines Kindes und vom Hersteller dieses Geräts abgerufen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten.</translation>
 <translation id="5502915260472117187">Ein Kind</translation>
 <translation id="5511823366942919280">Möchtest du dieses Gerät wirklich als „Shark“ einrichten?</translation>

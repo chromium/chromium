@@ -126,6 +126,7 @@
 <translation id="2128411189117340671">Zarządzaj profilami Chrome</translation>
 <translation id="2137162749895930932">Zamknij ekran tłumaczenia</translation>
 <translation id="2139300032719313227">Uruchom ponownie Chrome OS</translation>
+<translation id="2147218225094845757">Ukryj panel boczny</translation>
 <translation id="2151406531797534936">Uruchom Chrome ponownie</translation>
 <translation id="2163089732491971196">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chrome na koncie Google i ich używać</translation>
 <translation id="2170098639895543546">Wybierz dowolny element na stronie</translation>
@@ -345,7 +346,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="4329315893554541805">Aby korzystać z personalizacji i innych funkcji, uwzględnij Chrome w Aktywności w internecie i aplikacjach oraz w połączonych usługach Google</translation>
 <translation id="4334241893986177674">Przeszukaj ten zrzut ekranu</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> – dodano do Chrome</translation>
-<translation id="4344128547036991536">Gdy otworzysz Obiektyw Google, tytuł, adres URL i zawartość strony, w tym pliki PDF, zostaną automatycznie wysłane do Google. <ph name="LEARN_MORE" /></translation>
+<translation id="4344128547036991536">Po uruchomieniu Obiektywu Google tytuł, adres URL i zawartość strony, w tym pliki PDF, zostaną automatycznie wysłane do Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Aby korzystać z personalizacji, uwzględnij Chrome w Aktywności w internecie i aplikacjach</translation>
 <translation id="436060642166082913">Pobieranie zostało zablokowane przez Chrome, ponieważ plik może zaszkodzić Twoim kontom osobistym i tym w sieciach społecznościowych</translation>
 <translation id="4367027658822022112">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp. Kliknij przycisk Przypnij u góry panelu bocznego</translation>
@@ -753,6 +754,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="8196526165798579689">Wyszukaj w wersji deweloperskiej Chrome</translation>
 <translation id="8221491193165283816">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na ich wysyłanie, kliknij tutaj.</translation>
 <translation id="8227493674161801700">Wyszukaj w Chrome Beta</translation>
+<translation id="8233224921566021881">Chrome potrzebuje dostępu do sieci lokalnej, aby wykrywać urządzenia w pobliżu i z nich korzystać</translation>
 <translation id="8253851811470049684">Otwieraj linki w Chrome z dowolnej aplikacji i dodaj przeglądarkę do paska zadań, żeby mieć do niej łatwy dostęp</translation>
 <translation id="8255190535488645436">Google Chrome używa Twojej kamery i mikrofonu.</translation>
 <translation id="8260086374035800939">Jeśli Gemini w Chrome jest otwarty, panel boczny pozostaje otwarty podczas tworzenia nowych kart</translation>

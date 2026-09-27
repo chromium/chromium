@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Tuzatish vositasi boshqa varaqda toʻxtatildi, shu varaqqa kirish uchun bosing.</translation>
 <translation id="1171774979989969504">Iltimos, e-pochta manzilini kiriting.</translation>
 <translation id="1178581264944972037">Pauza</translation>
+<translation id="1254779809141342904">Bu CAP ogohlantirishi XSLT deb nomlangan texnologiyadan foydalanadi; bu funksiya <ph name="REMOVAL_LINK" />. Bu holatda mazkur ogohlantirish qayta ishlanmagan XML maʼlumotlari bilan chiqadi. Uni koʻrishda davom etish uchun <ph name="EXTENSION_LINK" /> oʻrnatishingiz mumkin.</translation>
 <translation id="1306460908038601864">Oʻchiq</translation>
 <translation id="1311894908970423688">Qiymat formati: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2746543609216772311">Eng kichik qiymati <ph name="MINIMUM_DATE_OR_TIME" /> bo‘lishi kerak.</translation>
 <translation id="2761667185364618470">Davom etish uchun ushbu katakchani belgilang.</translation>
+<translation id="2854734116215697908">bu brauzerdan olib tashlandi</translation>
 <translation id="2908441821576996758">Elektron pochta manzillarini bir vergul bilan ajratilgan holda kiriting.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Yaroqli qiymat kiriting. Maydon to‘ldirilmadi yoki noto‘g‘ri sana kiritildi.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">Oldinga va orqaga 10s o‘tkazish uchun ikki marta bosing</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
+<translation id="5855560023261018690">tez orada bu brauzerdan olib tashlanadi</translation>
 <translation id="5868587040512539609">Video treklar</translation>
 <translation id="588258955323874662">Butun ekran</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> ekraniga namoyish etilmoqda</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Tasvir ustida tasvir rejimidan chiqish</translation>
 <translation id="6484738902856791350">Chiroyli tartiblash</translation>
 <translation id="6550675742724504774">Parametrlar</translation>
+<translation id="65574987622079584">brauzer kengaytmasini</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6661136971638885481">Trek #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Boshqa...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Shu hafta</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">kkkk</translation>
+<translation id="8243989288843872594">Bu ogohlantirish boshqa chiqmasin</translation>
 <translation id="8284326494547611709">Taglavhalar</translation>
 <translation id="835897206747267392">Qiymat yaroqsiz.</translation>
 <translation id="839593075537728968">Qiymati <ph name="MINIMUM_TIME" /> va <ph name="MAXIMUM_TIME" /> orasida boʻlsin.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Keyingi qatorga olish</translation>
 <translation id="8750798805984357768">Bu parametrlardan birini tanlang.</translation>
+<translation id="8753001114009816390">Bu sayt XSLT ishlatadi; bu funksiya <ph name="REMOVAL_LINK" />. Bu holatda mazkur sahifa katta ehtimol bilan xatolar bilan ochiladi. Uni koʻrishda davom etish uchun <ph name="EXTENSION_LINK" /> oʻrnatishingiz mumkin. Aks holda, batafsil axborot uchun sayt egasiga murojaat qiling.</translation>
 <translation id="8845239796550121995">Televizoringizga translatsiya qilinmoqda</translation>
 <translation id="8875657656876809964">Video ijro etilmadi</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

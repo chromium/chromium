@@ -50,7 +50,6 @@
 <translation id="1347975661240122359">L'aggiornamento inizierà quando la carica della batteria raggiunge il <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Per usare il Controllo genitori, ad esempio l'approvazione delle app e i limiti per il tempo di utilizzo, è necessario che il bambino abbia un Account Google gestito da un genitore. In un secondo momento è possibile aggiungere un account della scuola da usare per strumenti quali Google Classroom.</translation>
 <translation id="1375557162880614858">Vuoi attivare ChromeVox, lo screen reader integrato per ChromeOS Flex?</translation>
-<translation id="1375938286942050085">Configurazione completata. Dopodiché prepara il tuo dispositivo per giocare</translation>
 <translation id="1377600615067678409">Salta per ora</translation>
 <translation id="1399261165075500043">Impossibile caricare i Termini di servizio di Google Play</translation>
 <translation id="1400243387594338234">Puoi usare questo PIN per accedere al tuo dispositivo</translation>
@@ -260,7 +259,6 @@
 <translation id="3856470183388031602">Utilizza il tuo Account Google su <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Seleziona il fuso orario</translation>
 <translation id="3893630138897523026">ChromeVox (lettura vocale)</translation>
-<translation id="3897746662269329507">Il tuo <ph name="DEVICE_TYPE" /> è stato progettato per i giochi. Si aprirà l'app Esplora, dove potrai accedere a centinaia dei giochi più recenti, visualizzare offerte per i giochi e scoprire funzionalità di gioco disponibili con il tuo dispositivo.</translation>
 <translation id="389901847090970821">Seleziona la tastiera</translation>
 <translation id="3910588685973519483">Crea sfondi con l'IA</translation>
 <translation id="3924259174674732591">Dimensioni di visualizzazione e testo: <ph name="DISPLAY_ZOOM" />%</translation>
@@ -412,7 +410,6 @@
 <translation id="542948651837270806">È necessario installare un aggiornamento del firmware Trusted Platform Module. Visita il sito <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5448293924669608770">Spiacenti, qualcosa è andato storto in fase di accesso</translation>
 <translation id="5453829744223920473">Tuo figlio può utilizzare tutte le app, i preferiti e le risorse della scuola proprio come in classe. La scuola stabilisce le regole di base.</translation>
-<translation id="5463450804024056231">Registrati per ricevere email relative a <ph name="DEVICE_TYPE" /></translation>
 <translation id="5473099001878321374">Se prosegui, accetti che il dispositivo possa scaricare e installare automaticamente aggiornamenti e app da Google, dall'operatore di tuo figlio e dal produttore del dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5502915260472117187">Bambino</translation>
 <translation id="5511823366942919280">Vuoi configurare questo dispositivo come dispositivo "Shark"?</translation>

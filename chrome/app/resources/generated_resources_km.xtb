@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{បាននាំចូល​ពាក្យសម្ងាត់ 1 ទៅក្នុង<ph name="BRAND" />នៅលើ​ឧបករណ៍នេះ}other{បាននាំចូល​ពាក្យសម្ងាត់ {NUM_PASSWORDS} ទៅក្នុង<ph name="BRAND" />នៅលើ​ឧបករណ៍នេះ}}</translation>
 <translation id="1046572983040892965">បានផ្លាស់ទីវិនដូឡើងលើ និងទៅខាងឆ្វេង</translation>
 <translation id="1047431265488717055">ចម្លងអត្ថបទតំណ</translation>
+<translation id="104751728059674265">មិនអាចផ្ដល់​មតិកែលម្អ​សម្រាប់​គណនី​របស់អ្នក​បានទេ។ មនុស្ស​ពេញវ័យ​អាចប្រើ​ឧបករណ៍ ឬ​កម្រងព័ត៌មាន​របស់គាត់ ដើម្បី​រាយការណ៍​អំពី​បញ្ហា​ជំនួសអ្នក​បាន។</translation>
 <translation id="1048986595386481879">បែងចែក​ជានិច្ច</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{កំពុងទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}other{កំពុងទទួល <ph name="ATTACHMENTS" /> ពី <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">អនាមិក</translation>
@@ -469,6 +470,7 @@
 <translation id="1341701348342335220">ធ្វើបានល្អ!</translation>
 <translation id="1342886103232377846">ដើម្បីពិនិត្យរកមើលពាក្យសម្ងាត់ដែល​រងការលុកលុយ សូមចូលទៅកាន់កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់</translation>
 <translation id="1343920184519992513">បន្តត្រង់ចំណុចដែលអ្នកបានចាកចេញ និងបើកបណ្ដុំទំព័រជាក់លាក់</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">បញ្ជាក់ និងចាប់ផ្ដើមឡើងវិញ</translation>
 <translation id="1346748346194534595">ស្តាំ</translation>
 <translation id="1347512539447549782">ទំហំ​ផ្ទុក Linux</translation>
@@ -797,7 +799,6 @@
 <translation id="160689647589417224">កម្មវិធីនេះត្រូវបានដាក់កំហិតនៅក្នុងតំបន់នេះ។</translation>
 <translation id="1607139524282324606">សម្អាតធាតុ</translation>
 <translation id="1608668830839595724">សកម្មភាពច្រើនជាងមុន​សម្រាប់​ធាតុដែលបានជ្រើសរើស</translation>
-<translation id="1609603645228231640">Gemini Spark ស្ថិតក្នុង​ដំណាក់កាល​ពិសោធន៍ និង​អាចធ្វើ​សកម្មភាពនានា ដូចជា​ចែករំលែក​ព័ត៌មាន​របស់អ្នក ឬធ្វើការទិញ​ដោយ​មិនស្នើសុំ​ជាដើម។ <ph name="LINK_BEGIN" />ពិនិត្យមើល​ហានិភ័យ<ph name="LINK_END" />។</translation>
 <translation id="1610272688494140697">ការ​កំណត់​កម្មវិធី</translation>
 <translation id="161042844686301425">បៃតងខ្ចី</translation>
 <translation id="1611649489706141841">ទៅមុខ</translation>
@@ -992,6 +993,7 @@
 <translation id="1755601632425835748">ទំហំ​អក្សរ</translation>
 <translation id="1756963401828337401">ជ្រើសរើស​អេក្រង់​ដែល​ត្រូវថត</translation>
 <translation id="17584710573359123">មើល​នៅក្នុង Chrome Web Store</translation>
+<translation id="1758845021884209593">ប្រើ​ផ្លូវកាត់​នៅលើ​កម្មវិធី​ប្រព័ន្ធ​ប្រតិបត្តិការ</translation>
 <translation id="1761402971842586829">បាន​រៀបចំ<ph name="BUTTON_NAME" />ឡើងវិញ​ទៅ <ph name="REMAPPING_OPTION" />។</translation>
 <translation id="1761845175367251960">គណនី​របស់ <ph name="NAME" /></translation>
 <translation id="176272781006230109">ការណែនាំអំពីការទិញទំនិញ</translation>
@@ -1063,7 +1065,6 @@
 <translation id="1808805149659872686">ការបញ្ចូលថ្មី</translation>
 <translation id="1809201888580326312">អ្នកបាន​ជ្រើសរើស​មិនរក្សាទុក​ពាក្យសម្ងាត់​សម្រាប់គេហទំព័រ និងកម្មវិធី​ទាំងនេះ</translation>
 <translation id="1809734401532861917">បញ្ចូល​ចំណាំ ប្រវត្តិ ពាក្យ​សម្ងាត់ និង​ការ​កំណត់​ផ្សេង​ទៀត​របស់​ខ្ញុំទៅ​ <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="1811908311154949291">Fenced Frame ឯកជន៖ <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> មិនអាច​បន្តប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> បានទេ</translation>
 <translation id="1812284620455788548">កំពុង​ភ្ជាប់ <ph name="TAB_NAME" /></translation>
 <translation id="1813278315230285598">សេវាកម្ម</translation>
@@ -1297,7 +1298,6 @@
 <translation id="1983612835086592681">អ្នក​បានបើក​កាលពី​សប្ដាហ៍មុន</translation>
 <translation id="1984087999855033707">លេខទូរសព្ទ</translation>
 <translation id="1984417487208496350">គ្មានការការពារ (មិនណែនាំ)</translation>
-<translation id="1984683754853869253">តើអ្នកចង់​បង្កើត​កម្រង​ព័ត៌មានថ្មី​សម្រាប់​សាលា​ដែរទេ?</translation>
 <translation id="198507684520034826">ជំនួយ</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">ការកំណត់​ទីតាំង​កម្រិតខ្ពស់</translation>
@@ -1331,7 +1331,6 @@
 <translation id="2010636492623189611">បាន​ជ្រើសរើស។</translation>
 <translation id="2012935757369720523">លុប​ឯកសារ</translation>
 <translation id="2014191284313949173">បិទផ្ទាំងដាច់ដោយឡែក</translation>
-<translation id="2014495120525813351">ឱ្យ Gemini Spark រុករក​នៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="2016473077102413275">មុខងារដែលត្រូវការរូបភាពនឹងមិនដំណើរការទេ</translation>
 <translation id="2017334798163366053">បិទដំណើរការប្រមូលទិន្នន័យប្រតិបត្តិការ</translation>
 <translation id="2017770349934140286">Google Play និង​កម្មវិធី​ដែលអ្នកបាន​ទាញយកពី Google Play នឹងត្រូវបានលុប​ចេញពី Chromebook នេះ។
@@ -2046,7 +2045,6 @@
 <translation id="2554553592469060349">ឯកសារដែលបានជ្រើសរើសធំពេក (ទំហំអតិបរមា៖ 3mb)។</translation>
 <translation id="2555802059188792472">កម្មវិធី <ph name="NUM_ALLOWED_APPS" /> ក្នុងចំណោម <ph name="TOTAL_NUM_APPS" /> អាចផ្ញើការ​ជូនដំណឹង</translation>
 <translation id="2555855727505718984">ការបំពេញ​ស្វ័យប្រវត្តិ​នឹងមិន​មានព័ត៌មាននេះ​នៅលើ​ឧបករណ៍នេះ ដើម្បីជួយ​បំពេញ​ទម្រង់​បែបបទ​ឡើយ</translation>
-<translation id="25568951186001797">Fenced Frame៖ <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">មើល​ចំណាំ​របស់​អ្នក​ទាំងអស់​នៅ​ទីនេះ</translation>
 <translation id="2563924218974330506">ឥឡូវនេះ អ្នកអាចគ្រប់គ្រងក្រុមផ្ទាំងរបស់អ្នកនៅទីនេះ។ ដកខ្ទាស់សារនេះនៅពេលណាក៏បាន។</translation>
 <translation id="2564520396658920462">ប្រតិបត្តិការ JavaScript តាមរយៈ AppleScript ត្រូវ​បាន​បិទ។ ដើម្បី​បើក​វា នៅលើរបារម៉ឹនុយ សូមចូល​ទៅកាន់ ទិដ្ឋភាព &gt; អ្នក​អភិវឌ្ឍន៍ &gt; អនុញ្ញាត JavaScript ពី​ Apple Events ។ សម្រាប់​ព័ត៌មាន​បន្ថែម៖ https://support.google.com/chrome/?p=applescriptk</translation>
@@ -2125,7 +2123,6 @@
 <translation id="2626746300781063303">គេហទំព័រ រួមទាំង Google ប្រើ​ឆន្ទានុសិទ្ធិរបស់ខ្លួន​នៅ​ពេល​ឆ្លើយតប​នឹងសំណើ​នេះ</translation>
 <translation id="2626799779920242286">សូមព្យាយាមម្តងដងទៀតពេលក្រោយ។</translation>
 <translation id="2627424346328942291">មិនអាច​ចែករំលែក​បានទេ</translation>
-<translation id="2627970398976286795">ពិនិត្យមើលហានិភ័យរបស់ Gemini Spark</translation>
 <translation id="2628258844236035475">ដក​អាសយដ្ឋាន​ផ្ទះ​របស់អ្នក​ចេញពី​ការបំពេញ​ស្វ័យប្រវត្តិ​របស់ Chrome ឬ?</translation>
 <translation id="2628770867680720336">តម្រូវឱ្យកំណត់ Chromebook នេះដូច​ដើមឡើងវិញ ដើម្បីបើក​ការជួសជុល ADB។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់​បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">ចាប់ផ្ដើម​ការជជែកថ្មី​ជាមួយ Gemini</translation>
@@ -2434,7 +2431,6 @@
 <translation id="2845276301195220700">សកម្មភាព​ច្រើនទៀត​សម្រាប់ Google ប្រតិទិន</translation>
 <translation id="2845382757467349449">បង្ហាញរបាចំណាំជានិច្ច</translation>
 <translation id="284581348330507117">បង្កើតពាក្យសម្ងាត់ខុសប្លែកពីគេ</translation>
-<translation id="2846345106886298325">បានបញ្ចប់កិច្ចការ និងត្រឡប់ទៅ Gemini Spark វិញ</translation>
 <translation id="284884486564166077">ស្វែងរករូបភាពណាមួយដោយប្រើ Lens</translation>
 <translation id="2849035674501872372">រកមើល</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
@@ -2496,7 +2492,6 @@
 <translation id="2893318819023133318">បញ្ច្រាស​ទិដ្ឋភាព</translation>
 <translation id="2894596417096093634">លេខកូដសម្គាល់​របាយការណ៍អំពីការគាំង</translation>
 <translation id="2894757982205307093">ផ្ទាំងថ្មី​នៅក្នុងក្រុម</translation>
-<translation id="2895194086130800590">Gemini Spark អាចប្រើ​មុខងារ​រុករកស្វ័យប្រវត្តិ​នៅលើ​ឧបករណ៍​នេះបាន លុះត្រាតែ​ឧបករណ៍នេះ​នៅសកម្ម ហើយ Chrome កំពុង​ដំណើរការ។</translation>
 <translation id="289695669188700754">លេខសម្គាល់សោ៖ <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ការកំណត់​ផ្ទាល់ខ្លួននេះ​នឹងត្រូវបាន​លុបចេញ នៅពេលដែល​អ្នកបិទផ្ទាំងឯកជន​ទាំងអស់​របស់អ្នក</translation>
 <translation id="2897878306272793870">តើអ្នកប្រាកដថាចង់បើក <ph name="TAB_COUNT" /> ផ្ទាំងទេ?</translation>
@@ -2549,7 +2544,6 @@
 <translation id="2933653107553951760">ស្ដារ​ក្រុម</translation>
 <translation id="2934225044529065415">មិនអាចចូលប្រើកាមេរ៉ាបានទេ</translation>
 <translation id="2935314715123552088">បិទកម្រងព័ត៌មាន eSIM ដែលសកម្ម</translation>
-<translation id="2936067606203230121">Gemini Spark នឹងសម្រេច​ថាតើត្រូវ​ធ្វើសកម្មភាព​ណាខ្លះ​ដោយផ្អែកលើ​កិច្ចការ​ដែលអ្នក​ចាប់ផ្ដើម ឬធ្វើបច្ចុប្បន្នភាព។</translation>
 <translation id="2936851848721175671">ការ​បម្រុងទុក និង​ការស្ដារ</translation>
 <translation id="2938981087412273365">មិនអនុញ្ញាតឱ្យអាន និងផ្លាស់ប្ដូរ​គេហទំព័រនេះទេ</translation>
 <translation id="2939005221756255562">បើក​ការជូនដំណឹង​នៅក្នុង​មជ្ឈមណ្ឌល​ជូនដំណឹង។ បើក<ph name="BEGIN_LINK" />ការ​កំណត់ប្រព័ន្ធ<ph name="END_LINK" />។</translation>
@@ -3105,6 +3099,7 @@
 <translation id="3355936511340229503">កំហុសឆ្គងការភ្ជាប់</translation>
 <translation id="335678817537689040">ថេរ</translation>
 <translation id="3359256513598016054">ឧបសគ្គគោលការណ៍វិញ្ញាបនប័ត្រ</translation>
+<translation id="3359465538772230055">គ្មាន​កិច្ចការ</translation>
 <translation id="3360297538363969800">ការបោះពុម្ពបានបរាជ័យ សូមពិនិត្យម៉ាស៊ីនបោះពុម្ពរបស់អ្នក ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> កំពុង​ចែករំលែក <ph name="ATTACHMENTS" /> ជាមួយ​អ្នក។}other{<ph name="DEVICE_NAME" /> កំពុង​ចែករំលែក <ph name="ATTACHMENTS" /> ជាមួយ​អ្នក។}}</translation>
@@ -3655,7 +3650,6 @@
 <translation id="3756578970075173856">កំណត់​កូដ PIN</translation>
 <translation id="3756806135608816820">គេហទំព័រ​អាច​ស្នើសុំ​រកមើល​ឧបករណ៍​ប៊្លូធូស</translation>
 <translation id="3756823472711156529">ស្ដារ​ក្រុម</translation>
-<translation id="3757337311115630808">ស្វែងយល់បន្ថែមអំពី Gemini Spark</translation>
 <translation id="3757567010566591880">ដកខ្ទាស់ពី​របារឧបករណ៍</translation>
 <translation id="3757645900890881944">ឧបករណ៍​ម៉ាស៊ីនស្វែងរក</translation>
 <translation id="3757733214359997190">រកមិនឃើញ​គេហទំព័រទេ</translation>
@@ -4779,6 +4773,7 @@
 <translation id="4631637535315947773">ផ្លូវកាត់​សម្រាប់​គេហទំព័រ​ដែលអ្នក​ចូលមើល​ញឹកញាប់​បំផុត​ត្រូវបាន​ដកចេញ​ហើយ ដោយសារ​អ្នកមិនបាន​ប្រើផ្លូវកាត់​ទាំងនោះ​នាពេលថ្មីៗ​នេះទេ</translation>
 <translation id="4631955550884380853">សំឡេង​ផ្ដោត</translation>
 <translation id="4632655012900268062">ប្ដូរកាតតាមបំណង</translation>
+<translation id="4634719521235795064">Gemini អាចប្រើ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់ ដើម្បី​ចូលគណនី​ជំនួសអ្នក។ <ph name="BEGIN_LINK" />ស្វែងយល់​អំពី​របៀបដែល Gemini ចាត់ចែង​ទិន្នន័យ​របស់អ្នក<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">លុប Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> មិនអាច​ប្រើបាន​សម្រាប់​អ្នកប្រើប្រាស់​ជាភ្ញៀវទេ។</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{បង្ហោះ​រូបភាព 1 សន្លឹកសម្រាប់​ប្រើ​ជាមួយ​សំណួរ​របស់អ្នក}other{បង្ហោះ​រូបភាព​រហូតដល់ # សន្លឹកសម្រាប់​ប្រើ​ជាមួយ​សំណួរ​របស់អ្នក}}</translation>
@@ -5265,7 +5260,6 @@
 <translation id="4989966318180235467">តាមដានទំព័រផ្ទៃខាងក្រោយ</translation>
 <translation id="499016799952867794">លក្ខណៈនេះ​អនុញ្ញាតឱ្យ​កម្មវិធី​ដំណើរការ​ដូច​ការរំពឹងទុក។</translation>
 <translation id="4990673372047946816">គ្មាន​កាមេរ៉ា​ដែលអាច​ប្រើបាន​ទេ</translation>
-<translation id="499126848196136237">Gemini Spark អាចប្រើ​មុខងារ​រុករកស្វ័យប្រវត្តិ​របស់ Chrome នៅលើ​ឧបករណ៍នេះ ដើម្បី​ធ្វើអន្តរកម្ម​ជាមួយ​គេហទំព័រ និង​បំពេញ​កិច្ចការ​ជំនួសឱ្យអ្នក។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="4991420928586866460">ប្រើប៊ូតុងជួរខាងលើជាប៊ូតុងមុខងារ</translation>
 <translation id="4991873517942703737">សួរអំពីឯកសារនេះ</translation>
 <translation id="4992066212339426712">បើកសម្លេង</translation>
@@ -5522,7 +5516,6 @@
 <translation id="5189274947477567401">ការផ្តាច់​ចេញពី​ការចែករំលែកដំណើរការ​តម្រូវឱ្យ​ចាប់ផ្ដើម​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ឡើងវិញ។ កម្មវិធីរុករក​តាម​អ៊ីនធឺណិតនេះ​នឹងចាប់ផ្ដើម​ឡើងវិញ​ឥឡូវនេះ។</translation>
 <translation id="5189404424758444348">បច្ចេកវិទ្យាជំនាន់មុន</translation>
 <translation id="5190577235024772869">ប្រើ <ph name="USED_SPACE" /></translation>
-<translation id="5190835502935405962">របាចំណាំ</translation>
 <translation id="5190926251776387065">បើកដំណើរការ​ច្រក</translation>
 <translation id="5190959794678983197">មិនមាន​មីក្រូហ្វូន</translation>
 <translation id="5191094172448199359">កូដ PIN ដែលអ្នក​បានបញ្ចូល​មិនត្រូវគ្នាទេ</translation>
@@ -6091,6 +6084,7 @@
 <translation id="5641715878999557094">"<ph name="EXTENSION_NAME" />" បានប្ដូរ​ទំព័រ​ដែលបង្ហាញ នៅពេល​អ្នកចុច​ប៊ូតុងទំព័រ​ដើម។</translation>
 <translation id="5643191124441701136">លេខកូដ​សុវត្ថិភាព​របស់អ្នក​ស្ថិតនៅផ្នែក​ខាងមុខ​នៃកាត​របស់អ្នក</translation>
 <translation id="5643321261065707929">បណ្ដាញផ្អែកតាមទិន្នន័យដែលប្រើ</translation>
+<translation id="5645369002069651355">កំពុង​ផ្ទៀងផ្ទាត់​អ៊ីមែល</translation>
 <translation id="5646376287012673985">ទីតាំង</translation>
 <translation id="5646558797914161501">អ្នកជំនួញ</translation>
 <translation id="564670806635578888">ស្វែងរក “<ph name="SEARCH_TERMS" />” នៅលើ Google</translation>
@@ -6129,6 +6123,7 @@
 <translation id="5687340364605915800">គេហទំព័រ​ប្រើ​ឆន្ទានុសិទ្ធិរបស់ខ្លួន​នៅ​ពេល​ឆ្លើយតប​នឹងសំណើ​នេះ</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">ទីតាំង</translation>
+<translation id="568984110402742489">មិនអាច​ផ្ញើ​មតិកែលម្អ​បានទេ</translation>
 <translation id="56907980372820799">ភ្ជាប់ទិន្នន័យ</translation>
 <translation id="5691772641933328258">មិន​ស្គាល់​ស្នាម​ម្រាមដៃ​ទេ</translation>
 <translation id="5693255400847650006">កំពុងប្រើ​មីក្រូហ្វូន</translation>
@@ -7022,7 +7017,6 @@
 <translation id="6393550101331051049">អនុញ្ញាតឱ្យបង្ហាញខ្លឹមសារគ្មានសុវត្ថិភាព</translation>
 <translation id="6394634179843537518">បញ្ចូល​ឯកសារ</translation>
 <translation id="6395423953133416962">ផ្ញើ <ph name="BEGIN_LINK1" />ព័ត៌មានប្រព័ន្ធ<ph name="END_LINK1" /> និង <ph name="BEGIN_LINK2" />ម៉ាទ្រិក<ph name="END_LINK2" /></translation>
-<translation id="6397586889873084061">បាទ/ចាស រក្សាទិន្នន័យ​របស់ខ្ញុំ​ដាច់ដោយ​ឡែកពី​សាលា (បានណែនាំ)</translation>
 <translation id="6398715114293939307">លុប Google Play Store</translation>
 <translation id="6398765197997659313">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="639880411171387127">ការជ្រើសរើស Google Lens របស់អ្នក។ ចុច enter ឬ backspace ដើម្បីលុបការជ្រើសរើស Google Lens របស់អ្នក</translation>
@@ -8381,7 +8375,6 @@
 <translation id="7421293530411019405">ចាកចេញពីក្រុមផ្ទាំងឬ?</translation>
 <translation id="7421925624202799674">មើលប្រភពទំព័រ</translation>
 <translation id="7422192691352527311">ចំណូលចិត្ត......</translation>
-<translation id="7423381908337122792">អ្នក​ដែលមាន​សិទ្ធិចូលប្រើ​ភ្នាក់ងារ Gemini Spark របស់អ្នក​អាច​គ្រប់គ្រង​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome របស់អ្នក​បាន។</translation>
 <translation id="7423425410216218516">លទ្ធភាពមើលឃើញ​ត្រូវបានបើក​រយៈពេល <ph name="MINUTES" /> នាទី</translation>
 <translation id="7423513079490750513">លុប <ph name="INPUT_METHOD_NAME" /> ចេញ</translation>
 <translation id="7424818322350938336">បានបញ្ចូលបណ្ដាញ</translation>
@@ -8507,6 +8500,7 @@
 <translation id="7517292544534877198">ប្រើការ​អ៊ីនគ្រីបលំនាំដើមរបស់ Google សម្រាប់ពាក្យសម្ងាត់នៅក្នុងគណនី Google របស់អ្នក</translation>
 <translation id="7517959947270534934">សមាជិក​គ្រួសារ​របស់អ្នក​មិនអាច​ទទួលបាន​ពាក្យសម្ងាត់​ឥឡូវនេះ​ទេ។ សូមស្នើឱ្យ​ពួកគេ​ដំឡើងកំណែ Chrome និង​ធ្វើសមកាល​កម្ម​ពាក្យសម្ងាត់​របស់ពួកគេ។</translation>
 <translation id="7518079994230200553">មិនអាចប្រើ​ជម្រើសនេះ​ឥឡូវនេះបានទេ។</translation>
+<translation id="7519506357537394422">អនុញ្ញាតឱ្យ Gemini ចូលគណនី <ph name="DOMAIN" /> ជំនួសអ្នកឬ?</translation>
 <translation id="752021853309481824">ដើម្បី​ទទួលបាន​ព័ត៌មាន​ដែលអ្នក​បានរក្សាទុក និង​អ្វីៗជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក សូម​ចូលគណនីជា <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">ច្រក​ឯកជន៖ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">បង្ហាញផ្លូវកាត់</translation>
@@ -8734,7 +8728,6 @@
 <translation id="769824636077131955">ឯកសារនេះធំពេកសម្រាប់ការពិនិត្យសុវត្ថិភាព។ អ្នកអាចបោះពុម្ពឯកសាររហូតដល់ 50 MB។</translation>
 <translation id="7698507637739331665">ធាតុមួយចំនួន​ត្រូវបាន​ទប់ស្កាត់</translation>
 <translation id="7700516433658473670">ម៉ាស៊ីនបោះពុម្ព និងម៉ាស៊ីនស្កេន</translation>
-<translation id="7700873336634517379">ទេ បន្តប្រើ​សម្រាប់​សាលា​នៅក្នុង​កម្រងព័ត៌មាន​នេះ</translation>
 <translation id="7701040980221191251">គ្មាន</translation>
 <translation id="7701869757853594372">ឈ្មោះកាត់ USER</translation>
 <translation id="770231223935918661">សួរអំពីរូបភាពនេះ</translation>
@@ -9100,6 +9093,7 @@
 <translation id="7978450511781612192">សកម្មភាព​នេះនឹង​នាំ​អ្នកចេញ​ពីគណនី Google របស់អ្នក។ ចំណាំ ប្រវត្តិ ពាក្យសម្ងាត់ និង​អ្វីៗជា​ច្រើនទៀត​របស់អ្នកនឹងលែង​ធ្វើសមកាលកម្ម​ទៀតហើយ។</translation>
 <translation id="7980066177668669492">ASCII ដែលបាន​បំប្លែងកូដ Base64, វិញ្ញាបនបត្រ​ច្រើន</translation>
 <translation id="7981410461060625406">ប្រើកូដសម្ងាត់ដែលបានរក្សាទុកសម្រាប់ <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">មិនអាច​ផ្ទៀងផ្ទាត់​អ៊ីមែល​របស់អ្នក​បានទេ</translation>
 <translation id="7981662863948574132">បង្ហាញ​ផ្ទាំងលោតឡើង​ដែលមានកូដ QR និង EID របស់​ឧបករណ៍</translation>
 <translation id="7982578888426609524">ការធ្វើបច្ចុប្បន្នភាព​ចុងក្រោយ​បំផុត​ចំពោះ​ក្រុមនេះ</translation>
 <translation id="7982789257301363584">បណ្តាញ</translation>
@@ -9244,6 +9238,7 @@
 <translation id="8081989000209387414">បិទ​ការជួសជុល ADB ឬ?</translation>
 <translation id="8082132721957920509">កាតរបស់អ្នកត្រូវបានរក្សាទុក</translation>
 <translation id="8082390128630131497">ការបិទ​ការជួសជុល ADB នឹងកំណត់ <ph name="DEVICE_TYPE" /> នេះដូចដើមឡើងវិញ។ គណនីអ្នកប្រើប្រាស់ និងទិន្នន័យ​មូលដ្ឋានទាំងអស់​នឹងត្រូវបាន​លុប។</translation>
+<translation id="8082737802704584539">ស្ថាប័ន​របស់អ្នក​បានបិទ​ការរក្សាទុក​ប្រវត្តិ​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="8084114998886531721">ពាក្យសម្ងាត់​ដែល​បានរក្សាទុក</translation>
 <translation id="8084417885464859041">ប្រើ Gemini ដោយសុវត្ថិភាព</translation>
 <translation id="8084429490152575036">ការកំណត់ APN បណ្ដាញ​ចល័ត</translation>
@@ -9286,6 +9281,7 @@
 <translation id="8109991406044913868">ទម្រង់រចនាដែលបានបង្កើតដោយ AI</translation>
 <translation id="8110393529211831722">ការជាវ​ត្រូវបាន​ដំឡើង​នៅលើ​ឧបករណ៍នេះ​តែប៉ុណ្ណោះ និងមិនធ្វើ​សម​កាលកម្ម​ជាមួយឧបករណ៍​ផ្សេងទៀត​ក្នុងគណនី​របស់អ្នកទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">កំពុងទាញយក​បញ្ជី​ទំនាក់ទំនង...</translation>
+<translation id="8110781914702267195">ចូលទៅកាន់ Google Wallet ដើម្បីគ្រប់គ្រង<ph name="BEGIN_LINK1" />ចំណូលចិត្តទិន្នន័យ និងឯកជនភាព<ph name="END_LINK1" />របស់អ្នក ឬគ្រប់គ្រង<ph name="BEGIN_LINK2" />វិធីបង់ប្រាក់<ph name="END_LINK2" /> និង<ph name="BEGIN_LINK3" />កាត<ph name="END_LINK3" /> ដូចជាកាតសមាជិកជាដើម</translation>
 <translation id="8114925369073821854">ការអនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូនលើ <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">ស្នើសុំការអនុញ្ញាតពីមាតាបិតា</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />ចងចាំ​របៀបដែលអ្នក​បានចូលគណនី និង​នាំអ្នក​ចូលគណនី​ដោយស្វ័យប្រវត្តិ នៅពេល​ដែលអាច។ នៅពេលបិទ អ្នកនឹង​ត្រូវបាន​ស្នើឱ្យ​បញ្ជាក់​គ្រប់ពេល។</translation>
@@ -10269,6 +10265,7 @@
 <translation id="8874341931345877644">ភ្ជាប់​ទៅឧបករណ៍៖</translation>
 <translation id="8874647982044395866">សរីរាង្គ</translation>
 <translation id="8874790741333031443">សាកល្បង​អនុញ្ញាត​ខូគី​ភាគីទីបី​ជាបណ្ដោះអាសន្ត ដែលមានន័យថា​មានការការពារ​ការរុករក​តិចជាងមុន ប៉ុន្តែ​មុខងារ​គេហទំព័រ​កាន់តែទំនង​ជាដំណើរការ​ដូចការរំពឹងទុក។</translation>
+<translation id="8874864294955002500">មិនអាចផ្ដល់​មតិកែលម្អ​សម្រាប់​គណនី​របស់អ្នក​បានទេ។ អ្នកគ្រប់គ្រង​សហគ្រាស​របស់អ្នក​អាចប្រើ​ឧបករណ៍ ឬ​កម្រងព័ត៌មាន​របស់គាត់ ដើម្បី​រាយការណ៍​អំពីបញ្ហា​ជំនួសអ្នក។</translation>
 <translation id="8875736897340638404">ជ្រើសរើសលទ្ធភាព​មើលឃើញរបស់អ្នក</translation>
 <translation id="8876307312329369159">ការកំណត់នេះ​មិនអាចប្ដូរ​នៅក្នុងរយៈពេលចូលប្រើសាកល្បង​បានទេ។</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ប្រើការស្កេនរកប៊្លូធូស ដើម្បីស្វែងរកឧបករណ៍នៅជិត។</translation>
@@ -10397,7 +10394,6 @@
 <translation id="897525204902889653">សេវាកម្ម​ចត្តាឡីស័ក</translation>
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" និងផ្ទាំង 1 ទៀត}other{"<ph name="TAB_TITLE" />" និងផ្ទាំង # ទៀត}}</translation>
 <translation id="897565255818387330">អនុញ្ញាតឱ្យ​គេហទំព័រនេះ​មើល និង​ចម្លង <ph name="FILE_NAME" /> ឬ?</translation>
-<translation id="8977523125954274918">រៀបចំ​កម្រងព័ត៌មាន​សាលា ដើម្បី​រក្សាទុក និងប្រើ​ពាក្យ​សម្ងាត់​របស់អ្នក និងអ្វីៗជា​ច្រើនទៀត​នៅក្នុង​គណនី​របស់អ្នក</translation>
 <translation id="8977811652087512276">ពាក្យសម្ងាត់​មិន​ត្រឹមត្រូវ ឬ​ឯកសារ​ខូច</translation>
 <translation id="8978154919215542464">បើក - ធ្វើសមកាលកម្មទាំងអស់</translation>
 <translation id="8978670037548431647">ផ្ទុក​សមត្ថភាព​ភ្ជាប់ឡើងវិញ</translation>
@@ -10501,7 +10497,6 @@
 <translation id="9040661932550800571">ធ្វើបច្ចុប្បន្នភាព​ពាក្យសម្ងាត់​សម្រាប់ <ph name="ORIGIN" />?</translation>
 <translation id="9041560164471731796">ដើម្បី​រក្សាទុក​ពាក្យ​សម្ងាត់ខ្លាំង​ដោយប្រើ​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់ សូម​ចូលគណនី Chrome</translation>
 <translation id="9041692268811217999">ការចូល​ប្រើ​ឯកសារមូលដ្ឋាន​នៅលើ​ម៉ាស៊ីន​របស់អ្នក​ត្រូវបានបិទ​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
-<translation id="9041881059840744611">អំពី​កម្រង​ព័ត៌មាន​សាលា</translation>
 <translation id="904224458472510106">ប្រតិបត្តិការនេះ​មិនអាច​ត្រឡប់វិញ​បានទេ</translation>
 <translation id="9042827002460091668">ពិនិត្យ​ការតភ្ជាប់​អ៊ីនធឺណិត​របស់អ្នក រួចព្យាយាម​ម្ដង​ទៀត</translation>
 <translation id="9042893549633094279">ឯកជនភាព និងសុវត្ថិភាព</translation>
@@ -10718,7 +10713,6 @@
 <translation id="9219103736887031265">រូបភាព</translation>
 <translation id="9219572436491982747">ទិន្នន័យដែលបានបញ្ជូនឱ្យ Google ប្រហែល​ត្រូវអ្នកត្រួតពិនិត្យជាមនុស្សមើលឃើញ​ក្នុងការកែលម្អ​បច្ចេកវិទ្យារបស់ Chrome AI</translation>
 <translation id="9219741625496141320">ទិន្នន័យរុករក​ត្រូវបានលុប​ដោយស្វ័យប្រវត្តិ</translation>
-<translation id="9220484506568374422">Gemini Spark នឹងមាន​សិទ្ធិចូលប្រើ​គេហទំព័រ​ដូចគ្នា​នឹងអ្នកដែរ រួមទាំង​គេហទំព័រ​ដែលអ្នក​បានចូល​គណនី។ វានឹង​ចែករំលែក​ព័ត៌មាន​ដែល​ចាំបាច់​ជាមួយ​ភាគីទីបី ដែលអាច​រួមបញ្ចូល​ព័ត៌មានផ្ទាល់ខ្លួន​ដែលអ្នក​អាច​យល់ថាមាន​លក្ខណៈ​រសើប។</translation>
 <translation id="9220525904950070496">ដកគណនីចេញ</translation>
 <translation id="9220723036554088545">បង្ហោះ​ឯកសារ</translation>
 <translation id="9220820413868316583">លើកម្រាមដៃ​ រួច​ព្យាយាម​ម្ដងទៀត។</translation>

@@ -889,7 +889,6 @@
 <translation id="4535755320005483982">የተጋራ <ph name="GROUP_TITLE" /> የትር ቡድን</translation>
 <translation id="4537137366307982887">የጠቃሚ ምክሮች ማሳወቂያዎች መርጦ መግባት በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4537987892902330164">እንደ <ph name="NAME_OR_EMAIL" /> ሆነው ገብተው ቆይተዋል።</translation>
-<translation id="4543131175509360848">ምንም የይለፍ ቁልፎች ሉህ የለም</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}other{<ph name="TAB_COUNT_MANY" /> ትሮች፣ <ph name="TAB_COUNT_INCOGNITO" /> ማንነት የማያሳውቅ}}</translation>
 <translation id="4558311620361989323">የድረ-ገፅ አቋራጮች</translation>
 <translation id="4572422548854449519">ወደ የሚተዳደር መለያ ይግቡ</translation>
@@ -934,6 +933,7 @@
 <translation id="4719927025381752090">ለመተርጎም ጥያቄ አቅርብ</translation>
 <translation id="4720556299488643018">ከደንበኝነት ምዝገባ ይውጡ</translation>
 <translation id="4732120983431207637">ድርድር ወደ ኋላ ማጠንጠኛ</translation>
+<translation id="4734965478015604180">አግድማዊ</translation>
 <translation id="4736934858538408121">ምናባዊ ካርድ</translation>
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4738065825338914557">ከደንበኝነት ምዝገባ በመውጣት ላይ…</translation>
@@ -982,6 +982,7 @@
 <translation id="488187801263602086">ፋይልን ዳግም ይሰይሙ</translation>
 <translation id="4885273946141277891">የማይደገፍ የChrome አብነቶች ብዛት።</translation>
 <translation id="4890973535105146893">Google መለያዎ ውስጥ ምንም የተቀመጡ የይለፍ ቃላት የሉም</translation>
+<translation id="490375751687810070">አቀባዊ</translation>
 <translation id="4905823827770127520">ገጹ ውስጥ አገናኝ ያካትቱ</translation>
 <translation id="4910889077668685004">የክፍያ መተግበሪያዎች</translation>
 <translation id="4911042367886397055">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" />!</translation>
@@ -1287,6 +1288,7 @@
 <translation id="6192907950379606605">የምስል መግለጫዎችን ያግኙ</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6196315980958524839">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ባለው የGoogle የይለፍ ቃል አስተዳዳሪ ላይ ነው</translation>
+<translation id="6200780647297916498">የትር አቀማመጥ</translation>
 <translation id="6204781143409202534">Chrome ከ<ph name="DOMAIN" /> ሊሆን የሚችል አይፈለጌ መልዕክትን ለይቷል።</translation>
 <translation id="6211386937064921208">ይህን ገፅ በቅድመ-ዕይታ በማሳየት ላይ</translation>
 <translation id="6212567362666004597">ትርን ወደ ቡድን ያክሉ</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="1083934481477628225">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
+<translation id="109026165963220603">Chromium'un yakındaki cihazları bulup kullanabilmesi için yerel ağınıza erişmesi gerekiyor</translation>
 <translation id="1090946077924227754">Belirli bir Chromium özelliğinde veya uzantısında arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra seçtiğiniz klavye tuşuna basın</translation>
 <translation id="1098493699368672217">Chromium ile arama özelliğini sistem tepsisinde göster ve klavye kısayolunu aç</translation>
 <translation id="1104942323762546749">Chromium, şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -103,6 +104,7 @@
 <translation id="2126108037660393668">İndirilen dosya doğrulanamadı.</translation>
 <translation id="2135919691573380097">Bu siteyi bildirin</translation>
 <translation id="2137162749895930932">Çeviri ekranını kapat</translation>
+<translation id="2147218225094845757">Yan paneli gizle</translation>
 <translation id="215352261310130060">Sitede güvenli bağlantı kullanılmadığı ve dosya üzerinde oynanmış olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="2170098639895543546">Sayfada herhangi bir şeyi seçin</translation>
 <translation id="2174178932569897599">Chromium'u özelleştir</translation>
@@ -300,7 +302,6 @@
 <translation id="4251772536351901305">Standart korumaya ek olarak sitelerden alınmış daha fazla veriyi analiz ederek Google'ın daha önce bilmedikleri de dahil olmak üzere tehlikeli siteler hakkında sizi uyarır. Chromium uyarılarını atlamayı seçebilirsiniz.</translation>
 <translation id="4269093074552541569">Chromium oturumunu kapatın</translation>
 <translation id="4271805377592243930">Chromium'la ilgili yardım alın</translation>
-<translation id="4275788652681621337">Yan paneli kapat</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
 <translation id="4285930937574705105">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Chromium şu anda çalışır durumdaysa kapatıp yeniden deneyin.</translation>
 <translation id="4298125729853015961">Şifreleri Chromium'dan Dışa Aktar</translation>

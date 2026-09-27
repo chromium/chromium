@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">បានផ្អាកកម្មវិធី​ជួសជុលនៅក្នុងផ្ទាំងមួយផ្សេងទៀត សូមចុចដើម្បីប្ដូរទៅផ្ទាំងនោះ។</translation>
 <translation id="1171774979989969504">សូមបញ្ចូលអាសយដ្ឋានអ៊ីម៉ែល</translation>
 <translation id="1178581264944972037">ផ្អាក</translation>
+<translation id="1254779809141342904">ការជូន​ដំណឹង CAP នេះ​ប្រើប្រាស់​បច្ចេកវិទ្យា​ដែលមាន​ឈ្មោះថា XSLT ហើយ​មុខងារនោះ​កំពុង​ត្រូវបាន<ph name="REMOVAL_LINK" />។ នៅពេល​ករណីនោះ​កើតឡើង ការជូន​ដំណឹងនេះ​នឹងត្រូវបាន​បង្ហាញ​ជាទិន្នន័យ XML ដែលមិនទាន់វិភាគ។ អ្នក​ប្រហែលជា​អាច<ph name="EXTENSION_LINK" />ដែល​អាចឱ្យអ្នក​បន្តមើល​វាបាន។</translation>
 <translation id="1306460908038601864">បិទ</translation>
 <translation id="1311894908970423688">តម្លៃត្រូវតែ <ph name="VALUE_DATE_OR_TIME" />។</translation>
 <translation id="1588438908519853928">ធម្មតា</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2746543609216772311">តម្លៃត្រូវតែ <ph name="MINIMUM_DATE_OR_TIME" /> ឬក្រោយពេលនេះ។</translation>
 <translation id="2761667185364618470">សូមធីកក្នុងប្រអប់នេះប្រសិនបើអ្នកចង់ដំណើរការ។</translation>
+<translation id="2854734116215697908">ដកចេញ​ពីកម្មវិធីរុករកតាមអ៊ីនធឺណិត​នេះ</translation>
 <translation id="2908441821576996758">សូមបញ្ចូលសញ្ញាក្បៀស ដែលបែងចែកបញ្ជីអាសយដ្ឋានអ៊ីម៉ែល។</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ ប្រអប់បំពេញមិនបានបញ្ចប់ ឬមានកាលបរិច្ឆេទដែលគ្មានសុពលភាព។</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">ខាស</translation>
 <translation id="5630795885300617244">ប៉ះ​ពីរ​ដង​ខាងឆ្វេង ឬខាង​ស្តាំ ដើម្បី​រំលង 10 វិ</translation>
 <translation id="57838592816432529">បិទសម្លេង</translation>
+<translation id="5855560023261018690">ដកចេញ​ពីកម្មវិធីរុករកតាមអ៊ីនធឺណិត​នេះ​ក្នុងពេល​ឆាប់ៗនេះ</translation>
 <translation id="5868587040512539609">វីដេអូ</translation>
 <translation id="588258955323874662">ពេញអេក្រង់</translation>
 <translation id="5888666972993069672">ឥឡូវ​នេះកំពុង​បញ្ជូនទៅ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ចាកចេញ​ពីមុខងារ​រូបក្នុងរូប</translation>
 <translation id="6484738902856791350">ប្រើ​ទម្រង់ស្អាត</translation>
 <translation id="6550675742724504774">ជម្រើស</translation>
+<translation id="65574987622079584">ដំឡើង​កម្មវិធីបន្ថែម​លើកម្មវិធីរុករក​តាមអ៊ីនធឺណិត</translation>
 <translation id="6643016212128521049">ជម្រះ</translation>
 <translation id="6661136971638885481">កំណាត់ទី #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ផ្សេងទៀត...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">អាទិត្យនេះ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">កុំបង្ហាញ​សារប្រុងប្រយ័ត្ន​នេះ​ឱ្យសោះ</translation>
 <translation id="8284326494547611709">អត្ថបទពិពណ៌នា</translation>
 <translation id="835897206747267392">តម្លៃគ្មានសុពលភាព។</translation>
 <translation id="839593075537728968">តម្លៃត្រូវតែ​ស្ថិតនៅ​ចន្លោះ <ph name="MINIMUM_TIME" /> និង <ph name="MAXIMUM_TIME" />។</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ការតម្រឹមជាជួរ</translation>
 <translation id="8750798805984357768">សូមជ្រើសរើសមួយក្នុងចំណោមជម្រើសទាំងនេះ។</translation>
+<translation id="8753001114009816390">គេហទំព័រនេះប្រើ XSLT។ មុខងារនោះកំពុងត្រូវបាន<ph name="REMOVAL_LINK" />។ នៅពេល​ដែល​ការដកចេញនោះ​កើតឡើង ទំព័រនេះ​ទំនងជា​នឹងលែង​បង្ហាញ​បានត្រឹមត្រូវ​ទៀតហើយ។ អ្នក​ប្រហែលជា​អាច<ph name="EXTENSION_LINK" />ដែល​អាចឱ្យអ្នក​បន្តមើល​វាបាន។ បើមិនដូច្នោះទេ អ្នកគួរតែទាក់ទងទៅអ្នកថែទាំគេហទំព័រ ដើម្បីទទួលបានព័ត៌មានបន្ថែម។</translation>
 <translation id="8845239796550121995">ឥឡូវនេះកំពុងភ្ជាប់ទៅទូរទស្សន៍របស់អ្នក</translation>
 <translation id="8875657656876809964">មាន​បញ្ហា​ក្នុង​ការ​ចាក់​​វីដេអូ​</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -65,7 +65,6 @@
 <translation id="1179890706672152411">ਤੁਹਾਡੀ ਸਟੋਰੇਜ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1190609913194133056">ਸੂਚਨਾ ਕੇਂਦਰ</translation>
-<translation id="1195433173321863960"><ph name="RESET_TIME" /> ਨੂੰ ਤੁਹਾਡੀ ਸੀਮਾ ਰੀਸੈੱਟ ਹੋਣ 'ਤੇ, ਚਿੱਤਰ ਦੁਬਾਰਾ ਉਪਲਬਧ ਹੋਣਗੇ</translation>
 <translation id="1196534270480620381">ਮੈਨੂੰ ਇਸ ਪੰਨੇ ਦਾ ਛੋਟਾ ਜਿਹਾ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="1199631150313925648">ਹੱਥੀਂ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="1199963004393929848">ਹਰਾ ਥੀਮ</translation>
@@ -163,7 +162,6 @@
 <translation id="1481450969185702334">ਲੱਭੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="1483493594462132177">ਭੇਜੋ</translation>
 <translation id="1486096554574027028">ਪਾਸਵਰਡ ਖੋਜੋ</translation>
-<translation id="1486593497476255523">ਟੈਬ ਗਰੁੱਪ ਬਣਾਉਣਾ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="1491277525950327607">ਸੈਟਿੰਗ ਨੂੰ ਟੌਗਲ ਕਰਨ ਲਈ ਡਬਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="1492417797159476138">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਸਾਈਟ ਲਈ ਇਹ ਵਰਤੋਂਕਾਰ ਨਾਮ ਰੱਖਿਅਤ ਕਰ ਚੁੱਕੇ ਹੋ</translation>
 <translation id="1497590942294823549">ਮੀਨੂ → Password Manager</translation>
@@ -251,7 +249,6 @@
 <translation id="1740650426894359238">ਕਿਸੇ ਹੋਰ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1741219894094057085">ਸਮਾਰਟ-ਵਾਚ</translation>
 <translation id="1743244221910283364">ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਰਖਾਸਤ ਕਰੋ</translation>
-<translation id="1744234754703485302">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="1748975028205587434">ਆਪਣੀ ਫ਼ਾਈਲ ਚੁਣੋ</translation>
 <translation id="1749733017156547309">ਪਾਸਵਰਡ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="174998178145075354">{count,plural, =1{ਪਤੇ ਦਾ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹੈ।}one{ਪਤੇ ਦਾ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹੈ।}other{ਪਤੇ ਦੇ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹਨ।}}</translation>
@@ -384,7 +381,6 @@
 <translation id="2155663190508912427">1 ਮਹੀਨੇ ਅੰਦਰ ਮਿਟਾਓ</translation>
 <translation id="2161446265348023004">ਖੁੱਲ੍ਹੀ ਵਿੰਡੋ 'ਤੇ ਜਾਓ</translation>
 <translation id="2164946989711475905">ਸਾਈਨ-ਇਨ ਕਰੋ…</translation>
-<translation id="2165110345209765380">AI ਮੋਡ ਨਾਲ ਖੋਜ ਪੂਰੀ ਹੋਈ!</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
 <translation id="2180338296831857171">ਪਤੇ ਮਿਟਾਓ</translation>
 <translation id="218350106843433823">ਪਾਸਵਰਡ ਅਤੇ ਪਾਸਕੀਆਂ ਨੂੰ ਆਟੋਫਿਲ ਕਰਨ ਦੀ ਸੁਵਿਧਾ</translation>
@@ -401,6 +397,7 @@
 <translation id="2216366330550244277">ਉਤਪਾਦ ਦੇ ਪੰਨੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2219935992754556187">Chrome ਤੁਹਾਡੇ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟੇ ਨੂੰ ਚਿਹਰਾ ਆਈਡੀ ਨਾਲ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
+<translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2223461067862937305">QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="2230173723195178503">ਵੈੱਬਪੰਨਾ ਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
@@ -426,7 +423,6 @@
 <translation id="2274179746480077483">Gmail ਅਤੇ Photos ਵਰਗੀਆਂ ਐਪਾਂ ਤੋਂ ਜਾਣਕਾਰੀ ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ। ਪਰਸਨਲ ਇੰਟੈਲੀਜੈਂਸ ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="2287614783861766820">{count,plural, =1{ਇਸ ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}one{ਇਸ ਪਤੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}other{ਇਨ੍ਹਾਂ ਪਤਿਆਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।}}</translation>
 <translation id="2295236662082735391">Gemini ਨਾਲ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਵੈੱਬ 'ਤੇ ਕਿਸੇ ਚਿੱਤਰ ਨੂੰ ਦਬਾਈ ਰੱਖੋ</translation>
-<translation id="2296360194694387941">Chrome ਵਿੱਚ Gemini ਦੀ ਵਰਤੋਂ ਪੂਰੀ ਹੋਈ!</translation>
 <translation id="2297989278479054870">ਤੁਹਾਡੇ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਮੌਜੂਦ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2299218006564889602">Google ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> ਵੇਰਵੇ ਦਿਖਾਓ</translation>
@@ -694,7 +690,6 @@
 <translation id="3181954750937456830">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਡੀ ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ)</translation>
 <translation id="3183362380688692618">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ...</translation>
 <translation id="3185000827934321633">ਨੈਵੀਗੇਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="3185760469172949183">ਕੈਮਰੇ ਨਾਲ ਖੋਜਣ ਦਾ ਕੰਮ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="3186796054637504691">ਇਤਿਹਾਸ ਅਤੇ ਵੈੱਬਸਾਈਟ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="3190558889382726167">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3190736958609431397">ਟਰੈਕਿੰਗ ਬੰਦ ਕਰੋ</translation>
@@ -767,7 +762,6 @@
 <translation id="3459644598174926977">ਕਿਸੇ ਪੰਨੇ ਬਾਰੇ ਪੁੱਛਣ, ਜੁਗਤਾਂ ਦਾ ਬੋਲ ਕੇ ਵਿਚਾਰ-ਵਟਾਂਦਰਾ ਕਰਨ ਅਤੇ ਲਗਾਤਾਰ ਗੱਲਬਾਤ ਕਰਨ ਲਈ Gemini ਨਾਲ ਲਾਈਵ ਹੋਵੋ।</translation>
 <translation id="3462768334899086950">ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਤੁਸੀਂ ਆਪਣੀ ਅਣਰੱਖਿਅਤ ਫ਼ਾਈਲ ਅਤੇ ਮੌਜੂਦਾ ਟੈਬਾਂ ਨੂੰ ਗੁਆ ਬੈਠੋਗੇ</translation>
 <translation id="3464194322481586217">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
-<translation id="346831467152294287">ਪਾਸਵਰਡ ਅਤੇ ਆਟੋਫਿਲ ਸੈੱਟਅੱਪ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="3469117812148449995">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="3472469028191701821">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦਾ ਹੈ</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} ਸਾਈਟ ਜਾਂ ਐਪ ਲਈ}one{{COUNT} ਸਾਈਟ ਜਾਂ ਐਪ ਲਈ}other{{COUNT} ਸਾਈਟਾਂ ਜਾਂ ਐਪਾਂ ਲਈ}}</translation>
@@ -812,6 +806,7 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਹੈ।</translation>
 <translation id="3580448612293054698">ਕੀ <ph name="ENTITY_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3581564640715911333">ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
+<translation id="3585482760087850407">ਇਸ ਸਾਈਟ ਲਈ ਕੈਮਰਾ ਪਹੁੰਚ</translation>
 <translation id="3587482841069643663">ਸਾਰੇ</translation>
 <translation id="3587885837929752825">ਤੁਹਾਡੀ ਸੰਸਥਾ ਇਹ ਸੀਮਤ ਕਰਦੀ ਹੈ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਿਸ ਤਰ੍ਹਾਂ ਦਾ ਡਾਟਾ ਰੱਖਿਅਤ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3588820906588687999">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਚਿੱਤਰ ਖੋਲ੍ਹੋ</translation>
@@ -868,7 +863,6 @@
 <translation id="3813175908845379029">ਲਾਹੇਵੰਦ ਸੁਝਾਅ ਜੋ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਬਿਹਤਰ ਅਤੇ ਆਸਾਨ ਬਣਾਉਂਦੇ ਹਨ</translation>
 <translation id="3818293389945649617">ਅਗਲੀ ਲੱਭੋ</translation>
 <translation id="3819183753496523827">ਤੁਸੀਂ ਆਫ਼ਲਾਈਨ ਹੋ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="3826034723896327540">ਟੈਬਾਂ ਪਿੰਨ ਹੋ ਗਈਆਂ!</translation>
 <translation id="3828924571679282172">{COUNT,plural, =1{1 ਭੁਗਤਾਨ ਵਿਧੀ}one{# ਭੁਗਤਾਨ ਵਿਧੀ}other{# ਭੁਗਤਾਨ ਵਿਧੀਆਂ}}</translation>
 <translation id="3831560640878483188">ਕੀ ਚਿਤਾਵਨੀ ਨੂੰ ਖਾਰਜ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3832419617903252251">ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -887,6 +881,7 @@
 <translation id="386224966259596343">ਅਗਲੀ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਕੋਈ ਢੁਕਵਾਂ ਫ਼ਾਰਮ ਭਰੋਗੇ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਇਸ ਜਾਣਕਾਰੀ ਨੂੰ Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦਾ ਮੌਕਾ ਹੋਵੇਗਾ।</translation>
 <translation id="3868495844258915202">ਪੂਰਾ URL ਦਿਖਾਓ</translation>
 <translation id="3875783148670536197">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
+<translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="3878657761594430423">ਸ਼ੀਟ ਗ੍ਰੈਬਰ</translation>
 <translation id="3885587018298784481">ਪਰਿਵਾਰ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣਾ</translation>
 <translation id="3888230626190453136">ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਬ੍ਰਾਊਜ਼ ਕਰੋ</translation>
@@ -997,7 +992,6 @@
 <translation id="422474357428465195">ਤੁਹਾਨੂੰ ਪਾਸਵਰਡ ਸੰਬੰਧੀ ਕਈ ਸਮੱਸਿਆਵਾਂ ਹਨ ਜੋ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਖਤਰੇ ਵਿੱਚ ਪਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="422477017457571619">ਉਨ੍ਹਾਂ ਖਤਰਨਾਕ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੇ ਵਿਰੁੱਧ ਅਸਲ-ਸਮੇਂ ਦੀ, AI-ਸੰਚਾਲਿਤ ਸੁਰੱਖਿਆ ਜੋ ਕਿ Google ਨੂੰ ਭੇਜੇ ਜਾਣ ਵਾਲੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ 'ਤੇ ਆਧਾਰਿਤ ਹੁੰਦੀ ਹੈ</translation>
 <translation id="4231395118547300571">ਸੁਰੱਖਿਆ ਜਾਂਚ ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਹਨ</translation>
-<translation id="4232376164796433044">ਪਾਸਵਰਡ ਅਤੇ ਆਟੋਫਿਲ</translation>
 <translation id="4232817129213135694">ਇਸ ਡੀਵਾਈਸ ਲਈ ਪਾਸਕੀਆਂ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ<ph name="END_BOLD" /> 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="424063167283213501">Known Traveler Number ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1820,6 +1814,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6749473226660745022">ਫ਼ੋਟੋਆਂ</translation>
 <translation id="6750456911389438250">{count,plural, =1{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}one{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}other{ਇਤਿਹਾਸ ਵਿੱਚ ਮੌਜੂਦ {count} ਆਈਟਮਾਂ ਨੂੰ ਆਯਾਤ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦਾ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹੈ।}one{ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦਾ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹੈ।}other{ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਦੇ {count} ਵਿਕਲਪ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰ ਉਪਲਬਧ ਹਨ।}}</translation>
+<translation id="6753460329812070808">Chrome ਤੋਂ ਸੁਝਾਅ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="6755200887046212842">ਖਾਤੇ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6757899787818440812">ਦਰਮਿਆਨੀ ਉਚਾਈ</translation>
 <translation id="6759709389246683070">ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਜਾਣ ਲਈ ਰਿਮਾਈਂਡਰ ਸੈੱਟ ਕਰਨ ਵਾਸਤੇ ਇਸ ਟੈਬ ਨੂੰ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖ ਸਕਦੇ ਹੋ</translation>
@@ -1905,6 +1900,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬਣਾਓ…</translation>
 <translation id="7007970306646738803">ਚੁਣੋ ਕਿ ਟੈਬਾਂ, ਇਤਿਹਾਸ ਅਤੇ ਪਾਸਵਰਡਾਂ ਵਰਗੇ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੌਜੂਦਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਦਾ ਕੀ ਕਰਨਾ ਹੈ।</translation>
+<translation id="701134422972919485">ਇਸ ਸਾਈਟ ਲਈ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਪਹੁੰਚ</translation>
 <translation id="7012978439516925343">ਪਾਸਕੀ ਬਣਾਉਣ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7015418667643980944">ਵੰਡ ਦਾ ਦ੍ਰਿਸ਼</translation>
 <translation id="7016070607649558507">ਤੁਹਾਡਾ 1 ਪਾਸਵਰਡ ਕਮਜ਼ੋਰ ਹੈ। ਸੁਰੱਖਿਅਤ ਰਹਿਣ ਲਈ ਇਸਨੂੰ ਹੁਣੇ ਠੀਕ ਕਰੋ।</translation>
@@ -2077,7 +2073,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7603308509262646847">ਕਾਰਡਧਾਰਕ <ph name="NAME" /> ਨੂੰ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="7603852183842204213">ਪੌਪ-ਅਪਸ ਬਲੌਕ ਕੀਤੇ ਗਏ (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
-<translation id="7606639338662398635">ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="760667371114328991">ਸੁਰੱਖਿਆ ਜਾਂਚ ਲਈ ਸੂਚਨਾਵਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7612619742409846846">ਇਸ ਦੇ ਤੌਰ 'ਤੇ Google ਵਿੱਚ ਸਾਈਨ ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="7612849887607288481">AI ਪ੍ਰੋਟੋਟਾਈਪਿੰਗ ਮੀਨੂ ਖੋਲ੍ਹੋ</translation>
@@ -2285,7 +2280,6 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8240217649914883113">ਇਸਨੂੰ ਮੇਰੇ ਕੈਲੰਡਰ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="824379025871762038">ਕਦੇ ਵੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="8250920743982581267">ਦਸਤਾਵੇਜ਼</translation>
-<translation id="8252980988000695656">Google Lens ਦਾ ਕੰਮ ਪੂਰਾ ਹੋਇਆ!</translation>
 <translation id="8258734532103758067">ਮੈਂ ਆਪਣਾ ਡਾਟਾ ਨਿਰਯਾਤ ਕਰ ਲਿਆ ਹੈ</translation>
 <translation id="8258999165172757081">ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
@@ -2336,6 +2330,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8393700583063109961">ਸੁਨੇਹਾ ਭੇਜੋ</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> ਦਿਨਾਂ ਤੋਂ ਨਹੀਂ ਵਰਤੀਆਂ ਗਈਆਂ ਟੈਬਾਂ</translation>
 <translation id="8395180897620197612">ਲੌਗ-ਇਨ logging ਨੂੰ ਰੋਕੋ</translation>
+<translation id="8399253661151100858">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8407669440184693619">ਇਸ ਸਾਈਟ ਲਈ ਕੋਈ ਪਾਸਵਰਡ ਨਹੀਂ ਲੱਭਿਆ</translation>
 <translation id="8407831512155324054">ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਮਜ਼ਬੂਤ ਲੱਗਦਾ ਹੈ</translation>
 <translation id="8414283596511250978">ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਕਦੇ ਨਾ ਭੁੱਲੋ</translation>
@@ -2350,6 +2345,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8439758443371991593">'ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ' ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="8443986842926457191">URL 2048 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਹੈ</translation>
 <translation id="8449869326050867919">ਪਾਸਵਰਡ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8458009459729013424">ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ "<ph name="SITE_DOMAIN" />" ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="8461708300275916315">ਜੇ ਤੁਹਾਡੀ ਉਮਰ 18 ਸਾਲ ਤੋਂ ਘੱਟ ਹੈ</translation>
 <translation id="8473815223723723001">Gemini ਨਾਲ ਚਿੱਤਰ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="8473863474539038330">ਪਤੇ ਅਤੇ ਹੋਰ</translation>
