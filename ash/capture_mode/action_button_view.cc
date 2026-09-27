@@ -94,8 +94,7 @@ ActionButtonView::ActionButtonView(views::Button::PressedCallback callback,
   ink_drop_container_->SetAutoMatchParentBounds(true);
 
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
-      SystemShadow::Type::kElevation12,
-      /*layer_recreated_callback=*/{});
+      SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCorners(gfx::RoundedCornersF(kActionButtonRadius));
 
   if (icon) {
