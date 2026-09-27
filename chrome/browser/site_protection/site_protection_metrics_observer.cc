@@ -26,6 +26,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -53,9 +54,7 @@ SiteProtectionMetricsObserver::MetricsData::~MetricsData() = default;
 
 SiteProtectionMetricsObserver::SiteProtectionMetricsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsUserData<SiteProtectionMetricsObserver>(
-          *web_contents),
-      content::WebContentsObserver(web_contents),
+    : content::WebContentsObserver(web_contents),
       site_engagement::SiteEngagementObserver(
           site_engagement::SiteEngagementServiceFactory::GetForProfile(
               web_contents->GetBrowserContext())),
@@ -459,7 +458,5 @@ void SiteProtectionMetricsObserver::LogV8OptimizerUma(
         iframe_state);
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SiteProtectionMetricsObserver);
 
 }  // namespace site_protection

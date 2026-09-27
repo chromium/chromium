@@ -989,7 +989,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/sessions",
-    "//chrome/browser/site_protection",
     "//chrome/browser/ssl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/subresource_filter",

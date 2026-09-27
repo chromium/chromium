@@ -78,6 +78,10 @@ namespace prerender {
 class NoStatePrefetchTabHelper;
 }  // namespace prerender
 
+namespace site_protection {
+class SiteProtectionMetricsObserver;
+}  // namespace site_protection
+
 namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
@@ -199,6 +203,8 @@ class TabFeatures {
   std::unique_ptr<NavigationPredictorPreconnectClient>
       navigation_predictor_preconnect_client_;
   std::unique_ptr<NavigationMetricsRecorder> navigation_metrics_recorder_;
+  std::unique_ptr<site_protection::SiteProtectionMetricsObserver>
+      site_protection_metrics_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

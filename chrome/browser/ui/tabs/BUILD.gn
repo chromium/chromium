@@ -567,6 +567,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/sessions",
       "//chrome/browser/signin",
+      "//chrome/browser/site_protection",
       "//chrome/browser/skills:public",
       "//chrome/browser/skills:ui",
       "//chrome/browser/ssl",

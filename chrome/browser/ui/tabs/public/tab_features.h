@@ -95,6 +95,10 @@ namespace skills {
 class SkillsUiTabControllerInterface;
 }  // namespace skills
 
+namespace site_protection {
+class SiteProtectionMetricsObserver;
+}  // namespace site_protection
+
 namespace selection {
 class SuggestionService;
 }  // namespace selection
@@ -866,6 +870,9 @@ class TabFeatures {
       navigation_predictor_preconnect_client_;
 
   std::unique_ptr<NavigationMetricsRecorder> navigation_metrics_recorder_;
+
+  std::unique_ptr<site_protection::SiteProtectionMetricsObserver>
+      site_protection_metrics_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

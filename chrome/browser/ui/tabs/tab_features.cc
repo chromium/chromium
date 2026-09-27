@@ -48,6 +48,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/security_state_event_observer.h"
@@ -887,6 +888,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   navigation_metrics_recorder_ =
       std::make_unique<NavigationMetricsRecorder>(tab.GetContents());
+
+  site_protection_metrics_observer_ =
+      std::make_unique<site_protection::SiteProtectionMetricsObserver>(
+          tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1192,6 +1197,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   navigation_metrics_recorder_ =
       std::make_unique<NavigationMetricsRecorder>(new_contents);
+
+  site_protection_metrics_observer_ =
+      std::make_unique<site_protection::SiteProtectionMetricsObserver>(
+          new_contents);
 }
 
 customize_chrome::SidePanelController*

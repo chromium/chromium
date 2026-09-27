@@ -63,7 +63,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
@@ -513,8 +512,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       profile->GetPrefs(), g_browser_process->safe_browsing_service(),
       enterprise_connectors::IsReferrerChainNeededForEnterprise(profile));
 #endif
-  site_protection::SiteProtectionMetricsObserver::CreateForWebContents(
-      web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (base::FeatureList::IsEnabled(

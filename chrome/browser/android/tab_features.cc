@@ -33,6 +33,7 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 #include "chrome/browser/ssl/security_state_event_observer.h"
@@ -275,6 +276,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   navigation_metrics_recorder_ =
       std::make_unique<NavigationMetricsRecorder>(web_contents);
+
+  site_protection_metrics_observer_ =
+      std::make_unique<site_protection::SiteProtectionMetricsObserver>(
+          web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

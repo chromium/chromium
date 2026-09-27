@@ -18,7 +18,6 @@
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,8 +32,7 @@ namespace site_protection {
 // site's familiarity to the user. These metrics will be used to create
 // heuristics for whether Chromium should enable extra protections.
 class SiteProtectionMetricsObserver
-    : public content::WebContentsUserData<SiteProtectionMetricsObserver>,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public site_engagement::SiteEngagementObserver {
  public:
   explicit SiteProtectionMetricsObserver(content::WebContents* web_contents);
@@ -61,8 +59,6 @@ class SiteProtectionMetricsObserver
   bool HasPendingTasksForTesting();
 
  private:
-  friend class content::WebContentsUserData<SiteProtectionMetricsObserver>;
-
   struct GotPointsNavigation {
     GURL url;
     double score_before_navigation = 0;
@@ -139,8 +135,6 @@ class SiteProtectionMetricsObserver
 
   // Logs UMA metrics related to the v8-optimizer state.
   void LogV8OptimizerUma(content::NavigationHandle* navigation_handle);
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   raw_ptr<Profile> profile_;
   raw_ptr<history::HistoryService> history_service_;

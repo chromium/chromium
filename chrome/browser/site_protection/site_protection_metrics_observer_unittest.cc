@@ -115,6 +115,7 @@ class SiteProtectionMetricsObserverTest
   }
 
   void TearDown() override {
+    site_protection_observer_.reset();
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     browser_process_->safe_browsing_service()->ShutDown();
     browser_process_->SetSafeBrowsingService(nullptr);
@@ -130,6 +131,7 @@ class SiteProtectionMetricsObserverTest
   }
 
   void SetIncognito() {
+    site_protection_observer_.reset();
     Profile* const otr_profile =
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
@@ -145,7 +147,8 @@ class SiteProtectionMetricsObserverTest
     // Create services which observe page navigation.
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
         web_contents());
-    SiteProtectionMetricsObserver::CreateForWebContents(web_contents());
+    site_protection_observer_ =
+        std::make_unique<SiteProtectionMetricsObserver>(web_contents());
   }
 
   history::HistoryService* GetRegularProfileHistoryService() {
@@ -239,6 +242,7 @@ class SiteProtectionMetricsObserverTest
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;
 #endif
+  std::unique_ptr<SiteProtectionMetricsObserver> site_protection_observer_;
 };
 
 // Test that SiteProtectionMetricsObserver logs the correct histogram and UKM if
@@ -517,20 +521,17 @@ TEST_F(SiteProtectionMetricsObserverTest, FileUrlNoMetricsLogged) {
   GURL kFileUrlVisitedNever("file:///usr/");
   GURL kUrlVisitedNever("https://bar.com");
 
-  SiteProtectionMetricsObserver* site_protection_observer =
-      SiteProtectionMetricsObserver::FromWebContents(web_contents());
-
   base::HistogramTester histogram_tester;
 
   // Check that there are no pending asynchronous tasks which would perhaps log
   // UMA when run.
   NavigateAndCommit(kFileUrlVisitedNever);
-  EXPECT_FALSE(site_protection_observer->HasPendingTasksForTesting());
+  EXPECT_FALSE(site_protection_observer_->HasPendingTasksForTesting());
 
   // Check that there are pending asynchronous tasks which would log UMA when
   // run.
   NavigateAndCommit(kUrlVisitedNever);
-  EXPECT_TRUE(site_protection_observer->HasPendingTasksForTesting());
+  EXPECT_TRUE(site_protection_observer_->HasPendingTasksForTesting());
 
   histogram_tester.ExpectTotalCount(
       "SafeBrowsing.SiteProtection.FamiliarityHeuristic", 0u);
@@ -703,6 +704,7 @@ class SiteProtectionMetricsObserverV8OptTest
   }
 
   void TearDown() override {
+    site_protection_observer_.reset();
     DeleteContents();
     SetRenderProcessHostFactory(nullptr);
     test_render_process_host_factory_.reset();
