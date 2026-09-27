@@ -26,6 +26,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
+#include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/glic/host/context/glic_page_features_manager.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
@@ -871,6 +872,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<RevokedPermissionsTabHelper>(tab.GetContents(),
                                                       service);
   }
+
+  external_protocol_observer_ =
+      std::make_unique<ExternalProtocolObserver>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1163,6 +1167,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     revoked_permissions_tab_helper_ =
         std::make_unique<RevokedPermissionsTabHelper>(new_contents, service);
   }
+
+  external_protocol_observer_ =
+      std::make_unique<ExternalProtocolObserver>(new_contents);
 }
 
 customize_chrome::SidePanelController*

@@ -959,7 +959,6 @@ source_set("tab_helpers_impl") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/enterprise",
-    "//chrome/browser/external_protocol",
     "//chrome/browser/favicon",
     "//chrome/browser/file_system_access",
     "//chrome/browser/glic:impl",

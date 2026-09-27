@@ -48,6 +48,7 @@ source_set("tabs_impl") {
     "//chrome/browser/contextual_search",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/enterprise",
+    "//chrome/browser/external_protocol",
     "//chrome/browser/glic",
     "//chrome/browser/net",
     "//chrome/browser/payments",

@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/net/enterprise_proxy_tab_helper_delegate.h"
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/public/features.h"
@@ -259,6 +260,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     revoked_permissions_tab_helper_ =
         std::make_unique<RevokedPermissionsTabHelper>(web_contents, service);
   }
+
+  external_protocol_observer_ =
+      std::make_unique<ExternalProtocolObserver>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

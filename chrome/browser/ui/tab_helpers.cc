@@ -28,7 +28,6 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
-#include "chrome/browser/external_protocol/external_protocol_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
@@ -395,7 +394,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents,
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents));
   CoreTabHelper::CreateForWebContents(web_contents);
-  ExternalProtocolObserver::CreateForWebContents(web_contents);
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
   FileSystemAccessTabHelper::CreateForWebContents(web_contents);

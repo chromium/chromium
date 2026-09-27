@@ -544,6 +544,7 @@ if (!is_android) {
       "//chrome/browser/commerce/in_stock_notification",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_tasks",
+      "//chrome/browser/external_protocol",
       "//chrome/browser/favicon",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",

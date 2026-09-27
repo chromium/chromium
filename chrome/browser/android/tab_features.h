@@ -79,6 +79,7 @@ class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
 class ConnectionHelpTabHelper;
+class ExternalProtocolObserver;
 class HttpAuthCacheStatus;
 class RevokedPermissionsTabHelper;
 class SecurityStateEventObserver;
@@ -186,6 +187,7 @@ class TabFeatures {
       v8_compile_hints_tab_helper_;
   std::unique_ptr<StorageAccessAPITabHelper> storage_access_api_tab_helper_;
   std::unique_ptr<RevokedPermissionsTabHelper> revoked_permissions_tab_helper_;
+  std::unique_ptr<ExternalProtocolObserver> external_protocol_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
