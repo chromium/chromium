@@ -30,6 +30,7 @@
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -263,6 +264,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   external_protocol_observer_ =
       std::make_unique<ExternalProtocolObserver>(web_contents);
+
+  no_state_prefetch_tab_helper_ =
+      std::make_unique<prerender::NoStatePrefetchTabHelper>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

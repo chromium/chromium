@@ -42,6 +42,7 @@
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -875,6 +876,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   external_protocol_observer_ =
       std::make_unique<ExternalProtocolObserver>(tab.GetContents());
+
+  no_state_prefetch_tab_helper_ =
+      std::make_unique<prerender::NoStatePrefetchTabHelper>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1170,6 +1174,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   external_protocol_observer_ =
       std::make_unique<ExternalProtocolObserver>(new_contents);
+
+  no_state_prefetch_tab_helper_ =
+      std::make_unique<prerender::NoStatePrefetchTabHelper>(new_contents);
 }
 
 customize_chrome::SidePanelController*

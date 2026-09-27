@@ -53,6 +53,7 @@ source_set("tabs_impl") {
     "//chrome/browser/net",
     "//chrome/browser/payments",
     "//chrome/browser/preloading/new_tab_page_preload",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/sync_tab_context",

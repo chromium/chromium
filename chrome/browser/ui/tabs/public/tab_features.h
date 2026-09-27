@@ -190,6 +190,10 @@ namespace permissions {
 class PermissionIndicatorsTabData;
 }  // namespace permissions
 
+namespace prerender {
+class NoStatePrefetchTabHelper;
+}  // namespace prerender
+
 namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
@@ -852,6 +856,9 @@ class TabFeatures {
   std::unique_ptr<RevokedPermissionsTabHelper> revoked_permissions_tab_helper_;
 
   std::unique_ptr<ExternalProtocolObserver> external_protocol_observer_;
+
+  std::unique_ptr<prerender::NoStatePrefetchTabHelper>
+      no_state_prefetch_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -16,8 +16,7 @@ namespace prerender {
 
 NoStatePrefetchTabHelper::NoStatePrefetchTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<NoStatePrefetchTabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 NoStatePrefetchTabHelper::~NoStatePrefetchTabHelper() = default;
 
@@ -38,7 +37,5 @@ void NoStatePrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
   no_state_prefetch_manager->RecordNavigation(
       page.GetMainDocument().GetLastCommittedURL());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(NoStatePrefetchTabHelper);
 
 }  // namespace prerender
