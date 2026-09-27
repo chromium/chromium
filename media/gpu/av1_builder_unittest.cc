@@ -940,4 +940,31 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithReferenceSelect) {
   EXPECT_TRUE(frame_header_delta.reference_mode_select);
 }
 
+// Spec 4.10.5. Padding a leb128 out to a fixed size is allowed, but the parse
+// loop stops at the first byte with the continuation bit clear, so only the
+// bytes before the last one may set it.
+TEST_F(AV1BuilderTest, WriteValueInLeb128FixedSizeTerminates) {
+  AV1BitstreamBuilder builder;
+  builder.WriteValueInLeb128(3, /*fixed_size=*/4);
+  const std::vector<uint8_t> packed = std::move(builder).Flush();
+
+  ASSERT_EQ(packed.size(), 4u);
+  EXPECT_EQ(packed[0], 0x83);
+  EXPECT_EQ(packed[1], 0x80);
+  EXPECT_EQ(packed[2], 0x80);
+  EXPECT_EQ(packed[3], 0x00);
+
+  // And the value survives the round trip described by that section.
+  uint32_t value = 0;
+  size_t i = 0;
+  for (; i < packed.size(); i++) {
+    value |= static_cast<uint32_t>(packed[i] & 0x7F) << (i * 7);
+    if (!(packed[i] & 0x80)) {
+      break;
+    }
+  }
+  EXPECT_EQ(value, 3u);
+  EXPECT_EQ(i, 3u) << "parser must stop on the last padded byte";
+}
+
 }  // namespace media

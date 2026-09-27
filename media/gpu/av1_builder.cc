@@ -513,17 +513,28 @@ void AV1BitstreamBuilder::WriteOBUHeader(libgav1::ObuType type,
 // See section 4.10.5 of the AV1 specification.
 void AV1BitstreamBuilder::WriteValueInLeb128(uint32_t value,
                                              std::optional<int> fixed_size) {
-  for (int i = 0; i < fixed_size.value_or(5); i++) {
+  const int num_bytes = fixed_size.value_or(5);
+  DCHECK_GT(num_bytes, 0);
+  // Spec 4.10.5 reads at most 8 bytes, and requires the eighth to terminate,
+  // so anything longer cannot be parsed back.
+  DCHECK_LE(num_bytes, 8);
+  for (int i = 0; i < num_bytes; i++) {
     uint8_t curr_byte = value & 0x7F;
     value >>= 7;
-    if (value || fixed_size) {
+    // The parse loop in spec 4.10.5 stops at the first byte whose most
+    // significant bit is clear, so only the bytes *before* the last one may
+    // set it. Padding a short value out to a fixed size is explicitly allowed
+    // by that section, but the padding still has to terminate.
+    const bool more_bytes = fixed_size ? i < num_bytes - 1 : value != 0;
+    if (more_bytes) {
       curr_byte |= 0x80;
-      Write(curr_byte, 8);
-    } else {
-      Write(curr_byte, 8);
+    }
+    Write(curr_byte, 8);
+    if (!more_bytes) {
       break;
     }
   }
+  DCHECK_EQ(value, 0u) << "value does not fit in " << num_bytes << " bytes";
 }
 
 void AV1BitstreamBuilder::WriteSU(int16_t value, size_t num_bits) {
