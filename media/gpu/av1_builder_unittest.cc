@@ -965,6 +965,96 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithReferenceSelect) {
   EXPECT_TRUE(frame_header_delta.reference_mode_select);
 }
 
+// Spec 5.9.22. skip_mode_present is coded whenever the reference structure
+// allows skip mode. This encoder never turns skip mode on, but the bit still
+// has to be written or every syntax element after it shifts by one, so the
+// check is on the values that follow it rather than on skip mode itself.
+//
+// Three frames are needed to get there: skipModeAllowed requires either a
+// backward reference or two forward references at different distances, and a
+// single delta frame off a key frame only ever sees one distinct order hint.
+TEST_F(AV1BuilderTest, BuildFrameOBUWritesSkipModePresentWhenAllowed) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+  seq_hdr.enable_restoration = false;
+  AV1BitstreamBuilder seq_header_obu =
+      AV1BitstreamBuilder::BuildSequenceHeaderOBU(seq_hdr);
+
+  // Fake tile_group_obu with only dummy data.
+  static const uint8_t tile_group_obu[] = {0x00, 0x80};
+  auto pack_frame = [&](const AV1BitstreamBuilder::FrameHeader& pic_hdr) {
+    AV1BitstreamBuilder packed;
+    packed.WriteOBUHeader(libgav1::kObuFrame, /*has_size=*/true);
+    AV1BitstreamBuilder frame_obu =
+        AV1BitstreamBuilder::BuildFrameHeaderOBU(seq_hdr, pic_hdr);
+    EXPECT_EQ(frame_obu.OutstandingBits() % 8, 0ull);
+    packed.WriteValueInLeb128(frame_obu.OutstandingBits() / 8 +
+                              std::size(tile_group_obu));
+    packed.AppendBitstreamBuffer(std::move(frame_obu));
+    for (const uint8_t byte : tile_group_obu) {
+      packed.Write(byte, 8);
+    }
+    return std::move(packed).Flush();
+  };
+
+  // Frame 0: key frame at order hint 0. refresh_frame_flags is inferred to be
+  // all frames, so every slot ends up holding order hint 0.
+  std::vector<uint8_t> chunk =
+      PackTemporalUnit(seq_hdr, MakeFrameHeader(0), /*metadata_obus=*/{});
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  libgav1::RefCountedBufferPtr key_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&key_frame), libgav1::kStatusOk);
+  const auto sequence_header = parser->sequence_header();
+  av1_decoder_state_->UpdateReferenceFrames(
+      key_frame,
+      base::strict_cast<int>(parser->frame_header().refresh_frame_flags));
+
+  // Frame 1: inter frame at order hint 1, landing in slot 1. That gives the
+  // DPB two distinct order hints, 0 in slot 0 and 1 in slot 1.
+  AV1BitstreamBuilder::FrameHeader pic_hdr_1 = MakeFrameHeader(1);
+  pic_hdr_1.refresh_frame_flags = 0b00000010;
+  chunk = pack_frame(pic_hdr_1);
+  auto parser_1 = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  parser_1->set_sequence_header(sequence_header);
+  libgav1::RefCountedBufferPtr frame_1;
+  ASSERT_EQ(parser_1->ParseOneFrame(&frame_1), libgav1::kStatusOk);
+  av1_decoder_state_->UpdateReferenceFrames(
+      frame_1,
+      base::strict_cast<int>(parser_1->frame_header().refresh_frame_flags));
+
+  // Frame 2: inter frame at order hint 2 referencing both slots, with compound
+  // prediction on. Both references are in the past at different distances, so
+  // the second-forward branch of skipModeAllowed fires and the bit is present.
+  //
+  // ref_order_hint here has to match what the decoder holds in its DPB, since
+  // the builder evaluates skipModeAllowed from the frame header while the
+  // decoder evaluates it from decoded reference state. A caller that fills
+  // ref_order_hint with placeholders would diverge, so any delegate setting
+  // reference_select must populate it from the real DPB.
+  AV1BitstreamBuilder::FrameHeader pic_hdr_2 = MakeFrameHeader(2);
+  pic_hdr_2.refresh_frame_flags = 0b00000100;
+  pic_hdr_2.reference_select = true;
+  pic_hdr_2.ref_frame_idx = {0, 1, 1, 1, 1, 1, 1};
+  pic_hdr_2.ref_order_hint = {0, 1, 0, 0, 0, 0, 0, 0};
+  chunk = pack_frame(pic_hdr_2);
+  auto parser_2 = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  parser_2->set_sequence_header(sequence_header);
+  libgav1::RefCountedBufferPtr frame_2;
+  ASSERT_EQ(parser_2->ParseOneFrame(&frame_2), libgav1::kStatusOk);
+
+  const auto frame_header = parser_2->frame_header();
+  EXPECT_TRUE(frame_header.reference_mode_select);
+  EXPECT_FALSE(frame_header.skip_mode_present);
+  // The element written straight after skip_mode_present. If the bit were
+  // missing this would pick up allow_warped_motion's slot instead.
+  EXPECT_TRUE(frame_header.reduced_tx_set);
+}
+
 // Spec 5.9.2. FrameIsIntra covers intra only frames as well as key frames, so
 // they take the intra branch: no primary_ref_frame, no reference list, no
 // frame_reference_mode and no global motion. refresh_frame_flags is still
@@ -1017,11 +1107,6 @@ TEST_F(AV1BuilderTest, BuildFrameOBUIntraOnly) {
   EXPECT_TRUE(frame_header.reduced_tx_set);
 }
 
-// Spec 5.9.12. separate_uv_delta_q belongs to color_config(), and only
-// diff_uv_delta is gated on it: the U deltas are coded whenever the stream has
-// chroma, and the V deltas are inferred from them. Covers both halves of the
-// move -- the sequence header has to emit the flag the frame header reads, and
-// the frame header has to emit the U deltas regardless of it.
 TEST_F(AV1BuilderTest, BuildFrameOBUWithoutSeparateUvDeltaQ) {
   AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
   seq_hdr.separate_uv_delta_q = false;

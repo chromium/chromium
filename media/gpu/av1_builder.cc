@@ -16,6 +16,9 @@ namespace media {
 
 namespace {
 constexpr int kPrimaryReferenceNone = 7;
+// Spec 6.10.2 REFS_PER_FRAME, and NUM_REF_FRAMES for the DPB.
+constexpr int kRefsPerFrame = 7;
+constexpr int kNumRefFrames = 8;
 constexpr uint8_t kAllFrames = 0xFF;
 
 // Spec 5.9.2, `FrameIsIntra` deduction in the uncompressed header syntax.
@@ -28,6 +31,80 @@ bool IsIntraFrame(libgav1::FrameType frame_type) {
 // the decoder can only ever see the low three bits.
 int OrderHintBits(const AV1BitstreamBuilder::SequenceHeader& seq_hdr) {
   return (seq_hdr.order_hint_bits_minus_1 & 0x7) + 1;
+}
+
+// get_relative_dist(). Spec 5.9.3.
+int GetRelativeDist(uint32_t a,
+                    uint32_t b,
+                    const AV1BitstreamBuilder::SequenceHeader& seq_hdr) {
+  if (!seq_hdr.enable_order_hint) {
+    return 0;
+  }
+
+  const int order_hint_bits = OrderHintBits(seq_hdr);
+  int diff = static_cast<int>(a) - static_cast<int>(b);
+  const int m = 1 << (order_hint_bits - 1);
+  diff = (diff & (m - 1)) - (diff & m);
+  return diff;
+}
+
+// Spec 5.9.22. ref_frame_idx is coded as f(3), so the mask only keeps the
+// caller-supplied value in range.
+uint32_t RefOrderHint(const AV1BitstreamBuilder::FrameHeader& pic_hdr, int i) {
+  return pic_hdr.ref_order_hint[pic_hdr.ref_frame_idx[i] & (kNumRefFrames - 1)];
+}
+
+// skipModeAllowed. Spec 5.9.22. The encoder never turns skip mode on, but
+// whether the *bit* is present is decided by the reference structure, so this
+// has to be evaluated or every syntax element after it shifts by one.
+bool IsSkipModeAllowed(const AV1BitstreamBuilder::SequenceHeader& seq_hdr,
+                       const AV1BitstreamBuilder::FrameHeader& pic_hdr) {
+  if (IsIntraFrame(pic_hdr.frame_type) || !pic_hdr.reference_select ||
+      !seq_hdr.enable_order_hint) {
+    return false;
+  }
+
+  int forward_idx = -1;
+  int backward_idx = -1;
+  uint32_t forward_hint = 0;
+  uint32_t backward_hint = 0;
+  for (int i = 0; i < kRefsPerFrame; ++i) {
+    const uint32_t ref_hint = RefOrderHint(pic_hdr, i);
+    if (GetRelativeDist(ref_hint, pic_hdr.order_hint, seq_hdr) < 0) {
+      if (forward_idx < 0 ||
+          GetRelativeDist(ref_hint, forward_hint, seq_hdr) > 0) {
+        forward_idx = i;
+        forward_hint = ref_hint;
+      }
+    } else if (GetRelativeDist(ref_hint, pic_hdr.order_hint, seq_hdr) > 0) {
+      if (backward_idx < 0 ||
+          GetRelativeDist(ref_hint, backward_hint, seq_hdr) < 0) {
+        backward_idx = i;
+        backward_hint = ref_hint;
+      }
+    }
+  }
+
+  if (forward_idx < 0) {
+    return false;
+  }
+  if (backward_idx >= 0) {
+    return true;
+  }
+  // No backward reference, so look for a second, further out forward one.
+  int second_forward_idx = -1;
+  uint32_t second_forward_hint = 0;
+  for (int i = 0; i < kRefsPerFrame; ++i) {
+    const uint32_t ref_hint = RefOrderHint(pic_hdr, i);
+    if (GetRelativeDist(ref_hint, forward_hint, seq_hdr) < 0) {
+      if (second_forward_idx < 0 ||
+          GetRelativeDist(ref_hint, second_forward_hint, seq_hdr) > 0) {
+        second_forward_idx = i;
+        second_forward_hint = ref_hint;
+      }
+    }
+  }
+  return second_forward_idx >= 0;
 }
 
 // CodedLossless. Spec 5.9.2, using get_qindex() with ignoreDeltaQ = 1 from
@@ -496,6 +573,13 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
   // Frame reference mode. Refer to AV1 spec section 5.9.23.
   if (!frame_is_intra) {
     ret.WriteBool(pic_hdr.reference_select);
+  }
+
+  // Skip mode parameters. Refer to AV1 spec section 5.9.22. The encoder never
+  // turns skip mode on, but whether the bit exists at all is decided by the
+  // reference structure, so it has to be written whenever skipModeAllowed.
+  if (IsSkipModeAllowed(seq_hdr, pic_hdr)) {
+    ret.WriteBool(false);  // skip_mode_present.
   }
 
   ret.WriteBool(pic_hdr.reduced_tx_set);
