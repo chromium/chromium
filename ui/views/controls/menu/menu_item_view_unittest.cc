@@ -499,11 +499,9 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsBorderAndMargins) {
   EXPECT_EQ(total_insets.bottom(),
             border_insets.bottom() + child_margins.bottom());
 
-  // Also verify GetContentStart and GetItemHorizontalBorder reflect the border.
+  // Also verify GetContentStart and GetTrailingPadding reflect the border.
   EXPECT_EQ(border_insets.left(), test_item()->GetContentStart());
-  EXPECT_EQ(
-      border_insets.right() - MenuConfig::instance().item_horizontal_padding,
-      test_item()->GetItemHorizontalBorder());
+  EXPECT_EQ(border_insets.right(), test_item()->GetTrailingPadding());
 }
 
 // Tests that CalculateProposedLayout accurately computes child bounds for a
@@ -545,8 +543,7 @@ TEST_F(MenuItemViewLayoutTest, RootMenuBorderAffectsSubmenuMetricsAndLayout) {
 
   EXPECT_EQ(border_insets.left(), root_menu()->GetContentStart());
   const MenuConfig& config = MenuConfig::instance();
-  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
-            root_menu()->GetItemHorizontalBorder());
+  EXPECT_EQ(border_insets.right(), root_menu()->GetTrailingPadding());
 
   // Append a submenu item with an arrow.
   MenuItemView* submenu_item = root_menu()->AppendSubMenu(2, u"Submenu");
@@ -571,16 +568,15 @@ TEST_F(MenuItemViewLayoutTest, RootMenuBorderAffectsSubmenuMetricsAndLayout) {
 
   // Submenu metrics should reflect the root menu's border.
   EXPECT_EQ(border_insets.left(), submenu->content_start());
-  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
-            submenu->item_horizontal_border());
   EXPECT_EQ(border_insets.right(), submenu->trailing_padding());
 
   // 1. Verify submenu arrow layout in `submenu_item`.
   ImageView* arrow_view =
       TestMenuItemView::submenu_arrow_image_view(submenu_item);
   ASSERT_TRUE(arrow_view);
-  const int expected_right_border =
-      submenu->item_horizontal_border() + config.arrow_to_edge_padding;
+  const int expected_right_border = submenu->trailing_padding() -
+                                    config.item_horizontal_padding +
+                                    config.arrow_to_edge_padding;
   const int expected_arrow_x =
       submenu_item->width() - expected_right_border - config.arrow_size;
   EXPECT_EQ(expected_arrow_x, arrow_view->x());
@@ -614,8 +610,7 @@ TEST_F(MenuItemViewLayoutTest, TitleItemWithBorder) {
 
   EXPECT_EQ(border_insets.left(), title_item->GetContentStart());
   const MenuConfig& config = MenuConfig::instance();
-  EXPECT_EQ(border_insets.right() - config.item_horizontal_padding,
-            title_item->GetItemHorizontalBorder());
+  EXPECT_EQ(border_insets.right(), title_item->GetTrailingPadding());
 
   PerformLayout();
 

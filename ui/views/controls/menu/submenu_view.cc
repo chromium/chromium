@@ -114,12 +114,11 @@ void SubmenuView::UpdateMenuPartSizes() {
 
   const auto get_metrics = [&] {
     return std::tie(icon_area_width_, label_start_, trailing_padding_,
-                    content_start_, item_horizontal_border_);
+                    content_start_);
   };
   const auto old_metrics = get_metrics();
 
-  item_horizontal_border_ = parent_menu_item_->GetItemHorizontalBorder();
-  trailing_padding_ = config.item_horizontal_padding + item_horizontal_border_;
+  trailing_padding_ = parent_menu_item_->GetTrailingPadding();
   const auto& menu_items = GetMenuItems();
   if (config.reserve_dedicated_arrow_column &&
       std::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {

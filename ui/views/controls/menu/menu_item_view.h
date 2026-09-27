@@ -409,6 +409,9 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the earliest horizontal position where content may appear.
   int GetContentStart() const;
 
+  // Returns the trailing horizontal padding after content.
+  int GetTrailingPadding() const;
+
   void set_controller(MenuController* controller) {
     if (controller) {
       controller_ = controller->AsWeakPtr();
