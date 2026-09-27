@@ -278,6 +278,7 @@ blink_core_tests_frame = [
   "location_report_body_test.cc",
   "mhtml_archive_test.cc",
   "mhtml_loading_test.cc",
+  "navigator_ua_data_test.cc",
   "performance_monitor_test.cc",
   "policy_container_test.cc",
   "report_test.cc",

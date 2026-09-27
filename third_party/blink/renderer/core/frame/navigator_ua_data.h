@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigator_ua_brand_version.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -19,7 +20,8 @@ class NavigatorUABrandVersion;
 class ScriptState;
 class UADataValues;
 
-class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
+class CORE_EXPORT NavigatorUAData : public ScriptWrappable,
+                                    ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -52,7 +54,10 @@ class NavigatorUAData : public ScriptWrappable, ExecutionContextClient {
 
  private:
   HeapVector<Member<NavigatorUABrandVersion>> brand_set_;
-  HeapVector<Member<NavigatorUABrandVersion>> empty_brand_set_;
+  // Only returned by brands() once the execution context is gone, so it is
+  // populated lazily to avoid an allocation on every navigator.userAgentData
+  // access.
+  mutable HeapVector<Member<NavigatorUABrandVersion>> empty_brand_set_;
   HeapVector<Member<NavigatorUABrandVersion>> full_version_list_;
   bool is_mobile_ = false;
   String platform_;

@@ -17,12 +17,7 @@
 namespace blink {
 
 NavigatorUAData::NavigatorUAData(ExecutionContext* context)
-    : ExecutionContextClient(context) {
-  NavigatorUABrandVersion* dict = NavigatorUABrandVersion::Create();
-  dict->setBrand("");
-  dict->setVersion("");
-  empty_brand_set_.push_back(dict);
-}
+    : ExecutionContextClient(context) {}
 
 void NavigatorUAData::AddBrandVersion(const String& brand,
                                       const String& version) {
@@ -101,7 +96,12 @@ const HeapVector<Member<NavigatorUABrandVersion>>& NavigatorUAData::brands()
   if (GetExecutionContext()) {
     return brand_set_;
   }
-
+  if (empty_brand_set_.empty()) {
+    NavigatorUABrandVersion* dict = NavigatorUABrandVersion::Create();
+    dict->setBrand("");
+    dict->setVersion("");
+    empty_brand_set_.push_back(dict);
+  }
   return empty_brand_set_;
 }
 
