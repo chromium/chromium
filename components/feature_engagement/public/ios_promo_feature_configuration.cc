@@ -64,7 +64,7 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.session_rate = kNoRestrictions;
     config.storage_type = StorageType::PROFILE;
     config.used =
-        EventConfig("ephemeral_theme_promo_used", Comparator(EQUAL, 0),
+        EventConfig(events::kEphemeralThemePromoUsed, Comparator(EQUAL, 0),
                     kMaxStoragePeriod, kMaxStoragePeriod);
     config.trigger =
         EventConfig("ephemeral_theme_promo_trigger", Comparator(EQUAL, 0),

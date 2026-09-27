@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import <array>
 #import <set>
 #import <string_view>
 #import <utility>
@@ -22,6 +23,7 @@
 #import "components/image_fetcher/core/request_metadata.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/sync/base/features.h"
 #import "components/sync/model/syncable_service.h"
 #import "components/sync/protocol/theme_specifics.pb.h"
@@ -31,6 +33,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/theme_ios_specifics_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -199,6 +202,13 @@ base::DictValue ParseColorMappingDict(std::string_view json_string) {
       .value_or(base::DictValue());
 }
 
+// Deletes the ephemeral theme files at `file_paths`.
+void DeleteEphemeralThemeFiles(std::vector<base::FilePath> file_paths) {
+  for (const base::FilePath& file_path : file_paths) {
+    base::DeleteFile(file_path);
+  }
+}
+
 }  // namespace
 
 HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
@@ -227,7 +237,6 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
                              callback);
 
   LoadCurrentTheme();
-  MaybeFetchEphemeralThemeData();
 
   if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
     theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>(this);
@@ -246,6 +255,7 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
         base::BindOnce(&HomeBackgroundCustomizationService::
                            DefaultRecentlyUsedBackgroundsLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
+    MaybeFetchEphemeralThemeData();
     return;
   }
 
@@ -265,6 +275,8 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
       }
     }
   }
+
+  MaybeFetchEphemeralThemeData();
 
   std::optional<RecentlyUsedBackgroundInternal> current_background =
       std::nullopt;
@@ -634,6 +646,14 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
     recently_used_backgrounds_.Put(std::move(new_recent_background.value()));
     StoreRecentlyUsedBackgroundsList();
   }
+
+  if (!IsCurrentEphemeralTheme() &&
+      !pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty()) {
+    ScopedDictPrefUpdate update(pref_service_,
+                                prefs::kIosNtpEphemeralThemeData);
+    update->Set(kPreEphemeralThemeBackgroundStyleKey,
+                static_cast<int>(GetCurrentBackgroundStyle()));
+  }
 }
 
 void HomeBackgroundCustomizationService::StoreRecentlyUsedBackgroundsList() {
@@ -854,12 +874,101 @@ void HomeBackgroundCustomizationService::OnPolicyPrefsChanged(
   NotifyObserversOfBackgroundChange();
 }
 
-void HomeBackgroundCustomizationService::MaybeFetchEphemeralThemeData() {
-  if (!url_loader_factory_ || state_path_.empty()) {
+HomeCustomizationBackgroundStyle
+HomeBackgroundCustomizationService::GetCurrentBackgroundStyle() {
+  if (IsCurrentEphemeralTheme()) {
+    return HomeCustomizationBackgroundStyle::kEphemeral;
+  }
+  if (GetCurrentUserUploadedBackground()) {
+    return HomeCustomizationBackgroundStyle::kUserUploaded;
+  }
+  if (GetCurrentNtpCustomBackground()) {
+    return HomeCustomizationBackgroundStyle::kPreset;
+  }
+  if (GetCurrentColorTheme()) {
+    return HomeCustomizationBackgroundStyle::kColor;
+  }
+  return HomeCustomizationBackgroundStyle::kDefault;
+}
+
+void HomeBackgroundCustomizationService::RestoreMostRecentBackground() {
+  if (recently_used_backgrounds_.empty()) {
+    ClearCurrentBackground();
+    StoreCurrentTheme();
+    return;
+  }
+  RecentlyUsedBackgroundInternal recent_background =
+      *recently_used_backgrounds_.begin();
+  if (std::holds_alternative<sync_pb::ThemeIosSpecifics>(recent_background)) {
+    ApplyTheme(std::get<sync_pb::ThemeIosSpecifics>(recent_background));
+  } else {
+    const HomeUserUploadedBackground& user_background =
+        std::get<HomeUserUploadedBackground>(recent_background);
+    SetCurrentUserUploadedBackground(user_background.image_path,
+                                     user_background.framing_coordinates);
+    StoreCurrentTheme();
+  }
+}
+
+void HomeBackgroundCustomizationService::CleanupEphemeralThemeData() {
+  if (pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty()) {
+    if (IsCurrentEphemeralTheme()) {
+      RestoreMostRecentBackground();
+    }
     return;
   }
 
+  if (IsCurrentEphemeralTheme()) {
+    std::optional<int> saved_style =
+        pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
+            .FindInt(kPreEphemeralThemeBackgroundStyleKey);
+    HomeCustomizationBackgroundStyle background_style =
+        saved_style.has_value()
+            ? static_cast<HomeCustomizationBackgroundStyle>(saved_style.value())
+            : HomeCustomizationBackgroundStyle::kDefault;
+
+    if (background_style == HomeCustomizationBackgroundStyle::kDefault) {
+      ClearCurrentBackground();
+      StoreCurrentTheme();
+    } else {
+      RestoreMostRecentBackground();
+    }
+  }
+
+  static constexpr std::array<std::string_view, 4> kFilePathKeys = {
+      kEphemeralThemeAnimationPathKey,
+      kEphemeralThemeAnimationPromoPathKey,
+      kEphemeralThemeGoogleLogoLightPathKey,
+      kEphemeralThemeGoogleLogoDarkPathKey,
+  };
+  const base::DictValue& ephemeral_theme_data =
+      pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
+  std::vector<base::FilePath> file_paths;
+  for (std::string_view key : kFilePathKeys) {
+    const std::string* path = ephemeral_theme_data.FindString(key);
+    if (path && !path->empty()) {
+      file_paths.emplace_back(*path);
+    }
+  }
+
+  if (!file_paths.empty()) {
+    // Delete the ephemeral theme files on a background sequence to avoid
+    // blocking the main sequence on disk I/O.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&DeleteEphemeralThemeFiles, std::move(file_paths)));
+  }
+
+  pref_service_->ClearPref(prefs::kIosNtpEphemeralThemeData);
+}
+
+void HomeBackgroundCustomizationService::MaybeFetchEphemeralThemeData() {
   if (!IsNTPEphemeralThemeEnabled()) {
+    CleanupEphemeralThemeData();
+    return;
+  }
+
+  if (!url_loader_factory_ || state_path_.empty()) {
     return;
   }
 
@@ -913,6 +1022,8 @@ void HomeBackgroundCustomizationService::FetchNextEphemeralThemeAsset(
             kNewTabPageEphemeralThemeAnimationPromoColorMappingParam.Get()));
     theme_dict.Set(kEphemeralThemeSeedColorKey,
                    kNewTabPageEphemeralThemeSeedColorParam.Get());
+    theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey,
+                   static_cast<int>(GetCurrentBackgroundStyle()));
 
     pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
                            std::move(theme_dict));

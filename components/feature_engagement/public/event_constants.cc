@@ -163,6 +163,7 @@ const char kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed[] =
 const char kHomeCustomizationMenuUsed[] = "home_customization_menu_used";
 const char kHomeBackgroundCustomizationMenuUsed[] =
     "home_customization_background_menu_used";
+const char kEphemeralThemePromoUsed[] = "ephemeral_theme_promo_used";
 const char kHomeCustomizationPromoTriggered[] =
     "home_customization_menu_iph_triggered";
 const char kNTPCustomBackgroundLoaded[] = "ntp_custom_background_loaded";

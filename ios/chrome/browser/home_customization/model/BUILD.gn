@@ -113,6 +113,7 @@ source_set("unit_tests") {
     "//components/themes",
     "//components/themes:prefs",
     "//components/version_info",
+    "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/promos_manager/model:constants",
     "//ios/chrome/browser/promos_manager/model:test_support",

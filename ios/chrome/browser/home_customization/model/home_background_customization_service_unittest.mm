@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
@@ -1371,6 +1372,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, LocalChangesTriggerSync) {
 // Test that setting and storing the ephemeral theme persists across service
 // restarts without adding it to the recently used backgrounds list.
 TEST_F(HomeBackgroundCustomizationServiceTest, SetAndPersistEphemeralTheme) {
+  feature_list_.InitAndEnableFeature(kNewTabPageEphemeralTheme);
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
   CreateService();
 
@@ -1571,6 +1573,12 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       saved_theme_data.FindString(kEphemeralThemeSeedColorKey);
   ASSERT_TRUE(saved_seed_color);
   EXPECT_EQ(kSeedColor, *saved_seed_color);
+
+  std::optional<int> saved_background_style =
+      saved_theme_data.FindInt(kPreEphemeralThemeBackgroundStyleKey);
+  ASSERT_TRUE(saved_background_style.has_value());
+  EXPECT_EQ(static_cast<int>(HomeCustomizationBackgroundStyle::kDefault),
+            saved_background_style.value());
 }
 
 // Test that the service skips re-downloading the animation JSONs and Google
@@ -1641,4 +1649,205 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       temp_dir.GetPath(), &mock_promos_manager);
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+// Test that when the ephemeral theme feature is disabled and the current
+// background is `kEphemeral` with a saved background style of `kDefault`, the
+// service restores the default background, deletes the 4 asset files, and
+// clears `kIosNtpEphemeralThemeData`.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       CleansUpEphemeralThemeAndRestoresDefaultBackgroundWhenFeatureDisabled) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
+  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
+  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
+  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
+  ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
+  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
+
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(kNewTabPageEphemeralTheme);
+    CreateService();
+
+    // Add a recently used color background first, then clear to default before
+    // ephemeral theme data is saved, so `recently_used_backgrounds_` is
+    // non-empty while the saved style is `kDefault`.
+    sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+    service_->SetBackgroundColor(color_theme.color(),
+                                 color_theme.browser_color_variant());
+    service_->StoreCurrentTheme();
+
+    service_->ClearCurrentBackground();
+    service_->StoreCurrentTheme();
+
+    base::DictValue theme_dict;
+    theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
+    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
+                   light_logo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
+                   dark_logo_file.value());
+    theme_dict.Set(
+        kPreEphemeralThemeBackgroundStyleKey,
+        static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
+    pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                           std::move(theme_dict));
+
+    service_->SetCurrentEphemeralTheme(
+        0x1A73E8, sync_pb::UserColorTheme::BrowserColorVariant::
+                      UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    service_->StoreCurrentTheme();
+    ASSERT_TRUE(service_->IsCurrentEphemeralTheme());
+  }
+
+  feature_list_.InitAndDisableFeature(kNewTabPageEphemeralTheme);
+  CreateService();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(service_->IsCurrentEphemeralTheme());
+  EXPECT_FALSE(service_->GetCurrentColorTheme().has_value());
+  EXPECT_FALSE(service_->GetCurrentCustomBackground().has_value());
+  EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
+  EXPECT_FALSE(base::PathExists(animation_file));
+  EXPECT_FALSE(base::PathExists(promo_file));
+  EXPECT_FALSE(base::PathExists(light_logo_file));
+  EXPECT_FALSE(base::PathExists(dark_logo_file));
+}
+
+// Test that when the ephemeral theme feature is disabled and the current
+// background is `kEphemeral` with a non-default saved background style, the
+// service restores the most recently used user background, deletes the 4 asset
+// files, and clears `kIosNtpEphemeralThemeData`.
+TEST_F(
+    HomeBackgroundCustomizationServiceTest,
+    CleansUpEphemeralThemeAndRestoresRecentlyUsedBackgroundWhenFeatureDisabled) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
+  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
+  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
+  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
+  ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
+  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
+
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(kNewTabPageEphemeralTheme);
+    CreateService();
+
+    base::DictValue theme_dict;
+    theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
+    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
+                   light_logo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
+                   dark_logo_file.value());
+    theme_dict.Set(
+        kPreEphemeralThemeBackgroundStyleKey,
+        static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
+    pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                           std::move(theme_dict));
+
+    service_->SetBackgroundColor(color_theme.color(),
+                                 color_theme.browser_color_variant());
+    service_->StoreCurrentTheme();
+
+    // Verify `StoreCurrentTheme` updated `kPreEphemeralThemeBackgroundStyleKey`
+    // to `kColor`.
+    std::optional<int> saved_style =
+        pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
+            .FindInt(kPreEphemeralThemeBackgroundStyleKey);
+    ASSERT_TRUE(saved_style.has_value());
+    EXPECT_EQ(static_cast<int>(HomeCustomizationBackgroundStyle::kColor),
+              saved_style.value());
+
+    service_->SetCurrentEphemeralTheme(
+        0x1A73E8, sync_pb::UserColorTheme::BrowserColorVariant::
+                      UserColorTheme_BrowserColorVariant_TONAL_SPOT);
+    service_->StoreCurrentTheme();
+    ASSERT_TRUE(service_->IsCurrentEphemeralTheme());
+  }
+
+  feature_list_.InitAndDisableFeature(kNewTabPageEphemeralTheme);
+  CreateService();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(service_->IsCurrentEphemeralTheme());
+  std::optional<sync_pb::UserColorTheme> restored_color =
+      service_->GetCurrentColorTheme();
+  ASSERT_TRUE(restored_color.has_value());
+  EXPECT_EQ(color_theme, restored_color.value());
+  EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
+  EXPECT_FALSE(base::PathExists(animation_file));
+  EXPECT_FALSE(base::PathExists(promo_file));
+  EXPECT_FALSE(base::PathExists(light_logo_file));
+  EXPECT_FALSE(base::PathExists(dark_logo_file));
+}
+
+// Test that when the ephemeral theme feature is disabled and the current
+// background is not `kEphemeral`, the service keeps the current background,
+// deletes the 4 asset files, and clears `kIosNtpEphemeralThemeData`.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       CleansUpEphemeralThemeFilesWhenNotEphemeralAndFeatureDisabled) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
+  base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
+  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
+  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
+  ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
+  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
+  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
+
+  sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0x00ff00);
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(kNewTabPageEphemeralTheme);
+    CreateService();
+
+    service_->SetBackgroundColor(color_theme.color(),
+                                 color_theme.browser_color_variant());
+    service_->StoreCurrentTheme();
+
+    base::DictValue theme_dict;
+    theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
+    theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
+                   light_logo_file.value());
+    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
+                   dark_logo_file.value());
+    theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey,
+                   static_cast<int>(HomeCustomizationBackgroundStyle::kColor));
+    pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                           std::move(theme_dict));
+  }
+
+  feature_list_.InitAndDisableFeature(kNewTabPageEphemeralTheme);
+  CreateService();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(service_->IsCurrentEphemeralTheme());
+  std::optional<sync_pb::UserColorTheme> current_color =
+      service_->GetCurrentColorTheme();
+  ASSERT_TRUE(current_color.has_value());
+  EXPECT_EQ(color_theme, current_color.value());
+  EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
+  EXPECT_FALSE(base::PathExists(animation_file));
+  EXPECT_FALSE(base::PathExists(promo_file));
+  EXPECT_FALSE(base::PathExists(light_logo_file));
+  EXPECT_FALSE(base::PathExists(dark_logo_file));
 }

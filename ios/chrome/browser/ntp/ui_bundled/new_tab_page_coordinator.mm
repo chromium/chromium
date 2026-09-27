@@ -2105,6 +2105,10 @@
   if (page == CustomizationMenuPage::kMain) {
     tracker->NotifyEvent(
         feature_engagement::events::kHomeBackgroundCustomizationMenuUsed);
+    if (IsNTPEphemeralThemeEnabled()) {
+      tracker->NotifyEvent(
+          feature_engagement::events::kEphemeralThemePromoUsed);
+    }
   }
 }
 

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_H_
 
+#import <Foundation/Foundation.h>
+
 #import <string>
 #import <string_view>
 #import <variant>
@@ -29,6 +31,7 @@
 #import "url/gurl.h"
 
 class HomeBackgroundCustomizationServiceObserver;
+enum class HomeCustomizationBackgroundStyle : NSInteger;
 class PrefRegistrySimple;
 class PrefService;
 class PromosManager;
@@ -152,6 +155,8 @@ inline constexpr std::string_view kEphemeralThemeGoogleLogoLightPathKey =
 inline constexpr std::string_view kEphemeralThemeGoogleLogoDarkPathKey =
     "google_logo_dark_path";
 inline constexpr std::string_view kEphemeralThemeSeedColorKey = "seed_color";
+inline constexpr std::string_view kPreEphemeralThemeBackgroundStyleKey =
+    "pre_ephemeral_background_style";
 
 inline constexpr std::string_view kEphemeralThemeDirectoryName =
     "ephemeral_theme";
@@ -342,6 +347,19 @@ class HomeBackgroundCustomizationService
     std::string_view pref_key;
     bool is_image = false;
   };
+
+  // Returns the `HomeCustomizationBackgroundStyle` corresponding to the
+  // currently active background.
+  HomeCustomizationBackgroundStyle GetCurrentBackgroundStyle();
+
+  // Restores the most recently used background, or clears the current
+  // background to the default if no recently used backgrounds exist.
+  void RestoreMostRecentBackground();
+
+  // Restores the previous non-ephemeral background if the ephemeral theme is
+  // currently active, deletes cached ephemeral theme asset files from disk, and
+  // clears `prefs::kIosNtpEphemeralThemeData`.
+  void CleanupEphemeralThemeData();
 
   // Evaluates Finch parameters and fetches the ephemeral theme data (main
   // animation JSON, promo animation JSON, light Google logo, and dark Google

@@ -311,6 +311,9 @@ extern const char kHomeCustomizationMenuUsed[];
 // enabled..
 extern const char kHomeBackgroundCustomizationMenuUsed[];
 
+// The user has opened the Home customization menu with ephemeral theme enabled.
+extern const char kEphemeralThemePromoUsed[];
+
 // The user has seen the `kIPHHomeCustomizationMenuFeature` iph.
 extern const char kHomeCustomizationPromoTriggered[];
 
