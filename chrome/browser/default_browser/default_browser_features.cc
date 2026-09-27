@@ -38,8 +38,7 @@ bool IsDefaultBrowserChangedOsNotificationEnabled() {
 
 bool IsDefaultBrowserPromptSurfacesEnabled() {
 #if BUILDFLAG(IS_WIN)
-  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces) ||
-         base::FeatureList::IsEnabled(kDefaultBrowserStickyModal);
+  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
 #else
   return false;
 #endif
@@ -73,15 +72,20 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   }
 
   DefaultBrowserPromptSurface prompt_surface =
-      DefaultBrowserPromptSurface::kInfobar;
-  if (base::FeatureList::IsEnabled(kDefaultBrowserStickyModal)) {
+      kDefaultBrowserPromptSurfaceParam.Get();
+  // Only query `kDefaultBrowserStickyModal` once the prompt surface has been
+  // determined to be a modal dialog, so that clients are only enrolled in the
+  // sticky modal experiment when they would be shown the modal dialog.
+  if ((prompt_surface ==
+           DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration ||
+       prompt_surface == DefaultBrowserPromptSurface::
+                             kModalDialogWithoutSettingsIllustration) &&
+      base::FeatureList::IsEnabled(kDefaultBrowserStickyModal)) {
     prompt_surface =
         kWithSettingsIllustration.Get()
             ? DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration
             : DefaultBrowserPromptSurface::
                   kModalDialogWithoutSettingsIllustration;
-  } else {
-    prompt_surface = kDefaultBrowserPromptSurfaceParam.Get();
   }
 #if BUILDFLAG(IS_WIN)
   // The modal prompt surface with settings illustration features an OS-level

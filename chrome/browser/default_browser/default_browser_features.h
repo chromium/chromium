@@ -34,7 +34,8 @@ bool IsDefaultBrowserPromptSurfacesEnabled();
 
 // Returns whether the modal dialog default browser prompt should remain open
 // after clicking the confirm action and switch to a retry state on focus
-// return.
+// return. Since this queries `kDefaultBrowserStickyModal`, it must only be
+// called once the prompt surface is known to be a modal dialog.
 bool IsDefaultBrowserModalSticky();
 
 // Returns whether the visual guided setter docking feature flag is enabled.
@@ -59,7 +60,8 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromptSurfaces);
 BASE_DECLARE_FEATURE_PARAM(DefaultBrowserPromptSurface,
                            kDefaultBrowserPromptSurfaceParam);
 
-// Enables the sticky modal default browser prompt experiment.
+// Enables the sticky modal default browser prompt experiment. Only takes effect
+// when `kDefaultBrowserPromptSurfaces` selects a modal dialog prompt surface.
 BASE_DECLARE_FEATURE(kDefaultBrowserStickyModal);
 
 // Parameter for whether the modal dialog prompt should remain open (sticky)

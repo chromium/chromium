@@ -82,7 +82,7 @@ void DefaultBrowserSurfaceManager::Show(bool can_pin_to_taskbar) {
   CHECK(controller_);
   controller_->OnShown();
 
-  if (default_browser::IsDefaultBrowserModalSticky()) {
+  if (IsStickyModalEntrypoint(GetEntrypointType())) {
     if (auto* manager =
             default_browser::DefaultBrowserManager::From(g_browser_process)) {
       // Note: `DefaultBrowserMonitor` only runs when

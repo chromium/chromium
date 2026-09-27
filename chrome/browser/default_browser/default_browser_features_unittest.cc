@@ -4,6 +4,9 @@
 
 #include "chrome/browser/default_browser/default_browser_features.h"
 
+#include <string>
+
+#include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,13 +24,10 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
 #endif
   }
   {
+    // The sticky modal experiment alone does not enable prompt surfaces.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kDefaultBrowserStickyModal);
-#if BUILDFLAG(IS_WIN)
-    EXPECT_TRUE(IsDefaultBrowserPromptSurfacesEnabled());
-#else
     EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
-#endif
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -144,9 +144,24 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
   }
 
   {
+    // The sticky modal experiment alone does not select a modal surface.
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
         {{kDefaultBrowserStickyModal,
+          {{"IsSticky", "true"}, {"WithSettingsIllustration", "false"}}}},
+        {});
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+  }
+
+  {
+    // When a modal surface is selected, the sticky modal experiment determines
+    // whether the settings illustration is used.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_with_settings_illustration"}}},
+         {kDefaultBrowserStickyModal,
           {{"IsSticky", "true"}, {"WithSettingsIllustration", "false"}}}},
         {});
 #if BUILDFLAG(IS_WIN)
@@ -162,7 +177,9 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
-        {{kDefaultBrowserStickyModal,
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_without_settings_illustration"}}},
+         {kDefaultBrowserStickyModal,
           {{"IsSticky", "true"}, {"WithSettingsIllustration", "true"}}},
          {kDefaultBrowserSetterSelection, {{"setter_option", "visual_guide"}}}},
         {});
@@ -173,6 +190,38 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
 #else
     EXPECT_EQ(GetDefaultBrowserPromptSurface(),
               DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+}
+
+// Tests that the sticky modal experiment is only activated once a modal dialog
+// prompt surface has been selected.
+TEST(DefaultBrowserFeaturesTest,
+     GetDefaultBrowserPromptSurfaceActivatesStickyModalOnlyForModal) {
+  const std::string sticky_trial_name =
+      std::string("scoped_feature_list_trial_for_") +
+      kDefaultBrowserStickyModal.name;
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces, {{"prompt_surface", "bubble_dialog"}}},
+         {kDefaultBrowserStickyModal, {{"IsSticky", "true"}}}},
+        {});
+    GetDefaultBrowserPromptSurface();
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(sticky_trial_name));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_without_settings_illustration"}}},
+         {kDefaultBrowserStickyModal, {{"IsSticky", "true"}}}},
+        {});
+    GetDefaultBrowserPromptSurface();
+#if BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(base::FieldTrialList::IsTrialActive(sticky_trial_name));
+#else
+    EXPECT_FALSE(base::FieldTrialList::IsTrialActive(sticky_trial_name));
 #endif
   }
 }

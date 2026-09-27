@@ -550,20 +550,23 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto prompt_surface = default_browser::GetDefaultBrowserPromptSurface();
-
   // The DefaultBrowserModalUI is only displayed for modal default browser
   // prompts. Only expose this Mojo interface when the modal dialog prompt
-  // surface (with or without settings illustration) or sticky modal experiment
-  // is enabled.
-  if (prompt_surface == default_browser::DefaultBrowserPromptSurface::
-                            kModalDialogWithoutSettingsIllustration ||
-      prompt_surface == default_browser::DefaultBrowserPromptSurface::
-                            kModalDialogWithSettingsIllustration ||
-      default_browser::IsDefaultBrowserModalSticky()) {
-    RegisterWebUIControllerInterfaceBinder<
-        default_browser_modal::mojom::PageHandlerFactory,
-        DefaultBrowserModalUI>(map);
+  // surface (with or without settings illustration) is enabled. The raw
+  // surface param is checked rather than `GetDefaultBrowserPromptSurface()` to
+  // avoid enrolling clients in the `kDefaultBrowserStickyModal` experiment
+  // before a prompt is shown.
+  if (default_browser::IsDefaultBrowserPromptSurfacesEnabled()) {
+    auto prompt_surface =
+        default_browser::kDefaultBrowserPromptSurfaceParam.Get();
+    if (prompt_surface == default_browser::DefaultBrowserPromptSurface::
+                              kModalDialogWithoutSettingsIllustration ||
+        prompt_surface == default_browser::DefaultBrowserPromptSurface::
+                              kModalDialogWithSettingsIllustration) {
+      RegisterWebUIControllerInterfaceBinder<
+          default_browser_modal::mojom::PageHandlerFactory,
+          DefaultBrowserModalUI>(map);
+    }
   }
 #endif
 

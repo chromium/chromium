@@ -559,7 +559,8 @@ inline constexpr char kDefaultBrowserSetterSelectionName[] =
     "Default Browser Setter Selection";
 
 inline constexpr char kDefaultBrowserStickyModalDescription[] =
-    "Enables the sticky modal dialog for the default browser prompt.";
+    "Enables the sticky modal dialog for the default browser prompt. Requires "
+    "#default-browser-prompt-surfaces to be set to a modal dialog variation.";
 inline constexpr char kDefaultBrowserStickyModalName[] =
     "Default Browser Sticky Modal";
 
