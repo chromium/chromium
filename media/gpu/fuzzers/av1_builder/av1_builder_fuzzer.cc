@@ -143,6 +143,13 @@ media::AV1BitstreamBuilder::FrameHeader ConvertToAV1BuilderFrameHeader(
 
   pic_hdr.primary_ref_frame = frame_header.primary_ref_frame();
   pic_hdr.refresh_frame_flags = frame_header.refresh_frame_flags();
+  // Spec 5.9.2 makes it a bitstream conformance requirement that an intra only
+  // frame does not refresh every slot, and av1_builder DCHECKs it, so clear a
+  // bit rather than hand it a combination no conforming encoder would produce.
+  if (pic_hdr.frame_type == libgav1::FrameType::kFrameIntraOnly &&
+      pic_hdr.refresh_frame_flags == 0xFF) {
+    pic_hdr.refresh_frame_flags = 0xFE;
+  }
   const size_t ref_frame_idx_size =
       std::min(static_cast<size_t>(frame_header.ref_frame_idx_size()),
                std::size(pic_hdr.ref_frame_idx));

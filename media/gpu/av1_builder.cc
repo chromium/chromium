@@ -16,6 +16,19 @@ namespace media {
 
 namespace {
 constexpr int kPrimaryReferenceNone = 7;
+constexpr uint8_t kAllFrames = 0xFF;
+
+// Spec 5.9.2, `FrameIsIntra` deduction in the uncompressed header syntax.
+bool IsIntraFrame(libgav1::FrameType frame_type) {
+  return frame_type == libgav1::FrameType::kFrameKey ||
+         frame_type == libgav1::FrameType::kFrameIntraOnly;
+}
+
+// OrderHintBits. Spec 5.5.1. order_hint_bits_minus_1 is coded as f(3), mask so
+// the decoder can only ever see the low three bits.
+int OrderHintBits(const AV1BitstreamBuilder::SequenceHeader& seq_hdr) {
+  return (seq_hdr.order_hint_bits_minus_1 & 0x7) + 1;
+}
 
 // CodedLossless. Spec 5.9.2, using get_qindex() with ignoreDeltaQ = 1 from
 // spec 7.12.2.
@@ -67,6 +80,21 @@ void WriteDeltaQ(AV1BitstreamBuilder& builder, int8_t delta_q) {
     builder.WriteBool(false);
   }
 }
+
+// frame_size() followed by render_size(). Spec 5.9.5, 5.9.6 and 5.9.8.
+void WriteFrameAndRenderSize(AV1BitstreamBuilder& builder,
+                             const AV1BitstreamBuilder::SequenceHeader& seq_hdr,
+                             bool frame_size_override_flag) {
+  if (frame_size_override_flag) {
+    builder.Write(seq_hdr.width - 1, seq_hdr.frame_width_bits_minus_1 + 1);
+    builder.Write(seq_hdr.height - 1, seq_hdr.frame_height_bits_minus_1 + 1);
+  }
+  if (seq_hdr.enable_superres) {
+    builder.WriteBool(false);  // use_superres.
+  }
+  builder.WriteBool(false);  // render_and_frame_size_different.
+}
+
 }  // namespace
 
 AV1BitstreamBuilder::SequenceHeader::SequenceHeader() = default;
@@ -193,14 +221,29 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     const FrameHeader& pic_hdr) {
   AV1BitstreamBuilder ret;
 
+  const bool frame_is_intra = IsIntraFrame(pic_hdr.frame_type);
+  // show_frame is always written as 1 below, so for key and switch frames both
+  // error_resilient_mode and refresh_frame_flags are implied rather than
+  // coded. See spec 5.9.2.
+  const bool implied_by_frame_type =
+      pic_hdr.frame_type == libgav1::FrameType::kFrameSwitch ||
+      pic_hdr.frame_type == libgav1::FrameType::kFrameKey;
+  const bool error_resilient_mode =
+      implied_by_frame_type || pic_hdr.error_resilient_mode;
+  const uint8_t refresh_frame_flags =
+      implied_by_frame_type ? kAllFrames : pic_hdr.refresh_frame_flags;
   // delta_q_present is only coded when base_q_idx is non-zero, so it is
   // inferred to 0 otherwise no matter what the caller asked for. Spec 5.9.17.
   const bool delta_q_present =
       pic_hdr.base_qindex > 0 && pic_hdr.delta_q_present;
+  // Inferred to 1 for switch frames, coded as 0 for everything else, so
+  // frame_size_with_refs() is never reached. Spec 5.9.2 and 5.9.5.
+  const bool frame_size_override_flag =
+      pic_hdr.frame_type == libgav1::FrameType::kFrameSwitch;
   const bool coded_lossless = IsCodedLossless(seq_hdr, pic_hdr);
   // AllLossless = CodedLossless && FrameWidth == UpscaledWidth. use_superres is
-  // never set, so UpscaledWidth == FrameWidth and the two are the same.
-  // Spec 5.9.2.
+  // always written as 0, so UpscaledWidth == FrameWidth and the two are the
+  // same. Spec 5.9.2.
   const bool all_lossless = coded_lossless;
 
   ret.WriteBool(false);  // For a frame OBU, the show_existing_frame flag is
@@ -208,35 +251,57 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
   ret.Write(pic_hdr.frame_type, 2);
   ret.WriteBool(true);  // If this frame needs to be immediately output once
                         // decoded, show_frame flag should be true.
-  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+  if (!implied_by_frame_type) {
     ret.WriteBool(pic_hdr.error_resilient_mode);
   }
   ret.WriteBool(pic_hdr.disable_cdf_update);
   ret.WriteBool(pic_hdr.allow_screen_content_tools);
-  ret.WriteBool(false);  // Disable frame size override flag.
+  // force_integer_mv is not coded: the sequence header writes
+  // seq_choose_integer_mv = 0 and seq_force_integer_mv = 0, so it is never
+  // SELECT_INTEGER_MV. Spec 5.9.2.
+  if (!frame_size_override_flag) {
+    ret.WriteBool(false);  // frame_size_override_flag.
+  }
   if (seq_hdr.enable_order_hint) {
-    ret.Write(pic_hdr.order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
+    ret.Write(pic_hdr.order_hint, OrderHintBits(seq_hdr));
   }
 
-  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
-    if (!pic_hdr.error_resilient_mode) {
-      ret.Write(pic_hdr.primary_ref_frame, 3);
+  if (!frame_is_intra && !error_resilient_mode) {
+    ret.Write(pic_hdr.primary_ref_frame, 3);
+  }
+  if (!implied_by_frame_type) {
+    ret.Write(refresh_frame_flags, 8);
+  }
+  if ((!frame_is_intra || refresh_frame_flags != kAllFrames) &&
+      error_resilient_mode && seq_hdr.enable_order_hint) {
+    // Set order hint for each reference frame.
+    for (uint32_t order_hint : pic_hdr.ref_order_hint) {
+      ret.Write(order_hint, OrderHintBits(seq_hdr));
     }
-    ret.Write(pic_hdr.refresh_frame_flags, 8);
+  }
 
-    if (pic_hdr.error_resilient_mode && seq_hdr.enable_order_hint) {
-      // Set order hint for each reference frame.
-      for (uint32_t order_hint : pic_hdr.ref_order_hint) {
-        ret.Write(order_hint, seq_hdr.order_hint_bits_minus_1 + 1);
-      }
+  if (frame_is_intra) {
+    // Spec 5.9.2 requires an intra only frame not to refresh every slot;
+    // doing so would make the stream non-conformant.
+    DCHECK(pic_hdr.frame_type != libgav1::FrameType::kFrameIntraOnly ||
+           refresh_frame_flags != kAllFrames);
+    WriteFrameAndRenderSize(ret, seq_hdr, frame_size_override_flag);
+    // UpscaledWidth == FrameWidth because superres is never signalled, so the
+    // second half of the spec condition is always true.
+    if (pic_hdr.allow_screen_content_tools) {
+      ret.WriteBool(pic_hdr.allow_intrabc);
     }
+  } else {
     if (seq_hdr.enable_order_hint) {
       ret.WriteBool(false);  // Disable frame reference short signaling.
     }
     for (uint8_t ref_idx : pic_hdr.ref_frame_idx) {
       ret.Write(ref_idx, 3);
     }
-    ret.WriteBool(false);  // Render and frame size are the same.
+    // frame_size_with_refs() is unreachable: it needs frame_size_override_flag
+    // with error_resilient_mode clear, and the only frame type that sets the
+    // former infers the latter to 1. Spec 5.9.2.
+    WriteFrameAndRenderSize(ret, seq_hdr, frame_size_override_flag);
     ret.WriteBool(false);  // No allow high precision MV.
     bool is_switchable_interp =
         pic_hdr.interpolation_filter ==
@@ -246,13 +311,8 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
       ret.Write(pic_hdr.interpolation_filter, 2);
     }
     ret.WriteBool(false);  // Motion not switchable.
-    if (seq_hdr.enable_ref_frame_mvs) {
+    if (!error_resilient_mode && seq_hdr.enable_ref_frame_mvs) {
       ret.WriteBool(false);  // Do not use ref frame MVs.
-    }
-  } else {
-    ret.WriteBool(false);  // Render and frame size are the same.
-    if (pic_hdr.allow_screen_content_tools) {
-      ret.WriteBool(pic_hdr.allow_intrabc);
     }
   }
   if (!pic_hdr.disable_cdf_update) {
@@ -433,17 +493,15 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.WriteBool(pic_hdr.tx_mode == libgav1::TxMode::kTxModeSelect);
   }
 
-  // Skip mode parameters are not present, as the encoder will only enable
-  // single prediction. Refer to AV1 spec section 5.9.22.
-
   // Frame reference mode. Refer to AV1 spec section 5.9.23.
-  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+  if (!frame_is_intra) {
     ret.WriteBool(pic_hdr.reference_select);
   }
+
   ret.WriteBool(pic_hdr.reduced_tx_set);
 
   // Global motion parameters. Refer to AV1 spec section 5.9.24.
-  if (pic_hdr.frame_type != libgav1::FrameType::kFrameKey) {
+  if (!frame_is_intra) {
     for (int i = 1 /*LAST_FRAME*/; i <= 7 /*ALTREF_FRAME*/; i++) {
       ret.WriteBool(false);  // Set is_global to all zeros.
     }
