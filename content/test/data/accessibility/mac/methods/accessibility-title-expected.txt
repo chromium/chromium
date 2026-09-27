@@ -1,2 +1,5 @@
 button.accessibilityTitle='Press Me'
 listitem.accessibilityTitle=''
+list.setAccessibilityFocused(TRUE)=NULL
+AXFocusedUIElementChanged on AXList AXSubrole=AXContentList
+list.accessibilityTitle=''

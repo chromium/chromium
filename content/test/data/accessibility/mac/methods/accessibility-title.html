@@ -2,9 +2,13 @@
 @SCRIPT:
   button.accessibilityTitle
   listitem.accessibilityTitle
+  list.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXList
+  list.accessibilityTitle
 -->
 <!DOCTYPE html>
 <button id="button">Press Me</button>
-<ul>
-  <li id="listitem" tabindex="0" autofocus>First item</li>
+<ul id="list" tabindex="0">
+  <li id="listitem" tabindex="0" autofocus>Cats</li>
+  <li>Dogs</li>
 </ul>
