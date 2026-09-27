@@ -984,6 +984,59 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithoutSeparateUvDeltaQ) {
   EXPECT_TRUE(frame_header.reduced_tx_set);
 }
 
+// Spec 5.9.11, 5.9.19, 5.9.20 and 5.9.21. A losslessly coded frame carries no
+// loop filter, CDEF, loop restoration or tx mode syntax at all.
+TEST_F(AV1BuilderTest, BuildFrameOBUCodedLossless) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+  AV1BitstreamBuilder::FrameHeader pic_hdr = MakeFrameHeader(0);
+  // A base qindex of 0 with no delta q is lossless. This is reachable from
+  // WebCodecs by asking for a quantizer of 0.
+  pic_hdr.base_qindex = 0;
+
+  std::vector<uint8_t> chunk =
+      PackTemporalUnit(seq_hdr, pic_hdr, /*metadata_obus=*/{});
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  const auto frame_header = parser->frame_header();
+  EXPECT_TRUE(frame_header.coded_lossless);
+  EXPECT_EQ(frame_header.tx_mode, libgav1::kTxModeOnly4x4);
+  // Written after the omitted blocks, so it only lands here if they really
+  // were omitted.
+  EXPECT_TRUE(frame_header.reduced_tx_set);
+}
+
+// Spec 5.9.12. With separate_uv_delta_q == 0 the V deltas are inferred from
+// the U ones, so a caller's V values must not influence CodedLossless: the
+// decoder never sees them, and the two sides would disagree about whether the
+// loop filter, CDEF and tx mode syntax is present at all.
+TEST_F(AV1BuilderTest, BuildFrameOBUCodedLosslessWithInferredVDeltaQ) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+  seq_hdr.separate_uv_delta_q = false;
+  AV1BitstreamBuilder::FrameHeader pic_hdr = MakeFrameHeader(0);
+  pic_hdr.base_qindex = 0;
+  // Never reaches the bitstream: the decoder infers DeltaQV* = DeltaQU* = 0
+  // and so sees a losslessly coded frame.
+  pic_hdr.delta_q_v_dc = 5;
+  pic_hdr.delta_q_v_ac = -3;
+
+  std::vector<uint8_t> chunk =
+      PackTemporalUnit(seq_hdr, pic_hdr, /*metadata_obus=*/{});
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  const auto frame_header = parser->frame_header();
+  EXPECT_TRUE(frame_header.coded_lossless);
+  EXPECT_EQ(frame_header.tx_mode, libgav1::kTxModeOnly4x4);
+  EXPECT_TRUE(frame_header.reduced_tx_set);
+}
+
 // Spec 4.10.5. Padding a leb128 out to a fixed size is allowed, but the parse
 // loop stops at the first byte with the continuation bit clear, so only the
 // bytes before the last one may set it.

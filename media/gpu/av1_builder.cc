@@ -4,6 +4,7 @@
 
 #include "media/gpu/av1_builder.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/check_op.h"
@@ -15,6 +16,47 @@ namespace media {
 
 namespace {
 constexpr int kPrimaryReferenceNone = 7;
+
+// CodedLossless. Spec 5.9.2, using get_qindex() with ignoreDeltaQ = 1 from
+// spec 7.12.2.
+//
+// Limitation: when segmentation_update_data is 0 the decoder inherits the
+// feature data from the primary reference frame rather than reading it here,
+// and the builder has no view of that. Callers that enable segmentation
+// without updating the data must keep FrameHeader::feature_* in sync with what
+// the reference carries.
+bool IsCodedLossless(const AV1BitstreamBuilder::SequenceHeader& seq_hdr,
+                     const AV1BitstreamBuilder::FrameHeader& pic_hdr) {
+  // The V component's delta Q values is read from driver post encode. As a
+  // result, when separate_uv_delta_q is 0, we should use the U component's
+  // delta Q values instead, to protect against drivers that return a random
+  // delta Q for V.
+  const int8_t delta_q_v_dc =
+      seq_hdr.separate_uv_delta_q ? pic_hdr.delta_q_v_dc : pic_hdr.delta_q_u_dc;
+  const int8_t delta_q_v_ac =
+      seq_hdr.separate_uv_delta_q ? pic_hdr.delta_q_v_ac : pic_hdr.delta_q_u_ac;
+  if (pic_hdr.delta_q_y_dc || pic_hdr.delta_q_u_dc || pic_hdr.delta_q_u_ac ||
+      delta_q_v_dc || delta_q_v_ac) {
+    return false;
+  }
+  // base_qindex is written as f(8); compare what the decoder will see.
+  const int base_qindex = static_cast<int>(pic_hdr.base_qindex & 0xFF);
+  for (size_t segment_id = 0; segment_id < libgav1::kMaxSegments;
+       ++segment_id) {
+    const auto& enabled = pic_hdr.feature_enabled[segment_id];
+    const auto& data = pic_hdr.feature_data[segment_id];
+    int qindex = base_qindex;
+    if (pic_hdr.segmentation_enabled &&
+        enabled[libgav1::kSegmentFeatureQuantizer]) {
+      qindex =
+          std::clamp(qindex + data[libgav1::kSegmentFeatureQuantizer], 0, 255);
+    }
+    if (qindex != 0) {
+      return false;
+    }
+  }
+  return true;
+}
 
 // Spec 5.9.13, the reverse process of read_delta_q().
 void WriteDeltaQ(AV1BitstreamBuilder& builder, int8_t delta_q) {
@@ -150,6 +192,17 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     const SequenceHeader& seq_hdr,
     const FrameHeader& pic_hdr) {
   AV1BitstreamBuilder ret;
+
+  // delta_q_present is only coded when base_q_idx is non-zero, so it is
+  // inferred to 0 otherwise no matter what the caller asked for. Spec 5.9.17.
+  const bool delta_q_present =
+      pic_hdr.base_qindex > 0 && pic_hdr.delta_q_present;
+  const bool coded_lossless = IsCodedLossless(seq_hdr, pic_hdr);
+  // AllLossless = CodedLossless && FrameWidth == UpscaledWidth. use_superres is
+  // never set, so UpscaledWidth == FrameWidth and the two are the same.
+  // Spec 5.9.2.
+  const bool all_lossless = coded_lossless;
+
   ret.WriteBool(false);  // For a frame OBU, the show_existing_frame flag is
                          // always set to 0.
   ret.Write(pic_hdr.frame_type, 2);
@@ -276,14 +329,14 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
 
   // Pack quantization index delta params. Refer to AV1 spec section 5.9.17.
   if (pic_hdr.base_qindex > 0) {
-    ret.WriteBool(pic_hdr.delta_q_present);
-    if (pic_hdr.delta_q_present) {
+    ret.WriteBool(delta_q_present);
+    if (delta_q_present) {
       ret.Write(pic_hdr.delta_q_res, 2);
     }
   }
 
   // Pack loop filter delta params. Refer to AV1 spec section 5.9.18.
-  if (pic_hdr.delta_q_present && !pic_hdr.allow_intrabc) {
+  if (delta_q_present && !pic_hdr.allow_intrabc) {
     ret.WriteBool(pic_hdr.delta_lf_present);
     if (pic_hdr.delta_lf_present) {
       ret.Write(pic_hdr.delta_lf_res, 2);
@@ -291,7 +344,10 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     }
   }
 
-  if (!pic_hdr.allow_intrabc) {
+  // When the frame is coded losslessly the loop filter, CDEF and tx mode
+  // syntax are all absent - the decoder infers them. Loop restoration keys
+  // off AllLossless instead. Spec 5.9.11, 5.9.19, 5.9.20 and 5.9.21.
+  if (!coded_lossless && !pic_hdr.allow_intrabc) {
     // Pack loop filter parameters. Refer to AV1 spec section 5.9.11.
     ret.Write(pic_hdr.filter_level[0], 6);
     ret.Write(pic_hdr.filter_level[1], 6);
@@ -335,9 +391,10 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
         ret.Write(pic_hdr.cdef_uv_sec_strength[i], 2);
       }
     }
+  }
 
-    // Pack loop restoration filter parameters. Refer to AV1 spec
-    // section 5.9.20.
+  // Pack loop restoration filter parameters. Refer to AV1 spec section 5.9.20.
+  if (!all_lossless && !pic_hdr.allow_intrabc) {
     if (seq_hdr.enable_restoration) {
       constexpr int kNumPlanes = 3;
       bool use_lr = false;
@@ -370,8 +427,11 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     }
   }
 
-  // TX mode syntax. Refer to AV1 spec section 5.9.21
-  ret.WriteBool(pic_hdr.tx_mode == libgav1::TxMode::kTxModeSelect);
+  // TX mode syntax. Refer to AV1 spec section 5.9.21. TxMode is inferred to be
+  // ONLY_4X4 when the frame is coded losslessly, so no bit is written.
+  if (!coded_lossless) {
+    ret.WriteBool(pic_hdr.tx_mode == libgav1::TxMode::kTxModeSelect);
+  }
 
   // Skip mode parameters are not present, as the encoder will only enable
   // single prediction. Refer to AV1 spec section 5.9.22.
