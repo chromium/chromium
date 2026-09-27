@@ -130,6 +130,10 @@ ShelfConfig::ShelfConfig()
       hidden_shelf_in_screen_portion_(3),
       status_indicator_offset_from_shelf_edge_(1),
       scrollable_shelf_ripple_padding_(2),
+      shelf_preview_height_(200),
+      shelf_preview_max_width_(300),
+      shelf_preview_max_ratio_(1.5),    // = 3/2
+      shelf_preview_min_ratio_(0.666),  // = 2/3
       shelf_blur_radius_(30),
       mousewheel_scroll_offset_threshold_(20),
       in_app_control_button_height_inset_(4),

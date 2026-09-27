@@ -2555,6 +2555,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 
+  ShelfItemDelegate* delegate =
+      context_menu ? nullptr : model_->GetShelfItemDelegate(shelf_id);
   // UnsafeDangling triaged in https://crbug.com/1423849.
   shelf_menu_model_adapter_ = std::make_unique<ShelfMenuModelAdapter>(
       item ? item->id.app_id : std::string(), std::move(menu_model), source,
@@ -2562,7 +2564,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
       base::BindOnce(&ShelfView::OnMenuClosed, base::Unretained(this),
                      base::UnsafeDangling(source)),
       display::Screen::Get()->InTabletMode(),
-      /*for_application_menu_items*/ !context_menu);
+      /*for_application_menu_items=*/!context_menu,
+      delegate ? delegate->GetWeakPtr() : nullptr);
   shelf_menu_model_adapter_->Run(
       GetMenuAnchorRect(*source, click_point, context_menu),
       shelf_->IsHorizontalAlignment()

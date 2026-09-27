@@ -1448,6 +1448,8 @@ component("ash") {
     "shelf/shelf_view.h",
     "shelf/shelf_widget.cc",
     "shelf/shelf_widget.h",
+    "shelf/shelf_window_preview_bubble.cc",
+    "shelf/shelf_window_preview_bubble.h",
     "shelf/shelf_window_targeter.cc",
     "shelf/shelf_window_targeter.h",
     "shelf/shelf_window_watcher.cc",

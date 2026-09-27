@@ -13,6 +13,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -34,6 +35,7 @@
 #include "ash/shelf/shelf_context_menu_model.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/shelf/shelf_focus_cycler.h"
+#include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_observer.h"
@@ -41,6 +43,7 @@
 #include "ash/shelf/shelf_tooltip_manager.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
+#include "ash/shelf/shelf_window_preview_bubble.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
@@ -60,6 +63,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -79,6 +83,7 @@
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -100,6 +105,8 @@
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/view_model.h"
@@ -265,6 +272,63 @@ class ProgressIndicatorWaiter {
         }));
     run_loop.Run();
   }
+};
+
+class AppMenuTestShelfItemDelegate : public ShelfItemDelegate,
+                                     public aura::WindowObserver {
+ public:
+  AppMenuTestShelfItemDelegate(const ShelfID& id,
+                               aura::Window* w1,
+                               aura::Window* w2)
+      : ShelfItemDelegate(id) {
+    w1_.Observe(w1);
+    w2_.Observe(w2);
+  }
+
+  AppMenuTestShelfItemDelegate(const AppMenuTestShelfItemDelegate&) = delete;
+  AppMenuTestShelfItemDelegate& operator=(const AppMenuTestShelfItemDelegate&) =
+      delete;
+
+  ~AppMenuTestShelfItemDelegate() override = default;
+
+  // ShelfItemDelegate:
+  void ItemSelected(std::unique_ptr<ui::Event> event,
+                    int64_t display_id,
+                    ShelfLaunchSource source,
+                    ItemSelectedCallback callback,
+                    const ItemFilterPredicate& filter_predicate) override {
+    AppMenuItems items;
+    items.push_back({0, u"Window 1", gfx::ImageSkia()});
+    items.push_back({1, u"Window 2", gfx::ImageSkia()});
+    std::move(callback).Run(SHELF_ACTION_NONE, std::move(items));
+  }
+
+  aura::Window* GetAppMenuItemWindow(int command_id) override {
+    if (command_id == 0) {
+      return w1_.GetSource();
+    }
+    if (command_id == 1) {
+      return w2_.GetSource();
+    }
+    return nullptr;
+  }
+
+  void ExecuteCommand(bool, int64_t, int32_t, int64_t) override {}
+  void Close() override {}
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    if (w1_.IsObservingSource(window)) {
+      w1_.Reset();
+    }
+    if (w2_.IsObservingSource(window)) {
+      w2_.Reset();
+    }
+  }
+
+ private:
+  base::ScopedObservation<aura::Window, aura::WindowObserver> w1_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver> w2_{this};
 };
 
 }  // namespace
@@ -4460,6 +4524,177 @@ TEST_F(ShelfViewPromiseAppTest, PromiseIconLayers) {
   }
 
   EXPECT_FALSE(test_api_->HasPendingPromiseAppRemoval(promise_app_id));
+}
+
+class ShelfViewWindowPreviewTest : public ShelfViewTest {
+ public:
+  ShelfViewWindowPreviewTest()
+      : ShelfViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~ShelfViewWindowPreviewTest() override = default;
+
+  void SetUp() override {
+    ShelfViewTest::SetUp();
+
+    window1_ = CreateToplevelTestWindow({100, 100});
+    window2_ = CreateToplevelTestWindow({150, 0, 100, 100});
+
+    ShelfItem item;
+    item.id = ShelfID("test_app_id");
+    item.type = TYPE_APP;
+    auto delegate = std::make_unique<AppMenuTestShelfItemDelegate>(
+        item.id, window1_.get(), window2_.get());
+    item_index_ = ShelfModel::Get()->Add(item, std::move(delegate));
+    test_api_->RunMessageLoopUntilAnimationsDone();
+
+    ShelfAppButton* button = GetButtonByID(item.id);
+    ASSERT_TRUE(button);
+
+    // Click the button to open the application menu.
+    GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+
+    ASSERT_TRUE(menu_adapter());
+    ASSERT_TRUE(menu_adapter()->IsShowingMenu());
+    views::MenuItemView* root_menu = menu_adapter()->root_for_testing();
+    ASSERT_TRUE(root_menu);
+    ASSERT_TRUE(root_menu->HasSubmenu());
+    title_item_ = root_menu->GetSubmenu()->GetMenuItemAt(0);
+    item0_ = root_menu->GetSubmenu()->GetMenuItemAt(1);
+    item1_ = root_menu->GetSubmenu()->GetMenuItemAt(2);
+    ASSERT_TRUE(title_item_);
+    ASSERT_TRUE(item0_);
+    ASSERT_TRUE(item1_);
+  }
+
+  void TearDown() override {
+    title_item_ = nullptr;
+    item0_ = nullptr;
+    item1_ = nullptr;
+    if (menu_adapter()) {
+      menu_adapter()->Cancel();
+      test_api_->RunMessageLoopUntilAnimationsDone();
+    }
+    if (item_index_ >= 0) {
+      ShelfModel::Get()->RemoveItemAt(item_index_);
+      test_api_->RunMessageLoopUntilAnimationsDone();
+    }
+    window2_.reset();
+    window1_.reset();
+    ShelfViewTest::TearDown();
+  }
+
+ protected:
+  ShelfMenuModelAdapter* menu_adapter() {
+    return GetShelfView()->shelf_menu_model_adapter_for_testing();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWindowPreviewOnShelf};
+  std::unique_ptr<aura::Window> window1_;
+  std::unique_ptr<aura::Window> window2_;
+  int item_index_ = -1;
+  raw_ptr<views::MenuItemView> title_item_ = nullptr;
+  raw_ptr<views::MenuItemView> item0_ = nullptr;
+  raw_ptr<views::MenuItemView> item1_ = nullptr;
+};
+
+TEST_F(ShelfViewWindowPreviewTest, ShowWindowPreviewAfterDelay) {
+  EXPECT_FALSE(menu_adapter()->preview_bubble());
+
+  // Hover item 0: preview bubble is not shown before kShowPreviewDelay.
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(item0_->IsSelected());
+  EXPECT_FALSE(menu_adapter()->preview_bubble());
+
+  // Advance time by kShowPreviewDelay: preview bubble is shown for window 1.
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ASSERT_TRUE(menu_adapter()->preview_bubble());
+  EXPECT_EQ(window1_.get(), menu_adapter()->preview_bubble()->window());
+
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      menu_adapter()->preview_bubble()->GetWidget()->GetNativeWindow());
+  gfx::Rect bubble_bounds =
+      menu_adapter()->preview_bubble()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_TRUE(display.work_area().Contains(bubble_bounds));
+  EXPECT_FALSE(bubble_bounds.Intersects(
+      GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen()));
+}
+
+TEST_F(ShelfViewWindowPreviewTest, SwitchMenuItemUpdatesPreviewInPlace) {
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ShelfWindowPreviewBubble* initial_bubble = menu_adapter()->preview_bubble();
+  ASSERT_TRUE(initial_bubble);
+  EXPECT_EQ(window1_.get(), initial_bubble->window());
+
+  // Hover item 1: the existing preview bubble is updated in-place immediately
+  // without recreation.
+  GetEventGenerator()->MoveMouseTo(item1_->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(item0_->IsSelected());
+  EXPECT_TRUE(item1_->IsSelected());
+  ASSERT_EQ(initial_bubble, menu_adapter()->preview_bubble());
+  EXPECT_EQ(window2_.get(), menu_adapter()->preview_bubble()->window());
+
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      menu_adapter()->preview_bubble()->GetWidget()->GetNativeWindow());
+  gfx::Rect bubble_bounds =
+      menu_adapter()->preview_bubble()->GetWidget()->GetWindowBoundsInScreen();
+  EXPECT_TRUE(display.work_area().Contains(bubble_bounds));
+  EXPECT_FALSE(bubble_bounds.Intersects(
+      GetPrimaryShelf()->shelf_widget()->GetWindowBoundsInScreen()));
+}
+
+TEST_F(ShelfViewWindowPreviewTest, UnselectMenuItemDelayedClose) {
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ShelfWindowPreviewBubble* initial_bubble = menu_adapter()->preview_bubble();
+  ASSERT_TRUE(initial_bubble);
+
+  // Move mouse to the non-selectable title item so item 0 is unselected.
+  // The bubble stays open during kClosePreviewDelay.
+  GetEventGenerator()->MoveMouseTo(
+      title_item_->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(item0_->IsSelected());
+  EXPECT_EQ(initial_bubble, menu_adapter()->preview_bubble());
+
+  // If another menu item is hovered before kClosePreviewDelay expires, the
+  // close timer is cancelled and the existing bubble is reused in place.
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kClosePreviewDelay /
+                                    2);
+  ASSERT_EQ(initial_bubble, menu_adapter()->preview_bubble());
+  GetEventGenerator()->MoveMouseTo(item1_->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(item1_->IsSelected());
+  ASSERT_EQ(initial_bubble, menu_adapter()->preview_bubble());
+  EXPECT_EQ(window2_.get(), menu_adapter()->preview_bubble()->window());
+
+  // Unselect item 1 and wait for the full kClosePreviewDelay: the preview
+  // bubble closes.
+  GetEventGenerator()->MoveMouseTo(
+      title_item_->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(item1_->IsSelected());
+  EXPECT_TRUE(menu_adapter()->preview_bubble());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kClosePreviewDelay);
+  EXPECT_FALSE(menu_adapter()->preview_bubble());
+}
+
+TEST_F(ShelfViewWindowPreviewTest, WindowDestroyedClosesPreview) {
+  // Destroying a window while the show timer is pending prevents the preview
+  // bubble from being created when the timer fires.
+  GetEventGenerator()->MoveMouseTo(item0_->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(item0_->IsSelected());
+  window1_.reset();
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  EXPECT_FALSE(menu_adapter()->preview_bubble());
+
+  // Destroying a window while its preview bubble is active immediately closes
+  // the preview bubble.
+  GetEventGenerator()->MoveMouseTo(item1_->GetBoundsInScreen().CenterPoint());
+  task_environment()->FastForwardBy(ShelfMenuModelAdapter::kShowPreviewDelay);
+  ASSERT_TRUE(menu_adapter()->preview_bubble());
+  EXPECT_EQ(window2_.get(), menu_adapter()->preview_bubble()->window());
+
+  window2_.reset();
+  EXPECT_FALSE(menu_adapter()->preview_bubble());
 }
 
 }  // namespace ash

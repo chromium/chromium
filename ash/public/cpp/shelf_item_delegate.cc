@@ -28,6 +28,10 @@ ShelfItemDelegate::AppMenuItems ShelfItemDelegate::GetAppMenuItems(
   return {};
 }
 
+aura::Window* ShelfItemDelegate::GetAppMenuItemWindow(int command_id) {
+  return nullptr;
+}
+
 void ShelfItemDelegate::GetContextMenu(int64_t display_id,
                                        GetContextMenuCallback callback) {
   // Supplying null will cause ShelfView to show a default context menu.
