@@ -32,6 +32,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -286,6 +287,12 @@ class ChromeRLZTrackerWebContentsObserver;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PluginObserver;
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+namespace safe_browsing {
+class TailoredSecurityUrlObserver;
+}  // namespace safe_browsing
 #endif
 
 namespace indigo {
@@ -873,6 +880,11 @@ class TabFeatures {
 
   std::unique_ptr<site_protection::SiteProtectionMetricsObserver>
       site_protection_metrics_observer_;
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
+      tailored_security_url_observer_;
+#endif
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

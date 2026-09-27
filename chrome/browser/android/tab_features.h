@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/common/buildflags.h"
+#include "components/safe_browsing/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/webui/buildflags.h"
@@ -77,6 +78,12 @@ class WebPaymentsObserver;
 namespace prerender {
 class NoStatePrefetchTabHelper;
 }  // namespace prerender
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+namespace safe_browsing {
+class TailoredSecurityUrlObserver;
+}  // namespace safe_browsing
+#endif
 
 namespace site_protection {
 class SiteProtectionMetricsObserver;
@@ -205,6 +212,10 @@ class TabFeatures {
   std::unique_ptr<NavigationMetricsRecorder> navigation_metrics_recorder_;
   std::unique_ptr<site_protection::SiteProtectionMetricsObserver>
       site_protection_metrics_observer_;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
+      tailored_security_url_observer_;
+#endif
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

@@ -52,26 +52,20 @@ class TailoredSecurityUrlObserverTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(TailoredSecurityUrlObserverTest, QueryRequestOnFocus) {
   MockTailoredSecurityService mock_service;
-  TailoredSecurityUrlObserver::CreateForWebContents(web_contents(),
-                                                    &mock_service);
-  TailoredSecurityUrlObserver* url_observer =
-      TailoredSecurityUrlObserver::FromWebContents(web_contents());
+  TailoredSecurityUrlObserver url_observer(web_contents(), &mock_service);
 
   EXPECT_CALL(mock_service, AddQueryRequest()).WillOnce(testing::Return(true));
   NavigateAndCommit(GURL("https://google.com"));
 
   EXPECT_CALL(mock_service, RemoveQueryRequest());
-  url_observer->OnWebContentsLostFocus(nullptr);
+  url_observer.OnWebContentsLostFocus(nullptr);
 }
 
 TEST_F(TailoredSecurityUrlObserverTest, QueryRequestOnNavigation) {
   MockTailoredSecurityService mock_service;
-  TailoredSecurityUrlObserver::CreateForWebContents(web_contents(),
-                                                    &mock_service);
-  TailoredSecurityUrlObserver* url_observer =
-      TailoredSecurityUrlObserver::FromWebContents(web_contents());
+  TailoredSecurityUrlObserver url_observer(web_contents(), &mock_service);
 
-  url_observer->OnWebContentsFocused(nullptr);
+  url_observer.OnWebContentsFocused(nullptr);
 
   EXPECT_CALL(mock_service, AddQueryRequest()).WillOnce(testing::Return(true));
   NavigateAndCommit(GURL("https://google.com"));

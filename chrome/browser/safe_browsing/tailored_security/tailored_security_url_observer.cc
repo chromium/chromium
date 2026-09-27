@@ -16,6 +16,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
@@ -98,9 +99,7 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityServiceDestroyed() {
 TailoredSecurityUrlObserver::TailoredSecurityUrlObserver(
     content::WebContents* web_contents,
     TailoredSecurityService* service)
-    : WebContentsObserver(web_contents),
-      WebContentsUserData(*web_contents),
-      service_(service) {
+    : WebContentsObserver(web_contents), service_(service) {
   bool focused = false;
 
   if (service_) {
@@ -147,7 +146,5 @@ void TailoredSecurityUrlObserver::MessageDismissed() {
   message_.reset();
 }
 #endif
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TailoredSecurityUrlObserver);
 
 }  // namespace safe_browsing

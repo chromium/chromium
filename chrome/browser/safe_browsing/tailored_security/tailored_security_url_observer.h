@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
@@ -26,11 +25,11 @@ class TailoredSecurityService;
 // This class handles the observation of whether the user is on a Google
 // property or not, so we can query the user's Tailored Security setting when
 // they are on a Google property.
-class TailoredSecurityUrlObserver
-    : public TailoredSecurityServiceObserver,
-      public content::WebContentsObserver,
-      public content::WebContentsUserData<TailoredSecurityUrlObserver> {
+class TailoredSecurityUrlObserver : public TailoredSecurityServiceObserver,
+                                    public content::WebContentsObserver {
  public:
+  TailoredSecurityUrlObserver(content::WebContents* web_contents,
+                              TailoredSecurityService* service);
   TailoredSecurityUrlObserver(const TailoredSecurityUrlObserver&) = delete;
   TailoredSecurityUrlObserver& operator=(const TailoredSecurityUrlObserver&) =
       delete;
@@ -50,12 +49,7 @@ class TailoredSecurityUrlObserver
   void OnTailoredSecurityServiceDestroyed() override;
 
  private:
-  TailoredSecurityUrlObserver(content::WebContents* web_contents,
-                              TailoredSecurityService* service);
-
   void UpdateFocusAndURL(bool focused, const GURL& url);
-
-  friend class content::WebContentsUserData<TailoredSecurityUrlObserver>;
 
 #if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
@@ -74,8 +68,6 @@ class TailoredSecurityUrlObserver
 
   // Whether we currently have a query request.
   bool has_query_request_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace safe_browsing

@@ -232,6 +232,12 @@
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -892,6 +898,17 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   site_protection_metrics_observer_ =
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           tab.GetContents());
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityIntegration)) {
+    tailored_security_url_observer_ =
+        std::make_unique<safe_browsing::TailoredSecurityUrlObserver>(
+            tab.GetContents(),
+            safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
+                profile));
+  }
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1201,6 +1218,17 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   site_protection_metrics_observer_ =
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           new_contents);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (tailored_security_url_observer_) {
+    tailored_security_url_observer_.reset();
+    tailored_security_url_observer_ =
+        std::make_unique<safe_browsing::TailoredSecurityUrlObserver>(
+            new_contents,
+            safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
+                profile));
+  }
+#endif
 }
 
 customize_chrome::SidePanelController*

@@ -82,6 +82,12 @@
 #include "chrome/browser/ui/customize_chrome/side_panel_controller_android.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 namespace tabs {
 
 namespace {
@@ -280,6 +286,17 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   site_protection_metrics_observer_ =
       std::make_unique<site_protection::SiteProtectionMetricsObserver>(
           web_contents);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kTailoredSecurityIntegration)) {
+    tailored_security_url_observer_ =
+        std::make_unique<safe_browsing::TailoredSecurityUrlObserver>(
+            web_contents,
+            safe_browsing::TailoredSecurityServiceFactory::GetForProfile(
+                profile));
+  }
+#endif
 }
 
 TabFeatures::~TabFeatures() = default;
