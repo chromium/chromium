@@ -49,8 +49,19 @@ bool CanUseRgbReadback(const media::VideoFrame& frame,
   return frame.format() == dest_frame.format() && CanUseRgbReadback(frame);
 }
 
+// Controls whether async YUV VideoFrame.copyTo() uses
+// RasterInterface::ReadbackYUVPixelsAsync() on the main thread instead of
+// synchronous plane readback on the background worker thread.
+// Disabled by default because ReadbackYUVPixelsAsync() currently performs slow
+// YUVA->RGB->I420 shader passes and requires main-thread UV interleaving for
+// NV12 frames (see crbug.com/565210897).
+BASE_FEATURE(kWebCodecsAsyncYuvReadback, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool CanUseYuvReadback(const media::VideoFrame& frame,
                        const media::VideoFrame& dest_frame) {
+  if (!base::FeatureList::IsEnabled(kWebCodecsAsyncYuvReadback)) {
+    return false;
+  }
   if (!frame.HasSharedImage()) {
     return false;
   }
