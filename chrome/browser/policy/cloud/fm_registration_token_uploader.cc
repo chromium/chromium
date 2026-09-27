@@ -162,6 +162,22 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
   CHECK_NE(scope_, PolicyInvalidationScope::kDeviceLocalAccount)
       << "Registration token is not expected for device local "
          "accounts";
+  if (core_->client()) {
+    invalidation_listener_->Start(this);
+    return;
+  }
+  // The token can only be uploaded through a client, so don't register with
+  // FCM until there is one. Unmanaged profiles never get a client.
+  listener_start_observer_ =
+      std::make_unique<CloudPolicyCoreConnectionObserver>(
+          core_,
+          base::BindOnce(&FmRegistrationTokenUploader::StartListener,
+                         base::Unretained(this)),
+          /*on_disconnected_callback=*/base::OnceClosure());
+}
+
+void FmRegistrationTokenUploader::StartListener() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   invalidation_listener_->Start(this);
 }
 

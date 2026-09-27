@@ -283,4 +283,29 @@ TEST_F(FmRegistrationTokenUploaderTest,
   core_.Disconnect();
 }
 
+TEST_F(FmRegistrationTokenUploaderTest, StartsListenerWithClient) {
+  core_.Connect(std::make_unique<MockCloudPolicyClient>());
+
+  EXPECT_CALL(mock_invalidation_listener_, Start(_));
+  FmRegistrationTokenUploader uploader(PolicyInvalidationScope::kDevice,
+                                       &mock_invalidation_listener_, &core_);
+}
+
+TEST_F(FmRegistrationTokenUploaderTest, DoesNotStartListenerWithoutClient) {
+  EXPECT_CALL(mock_invalidation_listener_, Start(_)).Times(0);
+  EXPECT_CALL(mock_invalidation_listener_, Shutdown());
+  FmRegistrationTokenUploader uploader(PolicyInvalidationScope::kUser,
+                                       &mock_invalidation_listener_, &core_);
+}
+
+TEST_F(FmRegistrationTokenUploaderTest, StartsListenerOnceOnCoreConnected) {
+  FmRegistrationTokenUploader uploader(PolicyInvalidationScope::kUser,
+                                       &mock_invalidation_listener_, &core_);
+
+  EXPECT_CALL(mock_invalidation_listener_, Start(&uploader));
+  core_.Connect(std::make_unique<MockCloudPolicyClient>());
+  core_.Disconnect();
+  core_.Connect(std::make_unique<MockCloudPolicyClient>());
+}
+
 }  // namespace policy

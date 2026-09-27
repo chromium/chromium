@@ -49,6 +49,8 @@ class FmRegistrationTokenUploader
     base::Time token_end_of_life;
   };
 
+  void StartListener();
+
   void DoUploadRegistrationToken(TokenData token_data);
   void DoAsyncUploadRegistrationToken(TokenData token_data,
                                       base::TimeDelta delay);
@@ -64,6 +66,7 @@ class FmRegistrationTokenUploader
 
   raw_ptr<CloudPolicyCore> core_ = nullptr;
 
+  std::unique_ptr<CloudPolicyCoreConnectionObserver> listener_start_observer_;
   std::unique_ptr<CloudPolicyCoreConnectionObserver> core_observer_;
   std::unique_ptr<CloudPolicyClientRegistrationObserver> client_observer_;
   std::unique_ptr<UploadJob> upload_job_;
