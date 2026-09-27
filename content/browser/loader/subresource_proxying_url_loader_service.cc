@@ -40,6 +40,7 @@ SubresourceProxyingURLLoaderService::BindContext::BindContext(
 
 void SubresourceProxyingURLLoaderService::BindContext::OnDidCommitNavigation(
     WeakDocumentPtr committed_document) {
+  did_commit_navigation = true;
   document = committed_document;
 }
 

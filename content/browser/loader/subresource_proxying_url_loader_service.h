@@ -31,9 +31,7 @@ class RenderFrameHostImpl;
 // A URLLoaderFactory that can be passed to a renderer to intercept subresource
 // requests.
 //
-// The renderer uses it for:
-// - Prefetch requests including <link rel="prefetch">
-// - Topics requests including fetch(<url>, {browsingTopics: true})
+// The renderer uses it for prefetch requests including <link rel="prefetch">.
 class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
     : public network::mojom::URLLoaderFactory {
  public:
@@ -48,8 +46,14 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
                 scoped_refptr<PrefetchedSignedExchangeCache>
                     prefetched_signed_exchange_cache);
 
-    // Set `document` to `committed_document`.
+    // Binds the committed document to this context upon navigation commit.
     void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+
+    // Returns true if `OnDidCommitNavigation()` was called for this context but
+    // the document it referenced has since navigated away or been destroyed.
+    bool WasInitiatorDocumentDestroyed() const {
+      return did_commit_navigation && !document.AsRenderFrameHostIfValid();
+    }
 
     const FrameTreeNodeId frame_tree_node_id;
     scoped_refptr<network::SharedURLLoaderFactory> factory;
@@ -72,6 +76,11 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
     // the document that this `BindContext` is associated with. It will become
     // null whenever the document navigates away.
     WeakDocumentPtr document;
+
+    // Whether `OnDidCommitNavigation()` has been called for this context. Used
+    // to distinguish `document` never having been set from it having been
+    // invalidated.
+    bool did_commit_navigation = false;
 
     // Total number of recursive prefetch tokens generated for this document.
     size_t total_tokens_generated = 0;
