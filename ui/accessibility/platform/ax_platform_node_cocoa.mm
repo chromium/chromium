@@ -3206,7 +3206,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
   for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
     AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
-    if (colheader) {
+    if (colheader && colheader != self) {
       [ret addObject:colheader];
     }
   }
