@@ -1990,7 +1990,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'et3UejMSVddcJ8uiUaYn_PfHsUqKQ0rKm0_qozpmZbIC',
+               'version': 'XAxW-CqzJytpLlBiMZfBqLjEGoV7F719LSr45sXh-e8C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
