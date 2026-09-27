@@ -161,6 +161,8 @@ blink_core_sources_editing = [
   "ime/character_bounds_update_event.h",
   "ime/edit_context.cc",
   "ime/edit_context.h",
+  "ime/ime_code_point_utils.cc",
+  "ime/ime_code_point_utils.h",
   "ime/ime_text_span.cc",
   "ime/ime_text_span.h",
   "ime/ime_text_span_vector_builder.cc",

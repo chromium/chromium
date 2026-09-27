@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
+#include "third_party/blink/renderer/core/editing/ime/ime_code_point_utils.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/markers/spell_check_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_properties.h"
@@ -56,8 +57,6 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
-#include "third_party/blink/renderer/core/editing/state_machines/backward_code_point_state_machine.h"
-#include "third_party/blink/renderer/core/editing/state_machines/forward_code_point_state_machine.h"
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -153,75 +152,6 @@ AtomicString GetVirtualKeyboardPolicyAttribute(Element* element) {
     return AtomicString();
 
   return virtual_keyboard_policy_value.ToAsciiLower();
-}
-
-constexpr int kInvalidDeletionLength = -1;
-constexpr bool IsInvalidDeletionLength(const int length) {
-  return length == kInvalidDeletionLength;
-}
-
-int CalculateBeforeDeletionLengthsInCodePoints(const String& text,
-                                               int before_length_in_code_points,
-                                               int selection_start) {
-  DCHECK_GE(before_length_in_code_points, 0);
-  DCHECK_GE(selection_start, 0);
-  DCHECK_LE(selection_start, static_cast<int>(text.length()));
-
-  base::span<const UChar> u_text = text.Span16();
-  BackwardCodePointStateMachine backward_machine;
-  int counter = before_length_in_code_points;
-  int deletion_start = selection_start;
-  while (counter > 0 && deletion_start > 0) {
-    const TextSegmentationMachineState state =
-        backward_machine.FeedPrecedingCodeUnit(
-            u_text[static_cast<size_t>(deletion_start - 1)]);
-    // According to Android's InputConnection spec, we should do nothing if
-    // |text| has invalid surrogate pair in the deletion range.
-    if (state == TextSegmentationMachineState::kInvalid)
-      return kInvalidDeletionLength;
-
-    if (backward_machine.AtCodePointBoundary())
-      --counter;
-    --deletion_start;
-  }
-  if (!backward_machine.AtCodePointBoundary())
-    return kInvalidDeletionLength;
-
-  const int offset = backward_machine.GetBoundaryOffset();
-  DCHECK_EQ(-offset, selection_start - deletion_start);
-  return -offset;
-}
-
-int CalculateAfterDeletionLengthsInCodePoints(const String& text,
-                                              int after_length_in_code_points,
-                                              int selection_end) {
-  DCHECK_GE(after_length_in_code_points, 0);
-  const auto end = base::checked_cast<wtf_size_t>(selection_end);
-  const wtf_size_t length = text.length();
-  DCHECK_LE(end, length);
-
-  base::span<const UChar> u_text = text.Span16();
-  ForwardCodePointStateMachine forward_machine;
-  int counter = after_length_in_code_points;
-  wtf_size_t deletion_end = end;
-  while (counter > 0 && deletion_end < length) {
-    const TextSegmentationMachineState state =
-        forward_machine.FeedFollowingCodeUnit(u_text[deletion_end]);
-    // According to Android's InputConnection spec, we should do nothing if
-    // |text| has invalid surrogate pair in the deletion range.
-    if (state == TextSegmentationMachineState::kInvalid)
-      return kInvalidDeletionLength;
-
-    if (forward_machine.AtCodePointBoundary())
-      --counter;
-    ++deletion_end;
-  }
-  if (!forward_machine.AtCodePointBoundary())
-    return kInvalidDeletionLength;
-
-  const int offset = forward_machine.GetBoundaryOffset();
-  DCHECK_EQ(static_cast<wtf_size_t>(offset), deletion_end - end);
-  return offset;
 }
 
 Element* RootEditableElementOfSelection(const FrameSelection& frame_selection) {
@@ -1660,16 +1590,18 @@ void InputMethodController::DeleteSurroundingTextInCodePoints(int before,
   const int selection_start = static_cast<int>(selection_offsets.Start());
   const int selection_end = static_cast<int>(selection_offsets.End());
 
-  const int before_length =
+  const std::optional<int> before_length =
       CalculateBeforeDeletionLengthsInCodePoints(text, before, selection_start);
-  if (IsInvalidDeletionLength(before_length))
+  if (!before_length) {
     return;
-  const int after_length =
+  }
+  const std::optional<int> after_length =
       CalculateAfterDeletionLengthsInCodePoints(text, after, selection_end);
-  if (IsInvalidDeletionLength(after_length))
+  if (!after_length) {
     return;
+  }
 
-  return DeleteSurroundingText(before_length, after_length);
+  return DeleteSurroundingText(*before_length, *after_length);
 }
 
 void InputMethodController::ExtendSelectionAndReplace(

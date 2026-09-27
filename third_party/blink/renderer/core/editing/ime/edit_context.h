@@ -209,6 +209,10 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Delete `before` characters preceding the current `selection_start_` and
   // `after` characters following the current `selection_end_`.
   void DeleteSurroundingText(int before, int after);
+  // Delete `before` characters preceding the current `selection_start_` and
+  // `after` characters following the current `selection_end_`, where the
+  // lengths are supplied in code points, not in UTF-16 code unit or in glyphs.
+  void DeleteSurroundingTextInCodePoints(int before, int after);
 
   // Change the selection range.
   // Optionally dispatch TextInputEvent to notify the

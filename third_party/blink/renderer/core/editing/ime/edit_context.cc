@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
+#include "third_party/blink/renderer/core/editing/ime/ime_code_point_utils.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format_update_event.h"
@@ -805,6 +806,35 @@ void EditContext::DeleteSurroundingText(int before, int after) {
 
   DispatchTextUpdateEvent(update_event_text, update_range_start,
                           update_range_end, selection_start_, selection_end_);
+}
+
+void EditContext::DeleteSurroundingTextInCodePoints(int before, int after) {
+  TRACE_EVENT1("ime", "EditContext::DeleteSurroundingTextInCodePoints",
+               "before, after",
+               std::to_string(before) + ", " + std::to_string(after));
+  DCHECK_GE(before, 0);
+  DCHECK_GE(after, 0);
+
+  // 8-bit characters are Latin-1 characters, so the deletion lengths are
+  // trivial.
+  if (text_.Is8Bit()) {
+    return DeleteSurroundingText(before, after);
+  }
+
+  const std::optional<int> before_length =
+      CalculateBeforeDeletionLengthsInCodePoints(
+          text_, before, static_cast<int>(OrderedSelectionStart()));
+  if (!before_length) {
+    return;
+  }
+  const std::optional<int> after_length =
+      CalculateAfterDeletionLengthsInCodePoints(
+          text_, after, static_cast<int>(OrderedSelectionEnd()));
+  if (!after_length) {
+    return;
+  }
+
+  DeleteSurroundingText(*before_length, *after_length);
 }
 
 void EditContext::SetSelection(int start,

@@ -1938,6 +1938,15 @@ void WebLocalFrameImpl::DeleteSurroundingText(int before, int after) {
 void WebLocalFrameImpl::DeleteSurroundingTextInCodePoints(int before,
                                                           int after) {
   TRACE_EVENT0("blink", "WebLocalFrameImpl::deleteSurroundingTextInCodePoints");
+
+  if (RuntimeEnabledFeatures::EditContextCodePointDeletionEnabled()) {
+    if (EditContext* edit_context =
+            GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+      edit_context->DeleteSurroundingTextInCodePoints(before, after);
+      return;
+    }
+  }
+
   if (WebPlugin* plugin = FocusedPluginIfInputMethodSupported()) {
     plugin->DeleteSurroundingTextInCodePoints(before, after);
     return;
