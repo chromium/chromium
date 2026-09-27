@@ -59,6 +59,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
+#include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -883,6 +884,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   navigation_predictor_preconnect_client_ =
       std::make_unique<NavigationPredictorPreconnectClient>(tab.GetContents());
+
+  navigation_metrics_recorder_ =
+      std::make_unique<NavigationMetricsRecorder>(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1185,6 +1189,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   navigation_predictor_preconnect_client_.reset();
   navigation_predictor_preconnect_client_ =
       std::make_unique<NavigationPredictorPreconnectClient>(new_contents);
+
+  navigation_metrics_recorder_ =
+      std::make_unique<NavigationMetricsRecorder>(new_contents);
 }
 
 customize_chrome::SidePanelController*

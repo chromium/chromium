@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
 
@@ -27,19 +26,17 @@ enum class ThirdPartyCookieBlockState {
   kMaxValue = kThirdPartyCookieBlockingDisabledForSite,
 };
 
-class NavigationMetricsRecorder
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NavigationMetricsRecorder> {
+class NavigationMetricsRecorder : public content::WebContentsObserver {
  public:
+  explicit NavigationMetricsRecorder(content::WebContents* web_contents);
+
   NavigationMetricsRecorder(const NavigationMetricsRecorder&) = delete;
   NavigationMetricsRecorder& operator=(const NavigationMetricsRecorder&) =
       delete;
 
   ~NavigationMetricsRecorder() override;
- private:
-  explicit NavigationMetricsRecorder(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<NavigationMetricsRecorder>;
 
+ private:
   ThirdPartyCookieBlockState GetThirdPartyCookieBlockState(const GURL& url);
 
   // content::WebContentsObserver overrides:
@@ -48,8 +45,6 @@ class NavigationMetricsRecorder
 
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_TAB_CONTENTS_NAVIGATION_METRICS_RECORDER_H_

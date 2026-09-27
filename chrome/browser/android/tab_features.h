@@ -85,6 +85,7 @@ class V8CompileHintsTabHelper;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
 class HttpAuthCacheStatus;
+class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
 class RevokedPermissionsTabHelper;
 class SecurityStateEventObserver;
@@ -197,6 +198,7 @@ class TabFeatures {
       no_state_prefetch_tab_helper_;
   std::unique_ptr<NavigationPredictorPreconnectClient>
       navigation_predictor_preconnect_client_;
+  std::unique_ptr<NavigationMetricsRecorder> navigation_metrics_recorder_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

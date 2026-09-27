@@ -29,14 +29,6 @@ typedef InProcessBrowserTest NavigationMetricsRecorderBrowserTest;
 const int kHighEngagementScore = 50;
 
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  NavigationMetricsRecorder* recorder =
-      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
-          web_contents);
-  ASSERT_TRUE(recorder);
-
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html, <html></html>")));
@@ -57,14 +49,6 @@ IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest, TestMetrics) {
 #endif
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderBrowserTest,
                        MAYBE_Navigation_EngagementLevel) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  NavigationMetricsRecorder* recorder =
-      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
-          web_contents);
-  ASSERT_TRUE(recorder);
-
   const GURL url("https://google.com");
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -121,11 +105,6 @@ class NavigationMetricsRecorderPrerenderBrowserTest
 
 IN_PROC_BROWSER_TEST_F(NavigationMetricsRecorderPrerenderBrowserTest,
                        PrerenderingShouldNotRecordSiteEngagementLevelMetric) {
-  NavigationMetricsRecorder* recorder =
-      content::WebContentsUserData<NavigationMetricsRecorder>::FromWebContents(
-          GetWebContents());
-  ASSERT_TRUE(recorder);
-
   base::HistogramTester histograms;
 
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");

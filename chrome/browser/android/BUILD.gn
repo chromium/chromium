@@ -58,6 +58,7 @@ source_set("tabs_impl") {
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/sync_tab_context",
+    "//chrome/browser/tab_contents",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/side_panel",
