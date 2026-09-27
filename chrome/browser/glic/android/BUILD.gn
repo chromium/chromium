@@ -54,6 +54,7 @@ android_resources("java_resources") {
     "java/res/layout/preference_widget_hotkey_navigation.xml",
     "java/res/layout/preference_widget_revoke.xml",
     "java/res/raw/glic_spinner.json",
+    "java/res/values-land/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
     "java/res/xml/glic_actor_login_permissions.xml",

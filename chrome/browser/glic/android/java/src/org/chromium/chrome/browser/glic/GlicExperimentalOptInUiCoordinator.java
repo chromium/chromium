@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.glic;
 
 import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.ColorDrawable;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,12 +58,12 @@ public class GlicExperimentalOptInUiCoordinator {
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
     private final WebContents mWebContents;
-    private final int mTargetWidthPx;
-    private final int mTargetHeightPx;
     private @Nullable PropertyModel mModel;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable ContentView mContentView;
     private @Nullable ChromeImageButton mCloseButton;
+    private int mTargetWidthPx;
+    private int mTargetHeightPx;
 
     // The dialog window is wider than ModalDialogView, so its background shows as a strip on each
     // side of the web contents. Clear it; the card draws the rounded corners instead.
@@ -128,31 +129,34 @@ public class GlicExperimentalOptInUiCoordinator {
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
         mWebContents = webContents;
-        // TODO(crbug.com/559823681): Investigate using ModalDialogProperties for sizing
-        // rather than manually calculating target dimensions on the custom view.
-        DisplayMetrics displayMetrics = mActivity.getResources().getDisplayMetrics();
-        int marginPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
-        int maxWidthPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width);
-        int maxHeightPx =
-                mActivity
-                        .getResources()
-                        .getDimensionPixelSize(
-                                ChromeFeatureList.isEnabled(
-                                                ChromeFeatureList
-                                                        .GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE)
-                                        ? R.dimen
-                                                .glic_experimental_opt_in_dialog_non_scrollable_max_height
-                                        : R.dimen.glic_experimental_opt_in_dialog_max_height);
+        updateTargetSize();
+    }
+
+    // TODO(crbug.com/559823681): Investigate using ModalDialogProperties for sizing
+    // rather than manually calculating target dimensions on the custom view.
+    // Landscape has its own size, and Chrome keeps the dialog open on rotation, so this is called
+    // again on configuration changes.
+    private void updateTargetSize() {
+        Resources res = mActivity.getResources();
+        boolean nonScrollable =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE);
+        int heightRes =
+                nonScrollable
+                        ? R.dimen.glic_experimental_opt_in_dialog_non_scrollable_max_height
+                        : R.dimen.glic_experimental_opt_in_dialog_max_height;
         mTargetWidthPx =
-                Math.min(maxWidthPx, Math.max(0, displayMetrics.widthPixels - 2 * marginPx));
-        mTargetHeightPx =
-                Math.min(maxHeightPx, Math.max(0, displayMetrics.heightPixels - 2 * marginPx));
+                res.getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width);
+        mTargetHeightPx = res.getDimensionPixelSize(heightRes);
+    }
+
+    /** Returns an exact spec for {@code targetPx}, capped to the space {@code spec} offers. */
+    private static int capToSpec(int targetPx, int spec) {
+        int size = targetPx;
+        if (View.MeasureSpec.getMode(spec) != View.MeasureSpec.UNSPECIFIED) {
+            size = Math.min(size, View.MeasureSpec.getSize(spec));
+        }
+        return View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY);
     }
 
     private boolean showInternal() {
@@ -182,14 +186,34 @@ public class GlicExperimentalOptInUiCoordinator {
                 mContentView,
                 new ThinWebViewAttachParams.Builder().setSupportTheming(true).build());
 
-        // Card container to size ThinWebView within the modal dialog.
-        FrameLayout cardContainer = new FrameLayout(mActivity);
+        // Card container to size ThinWebView within the modal dialog. Its size is capped to the
+        // space the dialog offers, so the web contents isn't cut off.
+        FrameLayout cardContainer =
+                new FrameLayout(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        super.onMeasure(
+                                capToSpec(mTargetWidthPx, widthMeasureSpec),
+                                capToSpec(mTargetHeightPx, heightMeasureSpec));
+                    }
+
+                    @Override
+                    protected void onConfigurationChanged(Configuration newConfig) {
+                        super.onConfigurationChanged(newConfig);
+                        updateTargetSize();
+                        if (mModel != null) {
+                            mModel.set(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx);
+                        }
+                    }
+                };
         cardContainer.addView(
                 mThinWebView.getView(),
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         cardContainer.setLayoutParams(
                 new FrameLayout.LayoutParams(
-                        mTargetWidthPx, mTargetHeightPx, Gravity.CENTER_HORIZONTAL));
+                        LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER_HORIZONTAL));
         int cornerRadiusPx =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.dialog_corner_radius);
         cardContainer.setOutlineProvider(

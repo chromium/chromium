@@ -19,7 +19,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentDialog;
@@ -242,17 +241,18 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
                 GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
-        ViewGroup.LayoutParams params = getCardLayoutParams(coordinator);
+        // The dialog offers 1000x1000dp, more than the card needs, so the card uses its full
+        // portrait size from values/dimens.xml: 380dp wide, 567dp tall. MAX_HEIGHT matches the
+        // card height so the dialog doesn't cap it.
+        View card = measureCard(coordinator, dpToPx(1000), dpToPx(1000));
+        assertEquals(dpToPx(380), card.getMeasuredWidth());
+        assertEquals(dpToPx(567), card.getMeasuredHeight());
         assertEquals(
-                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width),
-                params.width);
-        assertEquals(
-                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_height),
-                params.height);
-        assertEquals(
-                params.height,
+                dpToPx(567),
                 coordinator.getPropertyModelForTesting().get(ModalDialogProperties.MAX_HEIGHT));
-        assertEquals(Gravity.CENTER_HORIZONTAL, ((FrameLayout.LayoutParams) params).gravity);
+        assertEquals(
+                Gravity.CENTER_HORIZONTAL,
+                ((FrameLayout.LayoutParams) card.getLayoutParams()).gravity);
     }
 
     @Test
@@ -263,17 +263,45 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
                 GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
         assertNotNull(coordinator);
 
-        ViewGroup.LayoutParams params = getCardLayoutParams(coordinator);
+        // Same as the default size, but the flag switches the height to the non-scrollable
+        // 710dp.
+        View card = measureCard(coordinator, dpToPx(1000), dpToPx(1000));
+        assertEquals(dpToPx(380), card.getMeasuredWidth());
+        assertEquals(dpToPx(710), card.getMeasuredHeight());
         assertEquals(
-                getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width),
-                params.width);
-        assertEquals(
-                getDimensionPixelSize(
-                        R.dimen.glic_experimental_opt_in_dialog_non_scrollable_max_height),
-                params.height);
-        assertEquals(
-                params.height,
+                dpToPx(710),
                 coordinator.getPropertyModelForTesting().get(ModalDialogProperties.MAX_HEIGHT));
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h500dp-land")
+    public void testShow_Landscape_UsesLandscapeSize() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+
+        // In landscape, values-land/dimens.xml overrides the size to 600x310dp. The dialog
+        // offers 1000x500dp, which fits it.
+        View card = measureCard(coordinator, dpToPx(1000), dpToPx(500));
+        assertEquals(dpToPx(600), card.getMeasuredWidth());
+        assertEquals(dpToPx(310), card.getMeasuredHeight());
+        assertEquals(
+                dpToPx(310),
+                coordinator.getPropertyModelForTesting().get(ModalDialogProperties.MAX_HEIGHT));
+    }
+
+    @Test
+    @Config(qualifiers = "w1000dp-h1000dp")
+    public void testShow_CardCappedToAvailableSpace() {
+        GlicExperimentalOptInUiCoordinator coordinator =
+                GlicExperimentalOptInUiCoordinator.show(NATIVE_PTR, mWindowAndroid, mWebContents);
+        assertNotNull(coordinator);
+
+        // The dialog offers only 300x400dp, less than the 380x567dp target, so the card shrinks
+        // to the offered space instead of overflowing it.
+        View card = measureCard(coordinator, dpToPx(300), dpToPx(400));
+        assertEquals(dpToPx(300), card.getMeasuredWidth());
+        assertEquals(dpToPx(400), card.getMeasuredHeight());
     }
 
     @Test
@@ -294,16 +322,19 @@ public class GlicExperimentalOptInUiCoordinatorUnitTest {
                 ((ColorDrawable) dialog.getWindow().getDecorView().getBackground()).getColor());
     }
 
-    private ViewGroup.LayoutParams getCardLayoutParams(
-            GlicExperimentalOptInUiCoordinator coordinator) {
-        PropertyModel model = coordinator.getPropertyModelForTesting();
-        assertNotNull(model);
-        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        assertNotNull(customView);
-        return customView.getLayoutParams();
+    /** Measures the card as the dialog would, offering it at most the given space. */
+    private View measureCard(
+            GlicExperimentalOptInUiCoordinator coordinator,
+            int availableWidth,
+            int availableHeight) {
+        View card = coordinator.getPropertyModelForTesting().get(ModalDialogProperties.CUSTOM_VIEW);
+        card.measure(
+                View.MeasureSpec.makeMeasureSpec(availableWidth, View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(availableHeight, View.MeasureSpec.AT_MOST));
+        return card;
     }
 
-    private int getDimensionPixelSize(int dimenRes) {
-        return mActivity.getResources().getDimensionPixelSize(dimenRes);
+    private int dpToPx(int dp) {
+        return Math.round(dp * mActivity.getResources().getDisplayMetrics().density);
     }
 }

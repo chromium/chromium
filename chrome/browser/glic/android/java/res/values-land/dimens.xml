@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Glic experimental opt-in dialog dimensions in landscape. -->
+    <dimen name="glic_experimental_opt_in_dialog_max_width">600dp</dimen>
+    <dimen name="glic_experimental_opt_in_dialog_max_height">310dp</dimen>
+    <dimen name="glic_experimental_opt_in_dialog_non_scrollable_max_height">310dp</dimen>
+</resources>
