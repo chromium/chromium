@@ -290,10 +290,12 @@ TEST_F(AV1BuilderTest, BuildTemporalSequenceHeaderOBU) {
 }
 
 TEST_F(AV1BuilderTest, BuildFrameOBU) {
-  // MakeSequenceHeader() turns on superres, so both frames carry a
-  // use_superres bit inside frame_size() (spec 5.9.8). The key frame is
-  // therefore one bit longer than it used to be, with the trailing align bits
-  // absorbing the difference. allow_warped_motion follows in a later CL.
+  // MakeSequenceHeader() turns on superres and warped motion, so both frames
+  // carry a use_superres bit inside frame_size() (spec 5.9.8) and the inter
+  // frame additionally carries allow_warped_motion between skip_mode_params()
+  // and reduced_tx_set (spec 5.9.2). The key frame is therefore one bit longer
+  // than it used to be and the inter frame two, with the trailing align bits
+  // absorbing the difference.
   const std::vector<uint8_t> expected_packed_keyframe = {
       0b00010000, 0b00000000, 0b00100011, 0b00100000, 0b00000000, 0b01000001,
       0b00000100, 0b00010010, 0b10110000, 0b00000000, 0b00000000, 0b00000000,
@@ -304,7 +306,7 @@ TEST_F(AV1BuilderTest, BuildFrameOBU) {
       0b00000000, 0b00100011, 0b00100000, 0b00000000, 0b01000001, 0b00000100,
       0b00010010, 0b10110000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
       0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000,
-      0b00000000, 0b00000000, 0b00101000, 0b00000000};
+      0b00000000, 0b00000000, 0b00100100, 0b00000000};
   AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeSequenceHeader();
   AV1BitstreamBuilder frame_obu_key =
       AV1BitstreamBuilder::BuildFrameHeaderOBU(seq_hdr, MakeFrameHeader(0));
@@ -1053,6 +1055,63 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWritesSkipModePresentWhenAllowed) {
   // The element written straight after skip_mode_present. If the bit were
   // missing this would pick up allow_warped_motion's slot instead.
   EXPECT_TRUE(frame_header.reduced_tx_set);
+}
+
+// The golden byte comparison in BuildFrameOBU pins the output but cannot say
+// whether it is correct. MakeSequenceHeader() enables superres and warped
+// motion, the two features whose syntax elements used to be missing entirely,
+// so round trip that same configuration through the decoder.
+TEST_F(AV1BuilderTest, BuildFrameOBUWithSuperresAndWarpedMotion) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeSequenceHeader();
+  ASSERT_TRUE(seq_hdr.enable_superres);
+  ASSERT_TRUE(seq_hdr.enable_warped_motion);
+
+  std::vector<uint8_t> chunk =
+      PackTemporalUnit(seq_hdr, MakeFrameHeader(0), /*metadata_obus=*/{});
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  libgav1::RefCountedBufferPtr key_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&key_frame), libgav1::kStatusOk);
+  const auto sequence_header = parser->sequence_header();
+  const auto key_frame_header = parser->frame_header();
+  // use_superres is inside frame_size(), so a key frame exercises it too.
+  EXPECT_FALSE(key_frame_header.use_superres);
+  EXPECT_TRUE(key_frame_header.reduced_tx_set);
+  av1_decoder_state_->UpdateReferenceFrames(
+      key_frame, base::strict_cast<int>(key_frame_header.refresh_frame_flags));
+
+  // allow_warped_motion only exists on inter frames, so a delta frame is
+  // needed to cover it.
+  AV1BitstreamBuilder::FrameHeader pic_hdr = MakeFrameHeader(1);
+  pic_hdr.refresh_frame_flags = 0b00000010;
+  AV1BitstreamBuilder packed;
+  packed.WriteOBUHeader(libgav1::kObuFrame, /*has_size=*/true);
+  AV1BitstreamBuilder frame_obu =
+      AV1BitstreamBuilder::BuildFrameHeaderOBU(seq_hdr, pic_hdr);
+  EXPECT_EQ(frame_obu.OutstandingBits() % 8, 0ull);
+  static const uint8_t tile_group_obu[] = {0x00, 0x80};
+  packed.WriteValueInLeb128(frame_obu.OutstandingBits() / 8 +
+                            std::size(tile_group_obu));
+  packed.AppendBitstreamBuffer(std::move(frame_obu));
+  for (const uint8_t byte : tile_group_obu) {
+    packed.Write(byte, 8);
+  }
+  chunk = std::move(packed).Flush();
+  auto delta_parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+  delta_parser->set_sequence_header(sequence_header);
+  libgav1::RefCountedBufferPtr delta_frame;
+  ASSERT_EQ(delta_parser->ParseOneFrame(&delta_frame), libgav1::kStatusOk);
+
+  const auto frame_header = delta_parser->frame_header();
+  EXPECT_FALSE(frame_header.use_superres);
+  EXPECT_FALSE(frame_header.allow_warped_motion);
+  // Written straight after allow_warped_motion, so it only lands here if that
+  // bit was actually emitted.
+  EXPECT_TRUE(frame_header.reduced_tx_set);
+  EXPECT_EQ(frame_header.tx_mode, libgav1::kTxModeSelect);
 }
 
 // Spec 5.9.2. FrameIsIntra covers intra only frames as well as key frames, so

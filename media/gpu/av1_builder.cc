@@ -582,6 +582,13 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
     ret.WriteBool(false);  // skip_mode_present.
   }
 
+  // Refer to AV1 spec section 5.9.2. The encoder does not use warped motion,
+  // but the bit is present whenever the sequence enables it on an inter frame.
+  if (!frame_is_intra && !error_resilient_mode &&
+      seq_hdr.enable_warped_motion) {
+    ret.WriteBool(false);  // allow_warped_motion.
+  }
+
   ret.WriteBool(pic_hdr.reduced_tx_set);
 
   // Global motion parameters. Refer to AV1 spec section 5.9.24.
