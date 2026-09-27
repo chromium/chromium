@@ -87,13 +87,13 @@ void ThumbnailReadinessTracker::WasDiscarded() {
 }
 
 void ThumbnailReadinessTracker::UpdateReadiness(Readiness readiness) {
-  if (readiness == last_readiness_) {
-    return;
+  // If the WebContents is closing or discarded, it shouldn't be captured.
+  if (web_contents()->IsBeingDestroyed() || web_contents()->WasDiscarded()) {
+    readiness = Readiness::kNotReady;
   }
 
-  // If the WebContents is closing, it shouldn't be captured.
-  if (web_contents()->IsBeingDestroyed()) {
-    readiness = Readiness::kNotReady;
+  if (readiness == last_readiness_) {
+    return;
   }
 
   last_readiness_ = readiness;

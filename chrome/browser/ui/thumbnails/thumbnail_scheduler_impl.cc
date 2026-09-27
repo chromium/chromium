@@ -41,6 +41,7 @@ void ThumbnailSchedulerImpl::AddTab(TabCapturer* tab) {
 }
 
 void ThumbnailSchedulerImpl::RemoveTab(TabCapturer* tab) {
+  SetTabCapturePriority(tab, TabCapturePriority::kNone);
   int num_removed = tabs_.erase(tab);
   DCHECK_EQ(1, num_removed) << "removed a tab that was never added";
 }
@@ -74,12 +75,7 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
   if (tab_node->is_capturing) {
     switch (old_data.priority) {
       case TabCapturePriority::kNone:
-        // TODO(crbug.com/347770670): ThumbnailSchedulerImpl may not correctly
-        // deschedule discarded tabs when their priority transitions to kNone.
-        // This should be corrected once WebContentsDiscard lands and the old
-        // discarding code path is cleaned up.
-        NOTREACHED(base::NotFatalUntil::M160);
-        return;
+        NOTREACHED();
       case TabCapturePriority::kLow:
         lo_prio_capture_count_ -= 1;
         break;
@@ -166,14 +162,21 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
     lo_prio_capture_count_ += 1;
   }
 
+  // Update internal capturing state before notifying capturers, as
+  // SetCapturePermittedByScheduler() may synchronously trigger re-entrant
+  // priority updates.
   if (descheduled_tab) {
-    descheduled_tab->capturer->SetCapturePermittedByScheduler(false);
     descheduled_tab->is_capturing = false;
   }
+  if (scheduled_tab) {
+    scheduled_tab->is_capturing = true;
+  }
 
+  if (descheduled_tab) {
+    descheduled_tab->capturer->SetCapturePermittedByScheduler(false);
+  }
   if (scheduled_tab) {
     scheduled_tab->capturer->SetCapturePermittedByScheduler(true);
-    scheduled_tab->is_capturing = true;
   }
 }
 

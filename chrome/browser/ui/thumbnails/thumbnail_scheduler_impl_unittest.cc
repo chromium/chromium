@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
 
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,13 +21,22 @@ class FakeTabCapturer : public ThumbnailScheduler::TabCapturer {
 
   bool capture_permitted() const { return capture_permitted_; }
 
+  void set_on_capture_permitted_changed(
+      base::RepeatingCallback<void(bool)> callback) {
+    on_capture_permitted_changed_ = std::move(callback);
+  }
+
   // ThumbnailScheduler::TabCapturer:
   void SetCapturePermittedByScheduler(bool capture_permitted) override {
     capture_permitted_ = capture_permitted;
+    if (on_capture_permitted_changed_) {
+      on_capture_permitted_changed_.Run(capture_permitted);
+    }
   }
 
  private:
   bool capture_permitted_ = false;
+  base::RepeatingCallback<void(bool)> on_capture_permitted_changed_;
 };
 
 }  // namespace
@@ -193,4 +205,52 @@ TEST_F(ThumbnailSchedulerImplTest, CaptureStopsOnPriorityNone) {
   scheduler_.SetTabCapturePriority(
       &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kNone);
   EXPECT_THAT(TabScheduledStates(), ElementsAre(false, false, false, false));
+}
+
+TEST_F(ThumbnailSchedulerImplTest, ReentrantPriorityChangeDuringSchedule) {
+  // Simulate a tab that synchronously resets its priority to kNone when
+  // permitted to capture (e.g. when IncrementCapturerCount triggers a reload
+  // navigation on a tab needing reload).
+  tabs_[0].set_on_capture_permitted_changed(base::BindRepeating(
+      [](ThumbnailSchedulerImpl* scheduler, FakeTabCapturer* tab,
+         bool permitted) {
+        if (permitted) {
+          scheduler->SetTabCapturePriority(
+              tab, ThumbnailSchedulerImpl::TabCapturePriority::kNone);
+        }
+      },
+      &scheduler_, &tabs_[0]));
+
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(false, false, false, false));
+
+  // Subsequent priority changes from kNone should succeed without hitting
+  // NOTREACHED() and without leaked capture counts.
+  tabs_[0].set_on_capture_permitted_changed({});
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  scheduler_.SetTabCapturePriority(
+      &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(true, true, false, false));
+}
+
+TEST_F(ThumbnailSchedulerImplTest, RemoveTabWhileCapturingSchedulesWaitingTab) {
+  scheduler_.SetTabCapturePriority(
+      &tabs_[0], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  scheduler_.SetTabCapturePriority(
+      &tabs_[1], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  scheduler_.SetTabCapturePriority(
+      &tabs_[2], ThumbnailSchedulerImpl::TabCapturePriority::kHigh);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(true, true, false, false));
+
+  // Removing a capturing tab should deschedule it, decrement the active capture
+  // count, and schedule the next waiting tab.
+  scheduler_.RemoveTab(&tabs_[0]);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(false, true, true, false));
+
+  // Re-add tabs_[0] so TearDown() can remove all tabs cleanly, and verify its
+  // state was reset.
+  scheduler_.AddTab(&tabs_[0]);
+  EXPECT_THAT(TabScheduledStates(), ElementsAre(false, true, true, false));
 }
