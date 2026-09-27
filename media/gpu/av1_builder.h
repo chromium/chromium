@@ -107,6 +107,7 @@ struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::SequenceHeader {
   Libgav1ColorRange color_range = kLibgav1ColorRangeStudio;
   Libgav1ChromaSamplePosition chroma_sample_position =
       kLibgav1ChromaSamplePositionUnknown;
+  bool separate_uv_delta_q = true;
 };
 
 struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::FrameHeader {
@@ -118,7 +119,6 @@ struct MEDIA_GPU_EXPORT AV1BitstreamBuilder::FrameHeader {
   bool disable_cdf_update = false;
   bool disable_frame_end_update_cdf = false;
   uint32_t base_qindex = 0;
-  bool separate_uv_delta_q = true;
   int8_t delta_q_y_dc = 0;
   int8_t delta_q_u_dc = 0;
   int8_t delta_q_u_ac = 0;

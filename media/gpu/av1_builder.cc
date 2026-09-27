@@ -15,6 +15,16 @@ namespace media {
 
 namespace {
 constexpr int kPrimaryReferenceNone = 7;
+
+// Spec 5.9.13, the reverse process of read_delta_q().
+void WriteDeltaQ(AV1BitstreamBuilder& builder, int8_t delta_q) {
+  if (delta_q) {
+    builder.WriteBool(true);
+    builder.WriteSU(delta_q, 7);
+  } else {
+    builder.WriteBool(false);
+  }
+}
 }  // namespace
 
 AV1BitstreamBuilder::SequenceHeader::SequenceHeader() = default;
@@ -129,7 +139,7 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
     ret.Write(seq_hdr.chroma_sample_position, 2);
   }
 
-  ret.WriteBool(true);   // Separate uv delta q.
+  ret.WriteBool(seq_hdr.separate_uv_delta_q);
   ret.WriteBool(false);  // No film grain parameters present.
 
   ret.PutTrailingBits();
@@ -202,43 +212,27 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildFrameHeaderOBU(
 
   // Pack quantization params. Refer to AV1 spec section 5.9.12.
   ret.Write(pic_hdr.base_qindex, 8);
-  if (pic_hdr.delta_q_y_dc) {
-    ret.WriteBool(true);
-    ret.WriteSU(pic_hdr.delta_q_y_dc, 7);
-  } else {
-    ret.WriteBool(false);
-  }
-  if (pic_hdr.separate_uv_delta_q) {
-    bool diff_uv_delta = false;
-    if (pic_hdr.delta_q_u_dc != pic_hdr.delta_q_v_dc ||
-        pic_hdr.delta_q_u_ac != pic_hdr.delta_q_v_ac) {
-      diff_uv_delta = true;
-    }
+  WriteDeltaQ(ret, pic_hdr.delta_q_y_dc);
+  // NumPlanes is always 3: mono_chrome is never signalled. Only diff_uv_delta
+  // is gated on separate_uv_delta_q - the U deltas are read whenever there is
+  // chroma. Spec 5.9.12.
+  bool diff_uv_delta = false;
+  if (seq_hdr.separate_uv_delta_q) {
+    diff_uv_delta = pic_hdr.delta_q_u_dc != pic_hdr.delta_q_v_dc ||
+                    pic_hdr.delta_q_u_ac != pic_hdr.delta_q_v_ac;
     ret.WriteBool(diff_uv_delta);
-    for (const auto& delta_q : {pic_hdr.delta_q_u_dc, pic_hdr.delta_q_u_ac}) {
-      if (delta_q) {
-        ret.WriteBool(true);
-        ret.WriteSU(delta_q, 7);
-      } else {
-        ret.WriteBool(false);
-      }
-    }
-    if (diff_uv_delta) {
-      for (const auto& delta_q : {pic_hdr.delta_q_v_dc, pic_hdr.delta_q_v_ac}) {
-        if (delta_q) {
-          ret.WriteBool(true);
-          ret.WriteSU(delta_q, 7);
-        } else {
-          ret.WriteBool(false);
-        }
-      }
-    }
+  }
+  WriteDeltaQ(ret, pic_hdr.delta_q_u_dc);
+  WriteDeltaQ(ret, pic_hdr.delta_q_u_ac);
+  if (diff_uv_delta) {
+    WriteDeltaQ(ret, pic_hdr.delta_q_v_dc);
+    WriteDeltaQ(ret, pic_hdr.delta_q_v_ac);
   }
   ret.WriteBool(pic_hdr.using_qmatrix);
   if (pic_hdr.using_qmatrix) {
     ret.Write(pic_hdr.qm_y, 4);
     ret.Write(pic_hdr.qm_u, 4);
-    if (pic_hdr.separate_uv_delta_q) {
+    if (seq_hdr.separate_uv_delta_q) {
       ret.Write(pic_hdr.qm_v, 4);
     }
   }

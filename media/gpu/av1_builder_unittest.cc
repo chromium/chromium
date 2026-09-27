@@ -940,6 +940,50 @@ TEST_F(AV1BuilderTest, BuildFrameOBUWithReferenceSelect) {
   EXPECT_TRUE(frame_header_delta.reference_mode_select);
 }
 
+// Spec 5.9.12. separate_uv_delta_q belongs to color_config(), and only
+// diff_uv_delta is gated on it: the U deltas are coded whenever the stream has
+// chroma, and the V deltas are inferred from them. Covers both halves of the
+// move -- the sequence header has to emit the flag the frame header reads, and
+// the frame header has to emit the U deltas regardless of it.
+TEST_F(AV1BuilderTest, BuildFrameOBUWithoutSeparateUvDeltaQ) {
+  AV1BitstreamBuilder::SequenceHeader seq_hdr = MakeDefaultSequenceHeader();
+  seq_hdr.separate_uv_delta_q = false;
+
+  AV1BitstreamBuilder::FrameHeader pic_hdr = MakeFrameHeader(0);
+  pic_hdr.delta_q_y_dc = -2;
+  pic_hdr.delta_q_u_dc = 5;
+  pic_hdr.delta_q_u_ac = -7;
+  // Never coded: the decoder infers DeltaQV* from DeltaQU*.
+  pic_hdr.delta_q_v_dc = 11;
+  pic_hdr.delta_q_v_ac = 13;
+  pic_hdr.using_qmatrix = true;
+  pic_hdr.qm_y = 2;
+  pic_hdr.qm_u = 3;
+  pic_hdr.qm_v = 4;  // Also not coded; inferred as qm_u.
+
+  std::vector<uint8_t> chunk =
+      PackTemporalUnit(seq_hdr, pic_hdr, /*metadata_obus=*/{});
+  auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+      chunk.data(), chunk.size(), 0, buffer_pool_.get(),
+      av1_decoder_state_.get()));
+
+  libgav1::RefCountedBufferPtr current_frame;
+  ASSERT_EQ(parser->ParseOneFrame(&current_frame), libgav1::kStatusOk);
+  const auto frame_header = parser->frame_header();
+  EXPECT_EQ(frame_header.quantizer.delta_dc[0], pic_hdr.delta_q_y_dc);
+  EXPECT_EQ(frame_header.quantizer.delta_dc[1], pic_hdr.delta_q_u_dc);
+  EXPECT_EQ(frame_header.quantizer.delta_ac[1], pic_hdr.delta_q_u_ac);
+  EXPECT_EQ(frame_header.quantizer.delta_dc[2], pic_hdr.delta_q_u_dc);
+  EXPECT_EQ(frame_header.quantizer.delta_ac[2], pic_hdr.delta_q_u_ac);
+  EXPECT_TRUE(frame_header.quantizer.use_matrix);
+  EXPECT_EQ(frame_header.quantizer.matrix_level[0], pic_hdr.qm_y);
+  EXPECT_EQ(frame_header.quantizer.matrix_level[1], pic_hdr.qm_u);
+  EXPECT_EQ(frame_header.quantizer.matrix_level[2], pic_hdr.qm_u);
+  // Written after quantization_params(), so it only lands here if the U deltas
+  // and the omitted V deltas were sized correctly.
+  EXPECT_TRUE(frame_header.reduced_tx_set);
+}
+
 // Spec 4.10.5. Padding a leb128 out to a fixed size is allowed, but the parse
 // loop stops at the first byte with the continuation bit clear, so only the
 // bytes before the last one may set it.

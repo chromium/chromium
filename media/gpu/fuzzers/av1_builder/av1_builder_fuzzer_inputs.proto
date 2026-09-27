@@ -26,7 +26,8 @@ message AV1FrameHeader {
   optional bool disable_cdf_update = 3;
   optional bool disable_frame_end_update_cdf = 4;
   optional uint32 base_qindex = 5;
-  optional bool separate_uv_delta_q = 6;
+  // Moved to AV1SequenceHeader.
+  optional bool separate_uv_delta_q = 6 [deprecated = true];
   optional int32 delta_q_y_dc = 7;
   optional int32 delta_q_u_dc = 8;
   optional int32 delta_q_u_ac = 9;
@@ -102,6 +103,7 @@ message AV1SequenceHeader {
   optional bool enable_superres = 20;
   optional bool enable_cdef = 21;
   optional bool enable_restoration = 22;
+  optional bool separate_uv_delta_q = 23;
 }
 
 message AV1FrameOBUList {

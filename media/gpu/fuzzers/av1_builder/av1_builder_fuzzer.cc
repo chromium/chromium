@@ -56,6 +56,7 @@ media::AV1BitstreamBuilder::SequenceHeader ConvertToAV1BuilderSequenceHeader(
   seq_hdr.enable_superres = sequence_header.enable_superres();
   seq_hdr.enable_cdef = sequence_header.enable_cdef();
   seq_hdr.enable_restoration = sequence_header.enable_restoration();
+  seq_hdr.separate_uv_delta_q = sequence_header.separate_uv_delta_q();
 
   return seq_hdr;
 }
@@ -95,7 +96,6 @@ media::AV1BitstreamBuilder::FrameHeader ConvertToAV1BuilderFrameHeader(
   pic_hdr.disable_cdf_update = frame_header.disable_cdf_update();
 
   pic_hdr.base_qindex = frame_header.base_qindex();
-  pic_hdr.separate_uv_delta_q = frame_header.separate_uv_delta_q();
   pic_hdr.delta_q_y_dc = frame_header.delta_q_y_dc();
   pic_hdr.delta_q_u_dc = frame_header.delta_q_u_dc();
   pic_hdr.delta_q_u_ac = frame_header.delta_q_u_ac();

@@ -1084,7 +1084,7 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, UpdateFrameHeaderPostEncode) {
   UpdatePostEncodeValues(post_encode_values, post_encode_flags);
   EXPECT_EQ(frame_header_.base_qindex,
             post_encode_values.Quantization.BaseQIndex);
-  EXPECT_TRUE(frame_header_.separate_uv_delta_q);
+  EXPECT_TRUE(GetSequenceHeader().separate_uv_delta_q);
   EXPECT_EQ(frame_header_.delta_q_y_dc,
             post_encode_values.Quantization.YDCDeltaQ);
   EXPECT_EQ(frame_header_.delta_q_u_dc,
