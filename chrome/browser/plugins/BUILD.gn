@@ -53,6 +53,10 @@ source_set("plugins") {
 
   if (is_android) {
     sources += [ "plugin_observer_android.h" ]
+    public_deps += [
+      "//components/tabs:public",
+      "//ui/base/unowned_user_data",
+    ]
   }
 }
 

@@ -38,6 +38,7 @@
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/payments/web_payments_observer.h"
+#include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -333,6 +334,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   auto_fetch_navigation_observer_ =
       offline_pages::AutoFetchPageLoadWatcher::MaybeCreateNavigationObserver(
           web_contents);
+
+  plugin_observer_android_ =
+      GetUserDataFactory().CreateInstance<PluginObserverAndroid>(*tab, *tab,
+                                                                 web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

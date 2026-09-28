@@ -108,6 +108,7 @@ class HttpAuthCacheStatus;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
 class OomInterventionTabHelper;
+class PluginObserverAndroid;
 class PolicyAuditorBridge;
 class RevokedPermissionsTabHelper;
 class SecurityStateEventObserver;
@@ -234,6 +235,7 @@ class TabFeatures {
       from_gws_navigation_and_keep_alive_request_observer_;
   std::unique_ptr<offline_pages::AutoFetchNavigationObserver>
       auto_fetch_navigation_observer_;
+  std::unique_ptr<PluginObserverAndroid> plugin_observer_android_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

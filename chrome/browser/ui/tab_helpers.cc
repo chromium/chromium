@@ -155,7 +155,6 @@
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/content_capture/common/content_capture_features.h"
@@ -572,7 +571,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateAndroid>(
           web_contents));
-  PluginObserverAndroid::CreateForWebContents(web_contents);
   task_manager::WebContentsTags::CreateForTabContents(web_contents);
 
   // ChromeFacilitatedPaymentsClient requires ContentAutofillClient / payments
