@@ -18,6 +18,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
@@ -927,6 +928,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   sound_content_setting_observer_ =
       GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
           tab, tab, tab.GetContents());
+
+  task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
+      tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1262,6 +1266,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   sound_content_setting_observer_ =
       GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
           *tab, *tab, new_contents);
+
+  task_tab_helper_.reset();
+  task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
+      *tab, *tab, new_contents);
 }
 
 customize_chrome::SidePanelController*

@@ -22,7 +22,6 @@
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
-#include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -534,7 +533,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
   }
 #endif
-  tasks::TaskTabHelper::CreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);

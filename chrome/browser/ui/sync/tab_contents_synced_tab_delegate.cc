@@ -13,6 +13,7 @@
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -227,5 +228,6 @@ const tasks::TaskTabHelper* TabContentsSyncedTabDelegate::task_tab_helper()
   if (web_contents_ == nullptr) {
     return nullptr;
   }
-  return tasks::TaskTabHelper::FromWebContents(web_contents_);
+  return tasks::TaskTabHelper::From(
+      tabs::TabInterface::MaybeGetFromContents(web_contents_));
 }

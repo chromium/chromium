@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/content/navigation_task_id.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
@@ -19,27 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 
-class MockTaskTabHelper : public tasks::TaskTabHelper {
- public:
-  static void CreateForWebContents(content::WebContents* contents) {
-    DCHECK(contents);
-    if (!FromWebContents(contents))
-      contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new MockTaskTabHelper(contents)));
-  }
-
-  static MockTaskTabHelper* FromWebContents(content::WebContents* contents) {
-    DCHECK(contents);
-    return static_cast<MockTaskTabHelper*>(
-        contents->GetUserData(UserDataKey()));
-  }
-
-  explicit MockTaskTabHelper(content::WebContents* web_contents)
-      : tasks::TaskTabHelper(web_contents) {}
-
-  friend class TaskTabHelperUnitTest;
-};
-
 class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
  protected:
   const std::string kSearchDomain = "http://www.google.com/";
@@ -47,13 +27,13 @@ class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    MockTaskTabHelper::CreateForWebContents(web_contents());
-    task_tab_helper_ = MockTaskTabHelper::FromWebContents(web_contents());
+    task_tab_helper_ =
+        std::make_unique<tasks::TaskTabHelper>(tab_, web_contents());
     NavigateAndCommit(kSearchURL);
   }
 
   void TearDown() override {
-    task_tab_helper_ = nullptr;
+    task_tab_helper_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -80,7 +60,8 @@ class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetController().GetLastCommittedEntry();
   }
 
-  raw_ptr<MockTaskTabHelper> task_tab_helper_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
 };
 
 TEST_F(TaskTabHelperUnitTest, TestGetCurrentTaskId) {

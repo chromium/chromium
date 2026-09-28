@@ -11,23 +11,31 @@
 #include "components/sessions/content/navigation_task_id.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace sessions {
 class NavigationTaskId;
 }
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace tasks {
 
 // This is a tab helper that collects navigation state information of a
 // complex task.
-class TaskTabHelper : public content::WebContentsObserver,
-                      public content::WebContentsUserData<TaskTabHelper> {
+class TaskTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(TaskTabHelper);
+
+  TaskTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
   TaskTabHelper(const TaskTabHelper&) = delete;
   TaskTabHelper& operator=(const TaskTabHelper&) = delete;
 
   ~TaskTabHelper() override;
+
+  static TaskTabHelper* From(tabs::TabInterface* tab);
 
   // WebContentsObserver
   void NavigationEntryCommitted(
@@ -42,11 +50,7 @@ class TaskTabHelper : public content::WebContentsObserver,
     return &local_navigation_task_id_map_.find(nav_id)->second;
   }
 
- protected:
-  explicit TaskTabHelper(content::WebContents* web_contents);
-
  private:
-  friend class content::WebContentsUserData<TaskTabHelper>;
   void UpdateAndRecordTaskIds(
       const content::LoadCommittedDetails& load_details);
 
@@ -56,7 +60,7 @@ class TaskTabHelper : public content::WebContentsObserver,
   std::unordered_map<int, sessions::NavigationTaskId>
       local_navigation_task_id_map_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<TaskTabHelper> scoped_unowned_user_data_;
 };
 
 }  // namespace tasks

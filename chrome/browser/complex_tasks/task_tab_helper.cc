@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "ui/base/page_transition_types.h"
@@ -38,11 +39,19 @@ bool DoesTransitionContinueTask(ui::PageTransition transition) {
 
 namespace tasks {
 
-TaskTabHelper::TaskTabHelper(content::WebContents* web_contents)
+DEFINE_USER_DATA(TaskTabHelper);
+
+TaskTabHelper::TaskTabHelper(tabs::TabInterface& tab,
+                             content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<TaskTabHelper>(*web_contents) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 TaskTabHelper::~TaskTabHelper() = default;
+
+// static
+TaskTabHelper* TaskTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void TaskTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
@@ -148,8 +157,6 @@ static int64_t JNI_TaskTabHelper_GetRootTaskId(
   return -1;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper);
 
 }  // namespace tasks
 

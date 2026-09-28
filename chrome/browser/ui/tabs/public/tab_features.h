@@ -242,6 +242,10 @@ namespace tab_groups {
 class CollaborationMessagingTabData;
 }  // namespace tab_groups
 
+namespace tasks {
+class TaskTabHelper;
+}  // namespace tasks
+
 #if !BUILDFLAG(IS_ANDROID)
 namespace record_replay {
 class RecordReplayClient;
@@ -891,6 +895,8 @@ class TabFeatures {
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
 
   std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
+
+  std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
