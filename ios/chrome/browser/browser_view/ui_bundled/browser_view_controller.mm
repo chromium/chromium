@@ -2148,6 +2148,10 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
+  if (self.fullscreenController &&
+      self.fullscreenController->IsForceFullscreenMode()) {
+    return;
+  }
   if (!enabled) {
     [self updateForFullscreenProgress:1.0];
   }

@@ -60,6 +60,9 @@ void FullscreenUIUpdater::FullscreenControllerObserverForwarder::
 void FullscreenUIUpdater::FullscreenControllerObserverForwarder::
     FullscreenEnabledStateChanged(FullscreenController* controller,
                                   bool enabled) {
+  if (controller->IsForceFullscreenMode()) {
+    return;
+  }
   if ([ui_element_ respondsToSelector:@selector(updateForFullscreenEnabled:)]) {
     [ui_element_ updateForFullscreenEnabled:enabled];
   } else if (!enabled) {

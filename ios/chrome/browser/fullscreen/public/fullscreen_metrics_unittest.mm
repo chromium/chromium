@@ -87,6 +87,12 @@ class FullscreenMetricsTest : public PlatformTest {
 // Tests that FullscreenModel records kForcedByCode when reset for navigation.
 TEST_F(FullscreenMetricsTest, RecordsExitForcedByCodeOnReset) {
   model()->ResetForNavigation();  // Clear initial state if any.
+  // Enter fullscreen first so that `progress_ < 1.0`, ensuring that a
+  // subsequent call to `ResetForNavigation()` represents an actual fullscreen
+  // exit.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
   base::HistogramTester histogram_tester;
   model()->ResetForNavigation();
   histogram_tester.ExpectUniqueSample(
@@ -325,6 +331,25 @@ TEST_F(FullscreenMetricsTest, RecordsExitBottomReached) {
       FullscreenModeTransitionTrigger::kBottomReached, 1);
 }
 
+// Tests that LegacyFullscreenMediator records kForcedByCode when entering
+// fullscreen.
+TEST_F(FullscreenMetricsTest, RecordsEnterForcedByCode) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  base::HistogramTester histogram_tester;
+  mediator_->ForceEnterFullscreen(
+      /*insets_update_enabled=*/true,
+      FullscreenModeTransitionTrigger::kForcedByCode);
+
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  histogram_tester.ExpectUniqueSample(
+      kEnterFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByCode, 1);
+}
+
 // Tests that LegacyFullscreenMediator records kForcedByUser when exiting
 // fullscreen.
 TEST_F(FullscreenMetricsTest, RecordsEnterForcedByUser) {
@@ -363,6 +388,91 @@ TEST_F(FullscreenMetricsTest, RecordsExitForcedByUser) {
   histogram_tester.ExpectUniqueSample(
       kExitFullscreenModeTransitionTriggerHistogram,
       FullscreenModeTransitionTrigger::kForcedByUser, 1);
+}
+
+// Tests that LegacyFullscreenMediator records only kForcedByUser when exiting
+// force fullscreen mode via user interaction.
+TEST_F(FullscreenMetricsTest, RecordsExitForcedByUserOnForceExit) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  mediator_->ForceEnterFullscreen(
+      /*insets_update_enabled=*/true,
+      FullscreenModeTransitionTrigger::kForcedByUser);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  base::HistogramTester histogram_tester;
+  mediator_->ForceExitFullscreen(
+      FullscreenModeTransitionTrigger::kForcedByUser);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  histogram_tester.ExpectUniqueSample(
+      kExitFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByUser, 1);
+}
+
+// Tests that LegacyFullscreenMediator records only kForcedByCode when exiting
+// force fullscreen mode via code.
+TEST_F(FullscreenMetricsTest, RecordsExitForcedByCodeOnForceExit) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  mediator_->ForceEnterFullscreen(
+      /*insets_update_enabled=*/true,
+      FullscreenModeTransitionTrigger::kForcedByCode);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  base::HistogramTester histogram_tester;
+  mediator_->ForceExitFullscreen(
+      FullscreenModeTransitionTrigger::kForcedByCode);
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  histogram_tester.ExpectUniqueSample(
+      kExitFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByCode, 1);
+}
+
+// Tests that calling ExitFullscreen when toolbars are already fully visible
+// does not record a spurious exit metric.
+TEST_F(FullscreenMetricsTest, NoExitMetricWhenAlreadyVisible) {
+  model()->ResetForNavigation();
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  base::HistogramTester histogram_tester;
+  mediator_->ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
+  EXPECT_FALSE(observer().animator());
+
+  histogram_tester.ExpectTotalCount(
+      kExitFullscreenModeTransitionTriggerHistogram, 0);
+}
+
+// Tests that when an exit animation is interrupted by ResetForNavigation(),
+// exactly one exit transition is recorded.
+TEST_F(FullscreenMetricsTest,
+       RecordsExitForcedByCodeWhenResetInterruptsAnimation) {
+  model()->ResetForNavigation();
+  model()->SetScrollViewHeight(200.0);
+  model()->SetContentHeight(1000.0);
+
+  // Enter fullscreen.
+  SimulateFullscreenUserScrollWithDelta(model(), 100.0);
+  ASSERT_EQ(model()->progress(), 0.0);
+
+  base::HistogramTester histogram_tester;
+  // Start exit animation.
+  mediator_->ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
+  EXPECT_TRUE(observer().animator());
+
+  // Simulate a document navigation completing while the exit animation is in
+  // flight.
+  model()->ResetForNavigation();
+  ASSERT_EQ(model()->progress(), 1.0);
+
+  histogram_tester.ExpectUniqueSample(
+      kExitFullscreenModeTransitionTriggerHistogram,
+      FullscreenModeTransitionTrigger::kForcedByCode, 1);
 }
 
 // Tests that FullscreenModel records kTimeInFullscreenHistogram.

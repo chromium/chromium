@@ -97,6 +97,9 @@ void FullscreenModel::DecrementDisabledCounter() {
 
 void FullscreenModel::ForceEnterFullscreen() {
   SetProgress(0.0);
+  if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
+    UpdateBaseOffset();
+  }
 }
 
 void FullscreenModel::ResetForNavigation() {
@@ -110,8 +113,16 @@ void FullscreenModel::ResetForNavigation() {
     set_manually_forced(false);
     DecrementDisabledCounter();
   }
-  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
-                                FullscreenModeTransitionTrigger::kForcedByCode);
+  // Only record an exit transition if the toolbars were actually collapsed
+  // (`progress_ < 1.0`). If toolbars are already fully visible
+  // (`progress_ == 1.0`), routine navigations and tab changes should not log a
+  // false `kForcedByCode` exit event. This also avoids double-counting exit
+  // transitions when `ForceExitFullscreen` explicitly logs its own trigger.
+  if (progress_ < 1.0) {
+    base::UmaHistogramEnumeration(
+        kExitFullscreenModeTransitionTriggerHistogram,
+        FullscreenModeTransitionTrigger::kForcedByCode);
+  }
   progress_ = 1.0;
   scrolling_ = false;
   start_scrolling_time_ = std::nullopt;

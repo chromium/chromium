@@ -47,6 +47,9 @@ const int kPageHeightEM = 400;
 // Tolerance for width increase check.
 const CGFloat kViewportFitCoverTolerance = 5.0;
 
+// Identifier for Find in Page Done button in iOS's system Find Navigator.
+constexpr char kFindInPageDoneButtonID[] = "find.doneButton";
+
 // Hides the toolbar by scrolling down.
 void HideToolbarUsingUI() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
@@ -161,6 +164,12 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
   [ChromeEarlGrey setBoolValue:NO
              forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
+
+  if ([ChromeEarlGrey mainTabCount] == 0) {
+    [ChromeEarlGrey openNewTab];
+  } else {
+    [ChromeEarlGrey selectTabAtIndex:0];
+  }
 
   auto* responses = &_responses;
   self.testServer->RegisterRequestHandler(base::BindRepeating(
@@ -297,16 +306,19 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 
 // Tests hiding and showing of the header with a user scroll on a long page.
 - (void)testHideHeaderUserScrollLongPage {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
-
   _responses["/tallpage"] =
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
 
   GURL URL = self.testServer->GetURL("/tallpage");
-  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
   [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Set up the histogram tester after initial page load so that only the
+  // fullscreen transitions triggered by user scrolls are observed.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
   // Simulate a user scroll down.
   HideToolbarUsingUI();
   [ChromeEarlGreyUI waitForToolbarVisible:NO];
@@ -323,21 +335,12 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
       forHistogram:@"IOS.Fullscreen.TransitionTrigger.Enter"];
   GREYAssertNil(enterError, @"Histogram error: %@", enterError);
 
-  // Exit has kUserControlled and kForcedByCode from page
-  // load.
-  NSError* exitError0 = [MetricsAppInterface
+  NSError* exitError = [MetricsAppInterface
        expectCount:1
          forBucket:static_cast<int>(
                        FullscreenModeTransitionTrigger::kUserControlled)
       forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
-  GREYAssertNil(exitError0, @"Histogram error: %@", exitError0);
-
-  NSError* exitError1 = [MetricsAppInterface
-       expectCount:1
-         forBucket:static_cast<int>(
-                       FullscreenModeTransitionTrigger::kForcedByCode)
-      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
-  GREYAssertNil(exitError1, @"Histogram error: %@", exitError1);
+  GREYAssertNil(exitError, @"Histogram error: %@", exitError);
 
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
@@ -414,9 +417,14 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
       kPageHeightEM);
 
   GURL URL = self.testServer->GetURL("/origin");
-  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
   [ChromeEarlGrey waitForWebStateContainingText:"Tall page"];
   [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Set up the histogram tester after initial page load so that only the
+  // fullscreen exit transition triggered by the reload is observed.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
 
   // Hide the toolbar.
   HideToolbarUsingUI();
@@ -424,6 +432,77 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [ChromeEarlGrey tapWebStateElementWithID:@"link"];
   // Main test is here: Make sure the header is still visible!
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Reloading the page forces exit fullscreen via navigation, logging
+  // kForcedByCode.
+  NSError* exitError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kForcedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError, @"Histogram error: %@", exitError);
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
+}
+
+// Tests that opening Find in Page forces fullscreen and records kForcedByCode.
+// TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
+- (void)testEnterForcedByCodeFindInPage {
+  _responses["/tallpage"] =
+      base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
+
+  const GURL URL = self.testServer->GetURL("/tallpage");
+  // Use the longer page-load timeout for web state appearance. The default 4s
+  // is not always enough on a cold-started app on a loaded bot.
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Set up the histogram tester after initial page load so that only the
+  // fullscreen transitions triggered by Find in Page are observed.
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+
+  // Open Find in Page from the tools menu using the same robust scroll action
+  // as find_in_page_egtest.
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+  [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> tableViewMatcher =
+      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kToolsMenuFindInPageId),
+                                   grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
+      onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              @(kFindInPageDoneButtonID))
+                                  timeout:kWaitForPageLoadTimeout];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Entering Find in Page forces fullscreen, logging kForcedByCode.
+  NSError* enterError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kForcedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Enter"];
+  GREYAssertNil(enterError, @"Histogram error: %@", enterError);
+
+  // Close Find in Page with Done button to reset UI state for subsequent tests.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(@(kFindInPageDoneButtonID))]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 @(kFindInPageDoneButtonID))];
+  [ChromeEarlGrey waitForKeyboardToDisappear];
+  [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                @"Failed to release histogram tester.");
 }
 
 // Test to make sure the header is shown when a Tab opened by the current Tab is
@@ -632,7 +711,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
 
   GURL URL = self.testServer->GetURL("/tallpage");
-  [ChromeEarlGrey loadURL:URL];
+  [ChromeEarlGrey loadURL:URL withTimeout:kWaitForPageLoadTimeout];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
 
   // Long press on the omnibox to show the context menu.
@@ -1008,6 +1087,11 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 // TODO(crbug.com/499969010): Ensure PDFs display properly with new Fullscreen
 // implementation.
 - (void)testLongPDFScroll {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
+}
+
+// TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
+- (void)testEnterForcedByCodeFindInPage {
   EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
 }
 
