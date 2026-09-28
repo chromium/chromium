@@ -65,13 +65,6 @@ packager_builder(
     properties = {
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
-            "preprocess": [{
-                "name": "third_party/android_deps",
-                "cmd": [
-                    "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
-                    "-v",
-                ],
-            }],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
         },

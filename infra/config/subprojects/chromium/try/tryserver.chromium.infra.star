@@ -33,10 +33,6 @@ try_.builder(
             # Enable for CLs touching files under "3pp" directories which are
             # two level deep or more from the repo root.
             ".+/3pp/.+",
-            # Also enable for cls that affect fetch_all.py or the groovy scripts
-            # it runs unders buildSrc.
-            "third_party/android_deps/fetch_all.py",
-            "third_party/android_deps/buildSrc/src/main/groovy/.+",
         ],
     ),
     execution_timeout = 6 * time.hour,
@@ -44,13 +40,6 @@ try_.builder(
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
             "package_prefix": "chromium_3pp",
-            "preprocess": [{
-                "name": "third_party/android_deps",
-                "cmd": [
-                    "{CHECKOUT}/src/third_party/android_deps/fetch_all.py",
-                    "-v",
-                ],
-            }],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
         },
