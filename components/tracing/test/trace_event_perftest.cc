@@ -99,7 +99,7 @@ class TraceEventPerfTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   base::test::TracingEnvironment tracing_environment_;
 };
 
