@@ -931,6 +931,16 @@ Status GetAXNodeByElementId(Session* session,
   if (status.IsError())
     return status;
 
+  // CallFunction validates element reachability while resolving its argument.
+  base::ListValue args;
+  args.Append(element.Clone());
+  std::unique_ptr<base::Value> unused;
+  status = web_view->CallFunction(session->GetCurrentFrameId(),
+                                  "function(element) {}", args, &unused);
+  if (status.IsError()) {
+    return status;
+  }
+
   base::DictValue body;
   body.Set("backendNodeId", backend_node_id);
   body.Set("fetchRelatives", false);

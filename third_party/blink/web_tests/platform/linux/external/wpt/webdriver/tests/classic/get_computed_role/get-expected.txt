@@ -1,9 +1,5 @@
 This is a wdspec test.
 [FAIL] test_no_such_element_with_shadow_root
-  AssertionError
-[FAIL] test_stale_element_reference[top_context]
-  AssertionError
-[FAIL] test_stale_element_reference[child_context]
-  AssertionError
+  assert 200 == 404
 Harness: the test ran to completion.
 

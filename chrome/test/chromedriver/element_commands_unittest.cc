@@ -99,7 +99,62 @@ class MockResponseWebView : public StubWebView {
   }
 };
 
+class StaleAXNodeWebView : public StubWebView {
+ public:
+  StaleAXNodeWebView() : StubWebView("1") {}
+  ~StaleAXNodeWebView() override = default;
+
+  Status GetBackendNodeIdByElement(const std::string& frame,
+                                   const base::Value& element,
+                                   int* node_id) override {
+    EXPECT_EQ("", frame);
+    ExpectElement(element);
+    *node_id = 42;
+    return Status(kOk);
+  }
+
+  Status CallFunction(const std::string& frame,
+                      const std::string& function,
+                      const base::ListValue& args,
+                      std::unique_ptr<base::Value>* result) override {
+    EXPECT_EQ("", frame);
+    EXPECT_EQ("function(element) {}", function);
+    EXPECT_EQ(1u, args.size());
+    if (args.size() == 1u) {
+      ExpectElement(args[0]);
+    }
+    return Status(kStaleElementReference);
+  }
+
+  Status SendCommandAndGetResult(const std::string& cmd,
+                                 const base::DictValue& params,
+                                 std::unique_ptr<base::Value>* value) override {
+    ADD_FAILURE() << cmd << " must not be called for a stale element";
+    return Status(kUnknownError);
+  }
+
+ private:
+  void ExpectElement(const base::Value& element) {
+    ASSERT_TRUE(element.is_dict());
+    const std::string* element_id =
+        element.GetDict().FindString(GetElementKey(/*w3c_compliant=*/true));
+    ASSERT_NE(nullptr, element_id);
+    EXPECT_EQ("element-id", *element_id);
+  }
+};
+
 }  // namespace
+
+TEST(ElementCommandsTest, GetAXNodeByElementIdRejectsStaleElement) {
+  StaleAXNodeWebView webview;
+  Session session("id");
+  std::unique_ptr<base::Value> ax_node;
+
+  Status status =
+      GetAXNodeByElementId(&session, &webview, "element-id", &ax_node);
+
+  EXPECT_EQ(kStaleElementReference, status.code());
+}
 
 TEST(ElementCommandsTest, ExecuteGetElementRect_SizeError) {
   MockResponseWebView webview = MockResponseWebView();
