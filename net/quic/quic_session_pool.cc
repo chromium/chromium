@@ -1864,49 +1864,31 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
   bool has_disconnected = false;
   bool has_other_going_away = false;
 
-  bool has_inflight_preconnect = false;
-  bool has_inflight_non_preconnect = false;
-  std::optional<QuicSessionKey> mismatched_inflight_key;
-
-  // Step 1: Check if one or more sessions with the exact matching
+  // Step 1: Check if one or more established sessions with the exact matching
   // `quic_session_key()` already exist in `all_sessions_`.
   // Note: Since `DetermineQuicConnectionReuseDetails()` is only called when no
   // active session could be reused directly from `active_sessions_`, any
   // matching session found here must be in a non-active state (e.g. draining,
-  // disconnected, or received a GOAWAY frame) or still in the process of
-  // connecting / handshaking.
+  // disconnected, or received a GOAWAY frame).
   for (const auto& session : all_sessions_) {
     if (session_key == session->quic_session_key()) {
       if (!session->OneRttKeysAvailable()) {
-        if (session->connection() && session->connection()->connected()) {
-          if (session->session_creation_initiator() ==
-              MultiplexedSessionCreationInitiator::kPreconnect) {
-            has_inflight_preconnect = true;
-          } else {
-            has_inflight_non_preconnect = true;
-          }
-        }
-      } else {
-        if (session->session_creation_initiator() ==
-            MultiplexedSessionCreationInitiator::kPreconnect) {
-          has_preconnect = true;
-        } else {
-          has_non_preconnect = true;
-        }
-        if (session->goaway_received()) {
-          has_goaway = true;
-        } else if (!session->connection() ||
-                   !session->connection()->connected()) {
-          has_disconnected = true;
-        } else {
-          has_other_going_away = true;
-        }
+        continue;
       }
-    } else if (!session->OneRttKeysAvailable() && session->connection() &&
-               session->connection()->connected() &&
-               session_key.server_id() == session->server_id() &&
-               !mismatched_inflight_key) {
-      mismatched_inflight_key = session->quic_session_key();
+      if (session->session_creation_initiator() ==
+          MultiplexedSessionCreationInitiator::kPreconnect) {
+        has_preconnect = true;
+      } else {
+        has_non_preconnect = true;
+      }
+      if (session->goaway_received()) {
+        has_goaway = true;
+      } else if (!session->connection() ||
+                 !session->connection()->connected()) {
+        has_disconnected = true;
+      } else {
+        has_other_going_away = true;
+      }
     }
   }
 
@@ -1935,39 +1917,25 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
   } else if (has_non_preconnect) {
     details.establishment_reason =
         QuicSessionEstablishmentReason::kSessionExistedButNotPreconnect;
-  } else if (has_inflight_preconnect) {
-    details.establishment_reason =
-        QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect;
-  } else if (has_inflight_non_preconnect) {
-    details.establishment_reason =
-        QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect;
-  } else {
-    details.establishment_reason =
-        QuicSessionEstablishmentReason::kNoSessionExisted;
   }
 
-  // If matching session(s) existed in `all_sessions_` (established or
-  // in-flight), we have already determined the establishment reason (and
-  // non-reuse reason for established sessions).
-  if (details.establishment_reason !=
-      QuicSessionEstablishmentReason::kNoSessionExisted) {
+  // If established session(s) existed in `all_sessions_`, we have already
+  // determined the establishment reason and non-reuse reason.
+  if (details.establishment_reason.has_value()) {
     return details;
   }
 
-  // Step 2: No exact matching session existed in `all_sessions_`.
-  // Check if there is an active session or active job targeting the same server
-  // (ServerId / host & port). If so, identify which key fields caused the
-  // partition mismatch preventing reuse.
-  std::optional<QuicSessionKey> active_key =
-      GetActiveSessionToServerId(session_key);
-  if (!active_key) {
-    active_key = GetActiveJobToServerId(session_key);
-  }
-  if (!active_key) {
-    active_key = mismatched_inflight_key;
-  }
+  struct MismatchResult {
+    int mismatch_count = 0;
+    std::optional<QuicSessionNonReuseReason> reason;
+  };
 
-  if (active_key) {
+  auto analyze_mismatch =
+      [&](const QuicSessionKey& target_key) -> MismatchResult {
+    if (session_key == target_key) {
+      return {0, std::nullopt};
+    }
+
     int mismatch_count = 0;
     std::optional<QuicSessionNonReuseReason> single_mismatch_reason;
 
@@ -1979,45 +1947,157 @@ QuicConnectionReuseDetails QuicSessionPool::DetermineQuicConnectionReuseDetails(
     };
 
     check_mismatch(
-        session_key.socket_tag() != active_key->socket_tag(),
+        session_key.socket_tag() != target_key.socket_tag(),
         QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_SocketTag);
     check_mismatch(session_key.network_anonymization_key() !=
-                       active_key->network_anonymization_key(),
+                       target_key.network_anonymization_key(),
                    QuicSessionNonReuseReason::
                        kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey);
     check_mismatch(
-        session_key.privacy_mode() != active_key->privacy_mode(),
+        session_key.privacy_mode() != target_key.privacy_mode(),
         QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode);
     check_mismatch(
-        session_key.secure_dns_policy() != active_key->secure_dns_policy(),
+        session_key.secure_dns_policy() != target_key.secure_dns_policy(),
         QuicSessionNonReuseReason::
             kNoSessionExisted_KeyMismatch_SecureDnsPolicy);
     check_mismatch(
-        session_key.proxy_chain() != active_key->proxy_chain() ||
-            session_key.session_usage() != active_key->session_usage() ||
-            session_key.require_dns_https_alpn() !=
-                active_key->require_dns_https_alpn() ||
-            session_key.disable_cert_verification_network_fetches() !=
-                active_key->disable_cert_verification_network_fetches() ||
-            session_key.target_network() != active_key->target_network(),
+        session_key.proxy_chain() != target_key.proxy_chain(),
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other);
+    check_mismatch(
+        session_key.session_usage() != target_key.session_usage(),
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other);
+    check_mismatch(
+        session_key.require_dns_https_alpn() !=
+            target_key.require_dns_https_alpn(),
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other);
+    check_mismatch(
+        session_key.disable_cert_verification_network_fetches() !=
+            target_key.disable_cert_verification_network_fetches(),
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other);
+    check_mismatch(
+        session_key.target_network() != target_key.target_network(),
         QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other);
 
     // If multiple key fields differ, categorize as MultipleFields rather than
     // attributing arbitrarily to a single field.
     if (mismatch_count > 1) {
-      details.non_reuse_reason = QuicSessionNonReuseReason::
-          kNoSessionExisted_KeyMismatch_MultipleFields;
-    } else if (mismatch_count == 1) {
-      details.non_reuse_reason = *single_mismatch_reason;
-    } else {
-      details.non_reuse_reason =
-          QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_Other;
+      return {mismatch_count, QuicSessionNonReuseReason::
+                                  kNoSessionExisted_KeyMismatch_MultipleFields};
     }
+    if (mismatch_count == 1) {
+      return {1, *single_mismatch_reason};
+    }
+    // `session_key != target_key` guarantees `mismatch_count >= 1`.
+    NOTREACHED();
+  };
+
+  // Step 2: No exact matching established session existed in `all_sessions_`.
+  // Evaluate candidates targeting `session_key.server_id()` across active
+  // sessions (`active_sessions_`), active jobs (`active_jobs_`), and
+  // handshaking sessions (`all_sessions_`). Select the candidate with the
+  // fewest mismatched key fields, breaking ties in favor of established active
+  // sessions first, and then preconnect over non-preconnect for in-flight
+  // attempts.
+  struct CandidateMatch {
+    int mismatch_count;
+    bool is_established;
+    bool is_preconnect;
+    QuicSessionEstablishmentReason establishment_reason;
+    std::optional<QuicSessionNonReuseReason> non_reuse_reason;
+
+    bool IsBetterThan(const CandidateMatch& other) const {
+      if (mismatch_count != other.mismatch_count) {
+        return mismatch_count < other.mismatch_count;
+      }
+      if (is_established != other.is_established) {
+        return is_established;
+      }
+      if (is_preconnect != other.is_preconnect) {
+        return is_preconnect;
+      }
+      return false;
+    }
+  };
+
+  std::optional<CandidateMatch> best_candidate;
+
+  auto record_candidate = [&](const QuicSessionKey& candidate_key,
+                              bool is_established, bool is_preconnect) {
+    DCHECK(session_key.server_id() == candidate_key.server_id());
+    MismatchResult mismatch = analyze_mismatch(candidate_key);
+    QuicSessionEstablishmentReason establishment_reason;
+    if (is_established) {
+      establishment_reason = QuicSessionEstablishmentReason::kNoSessionExisted;
+    } else if (is_preconnect) {
+      establishment_reason =
+          QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect;
+    } else {
+      establishment_reason =
+          QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect;
+    }
+
+    CandidateMatch candidate{
+        .mismatch_count = mismatch.mismatch_count,
+        .is_established = is_established,
+        .is_preconnect = is_preconnect,
+        .establishment_reason = establishment_reason,
+        .non_reuse_reason = mismatch.reason,
+    };
+    if (!best_candidate || candidate.IsBetterThan(*best_candidate)) {
+      best_candidate = candidate;
+    }
+  };
+
+  for (const auto& [active_key, session] : active_sessions_) {
+    if (active_key.server_id() == session_key.server_id() &&
+        session_key != active_key) {
+      record_candidate(
+          active_key, /*is_established=*/true,
+          /*is_preconnect=*/session->session_creation_initiator() ==
+              MultiplexedSessionCreationInitiator::kPreconnect);
+    }
+  }
+
+  for (const auto& [job_key, job] : active_jobs_) {
+    CHECK(job);
+    if (job_key.server_id() == session_key.server_id()) {
+      record_candidate(job_key, /*is_established=*/false,
+                       /*is_preconnect=*/job->session_creation_initiator() ==
+                           MultiplexedSessionCreationInitiator::kPreconnect);
+    }
+  }
+
+  // Also check `all_sessions_` for sessions still in the process of
+  // handshaking (e.g. when attempts are managed via QuicSessionAttemptManager
+  // under HEv3 / HttpStreamPool). Check O(1) connection liveness and server_id
+  // match before calling `IsSessionActive()` (which performs a linear scan over
+  // `active_sessions_`).
+  // Note: If multiple handshaking sessions in `all_sessions_` tie on
+  // `mismatch_count` and `is_preconnect` but differ in which field mismatches,
+  // the reported `non_reuse_reason` retains the first encountered candidate
+  // (arbitrarily determined by pointer address order in `all_sessions_`).
+  for (const auto& session : all_sessions_) {
+    if (session->server_id() == session_key.server_id() &&
+        !session->OneRttKeysAvailable() && !session->goaway_received() &&
+        session->connection() && session->connection()->connected() &&
+        !IsSessionActive(session.get())) {
+      record_candidate(
+          session->quic_session_key(), /*is_established=*/false,
+          /*is_preconnect=*/session->session_creation_initiator() ==
+              MultiplexedSessionCreationInitiator::kPreconnect);
+    }
+  }
+
+  if (best_candidate) {
+    details.establishment_reason = best_candidate->establishment_reason;
+    details.non_reuse_reason = best_candidate->non_reuse_reason;
     return details;
   }
 
   // Step 3: No active session or job exists for this server at all (cold
   // start).
+  details.establishment_reason =
+      QuicSessionEstablishmentReason::kNoSessionExisted;
   details.non_reuse_reason =
       QuicSessionNonReuseReason::kNoSessionExisted_TrueColdStart;
   return details;

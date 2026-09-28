@@ -188,22 +188,27 @@ std::vector<TestParams> GetTestParams() {
 
 class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
  public:
-  SessionAttemptHelper(QuicSessionPool* pool,
-                       quic::ParsedQuicVersion quic_version,
-                       bool is_stale = false)
+  SessionAttemptHelper(
+      QuicSessionPool* pool,
+      quic::ParsedQuicVersion quic_version,
+      bool is_stale = false,
+      const url::SchemeHostPort& destination =
+          url::SchemeHostPort(url::kHttpsScheme,
+                              QuicSessionPoolTestBase::kDefaultServerHostName,
+                              QuicSessionPoolTestBase::kDefaultServerPort),
+      PrivacyMode privacy_mode = PrivacyMode::PRIVACY_MODE_DISABLED,
+      MultiplexedSessionCreationInitiator initiator =
+          MultiplexedSessionCreationInitiator::kUnknown)
       : pool_(pool),
-        quic_endpoint(quic_version,
-                      IPEndPoint(IPAddress::IPv4Localhost(),
-                                 QuicSessionPoolTestBase::kDefaultServerPort),
-                      ConnectionEndpointMetadata()) {
-    const url::SchemeHostPort destination(
-        url::kHttpsScheme, QuicSessionPoolTestBase::kDefaultServerHostName,
-        QuicSessionPoolTestBase::kDefaultServerPort);
+        quic_endpoint(
+            quic_version,
+            IPEndPoint(IPAddress::IPv4Localhost(), destination.port()),
+            ConnectionEndpointMetadata()) {
     QuicSessionKey session_key(
-        destination.host(), destination.port(),
-        PrivacyMode::PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-        SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false,
+        destination.host(), destination.port(), privacy_mode,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false,
         /*disable_cert_verification_network_fetches=*/false,
         handles::kInvalidNetworkHandle);
     quic_session_alias_key_ = QuicSessionAliasKey(destination, session_key);
@@ -213,7 +218,7 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         /*dns_resolution_start_time=*/base::TimeTicks(),
         /*dns_resolution_end_time=*/base::TimeTicks(),
         /*dns_resolution_details=*/std::nullopt, /*use_dns_aliases=*/true,
-        /*dns_aliases=*/{}, MultiplexedSessionCreationInitiator::kUnknown,
+        /*dns_aliases=*/{}, initiator,
         /*connection_management_config=*/std::nullopt, is_stale);
   }
 
@@ -16365,8 +16370,10 @@ TEST_P(QuicSessionPoolTest,
     return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 1;
   }));
 
-  // Querying for PRIVACY_MODE_DISABLED should return kNoSessionExisted because
-  // the in-flight session key does not match.
+  // Querying for PRIVACY_MODE_DISABLED: an in-flight non-preconnect session
+  // targeting the same server exists in active_jobs_, so establishment reason
+  // is kInflightSessionButNotPreconnect and non-reuse reason is
+  // kNoSessionExisted_KeyMismatch_PrivacyMode.
   QuicSessionKey key(kGoogleDestination.host(), kGoogleDestination.port(),
                      PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                      SessionUsage::kDestination, SocketTag(),
@@ -16376,13 +16383,15 @@ TEST_P(QuicSessionPoolTest,
                      handles::kInvalidNetworkHandle);
 
   EXPECT_EQ(
-      QuicSessionEstablishmentReason::kNoSessionExisted,
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect,
       QuicSessionPoolPeer::DetermineQuicSessionEstablishmentReasonForTesting(
           pool_.get(), key));
 
   QuicConnectionReuseDetails details =
       QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
           pool_.get(), key);
+  EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect,
+            details.establishment_reason);
   EXPECT_EQ(
       QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
       details.non_reuse_reason);
@@ -16520,6 +16529,8 @@ TEST_P(
     QuicChromiumClientSession* session2 =
         GetActiveSession(kGoogleDestination, PRIVACY_MODE_ENABLED);
     ASSERT_TRUE(session2);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              session2->quic_connection_reuse_details().establishment_reason);
     EXPECT_EQ(
         QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
         session2->quic_connection_reuse_details().non_reuse_reason);
@@ -16530,10 +16541,604 @@ TEST_P(
 
   histogram_tester.ExpectUniqueSample(
       "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
-      QuicSessionEstablishmentReason::kNoSessionExisted, 1);
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
   histogram_tester.ExpectUniqueSample(
       "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
-      QuicSessionEstablishmentReason::kNoSessionExisted, 1);
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.NonPreconnect.Used",
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.Used",
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode, 1);
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    GoogleSearchEstablishmentReasonMetrics_InflightSessionDuringDnsResolution) {
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  host_resolver_->set_ondemand_mode(true);
+
+  {
+    MockQuicData socket_data(version_);
+    socket_data.AddReadPauseForever();
+    socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+    // Initiate request 1 with preconnect initiator while DNS is pending.
+    RequestBuilder builder1(this);
+    builder1.destination = kGoogleDestination;
+    builder1.url = GURL("https://www.google.com");
+    builder1.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kPreconnect;
+    EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+    // Verify that no session exists in all_sessions_ yet (still in DNS), but
+    // the job is active in active_jobs_.
+    EXPECT_EQ(0, QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()));
+    EXPECT_TRUE(HasActiveJob(kGoogleDestination, PRIVACY_MODE_DISABLED));
+
+    QuicSessionKey key(kGoogleDestination.host(), kGoogleDestination.port(),
+                       PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                       SessionUsage::kDestination, SocketTag(),
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                       /*require_dns_https_alpn=*/false,
+                       /*disable_cert_verification_network_fetches=*/false,
+                       handles::kInvalidNetworkHandle);
+
+    // Even during DNS resolution before any socket or session is allocated,
+    // the in-flight attempt in active_jobs_ must be detected.
+    QuicConnectionReuseDetails details =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details.establishment_reason);
+    EXPECT_FALSE(details.non_reuse_reason.has_value());
+
+    // Also verify that a partition key mismatch against the in-flight job is
+    // properly classified under non_reuse_reason during DNS resolution.
+    QuicSessionKey privacy_key(
+        kGoogleDestination.host(), kGoogleDestination.port(),
+        PRIVACY_MODE_ENABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+        SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails mismatched_details =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), privacy_key);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              mismatched_details.establishment_reason);
+    EXPECT_EQ(
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
+        mismatched_details.non_reuse_reason);
+
+    host_resolver_->ResolveAllPending();
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 1;
+    }));
+  }
+
+  pool_.reset();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    GoogleSearchEstablishmentReasonMetrics_InflightSessionNakMismatchLogsHistogram) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details1 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  ProofVerifyDetailsChromium verify_details2 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Socket data for in-flight preconnect request 1 (stalls in handshake).
+    MockQuicData socket_data1(version_);
+    socket_data1.AddReadPauseForever();
+    socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+    // Socket data for request 2 (completes successfully under partitioned NAK).
+    client_maker_.Reset();
+    MockQuicData socket_data2(version_);
+    socket_data2.AddReadPauseForever();
+    socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+    socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+    // 1. Initiate in-flight preconnect with unpartitioned
+    // NetworkAnonymizationKey.
+    RequestBuilder builder1(this);
+    builder1.destination = kGoogleDestination;
+    builder1.url = GURL("https://www.google.com");
+    builder1.network_anonymization_key = NetworkAnonymizationKey();
+    builder1.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kPreconnect;
+    EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 1;
+    }));
+
+    // 2. Initiate non-preconnect request 2 with partitioned
+    // NetworkAnonymizationKey while request 1 is in flight.
+    SchemefulSite site(GURL("https://google.com"));
+    NetworkAnonymizationKey partitioned_nak =
+        NetworkAnonymizationKey::CreateSameSite(site);
+
+    crypto_client_stream_factory_.set_handshake_mode(
+        MockCryptoClientStream::CONFIRM_HANDSHAKE);
+    TestCompletionCallback callback2;
+    RequestBuilder builder2(this);
+    builder2.destination = kGoogleDestination;
+    builder2.url = GURL("https://www.google.com");
+    builder2.network_anonymization_key = partitioned_nak;
+    builder2.callback = callback2.callback();
+    builder2.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kUnknown;
+    EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+    EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+    std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+    EXPECT_TRUE(stream2);
+
+    QuicChromiumClientSession* session2 = GetActiveSession(
+        kGoogleDestination, PRIVACY_MODE_DISABLED, partitioned_nak);
+    ASSERT_TRUE(session2);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              session2->quic_connection_reuse_details().establishment_reason);
+    EXPECT_EQ(QuicSessionNonReuseReason::
+                  kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+              session2->quic_connection_reuse_details().non_reuse_reason);
+    QuicChromiumClientSessionPeer::SetNumTotalStreamsForTesting(session2, 1);
+  }
+
+  pool_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
+      QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.NonPreconnect.Used",
+      QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.Used",
+      QuicSessionNonReuseReason::
+          kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+      1);
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    GoogleSearchEstablishmentReasonMetrics_InflightNonPreconnectSessionMismatchedKeyLogsHistogram) {
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details1 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  ProofVerifyDetailsChromium verify_details2 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  base::HistogramTester histogram_tester;
+
+  {
+    // Socket data for in-flight non-preconnect request 1 (stalls in handshake).
+    MockQuicData socket_data1(version_);
+    socket_data1.AddReadPauseForever();
+    socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+    // Socket data for request 2 (completes successfully under
+    // PRIVACY_MODE_ENABLED).
+    client_maker_.Reset();
+    MockQuicData socket_data2(version_);
+    socket_data2.AddReadPauseForever();
+    socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+    socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+    // 1. Initiate in-flight non-preconnect on PRIVACY_MODE_DISABLED.
+    RequestBuilder builder1(this);
+    builder1.destination = kGoogleDestination;
+    builder1.url = GURL("https://www.google.com");
+    builder1.privacy_mode = PRIVACY_MODE_DISABLED;
+    builder1.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kUnknown;
+    EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 1;
+    }));
+
+    // 2. Initiate non-preconnect request 2 on PRIVACY_MODE_ENABLED while
+    // request 1 is in flight.
+    crypto_client_stream_factory_.set_handshake_mode(
+        MockCryptoClientStream::CONFIRM_HANDSHAKE);
+    TestCompletionCallback callback2;
+    RequestBuilder builder2(this);
+    builder2.destination = kGoogleDestination;
+    builder2.url = GURL("https://www.google.com");
+    builder2.privacy_mode = PRIVACY_MODE_ENABLED;
+    builder2.callback = callback2.callback();
+    builder2.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kUnknown;
+    EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+    EXPECT_THAT(callback2.WaitForResult(), IsOk());
+
+    std::unique_ptr<HttpStream> stream2 = CreateStream(&builder2.request);
+    EXPECT_TRUE(stream2);
+
+    QuicChromiumClientSession* session2 =
+        GetActiveSession(kGoogleDestination, PRIVACY_MODE_ENABLED);
+    ASSERT_TRUE(session2);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect,
+              session2->quic_connection_reuse_details().establishment_reason);
+    EXPECT_EQ(
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
+        session2->quic_connection_reuse_details().non_reuse_reason);
+    QuicChromiumClientSessionPeer::SetNumTotalStreamsForTesting(session2, 1);
+  }
+
+  pool_.reset();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.EstablishmentReason2.Used",
+      QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.NonPreconnect.Used",
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.GoogleSearch.NonReuseReason.Used",
+      QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode, 1);
+}
+
+TEST_P(QuicSessionPoolTest,
+       GoogleSearchEstablishmentReasonMetrics_CandidateRankingByMismatchCount) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details1 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  ProofVerifyDetailsChromium verify_details2 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+
+  {
+    // 1. Establish an active session 1 to kGoogleDestination under
+    // PRIVACY_MODE_DISABLED.
+    MockQuicData socket_data1(version_);
+    socket_data1.AddReadPauseForever();
+    socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+    socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+    TestCompletionCallback callback1;
+    RequestBuilder builder1(this);
+    builder1.destination = kGoogleDestination;
+    builder1.url = GURL("https://www.google.com");
+    builder1.privacy_mode = PRIVACY_MODE_DISABLED;
+    builder1.callback = callback1.callback();
+    EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+    EXPECT_THAT(callback1.WaitForResult(), IsOk());
+
+    std::unique_ptr<HttpStream> stream1 = CreateStream(&builder1.request);
+    EXPECT_TRUE(stream1);
+    EXPECT_TRUE(HasActiveSession(kGoogleDestination, PRIVACY_MODE_DISABLED));
+
+    // 2. Initiate in-flight preconnect job 2 under PRIVACY_MODE_ENABLED (stalls
+    // in handshake).
+    crypto_client_stream_factory_.set_handshake_mode(
+        MockCryptoClientStream::COLD_START);
+    MockQuicData socket_data2(version_);
+    socket_data2.AddReadPauseForever();
+    socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+    RequestBuilder builder2(this);
+    builder2.destination = kGoogleDestination;
+    builder2.url = GURL("https://www.google.com");
+    builder2.privacy_mode = PRIVACY_MODE_ENABLED;
+    builder2.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kPreconnect;
+    EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+
+    // Wait until the in-flight job has completed DNS resolution and stalled in
+    // its handshake.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 2 &&
+             HasActiveJob(kGoogleDestination, PRIVACY_MODE_ENABLED);
+    }));
+
+    // 3. Evaluate DetermineQuicConnectionReuseDetails across three mismatch
+    // scenarios:
+    //
+    // (a) `key3` (PRIVACY_MODE_DISABLED, partitioned_nak):
+    // - Established session1 (PRIVACY_MODE_DISABLED, empty NAK) has 1 mismatch
+    //   (NAK).
+    // - In-flight preconnect builder2 (PRIVACY_MODE_ENABLED, empty NAK) has 2
+    //   mismatches (PrivacyMode + NAK).
+    // -> session1 wins (1 < 2).
+    SchemefulSite site(GURL("https://example.com"));
+    NetworkAnonymizationKey partitioned_nak =
+        NetworkAnonymizationKey::CreateSameSite(site);
+    QuicSessionKey key3(kGoogleDestination.host(), kGoogleDestination.port(),
+                        PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                        SessionUsage::kDestination, SocketTag(),
+                        partitioned_nak, SecureDnsPolicy::kAllow,
+                        /*require_dns_https_alpn=*/false,
+                        /*disable_cert_verification_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle);
+
+    QuicConnectionReuseDetails details3 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key3);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kNoSessionExisted,
+              details3.establishment_reason);
+    EXPECT_EQ(QuicSessionNonReuseReason::
+                  kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+              details3.non_reuse_reason);
+
+    // (b) `key4` (PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS, empty NAK):
+    // - Established session1 has 1 mismatch (PrivacyMode).
+    // - In-flight preconnect builder2 has 1 mismatch (PrivacyMode).
+    // -> Tied at 1 mismatch; tie breaks in favor of the established session.
+    QuicSessionKey key4(kGoogleDestination.host(), kGoogleDestination.port(),
+                        PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS,
+                        ProxyChain::Direct(), SessionUsage::kDestination,
+                        SocketTag(), NetworkAnonymizationKey(),
+                        SecureDnsPolicy::kAllow,
+                        /*require_dns_https_alpn=*/false,
+                        /*disable_cert_verification_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle);
+
+    QuicConnectionReuseDetails details4 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key4);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kNoSessionExisted,
+              details4.establishment_reason);
+    EXPECT_EQ(
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
+        details4.non_reuse_reason);
+
+    // (c) `key5` (PRIVACY_MODE_ENABLED, partitioned_nak):
+    // - Established session1 (PRIVACY_MODE_DISABLED, empty NAK) has 2
+    //   mismatches (PrivacyMode + NAK).
+    // - In-flight preconnect builder2 (PRIVACY_MODE_ENABLED, empty NAK) has
+    //   only 1 mismatch (NAK).
+    // -> Near-miss in-flight preconnect builder2 wins (1 < 2) rather than being
+    //    masked by the more divergent established session.
+    QuicSessionKey key5(kGoogleDestination.host(), kGoogleDestination.port(),
+                        PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
+                        SessionUsage::kDestination, SocketTag(),
+                        partitioned_nak, SecureDnsPolicy::kAllow,
+                        /*require_dns_https_alpn=*/false,
+                        /*disable_cert_verification_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle);
+
+    QuicConnectionReuseDetails details5 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key5);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details5.establishment_reason);
+    EXPECT_EQ(QuicSessionNonReuseReason::
+                  kNoSessionExisted_KeyMismatch_NetworkAnonymizationKey,
+              details5.non_reuse_reason);
+  }
+
+  pool_.reset();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    GoogleSearchEstablishmentReasonMetrics_InflightSessionFallbackAllSessions) {
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  {
+    MockQuicData socket_data(version_);
+    socket_data.AddReadPauseForever();
+    socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+    // Create an attempt directly via QuicSessionAttempt (bypassing
+    // QuicSessionPool::active_jobs_) as occurs with QuicSessionAttemptManager /
+    // HttpStreamPool.
+    SessionAttemptHelper session_attempt(
+        pool_.get(), version_, /*is_stale=*/false, kGoogleDestination,
+        PRIVACY_MODE_DISABLED,
+        MultiplexedSessionCreationInitiator::kPreconnect);
+
+    int rv = session_attempt.Start();
+    EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+    // The session is created asynchronously in all_sessions_ while handshaking,
+    // but no Job exists in QuicSessionPool::active_jobs_.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 1;
+    }));
+    EXPECT_FALSE(HasActiveJob(kGoogleDestination, PRIVACY_MODE_DISABLED));
+
+    // 1. Exact key match against the handshaking session in all_sessions_.
+    QuicSessionKey key1(kGoogleDestination.host(), kGoogleDestination.port(),
+                        PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                        SessionUsage::kDestination, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*require_dns_https_alpn=*/false,
+                        /*disable_cert_verification_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails details1 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key1);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details1.establishment_reason);
+    EXPECT_FALSE(details1.non_reuse_reason.has_value());
+
+    // 2. Mismatched key (e.g. PRIVACY_MODE_ENABLED) falls back to the
+    // handshaking session in all_sessions_ and reports the key mismatch.
+    QuicSessionKey key2(kGoogleDestination.host(), kGoogleDestination.port(),
+                        PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
+                        SessionUsage::kDestination, SocketTag(),
+                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                        /*require_dns_https_alpn=*/false,
+                        /*disable_cert_verification_network_fetches=*/false,
+                        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails details2 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key2);
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details2.establishment_reason);
+    EXPECT_EQ(
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_PrivacyMode,
+        details2.non_reuse_reason);
+  }
+
+  pool_.reset();
+}
+
+TEST_P(
+    QuicSessionPoolTest,
+    GoogleSearchEstablishmentReasonMetrics_InflightSessionExactMatchWithSecondaryMismatch) {
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details1 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details1);
+  ProofVerifyDetailsChromium verify_details2 = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details2);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+
+  {
+    MockQuicData socket_data1(version_);
+    socket_data1.AddReadPauseForever();
+    socket_data1.AddSocketDataToFactory(socket_factory_.get());
+
+    MockQuicData socket_data2(version_);
+    socket_data2.AddReadPauseForever();
+    socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+    // 1. In-flight non-preconnect on PRIVACY_MODE_DISABLED.
+    RequestBuilder builder1(this);
+    builder1.destination = kGoogleDestination;
+    builder1.url = GURL("https://www.google.com");
+    builder1.privacy_mode = PRIVACY_MODE_DISABLED;
+    builder1.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kUnknown;
+    EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
+
+    // 2. In-flight preconnect on PRIVACY_MODE_ENABLED.
+    RequestBuilder builder2(this);
+    builder2.destination = kGoogleDestination;
+    builder2.url = GURL("https://www.google.com");
+    builder2.privacy_mode = PRIVACY_MODE_ENABLED;
+    builder2.session_creation_initiator =
+        MultiplexedSessionCreationInitiator::kPreconnect;
+    EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
+
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return QuicSessionPoolPeer::GetNumLiveSessions(pool_.get()) == 2 &&
+             HasActiveJob(kGoogleDestination, PRIVACY_MODE_DISABLED) &&
+             HasActiveJob(kGoogleDestination, PRIVACY_MODE_ENABLED);
+    }));
+
+    // 1. Query for PRIVACY_MODE_DISABLED: An exact match exists (builder1,
+    // non-preconnect), while a secondary mismatched preconnect job also exists
+    // (builder2, PRIVACY_MODE_ENABLED). The exact match must be prioritized
+    // over the secondary mismatched preconnect job.
+    QuicSessionKey key_non_preconnect(
+        kGoogleDestination.host(), kGoogleDestination.port(),
+        PRIVACY_MODE_DISABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+        SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails details1 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key_non_preconnect);
+
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionButNotPreconnect,
+              details1.establishment_reason);
+    EXPECT_FALSE(details1.non_reuse_reason.has_value());
+
+    // 2. Query for PRIVACY_MODE_ENABLED: An exact match exists on builder2
+    // (preconnect).
+    QuicSessionKey key_preconnect(
+        kGoogleDestination.host(), kGoogleDestination.port(),
+        PRIVACY_MODE_ENABLED, ProxyChain::Direct(), SessionUsage::kDestination,
+        SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails details2 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key_preconnect);
+
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details2.establishment_reason);
+    EXPECT_FALSE(details2.non_reuse_reason.has_value());
+
+    // 3. Query for a third key with PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS
+    // and SecureDnsPolicy::kDisable: Both builder1 and builder2 have 2
+    // mismatched fields (PrivacyMode + SecureDnsPolicy). When both preconnect
+    // and non-preconnect in-flight jobs are tied on mismatch count, preconnect
+    // attribution takes precedence.
+    QuicSessionKey key_both_mismatched(
+        kGoogleDestination.host(), kGoogleDestination.port(),
+        PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS, ProxyChain::Direct(),
+        SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
+        SecureDnsPolicy::kDisable,
+        /*require_dns_https_alpn=*/false,
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
+    QuicConnectionReuseDetails details3 =
+        QuicSessionPoolPeer::DetermineQuicConnectionReuseDetailsForTesting(
+            pool_.get(), key_both_mismatched);
+
+    EXPECT_EQ(QuicSessionEstablishmentReason::kInflightSessionAndWasPreconnect,
+              details3.establishment_reason);
+    EXPECT_EQ(
+        QuicSessionNonReuseReason::kNoSessionExisted_KeyMismatch_MultipleFields,
+        details3.non_reuse_reason);
+  }
+
+  pool_.reset();
 }
 
 TEST_P(QuicSessionPoolTest,

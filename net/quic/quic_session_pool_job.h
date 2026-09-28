@@ -70,6 +70,9 @@ class QuicSessionPool::Job : public QuicSessionAttempt::Delegate {
   }
   RequestPriority priority() const { return priority_; }
   QuicSessionPool* pool() const { return pool_.get(); }
+  MultiplexedSessionCreationInitiator session_creation_initiator() const {
+    return session_creation_initiator_;
+  }
 
   // Associate this job with another source.
   void AssociateWithNetLogSource(
