@@ -450,6 +450,7 @@ public interface TabModel extends TabList {
     int getTabCountForGroup(@Nullable Token tabGroupId);
 
     /** Returns whether a tab group exists with {@code tabGroupId}. */
+    // TODO(crbug.com/517544602): Rename to containsTabGroup to match TabListInterface.
     boolean tabGroupExists(@Nullable Token tabGroupId);
 
     /**
@@ -518,22 +519,7 @@ public interface TabModel extends TabList {
      * @param sourceTabId The id of the {@link Tab} to get the source group.
      * @param destinationTabId The id of a {@link Tab} to get the destination group.
      */
-    default void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId) {
-        mergeTabsToGroup(sourceTabId, destinationTabId, /* skipUpdateTabModel= */ false);
-    }
-
-    /**
-     * This method merges the source group that contains the {@code sourceTabId} to the destination
-     * group that contains the {@code destinationTabId}. This method only operates if two groups are
-     * in the same {@code TabModel}.
-     *
-     * @param sourceTabId The id of the {@link Tab} to get the source group.
-     * @param destinationTabId The id of a {@link Tab} to get the destination group.
-     * @param skipUpdateTabModel True if updating the tab model will be handled elsewhere (e.g. by
-     *     the tab strip).
-     */
-    void mergeTabsToGroup(
-            @TabId int sourceTabId, @TabId int destinationTabId, boolean skipUpdateTabModel);
+    void mergeTabsToGroup(@TabId int sourceTabId, @TabId int destinationTabId);
 
     /**
      * This method appends a list of {@link Tab}s to the destination group that contains the {@code}

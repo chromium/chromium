@@ -436,8 +436,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {}
 
     @Override
-    public void mergeTabsToGroup(
-            int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {}
+    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {}
 
     @Override
     public void mergeListOfTabsToGroup(

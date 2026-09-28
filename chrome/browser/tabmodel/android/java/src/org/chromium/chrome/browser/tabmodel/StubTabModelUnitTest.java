@@ -116,7 +116,6 @@ public class StubTabModelUnitTest {
                             // Default methods in interface that delegate to throwing methods.
                             // They are safe to inherit because they will eventually throw.
                             "pinTab",
-                            "mergeTabsToGroup",
                             "mergeListOfTabsToGroup"));
 
     @Test

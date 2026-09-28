@@ -121,8 +121,7 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void mergeTabsToGroup(
-            int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {
+    public void mergeTabsToGroup(int sourceTabId, int destinationTabId) {
         throw error();
     }
 

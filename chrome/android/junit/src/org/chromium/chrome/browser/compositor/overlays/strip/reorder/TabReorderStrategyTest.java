@@ -475,13 +475,13 @@ public class TabReorderStrategyTest extends ReorderStrategyTestBase {
     private void verifyMoved() {
         verify(mModel).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper, never()).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mModel, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mModel, never()).mergeTabsToGroup(anyInt(), anyInt());
     }
 
     private void verifyUnGrouped() {
         verify(mModel, never()).moveTab(anyInt(), anyInt());
         verify(mTabUnGrouper).ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
-        verify(mModel, never()).mergeTabsToGroup(anyInt(), anyInt(), anyBoolean());
+        verify(mModel, never()).mergeTabsToGroup(anyInt(), anyInt());
     }
 
     private void verifyMergedToGroup() {
