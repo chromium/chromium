@@ -370,7 +370,7 @@ TEST_F(VectorMathTest, Vmaxmgv) {
     for (const auto& source : GetPrimaryVectors(source_base)) {
       const float expected_max =
           std::accumulate(source.begin(), source.end(), 0.0f, maxmg);
-      float max = Vmaxmgv(source.as_span(), source.size());
+      float max = Vmaxmgv(source.as_span());
       EXPECT_EQ(expected_max, max) << testing::PrintToString(source);
     }
   }
@@ -459,7 +459,7 @@ TEST_F(VectorMathTest, Vsvesq) {
     for (const auto& source : GetPrimaryVectors(source_base)) {
       const float expected_sum =
           std::accumulate(source.begin(), source.end(), 0.0f, sqsum);
-      float sum = Vsvesq(source.as_span(), source.size());
+      float sum = Vsvesq(source.as_span());
       if (std::isfinite(expected_sum)) {
         // Optimized paths in Vsvesq use parallel partial sums which may result
         // in different rounding errors than the non-partial sum algorithm used

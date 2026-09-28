@@ -73,11 +73,10 @@ ALWAYS_INLINE static void Vclip(base::span<const float> source,
              dest.size());
 }
 
-ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
-                                  int source_stride,
-                                  float* max_p,
-                                  size_t frames_to_process) {
-  vDSP_maxmgv(source_p, source_stride, max_p, frames_to_process);
+ALWAYS_INLINE static float Vmaxmgv(base::span<const float> source) {
+  float max = 0;
+  vDSP_maxmgv(source.data(), 1, &max, source.size());
+  return max;
 }
 
 ALWAYS_INLINE static void Vmul(base::span<const float> source1,
@@ -122,11 +121,10 @@ ALWAYS_INLINE static void Vsadd(base::span<const float> source,
 #endif
 }
 
-ALWAYS_INLINE static void Vsvesq(const float* source_p,
-                                 int source_stride,
-                                 float* sum_p,
-                                 size_t frames_to_process) {
-  vDSP_svesq(source_p, source_stride, sum_p, frames_to_process);
+ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
+  float sum = 0;
+  vDSP_svesq(source.data(), 1, &sum, source.size());
+  return sum;
 }
 
 ALWAYS_INLINE static void Zvmul(const float* real1p,

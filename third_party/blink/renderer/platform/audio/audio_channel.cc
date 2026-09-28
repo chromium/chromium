@@ -122,7 +122,7 @@ float AudioChannel::MaxAbsValue() const {
     return 0;
   }
 
-  return vector_math::Vmaxmgv(Span(), length());
+  return vector_math::Vmaxmgv(Span());
 }
 
 }  // namespace blink

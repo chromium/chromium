@@ -52,9 +52,8 @@ void Vclip(base::span<const float> source,
            float high_threshold,
            base::span<float> dest);
 
-// *max_p = max(*max_p, source_max) where
-// source_max = max(abs(source[k])) for all k
-void Vmaxmgv(const float* source_p, float* max_p, size_t frames_to_process);
+// max = max(abs(source[k])) for all k
+float Vmaxmgv(base::span<const float> source);
 
 // dest[k] = source1[k] * source2[k]
 void Vmul(base::span<const float> source1,
@@ -72,8 +71,8 @@ void Vsadd(base::span<const float> source,
            float addend,
            base::span<float> dest);
 
-// sum += sum(source[k]^2) for all k
-void Vsvesq(const float* source_p, float* sum_p, size_t frames_to_process);
+// sum = sum(source[k]^2) for all k
+float Vsvesq(base::span<const float> source);
 
 // real_dest[k] = real1[k] * real2[k] - imag1[k] * imag2[k]
 // imag_dest[k] = real1[k] * imag2[k] + imag1[k] * real2[k]

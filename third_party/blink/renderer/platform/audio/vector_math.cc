@@ -127,12 +127,8 @@ void Vclip(base::span<const float> source,
               dest.first(frames_to_process));
 }
 
-float Vmaxmgv(base::span<const float> source, size_t frames_to_process) {
-  float max = 0;
-
-  impl::Vmaxmgv(source.data(), 1, &max, frames_to_process);
-
-  return max;
+float Vmaxmgv(base::span<const float> source) {
+  return impl::Vmaxmgv(source);
 }
 
 void Vmul(base::span<const float> source1,
@@ -167,12 +163,8 @@ void Vsadd(base::span<const float> source,
               dest.first(frames_to_process));
 }
 
-float Vsvesq(base::span<const float> source, size_t frames_to_process) {
-  float sum = 0;
-
-  impl::Vsvesq(source.data(), 1, &sum, frames_to_process);
-
-  return sum;
+float Vsvesq(base::span<const float> source) {
+  return impl::Vsvesq(source);
 }
 
 void Zvmul(base::span<const float> real1,

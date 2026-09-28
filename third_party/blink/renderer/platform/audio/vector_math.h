@@ -97,14 +97,12 @@ PLATFORM_EXPORT void Vsub(base::span<const float> source1,
 // Finds the maximum magnitude of a float vector:
 //
 // max = max(abs(source[k])) for all k.
-PLATFORM_EXPORT float Vmaxmgv(base::span<const float> source,
-                              size_t frames_to_process);
+PLATFORM_EXPORT float Vmaxmgv(base::span<const float> source);
 
 // Sums the squares of a float vector's elements:
 //
-// sum = sum(source[k]^2, k = 0, frames_to_process);
-PLATFORM_EXPORT float Vsvesq(base::span<const float> source,
-                             size_t frames_to_process);
+// sum = sum(source[k]^2) for all k.
+PLATFORM_EXPORT float Vsvesq(base::span<const float> source);
 
 // For an element-by-element multiply of two float vectors:
 //

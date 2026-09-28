@@ -8,6 +8,7 @@
 #include <arm_neon.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -104,33 +105,33 @@ ALWAYS_INLINE static void Vclip(base::span<const float> source,
   }
 }
 
-ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
-                                  int source_stride,
-                                  float* max_p,
-                                  size_t frames_to_process) {
-  size_t n = frames_to_process;
+ALWAYS_INLINE static float Vmaxmgv(base::span<const float> source) {
+  const size_t n = source.size();
+  const size_t tail_frames = n % kPackedFloatsPerRegister;
+  const size_t aligned_frames = n - tail_frames;
 
-  if (source_stride == 1) {
-    size_t tail_frames = n % kPackedFloatsPerRegister;
-    const float* end_p = UNSAFE_TODO(source_p + n - tail_frames);
-
-    float32x4_t four_max = vdupq_n_f32(*max_p);
-    while (source_p < end_p) {
-      float32x4_t source = vld1q_f32(source_p);
-      four_max = vmaxq_f32(four_max, vabsq_f32(source));
-      UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
+  float max = 0;
+  if (aligned_frames >= kPackedFloatsPerRegister) {
+    float32x4_t four_max = vdupq_n_f32(0);
+    const size_t end = aligned_frames - kPackedFloatsPerRegister;
+    for (size_t i = 0; i <= end; i += kPackedFloatsPerRegister) {
+      float32x4_t source_vec =
+          vld1q_f32(source.subspan(i, kPackedFloatsPerRegister).data());
+      four_max = vmaxq_f32(four_max, vabsq_f32(source_vec));
     }
     float32x2_t two_max =
         vmax_f32(vget_low_f32(four_max), vget_high_f32(four_max));
 
-    float group_max[2];
-    vst1_f32(group_max, two_max);
-    *max_p = std::max(group_max[0], group_max[1]);
-
-    n = tail_frames;
+    std::array<float, 2> group_max;
+    vst1_f32(group_max.data(), two_max);
+    max = std::max(group_max[0], group_max[1]);
   }
 
-  scalar::Vmaxmgv(source_p, source_stride, max_p, n);
+  if (tail_frames > 0u) {
+    max = std::max(
+        max, scalar::Vmaxmgv(source.subspan(aligned_frames, tail_frames)));
+  }
+  return max;
 }
 
 ALWAYS_INLINE static void Vmul(base::span<const float> source1,
@@ -230,33 +231,32 @@ ALWAYS_INLINE static void Vsadd(base::span<const float> source,
   }
 }
 
-ALWAYS_INLINE static void Vsvesq(const float* source_p,
-                                 int source_stride,
-                                 float* sum_p,
-                                 size_t frames_to_process) {
-  size_t n = frames_to_process;
+ALWAYS_INLINE static float Vsvesq(base::span<const float> source) {
+  const size_t n = source.size();
+  const size_t tail_frames = n % kPackedFloatsPerRegister;
+  const size_t aligned_frames = n - tail_frames;
 
-  if (source_stride == 1) {
-    size_t tail_frames = n % kPackedFloatsPerRegister;
-    const float* end_p = UNSAFE_TODO(source_p + n - tail_frames);
-
+  float sum = 0;
+  if (aligned_frames >= kPackedFloatsPerRegister) {
     float32x4_t four_sum = vdupq_n_f32(0);
-    while (source_p < end_p) {
-      float32x4_t source = vld1q_f32(source_p);
-      four_sum = vmlaq_f32(four_sum, source, source);
-      UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
+    const size_t end = aligned_frames - kPackedFloatsPerRegister;
+    for (size_t i = 0; i <= end; i += kPackedFloatsPerRegister) {
+      float32x4_t source_vec =
+          vld1q_f32(source.subspan(i, kPackedFloatsPerRegister).data());
+      four_sum = vmlaq_f32(four_sum, source_vec, source_vec);
     }
     float32x2_t two_sum =
         vadd_f32(vget_low_f32(four_sum), vget_high_f32(four_sum));
 
-    float group_sum[2];
-    vst1_f32(group_sum, two_sum);
-    *sum_p += group_sum[0] + group_sum[1];
-
-    n = tail_frames;
+    std::array<float, 2> group_sum;
+    vst1_f32(group_sum.data(), two_sum);
+    sum = group_sum[0] + group_sum[1];
   }
 
-  scalar::Vsvesq(source_p, source_stride, sum_p, n);
+  if (tail_frames > 0u) {
+    sum += scalar::Vsvesq(source.subspan(aligned_frames, tail_frames));
+  }
+  return sum;
 }
 
 ALWAYS_INLINE static void Zvmul(const float* real1p,

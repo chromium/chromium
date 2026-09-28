@@ -13,9 +13,11 @@
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstring>
 
+#include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -202,33 +204,37 @@ void Vclip(base::span<const float> source,
 #undef CLIP_ALL
 }
 
-// *max_p = max(*max_p, source_max) where
-// source_max = max(abs(source[k])) for all k
-void Vmaxmgv(const float* source_p, float* max_p, size_t frames_to_process) {
-  constexpr uint32_t kMask = 0x7FFFFFFFu;
-  float kMask_float;
-  UNSAFE_TODO(std::memcpy(&kMask_float, &kMask, sizeof(float)));
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
+// max = max(abs(source[k])) for all k
+float Vmaxmgv(base::span<const float> source) {
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, source.size() % kPackedFloatsPerRegister);
 
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+  constexpr uint32_t kMask = 0x7FFFFFFFu;
+  const float kMask_float = base::bit_cast<float>(kMask);
 
   MType m_mask = MM_PS(set1)(kMask_float);
   MType m_max = MM_PS(setzero)();
 
-  while (source_p < source_end_p) {
-    MType m_source = MM_PS(load)(source_p);
-    // Calculate the absolute value by ANDing the source with the mask,
-    // which will set the sign bit to 0.
-    m_source = MM_PS(and)(m_source, m_mask);
-    m_max = MM_PS(max)(m_source, m_max);
-    UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
+  if (source.size() >= kPackedFloatsPerRegister) {
+    const size_t end = source.size() - kPackedFloatsPerRegister;
+    for (size_t i = 0; i <= end; i += kPackedFloatsPerRegister) {
+      MType m_source =
+          MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data());
+      // Calculate the absolute value by ANDing the source with the mask,
+      // which will set the sign bit to 0.
+      m_source = MM_PS (and)(m_source, m_mask);
+      m_max = MM_PS(max)(m_source, m_max);
+    }
   }
 
   // Combine the packed floats.
-  const float* maxes = reinterpret_cast<const float*>(&m_max);
-  for (unsigned i = 0u; i < kPackedFloatsPerRegister; ++i)
-    *max_p = std::max(*max_p, UNSAFE_TODO(maxes[i]));
+  alignas(alignof(MType)) std::array<float, kPackedFloatsPerRegister> maxes;
+  MM_PS(store)(maxes.data(), m_max);
+  float max = 0;
+  for (float max_val : maxes) {
+    max = std::max(max, max_val);
+  }
+  return max;
 }
 
 // dest[k] = source1[k] * source2[k]
@@ -356,25 +362,30 @@ void Vsadd(base::span<const float> source,
 #undef SCALAR_ADD_ALL
 }
 
-// sum += sum(source[k]^2) for all k
-void Vsvesq(const float* source_p, float* sum_p, size_t frames_to_process) {
-  const float* const source_end_p = UNSAFE_TODO(source_p + frames_to_process);
-
-  DCHECK(IsAligned(source_p));
-  DCHECK_EQ(0u, frames_to_process % kPackedFloatsPerRegister);
+// sum = sum(source[k]^2) for all k
+float Vsvesq(base::span<const float> source) {
+  DCHECK(IsAligned(source.data()));
+  DCHECK_EQ(0u, source.size() % kPackedFloatsPerRegister);
 
   MType m_sum = MM_PS(setzero)();
 
-  while (source_p < source_end_p) {
-    MType m_source = MM_PS(load)(source_p);
-    m_sum = MM_PS(add)(m_sum, MM_PS(mul)(m_source, m_source));
-    UNSAFE_TODO(source_p += kPackedFloatsPerRegister);
+  if (source.size() >= kPackedFloatsPerRegister) {
+    const size_t end = source.size() - kPackedFloatsPerRegister;
+    for (size_t i = 0; i <= end; i += kPackedFloatsPerRegister) {
+      MType m_source =
+          MM_PS(load)(source.subspan(i, kPackedFloatsPerRegister).data());
+      m_sum = MM_PS(add)(m_sum, MM_PS(mul)(m_source, m_source));
+    }
   }
 
   // Combine the packed floats.
-  const float* sums = reinterpret_cast<const float*>(&m_sum);
-  for (unsigned i = 0u; i < kPackedFloatsPerRegister; ++i)
-    *sum_p += UNSAFE_TODO(sums[i]);
+  alignas(alignof(MType)) std::array<float, kPackedFloatsPerRegister> sums;
+  MM_PS(store)(sums.data(), m_sum);
+  float sum = 0;
+  for (float sum_val : sums) {
+    sum += sum_val;
+  }
+  return sum;
 }
 
 // real_dest[k] = real1[k] * real2[k] - imag1[k] * imag2[k]

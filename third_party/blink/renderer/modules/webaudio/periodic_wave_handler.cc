@@ -341,7 +341,7 @@ bool PeriodicWaveHandler::CreateBandLimitedTables(
     // value then compute normalization scale.
     if (!disable_normalization) {
       if (!range_index) {
-        float max_value = vector_math::Vmaxmgv(data_span, fft_size);
+        float max_value = vector_math::Vmaxmgv(data_span);
 
         if (max_value) {
           normalization_scale = 1.0f / max_value;
