@@ -5,7 +5,6 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -42,9 +41,6 @@
 namespace media {
 
 namespace {
-
-// TODO(crbug.com/379418979): Remove after M133 is stable.
-BASE_FEATURE(kStrictFFmpegCodecs, base::FEATURE_ENABLED_BY_DEFAULT);
 
 EncryptionScheme GetEncryptionScheme(const AVStream* stream) {
   AVDictionaryEntry* key =
@@ -88,9 +84,7 @@ void ApplyCodecContextSecuritySettings(AVCodecContext* codec_context) {
 
   // Note: This is security sensitive. FFmpeg may not always continue safely
   // in the presence of errors. See https://crbug.com/379418979
-  if (base::FeatureList::IsEnabled(kStrictFFmpegCodecs)) {
-    codec_context->err_recognition |= AV_EF_EXPLODE;
-  }
+  codec_context->err_recognition |= AV_EF_EXPLODE;
 }
 
 template <typename T>
