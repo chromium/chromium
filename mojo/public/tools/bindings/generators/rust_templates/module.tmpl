@@ -63,3 +63,24 @@ use mojom_value_parser::*;
 mod {{traits.name}};
 pub use {{traits.name}}::*;
 {% endfor %}
+
+{% for t in typemapped_types %}
+impl<__MojomContext> mojom_value_parser::MojomParse<{{t.mojom_name}}, __MojomContext> for {{t.rust_name}}
+where
+    {{t.mojom_name}}: mojom_value_parser::MojomParse<{{t.mojom_name}}, __MojomContext>,
+{
+    fn mojom_type() -> mojom_value_parser::MojomType {
+        <{{t.mojom_name}} as mojom_value_parser::MojomParse<{{t.mojom_name}}, __MojomContext>>::mojom_type()
+    }
+
+    fn into_mojom_value(self, context: &__MojomContext) -> mojom_value_parser::MojomValue {
+        let wire_val: {{t.mojom_name}} = self.into();
+        <{{t.mojom_name}} as mojom_value_parser::MojomParse<{{t.mojom_name}}, __MojomContext>>::into_mojom_value(wire_val, context)
+    }
+
+    fn try_from_mojom_value(val: mojom_value_parser::MojomValue, context: &__MojomContext) -> anyhow::Result<Self> {
+        let wire_val: {{t.mojom_name}} = <{{t.mojom_name}} as mojom_value_parser::MojomParse<{{t.mojom_name}}, __MojomContext>>::try_from_mojom_value(val, context)?;
+        std::convert::TryInto::try_into(wire_val).map_err(Into::into)
+    }
+}
+{% endfor %}

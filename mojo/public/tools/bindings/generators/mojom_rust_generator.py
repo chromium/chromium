@@ -184,10 +184,14 @@ def _GetParseAsType(
   current_module: mojom.Module,
   source_to_target_map: dict,
   typemap: dict,
-) -> str:
-  '''Return the regular generated type name if ty is typemapped, else None'''
-  if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
-    return _MojomTypeToRustType(ty, current_module, source_to_target_map, {})
+) -> str | None:
+  '''Return the generated type name if ty is or contains a typemapped type, else None'''
+  raw_type = _MojomTypeToRustType(ty, current_module, source_to_target_map, {})
+  mapped_type = _MojomTypeToRustType(
+    ty, current_module, source_to_target_map, typemap
+  )
+  if raw_type != mapped_type:
+    return raw_type
   return None
 
 
@@ -378,6 +382,7 @@ class Generator(generator.Generator):
     )
 
     typemaps_to_include = []
+    typemapped_types = []
     seen_files = set()
 
     source_root_abs = os.path.abspath(os.path.join(os.getcwd(), "../../"))
@@ -389,6 +394,12 @@ class Generator(generator.Generator):
       if (
         hasattr(kind, 'qualified_name') and kind.qualified_name in self.typemap
       ):
+        typemapped_types.append(
+          {
+            'mojom_name': _GetLocalName(kind),
+            'rust_name': self.typemap[kind.qualified_name]['typename'],
+          }
+        )
         traits_file = self.typemap[kind.qualified_name].get('traits_file')
         if traits_file and traits_file not in seen_files:
           traits_file_abs = os.path.abspath(
@@ -407,6 +418,7 @@ class Generator(generator.Generator):
       "module": self.module,
       "imports": imports,
       "typemaps_to_include": typemaps_to_include,
+      "typemapped_types": typemapped_types,
       "typemap": self.typemap,
     }
 

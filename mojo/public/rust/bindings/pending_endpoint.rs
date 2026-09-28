@@ -106,7 +106,8 @@ where
 
 impl<T, Marker> Eq for PendingEndpoint<T, Marker> where T: DynMojomInterface + ?Sized {}
 
-impl<Context, T, Marker> mojom_value_parser::MojomParse<Context> for PendingEndpoint<T, Marker>
+impl<Context, T, Marker> mojom_value_parser::MojomParse<Self, Context>
+    for PendingEndpoint<T, Marker>
 where
     T: DynMojomInterface + ?Sized + 'static,
     Marker: IsRemote + 'static,

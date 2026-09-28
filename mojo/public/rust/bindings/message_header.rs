@@ -273,7 +273,7 @@ const _: () = {
         }
     }
 
-    impl<Context> mojom_value_parser::MojomParse<Context> for MessageHeaderFlags {
+    impl<Context> mojom_value_parser::MojomParse<Self, Context> for MessageHeaderFlags {
         fn mojom_type() -> MojomType {
             MojomType::UInt32
         }

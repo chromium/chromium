@@ -44,7 +44,7 @@ use crate::helpers::*;
 // //mojo/public/cpp/bindings/tests/validation_test_input_parser.h
 fn validate_parsing<T>(value: T, data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse<()> + PartialEq + std::fmt::Debug,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     // We have to compute this eagerly since `value ` will get consumed by the
     // test
@@ -87,7 +87,7 @@ where
 // after parsing (comparing the parsed `MojomValue` instead of the parsed `T`).
 fn validate_parsing_with_handles<T>(value: T, data: &str, num_handles: usize) -> anyhow::Result<()>
 where
-    T: MojomParse<()> + PartialEq + std::fmt::Debug,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     // We have to compute this eagerly since `value ` will get consumed by the
     // test
@@ -128,7 +128,7 @@ where
 /// Check that we correctly fail to parse mismatching data.
 fn validate_parsing_failure<T>(data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse<()> + PartialEq + std::fmt::Debug,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     validate_parsing_failure_with_handles::<T>(data, 0)
 }
@@ -136,7 +136,7 @@ where
 /// Check that we correctly fail to parse mismatching data...with handles!
 fn validate_parsing_failure_with_handles<T>(data: &str, num_handles: usize) -> anyhow::Result<()>
 where
-    T: MojomParse<()> + PartialEq + std::fmt::Debug,
+    T: MojomParse + PartialEq + std::fmt::Debug,
 {
     let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
     let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
@@ -154,7 +154,7 @@ fn validate_parsing_with_associated<T>(
     data: &str,
 ) -> anyhow::Result<()>
 where
-    T: MojomParse<DummyRegistrarForTesting> + PartialEq + std::fmt::Debug,
+    T: MojomParse<T, DummyRegistrarForTesting> + PartialEq + std::fmt::Debug,
 {
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
 

@@ -7,6 +7,10 @@
 {%- endif %}
 pub enum {{name}} {
 {%- for field in union.fields %}
+{%- set parse_as = field.kind|get_parse_as_type %}
+{%- if parse_as %}
+  #[mojom(parse_as = "{{parse_as}}")]
+{%- endif %}
   {{field.name}}({{field.kind|to_rust_type}}),
 {%- endfor %}
 }

@@ -20,7 +20,7 @@ use crate::parsing_trait::MojomParse;
 /// The `interface_ids_offset` argument should be the distance from the
 /// beginning of `data_slice` to the start of the embedded interface ID array,
 /// or 0 if the array is absent.
-pub fn deserialize<'a, Context, T: MojomParse<Context>>(
+pub fn deserialize<'a, Context, T: MojomParse<T, Context>>(
     data_slice: &'a [u8],
     handles: &'a mut [Option<UntypedHandle>],
     interface_ids_offset: u64,
@@ -44,7 +44,7 @@ pub fn deserialize<'a, Context, T: MojomParse<Context>>(
 
 /// This function is the same as `deserialize`, but returns a `TooMuchData`
 /// parsing error if there are bytes leftover after deserializating
-pub fn deserialize_exact<Context, T: MojomParse<Context>>(
+pub fn deserialize_exact<Context, T: MojomParse<T, Context>>(
     data_slice: &[u8],
     handles: &mut [Option<UntypedHandle>],
     interface_ids_offset: u64,
@@ -69,7 +69,7 @@ pub fn deserialize_exact<Context, T: MojomParse<Context>>(
 ///
 /// Panics if called on a non-struct (structs are the only valid top-level
 /// type).
-pub fn serialize<Context, T: MojomParse<Context>>(
+pub fn serialize<Context, T: MojomParse<T, Context>>(
     value: T,
     context: &Context,
 ) -> (Vec<u8>, Vec<UntypedHandle>, u64) {

@@ -50,8 +50,8 @@ use crate::pending_associated_endpoint::{
 /// endpoint.
 pub trait Registrar: Send {
     // The trait needs to be public so we can name it in generated bindings code
-    // (as part of `MojomParse<dyn Registrar>`), but we don't actually need to
-    // expose any more information about it than the name.
+    // (as part of `MojomParse<Self, dyn Registrar>`), but we don't actually
+    // need to expose any more information about it than the name.
     #[allow(private_interfaces)]
     fn register_new_endpoint(
         &self,
@@ -101,7 +101,7 @@ impl Registrar for DummyRegistrarForTesting {
     }
 }
 
-impl<Context, T, Marker> mojom_value_parser::MojomParse<Context>
+impl<Context, T, Marker> mojom_value_parser::MojomParse<Self, Context>
     for PendingAssociatedEndpoint<T, Marker>
 where
     T: DynMojomInterface + ?Sized + 'static,

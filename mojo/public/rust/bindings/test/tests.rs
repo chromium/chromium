@@ -919,7 +919,7 @@ fn test_bad_control_message() {
 /// Serialize `params` and send it on the provided remote,
 /// with the given `flags`. This lets us test incorrect flag
 /// combinations.
-fn send_request_with_flags<T: mojom_value_parser::MojomParse<()>>(
+fn send_request_with_flags<T: mojom_value_parser::MojomParse>(
     remote: &mut Remote<dyn MathService>,
     ordinal: u32,
     flags: MessageHeaderFlags,

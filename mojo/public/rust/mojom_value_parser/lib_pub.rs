@@ -29,5 +29,5 @@ pub use mojom_value_parser_core::{
 pub use mojom_value_parser_core::{
     MessageHeader, MessageHeaderV1, MessageHeaderV2, MessageHeaderV3,
 };
-pub use mojom_value_parser_core::{MojomParse, PrimitiveEnum};
+pub use mojom_value_parser_core::{MojomParse, MojomType, MojomValue, PrimitiveEnum};
 pub use parsing_attribute::{MojomParse, PrimitiveEnum};

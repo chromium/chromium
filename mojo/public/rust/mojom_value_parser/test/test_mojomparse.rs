@@ -146,7 +146,7 @@ impl TestType {
     /// (1) T's associated MojomType and MojomWireType match ours, and
     /// (2) The input value of type T can be converted to and from the input
     ///     MojomValue
-    fn validate_mojomparse<T: MojomParse<()> + std::fmt::Debug + Clone + PartialEq>(
+    fn validate_mojomparse<T: MojomParse + std::fmt::Debug + Clone + PartialEq>(
         &self,
         rust_val: T,
         mojom_val: MojomValue,
@@ -178,7 +178,7 @@ impl TestType {
     ///
     /// Note: This will panic if you pass in types which contain associated
     /// endpoints, use `validate_mojomparse_associated` for those.
-    fn validate_mojomparse_handles<T: MojomParse<()> + std::fmt::Debug + PartialEq>(
+    fn validate_mojomparse_handles<T: MojomParse + std::fmt::Debug + PartialEq>(
         &self,
         rust_val: T,
         get_mojom_val: impl Fn() -> MojomValue,
@@ -214,7 +214,7 @@ impl TestType {
     /// associated endpoints to their paired counterparts using
     /// `same_interface_for_testing`.
     fn validate_mojomparse_associated<
-        T: MojomParse<DummyRegistrarForTesting> + std::fmt::Debug + PartialEq,
+        T: MojomParse<T, DummyRegistrarForTesting> + std::fmt::Debug + PartialEq,
     >(
         &self,
         rust_val: T,

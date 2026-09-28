@@ -14,13 +14,13 @@ use mojom_value_parser_core::{MojomParse, MojomValue};
 use system::mojo_types::UntypedHandle;
 
 /// Serialize a Rust struct with no context.
-pub(crate) fn serialize<T: MojomParse<()>>(value: T) -> (Vec<u8>, Vec<UntypedHandle>) {
+pub(crate) fn serialize<T: MojomParse>(value: T) -> (Vec<u8>, Vec<UntypedHandle>) {
     let (data, handles, _) = mojom_value_parser::serialize(value, &());
     (data, handles)
 }
 
 /// Deserialize a Rust struct with no context.
-pub(crate) fn deserialize_exact<T: MojomParse<()>>(
+pub(crate) fn deserialize_exact<T: MojomParse>(
     data_slice: &[u8],
     handles: &mut [Option<UntypedHandle>],
 ) -> mojom_value_parser::ParsingResult<T> {
@@ -28,12 +28,12 @@ pub(crate) fn deserialize_exact<T: MojomParse<()>>(
 }
 
 /// Convert to MojomValue with no context.
-pub(crate) fn into_mojom_value<T: MojomParse<()>>(value: T) -> MojomValue {
+pub(crate) fn into_mojom_value<T: MojomParse>(value: T) -> MojomValue {
     value.into_mojom_value(&())
 }
 
 /// Convert from MojomValue with no context.
-pub(crate) fn try_from_mojom_value<T: MojomParse<()>>(value: MojomValue) -> anyhow::Result<T> {
+pub(crate) fn try_from_mojom_value<T: MojomParse>(value: MojomValue) -> anyhow::Result<T> {
     T::try_from_mojom_value(value, &())
 }
 
