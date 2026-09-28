@@ -680,6 +680,37 @@ bool DoesHelpMenuHaveCommand(const AppMenuModel& model, int command_id) {
   return help_menu->GetIndexOfCommandId(command_id).has_value();
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+class AppMenuFeedbackTest : public base::test::WithFeatureOverride,
+                            public AppMenuModelTest {
+ public:
+  AppMenuFeedbackTest()
+      : WithFeatureOverride(features::kFeedbackDisabledDialog) {}
+  ~AppMenuFeedbackTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(AppMenuFeedbackTest,
+                       Feedback_UserFeedbackAllowedPolicy) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_TRUE(DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
+  }
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  false);
+  {
+    AppMenuModel model(this, browser());
+    model.Init();
+    EXPECT_EQ(IsParamFeatureEnabled(),
+              DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
+  }
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(AppMenuFeedbackTest);
+#else
 IN_PROC_BROWSER_TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                   true);
@@ -697,6 +728,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
     EXPECT_FALSE(DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
   }
 }
+#endif
 
 using AppMenuReportUnsafeSiteTest = AppMenuModelTest;
 

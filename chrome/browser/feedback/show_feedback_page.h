@@ -31,9 +31,14 @@ enum class FeedbackDisabledDialogParentStatus {
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FeedbackDisabledDialogParentStatus)
 #endif
 
-// Returns whether the feedback page can be shown for the given `profile`.
-// Callers can use this to hide or disable feedback UI entry points when
-// appropriate.
+// Returns whether feedback can be submitted for the given `profile`.
+bool CanSubmitFeedback(const Profile* profile);
+
+// Returns whether the feedback entry point can be shown for the given
+// `profile` (e.g. to display feedback menu items or trigger ShowFeedbackPage).
+// Note: This can return true even when `CanSubmitFeedback(profile)` returns
+// false (e.g. when `kFeedbackDisabledDialog` is enabled, in which case calling
+// `ShowFeedbackPage()` displays an informational dialog instead).
 bool CanShowFeedback(const Profile* profile);
 
 // Displays the Feedback UI.
@@ -42,11 +47,11 @@ bool CanShowFeedback(const Profile* profile);
 // the parent window. `bwi` should be nullptr if there are no currently open
 // browser windows.
 //
-// If `CanShowFeedback()` is false for the target profile, on Desktop platforms
-// (Win, Mac, Linux) a browser-modal dialog explaining that feedback is disabled
-// is shown when `kFeedbackDisabledDialog` is enabled and a suitable parent
-// browser window is available (either `bwi` or a fallback tabbed browser).
-// Otherwise, this is a no-op (metrics are still recorded).
+// If `CanSubmitFeedback()` is false for the target profile, on Desktop
+// platforms (Win, Mac, Linux) a browser-modal dialog explaining that feedback
+// is disabled is shown when `kFeedbackDisabledDialog` is enabled and a suitable
+// parent browser window is available (either `bwi` or a fallback tabbed
+// browser). Otherwise, this is a no-op (metrics are still recorded).
 void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       feedback::FeedbackSource source,
                       const std::string& description_template,

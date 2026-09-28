@@ -264,7 +264,7 @@ void ShowFeedbackPageImpl(gfx::NativeWindow parent,
     LOG(ERROR) << "Cannot invoke feedback: No profile found!";
     return;
   }
-  if (!CanShowFeedback(profile)) {
+  if (!CanSubmitFeedback(profile)) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     if (base::FeatureList::IsEnabled(features::kFeedbackDisabledDialog)) {
       FeedbackDisabledDialogParentStatus status =
@@ -311,7 +311,7 @@ void ShowFeedbackPageImpl(gfx::NativeWindow parent,
 
 }  // namespace
 
-bool CanShowFeedback(const Profile* profile) {
+bool CanSubmitFeedback(const Profile* profile) {
   if (!profile) {
     return false;
   }
@@ -344,6 +344,20 @@ bool CanShowFeedback(const Profile* profile) {
   // TODO(crbug.com/495657977): add ChromeOS implementation.
   return true;
 #endif
+}
+
+bool CanShowFeedback(const Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(features::kFeedbackDisabledDialog)) {
+    return true;
+  }
+#endif
+
+  return CanSubmitFeedback(profile);
 }
 
 void ShowFeedbackPage(BrowserWindowInterface* bwi,

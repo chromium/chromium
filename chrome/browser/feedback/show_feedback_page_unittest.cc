@@ -4,8 +4,10 @@
 
 #include "chrome/browser/feedback/show_feedback_page.h"
 
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -18,7 +20,29 @@
 
 namespace chrome {
 
-class ShowFeedbackPageTest : public testing::Test {
+class ShowFeedbackPageTest : public testing::Test,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+                             public base::test::WithFeatureOverride
+#else
+                             public testing::WithParamInterface<bool>
+#endif
+{
+ public:
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  ShowFeedbackPageTest()
+      : base::test::WithFeatureOverride(features::kFeedbackDisabledDialog) {}
+#else
+  ShowFeedbackPageTest() = default;
+#endif
+
+  bool IsFeedbackDisabledDialogEnabled() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    return IsParamFeatureEnabled();
+#else
+    return false;
+#endif
+  }
+
  protected:
   void SetUp() override {
     TestingProfile::Builder builder;
@@ -34,21 +58,24 @@ class ShowFeedbackPageTest : public testing::Test {
       identity_test_env_adaptor_;
 };
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_NoProfile) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_NoProfile) {
+  EXPECT_FALSE(CanSubmitFeedback(nullptr));
   EXPECT_FALSE(CanShowFeedback(nullptr));
 }
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_PolicyDisabled) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_PolicyDisabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed, false);
-  EXPECT_FALSE(CanShowFeedback(profile_.get()));
+  EXPECT_FALSE(CanSubmitFeedback(profile_.get()));
+  EXPECT_EQ(IsFeedbackDisabledDialogEnabled(), CanShowFeedback(profile_.get()));
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_NotSignedIn) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_NotSignedIn) {
+  EXPECT_TRUE(CanSubmitFeedback(profile_.get()));
   EXPECT_TRUE(CanShowFeedback(profile_.get()));
 }
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_CanSubmit) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_CanSubmit) {
   AccountInfo account_info =
       identity_test_env_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("test@example.com",
@@ -60,10 +87,11 @@ TEST_F(ShowFeedbackPageTest, CanShowFeedback_CanSubmit) {
       identity_test_env_adaptor_->identity_test_env()->identity_manager(),
       account_info);
 
+  EXPECT_TRUE(CanSubmitFeedback(profile_.get()));
   EXPECT_TRUE(CanShowFeedback(profile_.get()));
 }
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit) {
   AccountInfo account_info =
       identity_test_env_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("test@example.com",
@@ -75,10 +103,11 @@ TEST_F(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit) {
       identity_test_env_adaptor_->identity_test_env()->identity_manager(),
       account_info);
 
-  EXPECT_FALSE(CanShowFeedback(profile_.get()));
+  EXPECT_FALSE(CanSubmitFeedback(profile_.get()));
+  EXPECT_EQ(IsFeedbackDisabledDialogEnabled(), CanShowFeedback(profile_.get()));
 }
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_CanSubmit_Incognito) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_CanSubmit_Incognito) {
   AccountInfo account_info =
       identity_test_env_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("test@example.com",
@@ -92,10 +121,11 @@ TEST_F(ShowFeedbackPageTest, CanShowFeedback_CanSubmit_Incognito) {
 
   Profile* incognito_profile =
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  EXPECT_TRUE(CanSubmitFeedback(incognito_profile));
   EXPECT_TRUE(CanShowFeedback(incognito_profile));
 }
 
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit_Incognito) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit_Incognito) {
   AccountInfo account_info =
       identity_test_env_adaptor_->identity_test_env()
           ->MakePrimaryAccountAvailable("test@example.com",
@@ -109,12 +139,19 @@ TEST_F(ShowFeedbackPageTest, CanShowFeedback_CannotSubmit_Incognito) {
 
   Profile* incognito_profile =
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  EXPECT_FALSE(CanShowFeedback(incognito_profile));
+  EXPECT_FALSE(CanSubmitFeedback(incognito_profile));
+  EXPECT_EQ(IsFeedbackDisabledDialogEnabled(),
+            CanShowFeedback(incognito_profile));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ShowFeedbackPageTest);
 #else
-TEST_F(ShowFeedbackPageTest, CanShowFeedback_OtherPlatforms) {
+TEST_P(ShowFeedbackPageTest, CanShowFeedback_OtherPlatforms) {
+  EXPECT_TRUE(CanSubmitFeedback(profile_.get()));
   EXPECT_TRUE(CanShowFeedback(profile_.get()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All, ShowFeedbackPageTest, testing::Values(false));
 #endif
 
 }  // namespace chrome

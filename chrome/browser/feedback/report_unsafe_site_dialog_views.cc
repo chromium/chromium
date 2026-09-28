@@ -74,7 +74,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ReportUnsafeSiteDialogViews,
 // static
 bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
   const PrefService* prefs = profile.GetPrefs();
-  return !profile.IsOffTheRecord() && chrome::CanShowFeedback(&profile) &&
+  return !profile.IsOffTheRecord() && chrome::CanSubmitFeedback(&profile) &&
          safe_browsing::IsSafeBrowsingEnabled(*prefs);
 }
 

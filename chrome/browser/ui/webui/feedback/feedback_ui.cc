@@ -120,7 +120,7 @@ FeedbackUI::FeedbackUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 FeedbackUI::~FeedbackUI() = default;
 
 bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
-  return chrome::CanShowFeedback(profile);
+  return chrome::CanSubmitFeedback(profile);
 }
 
 void FeedbackUI::BindInterface(
