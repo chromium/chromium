@@ -365,6 +365,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)focusComposebox {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse &&
+      _viewController.view.hidden) {
+    return;
+  }
   [_omniboxCoordinator focusOmnibox];
 }
 
