@@ -509,19 +509,44 @@ void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
     return;
   }
 
-  std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  std::string content_type;
-
-  // TODO(crbug.com/41458368): Using GetMimeTypeFromExtension and including
-  // platform defined mime type mappings might be nice/make sense, however that
-  // method can potentially block and thus can't be called from the IO thread.
-  std::string mime_type;
-  if (net::GetWellKnownMimeTypeFromFile(
-          base::FilePath::FromUTF8Unsafe(display_name_), &mime_type)) {
-    content_type = std::move(mime_type);
+  base::FilePath display_name = base::FilePath::FromUTF8Unsafe(display_name_);
+  if (url().type() == storage::kFileSystemTypeTemporary) {
+    // Skip platform MIME type lookup for OPFS. OPFS names are chosen by the
+    // site, and platform MIME associations could expose which applications
+    // the user has installed.
+    std::string content_type;
+    std::string mime_type;
+    if (net::GetWellKnownMimeTypeFromFile(display_name, &mime_type)) {
+      content_type = std::move(mime_type);
+    }
+    DidResolveMimeTypeForBlob(std::move(callback), info,
+                              std::move(content_type));
+    return;
   }
-  // TODO(crbug.com/41458368): Consider some kind of fallback type when
-  // the above mime type detection fails.
+
+  // Platform MIME lookup can block while consulting the OS MIME database.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](const base::FilePath& name) {
+            std::string content_type;
+            if (!net::GetMimeTypeFromFile(name, &content_type)) {
+              return std::string();
+            }
+            return content_type;
+          },
+          std::move(display_name)),
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidResolveMimeTypeForBlob,
+                     weak_factory_.GetWeakPtr(), std::move(callback), info));
+}
+
+void FileSystemAccessFileHandleImpl::DidResolveMimeTypeForBlob(
+    AsBlobCallback callback,
+    const base::File::Info& info,
+    std::string content_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   mojo::PendingRemote<blink::mojom::Blob> blob_remote;
   mojo::PendingReceiver<blink::mojom::Blob> blob_receiver =
