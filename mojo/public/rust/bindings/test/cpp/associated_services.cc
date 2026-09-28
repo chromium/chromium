@@ -4,30 +4,113 @@
 
 #include "mojo/public/rust/bindings/test/cpp/associated_services.h"
 
-#include <memory>
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
+#include "base/run_loop.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
-#include "mojo/public/rust/bindings/test/cpp/add_seven_service.h"
 #include "mojo/public/rust/bindings/test/cxx.rs.h"
-#include "mojo/public/rust/bindings/test/test_util/bindings_unittests.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bindings_unittests::mojom {
 
+namespace {
+
+class PlusSevenMathServiceImpl : public MathService {
+ public:
+  PlusSevenMathServiceImpl() = default;
+  ~PlusSevenMathServiceImpl() override = default;
+
+  void Add(uint32_t a, uint32_t b, AddCallback callback) override {
+    std::move(callback).Run(a + b + 7);
+  }
+
+  void AddTwoInts(TwoIntsPtr ns, AddTwoIntsCallback callback) override {
+    std::move(callback).Run(static_cast<uint32_t>(ns->a) +
+                            static_cast<uint32_t>(ns->b) + 7);
+  }
+
+  void DoNothing() override {}
+
+  void DoNothingWithAck(DoNothingWithAckCallback callback) override {
+    std::move(callback).Run();
+  }
+};
+
+class CppHandleServiceImpl : public HandleService {
+ public:
+  CppHandleServiceImpl() = default;
+  ~CppHandleServiceImpl() override = default;
+
+  void PassHandles(mojo::ScopedMessagePipeHandle h1,
+                   mojo::ScopedMessagePipeHandle h2,
+                   mojo::ScopedMessagePipeHandle h3,
+                   mojo::ScopedHandle h4) override {
+    CHECK(h1.is_valid());
+    CHECK(h2.is_valid());
+    CHECK(h3.is_valid());
+    CHECK(h4.is_valid());
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<PlusSevenMathServiceImpl>(),
+        mojo::PendingReceiver<MathService>(std::move(h1)));
+  }
+};
+}  // namespace
+
+// Binds an associated receiver from Rust to a PlusSevenMathService, C++ keeps
+// ownership via a self-owned associated receiver.
+void BindPlusSevenAssociatedReceiver(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  mojo::PendingAssociatedReceiver<MathService> receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<MathService>(
+          std::move(adapter));
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<PlusSevenMathServiceImpl>(), std::move(receiver));
+}
+
+// Binds an associated receiver from Rust to a CppHandleServiceImpl, C++ keeps
+// ownership via a self-owned associated receiver.
+void BindCppHandleServiceReceiver(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  mojo::PendingAssociatedReceiver<HandleService> receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<HandleService>(
+          std::move(adapter));
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<CppHandleServiceImpl>(), std::move(receiver));
+}
+
+// Binds an associated receiver from Rust to a new PlusSevenMathService and
+// returns ownership.
+std::unique_ptr<PlusSevenMathService> CreatePlusSevenAssociatedReceiver(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  mojo::PendingAssociatedReceiver<MathService> receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<MathService>(
+          std::move(adapter));
+  return std::make_unique<PlusSevenMathService>(std::move(receiver));
+}
+
 extern "C" void rust_on_cpp_associated_disconnect(int32_t handler_type);
 
+// Sets a disconnect handler on a PlusSevenMathService that notifies Rust.
+void SetPlusSevenDisconnectCallback(PlusSevenMathService& service,
+                                    int32_t handler_type) {
+  service.set_disconnect_handler(
+      base::BindOnce(&rust_on_cpp_associated_disconnect, handler_type));
+}
+
+// AssociatedSender implementation that attaches received MathService endpoints
+// or creates new ones backed by PlusSevenMathService.
 class AssociatedSenderImpl : public AssociatedSender {
  public:
   AssociatedSenderImpl() = default;
   ~AssociatedSenderImpl() override = default;
 
+  // Receives an associated remote and verifies Add(1, 2) == 3.
   void SendRemote(mojo::PendingAssociatedRemote<MathService> remote) override {
     mojo::AssociatedRemote<MathService> math_remote(std::move(remote));
     math_remote.set_disconnect_handler(
@@ -37,6 +120,7 @@ class AssociatedSenderImpl : public AssociatedSender {
     active_remotes_.push_back(std::move(math_remote));
   }
 
+  // Receives an associated receiver and binds it to a PlusSevenMathService.
   void SendReceiver(
       mojo::PendingAssociatedReceiver<MathService> receiver) override {
     auto service = std::make_unique<PlusSevenMathService>(std::move(receiver));
@@ -45,6 +129,17 @@ class AssociatedSenderImpl : public AssociatedSender {
     active_services_.push_back(std::move(service));
   }
 
+  void SendHandleReceiver(
+      mojo::PendingAssociatedReceiver<HandleService> receiver) override {
+    mojo::MakeSelfOwnedAssociatedReceiver(
+        std::make_unique<CppHandleServiceImpl>(), std::move(receiver));
+  }
+
+  void SendAssociatedSender(
+      mojo::PendingAssociatedReceiver<AssociatedSender> receiver) override {}
+
+  // Creates an associated pair, binds the receiver to a PlusSevenMathService,
+  // and returns the remote.
   void RequestRemote(RequestRemoteCallback callback) override {
     mojo::PendingAssociatedRemote<MathService> remote;
     mojo::PendingAssociatedReceiver<MathService> receiver =
@@ -56,6 +151,8 @@ class AssociatedSenderImpl : public AssociatedSender {
     std::move(callback).Run(std::move(remote));
   }
 
+  // Creates an associated pair, returns the receiver, and verifies Add(20, 30)
+  // == 50.
   void RequestReceiver(RequestReceiverCallback callback) override {
     mojo::PendingAssociatedRemote<MathService> remote;
     mojo::PendingAssociatedReceiver<MathService> receiver =
@@ -72,6 +169,15 @@ class AssociatedSenderImpl : public AssociatedSender {
                      }));
 
     active_remotes_.push_back(std::move(math_remote));
+  }
+
+  void RequestHandleRemote(RequestHandleRemoteCallback callback) override {
+    mojo::PendingAssociatedRemote<HandleService> remote;
+    mojo::PendingAssociatedReceiver<HandleService> receiver =
+        remote.InitWithNewEndpointAndPassReceiver();
+    mojo::MakeSelfOwnedAssociatedReceiver(
+        std::make_unique<CppHandleServiceImpl>(), std::move(receiver));
+    std::move(callback).Run(std::move(remote));
   }
 
   void ClearActiveEndpoints() override {
@@ -93,6 +199,17 @@ void CreateCppAssociatedSender(
                               std::move(receiver));
 }
 
+// Binds an associated receiver from Rust to an AssociatedSenderImpl, C++ keeps
+// ownership via a self-owned associated receiver.
+void BindPlusSevenAssociatedSender(
+    mojo::rust::bindings::CxxPendingAssociatedEndpoint adapter) {
+  mojo::PendingAssociatedReceiver<AssociatedSender> receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<AssociatedSender>(
+          std::move(adapter));
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<AssociatedSenderImpl>(), std::move(receiver));
+}
+
 // AssociatedSender implementation that converts received endpoints into Rust
 // adapters and passes them back into Rust via BindRustMathServiceReceiver.
 class AssociatedSenderInteropTestImpl : public AssociatedSender {
@@ -101,11 +218,19 @@ class AssociatedSenderInteropTestImpl : public AssociatedSender {
   ~AssociatedSenderInteropTestImpl() override = default;
 
   void SendRemote(mojo::PendingAssociatedRemote<MathService> remote) override {}
+
   void SendReceiver(
       mojo::PendingAssociatedReceiver<MathService> receiver) override {
     auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
         std::move(receiver));
     BindRustMathServiceReceiver(std::move(adapter));
+  }
+
+  void SendHandleReceiver(
+      mojo::PendingAssociatedReceiver<HandleService> receiver) override {
+    auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(receiver));
+    BindRustHandleServiceReceiver(std::move(adapter));
   }
 
   void RequestRemote(RequestRemoteCallback callback) override {
@@ -119,6 +244,24 @@ class AssociatedSenderInteropTestImpl : public AssociatedSender {
   }
 
   void RequestReceiver(RequestReceiverCallback callback) override {}
+
+  void RequestHandleRemote(RequestHandleRemoteCallback callback) override {
+    mojo::PendingAssociatedRemote<HandleService> remote;
+    mojo::PendingAssociatedReceiver<HandleService> receiver =
+        remote.InitWithNewEndpointAndPassReceiver();
+    auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(receiver));
+    std::move(callback).Run(std::move(remote));
+    BindRustHandleServiceReceiver(std::move(adapter));
+  }
+
+  void SendAssociatedSender(
+      mojo::PendingAssociatedReceiver<AssociatedSender> receiver) override {
+    auto adapter = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+        std::move(receiver));
+    BindRustAssociatedSenderReceiver(std::move(adapter));
+  }
+
   void ClearActiveEndpoints() override {}
 };
 

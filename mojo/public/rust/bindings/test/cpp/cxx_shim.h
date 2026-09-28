@@ -5,14 +5,17 @@
 #ifndef MOJO_PUBLIC_RUST_BINDINGS_TEST_CPP_CXX_SHIM_H_
 #define MOJO_PUBLIC_RUST_BINDINGS_TEST_CPP_CXX_SHIM_H_
 
-#include "mojo/public/c/system/types.h"
+#include <memory>
+
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h"
 #include "mojo/public/rust/bindings/test/cpp/add_seven_service.h"
+#include "mojo/public/rust/bindings/test/test_util/bindings_unittests.test-mojom.h"
 #include "mojo/public/rust/system/scoped_handle_interop.h"
 
 namespace bindings_unittests::mojom {
 
+// Binds handle to a PlusSevenMathService and returns ownership.
 std::unique_ptr<PlusSevenMathService> CreatePlusSevenMathService(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> handle);
 
@@ -39,6 +42,13 @@ class AssociatedSenderTestRemote {
 
   // Sends an associated receiver adapter to the receiver.
   void SendReceiver(CxxPendingAssociatedEndpoint receiver_adapter);
+
+  // Requests an associated HandleService remote from the receiver, waits for
+  // the response, and returns it to Rust as an adapter.
+  CxxPendingAssociatedEndpoint RequestHandleRemote();
+
+  // Sends an associated HandleService receiver adapter to the receiver.
+  void SendHandleReceiver(CxxPendingAssociatedEndpoint receiver_adapter);
 
  private:
   mojo::Remote<AssociatedSender> remote_;

@@ -15,7 +15,7 @@ chromium::import! {
 
 use std::sync::{Arc, Mutex};
 
-use bindings::receiver::{AssociatedReceiver, PendingAssociatedReceiver};
+use bindings::receiver::{AssociatedReceiver, PendingAssociatedReceiver, PendingReceiver};
 use bindings::register_mojom_state_object_impls;
 use bindings::remote::{AssociatedRemote, PendingAssociatedRemote};
 
@@ -175,7 +175,7 @@ impl TypemapService for TypemapServiceImpl {
     }
 }
 
-bindings::register_mojom_state_object_impls!(impl TypemapService for TypemapServiceImpl);
+register_mojom_state_object_impls!(impl TypemapService for TypemapServiceImpl);
 
 // Convenience Wrapper
 type SharedOpt<T> = Arc<Mutex<Option<T>>>;
@@ -183,7 +183,7 @@ type SharedOpt<T> = Arc<Mutex<Option<T>>>;
 /// This object is used for testing associated interfaces.
 /// It can both create and receive associated remotes and receivers,
 /// and stores them in an Arc. Each field corresponds to one message
-/// of the interface, and contains the last thing send for that message.
+/// of the interface, and contains the last thing sent for that message.
 /// It is expected that the test will use one of these as a state object,
 /// but clone it first so it can access the fields for testing purposes.
 #[derive(Clone)] // Cloning makes a shallow copy
@@ -191,6 +191,8 @@ pub struct AssociatedSenderImpl {
     // Stores the remote/receiver that was sent to this object
     pub send_remote: SharedOpt<AssociatedRemote<dyn MathService>>,
     pub send_receiver: SharedOpt<PendingAssociatedReceiver<dyn MathService>>,
+    pub send_handle_receiver: SharedOpt<PendingAssociatedReceiver<dyn HandleService>>,
+    pub send_associated_sender: SharedOpt<PendingAssociatedReceiver<dyn AssociatedSender>>,
     // Stores the other end of the remote/receiver that we sent to the client
     pub request_remote: SharedOpt<AssociatedReceiver<SaturatingMathService>>,
     pub request_receiver: SharedOpt<AssociatedRemote<dyn MathService>>,
@@ -201,6 +203,8 @@ impl AssociatedSenderImpl {
         Self {
             send_remote: Arc::new(Mutex::new(None)),
             send_receiver: Arc::new(Mutex::new(None)),
+            send_handle_receiver: Arc::new(Mutex::new(None)),
+            send_associated_sender: Arc::new(Mutex::new(None)),
             request_remote: Arc::new(Mutex::new(None)),
             request_receiver: Arc::new(Mutex::new(None)),
         }
@@ -213,6 +217,12 @@ impl AssociatedSender for AssociatedSenderImpl {
     }
     fn SendReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn MathService>) {
         *self.send_receiver.lock().unwrap() = Some(receiver);
+    }
+    fn SendHandleReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn HandleService>) {
+        *self.send_handle_receiver.lock().unwrap() = Some(receiver);
+    }
+    fn SendAssociatedSender(&mut self, receiver: PendingAssociatedReceiver<dyn AssociatedSender>) {
+        *self.send_associated_sender.lock().unwrap() = Some(receiver);
     }
     fn RequestRemote(
         &mut self,
@@ -230,15 +240,30 @@ impl AssociatedSender for AssociatedSenderImpl {
         *self.request_receiver.lock().unwrap() = Some(remote.bind());
         response_callback(receiver);
     }
+    fn RequestHandleRemote(
+        &mut self,
+        response_callback: impl Send + 'static + FnOnce(PendingAssociatedRemote<dyn HandleService>),
+    ) {
+        let (remote, receiver) = PendingAssociatedRemote::new_pair();
+        receiver.bind_self_owned(HandleServiceImpl {
+            f: |h1, _h2, _h3, _h4| {
+                PendingReceiver::<dyn MathService>::new(h1)
+                    .bind_self_owned(SaturatingMathService {});
+            },
+        });
+        response_callback(remote);
+    }
     fn ClearActiveEndpoints(&mut self) {
         *self.send_remote.lock().unwrap() = None;
         *self.send_receiver.lock().unwrap() = None;
+        *self.send_handle_receiver.lock().unwrap() = None;
+        *self.send_associated_sender.lock().unwrap() = None;
         *self.request_remote.lock().unwrap() = None;
         *self.request_receiver.lock().unwrap() = None;
     }
 }
 
-bindings::register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderImpl);
+register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderImpl);
 
 pub struct AssociatedSenderInteropRustImpl;
 
@@ -247,6 +272,18 @@ impl AssociatedSender for AssociatedSenderInteropRustImpl {
 
     fn SendReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn MathService>) {
         receiver.bind_self_owned(SaturatingMathService {});
+    }
+
+    fn SendHandleReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn HandleService>) {
+        receiver.bind_self_owned(HandleServiceImpl {
+            f: |h1, _h2, _h3, _h4| {
+                PendingReceiver::<dyn MathService>::new(h1)
+                    .bind_self_owned(SaturatingMathService {});
+            },
+        });
+    }
+
+    fn SendAssociatedSender(&mut self, _receiver: PendingAssociatedReceiver<dyn AssociatedSender>) {
     }
 
     fn RequestRemote(
@@ -264,7 +301,21 @@ impl AssociatedSender for AssociatedSenderInteropRustImpl {
     ) {
     }
 
+    fn RequestHandleRemote(
+        &mut self,
+        response_callback: impl Send + 'static + FnOnce(PendingAssociatedRemote<dyn HandleService>),
+    ) {
+        let (remote, receiver) = PendingAssociatedRemote::<dyn HandleService>::new_pair();
+        receiver.bind_self_owned(HandleServiceImpl {
+            f: |h1, _h2, _h3, _h4| {
+                PendingReceiver::<dyn MathService>::new(h1)
+                    .bind_self_owned(SaturatingMathService {});
+            },
+        });
+        response_callback(remote);
+    }
+
     fn ClearActiveEndpoints(&mut self) {}
 }
 
-bindings::register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderInteropRustImpl);
+register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderInteropRustImpl);

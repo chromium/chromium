@@ -38,8 +38,11 @@ interface AssociatedSender {
     // Sends one end of a pipe to be held (and bound) by the receiver
     SendRemote(pending_associated_remote<MathService> remote);
     SendReceiver(pending_associated_receiver<MathService> receiver);
+    SendHandleReceiver(pending_associated_receiver<HandleService> receiver);
+    SendAssociatedSender(pending_associated_receiver<AssociatedSender> receiver);
     // Requests that the receiver create a pipe, hold/bind one end, and send the other to us
     RequestRemote() => (pending_associated_remote<MathService> remote);
     RequestReceiver() => (pending_associated_receiver<MathService> receiver);
+    RequestHandleRemote() => (pending_associated_remote<HandleService> remote);
     ClearActiveEndpoints();
 };

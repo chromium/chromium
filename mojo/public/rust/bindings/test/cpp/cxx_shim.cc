@@ -63,6 +63,32 @@ void AssociatedSenderTestRemote::SendReceiver(
   remote_->SendReceiver(std::move(pending_receiver));
 }
 
+// Requests an associated HandleService remote from the receiver, waits for the
+// response, and returns it to Rust as an adapter.
+CxxPendingAssociatedEndpoint AssociatedSenderTestRemote::RequestHandleRemote() {
+  base::RunLoop run_loop;
+  CxxPendingAssociatedEndpoint result;
+  remote_->RequestHandleRemote(base::BindOnce(
+      [](base::OnceClosure quit, CxxPendingAssociatedEndpoint* result,
+         mojo::PendingAssociatedRemote<HandleService> pending_remote) {
+        *result = mojo::rust::bindings::MakeAssociatedEndpointRustAdapter(
+            std::move(pending_remote));
+        std::move(quit).Run();
+      },
+      run_loop.QuitClosure(), &result));
+  run_loop.Run();
+  return result;
+}
+
+// Sends an associated HandleService receiver adapter to the receiver.
+void AssociatedSenderTestRemote::SendHandleReceiver(
+    CxxPendingAssociatedEndpoint receiver_adapter) {
+  mojo::PendingAssociatedReceiver<HandleService> pending_receiver =
+      mojo::rust::bindings::PassPendingAssociatedReceiver<HandleService>(
+          std::move(receiver_adapter));
+  remote_->SendHandleReceiver(std::move(pending_receiver));
+}
+
 // Just creates an AssociatedSenderTestRemote wrapped in a unique pointer.
 std::unique_ptr<AssociatedSenderTestRemote> CreateAssociatedSenderTestRemote(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper) {

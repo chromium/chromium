@@ -60,7 +60,31 @@ AssociatedEndpointRustAdapter::AssociatedEndpointRustAdapter(
     mojo::ScopedInterfaceEndpointHandle handle)
     : handle_(std::move(handle)) {}
 
+AssociatedEndpointRustAdapter::AssociatedEndpointRustAdapter(
+    mojo::AssociatedGroupController* controller,
+    uint32_t interface_id) {
+  if (!controller) {
+    return;
+  }
+  if (interface_id == mojo::kInvalidInterfaceId) {
+    mojo::ScopedInterfaceEndpointHandle remote_handle;
+    mojo::ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
+        &handle_, &remote_handle);
+    if (controller->AssociateInterface(std::move(remote_handle)) ==
+        mojo::kInvalidInterfaceId) {
+      handle_.reset();
+    }
+  } else if (!mojo::IsPrimaryInterfaceId(interface_id)) {
+    handle_ = controller->CreateLocalEndpointHandle(
+        static_cast<mojo::InterfaceId>(interface_id));
+  }
+}
+
 AssociatedEndpointRustAdapter::~AssociatedEndpointRustAdapter() = default;
+
+bool AssociatedEndpointRustAdapter::is_valid() const {
+  return handle_.is_valid() || client_adapter_;
+}
 
 std::unique_ptr<AssociatedEndpointRustAdapter>
 AssociatedEndpointRustAdapter::Create(
@@ -121,28 +145,9 @@ void AssociatedEndpointRustAdapter::SendMessage(
 std::unique_ptr<AssociatedEndpointRustAdapter>
 AssociatedEndpointRustAdapter::RegisterNewEndpoint(
     uint32_t interface_id) const {
-  auto* controller = group_controller();
-  if (!controller) {
-    return nullptr;
-  }
-
-  mojo::ScopedInterfaceEndpointHandle new_handle;
-  if (interface_id == mojo::kInvalidInterfaceId) {
-    mojo::ScopedInterfaceEndpointHandle local_handle;
-    mojo::ScopedInterfaceEndpointHandle remote_handle;
-    mojo::ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
-        &local_handle, &remote_handle);
-    controller->AssociateInterface(std::move(remote_handle));
-    new_handle = std::move(local_handle);
-  } else {
-    new_handle =
-        controller->CreateLocalEndpointHandle(mojo::InterfaceId(interface_id));
-  }
-
-  if (!new_handle.is_valid()) {
-    return nullptr;
-  }
-  return std::make_unique<AssociatedEndpointRustAdapter>(std::move(new_handle));
+  auto adapter = std::make_unique<AssociatedEndpointRustAdapter>(
+      group_controller(), interface_id);
+  return adapter->is_valid() ? std::move(adapter) : nullptr;
 }
 
 // Returns the underlying group controller

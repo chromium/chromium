@@ -7,7 +7,9 @@
 
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/mojo_responder_wrapper.h"
 
+#include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/responder_thunk.h"
@@ -37,12 +39,14 @@ class MojoResponderWrapper::ResponderHolder {
 MojoResponderWrapper::MojoResponderWrapper(
     std::unique_ptr<mojo::internal::ResponderThunk> responder,
     scoped_refptr<base::SequencedTaskRunner> runner,
-    scoped_refptr<mojo::AssociatedGroupController> group_controller)
+    scoped_refptr<mojo::AssociatedGroupController> group_controller,
+    std::vector<mojo::ScopedInterfaceEndpointHandle> associated_handles)
     : responder_(
           responder ? base::SequenceBound<ResponderHolder>(runner,
                                                            std::move(responder))
                     : base::SequenceBound<ResponderHolder>()),
-      group_controller_(std::move(group_controller)) {}
+      group_controller_(std::move(group_controller)),
+      associated_handles_(std::move(associated_handles)) {}
 
 MojoResponderWrapper::~MojoResponderWrapper() = default;
 
@@ -65,27 +69,25 @@ bool MojoResponderWrapper::CanSendResponse() const {
 // will be created; otherwise `interface_id` is used.
 std::unique_ptr<AssociatedEndpointRustAdapter>
 MojoResponderWrapper::RegisterNewEndpoint(uint32_t interface_id) const {
-  if (!group_controller_) {
-    return nullptr;
+  // If an interface ID was provided, it must be an endpoint from the incoming
+  // message, already extracted into `associated_handles_`.
+  if (interface_id != mojo::kInvalidInterfaceId) {
+    auto it = std::ranges::find_if(associated_handles_,
+                                   [interface_id](const auto& handle) {
+                                     return handle.id() == interface_id;
+                                   });
+    if (it == associated_handles_.end()) {
+      return nullptr;
+    }
+    auto handle = std::move(*it);
+    associated_handles_.erase(it);
+    return std::make_unique<AssociatedEndpointRustAdapter>(std::move(handle));
   }
 
-  mojo::ScopedInterfaceEndpointHandle new_handle;
-  if (interface_id == mojo::kInvalidInterfaceId) {
-    mojo::ScopedInterfaceEndpointHandle local_handle;
-    mojo::ScopedInterfaceEndpointHandle remote_handle;
-    mojo::ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(
-        &local_handle, &remote_handle);
-    group_controller_->AssociateInterface(std::move(remote_handle));
-    new_handle = std::move(local_handle);
-  } else {
-    new_handle = group_controller_->CreateLocalEndpointHandle(
-        mojo::InterfaceId(interface_id));
-  }
-
-  if (!new_handle.is_valid()) {
-    return nullptr;
-  }
-  return std::make_unique<AssociatedEndpointRustAdapter>(std::move(new_handle));
+  // If we got an invalid interface ID, register a new one
+  auto adapter = std::make_unique<AssociatedEndpointRustAdapter>(
+      group_controller_.get(), mojo::kInvalidInterfaceId);
+  return adapter->is_valid() ? std::move(adapter) : nullptr;
 }
 
 }  // namespace mojo::rust::bindings

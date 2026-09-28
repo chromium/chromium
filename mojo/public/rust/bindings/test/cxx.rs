@@ -7,19 +7,22 @@ chromium::import! {
     "//mojo/public/rust/system";
 }
 
-use crate::tests::BindRustMathServiceReceiver;
+use crate::tests::{
+    BindRustAssociatedSenderReceiver, BindRustHandleServiceReceiver, BindRustMathServiceReceiver,
+};
 
 #[cxx::bridge(namespace = "bindings_unittests::mojom")]
 pub mod ffi {
     #[namespace = "mojo::rust::bindings"]
     unsafe extern "C++" {
         include!("mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h");
-        type AssociatedEndpointRustAdapter =
-            super::bindings::cxx_associated_endpoint::ffi::AssociatedEndpointRustAdapter;
+        type AssociatedEndpointRustAdapter = super::bindings::CxxPendingAssociatedEndpoint;
     }
 
     extern "Rust" {
         fn BindRustMathServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+        fn BindRustHandleServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+        fn BindRustAssociatedSenderReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
     }
 
     unsafe extern "C++" {
@@ -34,9 +37,6 @@ pub mod ffi {
         #[namespace = "mojo::rust"]
         type ScopedMessagePipeHandleWrapper =
             super::system::scoped_handle_interop::ScopedMessagePipeHandleWrapper;
-
-        #[namespace = "mojo::rust"]
-        type ScopedHandleWrapper = crate::cxx::system::scoped_handle_interop::ScopedHandleWrapper;
 
         fn CreatePlusSevenMathService(
             handle: UniquePtr<ScopedMessagePipeHandleWrapper>,
@@ -66,5 +66,16 @@ pub mod ffi {
             self: Pin<&mut AssociatedSenderTestRemote>,
             receiver_adapter: UniquePtr<AssociatedEndpointRustAdapter>,
         );
+
+        fn RequestHandleRemote(
+            self: Pin<&mut AssociatedSenderTestRemote>,
+        ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+
+        fn SendHandleReceiver(
+            self: Pin<&mut AssociatedSenderTestRemote>,
+            receiver_adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        );
+
+        fn TestBadMessageToRustReceiver();
     }
 }

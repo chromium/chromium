@@ -22,6 +22,10 @@ namespace bindings_unittests::mojom {
 void TestRemoteFromCpp(
     std::unique_ptr<mojo::rust::ScopedMessagePipeHandleWrapper> wrapper);
 
+// Tests sending a malformed message from a C++ associated remote across a C++
+// primary pipe to a Rust associated receiver.
+void TestBadMessageToRustReceiver();
+
 }  // namespace bindings_unittests::mojom
 
 #endif  // MOJO_PUBLIC_RUST_BINDINGS_TEST_CPP_TEST_RUNNERS_H_

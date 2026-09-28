@@ -24,6 +24,7 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
+#include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/responder_thunk.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/mojo_responder_wrapper.h"
@@ -115,6 +116,20 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
     return false;
   }
 
+  // C++ removes the associated interface IDs from the message preemptively.
+  // Rust expects them to be there, so write them back into the payload.
+  std::vector<mojo::ScopedInterfaceEndpointHandle> associated_handles =
+      std::move(*message->mutable_associated_endpoint_handles());
+  // Associated interface IDs are only included in header versions >= 2
+  if (message->version() >= 2 &&
+      !message->header_v2()->payload_interface_ids.is_null()) {
+    auto* ids_array = message->header_v2()->payload_interface_ids.Get();
+    for (size_t i = 0; i < associated_handles.size() && i < ids_array->size();
+         ++i) {
+      ids_array->at(i) = associated_handles[i].id();
+    }
+  }
+
   std::vector<mojo::ScopedHandle> handles =
       std::move(*message->mutable_handles());
   ::rust::Vec<MojoHandle> handle_values;
@@ -133,9 +148,15 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
   // It's technically possible for the Rust handler to drop `this` while
   // it's running, so make sure we stay alive until the end of the handler.
   scoped_refptr<InterfaceEndpointClientAdapter> keep_alive(this);
-  auto responder_wrapper = std::make_unique<MojoResponderWrapper>(
-      std::move(responder), task_runner_,
-      base::WrapRefCounted(group_controller()));
+  std::unique_ptr<MojoResponderWrapper> responder_wrapper;
+  if (responder || !associated_handles.empty()) {
+    // Note that it's safe and valid to create a `MojoResponderWrapper`
+    // with a null `responder`
+    responder_wrapper = std::make_unique<MojoResponderWrapper>(
+        std::move(responder), task_runner_,
+        base::WrapRefCounted(group_controller()),
+        std::move(associated_handles));
+  }
   return run_rust_incoming_handler(
       *info_.value(), payload, std::move(handle_values), std::move(raw_wrapper),
       std::move(responder_wrapper));

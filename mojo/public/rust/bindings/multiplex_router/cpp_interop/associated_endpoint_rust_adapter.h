@@ -62,11 +62,16 @@ class AssociatedEndpointRustAdapter {
  public:
   explicit AssociatedEndpointRustAdapter(
       mojo::ScopedInterfaceEndpointHandle handle);
+  AssociatedEndpointRustAdapter(mojo::AssociatedGroupController* controller,
+                                uint32_t interface_id);
   ~AssociatedEndpointRustAdapter();
 
   AssociatedEndpointRustAdapter(const AssociatedEndpointRustAdapter&) = delete;
   AssociatedEndpointRustAdapter& operator=(
       const AssociatedEndpointRustAdapter&) = delete;
+
+  // Returns true if this adapter holds an endpoint
+  bool is_valid() const;
 
   // Create a new adapter wrapped in a unique_ptr. This function mostly exists
   // to be called from Rust.
