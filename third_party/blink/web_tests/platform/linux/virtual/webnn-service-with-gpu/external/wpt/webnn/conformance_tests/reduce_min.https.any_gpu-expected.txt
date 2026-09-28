@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [required] reduceMin float32 4D tensor options.axes with options.keepDimensions=false
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceMin float32 actual -55.9765625 should be close enough to expected -55.97655487060547 by ULP distance: expected a number less than or equal to 0n but got 2n
+[FAIL] [required] reduceMin float32 4D tensor options.axes with options.keepDimensions=true
+  assert_less_than_equal: assert_array_approx_equals_ulp: test reduceMin float32 actual -55.9765625 should be close enough to expected -55.97655487060547 by ULP distance: expected a number less than or equal to 0n but got 2n
+Harness: the test ran to completion.
+

@@ -1,3 +1,5 @@
 This is a testharness.js-based test.
+[FAIL] [required] layerNormalization float32 4D tensor all options
+  assert_less_than_equal: assert_array_approx_equals_ulp: test layerNormalization float32 actual 0.7769566774368286 should be close enough to expected 0.7769554257392883 by ULP distance: expected a number less than or equal to 14n but got 21n
 Harness: the test ran to completion.
 

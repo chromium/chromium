@@ -351,6 +351,7 @@ fun:*unique_ptr*TfLiteDelegate*
 # LiteRT: Indirect calls to dynamically loaded LiteRT runtime and accelerators.
 src:*third_party/litert/*
 src:*services/webnn/tflite/*
+src:*third_party/dawn/src/dawn/common/WGPUDeviceCallbackInfos.cpp
 
 ######### Uncategorized
 
