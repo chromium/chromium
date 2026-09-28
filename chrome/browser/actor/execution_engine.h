@@ -333,17 +333,13 @@ class ExecutionEngine : public ToolDelegate,
   // origin_gating::OriginGatingChecker::Delegate
   void DoesOriginRequireUserConfirmation(
       origin_gating::GatingDecisionContext* context,
-      origin_gating::GateableEvent event,
-      const GURL& source,
-      const GURL& destination,
+      const origin_gating::GateableEvent& event,
       DoesOriginRequireUserConfirmationCallback callback) const override;
   void EvaluateEnterprisePolicy(
       const GURL& destination,
       EvaluateEnterprisePolicyCallback callback) const override;
   void OnNoVerdict(origin_gating::GatingDecisionContext* context,
-                   origin_gating::GateableEvent event,
-                   const GURL& source,
-                   const GURL& destination,
+                   const origin_gating::GateableEvent& event,
                    bool requires_user_confirmation,
                    base::OnceCallback<void(NoVerdictResult)> callback) override;
 
@@ -424,7 +420,7 @@ class ExecutionEngine : public ToolDelegate,
       const url::Origin& destination_origin,
       State initial_state,
       std::optional<url::Origin> initiator,
-      origin_gating::GateableEvent event,
+      origin_gating::GateableEvent::Type event_type,
       std::unique_ptr<origin_gating::GatingDecisionContext> context,
       origin_gating::GatingDecision decision);
 

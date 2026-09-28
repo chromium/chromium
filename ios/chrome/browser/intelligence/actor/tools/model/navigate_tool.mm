@@ -98,8 +98,9 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
   const GURL source_url = web_state_->GetLastCommittedURL();
   auto context = std::make_unique<origin_gating::GatingDecisionContext>();
   gating_checker->ComputeGatingDecision(
-      std::move(context), origin_gating::GateableEvent::kNavigationRequest,
-      source_url, destination_url,
+      std::move(context),
+      origin_gating::GateableEvent(origin_gating::NavigationRequestEvent{
+          .source = source_url, .destination = destination_url}),
       base::BindOnce(&NavigateTool::OnGatingDecisionComputed,
                      weak_ptr_factory_.GetWeakPtr(), destination_url,
                      std::move(callback)));

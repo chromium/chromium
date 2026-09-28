@@ -22,14 +22,12 @@ class CustomPredicate {
  public:
   using AsyncPredicate = base::RepeatingCallback<void(
       GatingDecisionContext* context,
-      const GURL& source,
-      const GURL& destination,
+      const GateableEvent& event,
       base::OnceCallback<void(Decision)> callback)>;
 
   using SyncPredicate =
       base::RepeatingCallback<Decision(GatingDecisionContext* context,
-                                       const GURL& source,
-                                       const GURL& destination)>;
+                                       const GateableEvent& event)>;
 
   // Constructs a CustomPredicate tagged with the given enum as its source.
   template <IsIntCompatibleEnum E>
@@ -85,8 +83,8 @@ class PredicateConfiguration {
 
   const Predicate& predicate() const { return predicate_; }
 
-  // Returns whether this predicate should be evaluated for `event`.
-  bool AppliesTo(GateableEvent event) const;
+  // Returns whether this predicate should be evaluated for `event_type`.
+  bool AppliesTo(GateableEvent::Type event_type) const;
 
  private:
   Predicate predicate_;
@@ -102,6 +100,10 @@ class OriginGatingConfiguration {
   //
   // The following internal/fallback states are strictly forbidden:
   // - `DecisionSource::kNoVerdict`
+  //
+  // The following predicates require a navigation source URL and must not be
+  // configured to apply to `GateableEvent::kPageAction`:
+  // - `DecisionSource::kAllowSameOrigin`
   //
   // Note: `use_site_keyed_cache` is essentially useless if `predicates` does
   // not include a cache predicate (`kCacheWithUserConfirmation` or

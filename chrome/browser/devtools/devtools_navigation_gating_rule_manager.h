@@ -52,17 +52,13 @@ class DevToolsNavigationGatingRuleManager
   // origin_gating::OriginGatingChecker::Delegate implementation:
   void DoesOriginRequireUserConfirmation(
       origin_gating::GatingDecisionContext* context,
-      origin_gating::GateableEvent event,
-      const GURL& source,
-      const GURL& destination,
+      const origin_gating::GateableEvent& event,
       DoesOriginRequireUserConfirmationCallback callback) const override;
   void EvaluateEnterprisePolicy(
       const GURL& destination,
       EvaluateEnterprisePolicyCallback callback) const override;
   void OnNoVerdict(origin_gating::GatingDecisionContext* context,
-                   origin_gating::GateableEvent event,
-                   const GURL& source,
-                   const GURL& destination,
+                   const origin_gating::GateableEvent& event,
                    bool requires_user_confirmation,
                    base::OnceCallback<void(NoVerdictResult)> callback) override;
 
@@ -73,8 +69,7 @@ class DevToolsNavigationGatingRuleManager
 
   origin_gating::Decision EvaluateRules(
       origin_gating::GatingDecisionContext* context,
-      const GURL& source,
-      const GURL& destination) const;
+      const origin_gating::GateableEvent& event) const;
 
   content_settings::HostIndexedContentSettings rules_;
   bool has_allowlist_ = false;

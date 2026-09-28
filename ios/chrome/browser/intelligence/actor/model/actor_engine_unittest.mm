@@ -515,8 +515,9 @@ TEST_F(ActorEngineOriginGatingTest, BlocksListedUrl) {
       future;
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
-      origin_gating::GateableEvent::kNavigationResponse,
-      GURL("https://safe.com"), GURL("https://malicious.com"),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://malicious.com")}),
       future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();
@@ -531,8 +532,9 @@ TEST_F(ActorEngineOriginGatingTest, NavigationRequestFailsOpenForUnlistedUrl) {
       future;
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
-      origin_gating::GateableEvent::kNavigationRequest,
-      GURL("https://random-source.com"), GURL("https://random-dest.com"),
+      origin_gating::GateableEvent(origin_gating::NavigationRequestEvent{
+          .source = GURL("https://random-source.com"),
+          .destination = GURL("https://random-dest.com")}),
       future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();
@@ -555,8 +557,9 @@ TEST_F(ActorEngineOriginGatingTest, AllowsListedUrl) {
       future;
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
-      origin_gating::GateableEvent::kNavigationResponse,
-      GURL("https://safe.com"), GURL("https://trusted.com"),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://trusted.com")}),
       future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();
@@ -568,7 +571,7 @@ TEST_F(ActorEngineOriginGatingTest, AllowsListedUrl) {
 TEST_F(ActorEngineOriginGatingTest, BlocksActionOnBlockedUrl) {
   const std::string mock_rules_json = R"json({
     "navigation_blocked": [
-      {"from": "https://safe.com", "to": "https://malicious.com"}
+      {"from": "https://malicious.com", "to": "https://malicious.com"}
     ]
   })json";
   actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
@@ -579,8 +582,9 @@ TEST_F(ActorEngineOriginGatingTest, BlocksActionOnBlockedUrl) {
       future;
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
-      origin_gating::GateableEvent::kPageAction, GURL("https://safe.com"),
-      GURL("https://malicious.com"), future.GetCallback());
+      origin_gating::GateableEvent(origin_gating::PageActionEvent{
+          .destination = GURL("https://malicious.com")}),
+      future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();
   EXPECT_FALSE(decision.is_allowed);
@@ -602,8 +606,9 @@ TEST_F(ActorEngineOriginGatingTest, HandlesEmptySourceUrl) {
       future;
   checker_->ComputeGatingDecision(
       std::make_unique<origin_gating::GatingDecisionContext>(),
-      origin_gating::GateableEvent::kNavigationResponse,
-      /*source=*/GURL(), GURL("https://malicious.com"), future.GetCallback());
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL(), .destination = GURL("https://malicious.com")}),
+      future.GetCallback());
 
   const origin_gating::GatingDecision& decision = future.Get<1>();
   EXPECT_FALSE(decision.is_allowed);

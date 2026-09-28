@@ -9,16 +9,55 @@
 #include <variant>
 
 #include "base/check.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace origin_gating {
 
-std::string GateableEventToString(GateableEvent event) {
-  switch (event) {
-    case origin_gating::GateableEvent::kNavigationRequest:
+GateableEvent::GateableEvent(NavigationRequestEvent event)
+    : data_(std::move(event)) {}
+
+GateableEvent::GateableEvent(NavigationResponseEvent event)
+    : data_(std::move(event)) {}
+
+GateableEvent::GateableEvent(PageActionEvent event) : data_(std::move(event)) {}
+
+GateableEvent::GateableEvent(const GateableEvent&) = default;
+GateableEvent& GateableEvent::operator=(const GateableEvent&) = default;
+GateableEvent::GateableEvent(GateableEvent&&) = default;
+GateableEvent& GateableEvent::operator=(GateableEvent&&) = default;
+GateableEvent::~GateableEvent() = default;
+
+GateableEvent::Type GateableEvent::type() const {
+  return static_cast<Type>(data_.index());
+}
+
+const GURL& GateableEvent::destination() const {
+  return std::visit(
+      [](const auto& event) -> const GURL& { return event.destination; },
+      data_);
+}
+
+const GURL* GateableEvent::source() const {
+  return std::visit(
+      absl::Overload{
+          [](const NavigationRequestEvent& event) -> const GURL* {
+            return &event.source;
+          },
+          [](const NavigationResponseEvent& event) -> const GURL* {
+            return &event.source;
+          },
+          [](const PageActionEvent&) -> const GURL* { return nullptr; },
+      },
+      data_);
+}
+
+std::string GateableEventTypeToString(GateableEvent::Type type) {
+  switch (type) {
+    case GateableEvent::Type::kNavigationRequest:
       return "NavigationRequest";
-    case origin_gating::GateableEvent::kNavigationResponse:
+    case GateableEvent::Type::kNavigationResponse:
       return "NavigationResponse";
-    case origin_gating::GateableEvent::kPageAction:
+    case GateableEvent::Type::kPageAction:
       return "PageAction";
   }
 }

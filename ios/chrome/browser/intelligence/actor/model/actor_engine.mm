@@ -29,15 +29,17 @@ namespace {
 // Evaluates the destination against the Actor Safety List component data.
 origin_gating::Decision EvaluateSafetyListPredicate(
     origin_gating::GatingDecisionContext* context,
-    const GURL& source,
-    const GURL& destination) {
+    const origin_gating::GateableEvent& event) {
   actor::SafetyListManager* safety_list_manager =
       actor::SafetyListManager::GetInstance();
   if (!safety_list_manager) {
     return origin_gating::Decision::kNoDecision;
   }
 
-  const GURL& effective_source = source.is_empty() ? destination : source;
+  const GURL& destination = event.destination();
+  const GURL& effective_source = event.source() && !event.source()->is_empty()
+                                     ? *event.source()
+                                     : destination;
   switch (safety_list_manager->Find(effective_source, destination)) {
     case actor::SafetyListManager::Decision::kAllow:
       return origin_gating::Decision::kAllowed;

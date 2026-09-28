@@ -76,8 +76,9 @@ void ActorWebStatePolicyDecider::ShouldAllowRequest(
   auto context = std::make_unique<origin_gating::GatingDecisionContext>();
 
   gating_checker->ComputeGatingDecision(
-      std::move(context), origin_gating::GateableEvent::kNavigationRequest,
-      source_url, destination_url,
+      std::move(context),
+      origin_gating::GateableEvent(origin_gating::NavigationRequestEvent{
+          .source = source_url, .destination = destination_url}),
       base::BindOnce(&ActorWebStatePolicyDecider::OnGatingDecisionComputed,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

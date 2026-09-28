@@ -50,14 +50,11 @@ class OriginGatingChecker {
 
     using DoesOriginRequireUserConfirmationCallback =
         base::OnceCallback<void(bool)>;
-    // Evaluates whether the given destination URL requires confirmation from
-    // the user when navigating from the source URL. Invokes the callback with
-    // the result.
+    // Evaluates whether the given event requires confirmation from the user.
+    // Invokes the callback with the result.
     virtual void DoesOriginRequireUserConfirmation(
         GatingDecisionContext* context,
-        GateableEvent event,
-        const GURL& source,
-        const GURL& destination,
+        const GateableEvent& event,
         DoesOriginRequireUserConfirmationCallback callback) const = 0;
 
     struct DecisionWithMetadata {
@@ -79,9 +76,7 @@ class OriginGatingChecker {
     // Defers the final decision from the OriginGatingChecker to the delegate.
     virtual void OnNoVerdict(
         GatingDecisionContext* context,
-        GateableEvent event,
-        const GURL& source,
-        const GURL& destination,
+        const GateableEvent& event,
         bool requires_user_confirmation,
         base::OnceCallback<void(NoVerdictResult)> callback) = 0;
   };
@@ -101,8 +96,6 @@ class OriginGatingChecker {
   // sequence.
   void ComputeGatingDecision(std::unique_ptr<GatingDecisionContext> context,
                              GateableEvent event,
-                             const GURL& source,
-                             const GURL& destination,
                              GatingDecisionCallback callback);
 
   // Exposes mutation methods to manage allowed origins in the cache. No-op if
@@ -139,9 +132,7 @@ class OriginGatingChecker {
   // to avoid needless recomputations.
   struct DelegateInputs {
     GateableEvent event;
-    GURL source;
-    url::Origin source_origin;
-    GURL destination;
+    std::optional<url::Origin> source_origin;
     url::Origin destination_origin;
     std::optional<bool> requires_user_confirmation;
     // The decision from the ActorContainerConfig, or `kNoDecision` if there is

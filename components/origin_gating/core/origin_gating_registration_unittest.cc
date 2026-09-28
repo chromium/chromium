@@ -24,9 +24,7 @@ class MockDelegate : public OriginGatingChecker::Delegate {
   MOCK_METHOD(void,
               DoesOriginRequireUserConfirmation,
               (GatingDecisionContext * context,
-               GateableEvent event,
-               const GURL& source,
-               const GURL& destination,
+               const GateableEvent& event,
                DoesOriginRequireUserConfirmationCallback callback),
               (const, override));
   MOCK_METHOD(void,
@@ -37,9 +35,7 @@ class MockDelegate : public OriginGatingChecker::Delegate {
   MOCK_METHOD(void,
               OnNoVerdict,
               (GatingDecisionContext * context,
-               GateableEvent event,
-               const GURL& source,
-               const GURL& destination,
+               const GateableEvent& event,
                bool requires_user_confirmation,
                base::OnceCallback<void(NoVerdictResult)> callback),
               (override));
