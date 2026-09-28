@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/safe_browsing/cloud_content_scanning",
   "+chrome/browser/sync/sync_service_factory.h",
   "+chrome/browser/sync_file_system",
   "+chrome/browser/ui/ash",
