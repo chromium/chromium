@@ -133,12 +133,6 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-void Canvas2DBitmapProvider::SetAnimatedImageFrameIndexes(
-    scoped_refptr<const cc::AnimatedImageFrameIndexMap> map) {
-  CHECK(canvas_image_provider_);
-  canvas_image_provider_->SetAnimatedImageFrameIndexes(map);
-}
-
 scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::Snapshot");
@@ -211,7 +205,9 @@ void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
   CHECK(delegate_);
-  SetAnimatedImageFrameIndexes(delegate_->GetAnimatedImageFrameIndexes(id));
+  CHECK(canvas_image_provider_);
+  canvas_image_provider_->SetAnimatedImageFrameIndexes(
+      delegate_->GetAnimatedImageFrameIndexes(id));
 }
 
 void Canvas2DBitmapProvider::ClearAtCreation() {
