@@ -70,9 +70,15 @@ std::string SerializeSigDictionary(
 }
 
 std::string CreateMessageSignatureKey(const sdjwt::Jwk& public_key) {
+  // draft-hardt-httpbis-signature-key-08 Section 3.4 requires `alg` to be
+  // present and fully specified: the verifier takes the algorithm from it
+  // rather than deriving it from `kty` and `crv`. `ExportPublicKey()` populates
+  // it, so the whole JWK is emitted verbatim here, less the private parameter.
+  CHECK(!public_key.alg.empty())
+      << "Missing alg for the hwk scheme: " << public_key.kty;
   net::structured_headers::Parameters params;
   for (auto [key, value] : public_key.ToDict()) {
-    if (key == "alg" || key == "d") {
+    if (key == "d") {
       continue;
     }
     std::string* str = value.GetIfString();
@@ -545,7 +551,14 @@ void EmailVerificationRequest::Verify(
   // preferred over ECDSA here.
   std::unique_ptr<crypto::keypair::PrivateKey> private_key;
   for (const auto& supported_alg : result.signing_alg_values_supported) {
-    if (supported_alg == "EdDSA") {
+    // The Email Verification Protocol requires issuers to advertise
+    // fully-specified identifiers, so "Ed25519" is the spelling to expect
+    // here.
+    //
+    // TODO(crbug.com/561405995): drop "EdDSA" once no deployed issuer
+    // advertises it. It is accepted alongside "Ed25519" only while deployed
+    // issuers migrate off it.
+    if (supported_alg == "Ed25519" || supported_alg == "EdDSA") {
       private_key = std::make_unique<crypto::keypair::PrivateKey>(
           crypto::keypair::PrivateKey::GenerateEd25519());
       break;
@@ -560,6 +573,15 @@ void EmailVerificationRequest::Verify(
     }
     // TODO(crbug.com/380367784): figure out what to do if we get an unsupported
     // algorithm here (should we reject? ignore?).
+  }
+
+  // `signing_alg_values_supported` is optional, and the Email Verification
+  // Protocol defaults it to Ed25519 when the issuer does not advertise
+  // anything. An issuer that does advertise algorithms, but none that are
+  // supported here, is still an error rather than a silent fallback.
+  if (!private_key && result.signing_alg_values_supported.empty()) {
+    private_key = std::make_unique<crypto::keypair::PrivateKey>(
+        crypto::keypair::PrivateKey::GenerateEd25519());
   }
 
   if (!private_key) {
@@ -691,6 +713,8 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
   CHECK(holder_pub_key);
 
   sdjwt::Header header;
+  // Matches what the browser conveyed in the Signature-Key header, and so what
+  // the issuer echoes back in `cnf.jwk`.
   header.alg = holder_pub_key->alg;
   header.typ = "kb+jwt";
 

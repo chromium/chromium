@@ -343,7 +343,9 @@ TEST_F(JwtSignerTest, ExportPublicKeyEdDsa) {
   ASSERT_TRUE(jwk.has_value());
   EXPECT_EQ(jwk->kty, "OKP");
   EXPECT_EQ(jwk->crv, "Ed25519");
-  EXPECT_EQ(jwk->alg, "EdDSA");
+  // Fully specified per RFC 9864, not the deprecated polymorphic "EdDSA".
+  // Callers emit this verbatim into Signature-Key and the KB-JWT header.
+  EXPECT_EQ(jwk->alg, "Ed25519");
   EXPECT_FALSE(jwk->x.empty());
 
   std::array<uint8_t, 32> public_key_raw = private_key.ToEd25519PublicKey();
@@ -351,6 +353,103 @@ TEST_F(JwtSignerTest, ExportPublicKeyEdDsa) {
   base::Base64UrlEncode(public_key_raw,
                         base::Base64UrlEncodePolicy::OMIT_PADDING, &expected_x);
   EXPECT_EQ(jwk->x, expected_x);
+}
+
+// RFC 9864 deprecated the polymorphic "EdDSA" identifier. Ed25519 signatures
+// have to verify under either spelling while issuers migrate.
+TEST_F(JwtSignerTest, JwtVerifierFullySpecifiedEd25519) {
+  auto private_key = crypto::keypair::PrivateKey::GenerateEd25519();
+  auto jwk = ExportPublicKey(private_key);
+  ASSERT_TRUE(jwk);
+
+  const std::string message = "hello world";
+  auto signer = CreateJwtSigner(std::move(private_key));
+  auto signature = std::move(signer).Run(message);
+
+  ASSERT_TRUE(signature);
+
+  Header header;
+  header.alg = "Ed25519";
+  auto verifier = CreateJwtVerifier(*jwk, header);
+  EXPECT_TRUE(std::move(verifier).Run(message, base::as_byte_span(*signature)));
+}
+
+// Every key this module produces carries a fully-specified `alg` ready to be
+// emitted verbatim, so callers never have to derive one.
+TEST_F(JwtSignerTest, ExportedKeysCarryFullySpecifiedAlg) {
+  auto ed25519 =
+      ExportPublicKey(crypto::keypair::PrivateKey::GenerateEd25519());
+  ASSERT_TRUE(ed25519);
+  EXPECT_EQ(ed25519->alg, "Ed25519");
+
+  auto p256 = ExportPublicKey(crypto::keypair::PrivateKey::GenerateEcP256());
+  ASSERT_TRUE(p256);
+  EXPECT_EQ(p256->alg, "ES256");
+
+  auto rsa = ExportPublicKey(crypto::keypair::PrivateKey::GenerateRsa2048());
+  ASSERT_TRUE(rsa);
+  EXPECT_EQ(rsa->alg, "RS256");
+
+  // None of them is the polymorphic identifier RFC 9864 deprecated.
+  for (const auto* jwk : {&*ed25519, &*p256, &*rsa}) {
+    EXPECT_NE(jwk->alg, "EdDSA");
+  }
+}
+
+// Each case signs correctly and only varies the header's `alg`, so a rejection
+// can only come from the alg/key consistency check rather than from a bad
+// signature.
+TEST_F(JwtSignerTest, JwtVerifierEnforcesAlgMatchesKey) {
+  const std::string message = "hello world";
+
+  const struct {
+    const char* name;
+    crypto::keypair::PrivateKey (*generate)();
+    std::vector<std::string> accepted;
+    std::vector<std::string> rejected;
+  } kCases[] = {
+      // "EdDSA" is deprecated by RFC 9864 but still accepted on input.
+      {"Ed25519",
+       &crypto::keypair::PrivateKey::GenerateEd25519,
+       {"Ed25519", "EdDSA"},
+       {"", "ES256", "RS256", "none"}},
+      // The polymorphic identifier is only ever an alias for Ed25519 here, so
+      // it must not be accepted for other key types.
+      {"ES256",
+       &crypto::keypair::PrivateKey::GenerateEcP256,
+       {"ES256"},
+       {"", "Ed25519", "EdDSA", "RS256"}},
+      {"RS256",
+       &crypto::keypair::PrivateKey::GenerateRsa2048,
+       {"RS256"},
+       {"", "Ed25519", "EdDSA", "ES256"}},
+  };
+
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.name);
+
+    auto private_key = test_case.generate();
+    auto jwk = ExportPublicKey(private_key);
+    ASSERT_TRUE(jwk);
+    auto signature = CreateJwtSigner(std::move(private_key)).Run(message);
+    ASSERT_TRUE(signature);
+
+    for (const std::string& alg : test_case.accepted) {
+      SCOPED_TRACE(alg);
+      Header header;
+      header.alg = alg;
+      EXPECT_TRUE(CreateJwtVerifier(*jwk, header)
+                      .Run(message, base::as_byte_span(*signature)));
+    }
+
+    for (const std::string& alg : test_case.rejected) {
+      SCOPED_TRACE(alg);
+      Header header;
+      header.alg = alg;
+      EXPECT_FALSE(CreateJwtVerifier(*jwk, header)
+                       .Run(message, base::as_byte_span(*signature)));
+    }
+  }
 }
 
 }  // namespace content::sdjwt

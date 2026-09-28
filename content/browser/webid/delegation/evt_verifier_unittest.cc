@@ -159,6 +159,50 @@ TEST_F(EvtVerifierTest, SuccessfulVerification) {
       EvtVerifier::Result::kVerified);
 }
 
+// RFC 9864 deprecated the polymorphic "EdDSA" identifier, and the Email
+// Verification Protocol requires the fully-specified "Ed25519" instead. Both
+// spellings have to verify while issuers migrate, on the EVT header, the
+// KB-JWT header and the echoed `cnf.jwk`.
+TEST_F(EvtVerifierTest, FullySpecifiedEd25519AlgAccepted) {
+  TokenOptions options;
+  options.evt_alg = "Ed25519";
+  options.kb_alg = "Ed25519";
+  auto ctx = CreateTokenContext(options);
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kVerified);
+}
+
+// An issuer part-way through migrating can mix the two spellings; neither
+// combination should fail.
+TEST_F(EvtVerifierTest, MixedEd25519AlgSpellingsAccepted) {
+  TokenOptions options;
+  options.evt_alg = "Ed25519";
+  options.kb_alg = "EdDSA";
+  auto ctx = CreateTokenContext(options);
+  EXPECT_EQ(
+      EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                          ctx.rp_origin, ctx.email, ctx.nonce, ctx.browser_jwk),
+      EvtVerifier::Result::kVerified);
+}
+
+TEST_F(EvtVerifierTest, UnsupportedEvtAlgRejected) {
+  // "none" and the symmetric MAC identifiers are forbidden outright, and Ed448
+  // is permitted by the spec but unsupported here because Chromium has no
+  // Ed448 keys. An absent `alg` is rejected too: it is REQUIRED in the header.
+  for (const char* alg : {"", "none", "HS256", "Ed448"}) {
+    SCOPED_TRACE(alg);
+    TokenOptions options;
+    options.evt_alg = alg;
+    auto ctx = CreateTokenContext(options);
+    EXPECT_EQ(EvtVerifier::Verify(ctx.full_token, ctx.issuer_origin, ctx.jwks,
+                                  ctx.rp_origin, ctx.email, ctx.nonce,
+                                  ctx.browser_jwk),
+              EvtVerifier::Result::kSdJwtUnsupportedHeaderAlg);
+  }
+}
+
 TEST_F(EvtVerifierTest, CaseMismatchedEmailRejected) {
   TokenOptions options;
   options.evt_email = "TeSt@ExAmPlE.CoM";

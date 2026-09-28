@@ -30,7 +30,12 @@ base::expected<void, Result> VerifyEVT(const sdjwt::SdJwt& sd_jwt,
     return base::unexpected(Result::kSdJwtInvalidTyp);
   }
 
-  if (header.alg != "EdDSA" && header.alg != "RS256" && header.alg != "ES256") {
+  // TODO(crbug.com/561405995): drop "EdDSA" once no deployed issuer sends it.
+  // RFC 9864 deprecated it in favour of the fully-specified "Ed25519", which
+  // the Email Verification Protocol requires; it is accepted here only so the
+  // browser keeps working with issuers that have not migrated yet.
+  if (header.alg != "Ed25519" && header.alg != "EdDSA" &&
+      header.alg != "RS256" && header.alg != "ES256") {
     return base::unexpected(Result::kSdJwtUnsupportedHeaderAlg);
   }
 

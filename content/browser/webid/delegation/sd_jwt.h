@@ -111,6 +111,10 @@ struct CONTENT_EXPORT Jwk {
   ~Jwk();
   Jwk(const Jwk& other);
 
+  // Compares key material only: `alg` is deliberately excluded. Keys from
+  // ExportPublicKey() always set `alg`, but issuers need not echo it back in
+  // `cnf.jwk` (Google's issuer omits it), so comparing it would reject valid
+  // tokens. See crbug.com/561405995.
   bool operator==(const Jwk& other) const;
 
   static std::optional<Jwk> From(const base::DictValue& json);
