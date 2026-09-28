@@ -12,6 +12,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
+
+#include "base/android/scoped_java_ref.h"
 #endif
 
 class TemplateURLService;
@@ -54,6 +56,28 @@ struct CategorizedTemplateUrls {
   // Shortcuts with a starter pack id and extensions that are currently
   // inactive.
   TemplateURL::TemplateURLVector inactive_feature_shortcuts;
+};
+
+// Container for search engines split into prepopulated and recently visited
+// lists, used primarily by mobile settings screens.
+struct PrepopulatedAndRecentlyVisitedTemplateUrls {
+  PrepopulatedAndRecentlyVisitedTemplateUrls();
+  PrepopulatedAndRecentlyVisitedTemplateUrls(
+      const PrepopulatedAndRecentlyVisitedTemplateUrls& other);
+  PrepopulatedAndRecentlyVisitedTemplateUrls& operator=(
+      const PrepopulatedAndRecentlyVisitedTemplateUrls& other);
+  PrepopulatedAndRecentlyVisitedTemplateUrls(
+      PrepopulatedAndRecentlyVisitedTemplateUrls&& other);
+  PrepopulatedAndRecentlyVisitedTemplateUrls& operator=(
+      PrepopulatedAndRecentlyVisitedTemplateUrls&& other);
+  ~PrepopulatedAndRecentlyVisitedTemplateUrls();
+
+  // All prepopulated engines retrieved from `GetPrepopulatedEngines()`. This
+  // always includes the current default search engine.
+  TemplateURL::TemplateURLVector prepopulated_urls;
+  // A limited number of recently visited URLs, defined and sorted through
+  // `SortAndFilterRecentlyVisitedURLs()`.
+  TemplateURL::TemplateURLVector recently_visited_urls;
 };
 
 // Defines the category of template URLs to be displayed in different UI
@@ -122,6 +146,11 @@ class SearchEngineSettingsDataProvider {
       template_url_starter_pack_data::StarterPackIdSet
           disabled_starter_pack_ids = {}) const;
 
+  // Returns an object containing prepopulated engines and recently visited
+  // engines for mobile settings screens.
+  PrepopulatedAndRecentlyVisitedTemplateUrls
+  GetPrepopulatedAndRecentlyVisitedTemplateURLs() const;
+
   // Returns template URLs filtered by `category` and sorted appropriately
   // (managed first, then alphabetically for site search).
   std::vector<const TemplateURL*> GetTemplateUrlsByCategory(
@@ -147,6 +176,9 @@ class SearchEngineSettingsDataProvider {
   GetDisabledStarterPackIdsForAndroid();
 
   void Destroy(JNIEnv* env);
+
+  base::android::ScopedJavaLocalRef<jobject>
+  GetPrepopulatedAndRecentlyVisitedTemplateURLs(JNIEnv* env) const;
 
   std::vector<const TemplateURL*> GetTemplateUrlsByCategory(
       JNIEnv* env,

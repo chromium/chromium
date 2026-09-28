@@ -111,22 +111,6 @@ public class TemplateUrlService {
     }
 
     /**
-     * Returns two lists: The first including prepopulated and policy enforced engines and the
-     * default engine, the second one recently visited sites.
-     *
-     * <p>TODO(crbug.com/545131041): Migrate callers to {@link
-     * SearchEngineSettingsDataProvider#getPrepopulatedAndRecentlyVisitedTemplateURLs()} and remove
-     * this method. It is retained here only so this CL does not also have to move the prepopulated
-     * engine logic; that happens in the follow-up.
-     */
-    public PrepopulatedAndRecentlyVisitedTemplateURLs
-            getPrepopulatedAndRecentlyVisitedTemplateURLs() {
-        ThreadUtils.assertOnUiThread();
-        return TemplateUrlServiceJni.get()
-                .getPrepopulatedAndRecentlyVisitedTemplateURLs(mNativeTemplateUrlServiceAndroid);
-    }
-
-    /**
      * Creates a {@link SearchEngineSettingsDataProvider} instance to prepare data for settings
      * screens. The caller is responsible for calling {@link
      * SearchEngineSettingsDataProvider#close()} when done.
@@ -762,9 +746,6 @@ public class TemplateUrlService {
                 @Nullable String imageTranslateTargetLanguageParamKey);
 
         void getTemplateUrls(long nativeTemplateUrlServiceAndroid, List<TemplateUrl> templateUrls);
-
-        PrepopulatedAndRecentlyVisitedTemplateURLs getPrepopulatedAndRecentlyVisitedTemplateURLs(
-                long nativeTemplateUrlServiceAndroid);
 
         long createSettingsDataProvider(long nativeTemplateUrlServiceAndroid);
 

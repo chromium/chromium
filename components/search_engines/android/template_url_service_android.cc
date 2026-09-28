@@ -659,28 +659,6 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   }
 }
 
-base::android::ScopedJavaLocalRef<jobject>
-TemplateUrlServiceAndroid::GetPrepopulatedAndRecentlyVisitedTemplateURLs(
-    JNIEnv* env) {
-  CHECK(base::FeatureList::IsEnabled(switches::kSearchSettingsUpdateV2));
-
-  auto result =
-      template_url_service_->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
-
-  std::vector<const TemplateURL*> prepopulated_urls;
-  for (const auto& turl : result.prepopulated_urls) {
-    prepopulated_urls.push_back(turl.get());
-  }
-
-  std::vector<const TemplateURL*> recently_visited_urls;
-  for (const auto& turl : result.recently_visited_urls) {
-    recently_visited_urls.push_back(turl.get());
-  }
-
-  return Java_PrepopulatedAndRecentlyVisitedTemplateURLs_create(
-      env, prepopulated_urls, recently_visited_urls);
-}
-
 int64_t TemplateUrlServiceAndroid::CreateSettingsDataProvider(JNIEnv* env) {
   return reinterpret_cast<int64_t>(
       template_url_service_->CreateSearchEngineSettingsDataProvider()

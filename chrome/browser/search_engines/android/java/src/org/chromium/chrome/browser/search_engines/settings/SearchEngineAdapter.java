@@ -45,6 +45,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.ChoiceMadeLocation;
 import org.chromium.components.search_engines.PrepopulatedAndRecentlyVisitedTemplateURLs;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
@@ -68,8 +69,8 @@ public class SearchEngineAdapter extends BaseAdapter
                 TemplateUrlService.TemplateUrlServiceObserver,
                 OnClickListener {
 
-    public static final int MAX_RECENT_ENGINE_NUM = 3;
-    public static final long MAX_DISPLAY_TIME_SPAN_MS = DateUtils.DAY_IN_MILLIS * 2;
+    private static final int MAX_RECENT_ENGINE_NUM = 3;
+    @VisibleForTesting static final long MAX_DISPLAY_TIME_SPAN_MS = DateUtils.DAY_IN_MILLIS * 2;
     private static final Runnable NO_OP = CallbackUtils.emptyRunnable();
 
     private static final int VIEW_TYPE_COUNT = 3;
@@ -93,7 +94,7 @@ public class SearchEngineAdapter extends BaseAdapter
         TemplateUrlSourceType.RECENT
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TemplateUrlSourceType {
+    private @interface TemplateUrlSourceType {
         int DEFAULT = 0;
         int PREPOPULATED = 1;
         int RECENT = 2;
@@ -137,6 +138,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private @MonotonicNonNull Runnable mDisableAutoSwitchRunnable;
     private final ContainmentItemController mContainmentItemController;
+    private final SearchEngineSettingsDataProvider mSettingsDataProvider;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -150,6 +152,8 @@ public class SearchEngineAdapter extends BaseAdapter
             Context context, Profile profile, @Nullable Runnable siteSearchClickHandler) {
         mContext = context;
         mProfile = profile;
+        mSettingsDataProvider =
+                TemplateUrlServiceFactory.getForProfile(profile).createSettingsDataProvider();
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContainmentItemController = new ContainmentItemController(mContext);
@@ -178,6 +182,10 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         TemplateUrlServiceFactory.getForProfile(mProfile).removeObserver(this);
+    }
+
+    public void destroy() {
+        mSettingsDataProvider.close();
     }
 
     String getValueForTesting() {
@@ -217,7 +225,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2)) {
             PrepopulatedAndRecentlyVisitedTemplateURLs engines =
-                    templateUrlService.getPrepopulatedAndRecentlyVisitedTemplateURLs();
+                    mSettingsDataProvider.getPrepopulatedAndRecentlyVisitedTemplateURLs();
 
             // Recently visited search engines may be disabled as site search can set more advanced
             // settings.
@@ -331,7 +339,7 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     @VisibleForTesting
-    public static void sortAndFilterUnnecessaryTemplateUrl(
+    static void sortAndFilterUnnecessaryTemplateUrl(
             List<TemplateUrl> templateUrls,
             @Nullable TemplateUrl defaultSearchEngine,
             boolean isEeaChoiceCountry) {

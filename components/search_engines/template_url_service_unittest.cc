@@ -576,7 +576,7 @@ TEST_F(TemplateURLServiceUnitTest, HiddenFromLists) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
 TEST_F(TemplateURLServiceUnitTest,
        GetPrepopulatedAndRecentlyVisitedTemplateURLs_Empty) {
   TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls data =
@@ -709,7 +709,7 @@ TEST_F(
                                     HasShortName("Recent Site Search 3"),
                                     HasShortName("Recent Site Search 2")));
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(TemplateURLServiceUnitTest,
        GetDefaultSearchProviderIgnoringExtensionsFallbackMatch) {

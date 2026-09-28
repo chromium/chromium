@@ -163,16 +163,6 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& template_url_list_obj);
 
-  // Get the available search engines separated into two vectors from
-  // `TemplateURLService::GetPrepopulatedAndRecentlyVisitedTemplateURLs()`.
-  //
-  // TODO(crbug.com/545131041): Remove once callers use
-  // `SearchEngineSettingsDataProvider` directly. Retained here so that this
-  // change is limited to the category queries; the prepopulated engine logic
-  // moves in the follow-up.
-  base::android::ScopedJavaLocalRef<jobject>
-  GetPrepopulatedAndRecentlyVisitedTemplateURLs(JNIEnv* env);
-
   // Creates a SearchEngineSettingsDataProvider and returns a raw pointer to it
   // as an int64_t. The Java caller owns the instance and must close/destroy it.
   int64_t CreateSettingsDataProvider(JNIEnv* env);

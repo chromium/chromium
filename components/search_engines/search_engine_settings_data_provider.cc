@@ -16,12 +16,15 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/android/template_url_android.h"
+#include "components/search_engines/search_engines_switches.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "components/search_engines/android/jni_headers/PrepopulatedAndRecentlyVisitedTemplateURLs_jni.h"
 #include "components/search_engines/android/jni_headers/SearchEngineSettingsDataProvider_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -37,6 +40,23 @@ CategorizedTemplateUrls::CategorizedTemplateUrls(
 CategorizedTemplateUrls& CategorizedTemplateUrls::operator=(
     CategorizedTemplateUrls&& other) = default;
 CategorizedTemplateUrls::~CategorizedTemplateUrls() = default;
+
+PrepopulatedAndRecentlyVisitedTemplateUrls::
+    PrepopulatedAndRecentlyVisitedTemplateUrls() = default;
+PrepopulatedAndRecentlyVisitedTemplateUrls::
+    PrepopulatedAndRecentlyVisitedTemplateUrls(
+        const PrepopulatedAndRecentlyVisitedTemplateUrls& other) = default;
+PrepopulatedAndRecentlyVisitedTemplateUrls&
+PrepopulatedAndRecentlyVisitedTemplateUrls::operator=(
+    const PrepopulatedAndRecentlyVisitedTemplateUrls& other) = default;
+PrepopulatedAndRecentlyVisitedTemplateUrls::
+    PrepopulatedAndRecentlyVisitedTemplateUrls(
+        PrepopulatedAndRecentlyVisitedTemplateUrls&& other) = default;
+PrepopulatedAndRecentlyVisitedTemplateUrls&
+PrepopulatedAndRecentlyVisitedTemplateUrls::operator=(
+    PrepopulatedAndRecentlyVisitedTemplateUrls&& other) = default;
+PrepopulatedAndRecentlyVisitedTemplateUrls::
+    ~PrepopulatedAndRecentlyVisitedTemplateUrls() = default;
 
 SearchEngineSettingsDataProvider::SearchEngineSettingsDataProvider(
     TemplateURLService& template_url_service,
@@ -92,6 +112,41 @@ SearchEngineSettingsDataProvider::GetCategorizedTemplateURLs(
           prepopulate_data_resolver_->GetPrepopulatedEngines()));
   std::ranges::sort(data.inactive_site_shortcuts,
                     ::internal::OrderTemplateUrlsByManagedAndAlphabetically());
+
+  return data;
+}
+
+PrepopulatedAndRecentlyVisitedTemplateUrls SearchEngineSettingsDataProvider::
+    GetPrepopulatedAndRecentlyVisitedTemplateURLs() const {
+  PrepopulatedAndRecentlyVisitedTemplateUrls data;
+
+  for (TemplateURL* url : template_url_service_->GetTemplateURLs()) {
+    if (template_url_service_->HiddenFromLists(url)) {
+      continue;
+    }
+
+    if (template_url_service_->ShowInDefaultList(url)) {
+      data.prepopulated_urls.push_back(url);
+      continue;
+    }
+
+    const bool is_starter_pack =
+        url->starter_pack_id() !=
+        template_url_starter_pack_data::StarterPackId::kNone;
+    const bool is_extension = url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
+
+    if (is_starter_pack || is_extension) {
+      continue;
+    }
+
+    data.recently_visited_urls.push_back(url);
+  }
+
+  std::ranges::sort(
+      data.prepopulated_urls,
+      ::internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
+          prepopulate_data_resolver_->GetPrepopulatedEngines()));
+  ::internal::SortAndFilterRecentlyVisitedURLs(data.recently_visited_urls);
 
   return data;
 }
@@ -188,6 +243,28 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
 #if BUILDFLAG(IS_ANDROID)
 void SearchEngineSettingsDataProvider::Destroy(JNIEnv* env) {
   delete this;
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+SearchEngineSettingsDataProvider::GetPrepopulatedAndRecentlyVisitedTemplateURLs(
+    JNIEnv* env) const {
+  CHECK(base::FeatureList::IsEnabled(switches::kSearchSettingsUpdateV2));
+  auto result = GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  std::vector<const TemplateURL*> prepopulated_urls;
+  prepopulated_urls.reserve(result.prepopulated_urls.size());
+  for (const auto& turl : result.prepopulated_urls) {
+    prepopulated_urls.push_back(turl.get());
+  }
+
+  std::vector<const TemplateURL*> recently_visited_urls;
+  recently_visited_urls.reserve(result.recently_visited_urls.size());
+  for (const auto& turl : result.recently_visited_urls) {
+    recently_visited_urls.push_back(turl.get());
+  }
+
+  return Java_PrepopulatedAndRecentlyVisitedTemplateURLs_create(
+      env, prepopulated_urls, recently_visited_urls);
 }
 
 // static

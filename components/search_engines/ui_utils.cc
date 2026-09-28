@@ -16,7 +16,6 @@ namespace internal {
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr size_t kMaxCustomSearchEngines = 3;
 
 base::TimeDelta GetMaxVisitAge() {
@@ -26,7 +25,6 @@ base::TimeDelta GetMaxVisitAge() {
   }
   return base::Days(2);
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Helper function to create and configure an icu::Collator.
 std::unique_ptr<icu::Collator> CreateCollator() {
@@ -168,7 +166,6 @@ bool OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically::operator()(
   return get_extended_sort_key(lhs) < get_extended_sort_key(rhs);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void SortAndFilterRecentlyVisitedURLs(
     TemplateURL::TemplateURLVector& recently_visited) {
   // Partially sort `recently_visited` by TemplateURL's last_visited time.
@@ -185,7 +182,6 @@ void SortAndFilterRecentlyVisitedURLs(
       std::ranges::greater_equal(), &TemplateURL::last_visited);
   recently_visited.erase(cut_begin, end);
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
     bool ai_mode_enabled,

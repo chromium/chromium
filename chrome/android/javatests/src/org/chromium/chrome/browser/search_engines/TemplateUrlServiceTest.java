@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.search_engines.PrepopulatedAndRecentlyVisitedTemplateURLs;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
@@ -229,7 +230,12 @@ public class TemplateUrlServiceTest {
 
         PrepopulatedAndRecentlyVisitedTemplateURLs result =
                 ThreadUtils.runOnUiThreadBlocking(
-                        mTemplateUrlService::getPrepopulatedAndRecentlyVisitedTemplateURLs);
+                        () -> {
+                            try (SearchEngineSettingsDataProvider provider =
+                                    mTemplateUrlService.createSettingsDataProvider()) {
+                                return provider.getPrepopulatedAndRecentlyVisitedTemplateURLs();
+                            }
+                        });
 
         Assert.assertNotNull(result);
         List<TemplateUrl> prepopulated = result.getPrepopulatedUrls();

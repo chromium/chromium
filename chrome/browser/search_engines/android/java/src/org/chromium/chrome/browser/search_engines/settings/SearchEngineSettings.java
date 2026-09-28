@@ -101,8 +101,17 @@ public class SearchEngineSettings extends ListFragment
         mSearchEngineAdapter.stop();
     }
 
+    @Override
+    public void onDestroy() {
+        if (mSearchEngineAdapter != null) {
+            mSearchEngineAdapter.destroy();
+        }
+        super.onDestroy();
+    }
+
     /**
      * Sets a runnable that disables auto search engine switching.
+     *
      * @param runnable Runnable to disable auto search engine switching.
      */
     public void setDisableAutoSwitchRunnable(Runnable runnable) {

@@ -513,6 +513,20 @@ TEST_F(SearchEngineSettingsDataProviderTest,
                                          HasShortName("B Unmanaged")));
 }
 
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs) {
+  TemplateURL* prepop =
+      AddTemplateURL(u"Prepop Engine", u"pe", /*prepopulate_id=*/1);
+  template_url_service().SetUserSelectedDefaultSearchProvider(prepop);
+  TemplateURL* custom = AddTemplateURL(u"Custom Engine", u"custom");
+
+  auto provider = CreateProvider();
+  auto result = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  EXPECT_THAT(result.prepopulated_urls, testing::ElementsAre(prepop));
+  EXPECT_THAT(result.recently_visited_urls, testing::ElementsAre(custom));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineSettingsDataProviderTest,
        GetDisabledStarterPackIdsForAndroid) {

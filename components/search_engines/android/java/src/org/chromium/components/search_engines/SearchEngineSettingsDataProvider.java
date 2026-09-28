@@ -43,6 +43,14 @@ public class SearchEngineSettingsDataProvider implements AutoCloseable {
         mNativeSearchEngineSettingsDataProvider = 0;
     }
 
+    public PrepopulatedAndRecentlyVisitedTemplateURLs
+            getPrepopulatedAndRecentlyVisitedTemplateURLs() {
+        assert mNativeSearchEngineSettingsDataProvider != 0;
+        return SearchEngineSettingsDataProviderJni.get()
+                .getPrepopulatedAndRecentlyVisitedTemplateURLs(
+                        mNativeSearchEngineSettingsDataProvider);
+    }
+
     public List<TemplateUrl> getTemplateUrlsByCategory(@TemplateUrlCategory int category) {
         assert mNativeSearchEngineSettingsDataProvider != 0;
         return SearchEngineSettingsDataProviderJni.get()
@@ -53,6 +61,10 @@ public class SearchEngineSettingsDataProvider implements AutoCloseable {
     public interface Natives {
         @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
         void destroy(long nativeSearchEngineSettingsDataProvider);
+
+        @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
+        PrepopulatedAndRecentlyVisitedTemplateURLs getPrepopulatedAndRecentlyVisitedTemplateURLs(
+                long nativeSearchEngineSettingsDataProvider);
 
         @NativeClassQualifiedName("search_engines::SearchEngineSettingsDataProvider")
         @JniType("std::vector<const TemplateURL*>")

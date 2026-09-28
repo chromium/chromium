@@ -16,6 +16,7 @@ import android.widget.ListView;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.PrepopulatedAndRecentlyVisitedTemplateURLs;
+import org.chromium.components.search_engines.SearchEngineSettingsDataProvider;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -73,8 +75,16 @@ public class SearchEngineSettingsRenderTest {
 
     private @Mock RegionalCapabilitiesService mMockRegionalCapabilities;
     private @Mock TemplateUrlService mMockTemplateUrlService;
+    private @Mock SearchEngineSettingsDataProvider mMockSettingsDataProvider;
     private @Mock Profile mProfile;
     private @Mock LargeIconBridge.Natives mLargeIconBridgeNativeMock;
+
+    @Before
+    public void setUp() {
+        doReturn(mMockSettingsDataProvider)
+                .when(mMockTemplateUrlService)
+                .createSettingsDataProvider();
+    }
 
     @Test
     @MediumTest
@@ -179,7 +189,7 @@ public class SearchEngineSettingsRenderTest {
         doReturn(
                         new PrepopulatedAndRecentlyVisitedTemplateURLs(
                                 List.of(engine2, engine1), List.of(engine3)))
-                .when(mMockTemplateUrlService)
+                .when(mMockSettingsDataProvider)
                 .getPrepopulatedAndRecentlyVisitedTemplateURLs();
         doReturn(engine1).when(mMockTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         doReturn(true).when(mMockTemplateUrlService).isLoaded();

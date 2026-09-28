@@ -585,18 +585,6 @@ class TemplateURLService::PreLoadingProviders {
   TemplateURLService::OwnedTemplateURLVector search_engines_;
 };
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls -------------
-
-TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls::
-    PrepopulatedAndRecentlyVisitedTemplateUrls() = default;
-TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls::
-    ~PrepopulatedAndRecentlyVisitedTemplateUrls() = default;
-TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls::
-    PrepopulatedAndRecentlyVisitedTemplateUrls(
-        const PrepopulatedAndRecentlyVisitedTemplateUrls& other) = default;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
 // TemplateURLService ---------------------------------------------------------
 
 TemplateURLService::TemplateURLService(
@@ -1408,42 +1396,15 @@ TemplateURLService::CreateSearchEngineSettingsDataProvider() {
       *profile_metrics_service_);
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
 TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls
 TemplateURLService::GetPrepopulatedAndRecentlyVisitedTemplateURLs() {
-  PrepopulatedAndRecentlyVisitedTemplateUrls data;
-
-  for (TemplateURL* url : GetTemplateURLs()) {
-    if (HiddenFromLists(url)) {
-      continue;
-    }
-
-    if (ShowInDefaultList(url)) {
-      data.prepopulated_urls.push_back(url);
-      continue;
-    }
-
-    const bool is_starter_pack =
-        url->starter_pack_id() !=
-        template_url_starter_pack_data::StarterPackId::kNone;
-    const bool is_extension = url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
-
-    if (is_starter_pack || is_extension) {
-      continue;
-    }
-
-    data.recently_visited_urls.push_back(url);
-  }
-
-  std::ranges::sort(
-      data.prepopulated_urls,
-      internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically(
-          prepopulate_data_resolver_->GetPrepopulatedEngines()));
-  internal::SortAndFilterRecentlyVisitedURLs(data.recently_visited_urls);
-
-  return data;
+  // TODO(crbug.com/545131041): Remove when iOS migrates to
+  // SearchEngineSettingsDataProvider directly.
+  return CreateSearchEngineSettingsDataProvider()
+      ->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 url::Origin TemplateURLService::GetDefaultSearchProviderOrigin() const {
   const TemplateURL* template_url = GetDefaultSearchProvider();
