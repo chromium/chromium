@@ -8,12 +8,13 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 assert(toolkit_views)
 
 source_set("data_sharing") {
-  sources = [
+  public = [
     "account_card_view.h",
     "collaboration_controller_delegate_desktop.h",
     "data_sharing_bubble_controller.h",
     "data_sharing_utils.h",
   ]
+
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -28,9 +29,7 @@ source_set("data_sharing") {
     "//ui/base",
     "//ui/views",
   ]
-}
 
-source_set("impl") {
   sources = [
     "account_card_view.cc",
     "collaboration_controller_delegate_desktop.cc",
@@ -38,7 +37,6 @@ source_set("impl") {
     "data_sharing_utils.cc",
   ]
   deps = [
-    ":data_sharing",
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
@@ -73,14 +71,6 @@ source_set("impl") {
     "//ui/gfx",
     "//ui/views",
   ]
-
-  # data_sharing_bubble_controller.cc and
-  # collaboration_controller_delegate_desktop.cc include headers still built as
-  # part of //chrome/browser/ui:ui (browser_element_identifiers.h and
-  # views/frame/browser_view.h). Reach them
-  # via browser_public_dependencies; the reverse edge is expressed by the
-  # allow_circular_includes_from entry on //chrome/browser/ui:ui.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
