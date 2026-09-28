@@ -685,6 +685,7 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
           new_thread_entity.specifics().title(),
           new_thread_entity.specifics().last_turn_time_unix_epoch_millis(),
           new_thread_entity.specifics().conversation_turn_id()));
+      task.SetTitle(new_thread_entity.specifics().title());
       NotifyTaskUpdated(task, TriggerSource::kRemote);
     }
 
@@ -715,6 +716,11 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
 void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
     const std::vector<base::Uuid>& thread_ids) {
   OnThreadRemovedRemotelyInternal(ThreadType::kAiMode, thread_ids);
+}
+
+void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
+    const std::vector<std::string>& thread_server_ids) {
+  OnThreadRemovedRemotelyInternal(ThreadType::kAiMode, thread_server_ids);
 }
 
 void ContextualTasksServiceImpl::OnGeminiThreadDataStoreLoaded() {
@@ -828,16 +834,30 @@ void ContextualTasksServiceImpl::RemoveTaskInternal(const base::Uuid& task_id,
 void ContextualTasksServiceImpl::OnThreadRemovedRemotelyInternal(
     ThreadType thread_type_filter,
     const std::vector<base::Uuid>& thread_ids) {
-  std::set<std::string> removed_thread_server_ids;
+  std::vector<std::string> server_ids;
+  server_ids.reserve(thread_ids.size());
   for (const auto& id : thread_ids) {
-    removed_thread_server_ids.insert(id.AsLowercaseString());
+    server_ids.push_back(id.AsLowercaseString());
+  }
+  OnThreadRemovedRemotelyInternal(thread_type_filter, server_ids);
+}
+
+void ContextualTasksServiceImpl::OnThreadRemovedRemotelyInternal(
+    ThreadType thread_type_filter,
+    const std::vector<std::string>& thread_server_ids) {
+  std::set<std::string> removed_thread_server_ids;
+  for (const auto& id : thread_server_ids) {
+    if (!id.empty()) {
+      removed_thread_server_ids.insert(base::ToLowerASCII(id));
+    }
   }
 
   std::vector<base::Uuid> tasks_to_delete;
   for (const auto& task_entry : tasks_) {
     const ContextualTask& task = task_entry.second;
     if (task.GetThread() && task.GetThread()->type == thread_type_filter) {
-      if (removed_thread_server_ids.count(task.GetThread()->server_id)) {
+      if (removed_thread_server_ids.count(
+              base::ToLowerASCII(task.GetThread()->server_id))) {
         tasks_to_delete.push_back(task.GetTaskId());
       }
     }

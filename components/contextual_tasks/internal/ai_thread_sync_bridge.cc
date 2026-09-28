@@ -37,6 +37,8 @@ void ApplyEntityProtoToTrimmedSpecifics(
   mutable_base_specifics->set_conversation_turn_id(
       entity.specifics().conversation_turn_id());
   mutable_base_specifics->set_title(entity.specifics().title());
+  mutable_base_specifics->set_last_turn_time_unix_epoch_millis(
+      entity.specifics().last_turn_time_unix_epoch_millis());
 }
 
 }  // namespace
@@ -67,7 +69,7 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       data_type_store_->CreateWriteBatch(std::move(metadata_change_list));
   std::vector<proto::AiThreadEntity> added_or_updated;
-  std::vector<base::Uuid> removed;
+  std::vector<std::string> removed_server_ids;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
 
@@ -85,8 +87,7 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
       case syncer::EntityChange::ACTION_DELETE:
         ai_thread_entities_.erase(change->storage_key());
         batch->DeleteData(change->storage_key());
-        removed.emplace_back(
-            base::Uuid::ParseCaseInsensitive(change->storage_key()));
+        removed_server_ids.push_back(change->storage_key());
         break;
     }
   }
@@ -98,7 +99,7 @@ AiThreadSyncBridge::ApplyIncrementalSyncChanges(
 
   for (auto& observer : observers_) {
     observer.OnThreadAddedOrUpdatedRemotely(added_or_updated);
-    observer.OnThreadRemovedRemotely(removed);
+    observer.OnThreadRemovedRemotely(removed_server_ids);
   }
   return std::nullopt;
 }
@@ -141,9 +142,9 @@ std::string AiThreadSyncBridge::GetStorageKey(
 
 void AiThreadSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  std::vector<base::Uuid> uuids;
+  std::vector<std::string> removed_server_ids;
   for (const auto& [server_id, entity] : ai_thread_entities_) {
-    uuids.push_back(base::Uuid::ParseCaseInsensitive(server_id));
+    removed_server_ids.push_back(server_id);
   }
   ai_thread_entities_.clear();
   data_type_store_->DeleteAllDataAndMetadata(
@@ -151,7 +152,7 @@ void AiThreadSyncBridge::ApplyDisableSyncChanges(
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   for (auto& observer : observers_) {
-    observer.OnThreadRemovedRemotely(uuids);
+    observer.OnThreadRemovedRemotely(removed_server_ids);
   }
 }
 

@@ -40,6 +40,8 @@ class AiThreadSyncBridge : public syncer::DataTypeSyncBridge {
         const std::vector<proto::AiThreadEntity>& thread_entities) = 0;
     virtual void OnThreadRemovedRemotely(
         const std::vector<base::Uuid>& thread_ids) = 0;
+    virtual void OnThreadRemovedRemotely(
+        const std::vector<std::string>& thread_server_ids) {}
   };
 
   AiThreadSyncBridge(
