@@ -5008,6 +5008,16 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarButtonPressAndDragTest, PressAndDragDown) {
     return runner && runner->IsRunning();
   }));
 
+  if (std::string(param.selector) == kBackSelector) {
+    EXPECT_TRUE(webui_toolbar_view->back_control_.menu_model_adapter_
+                    ->triggerable_event_flags() &
+                ui::EF_MIDDLE_MOUSE_BUTTON);
+  } else if (std::string(param.selector) == kForwardSelector) {
+    EXPECT_TRUE(webui_toolbar_view->forward_control_.menu_model_adapter_
+                    ->triggerable_event_flags() &
+                ui::EF_MIDDLE_MOUSE_BUTTON);
+  }
+
   // Clean up
   get_menu_runner()->Cancel();
 }
