@@ -327,15 +327,25 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
   // Gemini policy restriction (workspace) — present account menu
   // for switching accounts.
   if (availability.ineligibility_reasons->workspace) {
-    [self presentAccountMenu];
-    return;
+    // Policy checks are performed asynchronously, so sign-in state could have
+    // changed since the flow was triggered.
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
+    if (authService && authService->SigninEnabled() &&
+        authService->HasPrimaryIdentity()) {
+      [self presentAccountMenu];
+      return;
+    } else {
+      [self finishWithResult:kGeminiEntryFlowResultCancelled];
+    }
   }
 
   // Remaining ineligibility (account capability or other).
   [self finishWithResult:kGeminiEntryFlowResultUnknown];
 }
 
-// Presents the account menu for switching to a different account.
+// Presents the account menu for switching to a different account. Assumes
+// sign-in is enabled and there is a primary account.
 - (void)presentAccountMenu {
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
       initWithBaseViewController:self.baseViewController
