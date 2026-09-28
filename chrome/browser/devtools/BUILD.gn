@@ -114,6 +114,11 @@ source_set("devtools_contents_resizing_strategy") {
   ]
 }
 
+source_set("devtools_toggle_action") {
+  public = [ "devtools_toggle_action.h" ]
+  sources = [ "devtools_toggle_action.cc" ]
+}
+
 static_library("devtools") {
   # Note: new sources and deps should be generally added in (!is_android) below.
   sources = [
@@ -127,6 +132,7 @@ static_library("devtools") {
   ]
 
   public_deps = [
+    ":devtools_toggle_action",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
   ]
@@ -212,8 +218,6 @@ static_library("devtools") {
       "devtools_select_file_dialog.h",
       "devtools_settings.cc",
       "devtools_settings.h",
-      "devtools_toggle_action.cc",
-      "devtools_toggle_action.h",
       "devtools_ui_bindings.cc",
       "devtools_ui_bindings.h",
       "devtools_window.cc",
