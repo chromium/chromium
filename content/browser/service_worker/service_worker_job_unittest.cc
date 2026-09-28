@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -889,6 +890,136 @@ TEST_P(ServiceWorkerJobTest, AbortAll_RegUnreg) {
       options.scope, key, blink::ServiceWorkerStatusCode::kErrorNotFound);
 
   EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), registration);
+}
+
+TEST_P(ServiceWorkerJobTest, AbortAll_ReentrantRegister) {
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = GURL("https://www.example.com/");
+  const blink::StorageKey key = GetTestStorageKey(options.scope);
+
+  const int kNumJobs = 10;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations(kNumJobs *
+                                                                      2);
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(kNumJobs * 2, run_loop.QuitClosure());
+
+  auto reentrant_callback = base::BindRepeating(
+      [](ServiceWorkerJobCoordinator* coordinator,
+         const blink::mojom::ServiceWorkerRegistrationOptions& options,
+         const blink::StorageKey& key,
+         std::vector<scoped_refptr<ServiceWorkerRegistration>>* out_regs,
+         base::RepeatingClosure barrier, int num_jobs,
+         blink::ServiceWorkerStatusCode status,
+         const std::string& status_message,
+         ServiceWorkerRegistration* registration) {
+        EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, status);
+        for (int i = 0; i < num_jobs; ++i) {
+          GURL script_url(base::StringPrintf(
+              "https://www.example.com/reentrant_sw%d.js", i));
+          coordinator->Register(
+              script_url, options, key, CreateFetchClientSettingsObject(),
+              /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+              /*ancestor_frame_type=*/
+              blink::mojom::AncestorFrameType::kNormalFrame,
+              SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
+                               &(*out_regs)[num_jobs + i], barrier),
+              PolicyContainerPolicies());
+        }
+        barrier.Run();
+      },
+      job_coordinator(), options, key, &registrations, barrier_closure,
+      kNumJobs);
+
+  for (int i = 0; i < kNumJobs; ++i) {
+    GURL script_url(
+        base::StringPrintf("https://www.example.com/initial_sw%d.js", i));
+    ServiceWorkerRegisterJob::RegistrationCallback callback;
+    if (i == 0) {
+      callback = reentrant_callback;
+    } else {
+      callback = SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
+                                  &registrations[i], barrier_closure);
+    }
+    job_coordinator()->Register(
+        script_url, options, key, CreateFetchClientSettingsObject(),
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
+        std::move(callback), PolicyContainerPolicies());
+  }
+
+  job_coordinator()->AbortAll();
+
+  run_loop.Run();
+
+  for (const auto& reg : registrations) {
+    EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), reg);
+  }
+}
+
+TEST_P(ServiceWorkerJobTest, AbortScope_ReentrantRegister) {
+  blink::mojom::ServiceWorkerRegistrationOptions options;
+  options.scope = GURL("https://www.example.com/");
+  const blink::StorageKey key = GetTestStorageKey(options.scope);
+
+  const int kNumJobs = 10;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations(kNumJobs *
+                                                                      2);
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(kNumJobs * 2, run_loop.QuitClosure());
+
+  auto reentrant_callback = base::BindRepeating(
+      [](ServiceWorkerJobCoordinator* coordinator,
+         const blink::mojom::ServiceWorkerRegistrationOptions& options,
+         const blink::StorageKey& key,
+         std::vector<scoped_refptr<ServiceWorkerRegistration>>* out_regs,
+         base::RepeatingClosure barrier, int num_jobs,
+         blink::ServiceWorkerStatusCode status,
+         const std::string& status_message,
+         ServiceWorkerRegistration* registration) {
+        EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorAbort, status);
+        for (int i = 0; i < num_jobs; ++i) {
+          GURL script_url(base::StringPrintf(
+              "https://www.example.com/reentrant_sw%d.js", i));
+          coordinator->Register(
+              script_url, options, key, CreateFetchClientSettingsObject(),
+              /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+              /*ancestor_frame_type=*/
+              blink::mojom::AncestorFrameType::kNormalFrame,
+              SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
+                               &(*out_regs)[num_jobs + i], barrier),
+              PolicyContainerPolicies());
+        }
+        barrier.Run();
+      },
+      job_coordinator(), options, key, &registrations, barrier_closure,
+      kNumJobs);
+
+  for (int i = 0; i < kNumJobs; ++i) {
+    GURL script_url(
+        base::StringPrintf("https://www.example.com/initial_sw%d.js", i));
+    ServiceWorkerRegisterJob::RegistrationCallback callback;
+    if (i == 0) {
+      callback = reentrant_callback;
+    } else {
+      callback = SaveRegistration(blink::ServiceWorkerStatusCode::kErrorAbort,
+                                  &registrations[i], barrier_closure);
+    }
+    job_coordinator()->Register(
+        script_url, options, key, CreateFetchClientSettingsObject(),
+        /*requesting_frame_id=*/GlobalRenderFrameHostId(),
+        /*ancestor_frame_type=*/blink::mojom::AncestorFrameType::kNormalFrame,
+        std::move(callback), PolicyContainerPolicies());
+  }
+
+  job_coordinator()->Abort(options.scope, key);
+
+  run_loop.Run();
+
+  for (const auto& reg : registrations) {
+    EXPECT_EQ(scoped_refptr<ServiceWorkerRegistration>(), reg);
+  }
 }
 
 TEST_P(ServiceWorkerJobTest, AbortScope) {
