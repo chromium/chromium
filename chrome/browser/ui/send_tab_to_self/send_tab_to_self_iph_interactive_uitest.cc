@@ -463,15 +463,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature));
 }
 
-// TODO(crbug.com/565062574): The test crashes on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TutorialFlowCompletesOnTabSend \
-  DISABLED_TutorialFlowCompletesOnTabSend
-#else
-#define MAYBE_TutorialFlowCompletesOnTabSend TutorialFlowCompletesOnTabSend
-#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       MAYBE_TutorialFlowCompletesOnTabSend) {
+                       TutorialFlowCompletesOnTabSend) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
@@ -480,13 +473,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
       PressDefaultPromoButton(),
       // Step 1: Bubble is shown on the active tab.
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)),
       MoveMouseTo(kTabElementId), ClickMouse(ui_controls::RIGHT),
       // Step 2: Context menu open, bubble on Send Tab to Self menu item.
-      WaitForShow(kTabSendTabToSelfMenuItem), SelectSendTabToSelfDeviceItem(),
+      InAnyContext(WaitForShow(kTabSendTabToSelfMenuItem)),
+      SelectSendTabToSelfDeviceItem(),
       // Completion step: bubble anchored to the toast notification.
-      WaitForShow(toasts::ToastView::kToastViewId),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+      InAnyContext(WaitForShow(toasts::ToastView::kToastViewId)),
+      InAnyContext(WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting)));
 }
 
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
@@ -499,6 +495,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
       PressDefaultPromoButton(),
       // Step 1: Bubble is shown on the active tab (second tab at index 1).
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
       NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
       MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
       // Step 2: Context menu open, bubble on Send Tab to Self menu item.
