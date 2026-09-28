@@ -219,7 +219,7 @@
   switch (page) {
     case CustomizationMenuPage::kMain:
       return l10n_util::GetNSString(
-          IDS_IOS_HOME_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE);
+          IDS_IOS_NEW_TAB_PAGE_CUSTOMIZATION_MAIN_PAGE_NAVIGATION_TITLE);
     case CustomizationMenuPage::kMagicStack:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE);
