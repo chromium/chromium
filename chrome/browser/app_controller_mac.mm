@@ -1948,7 +1948,9 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   _menuState->UpdateCommandEnabled(IDC_HELP_PAGE_VIA_MENU, true);
   _menuState->UpdateCommandEnabled(IDC_IMPORT_SETTINGS, true);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  _menuState->UpdateCommandEnabled(IDC_FEEDBACK, true);
+  _menuState->UpdateCommandEnabled(
+      IDC_FEEDBACK,
+      !base::FeatureList::IsEnabled(features::kFeedbackDisabledDialog));
 #endif
   _menuState->UpdateCommandEnabled(IDC_TASK_MANAGER_MAIN_MENU, true);
   _menuState->UpdateCommandEnabled(IDC_EXIT, true);
