@@ -51,6 +51,13 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
   if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  // Desktop bubbles require a browser tab window to anchor to; skip non-tab
+  // WebContents such as extension popups or side panels.
+  if (!tabs::TabInterface::MaybeGetFromContents(web_contents())) {
+    return;
+  }
+#endif
 
   SetupBubble(std::move(accept_mandatory_reauth_callback),
               std::move(cancel_mandatory_reauth_callback),

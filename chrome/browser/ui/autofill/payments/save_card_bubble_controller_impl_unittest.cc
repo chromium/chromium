@@ -197,6 +197,7 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
     handle.set_has_committed(true);
     DidFinishNavigation(&handle);
   }
+
  protected:
   bool IsPaymentsSyncTransportEnabledWithoutSyncFeature() const override {
     return false;
@@ -2206,9 +2207,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 }
 
 class SaveCardBubbleControllerImplTestWithCvCStorageAndFilling
-    : public SaveCardBubbleControllerImplTest {
-
-};
+    : public SaveCardBubbleControllerImplTest {};
 
 TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
        LocalCardSaveOnlyDialogContent) {
@@ -2243,6 +2242,47 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card and encrypted security "
             u"code to your device");
+}
+
+// Tests that invoking save card bubble flows on a non-tab WebContents (where
+// TabInterface::MaybeGetFromContents returns nullptr, such as in an extension
+// side panel or popup) does not crash, mutate state, or log metrics.
+TEST_F(SaveCardBubbleControllerImplTest,
+       NonTabWebContentsDoesNotCrashOrShowBubble) {
+  base::HistogramTester histogram_tester;
+  // `web_contents()` from ChromeRenderViewHostTestHarness is not added to
+  // `tab_strip_model_`, so it has no `TabInterface`.
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(web_contents()), nullptr);
+
+  SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
+  auto* non_tab_controller =
+      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
+  ASSERT_NE(non_tab_controller, nullptr);
+
+  for (bool show_prompt : {true, false}) {
+    non_tab_controller->OfferLocalSave(
+        autofill::test::GetCreditCard(),
+        SaveCreditCardOptions().with_show_prompt(show_prompt),
+        base::DoNothing());
+    EXPECT_EQ(non_tab_controller->GetPaymentBubbleView(), nullptr);
+    EXPECT_EQ(non_tab_controller->GetPaymentsBubbleType(),
+              PaymentsBubbleType::kInactive);
+    EXPECT_FALSE(non_tab_controller->IsIconVisible());
+
+    non_tab_controller->OfferUploadSave(
+        autofill::test::GetCreditCard(), LegalMessageLines(),
+        SaveCreditCardOptions().with_show_prompt(show_prompt),
+        base::DoNothing());
+    EXPECT_EQ(non_tab_controller->GetPaymentBubbleView(), nullptr);
+    EXPECT_EQ(non_tab_controller->GetPaymentsBubbleType(),
+              PaymentsBubbleType::kInactive);
+    EXPECT_FALSE(non_tab_controller->IsIconVisible());
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptOffer.Local.FirstShow", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow", 0);
 }
 
 }  // namespace

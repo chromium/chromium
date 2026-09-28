@@ -298,4 +298,20 @@ TEST_P(MandatoryReauthBubbleControllerOptInBubbleMetricsTest,
       autofill_metrics::MandatoryReauthOptInBubbleResult::kNotInteracted, 1);
 }
 
+TEST_F(MandatoryReauthBubbleControllerImplTest,
+       NonTabWebContentsDoesNotCrashOrShowBubble) {
+  base::HistogramTester histogram_tester;
+  web_contents()->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+  ResetFakeTabInterface();
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(web_contents()), nullptr);
+
+  ShowBubble();
+  EXPECT_EQ(controller()->GetBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetMandatoryReauthBubbleType(),
+            MandatoryReauthBubbleType::kInactive);
+  EXPECT_FALSE(controller()->IsIconVisible());
+  histogram_tester.ExpectTotalCount(GetOfferMetricsPath(/*is_reshow=*/false),
+                                    0);
+}
+
 }  // namespace autofill

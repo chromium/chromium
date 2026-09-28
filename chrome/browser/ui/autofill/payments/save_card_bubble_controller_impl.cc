@@ -122,8 +122,8 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
     HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
-  // Don't show the bubble if it's already visible.
-  if (bubble_view() || !MaySetUpBubble()) {
+  // Don't show the bubble if it's already visible or cannot be shown.
+  if (bubble_view() || !MaySetUpBubble() || !GetAutofillBubbleHandler()) {
     return;
   }
 
@@ -169,8 +169,8 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
-  // Don't show the bubble if it's already visible.
-  if (bubble_view() || !MaySetUpBubble()) {
+  // Don't show the bubble if it's already visible or cannot be shown.
+  if (bubble_view() || !MaySetUpBubble() || !GetAutofillBubbleHandler()) {
     return;
   }
 
@@ -822,8 +822,13 @@ SaveCardBubbleControllerImpl::GetPageActionTooltipText() {
 
 AutofillBubbleHandler*
 SaveCardBubbleControllerImpl::GetAutofillBubbleHandler() {
-  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
-  CHECK(tab);
+  // We may be in a non-tab WebContents such as a side panel or extension popup;
+  // in those cases we cannot access the AutofillBubbleHandler.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab) {
+    return nullptr;
+  }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   CHECK(browser);
   return AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
@@ -835,6 +840,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   }
 
   AutofillBubbleHandler* autofill_bubble_handler = GetAutofillBubbleHandler();
+  CHECK(autofill_bubble_handler);
   if (current_bubble_type_ == PaymentsBubbleType::kUploadComplete) {
     SetBubbleView(*autofill_bubble_handler->ShowSaveCardConfirmationBubble(
         web_contents(), this));

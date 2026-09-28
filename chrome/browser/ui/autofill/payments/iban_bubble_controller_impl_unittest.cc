@@ -351,4 +351,30 @@ TEST_F(IbanBubbleControllerImplTest,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));
 }
 
+TEST_F(IbanBubbleControllerImplTest,
+       NonTabWebContentsDoesNotCrashOrShowBubble) {
+  web_contents()->RemoveUserData(tabs::TabLookupFromWebContents::UserDataKey());
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(web_contents()), nullptr);
+
+  base::HistogramTester histogram_tester;
+  for (bool should_show_prompt : {true, false}) {
+    controller()->OfferLocalSave(test::GetLocalIban(), should_show_prompt,
+                                 base::DoNothing());
+    EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+    EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
+    EXPECT_FALSE(controller()->IsIconVisible());
+
+    controller()->OfferUploadSave(test::GetServerIban(), LegalMessageLines(),
+                                  should_show_prompt, base::DoNothing());
+    EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+    EXPECT_EQ(controller()->GetIbanBubbleType(), IbanBubbleType::kInactive);
+    EXPECT_FALSE(controller()->IsIconVisible());
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveIbanPromptOffer.Local.FirstShow", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveIbanPromptOffer.Upload.FirstShow", 0);
+}
+
 }  // namespace autofill
