@@ -18,7 +18,9 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -43,9 +45,16 @@ class TabSharingToolbarMediator {
 
     private final WebContents mCapturer;
     private final WebContents mCapturee;
-    private final CharSequence mCaptureeStatus;
-    private final CharSequence mCapturerStatus;
-    private final CharSequence mOtherTabsStatus;
+    private final ClickableSpan mCapturerSpan;
+    private final ClickableSpan mCaptureeSpan;
+    private final WebContentsObserver mCapturerObserver;
+    private final WebContentsObserver mCaptureeObserver;
+
+    private @Nullable String mCapturerName;
+    private @Nullable String mCaptureeName;
+    private CharSequence mCaptureeStatus = "";
+    private CharSequence mCapturerStatus = "";
+    private CharSequence mOtherTabsStatus = "";
 
     /**
      * Initializes the mediator.
@@ -67,35 +76,13 @@ class TabSharingToolbarMediator {
 
         mCapturer = mBridge.getCapturer();
         mCapturee = mBridge.getCapturee();
+        mCapturerSpan = buildClickToNavigateToTabSpan(mCapturer);
+        mCaptureeSpan = buildClickToNavigateToTabSpan(mCapturee);
 
-        ClickableSpan capturerSpan = buildClickToNavigateToTabSpan(mCapturer);
-        ClickableSpan captureeSpan = buildClickToNavigateToTabSpan(mCapturee);
-        String capturerName =
-                UrlFormatter.formatUrlForSecurityDisplay(
-                        mCapturer.getLastCommittedUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        String captureeName =
-                UrlFormatter.formatUrlForSecurityDisplay(
-                        mCapturee.getLastCommittedUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
-        mCaptureeStatus =
-                SpanApplier.applySpans(
-                        mContext.getString(
-                                R.string.tab_sharing_toolbar_sharing_current_tab_label,
-                                LINK + capturerName + LINK_END),
-                        new SpanInfo(LINK, LINK_END, capturerSpan));
-        mCapturerStatus =
-                SpanApplier.applySpans(
-                        mContext.getString(
-                                R.string.tab_sharing_toolbar_sharing_another_tab_to_this_tab_label,
-                                LINK + captureeName + LINK_END),
-                        new SpanInfo(LINK, LINK_END, captureeSpan));
-        mOtherTabsStatus =
-                SpanApplier.applySpans(
-                        mContext.getString(
-                                R.string.tab_sharing_toolbar_sharing_another_tab_label,
-                                LINK1 + captureeName + LINK1_END,
-                                LINK2 + capturerName + LINK2_END),
-                        new SpanInfo(LINK1, LINK1_END, captureeSpan),
-                        new SpanInfo(LINK2, LINK2_END, capturerSpan));
+        rebuildStatusStrings();
+
+        mCapturerObserver = createNavigationObserver(mCapturer);
+        mCaptureeObserver = createNavigationObserver(mCapturee);
 
         mActiveTabObserver =
                 new ActivityTabProvider.ActivityTabTabObserver(tabProvider, true) {
@@ -116,6 +103,10 @@ class TabSharingToolbarMediator {
 
                     @Override
                     public void onUrlUpdated(Tab tab) {
+                        if (tab.getWebContents() == mCapturee
+                                || tab.getWebContents() == mCapturer) {
+                            rebuildStatusStrings();
+                        }
                         updateToolbarForTab(tab);
                     }
                 };
@@ -126,6 +117,82 @@ class TabSharingToolbarMediator {
                 this::changeSourceToCurrentTab);
 
         updateToolbarForTab(mTabProvider.get());
+    }
+
+    private WebContentsObserver createNavigationObserver(WebContents webContents) {
+        return new WebContentsObserver(webContents) {
+            @Override
+            public void primaryPageChanged(Page page) {
+                onSharedWebContentsNavigated();
+            }
+
+            @Override
+            public void webContentsDestroyed() {
+                observe(null);
+            }
+        };
+    }
+
+    private void onSharedWebContentsNavigated() {
+        if (rebuildStatusStrings()) {
+            updateToolbarForTab(mTabProvider.get());
+        }
+    }
+
+    /**
+     * Recomputes the formatted origin status strings if either the capturer or capturee origin has
+     * changed.
+     *
+     * <p>Navigation callbacks (such as {@link WebContentsObserver#primaryPageChanged} and {@link
+     * ActivityTabProvider.ActivityTabTabObserver#onUrlUpdated}) can fire multiple times during a
+     * single page load or during same-origin navigations (e.g. URL fragment/query updates or
+     * history.pushState) where the formatted security display origin remains identical.
+     *
+     * <p>Short-circuiting when the formatted origins match avoids unnecessary {@link
+     * android.text.SpannableString} allocations and preserves object reference identity for {@code
+     * mCaptureeStatus}, {@code mCapturerStatus}, and {@code mOtherTabsStatus}. This allows {@link
+     * PropertyModel#set} to no-op via reference equality and prevents redundant {@code TextView}
+     * re-bindings and layout passes in the toolbar UI.
+     *
+     * @return True if the status strings were rebuilt due to an origin change; false otherwise.
+     */
+    private boolean rebuildStatusStrings() {
+        if (mCapturer.isDestroyed() || mCapturee.isDestroyed()) {
+            return false;
+        }
+        String capturerName =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        mCapturer.getLastCommittedUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        String captureeName =
+                UrlFormatter.formatUrlForSecurityDisplay(
+                        mCapturee.getLastCommittedUrl(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+        if (capturerName.equals(mCapturerName) && captureeName.equals(mCaptureeName)) {
+            return false;
+        }
+        mCapturerName = capturerName;
+        mCaptureeName = captureeName;
+
+        mCaptureeStatus =
+                SpanApplier.applySpans(
+                        mContext.getString(
+                                R.string.tab_sharing_toolbar_sharing_current_tab_label,
+                                LINK + capturerName + LINK_END),
+                        new SpanInfo(LINK, LINK_END, mCapturerSpan));
+        mCapturerStatus =
+                SpanApplier.applySpans(
+                        mContext.getString(
+                                R.string.tab_sharing_toolbar_sharing_another_tab_to_this_tab_label,
+                                LINK + captureeName + LINK_END),
+                        new SpanInfo(LINK, LINK_END, mCaptureeSpan));
+        mOtherTabsStatus =
+                SpanApplier.applySpans(
+                        mContext.getString(
+                                R.string.tab_sharing_toolbar_sharing_another_tab_label,
+                                LINK1 + captureeName + LINK1_END,
+                                LINK2 + capturerName + LINK2_END),
+                        new SpanInfo(LINK1, LINK1_END, mCaptureeSpan),
+                        new SpanInfo(LINK2, LINK2_END, mCapturerSpan));
+        return true;
     }
 
     /**
@@ -235,5 +302,7 @@ class TabSharingToolbarMediator {
     /** Cleans up resources. */
     public void destroy() {
         mActiveTabObserver.destroy();
+        mCapturerObserver.observe(null);
+        mCaptureeObserver.observe(null);
     }
 }

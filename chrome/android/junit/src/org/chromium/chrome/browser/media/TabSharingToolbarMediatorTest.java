@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,11 +47,16 @@ import org.chromium.url.GURL;
 /** Unit tests for {@link TabSharingToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSharingToolbarMediatorTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private TabSharingUiBridge mBridge;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
     private WebContents mCapturer;
-    @Mock private WebContents mCapturee;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
+    private WebContents mCapturee;
+
     @Mock private WebContents mOtherWebContents;
     @Mock private Tab mCurrentTab;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
@@ -62,11 +70,6 @@ public class TabSharingToolbarMediatorTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mCapturer =
-                Mockito.mock(
-                        WebContents.class,
-                        Mockito.withSettings()
-                                .extraInterfaces(WebContentsObserver.Observable.class));
         when(mBridge.getCapturer()).thenReturn(mCapturer);
         when(mBridge.getCapturee()).thenReturn(mCapturee);
         when(mBridge.isSourceSwitchingSupported()).thenReturn(true);
@@ -86,9 +89,7 @@ public class TabSharingToolbarMediatorTest {
                 .thenAnswer(
                         (invocation) -> {
                             GURL url = (GURL) invocation.getArgument(0);
-                            if (url == capturerUrl) return "meet.google.com";
-                            if (url == captureeUrl) return "youtube.com";
-                            return "other.com";
+                            return url.getHost();
                         });
 
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mDispatcherJniMock);
@@ -283,5 +284,150 @@ public class TabSharingToolbarMediatorTest {
         android.text.TextPaint paint = new android.text.TextPaint();
         spans[0].updateDrawState(paint);
         assertFalse(paint.isUnderlineText());
+    }
+
+    @Test
+    public void testCaptureeNavigatesInBackground_UpdatesStatusText() {
+        // User is viewing the Capturer tab while Capturee tab is in the background.
+        when(mCurrentTab.getWebContents()).thenReturn(mCapturer);
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        CharSequence initialStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(initialStatus.toString().contains("Sharing youtube.com to this tab"));
+
+        ArgumentCaptor<WebContentsObserver> observerCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturee).addObserver(observerCaptor.capture());
+        WebContentsObserver captureeObserver = observerCaptor.getValue();
+
+        // Simulate cross-origin navigation in the background capturee tab.
+        when(mCapturee.getLastCommittedUrl())
+                .thenReturn(new GURL("https://sensitive-bank.example"));
+        captureeObserver.primaryPageChanged(Mockito.mock(Page.class));
+
+        CharSequence updatedStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(
+                "Toolbar status must immediately reflect the new capturee origin",
+                updatedStatus.toString().contains("Sharing sensitive-bank.example to this tab"));
+    }
+
+    @Test
+    public void testCapturerNavigates_UpdatesStatusText() {
+        when(mCurrentTab.getWebContents()).thenReturn(mCapturee);
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        CharSequence initialStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(initialStatus.toString().contains("Sharing this tab to meet.google.com"));
+
+        ArgumentCaptor<WebContentsObserver> observerCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturer).addObserver(observerCaptor.capture());
+        WebContentsObserver capturerObserver = observerCaptor.getValue();
+
+        when(mCapturer.getLastCommittedUrl()).thenReturn(new GURL("https://new-capturer.example"));
+        capturerObserver.primaryPageChanged(Mockito.mock(Page.class));
+
+        CharSequence updatedStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(updatedStatus.toString().contains("Sharing this tab to new-capturer.example"));
+    }
+
+    @Test
+    public void testDestroy_RemovesWebContentsObservers() {
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        ArgumentCaptor<WebContentsObserver> capturerObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        ArgumentCaptor<WebContentsObserver> captureeObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturer)
+                .addObserver(capturerObserverCaptor.capture());
+        verify((WebContentsObserver.Observable) mCapturee)
+                .addObserver(captureeObserverCaptor.capture());
+
+        mMediator.destroy();
+        mMediator = null;
+
+        verify((WebContentsObserver.Observable) mCapturer)
+                .removeObserver(capturerObserverCaptor.getValue());
+        verify((WebContentsObserver.Observable) mCapturee)
+                .removeObserver(captureeObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testNavigation_ViewingOtherTab_UpdatesStatusText() {
+        // User is viewing a third tab (neither capturer nor capturee).
+        when(mCurrentTab.getWebContents()).thenReturn(mOtherWebContents);
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        CharSequence initialStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(initialStatus.toString().contains("Sharing youtube.com to meet.google.com"));
+
+        ArgumentCaptor<WebContentsObserver> captureeObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturee)
+                .addObserver(captureeObserverCaptor.capture());
+
+        when(mCapturee.getLastCommittedUrl())
+                .thenReturn(new GURL("https://sensitive-bank.example"));
+        captureeObserverCaptor.getValue().primaryPageChanged(Mockito.mock(Page.class));
+
+        CharSequence updatedStatus = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertTrue(
+                updatedStatus
+                        .toString()
+                        .contains("Sharing sensitive-bank.example to meet.google.com"));
+    }
+
+    @Test
+    public void testSameOriginNavigation_ShortCircuitsRebuild() {
+        when(mCurrentTab.getWebContents()).thenReturn(mCapturer);
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        CharSequence initialStatusInstance = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertNotNull(initialStatusInstance);
+
+        ArgumentCaptor<WebContentsObserver> captureeObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturee)
+                .addObserver(captureeObserverCaptor.capture());
+
+        // Simulate a same-origin navigation (path/query change) where host remains "youtube.com".
+        when(mCapturee.getLastCommittedUrl())
+                .thenReturn(new GURL("https://youtube.com/watch?v=12345"));
+        captureeObserverCaptor.getValue().primaryPageChanged(Mockito.mock(Page.class));
+
+        CharSequence statusAfterSameOriginNav = mModel.get(TabSharingToolbarProperties.STATUS_TEXT);
+        assertSame(
+                "Status CharSequence instance should not be re-allocated when origin is unchanged",
+                initialStatusInstance,
+                statusAfterSameOriginNav);
+    }
+
+    @Test
+    public void testWebContentsDestroyed_DetachesObserverAndSkipsRebuild() {
+        when(mCurrentTab.getWebContents()).thenReturn(mCapturer);
+        mMediator = new TabSharingToolbarMediator(mContext, mModel, mBridge, mTabProvider);
+
+        ArgumentCaptor<WebContentsObserver> capturerObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        ArgumentCaptor<WebContentsObserver> captureeObserverCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify((WebContentsObserver.Observable) mCapturer)
+                .addObserver(capturerObserverCaptor.capture());
+        verify((WebContentsObserver.Observable) mCapturee)
+                .addObserver(captureeObserverCaptor.capture());
+
+        // Simulate mCapturee being destroyed while the mediator is still retained (e.g. during a
+        // source switch pending swap window).
+        captureeObserverCaptor.getValue().webContentsDestroyed();
+        verify((WebContentsObserver.Observable) mCapturee)
+                .removeObserver(captureeObserverCaptor.getValue());
+
+        when(mCapturee.isDestroyed()).thenReturn(true);
+        when(mCapturee.getLastCommittedUrl())
+                .thenThrow(new IllegalStateException("Native WebContents already destroyed"));
+
+        // Navigating mCapturer must not call getLastCommittedUrl() on the destroyed mCapturee.
+        capturerObserverCaptor.getValue().primaryPageChanged(Mockito.mock(Page.class));
     }
 }

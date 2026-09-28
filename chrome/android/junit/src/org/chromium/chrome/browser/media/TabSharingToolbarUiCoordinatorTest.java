@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.media;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
 import android.view.ViewGroup;
@@ -48,8 +46,13 @@ public class TabSharingToolbarUiCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private Profile mWindowProfile;
     @Mock private TabSharingUiBridge mBridge;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
     private WebContents mCapturer;
-    @Mock private WebContents mCapturee;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
+    private WebContents mCapturee;
+
     @Mock private Profile mSessionProfile;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureJniMock;
@@ -61,10 +64,6 @@ public class TabSharingToolbarUiCoordinatorTest {
     @Before
     public void setUp() {
         MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(mMediaCaptureJniMock);
-        mCapturer =
-                mock(
-                        WebContents.class,
-                        withSettings().extraInterfaces(WebContentsObserver.Observable.class));
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mParentView = new FrameLayout(activity);
