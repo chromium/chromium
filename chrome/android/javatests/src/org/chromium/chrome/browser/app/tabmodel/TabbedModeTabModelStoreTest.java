@@ -627,6 +627,7 @@ public class TabbedModeTabModelStoreTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // crbug.com/567031910
     @EnableFeatures(
             ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE
                     + ":phase/"
