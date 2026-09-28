@@ -131,6 +131,10 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     RequestType request_type,
     std::optional<GeolocationPromptType> geolocation_prompt_type) {
   switch (request_type) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    case RequestType::kAmbientLogin:
+      return RequestTypeForUma::PERMISSION_AMBIENT_LOGIN;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

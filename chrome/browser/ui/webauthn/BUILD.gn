@@ -11,6 +11,8 @@ source_set("webauthn") {
   if (toolkit_views) {
     sources += [
       "account_hover_list_model.h",
+      "ambient/ambient_login_permission_controller.h",
+      "ambient/ambient_login_permission_request.h",
       "ambient/ambient_signin_controller.h",
       "authenticator_request_sheet_model.h",
       "authenticator_request_window.h",
@@ -32,6 +34,7 @@ source_set("webauthn") {
       "//chrome/browser/webauthn",
       "//components/password_manager/core/browser:metrics_util",
       "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/permissions",
       "//content/public/browser",
       "//device/fido",
       "//ui/base",
@@ -46,6 +49,8 @@ source_set("impl") {
   if (toolkit_views) {
     sources = [
       "account_hover_list_model.cc",
+      "ambient/ambient_login_permission_controller.cc",
+      "ambient/ambient_login_permission_request.cc",
       "ambient/ambient_signin_controller.cc",
       "authenticator_request_sheet_model.cc",
       "authenticator_request_window.cc",
@@ -128,6 +133,7 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
+      "ambient/ambient_login_permission_controller_unittest.cc",
       "ambient/ambient_signin_controller_unittest.cc",
       "context_menu_helper_unittest.cc",
       "passkey_deleted_confirmation_controller_unittest.cc",
@@ -155,6 +161,7 @@ if (!is_android) {
       "//components/autofill/core/common:test_support",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:metrics_util",
+      "//components/permissions:test_support",
       "//components/tabs:test_support",
       "//content/test:test_support",
       "//device/fido",

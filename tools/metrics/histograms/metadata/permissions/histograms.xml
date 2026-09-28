@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PermissionRequestTypes) -->
 
 <variants name="PermissionRequestTypes">
+  <variant name=".AmbientLogin" summary="Ambient login permission"/>
   <variant name=".AR" summary="AR permission"/>
   <variant name=".AudioAndVideoCapture" summary="Mic+Camera permission"/>
   <variant name=".AudioCapture" summary="Microphone permission"/>
@@ -173,7 +174,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".WindowManagement" summary="Window Management permission"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma) -->
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:RequestTypeForUma) -->
 
 <variants name="PermissionTypeForElementAnchoredBubble">
   <variant name="AR"/>

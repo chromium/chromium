@@ -192,13 +192,15 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "GeolocationApproximate";
     case RequestTypeForUma::PERMISSION_GEOLOCATION_UPGRADE:
       return "GeolocationUpgrade";
+    case RequestTypeForUma::PERMISSION_AMBIENT_LOGIN:
+      return "AmbientLogin";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::NUM:
       NOTREACHED();
   }
 }
-// LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma)
+// LINT.ThenChange(//components/permissions/permission_uma_constants.h:RequestTypeForUma)
 
 // Helper to check if the current render frame host is cross-origin with top
 // level frame. Note: in case of nested frames like A(B(A)), the bottom frame A

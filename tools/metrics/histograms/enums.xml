@@ -24029,9 +24029,10 @@ Called by update_net_error_codes.py.-->
       label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE"/>
   <int value="47" label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION_APPROXIMATE"/>
   <int value="48" label="PERMISSION_BUBBLE_PERMISSION_GEOLOCATION_UPGRADE"/>
+  <int value="49" label="PERMISSION_BUBBLE_PERMISSION_AMBIENT_LOGIN"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma) -->
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:RequestTypeForUma) -->
 
 <!-- LINT.IfChange(PermissionType) -->
 

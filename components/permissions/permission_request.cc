@@ -385,6 +385,9 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
 std::u16string PermissionRequest::GetMessageTextFragment() const {
   int message_id = 0;
   switch (request_type()) {
+    case RequestType::kAmbientLogin:
+      // Handled by an override in `AmbientLoginPermissionRequest`.
+      NOTREACHED();
     case RequestType::kArSession:
       message_id = IDS_AR_PERMISSION_FRAGMENT;
       break;

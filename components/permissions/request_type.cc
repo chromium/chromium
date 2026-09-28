@@ -85,6 +85,10 @@ int GetIconIdAndroid(RequestType type) {
 // 2 - In a separate change, remove the refresh icons.
 const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
   switch (type) {
+    case RequestType::kAmbientLogin:
+      // TODO(https://crbug.com/532206357): This is a placeholder. This should
+      // be a dynamic icon if possible.
+      return vector_icons::kPasskeyIcon;
     case RequestType::kArSession:
     case RequestType::kVrSession:
       return ::features::IsRoundedIconsEnabled()
@@ -266,6 +270,8 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
                  : vector_icons::kStorageAccessOffOldIcon;
     case RequestType::kIdentityProvider:
       // TODO(crbug.com/40252825): use a dedicated icon
+      return gfx::VectorIcon::EmptyIcon();
+    case RequestType::kAmbientLogin:
       return gfx::VectorIcon::EmptyIcon();
     case RequestType::kKeyboardLock:
       return ::features::IsRoundedIconsEnabled()
@@ -456,6 +462,9 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::WEB_APP_INSTALLATION;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       // Not associated with a ContentSettingsType.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    case RequestType::kAmbientLogin:
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kDiskQuota:
     case RequestType::kFileSystemAccess:
     case RequestType::kIdentityProvider:
@@ -507,6 +516,10 @@ IconId GetBlockedIconId(RequestType type) {
 
 const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
   switch (request_type) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    case permissions::RequestType::kAmbientLogin:
+      return "ambient_login";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case permissions::RequestType::kArSession:
       return "ar_session";
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

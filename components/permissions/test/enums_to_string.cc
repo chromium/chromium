@@ -37,6 +37,9 @@ std::string_view ToString(permissions::RequestType request_type) {
 
   static constexpr auto map =
       base::MakeFixedFlatMap<RequestType, std::string_view>({
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+          {RequestType::kAmbientLogin, "AmbientLogin"},
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           {RequestType::kArSession, "ArSession"},
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
           {RequestType::kCameraPanTiltZoom, "CameraPanTiltZoom"},
