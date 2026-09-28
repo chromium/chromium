@@ -1417,7 +1417,13 @@ public class SiteSettingsTest {
         SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
-        runProtectedContentPromptTest(/* expectGranted= */ true);
+        initializeUpdateWaiter(/* expectGranted= */ true);
+        mPermissionTestRule.runAllowTest(
+                mPermissionUpdateWaiter,
+                "/content/test/data/android/eme_permissions.html",
+                "requestEME()",
+                0,
+                true);
     }
 
     @Test
@@ -1427,7 +1433,13 @@ public class SiteSettingsTest {
         SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.ASK);
 
-        runProtectedContentPromptTest(/* expectGranted= */ false);
+        initializeUpdateWaiter(/* expectGranted= */ false);
+        mPermissionTestRule.runDenyTest(
+                mPermissionUpdateWaiter,
+                "/content/test/data/android/eme_permissions.html",
+                "requestEME()",
+                0,
+                true);
     }
 
     @Test
@@ -1570,28 +1582,5 @@ public class SiteSettingsTest {
         testTwoStateToggleDisabledByPolicy(SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);
         // TODO(crbug.com/40879457): add a test for sensors once crash in the sensors settings page
         // is resolved.
-    }
-
-    private void runProtectedContentPromptTest(boolean expectGranted) throws Exception {
-        initializeUpdateWaiter(expectGranted);
-        mPermissionTestRule.setUpUrl("/content/test/data/android/eme_permissions.html");
-        // Ensure any active ToolbarProgressBar TimeAnimator frame callbacks on Choreographer are
-        // canceled before interacting with the permission modal dialog via Espresso.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        mPermissionTestRule
-                                .getActivity()
-                                .getToolbarManager()
-                                .getToolbar()
-                                .getProgressBar()
-                                .finish(false));
-        mPermissionTestRule.runJavaScriptCodeWithUserGestureInCurrentTab("requestEME()");
-        PermissionTestRule.waitForDialogShownState(mPermissionTestRule.getActivity(), true);
-        PermissionTestRule.replyToDialog(
-                expectGranted
-                        ? PermissionTestRule.PromptDecision.ALLOW
-                        : PermissionTestRule.PromptDecision.DENY,
-                mPermissionTestRule.getActivity());
-        mPermissionUpdateWaiter.waitForNumUpdates(0);
     }
 }
