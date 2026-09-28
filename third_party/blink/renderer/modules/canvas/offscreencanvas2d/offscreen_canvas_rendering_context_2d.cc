@@ -394,7 +394,6 @@ ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
   image->SetOriginClean(OriginClean());
 
   ResetResourceProvider();
-  ResetRecorder();
   Host()->DiscardResources();
 
   return MakeGarbageCollected<ImageBitmap>(std::move(image));
