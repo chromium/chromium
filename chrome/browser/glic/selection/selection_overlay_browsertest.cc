@@ -328,10 +328,57 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
   listener.WaitForBatches(1);
   const auto& actions = listener.actions();
-  ASSERT_EQ(actions.size(), 3u);
+  ASSERT_EQ(actions.size(), 1u);
+  EXPECT_EQ(actions[0]->title, "Ask Gemini");
+  EXPECT_TRUE(actions[0]->action->is_handoff());
+}
+
+class SelectionOverlayQuickAnswersSuggestionsBrowserTest
+    : public GlicBrowserTest {
+ public:
+  SelectionOverlayQuickAnswersSuggestionsBrowserTest() {
+    scoped_feature_list_.InitFromCommandLine(
+        "GlicCaptureRegion,GlicSelectionOverlayPrompt,"
+        "QuickAnswersSelectionSuggestions",
+        "");
+  }
+  ~SelectionOverlayQuickAnswersSuggestionsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
+                       QuickAnswersSuggestionsInjectedWhenFeatureEnabled) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+  controller->Show(/*options=*/nullptr);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+
+  TestSuggestedActionsListener listener;
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  listener.WaitForBatches(1);
+  const auto& actions = listener.actions();
+  ASSERT_EQ(actions.size(), 1u);
   EXPECT_EQ(actions[0]->title, "Explain");
-  EXPECT_EQ(actions[1]->title, "Summarize");
-  EXPECT_EQ(actions[2]->title, "Create Image");
+  ASSERT_TRUE(actions[0]->action->is_inline_fulfillment());
+  EXPECT_EQ(actions[0]->action->get_inline_fulfillment()->resource_name,
+            "explain_fulfillment.js");
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,

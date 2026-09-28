@@ -36,9 +36,14 @@ void PromptSuggestion::OnSuggestionExecuted() {
   if (service) {
     GlicInvokeOptions options(Target(*tab_),
                               mojom::InvocationSource::kTextSelectionWidget);
-    options.prompts.push_back(prompt_);
-    service->InvokeWithAutoSubmit(
-        InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), std::move(options));
+    if (!prompt_.empty()) {
+      options.prompts.push_back(prompt_);
+      service->InvokeWithAutoSubmit(
+          InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+          std::move(options));
+    } else {
+      service->Invoke(std::move(options));
+    }
   }
 }
 

@@ -16,6 +16,8 @@ source_set("selection") {
     "inline_cue_blocklist_utils.h",
     "prompt_suggestion.cc",
     "prompt_suggestion.h",
+    "quick_answers_tool.cc",
+    "quick_answers_tool.h",
     "selection_overlay_controller.cc",
     "selection_overlay_controller.h",
     "selection_overlay_untrusted_ui.cc",

@@ -20,7 +20,7 @@ class PromptSuggestion : public ::selection::Suggestion {
  public:
   PromptSuggestion(tabs::TabInterface& tab,
                    std::u16string label,
-                   std::string prompt);
+                   std::string prompt = "");
   ~PromptSuggestion() override;
 
   // ::selection::Suggestion:

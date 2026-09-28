@@ -1402,11 +1402,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "el => {"
           "  const chips = "
           "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (chips.length !== 3) return false;"
+          "  if (chips.length !== 1) return false;"
           "  const titles = chips.map(c => "
           "c.querySelector('.chip-label')?.textContent?.trim());"
-          "  return titles[0] === 'Explain' && titles[1] === 'Summarize' && "
-          "titles[2] === 'Create Image';"
+          "  return titles[0] === 'Ask Gemini';"
           "}"),
       WaitForJsResultAt(
           kOverlayWebContentsId, kSelectionOverlay,
@@ -1456,11 +1455,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPromptWithoutBox,
           "el => {"
           "  const chips = "
           "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
-          "  if (chips.length !== 3) return false;"
+          "  if (chips.length !== 1) return false;"
           "  const titles = chips.map(c => "
           "c.querySelector('.chip-label')?.textContent?.trim());"
-          "  return titles[0] === 'Explain' && titles[1] === 'Summarize' && "
-          "titles[2] === 'Create Image';"
+          "  return titles[0] === 'Ask Gemini';"
           "}"));
 }
 
@@ -1528,7 +1526,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithPrompt,
           "  const chips = "
           "Array.from(el.shadowRoot.querySelectorAll('.action-chip'));"
           "  const chip = chips.find(c => "
-          "c.querySelector('.chip-label')?.textContent === 'Explain');"
+          "c.querySelector('.chip-label')?.textContent === 'Ask Gemini');"
           "  if (!chip) return false;"
           "  chip.click();"
           "  return true;"

@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/selection/quick_answers_tool.h"
 #include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -85,6 +86,9 @@ BASE_FEATURE(kGlicSelectionOverlayFullSizeScreenshot,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kStaticSelectionSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kQuickAnswersSelectionSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
   double x_scale = image.width();
@@ -230,6 +234,12 @@ SelectionOverlayController::SelectionOverlayController(
       suggestion_service->RegisterTool(static_suggestion_tool_.get());
     }
   }
+  if (base::FeatureList::IsEnabled(kQuickAnswersSelectionSuggestions)) {
+    quick_answers_tool_ = std::make_unique<QuickAnswersTool>(CHECK_DEREF(tab_));
+    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
+      suggestion_service->RegisterTool(quick_answers_tool_.get());
+    }
+  }
   tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
       base::BindRepeating(&SelectionOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
@@ -252,6 +262,11 @@ SelectionOverlayController::~SelectionOverlayController() {
   if (static_suggestion_tool_) {
     if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
       suggestion_service->UnregisterTool(static_suggestion_tool_.get());
+    }
+  }
+  if (quick_answers_tool_) {
+    if (auto* suggestion_service = ::selection::SuggestionService::From(tab_)) {
+      suggestion_service->UnregisterTool(quick_answers_tool_.get());
     }
   }
   if (tab_ && tab_->GetBrowserWindowInterface()) {
