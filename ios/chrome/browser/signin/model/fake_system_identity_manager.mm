@@ -517,20 +517,31 @@ NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
   return nil;
 }
 
-void FakeSystemIdentityManager::FetchCapabilitiesWithPartial(
+void FakeSystemIdentityManager::FetchCapabilities(
     id<SystemIdentity> identity,
     const std::vector<std::string>& names,
-    FetchCapabilitiesCompletion completion,
-    FetchPartialCapabilitiesCallback partial_callback) {
+    FetchPartialCapabilitiesCallback partial_callback,
+    FetchCapabilitiesCompletion completion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaId]);
-  // Fetching the hosted domain is an asynchronous operation (as it requires
+
+  // The fake fetches all the capabilities at once, so `partial_callback` is
+  // invoked a single time, right before `completion`.
+  auto callback = base::BindOnce(
+      [](FetchPartialCapabilitiesCallback partial_callback,
+         FetchCapabilitiesCompletion completion,
+         std::map<std::string, CapabilityResult> result) {
+        partial_callback.Run(result);
+        std::move(completion).Run();
+      },
+      std::move(partial_callback), std::move(completion));
+
+  // Fetching the capabilities is an asynchronous operation (as it requires
   // some network calls).
-  PostClosure(FROM_HERE,
-              base::BindOnce(
-                  &FakeSystemIdentityManager::FetchCapabilitiesWithPartialAsync,
-                  GetWeakPtr(), identity, names, std::move(completion),
-                  std::move(partial_callback)));
+  PostClosure(
+      FROM_HERE,
+      base::BindOnce(&FakeSystemIdentityManager::FetchCapabilitiesAsync,
+                     GetWeakPtr(), identity, names, std::move(callback)));
 }
 
 void FakeSystemIdentityManager::RegisterExternalPrivacyContextProvider(
@@ -747,25 +758,6 @@ void FakeSystemIdentityManager::FetchCapabilitiesAsync(
   }
 
   std::move(callback).Run(result);
-}
-
-void FakeSystemIdentityManager::FetchCapabilitiesWithPartialAsync(
-    id<SystemIdentity> identity,
-    const std::vector<std::string>& names,
-    FetchCapabilitiesCompletion completion,
-    FetchPartialCapabilitiesCallback partial_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto callback = base::BindOnce(
-      [](FetchPartialCapabilitiesCallback partial_callback,
-         FetchCapabilitiesCompletion completion,
-         std::map<std::string, CapabilityResult> result) {
-        partial_callback.Run(result);
-        std::move(completion).Run();
-      },
-      std::move(partial_callback), std::move(completion));
-
-  FetchCapabilitiesAsync(identity, names, std::move(callback));
 }
 
 void FakeSystemIdentityManager::PostClosure(base::Location from_here,
