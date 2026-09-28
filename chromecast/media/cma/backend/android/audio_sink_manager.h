@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 
@@ -63,7 +64,7 @@ class AudioSinkManager {
 
   std::map<AudioContentType, VolumeInfo> volume_info_;
 
-  std::vector<AudioSinkAndroid*> sinks_;
+  std::vector<raw_ptr<AudioSinkAndroid>> sinks_;
 };
 
 }  // namespace media

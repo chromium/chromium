@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -76,7 +77,7 @@ class VolumeControlAndroid : SystemVolumeTableAccessApi {
   std::map<AudioContentType, bool> muted_;
 
   base::Lock observer_lock_;
-  std::vector<VolumeObserver*> volume_observers_;
+  std::vector<raw_ptr<VolumeObserver>> volume_observers_;
 
   base::Thread thread_;
   base::WaitableEvent initialize_complete_event_;

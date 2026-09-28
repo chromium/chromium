@@ -81,7 +81,7 @@ void AudioSinkManager::SetOutputLimitDb(AudioContentType type, float limit_db) {
 }
 
 void AudioSinkManager::UpdateAllLimiterMultipliers(AudioContentType type) {
-  for (auto* sink : sinks_) {
+  for (AudioSinkAndroid* sink : sinks_) {
     if (sink->content_type() == type)
       UpdateLimiterMultiplier(sink);
   }
