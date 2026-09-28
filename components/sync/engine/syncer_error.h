@@ -35,7 +35,7 @@ class SyncerError {
 
   ~SyncerError() = default;
 
-  Type type() const { return type_; }
+  Type type() const { return static_cast<Type>(value_.index()); }
 
   // It is a caller responsibility to ensure right type(). If it doesn't match
   // Get..OrDie() will cause a crash.
@@ -57,9 +57,8 @@ class SyncerError {
   static_assert(std::variant_size<ValueType>::value ==
                 static_cast<int>(Type::kMaxValue) + 1);
 
-  SyncerError(Type type, ValueType value);
+  explicit SyncerError(ValueType value);
 
-  Type type_;
   ValueType value_;
 };
 
