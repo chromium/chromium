@@ -10,10 +10,14 @@
 //! for C++ to provide.
 
 chromium::import! {
+  "//base:sequenced_task_runner";
   "//mojo/public/rust/system";
 }
 
+use std::sync::Arc;
+
 use cxx::UniquePtr;
+use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message::ReadableBytesOnlyMessage;
 use system::mojo_types::{RawMojoHandle, UntypedHandle};
 use system::scoped_handle_interop::ScopedMessageHandleWrapper;
@@ -21,8 +25,9 @@ use system::scoped_handle_interop::ScopedMessageHandleWrapper;
 use super::cxx::ffi;
 use crate::message::MojomMessage;
 use crate::message_header::MessageHeader;
-use crate::multiplex_router::endpoint_registry::INVALID_INTERFACE_ID;
+use crate::multiplex_router::endpoint_registry::{EndpointInfo, INVALID_INTERFACE_ID};
 use crate::multiplex_router::multiplex_router::MultiplexRouter;
+use crate::multiplex_router::response_sender::ResponseSender;
 
 // Packages a Rust MojomMessage into a C++ `mojo::Message` for transmission or
 // dispatch through C++ bindings.
@@ -105,4 +110,68 @@ pub fn allocate_interface_id(router: &MultiplexRouter) -> u32 {
 /// registered.
 pub fn register_interface_id(router: &MultiplexRouter, interface_id: u32) -> bool {
     router.add_associated_interface(Some(interface_id), None).is_some()
+}
+
+/// Transmits an outgoing message originating from a C++ associated endpoint
+/// through the Rust router's underlying primary pipe. Returns true if the
+/// message was successfully queued, or false if the pipe or endpoint is closed.
+pub fn send_message_from_cpp(
+    router: &MultiplexRouter,
+    interface_id: u32,
+    message_wrapper: UniquePtr<ScopedMessageHandleWrapper>,
+) -> bool {
+    let Some(handle) = ScopedMessageHandleWrapper::into_message_handle(message_wrapper) else {
+        return false;
+    };
+    router.send_raw_message(interface_id, handle.into())
+    // Note that if we fail, the C++ side will handle cleanup of any associated
+    // interface IDs that were in the message, so we don't have to do it here.
+}
+
+/// Helper function: dreferences the endpoint client held by the handlers below
+fn client_ref(
+    client: &UniquePtr<ffi::RustAssociatedEndpointClient>,
+) -> &ffi::RustAssociatedEndpointClient {
+    client.as_ref().expect("client must not be null")
+}
+
+/// Binds a C++ associated endpoint client to the Rust router, setting up the
+/// handlers to call out to `client` and run on the specified task runner.
+pub fn attach_cpp_endpoint(
+    router: &MultiplexRouter,
+    interface_id: u32,
+    client: UniquePtr<ffi::RustAssociatedEndpointClient>,
+    runner: &sequenced_task_runner::ffi::SequencedTaskRunner,
+) {
+    let runner_handle = SequencedTaskRunnerHandle::clone_from_ref(runner);
+
+    // TODO(crbug.com/524990003): Currently `client` is dropped when
+    // `disconnect_handler` runs. Once MultiplexRouter tracks disconnected
+    // endpoints in its map, `client` should be held by the entry until the
+    // endpoint is detached or closed by C++.
+    let client = Arc::new(client);
+    let weak_client = Arc::downgrade(&client);
+
+    // C++ creates its own equivalent of `_sender` so we can ignore it here.
+    let incoming_handler = Arc::new(move |msg: MojomMessage, _sender: ResponseSender| {
+        if let Some(client) = weak_client.upgrade() {
+            // It would be nice to tear down the pipe if this fails, like C++
+            // does, but that's much harder in Rust since we only
+            // have a const ref here. We'll still report any bad
+            // messages so this is mostly an inconvenience.
+            let _ = ffi::run_cpp_incoming_handler(client_ref(&client), msg.into());
+        }
+    });
+
+    let disconnect_handler = Box::new(move || {
+        ffi::run_cpp_disconnect_handler(client_ref(&client));
+    });
+
+    let endpoint_info = EndpointInfo {
+        runner: runner_handle,
+        incoming_message_handler: incoming_handler,
+        disconnect_handler: Some(disconnect_handler),
+    };
+
+    router.bind_interface(interface_id, endpoint_info);
 }

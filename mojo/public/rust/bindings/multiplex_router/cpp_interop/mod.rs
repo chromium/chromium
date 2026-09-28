@@ -8,7 +8,7 @@ pub mod cxx_shim;
 pub use cxx::ffi;
 
 pub use cpp_router_handle::{CppResponseSender, CppRouterHandle};
-pub use cxx_shim::allocate_interface_id;
+pub use cxx_shim::{allocate_interface_id, attach_cpp_endpoint, send_message_from_cpp};
 
 /// A type representing a pending associated endpoint in C++, which can
 /// be used to create a Rust associated endpoint that sends its messages
