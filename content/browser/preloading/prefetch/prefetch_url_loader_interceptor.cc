@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 
+#include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -139,6 +140,33 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  CHECK(frame_tree_node);
+  NavigationRequest* navigation_request = frame_tree_node->navigation_request();
+  // `NavigationRequest` is gone unexpectedly in unit tests.
+  // TODO(crbug.com/548008832): Fix tests and turn this into
+  // `CHECK(navigation_request)`.
+  if (!navigation_request) {
+    CHECK_IS_TEST();
+    redirect_serving_handle_ = PrefetchServingHandle();
+    TRACE_EVENT_END("loading");
+    std::move(loader_callback_).Run(std::nullopt);
+    return;
+  }
+
+  // Only the default storage partition is supported for prefetches.
+  // Here the navigation target's `StoragePartition` is checked, while the
+  // prefetch initiator's `StoragePartition` is checked at prefetch time in
+  // `PrefetchService::CheckEligibilityOfPrefetch()`.
+  if (navigation_request->GetTargetStoragePartition() !=
+      prefetch_service->GetBrowserContext()->GetDefaultStoragePartition()) {
+    redirect_serving_handle_ = PrefetchServingHandle();
+    TRACE_EVENT_END("loading");
+    std::move(loader_callback_).Run(std::nullopt);
+    return;
+  }
+
   if (redirect_serving_handle_ &&
       redirect_serving_handle_.DoesCurrentURLToServeMatch(
           tentative_resource_request.url)) {
@@ -175,8 +203,6 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     redirect_serving_handle_ = PrefetchServingHandle();
   }
 
-  FrameTreeNode* frame_tree_node =
-      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   if (!frame_tree_node->IsOutermostMainFrame()) {
     // The prefetch code does not currently deal with prefetching within a frame
     // (i.e., where the partition which should be assigned to the request is not

@@ -1949,6 +1949,17 @@ class CONTENT_EXPORT NavigationRequest
     return download_policy();
   }
 
+  // Returns the `StoragePartition` corresponding to the current navigation
+  // request.
+  //
+  // During navigation loading, this represents the partition where the active
+  // request is loaded (and where the document will commit, absent further
+  // redirects):
+  // - Initialized when the initial request starts in `StartNavigation()`
+  //   (`state_ >= WILL_START_REQUEST`). Must not be called before then.
+  // - Updated upon each server redirect.
+  StoragePartition* GetTargetStoragePartition() const;
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -2723,7 +2734,10 @@ class CONTENT_EXPORT NavigationRequest
   bool ShouldAddDeviceBoundSessionObserver();
 
   // Returns the `StoragePartition` based on the config from the `site_info_`.
-  StoragePartition* GetStoragePartitionWithCurrentSiteInfo();
+  // TODO(crbug.com/565066826): Confirm the semantics of callers and migrate
+  // them to GetTargetStoragePartition() or appropriate StoragePartition
+  // getters.
+  StoragePartition* GetStoragePartitionWithCurrentSiteInfo() const;
 
   // Passes the response body contents to the original caller using the stored
   // callback once the body has been successfully read from its corresponding
@@ -2963,6 +2977,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // The SiteInfo of this navigation, as obtained from
   // SiteInstanceImpl::ComputeSiteInfo().
+  // This reflects the navigation target frame's `StoragePartition` only after
+  // `StartNavigation()` (`state_ >= WILL_START_REQUEST`), and is updated upon
+  // redirects on `WillRedirectRequest()` (`WILL_REDIRECT_REQUEST`).
   SiteInfo site_info_;
 
   base::OnceClosure on_start_checks_complete_closure_;

@@ -12557,13 +12557,22 @@ void NavigationRequest::CheckSoftNavigationHeuristicsInvariants() {
   DCHECK(!frame_tree_node()->IsFencedFrameRoot());
 }
 
-StoragePartition* NavigationRequest::GetStoragePartitionWithCurrentSiteInfo() {
+StoragePartition* NavigationRequest::GetStoragePartitionWithCurrentSiteInfo()
+    const {
   // `site_info_`'s StoragePartitionConfig should refer to the correct
   // `StoragePartition` for this navigation.
   return frame_tree_node_->navigator()
       .controller()
       .GetBrowserContext()
       ->GetStoragePartition(site_info_.GetStoragePartitionConfig());
+}
+
+StoragePartition* NavigationRequest::GetTargetStoragePartition() const {
+  // `site_info_` (and thus the target StoragePartition) is only initialized
+  // once the request starts loading in `StartNavigation()`, and updated on
+  // redirects.
+  CHECK_GE(state_, WILL_START_REQUEST);
+  return GetStoragePartitionWithCurrentSiteInfo();
 }
 
 void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
