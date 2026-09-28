@@ -7,17 +7,18 @@
 
 #include <memory>
 
-// IsICloudDriveEnabled returns true if iCloud Drive is available. This is used
-// as an approximation to "has iCloud Keychain enabled", which is what we would
-// like to know but cannot easily learn.
-bool IsICloudDriveEnabled();
+// Returns true if iCloud Keychain is configured for passkeys on this device.
+// When available, this queries Apple's
+// `isDeviceConfiguredForPasskeys` API. Otherwise, it falls back to checking
+// whether iCloud Drive is available as an approximation.
+bool IsICloudKeychainConfiguredForPasskeys();
 
-struct ScopedICloudDriveOverride {
-  virtual ~ScopedICloudDriveOverride() = 0;
+struct ScopedICloudKeychainOverride {
+  virtual ~ScopedICloudKeychainOverride() = 0;
 };
 
-// Override `IsICloudDriveEnabled` for testing purposes.
-std::unique_ptr<ScopedICloudDriveOverride> OverrideICloudDriveEnabled(
-    bool enabled);
+// Override `IsICloudKeychainConfiguredForPasskeys` for testing purposes.
+std::unique_ptr<ScopedICloudKeychainOverride>
+OverrideICloudKeychainConfiguredForPasskeys(bool configured);
 
 #endif  // CHROME_BROWSER_WEBAUTHN_CHROME_AUTHENTICATOR_REQUEST_DELEGATE_MAC_H_

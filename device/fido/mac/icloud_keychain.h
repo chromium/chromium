@@ -5,6 +5,8 @@
 #ifndef DEVICE_FIDO_MAC_ICLOUD_KEYCHAIN_H_
 #define DEVICE_FIDO_MAC_ICLOUD_KEYCHAIN_H_
 
+#include <os/availability.h>
+
 #include <memory>
 #include <optional>
 
@@ -39,6 +41,12 @@ std::optional<bool> HasPermission();
 // SupportsLargeBlob returns true if the current macOS version and the chrome
 // feature flag both support large blob extension for iCloud Keychain.
 COMPONENT_EXPORT(DEVICE_FIDO) bool SupportsLargeBlob();
+
+// Returns true if iCloud Keychain is configured for passkeys according to the
+// macOS AuthenticationServices API.
+COMPONENT_EXPORT(DEVICE_FIDO)
+API_AVAILABLE(macos(26.2))
+bool IsConfiguredForPasskeys();
 
 }  // namespace fido::icloud_keychain
 }  // namespace device

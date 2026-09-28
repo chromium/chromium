@@ -672,6 +672,47 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Successful get() from iCloud Keychain"/>
 </enum>
 
+<!-- LINT.IfChange(WebAuthenticationMacOSPlatformAuthenticatorActionV2) -->
+
+<enum name="WebAuthenticationMacOSPlatformAuthenticatorActionV2">
+  <int value="0"
+      label="Started create() for profile authenticator with iCloud Keychain
+             available"/>
+  <int value="1"
+      label="Started create() for profile authenticator with iCloud Keychain
+             unavailable"/>
+  <int value="2"
+      label="Started create() for iCloud Keychain with iCloud Keychain
+             available"/>
+  <int value="3"
+      label="Started create() for iCloud Keychain with iCloud Keychain
+             unavailable"/>
+  <int value="4"
+      label="Successful create() for profile authenticator with iCloud
+             Keychain available"/>
+  <int value="5"
+      label="Successful create() for profile authenticator with iCloud
+             Keychain unavailable"/>
+  <int value="6"
+      label="Successful create() for iCloud Keychain with iCloud Keychain
+             available"/>
+  <int value="7"
+      label="Successful create() for iCloud Keychain with iCloud Keychain
+             unavailable"/>
+  <int value="8"
+      label="Started get() where the profile authenticator recognised a
+             credential"/>
+  <int value="9"
+      label="Started get() where iCloud Keychain recognised a credential"/>
+  <int value="10"
+      label="Started get() where both the profile authenticator and iCloud
+             Keychain recognised a credential"/>
+  <int value="11" label="Successful get() from the profile authenticator"/>
+  <int value="12" label="Successful get() from iCloud Keychain"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/authenticator_request_dialog_controller.cc:MacOsHistogramValues) -->
+
 <enum name="WebAuthenticationMakeCredentialOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Security Error"/>

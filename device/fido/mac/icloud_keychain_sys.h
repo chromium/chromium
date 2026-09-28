@@ -39,6 +39,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(13.3)) SystemInterface
   // called.
   virtual bool IsAvailable() const = 0;
 
+  // IsConfiguredForPasskeys returns true if the system reports that it is
+  // configured for passkeys.
+  API_AVAILABLE(macos(26.2))
+  virtual bool IsConfiguredForPasskeys() const = 0;
+
   // These names are extremely long and so are aliased here to make other code
   // a bit more readable.
   using AuthState =

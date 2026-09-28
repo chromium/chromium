@@ -74,6 +74,10 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              "WebAuthenticationICloudKeychainForInactiveWithoutDrive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled in M156. Remove in or after M159.
+BASE_FEATURE(kWebAuthnICloudKeychainUseDeviceConfiguredForPasskeys,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Development flag. Must not be enabled by default once
 // kWebAuthnEnclaveAuthenticator is enabled.
 BASE_FEATURE(kWebAuthnUseInsecureSoftwareUnexportableKeys,

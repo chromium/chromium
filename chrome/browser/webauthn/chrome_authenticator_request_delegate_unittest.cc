@@ -1562,7 +1562,8 @@ TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest,
       ChromeAuthenticatorRequestDelegate::RequestSource::
           kSecurePaymentConfirmation,
       /*is_active_profile_authenticator_user=*/false,
-      /*has_icloud_drive_enabled=*/true, /*request_is_for_google_com=*/true,
+      /*is_icloud_keychain_configured=*/true,
+      /*request_is_for_google_com=*/true,
       /*preference=*/true));
 
   // For the valid request type, the preference should be controlling if set.
@@ -1572,7 +1573,7 @@ TEST_F(ChromeAuthenticatorRequestDelegatePrivateTest,
                   ChromeAuthenticatorRequestDelegate::RequestSource::
                       kWebAuthentication,
                   /*is_active_profile_authenticator_user=*/false,
-                  /*has_icloud_drive_enabled=*/true,
+                  /*is_icloud_keychain_configured=*/true,
                   /*request_is_for_google_com=*/true,
                   /*preference=*/preference));
 

@@ -50,6 +50,12 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForActiveWithoutDrive);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 
+// Controls whether Chrome on macOS checks if iCloud Keychain is configured for
+// passkeys via ASAuthorizationWebBrowserPublicKeyCredentialManager instead of
+// using iCloud Drive as a proxy.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainUseDeviceConfiguredForPasskeys);
+
 // Use insecure software unexportable keys to authenticate to the enclave.
 // For development purposes only.
 COMPONENT_EXPORT(FIDO_PUBLIC)

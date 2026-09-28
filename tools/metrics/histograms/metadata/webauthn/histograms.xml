@@ -798,6 +798,21 @@ chromium-metrics-reviews@google.com.
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
+    Deprecated. Replaced by
+    WebAuthentication.MacOS.PlatformAuthenticatorActionV2 in M156. Records
+    events from the macOS platform authenticator. Note that &quot;success&quot;
+    events are only recorded for transactions that previously recorded a
+    &quot;start&quot; event.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.MacOS.PlatformAuthenticatorActionV2"
+    enum="WebAuthenticationMacOSPlatformAuthenticatorActionV2"
+    expires_after="2027-03-31">
+  <owner>martinkr@google.com</owner>
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
     Records events from the macOS platform authenticator. Note that
     &quot;success&quot; events are only recorded for transactions that
     previously recorded a &quot;start&quot; event.

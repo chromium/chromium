@@ -318,7 +318,7 @@ class ChromeAuthenticatorRequestDelegate
   static bool ShouldCreateInICloudKeychain(
       RequestSource request_source,
       bool is_active_profile_authenticator_user,
-      bool has_icloud_drive_enabled,
+      bool is_icloud_keychain_configured,
       bool request_is_for_google_com,
       std::optional<bool> preference);
 

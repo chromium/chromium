@@ -210,6 +210,11 @@ bool FakeSystemInterface::IsAvailable() const {
   return true;
 }
 
+API_AVAILABLE(macos(26.2))
+bool FakeSystemInterface::IsConfiguredForPasskeys() const {
+  return is_configured_for_passkeys_;
+}
+
 SystemInterface::AuthState FakeSystemInterface::GetAuthState() {
   return auth_state_;
 }

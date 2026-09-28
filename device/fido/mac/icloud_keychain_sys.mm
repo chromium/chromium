@@ -268,6 +268,12 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
     return available;
   }
 
+  API_AVAILABLE(macos(26.2))
+  bool IsConfiguredForPasskeys() const override {
+    return [ASAuthorizationWebBrowserPublicKeyCredentialManager
+        isDeviceConfiguredForPasskeys];
+  }
+
   AuthState GetAuthState() override {
     return GetManager().authorizationStateForPlatformCredentials;
   }

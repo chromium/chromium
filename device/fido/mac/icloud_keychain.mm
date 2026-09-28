@@ -649,4 +649,9 @@ std::optional<bool> HasPermission() {
   return std::nullopt;
 }
 
+API_AVAILABLE(macos(26.2))
+bool IsConfiguredForPasskeys() {
+  return GetSystemInterface()->IsConfiguredForPasskeys();
+}
+
 }  // namespace device::fido::icloud_keychain

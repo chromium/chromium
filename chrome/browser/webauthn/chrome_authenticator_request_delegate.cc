@@ -263,7 +263,7 @@ void ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(
           // is stored in preferences, which aren't available at this time while
           // we're still registering them. Thus we assume that they are not.
           /*is_active_profile_authenticator_user=*/false,
-          IsICloudDriveEnabled(),
+          IsICloudKeychainConfiguredForPasskeys(),
           /*request_is_for_google_com=*/false, /*preference=*/std::nullopt));
 #endif
 }
@@ -1204,7 +1204,7 @@ bool ChromeAuthenticatorRequestDelegate::IsActiveProfileAuthenticatorUser(
 bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
     RequestSource request_source,
     bool is_active_profile_authenticator_user,
-    bool has_icloud_drive_enabled,
+    bool is_icloud_keychain_configured,
     bool request_is_for_google_com,
     std::optional<bool> preference) {
   // Secure Payment Confirmation and credit-card autofill continue to use
@@ -1215,9 +1215,9 @@ bool ChromeAuthenticatorRequestDelegate::ShouldCreateInICloudKeychain(
   if (preference.has_value()) {
     return *preference;
   }
-  // Requests for google.com and users with iCloud Drive enabled have
+  // Requests for google.com and users with iCloud Keychain configured have
   // defaulted to iCloud Keychain since M118.
-  if (request_is_for_google_com || has_icloud_drive_enabled) {
+  if (request_is_for_google_com || is_icloud_keychain_configured) {
     return true;
   }
   return base::FeatureList::IsEnabled(
@@ -1256,16 +1256,18 @@ void ChromeAuthenticatorRequestDelegate::ConfigureICloudKeychain(
     RequestSource request_source,
     const std::string& rp_id) {
   const PrefService* prefs = profile()->GetPrefs();
-  const bool is_icloud_drive_enabled = IsICloudDriveEnabled();
+  const bool is_icloud_keychain_configured =
+      IsICloudKeychainConfiguredForPasskeys();
   const bool is_active_profile_authenticator_user =
       IsActiveProfileAuthenticatorUser(prefs);
   dialog_controller_->set_allow_icloud_keychain(
       request_source == RequestSource::kWebAuthentication);
-  dialog_controller_->set_has_icloud_drive_enabled(is_icloud_drive_enabled);
+  dialog_controller_->set_is_icloud_keychain_configured(
+      is_icloud_keychain_configured);
   dialog_controller_->set_should_create_in_icloud_keychain(
       ShouldCreateInICloudKeychain(
           request_source, is_active_profile_authenticator_user,
-          is_icloud_drive_enabled, rp_id == "google.com",
+          is_icloud_keychain_configured, rp_id == "google.com",
           GetICloudKeychainPref(prefs)));
 }
 

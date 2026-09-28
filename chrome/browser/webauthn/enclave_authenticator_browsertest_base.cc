@@ -111,7 +111,8 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
   if (__builtin_available(macOS 13.5, *)) {
     fake_icloud_keychain_ = device::fido::icloud_keychain::NewFake();
   }
-  scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
+  scoped_icloud_keychain_override_ =
+      OverrideICloudKeychainConfiguredForPasskeys(false);
 #endif
   scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
 

@@ -145,7 +145,8 @@ class EnclaveAuthenticatorTestBase : public SyncTest {
   std::unique_ptr<device::fido::mac::ScopedBiometricsOverride>
       biometrics_override_;
   std::unique_ptr<device::fido::icloud_keychain::Fake> fake_icloud_keychain_;
-  std::unique_ptr<ScopedICloudDriveOverride> scoped_icloud_drive_override_;
+  std::unique_ptr<ScopedICloudKeychainOverride>
+      scoped_icloud_keychain_override_;
 #endif
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<WebAuthnScopedFakeUnexportableKeyProvider> fake_hw_provider_;

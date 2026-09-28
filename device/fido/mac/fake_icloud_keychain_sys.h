@@ -37,6 +37,10 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // set_auth_state sets the state that `GetAuthState` will report.
   void set_auth_state(AuthState auth_state);
 
+  void set_is_configured_for_passkeys(bool configured) {
+    is_configured_for_passkeys_ = configured;
+  }
+
   // set_next_auth_state sets the state the state that will become current after
   // a call to `AuthorizeAndContinue`. This must be called before
   // `AuthorizeAndContinue`.
@@ -88,6 +92,9 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // SystemInterface:
   bool IsAvailable() const override;
 
+  API_AVAILABLE(macos(26.2))
+  bool IsConfiguredForPasskeys() const override;
+
   AuthState GetAuthState() override;
 
   void AuthorizeAndContinue(base::OnceCallback<void()> callback) override;
@@ -122,6 +129,7 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
 
   AuthState auth_state_ = kAuthAuthorized;
   std::optional<AuthState> next_auth_state_;
+  bool is_configured_for_passkeys_ = true;
 
   base::RepeatingCallback<void(const CtapMakeCredentialRequest&)>
       create_callback_;
