@@ -827,6 +827,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testScrollingNotResetOnItemUpdate() throws InterruptedException {
         AtomicInteger obfuscatedChildAt = new AtomicInteger(-1);
         ThreadUtils.runOnUiThreadBlocking(
