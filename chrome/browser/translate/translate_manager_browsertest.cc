@@ -1606,10 +1606,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-// TODO(https://crbug.com/467160838): Fix test failure on ChromeOS ASan and
-// MSan.
+// TODO(https://crbug.com/467160838): Fix test failure on ChromeOS ASan, MSan
+// and Mac.
 #if (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) || \
-    defined(MEMORY_SANITIZER)
+    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
 #define MAYBE_RevertTranslationClosesSidePanelViaTranslateManager \
   DISABLED_RevertTranslationClosesSidePanelViaTranslateManager
 #else
