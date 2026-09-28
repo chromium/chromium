@@ -1292,36 +1292,45 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   options = QueryOptions();  // Reset options to default.
 
   // Now try with only per-day de-duping -- the second visit should appear,
-  // since it's a duplicate of visit6 but on a different day.
+  // since it's a duplicate of visit 9 but on a different day. 404s are included
+  // by default, so we expect visit 9 instead of visit6.
   options.duplicate_policy = QueryOptions::REMOVE_DUPLICATES_PER_DAY;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(3U, results.size());
-  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
+#if !defined(ANDROID)
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[8]));
+#else
+  // On Android, the ones with an `app_id` are chosen among the duplicates.
+  // Visit 8 is the most recent of those.
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[7]));
+#endif
   EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
   EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
 
   // Now try without de-duping, expect to see all visible visits to url id 1.
   options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
   GetVisibleVisitsForURL(url_id, options, &results);
-  ASSERT_EQ(4U, results.size());
-  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
-  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
-  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[1]));
-  EXPECT_THAT(results[3], MatchesVisitInfo(test_visit_rows[0]));
+  ASSERT_EQ(6U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[8]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[7]));
+  EXPECT_THAT(results[2], MatchesVisitInfo(test_visit_rows[6]));
+  EXPECT_THAT(results[3], MatchesVisitInfo(test_visit_rows[5]));
+  EXPECT_THAT(results[4], MatchesVisitInfo(test_visit_rows[1]));
+  EXPECT_THAT(results[5], MatchesVisitInfo(test_visit_rows[0]));
 
   // Now try with a `max_count` limit to get the newest 2 visits only.
   options.max_count = 2;
   GetVisibleVisitsForURL(url_id, options, &results);
   ASSERT_EQ(2U, results.size());
-  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
-  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
-
-  // Try `max_count` again, including 404s this time.
-  options.policy_for_404_visits = VisitQuery404sPolicy::kInclude404s;
-  GetVisibleVisitsForURL(url_id, options, &results);
-  ASSERT_EQ(2U, results.size());
   EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[8]));
   EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[7]));
+
+  // Try `max_count` again, excluding 404s this time.
+  options.policy_for_404_visits = VisitQuery404sPolicy::kExclude404s;
+  GetVisibleVisitsForURL(url_id, options, &results);
+  ASSERT_EQ(2U, results.size());
+  EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[6]));
+  EXPECT_THAT(results[1], MatchesVisitInfo(test_visit_rows[5]));
 
   // Now try getting the oldest 2 visits and make sure they're ordered oldest
   // first.

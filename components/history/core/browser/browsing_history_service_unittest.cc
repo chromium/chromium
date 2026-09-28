@@ -398,7 +398,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   std::unique_ptr<TestBrowsingHistoryService> browsing_history_service_;
 };
 
-TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryIncludes404s) {
   // Add a non-404 visit.
   AddHistory({{kUrl1, 1, kLocal}});
 
@@ -411,10 +411,11 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryExcludes404s) {
 
   BlockUntilHistoryProcessesPendingRequests();
 
-  // 404s should be excluded from query results.
+  // 404s should be included in the query results by default.
   EXPECT_THAT(QueryHistory(),
               MatchesQueryResult(baseline_time_, /*reached_beginning*/ true,
-                                 std::vector<TestResult>{{kUrl1, 1, kLocal}}));
+                                 std::vector<TestResult>{{kUrl2, 2, kLocal},
+                                                         {kUrl1, 1, kLocal}}));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryNoSources) {
