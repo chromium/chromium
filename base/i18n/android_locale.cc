@@ -25,6 +25,9 @@ std::string GetAndroidDefaultCountryCode() {
 LanguageTag GetAndroidDefaultLocale() {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::string locale_str = Java_LocaleUtils_getDefaultLocaleString(env);
+  if (locale_str.empty()) {
+    return GetKnownLanguageTag("en-US");
+  }
   std::optional<LanguageTag> tag = GetLanguageTagFromString(locale_str);
   CHECK(tag);
   return *tag;
