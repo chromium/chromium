@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/ephemeral_theme_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -81,6 +82,13 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
     completion = ^{
       [ntpHandler showHomeBackgroundCustomizationPromoWithUIHandler:nil];
     };
+  } else {
+    id<HelpCommands> helpHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+    completion = ^{
+      [helpHandler presentInProductHelpWithType:
+                       InProductHelpType::kHomeBackgroundCustomization];
+    };
   }
 
   if (_viewController.presentingViewController &&
@@ -88,6 +96,11 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:completion];
+  } else if (completion) {
+    // If the sheet was dismissed interactively (e.g., via swipe-to-dismiss),
+    // `_viewController` is already dismissed when `stop` is called, so invoke
+    // `completion` directly.
+    completion();
   }
 
   [_mediator disconnect];

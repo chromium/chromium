@@ -1215,6 +1215,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _toolsMenuButton = toolsMenuButton;
   _toolsMenuButton.blueDot = _hasToolsMenuBlueDot;
 
+  if (IsOverflowMenuHomeCustomizationEntrypointEnabled() &&
+      IsNTPEphemeralThemeEnabled()) {
+    [self.layoutGuideCenter referenceView:toolsMenuButton
+                                underName:kFeedIPHNamedGuide];
+  }
+
   [self applyBackgroundTheme];
 }
 

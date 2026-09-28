@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -331,7 +332,8 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   // Checks "canPresentBubble" after checking that the NTP with feed is visible.
   // This ensures that the feature tracker doesn't trigger the IPH event if the
   // bubble isn't shown, which would prevent it from ever being shown again.
-  if (!menuButton || ![self canPresentBubble]) {
+  if (!menuButton || ![self canPresentBubbleWithCheckTabScrolledToTop:
+                                !IsNTPEphemeralThemeEnabled()]) {
     return;
   }
   CGPoint customizationMenuAnchor =
