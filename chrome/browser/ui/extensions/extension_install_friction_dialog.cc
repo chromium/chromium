@@ -80,16 +80,21 @@ class ExtensionInstallFrictionDialogDelegate : public ui::DialogModelDelegate {
   void OnLearnMoreLinkClicked() {
     learn_more_clicked_ = true;
 
-    if (original_web_contents_) {
+    // Closing the dialog can destroy `this`, so take what is needed onto the
+    // stack and close before navigating.
+    base::WeakPtr<content::WebContents> web_contents = original_web_contents_;
+
+    dialog_model()->host()->Close();
+    // `this` might be deleted when `Close()` is called.
+
+    if (web_contents) {
       GURL url(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL);
       content::OpenURLParams params =
           content::OpenURLParams::CreateBrowserInitiated(
               url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
               ui::PAGE_TRANSITION_LINK);
-      original_web_contents_->OpenURL(params, {});
+      web_contents->OpenURL(params, {});
     }
-
-    dialog_model()->host()->Close();
   }
 
  private:

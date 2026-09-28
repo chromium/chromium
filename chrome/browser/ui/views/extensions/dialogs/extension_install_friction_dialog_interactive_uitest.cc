@@ -5,13 +5,18 @@
 #include "chrome/browser/ui/extensions/extension_install_friction_dialog.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/widget/widget.h"
 
 class ExtensionInstallFrictionDialogUITest : public InteractiveBrowserTest {
  public:
@@ -83,3 +88,83 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallFrictionDialogUITest,
       // Dialog should be closed.
       WaitForHide(extensions::kExtensionInstallFrictionLearnMoreLink));
 }
+
+namespace {
+
+// Intercepts the navigation started by the learn-more link, and optionally
+// closes the dialog from inside it.
+class DialogClosingNavigationDelegate : public content::WebContentsDelegate {
+ public:
+  explicit DialogClosingNavigationDelegate(bool close_dialog)
+      : close_dialog_(close_dialog) {}
+
+  DialogClosingNavigationDelegate(const DialogClosingNavigationDelegate&) =
+      delete;
+  DialogClosingNavigationDelegate& operator=(
+      const DialogClosingNavigationDelegate&) = delete;
+  ~DialogClosingNavigationDelegate() override = default;
+
+  void set_widget(views::Widget* widget) { widget_ = widget->GetWeakPtr(); }
+  bool fired() const { return fired_; }
+
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    fired_ = true;
+    if (close_dialog_ && widget_) {
+      views::Widget* widget = widget_.get();
+      widget_ = nullptr;
+      widget->CloseNow();
+    }
+    // The navigation itself is swallowed; only the ordering is under test.
+    return nullptr;
+  }
+
+ private:
+  const bool close_dialog_;
+  base::WeakPtr<views::Widget> widget_;
+  bool fired_ = false;
+};
+
+}  // namespace
+
+class ExtensionInstallFrictionDialogLearnMoreLinkTest
+    : public ExtensionInstallFrictionDialogUITest,
+      public testing::WithParamInterface<bool> {};
+
+// Clicks the learn-more link while a delegate intercepts the navigation. The
+// parameter decides whether that delegate also closes the dialog, which is what
+// a tab-modal dismissal does on Android.
+IN_PROC_BROWSER_TEST_P(ExtensionInstallFrictionDialogLearnMoreLinkTest,
+                       ClickLearnMoreLink) {
+  DialogClosingNavigationDelegate nav_delegate(/*close_dialog=*/GetParam());
+  content::WebContents* const web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  RunTestSequence(
+      ShowExtensionInstallFrictionDialog(),
+      WaitForShow(extensions::kExtensionInstallFrictionLearnMoreLink),
+      WithView(extensions::kExtensionInstallFrictionLearnMoreLink,
+               [&](views::StyledLabel* learn_more_label) {
+                 nav_delegate.set_widget(learn_more_label->GetWidget());
+                 web_contents->SetDelegate(&nav_delegate);
+                 learn_more_label->ClickFirstLinkForTesting();
+               }),
+      // The link closes the dialog, so the element hides during the step above
+      // and the sequence has to wait for that.
+      WaitForHide(extensions::kExtensionInstallFrictionLearnMoreLink));
+
+  web_contents->SetDelegate(nullptr);
+  EXPECT_TRUE(nav_delegate.fired());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionInstallFrictionDialogLearnMoreLinkTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "DialogClosedDuringNavigation" : "DialogLeftOpen";
+    });
