@@ -38,7 +38,11 @@ GlassFrameService* GlassFrameService::GetInstance() {
 
 // static
 void GlassFrameService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlassFrameEnabled, true);
+  bool default_enabled = true;
+#if defined(ARCH_CPU_X86_FAMILY)
+  default_enabled = false;
+#endif  // defined (ARCH_CPU_X86_FAMILY)
+  registry->RegisterBooleanPref(prefs::kGlassFrameEnabled, default_enabled);
 }
 
 GlassFrameService::GlassFrameService(BrowserProcess& process)
