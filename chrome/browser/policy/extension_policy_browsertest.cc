@@ -426,7 +426,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
   auto* loader = extensions::ComponentLoader::Get(browser()->GetProfile());
   loader->AddDefaultComponentExtensions(false);
-  base::RunLoop().RunUntilIdle();
 
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_TRUE(
