@@ -4,3 +4,6 @@ aishwaryarj@google.com
 per-file ...MultiInstancePersistentStore*.java=zheliooo@google.com
 per-file ...MultiInstanceProtoMigrationController*.java=zheliooo@google.com
 per-file ...multi_instance_data.proto=zheliooo@google.com
+per-file ...WindowOcclusionTracker.java=boliu@chromium.org
+per-file ...WindowZOrderTracker.java=boliu@chromium.org
+per-file ...WindowOcclusionMetrics.java=boliu@chromium.org

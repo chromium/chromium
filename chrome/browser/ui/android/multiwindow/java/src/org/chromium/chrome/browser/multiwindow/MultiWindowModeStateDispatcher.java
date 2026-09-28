@@ -12,10 +12,10 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
- * Monitors multi-window mode state changes in the associated activity and dispatches changes
- * to registered observers.
+ * Monitors multi-window mode state changes in the associated activity and dispatches changes to
+ * registered observers.
  *
- * Also contains methods related to multi-window/multi-instance support that require interaction
+ * <p>Also contains methods related to multi-window/multi-instance support that require interaction
  * with the backing activity.
  */
 @NullMarked
@@ -24,26 +24,28 @@ public interface MultiWindowModeStateDispatcher {
     interface MultiWindowModeObserver {
         /**
          * @param isInMultiWindowMode Whether the activity backing this state dispatcher is
-         *         currently in multi-window mode.
+         *     currently in multi-window mode.
          */
         void onMultiWindowModeChanged(boolean isInMultiWindowMode);
     }
 
     /**
      * Add an observer to the list.
+     *
      * @return True if the observer list changed as a result of the call.
      */
     boolean addObserver(MultiWindowModeObserver observer);
 
     /**
      * Remove an observer from the list if it is in the list.
+     *
      * @return True if an element was removed as a result of this call.
      */
     boolean removeObserver(MultiWindowModeObserver observer);
 
     /**
      * @return Whether the activity associated with this state dispatcher is currently in
-     *         multi-window mode.
+     *     multi-window mode.
      */
     boolean isInMultiWindowMode();
 
