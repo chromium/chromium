@@ -330,14 +330,20 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
       '_RunConformanceTest'
     )
     instance._is_asan = False
-    self.assertEqual(instance._GetTestTimeout(), 300)
+    with mock.patch.object(instance, '_IsSlowTest', return_value=False):
+      self.assertEqual(instance._GetTestTimeout(), 300)
+    with mock.patch.object(instance, '_IsSlowTest', return_value=True):
+      self.assertEqual(instance._GetTestTimeout(), 1200)
 
   def testWebGlConformanceTimeoutAsan(self) -> None:
     instance = webgl1_cit.WebGL1ConformanceIntegrationTest(
       '_RunConformanceTest'
     )
     instance._is_asan = True
-    self.assertEqual(instance._GetTestTimeout(), 600)
+    with mock.patch.object(instance, '_IsSlowTest', return_value=False):
+      self.assertEqual(instance._GetTestTimeout(), 600)
+    with mock.patch.object(instance, '_IsSlowTest', return_value=True):
+      self.assertEqual(instance._GetTestTimeout(), 2400)
 
   def testAsanClassMemberSetCorrectly(self):
     test_class = gpu_integration_test.GpuIntegrationTest

@@ -450,7 +450,7 @@ class WebGLConformanceIntegrationTestBase(
     if self._is_asan:
       # Asan runs much slower and needs a longer timeout
       timeout *= 2
-    return timeout
+    return int(timeout * self._GetSlowMultiplier())
 
   def _GetExtensionHarnessScript(self) -> str:
     assert self._conformance_harness_script is not None
