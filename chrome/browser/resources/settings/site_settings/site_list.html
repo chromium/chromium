@@ -63,7 +63,8 @@
       </div>
       <div class="list-frame menu-content vertical-list" id="listContainer"
           hidden$="[[!hasSites_(sites.*)]]">
-        <iron-list items="[[getFilteredSites_(searchFilter, sites.*)]]"
+        <iron-list id="list"
+            items="[[getFilteredSites_(searchFilter, sites.*)]]"
             role="grid" aria-labelledby="listHeader"
             aria-describedby="[[categoryHeader]]" preserve-focus risk-selection>
           <template>

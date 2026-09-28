@@ -1909,6 +1909,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListCookiesExceptionTypes) {
           "runMochaSuite('SiteListCookiesExceptionTypes')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListPopulatedWhileHidden) {
+  RunTest("settings/site_list_test.js",
+          "runMochaSuite('SiteListPopulatedWhileHidden')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsSiteListTest, SiteListSearchTests) {
   RunTest("settings/site_list_test.js", "runMochaSuite('SiteListSearchTests')");
 }

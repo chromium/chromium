@@ -611,6 +611,110 @@ suite('SiteListCookiesExceptionTypes', function() {
   });
 });
 
+suite('SiteListPopulatedWhileHidden', function() {
+  /**
+   * A site list element created before each test.
+   */
+  let testElement: SiteListElement;
+
+  /**
+   * The container holding |testElement|, used to hide and show it.
+   */
+  let container: HTMLElement;
+
+  /**
+   * The mock proxy object to use during test.
+   */
+  let browserProxy: TestSiteSettingsBrowserProxy;
+
+  suiteSetup(function() {
+    CrSettingsPrefs.setInitialized();
+  });
+
+  suiteTeardown(function() {
+    CrSettingsPrefs.resetForTesting();
+  });
+
+  // Initialize a site-list inside a hidden container before each test. This
+  // mimics Settings stamping a view into a <cr-view-manager> view that has not
+  // been made visible yet.
+  setup(function() {
+    populateTestExceptions();
+
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.appendChild(container);
+    testElement = document.createElement('site-list');
+    testElement.searchFilter = '';
+    container.appendChild(testElement);
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  function getEntryCount(): number {
+    return testElement.$.listContainer.querySelectorAll('site-list-entry')
+        .length;
+  }
+
+  /**
+   * Waits for |count| site-list-entry elements to be rendered, then asserts
+   * that this actually happened. ResizeObserver delivery plus <iron-list>'s
+   * own rAF-debounced render take a few frames, so poll for a bounded number
+   * of frames rather than assuming an exact count.
+   */
+  async function waitForEntryCount(count: number): Promise<void> {
+    for (let i = 0; i < 10 && getEntryCount() !== count; i++) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    assertEquals(count, getEntryCount());
+  }
+
+  // Regression test for crbug.com/555774396: third-party cookie exceptions
+  // fetched while the page was still hidden must be rendered once the page
+  // becomes visible, rather than staying invisible until the user edits the
+  // list.
+  test('third party cookie exceptions render once shown', async function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.THIRD_PARTY;
+    browserProxy.setPrefs(prefsMixedCookiesExceptionTypes);
+    testElement.categorySubtype = ContentSetting.ALLOW;
+    testElement.category = ContentSettingsTypes.COOKIES;
+
+    await browserProxy.whenCalled('getExceptionList');
+    await flushTasks();
+
+    // The data has been fetched, but nothing is rendered while hidden.
+    assertEquals(1, testElement.sites.length);
+    assertEquals(0, getEntryCount());
+
+    // Showing the element must render the already-fetched exceptions, without
+    // any further changes to the exception list.
+    container.style.display = '';
+    await waitForEntryCount(1);
+    assertTrue(isChildVisible(testElement, 'site-list-entry'));
+  });
+
+  test('site data exceptions render once shown', async function() {
+    testElement.cookiesExceptionType = CookiesExceptionType.SITE_DATA;
+    browserProxy.setPrefs(prefsMixedCookiesExceptionTypes);
+    testElement.categorySubtype = ContentSetting.ALLOW;
+    testElement.category = ContentSettingsTypes.COOKIES;
+
+    await browserProxy.whenCalled('getExceptionList');
+    await flushTasks();
+
+    assertEquals(4, testElement.sites.length);
+    assertEquals(0, getEntryCount());
+
+    container.style.display = '';
+    await waitForEntryCount(4);
+  });
+});
+
 // TODO(crbug.com/41439813, crbug.com/40123519): Flaky test. When it is fixed,
 // merge SiteListDisabled back into SiteList.
 suite('DISABLED_SiteList', function() {
