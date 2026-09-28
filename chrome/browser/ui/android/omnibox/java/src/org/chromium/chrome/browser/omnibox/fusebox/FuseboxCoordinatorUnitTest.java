@@ -36,10 +36,12 @@ import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -111,7 +113,6 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private FuseboxSessionState mSession;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
-    @Mock private Bitmap mBitmap;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
@@ -125,27 +126,41 @@ public class FuseboxCoordinatorUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Callback<Boolean> mOnInteractionCompletedCallback;
 
+    private Bitmap mBitmap;
     private AutocompleteInput mAutocompleteInput;
     private ActivityController<TestActivity> mActivityController;
     private ConstraintLayout mParent;
     private FuseboxCoordinator mCoordinator;
+    private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier;
+    private SettableNonNullObservableSupplier<InputState> mInputStateSupplier;
+    private OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
+    private NullableObservableSupplier<GURL> mPreviewMatchUrlSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier;
 
-    private final SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
-            ObservableSuppliers.createNonNull(mTabModelSelector);
-    private final SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier =
-            ObservableSuppliers.createNonNull(List.of());
-    private final SettableNonNullObservableSupplier<InputState> mInputStateSupplier =
-            ObservableSuppliers.createNonNull(new InputStateBuilder().build());
-    private final OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier =
-            new OneshotSupplierImpl<>();
     private final Function<Tab, @Nullable Bitmap> mTabFaviconFunction = (tab) -> mBitmap;
-    private final NullableObservableSupplier<GURL> mPreviewMatchUrlSupplier =
-            ObservableSuppliers.alwaysNull();
-    private final SettableNonNullObservableSupplier<Boolean> mUrlTextWrappingSupplier =
-            ObservableSuppliers.createNonNull(false);
+
+    // Pre-initialize ByteBuddy mock classes in the SandboxClassLoader before the per-test 30s
+    // timeout (BaseTimeLimitedStatement) starts. Because JUnit orders @Test methods by hashCode,
+    // testNotifyOmniboxSessionEnded (-2126445701) always runs first in each SDK sandbox and
+    // otherwise absorbs the entire cold-start class instrumentation and mock generation cost.
+    // Note: Robolectric runs @BeforeClass before configuring ConfigurationRegistry/Looper, so
+    // setUpClass() must not initialize Android GraphicsShadowPicker (Bitmap) or Handler objects.
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        MockitoAnnotations.openMocks(new FuseboxCoordinatorUnitTest()).close();
+    }
 
     @Before
     public void setUp() {
+        mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
+        mSuggestedTabsSupplier = ObservableSuppliers.createNonNull(List.of());
+        mInputStateSupplier = ObservableSuppliers.createNonNull(new InputStateBuilder().build());
+        mTemplateUrlServiceSupplier = new OneshotSupplierImpl<>();
+        mPreviewMatchUrlSupplier = ObservableSuppliers.alwaysNull();
+        mUrlTextWrappingSupplier = ObservableSuppliers.createNonNull(false);
+
         UserPrefs.setPrefServiceForTesting(mPrefService);
         lenient().doReturn(true).when(mPrefService).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
