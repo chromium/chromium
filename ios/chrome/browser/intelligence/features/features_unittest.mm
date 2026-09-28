@@ -7,6 +7,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/features.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -250,6 +251,7 @@ TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_FeatureFlagDisabled) {
   EXPECT_FALSE(IsGeminiLuminousEnabled());
 }
 
+
 TEST_F(ActorFeaturesTest, GeminiFREExperimentVariants) {
   // Disabled by default.
   EXPECT_FALSE(IsGeminiFREExperimentEnabled());
@@ -366,8 +368,17 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingEnabled) {
   scoped_feature_list.InitWithFeatures(
       {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor}, {});
 
-  EXPECT_EQ(IsBackgroundContinuedProcessingEnabled(),
-            IsGeminiActorBackgroundingEnabled());
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+  if (@available(iOS 26.0, *)) {
+    // Backgrounding is enabled by default when the compile flag is set.
+    EXPECT_TRUE(IsGeminiActorBackgroundingEnabled());
+  } else {
+    EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
+  }
+#else
+  // Backgrounding is always disabled when the compile flag is not set.
+  EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
+#endif
 }
 
 // Tests that Gemini Actor backgrounding returns false when explicitly disabled

@@ -608,8 +608,6 @@ source_set("app_internal") {
     "//ios/chrome/app/application_delegate:url_opener",
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/app/background_refresh",
-    "//ios/chrome/app/background_task",
-    "//ios/chrome/app/background_task:features",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:profile_controller",
     "//ios/chrome/app/startup",
@@ -725,6 +723,10 @@ source_set("app_internal") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
+
+  if (ios_enable_background_continued_processing) {
+    deps += [ "//ios/chrome/app/background_task" ]
   }
 
   if (enable_rlz) {

@@ -12,11 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
-#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
-#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
-#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
@@ -30,14 +26,22 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/application_delegate/app_state.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/app/profile/profile_state.h"  // nogncheck
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"  // nogncheck
+#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
+#endif
 
 namespace actor {
 
@@ -67,7 +71,9 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
       task_id, title, allow_incognito_web_states, journal_.get(),
       tool_factory_.get(), browser_list);
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   RegisterBackgroundTask(task.get());
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
     if (observer) {
@@ -354,6 +360,7 @@ web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
       browser_and_index.tab_index);
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 bool ActorService::RegisterBackgroundTask(ActorTask* task) {
   CHECK(task);
   const ActorTaskId task_id = task->task_id();
@@ -416,5 +423,6 @@ bool ActorService::RegisterBackgroundTask(ActorTask* task) {
                   {{"status", "success (not guaranteed to be executed)"}});
   return true;
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 }  // namespace actor

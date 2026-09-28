@@ -31,6 +31,7 @@ source_set("unit_tests") {
     ":features",
     "//base/test:test_support",
     "//components/application_locale_storage",
+    "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/app/background_task:features",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/test:test_support",

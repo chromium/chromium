@@ -15,7 +15,7 @@
 #import "base/timer/timer.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
@@ -27,15 +27,19 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
-#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/web/public/web_state.h"
+
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/web_state.h"
+#endif
 
 namespace actor {
 
@@ -48,6 +52,7 @@ constexpr base::TimeDelta kPageLoadTimeout = base::Seconds(7);
 // TODO(crbug.com/556739755): Localize default button text string.
 NSString* const kDefaultConfirmationButtonText = @"Continue";
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Interval between JavaScript heartbeat pings. Found to be the sweetspot for
 // keeping renderer processes alive & accepting IPC messages (otherwise they
 // drop their keep-alive assertions after about 1 second of inactivity.)
@@ -55,6 +60,7 @@ constexpr base::TimeDelta kHeartbeatInterval = base::Milliseconds(400);
 
 // Minimal zero side effects script executed to generate IPC activity.
 constexpr char16_t kHeartbeatScript[] = u";";
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 // Returns the string representation of the ActorTaskState.
 std::string ActorTaskStateToString(ActorTaskState state) {
@@ -126,8 +132,10 @@ ActorTask::~ActorTask() {
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
   load_timeout_timer_.Stop();
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   StopHeartbeatTimer();
   FinalizeBackgroundTask(/*success=*/false);
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   observers_ = nil;
 }
@@ -180,8 +188,10 @@ void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
     last_task_update_ = task_update;
   }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   UpdateBackgroundTaskSubtitle(task_update);
   StartHeartbeatTimer();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   engine_->Act(
       std::move(actions),
@@ -222,7 +232,9 @@ void ActorTask::AddControlledWebState(web::WebState* web_state) {
       tab_helper->SetControlState(ControlStateForTaskState(state_));
     }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
     StartHeartbeatTimer();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
     [observers_ actorTaskWithID:task_id_
                  didAddWebState:web_state->GetUniqueIdentifier()];
@@ -240,11 +252,12 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   SetState(ActorTaskState::kCancelled);
   SetKeepRenderProcessAliveOnControlledWebStates(/*keep_alive=*/false);
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   StopHeartbeatTimer();
   const bool success = stop_reason == ActorTaskStoppedReason::kTaskComplete ||
                        stop_reason == ActorTaskStoppedReason::kStoppedByUser;
   FinalizeBackgroundTask(success);
-
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // TODO(crbug.com/496164697): Implement and test.
   [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
 }
@@ -254,7 +267,9 @@ void ActorTask::Pause(bool from_actor) {
 }
 
 void ActorTask::Resume() {
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   StartHeartbeatTimer();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // TODO(crbug.com/496164697): Implement and test.
 }
@@ -414,14 +429,13 @@ bool ActorTask::allow_incognito_web_states() const {
   return allow_incognito_web_states_;
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 void ActorTask::SetBackgroundTaskContext(
     BackgroundContinuedProcessingTaskContext* background_task_context) {
-  if (!IsGeminiActorBackgroundingEnabled()) {
-    return;
-  }
   background_task_context_ = background_task_context;
   UpdateBackgroundTaskSubtitle(last_task_update_);
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 #pragma mark - web::WebStateObserver
 
@@ -437,9 +451,11 @@ void ActorTask::WebStateDestroyed(web::WebState* web_state) {
   }
   PruneDestroyedWebStates(web_state);
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (controlled_web_states_.empty()) {
     StopHeartbeatTimer();
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 }
 
 #pragma mark - Private
@@ -482,9 +498,11 @@ void ActorTask::SetState(ActorTaskState new_state) {
     SetControlStateOnWebStates(new_control_state);
   }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (IsTerminalState(new_state)) {
     StopHeartbeatTimer();
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   [observers_ actorTaskWithID:task_id_
                didChangeState:new_state
@@ -555,7 +573,9 @@ void ActorTask::OnPageLoadedTimeout() {
 
 void ActorTask::OnWillExecuteTool(ToolType tool_type,
                                   web::WebStateID web_state_id) {
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   UpdateBackgroundTaskProgress();
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   [observers_ actorTaskWithID:task_id_
               willExecuteTool:tool_type
@@ -593,6 +613,7 @@ void ActorTask::OnNavigationBlocked(mojom::ActionResultCode code) {
   }
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 void ActorTask::UpdateBackgroundTaskSubtitle(const std::string& task_update) {
   if (!background_task_context_ || task_update.empty()) {
     return;
@@ -691,5 +712,6 @@ void ActorTask::OnHeartbeatPingResponse(web::WebStateID web_state_id,
          {"error_code", base::NumberToString(error.code)}});
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 }  // namespace actor
