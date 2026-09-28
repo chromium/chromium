@@ -52,6 +52,20 @@ const auto kHashOfTestData1To3 = std::to_array<uint8_t>(
      0x43, 0xaf, 0xac, 0x8c, 0x71, 0x75, 0xbd, 0x03, 0xfb, 0x5f, 0xc9,
      0x05, 0x65, 0x0f, 0x8c, 0x80, 0xaf, 0x08, 0x74, 0x43, 0xa8});
 
+// Make sure paths are normalized on Windows.
+bool IsParentDirectory(const base::FilePath& dir, const base::FilePath& path) {
+#if BUILDFLAG(IS_WIN)
+  const base::FilePath long_dir = base::MakeLongFilePath(dir);
+  const base::FilePath long_path = base::MakeLongFilePath(path);
+  if (long_dir.empty() || long_path.empty()) {
+    return dir.IsParent(path);
+  }
+  return long_dir.IsParent(long_path);
+#else
+  return dir.IsParent(path);
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 }  // namespace
 
 class BaseFileTest : public testing::Test {
@@ -747,7 +761,9 @@ TEST_F(BaseFileTest, CreatedInSystemTempDirectory) {
 
   base::FilePath system_temp_dir;
   ASSERT_TRUE(base::GetTempDir(&system_temp_dir));
-  EXPECT_TRUE(system_temp_dir.IsParent(base_file_->full_path()));
+  EXPECT_TRUE(IsParentDirectory(system_temp_dir, base_file_->full_path()))
+      << "system_temp_dir=" << system_temp_dir
+      << " full_path=" << base_file_->full_path();
   base_file_->Finish();
 }
 
@@ -777,10 +793,12 @@ TEST_F(BaseFileTest, MAYBE_CreatedInSystemTempDirectoryFallback) {
   EXPECT_FALSE(base_file_->full_path().empty());
   EXPECT_TRUE(base_file_->in_progress());
 
-  EXPECT_FALSE(unwritable_dir.IsParent(base_file_->full_path()));
+  EXPECT_FALSE(IsParentDirectory(unwritable_dir, base_file_->full_path()));
   base::FilePath system_temp_dir;
   ASSERT_TRUE(base::GetTempDir(&system_temp_dir));
-  EXPECT_TRUE(system_temp_dir.IsParent(base_file_->full_path()));
+  EXPECT_TRUE(IsParentDirectory(system_temp_dir, base_file_->full_path()))
+      << "system_temp_dir=" << system_temp_dir
+      << " full_path=" << base_file_->full_path();
   base_file_->Finish();
 }
 
