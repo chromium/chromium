@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Implementation of ActorForegroundService. */
@@ -290,6 +291,12 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                     TabModelSelectorSupplier.getValueOrNullFrom(
                             ((AsyncInitializationActivity) activity).getWindowAndroid());
             if (selector != null) {
+                Tab lastActiveTab = selector.getCurrentTab();
+                if (lastActiveTab != null
+                        && !lastActiveTab.isIncognito()
+                        && UrlUtilities.isNtpUrl(lastActiveTab.getUrl())) {
+                    return lastActiveTab;
+                }
                 TabCreator tabCreator = selector.getModel(false).getTabCreator();
                 return tabCreator.createNewTab(
                         new LoadUrlParams("about:blank"),

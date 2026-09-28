@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,9 +30,14 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 
 /** Unit tests for {@link ActorForegroundServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -229,5 +236,43 @@ public class ActorForegroundServiceImplTest {
         verify(mMockBackgroundManager, never())
                 .startBackgroundActuation(mMockProfile, "test-message-id");
         verify(mMockActorService).notifyBackgroundSetupFailed(eq("test-message-id"));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
+    public void testOnStartCommand_ActivityVisible_ReusesNtpTab() {
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+        when(mMockController.isTabbedActivityVisible()).thenReturn(true);
+        MultiWindowUtils.setLastAccessedWindowIdForTesting(42);
+
+        AsyncInitializationActivity mockActivity = mock(AsyncInitializationActivity.class);
+        MultiWindowUtils.setActivityByWindowIdForTesting(42, mockActivity);
+        org.chromium.ui.base.ActivityWindowAndroid mockWindow =
+                mock(org.chromium.ui.base.ActivityWindowAndroid.class);
+        when(mockActivity.getWindowAndroid()).thenReturn(mockWindow);
+
+        TabModelSelector mockSelector = mock(TabModelSelector.class);
+        TabModelSelectorSupplier.setInstanceForTesting(mockSelector);
+
+        Tab ntpTab = mock(Tab.class);
+        when(ntpTab.getId()).thenReturn(555);
+        when(ntpTab.getUrl())
+                .thenReturn(
+                        new org.chromium.url.GURL(
+                                org.chromium.components.embedder_support.util.UrlConstants
+                                        .NTP_URL));
+        when(ntpTab.isIncognito()).thenReturn(false);
+        when(mockSelector.getCurrentTab()).thenReturn(ntpTab);
+
+        Intent intent = new Intent();
+        intent.setAction(START_ACTOR_FOREGROUND_SERVICE);
+        intent.putExtra(
+                "org.chromium.chrome.browser.actor.EXTRA_GLIC_TRIGGER_MESSAGE_ID",
+                "test-message-id");
+
+        mServiceImpl.onStartCommand(intent, /* flags= */ 0, /* startId= */ 1);
+
+        verify(mMockActorService).setPreparedBackgroundTab(eq(ntpTab), eq("test-message-id"));
+        verify(mMockActorService, never()).notifyBackgroundSetupFailed(any());
     }
 }
