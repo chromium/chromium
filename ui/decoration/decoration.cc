@@ -22,7 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
-namespace ui::decoration {
+namespace ui {
 
 namespace {
 
@@ -53,12 +53,12 @@ std::string MakeLayerName(std::string_view debug_name) {
 
 // static
 std::unique_ptr<Decoration> Decoration::Create(
-    std::unique_ptr<DecorationSource> source,
+    std::unique_ptr<decoration::DecorationSource> source,
     std::string_view debug_name) {
   return std::make_unique<Decoration>(std::move(source), debug_name);
 }
 
-Decoration::Decoration(std::unique_ptr<DecorationSource> source,
+Decoration::Decoration(std::unique_ptr<decoration::DecorationSource> source,
                        std::string_view debug_name)
     : source_(std::move(source)),
       name_(MakeLayerName(debug_name)),
@@ -176,7 +176,7 @@ void Decoration::CrossFadeToNewAppearance(base::TimeDelta duration) {
 }
 
 void Decoration::UpdateAppearanceImmediately() {
-  const std::optional<DecorationSource::Details> details =
+  const std::optional<decoration::DecorationSource::Details> details =
       content_bounds_.IsEmpty()
           ? std::nullopt
           : source_->GetDetails(
@@ -185,7 +185,7 @@ void Decoration::UpdateAppearanceImmediately() {
 
   // Compare only the appearance, so geometry or occlusion changes don't
   // re-upload the image.
-  const std::optional<DecorationSource::Appearance> appearance =
+  const std::optional<decoration::DecorationSource::Appearance> appearance =
       details.has_value() ? std::make_optional(details->appearance)
                           : std::nullopt;
 
@@ -255,4 +255,4 @@ void Decoration::UpdateAppearanceImmediately() {
   decoration_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
 }
 
-}  // namespace ui::decoration
+}  // namespace ui
