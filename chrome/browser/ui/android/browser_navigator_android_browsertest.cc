@@ -7,6 +7,7 @@
 #include "base/base_switches.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_future.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1093,8 +1094,16 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
             tab_list2->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
 
+// TODO(crbug.com/559246531): Consistently failing on Android Desktop.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_Disposition_SwitchToTab_SameWindow_ClosesNtp \
+  DISABLED_Disposition_SwitchToTab_SameWindow_ClosesNtp
+#else
+#define MAYBE_Disposition_SwitchToTab_SameWindow_ClosesNtp \
+  Disposition_SwitchToTab_SameWindow_ClosesNtp
+#endif
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
-                       Disposition_SwitchToTab_SameWindow_ClosesNtp) {
+                       MAYBE_Disposition_SwitchToTab_SameWindow_ClosesNtp) {
   SetTabToNewTabPageWithNoHistory();
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
   NavigateParams open_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
@@ -1165,8 +1174,17 @@ IN_PROC_BROWSER_TEST_F(
             tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
-                       Disposition_SwitchToTab_DifferentWindow_ClosesNtp) {
+// TODO(crbug.com/559228399): Consistently failing on android-desktop-x64-rel.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_Disposition_SwitchToTab_DifferentWindow_ClosesNtp \
+  DISABLED_Disposition_SwitchToTab_DifferentWindow_ClosesNtp
+#else
+#define MAYBE_Disposition_SwitchToTab_DifferentWindow_ClosesNtp \
+  Disposition_SwitchToTab_DifferentWindow_ClosesNtp
+#endif
+IN_PROC_BROWSER_TEST_F(
+    NavigateAndroidBrowserTest,
+    MAYBE_Disposition_SwitchToTab_DifferentWindow_ClosesNtp) {
   // Set up initial window with an NTP.
   SetTabToNewTabPageWithNoHistory();
   ASSERT_EQ(1, tab_list_->GetTabCount());
