@@ -138,7 +138,7 @@ void TrustedVaultDegradedRecoverabilityHandler::Refresh() {
   // it's safe to use base::Unretained() here.
   ongoing_get_recoverability_request_ =
       connection_->DownloadIsRecoverabilityDegraded(
-          account_info_,
+          account_info_, security_domain_,
           base::BindOnce(&TrustedVaultDegradedRecoverabilityHandler::
                              OnRecoverabilityIsDegradedDownloaded,
                          base::Unretained(this)));

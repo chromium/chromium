@@ -107,7 +107,7 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
   // Guaranteed by `device_registered` check above.
   CHECK(!vault_keys.empty());
   ongoing_request_ = connection_->DownloadNewKeys(
-      primary_account_,
+      primary_account_, security_domain_id_,
       TrustedVaultKeyAndVersion(vault_keys.back(), last_vault_key_version),
       std::move(key_pair),
       // `this` outlives `ongoing_request_`.
@@ -203,14 +203,14 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
   if (key_storage_->HasNonConstantKey(primary_account_.gaia,
                                       security_domain_id_)) {
     ongoing_registration_request_ = connection_->RegisterAuthenticationFactor(
-        primary_account_,
+        primary_account_, security_domain_id_,
         GetTrustedVaultKeysWithVersions(vault_keys, last_vault_key_version),
         key_pair->public_key(), LocalPhysicalDevice(),
         base::BindOnce(&PhysicalDeviceRecoveryFactor::OnRegistered,
                        base::Unretained(this), true));
   } else {
     ongoing_registration_request_ = connection_->RegisterLocalDeviceWithoutKeys(
-        primary_account_, key_pair->public_key(),
+        primary_account_, security_domain_id_, key_pair->public_key(),
         base::BindOnce(&PhysicalDeviceRecoveryFactor::OnRegistered,
                        base::Unretained(this), false));
   }

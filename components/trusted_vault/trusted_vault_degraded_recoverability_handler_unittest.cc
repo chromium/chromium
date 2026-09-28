@@ -145,10 +145,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
           SecurityDomainId::kChromeSync);
   base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
 
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    MockTrustedVaultThrottlingConnection::
-                        IsRecoverabilityDegradedCallback callback) {
+  EXPECT_CALL(connection,
+              DownloadIsRecoverabilityDegraded(
+                  Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
+                   MockTrustedVaultThrottlingConnection::
+                       IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -190,10 +192,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   base::HistogramTester histogram_tester;
   testing::NiceMock<MockTrustedVaultThrottlingConnection> connection;
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillByDefault([&](const CoreAccountInfo&,
-                         MockTrustedVaultThrottlingConnection::
-                             IsRecoverabilityDegradedCallback callback) {
+  ON_CALL(connection,
+          DownloadIsRecoverabilityDegraded(
+              Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillByDefault([](const CoreAccountInfo&, SecurityDomainId,
+                        MockTrustedVaultThrottlingConnection::
+                            IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -296,10 +300,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
           SecurityDomainId::kChromeSync);
 
   // Make handler aware about degraded recoverability.
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    MockTrustedVaultThrottlingConnection::
-                        IsRecoverabilityDegradedCallback callback) {
+  EXPECT_CALL(connection,
+              DownloadIsRecoverabilityDegraded(
+                  Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
+                   MockTrustedVaultThrottlingConnection::
+                       IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -339,10 +345,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   scheduler->GetIsRecoverabilityDegraded(base::DoNothing());
 
   // Make handler aware about degraded recoverability.
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    MockTrustedVaultThrottlingConnection::
-                        IsRecoverabilityDegradedCallback callback) {
+  EXPECT_CALL(connection,
+              DownloadIsRecoverabilityDegraded(
+                  Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
+                   MockTrustedVaultThrottlingConnection::
+                       IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -368,10 +376,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
        ShouldWriteTheStateImmediatelyWithRecoverabilityDegradedAndCurrentTime) {
   testing::NiceMock<MockTrustedVaultThrottlingConnection> connection;
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillByDefault([&](const CoreAccountInfo&,
-                         MockTrustedVaultThrottlingConnection::
-                             IsRecoverabilityDegradedCallback callback) {
+  ON_CALL(connection,
+          DownloadIsRecoverabilityDegraded(
+              Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillByDefault([](const CoreAccountInfo&, SecurityDomainId,
+                        MockTrustedVaultThrottlingConnection::
+                            IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -396,10 +406,12 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
   expected_state.set_last_refresh_time_millis_since_unix_epoch(
       TimeToProtoTime(base::Time::Now()));
 
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    MockTrustedVaultThrottlingConnection::
-                        IsRecoverabilityDegradedCallback callback) {
+  EXPECT_CALL(connection,
+              DownloadIsRecoverabilityDegraded(
+                  Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
+                   MockTrustedVaultThrottlingConnection::
+                       IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -416,10 +428,12 @@ TEST_F(
     ShouldWriteTheStateImmediatelyWithRecoverabilityNotDegradedAndCurrentTime) {
   testing::NiceMock<MockTrustedVaultThrottlingConnection> connection;
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
-  ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillByDefault([&](const CoreAccountInfo&,
-                         MockTrustedVaultThrottlingConnection::
-                             IsRecoverabilityDegradedCallback callback) {
+  ON_CALL(connection,
+          DownloadIsRecoverabilityDegraded(
+              Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillByDefault([](const CoreAccountInfo&, SecurityDomainId,
+                        MockTrustedVaultThrottlingConnection::
+                            IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -444,10 +458,12 @@ TEST_F(
   expected_state.set_last_refresh_time_millis_since_unix_epoch(
       TimeToProtoTime(base::Time::Now()));
 
-  EXPECT_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-      .WillOnce([&](const CoreAccountInfo&,
-                    MockTrustedVaultThrottlingConnection::
-                        IsRecoverabilityDegradedCallback callback) {
+  EXPECT_CALL(connection,
+              DownloadIsRecoverabilityDegraded(
+                  Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
+                   MockTrustedVaultThrottlingConnection::
+                       IsRecoverabilityDegradedCallback callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kNotDegraded);
         return std::make_unique<TrustedVaultConnection::Request>();
       });
@@ -497,8 +513,10 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
               SecurityDomainId::kChromeSync);
   {
     base::RunLoop run_loop;
-    ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-        .WillByDefault([&](const CoreAccountInfo&,
+    ON_CALL(connection,
+            DownloadIsRecoverabilityDegraded(
+                Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+        .WillByDefault([&](const CoreAccountInfo&, SecurityDomainId,
                            MockTrustedVaultThrottlingConnection::
                                IsRecoverabilityDegradedCallback callback) {
           std::move(callback).Run(
@@ -521,8 +539,10 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   {
     base::RunLoop run_loop;
-    ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-        .WillByDefault([&](const CoreAccountInfo&,
+    ON_CALL(connection,
+            DownloadIsRecoverabilityDegraded(
+                Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+        .WillByDefault([&](const CoreAccountInfo&, SecurityDomainId,
                            MockTrustedVaultThrottlingConnection::
                                IsRecoverabilityDegradedCallback callback) {
           std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
@@ -544,8 +564,10 @@ TEST_F(TrustedVaultDegradedRecoverabilityHandlerTest,
 
   {
     base::RunLoop run_loop;
-    ON_CALL(connection, DownloadIsRecoverabilityDegraded(Eq(account_info), _))
-        .WillByDefault([&](const CoreAccountInfo&,
+    ON_CALL(connection,
+            DownloadIsRecoverabilityDegraded(
+                Eq(account_info), Eq(SecurityDomainId::kChromeSync), _))
+        .WillByDefault([&](const CoreAccountInfo&, SecurityDomainId,
                            MockTrustedVaultThrottlingConnection::
                                IsRecoverabilityDegradedCallback callback) {
           std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);

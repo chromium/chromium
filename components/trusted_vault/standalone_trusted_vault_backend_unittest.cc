@@ -510,7 +510,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
   SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
   EXPECT_CALL(*connection(), DownloadIsRecoverabilityDegraded)
-      .WillOnce([](const CoreAccountInfo&,
+      .WillOnce([](const CoreAccountInfo&, SecurityDomainId,
                    TrustedVaultConnection::IsRecoverabilityDegradedCallback
                        callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
@@ -550,8 +550,9 @@ TEST_F(
 
   Mock::VerifyAndClearExpectations(&cb);
 
-  ON_CALL(*connection(), DownloadIsRecoverabilityDegraded(Eq(kAccountInfo), _))
-      .WillByDefault([](const CoreAccountInfo&,
+  ON_CALL(*connection(), DownloadIsRecoverabilityDegraded(
+                             Eq(kAccountInfo), Eq(security_domain_id()), _))
+      .WillByDefault([](const CoreAccountInfo&, SecurityDomainId,
                         TrustedVaultConnection::IsRecoverabilityDegradedCallback
                             callback) {
         std::move(callback).Run(TrustedVaultRecoverabilityStatus::kDegraded);
@@ -1477,14 +1478,15 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(kAccountInfo),
+          Eq(kAccountInfo), Eq(security_domain_id()),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&,
                     const SecureBoxPublicKey& public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -1557,14 +1559,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(kAccountInfo),
+          Eq(kAccountInfo), Eq(security_domain_id()),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&,
                     const SecureBoxPublicKey& public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -1621,14 +1624,15 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(kAccountInfo),
+          Eq(kAccountInfo), Eq(security_domain_id()),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&,
                     const SecureBoxPublicKey& public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback

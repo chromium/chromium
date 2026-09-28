@@ -689,13 +689,11 @@ std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
 }
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
-    SecurityDomainId security_domain,
     const GURL& trusted_vault_service_url,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher)
-    : security_domain_(security_domain),
-      pending_url_loader_factory_(std::move(pending_url_loader_factory)),
+    : pending_url_loader_factory_(std::move(pending_url_loader_factory)),
       access_token_fetcher_(std::move(access_token_fetcher)),
       trusted_vault_service_url_(trusted_vault_service_url) {
   DCHECK(trusted_vault_service_url_.is_valid());
@@ -706,13 +704,15 @@ TrustedVaultConnectionImpl::~TrustedVaultConnectionImpl() = default;
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const MemberKeysSource& member_keys_source,
     const SecureBoxPublicKey& authentication_factor_public_key,
     AuthenticationFactorTypeAndRegistrationParams
         authentication_factor_type_and_registration_params,
     RegisterAuthenticationFactorCallback callback) {
   return SendJoinSecurityDomainsRequest(
-      account_info, member_keys_source, authentication_factor_public_key,
+      account_info, security_domain, member_keys_source,
+      authentication_factor_public_key,
       authentication_factor_type_and_registration_params,
       base::BindOnce(&RunRegisterAuthenticationFactorCallback,
                      std::move(callback)));
@@ -721,10 +721,11 @@ TrustedVaultConnectionImpl::RegisterAuthenticationFactor(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RegisterLocalDeviceWithoutKeys(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const SecureBoxPublicKey& device_public_key,
     RegisterAuthenticationFactorCallback callback) {
   return SendJoinSecurityDomainsRequest(
-      account_info, ConstantKeySource(), device_public_key,
+      account_info, security_domain, ConstantKeySource(), device_public_key,
       LocalPhysicalDevice(),
       base::BindOnce(&RunRegisterAuthenticationFactorCallback,
                      std::move(callback)));
@@ -733,13 +734,14 @@ TrustedVaultConnectionImpl::RegisterLocalDeviceWithoutKeys(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadNewKeys(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
   // TODO(crbug.com/40255601): consider retries for keys downloading after
   // initial failure returned to the upper layers.
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain_, account_info.account_id,
+      security_domain, account_info.account_id,
       TrustedVaultRequest::HttpMethod::kGet,
       GetGetSecurityDomainMemberURL(
           trusted_vault_service_url_,
@@ -747,14 +749,14 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
-      MakeFetchStatusCallback(security_domain_,
+      MakeFetchStatusCallback(security_domain,
                               TrustedVaultURLFetchReasonForUMA::kDownloadKeys));
 
   request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessDownloadKeysResponse,
                      /*response_processor=*/
                      std::make_unique<DownloadKeysResponseHandler>(
-                         security_domain_, last_trusted_vault_key_and_version,
+                         security_domain, last_trusted_vault_key_and_version,
                          std::move(device_key_pair)),
                      std::move(callback)));
 
@@ -764,16 +766,17 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain_, account_info.account_id,
+      security_domain, account_info.account_id,
       TrustedVaultRequest::HttpMethod::kGet,
-      GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain_),
+      GetGetSecurityDomainURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
       MakeFetchStatusCallback(
-          security_domain_,
+          security_domain,
           TrustedVaultURLFetchReasonForUMA::kDownloadIsRecoverabilityDegraded));
 
   request->FetchAccessTokenAndSendRequest(base::BindOnce(
@@ -785,16 +788,17 @@ TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadGaiaPasswordPublicKey(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     DownloadGaiaPasswordPublicKeyCallback callback) {
   GURL url = GetDownloadGaiaPasswordPublicKeyURL(trusted_vault_service_url_);
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain_, account_info.account_id,
+      security_domain, account_info.account_id,
       TrustedVaultRequest::HttpMethod::kGet, url,
       /*serialized_request_proto=*/std::nullopt,
       /*max_retry_duration=*/base::Seconds(0), GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
       MakeFetchStatusCallback(
-          security_domain_,
+          security_domain,
           TrustedVaultURLFetchReasonForUMA::kDownloadGaiaPasswordPublicKey));
 
   request->FetchAccessTokenAndSendRequest(base::BindOnce(
@@ -806,18 +810,18 @@ TrustedVaultConnectionImpl::DownloadGaiaPasswordPublicKey(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RotateSharedKey(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const trusted_vault_pb::RotateSharedKeyRequest& request,
     RotateSharedKeyCallback callback) {
   auto http_request = std::make_unique<TrustedVaultRequest>(
-      security_domain_, account_info.account_id,
+      security_domain, account_info.account_id,
       TrustedVaultRequest::HttpMethod::kPost,
-      GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain_),
+      GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/request.SerializeAsString(),
       /*max_retry_duration=*/kMaxKeyRotationRetryDuration,
       GetOrCreateURLLoaderFactory(), access_token_fetcher_->Clone(),
       MakeFetchStatusCallback(
-          security_domain_,
-          TrustedVaultURLFetchReasonForUMA::kRotateSharedKey));
+          security_domain, TrustedVaultURLFetchReasonForUMA::kRotateSharedKey));
 
   http_request->FetchAccessTokenAndSendRequest(
       base::BindOnce(&ProcessRotateSharedKeyResponse, std::move(callback)));
@@ -828,25 +832,28 @@ TrustedVaultConnectionImpl::RotateSharedKey(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     DownloadAuthenticationFactorsRegistrationStateCallback callback,
     base::RepeatingClosure keep_alive_callback) {
   return DownloadAuthenticationFactorsRegistrationState(
-      account_info, {}, std::move(callback), std::move(keep_alive_callback));
+      account_info, security_domain, {}, std::move(callback),
+      std::move(keep_alive_callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
         recovery_factor_filter,
     DownloadAuthenticationFactorsRegistrationStateCallback callback,
     base::RepeatingClosure keep_alive_callback) {
   GURL request_url = GetGetSecurityDomainMembersURL(
-      trusted_vault_service_url_, {security_domain_}, recovery_factor_filter);
+      trusted_vault_service_url_, {security_domain}, recovery_factor_filter);
 
   return std::make_unique<
       DownloadAuthenticationFactorsRegistrationStateRequest>(
-      security_domain_, request_url, account_info.account_id,
+      security_domain, request_url, account_info.account_id,
       GetOrCreateURLLoaderFactory(), access_token_fetcher_->Clone(),
       std::move(callback), std::move(keep_alive_callback));
 }
@@ -854,25 +861,25 @@ TrustedVaultConnectionImpl::DownloadAuthenticationFactorsRegistrationState(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::SendJoinSecurityDomainsRequest(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const MemberKeysSource& member_keys_source,
     const SecureBoxPublicKey& authentication_factor_public_key,
     AuthenticationFactorTypeAndRegistrationParams
         authentication_factor_type_and_registration_params,
     JoinSecurityDomainsCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
-      security_domain_, account_info.account_id,
+      security_domain, account_info.account_id,
       TrustedVaultRequest::HttpMethod::kPost,
-      GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain_),
+      GetJoinSecurityDomainURL(trusted_vault_service_url_, security_domain),
       /*serialized_request_proto=*/
       CreateJoinSecurityDomainsRequest(
-          security_domain_, member_keys_source,
-          authentication_factor_public_key,
+          security_domain, member_keys_source, authentication_factor_public_key,
           authentication_factor_type_and_registration_params)
           .SerializeAsString(),
       kMaxJoinSecurityDomainRetryDuration, GetOrCreateURLLoaderFactory(),
       access_token_fetcher_->Clone(),
       MakeFetchStatusCallback(
-          security_domain_,
+          security_domain,
           GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
               authentication_factor_type_and_registration_params)));
 

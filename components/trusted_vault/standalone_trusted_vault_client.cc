@@ -258,8 +258,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       ExtractTrustedVaultServiceURLFromCommandLine();
   if (trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
-        security_domain, trusted_vault_service_gurl,
-        url_loader_factory->Clone(),
+        trusted_vault_service_gurl, url_loader_factory->Clone(),
         std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }

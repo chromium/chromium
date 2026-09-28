@@ -44,13 +44,11 @@ class AccessTokenFetcherWrapper : public TrustedVaultAccessTokenFetcher {
 }  // namespace
 
 std::unique_ptr<TrustedVaultConnection> NewFrontendTrustedVaultConnection(
-    SecurityDomainId security_domain,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   CHECK(identity_manager);
   CHECK(url_loader_factory);
   return std::make_unique<TrustedVaultConnectionImpl>(
-      security_domain,
       trusted_vault::ExtractTrustedVaultServiceURLFromCommandLine(),
       url_loader_factory->Clone(),
       std::make_unique<AccessTokenFetcherWrapper>(identity_manager));

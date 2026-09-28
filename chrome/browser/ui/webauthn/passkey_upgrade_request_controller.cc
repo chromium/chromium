@@ -46,6 +46,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -315,7 +316,7 @@ void PasskeyUpgradeRequestController::OnEnclaveLoaded() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   download_account_state_request_ =
       conn->DownloadAuthenticationFactorsRegistrationState(
-          account,
+          account, trusted_vault::SecurityDomainId::kPasskeys,
           base::BindOnce(
               &PasskeyUpgradeRequestController::OnAccountStateDownloaded,
               weak_factory_.GetWeakPtr(), std::move(trusted_vault_conn)),

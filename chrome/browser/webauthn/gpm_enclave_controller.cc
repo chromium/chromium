@@ -348,9 +348,8 @@ GpmTrustedVaultConnectionProvider::GetConnection(
   }
 
   // Default creation logic
-  return trusted_vault::NewFrontendTrustedVaultConnection(
-      trusted_vault::SecurityDomainId::kPasskeys, identity_manager,
-      url_loader_factory);
+  return trusted_vault::NewFrontendTrustedVaultConnection(identity_manager,
+                                                          url_loader_factory);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(GpmTrustedVaultConnectionProvider);
@@ -678,7 +677,7 @@ void GPMEnclaveController::OnEnclaveLoaded() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   download_account_state_request_ =
       conn->DownloadAuthenticationFactorsRegistrationState(
-          account,
+          account, trusted_vault::SecurityDomainId::kPasskeys,
           base::BindOnce(&GPMEnclaveController::OnAccountStateDownloaded,
                          weak_ptr_factory_.GetWeakPtr(), account.gaia,
                          std::move(trusted_vault_conn)),

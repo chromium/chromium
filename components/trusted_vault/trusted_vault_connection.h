@@ -24,6 +24,7 @@ class RotateSharedKeyRequest;
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
 class SecureBoxKeyPair;
 class SecureBoxPublicKey;
 
@@ -341,6 +342,7 @@ class TrustedVaultConnection {
   // TODO(crbug.com/406191378): Rename to ...RecoveryFactor.
   [[nodiscard]] virtual std::unique_ptr<Request> RegisterAuthenticationFactor(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
       AuthenticationFactorTypeAndRegistrationParams
@@ -352,6 +354,7 @@ class TrustedVaultConnection {
   // succeed only if constant key is the only key known server-side.
   [[nodiscard]] virtual std::unique_ptr<Request> RegisterLocalDeviceWithoutKeys(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       const SecureBoxPublicKey& device_public_key,
       RegisterAuthenticationFactorCallback callback) = 0;
 
@@ -361,6 +364,7 @@ class TrustedVaultConnection {
   // |callback| call or until request needs to be cancelled.
   [[nodiscard]] virtual std::unique_ptr<Request> DownloadNewKeys(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) = 0;
@@ -371,6 +375,7 @@ class TrustedVaultConnection {
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       IsRecoverabilityDegradedCallback callback) = 0;
 
   // Asynchronously attempts to download the Gaia password public key from the
@@ -378,6 +383,7 @@ class TrustedVaultConnection {
   // |callback| call or until request needs to be cancelled.
   [[nodiscard]] virtual std::unique_ptr<Request> DownloadGaiaPasswordPublicKey(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       DownloadGaiaPasswordPublicKeyCallback callback) = 0;
 
   // Asynchronously attempts to rotate the shared key stored in a security
@@ -385,6 +391,7 @@ class TrustedVaultConnection {
   // until request needs to be cancelled.
   [[nodiscard]] virtual std::unique_ptr<Request> RotateSharedKey(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       const trusted_vault_pb::RotateSharedKeyRequest& request,
       RotateSharedKeyCallback callback) = 0;
 
@@ -397,6 +404,7 @@ class TrustedVaultConnection {
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       DownloadAuthenticationFactorsRegistrationStateCallback callback,
       base::RepeatingClosure keep_alive_callback) = 0;
 
@@ -412,6 +420,7 @@ class TrustedVaultConnection {
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
+      SecurityDomainId security_domain,
       std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
           recovery_factor_filter,
       DownloadAuthenticationFactorsRegistrationStateCallback callback,

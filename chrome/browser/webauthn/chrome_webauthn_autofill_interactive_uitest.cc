@@ -55,6 +55,7 @@
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
@@ -147,10 +148,12 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       auto connection = std::make_unique<testing::NiceMock<
           trusted_vault::MockTrustedVaultThrottlingConnection>>();
-      ON_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                               testing::_, testing::_, testing::_))
+      ON_CALL(*connection,
+              DownloadAuthenticationFactorsRegistrationState(
+                  testing::_, trusted_vault::SecurityDomainId::kPasskeys,
+                  testing::_, testing::_))
           .WillByDefault(
-              [](const CoreAccountInfo&,
+              [](const CoreAccountInfo&, trusted_vault::SecurityDomainId,
                  base::OnceCallback<void(
                      trusted_vault::
                          DownloadAuthenticationFactorsRegistrationStateResult)>
@@ -780,7 +783,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMagiChromeQrAutofillIntegrationTest,
 
   delegate_observer_->WaitForUI();
 
-  ASSERT_TRUE(TapUsernameFieldUntilPopupWithSignInWithAnotherDeviceAppears(web_contents));
+  ASSERT_TRUE(TapUsernameFieldUntilPopupWithSignInWithAnotherDeviceAppears(
+      web_contents));
   base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller =
       autofill_client->suggestion_controller_for_testing();
   const std::vector<autofill::Suggestion>& suggestions =

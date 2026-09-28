@@ -173,7 +173,7 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->RegisterAuthenticationFactor(
-          account_info(),
+          account_info(), SecurityDomainId::kChromeSync,
           GetTrustedVaultKeysWithVersions(std::vector<std::vector<uint8_t>>(),
                                           0),
           SecureBoxKeyPair::GenerateRandom()->public_key(),
@@ -189,8 +189,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->RegisterLocalDeviceWithoutKeys(
-          account_info(), SecureBoxKeyPair::GenerateRandom()->public_key(),
-          base::DoNothing());
+          account_info(), SecurityDomainId::kChromeSync,
+          SecureBoxKeyPair::GenerateRandom()->public_key(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 
@@ -200,7 +200,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldCallDownloadNewKeys) {
   }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->DownloadNewKeys(
-          account_info(), TrustedVaultKeyAndVersion(std::vector<uint8_t>(), 0),
+          account_info(), SecurityDomainId::kChromeSync,
+          TrustedVaultKeyAndVersion(std::vector<uint8_t>(), 0),
           SecureBoxKeyPair::GenerateRandom(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
@@ -213,25 +214,12 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->DownloadIsRecoverabilityDegraded(
-          account_info(), base::DoNothing());
+          account_info(), SecurityDomainId::kChromeSync, base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 
 TEST_F(TrustedVaultThrottlingConnectionImplTest,
        ShouldCallDownloadAuthenticationFactorsRegistrationState) {
-  EXPECT_CALL(*delegate(),
-              DownloadAuthenticationFactorsRegistrationState(_, _, _))
-      .WillOnce(InvokeWithoutArgs([]() {
-        return std::make_unique<TrustedVaultConnection::Request>();
-      }));
-  std::unique_ptr<TrustedVaultConnection::Request> request =
-      throttling_connection()->DownloadAuthenticationFactorsRegistrationState(
-          account_info(), base::DoNothing(), base::DoNothing());
-  EXPECT_THAT(request, NotNull());
-}
-
-TEST_F(TrustedVaultThrottlingConnectionImplTest,
-       ShouldCallDownloadAuthenticationFactorsRegistrationStateWithFilter) {
   EXPECT_CALL(*delegate(),
               DownloadAuthenticationFactorsRegistrationState(_, _, _, _))
       .WillOnce(InvokeWithoutArgs([]() {
@@ -239,7 +227,21 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->DownloadAuthenticationFactorsRegistrationState(
-          account_info(),
+          account_info(), SecurityDomainId::kChromeSync, base::DoNothing(),
+          base::DoNothing());
+  EXPECT_THAT(request, NotNull());
+}
+
+TEST_F(TrustedVaultThrottlingConnectionImplTest,
+       ShouldCallDownloadAuthenticationFactorsRegistrationStateWithFilter) {
+  EXPECT_CALL(*delegate(),
+              DownloadAuthenticationFactorsRegistrationState(_, _, _, _, _))
+      .WillOnce(InvokeWithoutArgs([]() {
+        return std::make_unique<TrustedVaultConnection::Request>();
+      }));
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      throttling_connection()->DownloadAuthenticationFactorsRegistrationState(
+          account_info(), SecurityDomainId::kChromeSync,
           {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_PHYSICAL_DEVICE},
           base::DoNothing(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
@@ -252,8 +254,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest,
         return std::make_unique<TrustedVaultConnection::Request>();
       }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      throttling_connection()->DownloadGaiaPasswordPublicKey(account_info(),
-                                                             base::DoNothing());
+      throttling_connection()->DownloadGaiaPasswordPublicKey(
+          account_info(), SecurityDomainId::kChromeSync, base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 
@@ -263,8 +265,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldCallRotateSharedKey) {
   }));
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->RotateSharedKey(
-          account_info(), trusted_vault_pb::RotateSharedKeyRequest(),
-          base::DoNothing());
+          account_info(), SecurityDomainId::kChromeSync,
+          trusted_vault_pb::RotateSharedKeyRequest(), base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 

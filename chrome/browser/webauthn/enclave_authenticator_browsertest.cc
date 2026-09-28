@@ -1003,10 +1003,12 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
   void SetVaultConnectionToTimeout() {
     auto connection = std::make_unique<
         testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
-    EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                                 testing::_, testing::_, testing::_))
+    EXPECT_CALL(*connection,
+                DownloadAuthenticationFactorsRegistrationState(
+                    testing::_, trusted_vault::SecurityDomainId::kPasskeys,
+                    testing::_, testing::_))
         .WillOnce(
-            [](const CoreAccountInfo&,
+            [](const CoreAccountInfo&, trusted_vault::SecurityDomainId,
                base::OnceCallback<void(AuthenticationFactorsResult)> callback,
                base::RepeatingClosure _) mutable {
               return std::make_unique<
@@ -1023,10 +1025,12 @@ class EnclaveAuthenticatorBrowserTest : public EnclaveAuthenticatorTestBase {
   void CheckRegistrationStateNotRequested() {
     auto connection = std::make_unique<
         testing::NiceMock<MockTrustedVaultThrottlingConnection>>();
-    EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                                 testing::_, testing::_, testing::_))
+    EXPECT_CALL(*connection,
+                DownloadAuthenticationFactorsRegistrationState(
+                    testing::_, trusted_vault::SecurityDomainId::kPasskeys,
+                    testing::_, testing::_))
         .WillRepeatedly(
-            [](const CoreAccountInfo&,
+            [](const CoreAccountInfo&, trusted_vault::SecurityDomainId,
                base::OnceCallback<void(AuthenticationFactorsResult)> callback,
                base::RepeatingClosure _)
                 -> std::unique_ptr<

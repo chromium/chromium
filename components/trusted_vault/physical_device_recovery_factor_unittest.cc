@@ -144,7 +144,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
     EXPECT_CALL(
         *connection(),
         RegisterAuthenticationFactor(
-            Eq(account_info),
+            Eq(account_info), Eq(SecurityDomainId::kChromeSync),
             MatchTrustedVaultKeyAndVersions(GetTrustedVaultKeysWithVersions(
                 vault_keys, last_vault_key_version)),
             _,
@@ -152,7 +152,7 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
                 LocalPhysicalDevice())),
             _))
         .WillOnce(
-            [&](const CoreAccountInfo&,
+            [&](const CoreAccountInfo&, SecurityDomainId,
                 const MemberKeysSource& member_keys_source,
                 const SecureBoxPublicKey& device_public_key,
                 AuthenticationFactorTypeAndRegistrationParams,
@@ -219,14 +219,15 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info()),
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
           _,
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               LocalPhysicalDevice())),
           _))
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
@@ -307,14 +308,14 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info()),
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
           _,
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               LocalPhysicalDevice())),
           _))
-      .WillOnce([&](const CoreAccountInfo&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
                     const MemberKeysSource& member_keys_source,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
@@ -367,14 +368,14 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
-          Eq(account_info()),
+          Eq(account_info()), Eq(SecurityDomainId::kChromeSync),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
           _,
           Eq(AuthenticationFactorTypeAndRegistrationParams(
               LocalPhysicalDevice())),
           _))
-      .WillOnce([&](const CoreAccountInfo&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
                     const MemberKeysSource& member_keys_source,
                     const SecureBoxPublicKey& device_public_key,
                     AuthenticationFactorTypeAndRegistrationParams,
@@ -514,9 +515,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldThrottleKeysDownloading) {
                                       kLastKeyVersion);
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  ON_CALL(*connection(), DownloadNewKeys(account_info(), _, _, _))
+  ON_CALL(*connection(),
+          DownloadNewKeys(account_info(), Eq(SecurityDomainId::kChromeSync), _,
+                          _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+          [&](const CoreAccountInfo&, SecurityDomainId,
+              const TrustedVaultKeyAndVersion&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
@@ -555,9 +559,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
                                       kLastKeyVersion);
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  ON_CALL(*connection(), DownloadNewKeys(account_info(), _, _, _))
+  ON_CALL(*connection(),
+          DownloadNewKeys(account_info(), Eq(SecurityDomainId::kChromeSync), _,
+                          _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+          [&](const CoreAccountInfo&, SecurityDomainId,
+              const TrustedVaultKeyAndVersion&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
@@ -597,12 +604,13 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldDownloadNewKeys) {
 
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
   ON_CALL(*connection(),
-          DownloadNewKeys(account_info(),
+          DownloadNewKeys(account_info(), Eq(SecurityDomainId::kChromeSync),
                           TrustedVaultKeyAndVersionEq(kInitialVaultKeys.back(),
                                                       kInitialLastKeyVersion),
                           _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+          [&](const CoreAccountInfo&, SecurityDomainId,
+              const TrustedVaultKeyAndVersion&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
@@ -646,8 +654,9 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
       device_registration_callback;
   std::vector<uint8_t> serialized_public_device_key;
   EXPECT_CALL(*connection(),
-              RegisterLocalDeviceWithoutKeys(Eq(account_info()), _, _))
-      .WillOnce([&](const CoreAccountInfo& account_info,
+              RegisterLocalDeviceWithoutKeys(
+                  Eq(account_info()), Eq(SecurityDomainId::kChromeSync), _, _))
+      .WillOnce([&](const CoreAccountInfo& account_info, SecurityDomainId,
                     const SecureBoxPublicKey& device_public_key,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
@@ -676,13 +685,15 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
 
   // Attempt recovery of new keys.
   TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
-  ON_CALL(*connection(), DownloadNewKeys(account_info(),
-                                         TrustedVaultKeyAndVersionEq(
-                                             GetConstantTrustedVaultKey(),
-                                             kInitialLastKeyVersion),
-                                         _, _))
+  ON_CALL(
+      *connection(),
+      DownloadNewKeys(account_info(), Eq(SecurityDomainId::kChromeSync),
+                      TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
+                                                  kInitialLastKeyVersion),
+                      _, _))
       .WillByDefault(
-          [&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+          [&](const CoreAccountInfo&, SecurityDomainId,
+              const TrustedVaultKeyAndVersion&,
               std::unique_ptr<SecureBoxKeyPair> key_pair,
               TrustedVaultConnection::DownloadNewKeysCallback callback) {
             download_keys_callback = std::move(callback);
@@ -716,8 +727,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       first_device_registration_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
-                    const SecureBoxPublicKey&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
@@ -742,8 +753,8 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   TrustedVaultConnection::RegisterAuthenticationFactorCallback
       second_device_registration_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor)
-      .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
-                    const SecureBoxPublicKey&,
+      .WillOnce([&](const CoreAccountInfo&, SecurityDomainId,
+                    const MemberKeysSource&, const SecureBoxPublicKey&,
                     AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {

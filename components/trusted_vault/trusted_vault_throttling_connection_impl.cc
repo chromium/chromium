@@ -79,81 +79,91 @@ void TrustedVaultThrottlingConnectionImpl::RecordFailedRequestForThrottling(
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const MemberKeysSource& member_keys_source,
     const SecureBoxPublicKey& authentication_factor_public_key,
     AuthenticationFactorTypeAndRegistrationParams
         authentication_factor_type_and_registration_params,
     RegisterAuthenticationFactorCallback callback) {
   return delegate_->RegisterAuthenticationFactor(
-      account_info, member_keys_source, authentication_factor_public_key,
+      account_info, security_domain, member_keys_source,
+      authentication_factor_public_key,
       authentication_factor_type_and_registration_params, std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::RegisterLocalDeviceWithoutKeys(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const SecureBoxPublicKey& device_public_key,
     RegisterAuthenticationFactorCallback callback) {
   return delegate_->RegisterLocalDeviceWithoutKeys(
-      account_info, device_public_key, std::move(callback));
+      account_info, security_domain, device_public_key, std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::DownloadNewKeys(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair,
     DownloadNewKeysCallback callback) {
   return delegate_->DownloadNewKeys(
-      account_info, last_trusted_vault_key_and_version,
+      account_info, security_domain, last_trusted_vault_key_and_version,
       std::move(device_key_pair), std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     IsRecoverabilityDegradedCallback callback) {
-  return delegate_->DownloadIsRecoverabilityDegraded(account_info,
-                                                     std::move(callback));
+  return delegate_->DownloadIsRecoverabilityDegraded(
+      account_info, security_domain, std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::DownloadGaiaPasswordPublicKey(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     DownloadGaiaPasswordPublicKeyCallback callback) {
-  return delegate_->DownloadGaiaPasswordPublicKey(account_info,
+  return delegate_->DownloadGaiaPasswordPublicKey(account_info, security_domain,
                                                   std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::RotateSharedKey(
     const CoreAccountInfo& account_info,
+    SecurityDomainId security_domain,
     const trusted_vault_pb::RotateSharedKeyRequest& request,
     RotateSharedKeyCallback callback) {
-  return delegate_->RotateSharedKey(account_info, request, std::move(callback));
+  return delegate_->RotateSharedKey(account_info, security_domain, request,
+                                    std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::
     DownloadAuthenticationFactorsRegistrationState(
         const CoreAccountInfo& account_info,
+        SecurityDomainId security_domain,
         DownloadAuthenticationFactorsRegistrationStateCallback callback,
         base::RepeatingClosure keep_alive_callback) {
   return delegate_->DownloadAuthenticationFactorsRegistrationState(
-      account_info, std::move(callback), keep_alive_callback);
+      account_info, security_domain, std::move(callback), keep_alive_callback);
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::
     DownloadAuthenticationFactorsRegistrationState(
         const CoreAccountInfo& account_info,
+        SecurityDomainId security_domain,
         std::set<trusted_vault_pb::SecurityDomainMember_MemberType>
             recovery_factor_filter,
         DownloadAuthenticationFactorsRegistrationStateCallback callback,
         base::RepeatingClosure keep_alive_callback) {
   return delegate_->DownloadAuthenticationFactorsRegistrationState(
-      account_info, recovery_factor_filter, std::move(callback),
-      keep_alive_callback);
+      account_info, security_domain, recovery_factor_filter,
+      std::move(callback), keep_alive_callback);
 }
 
 }  // namespace trusted_vault

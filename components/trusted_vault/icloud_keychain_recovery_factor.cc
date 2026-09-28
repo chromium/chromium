@@ -113,7 +113,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery(
 
   ongoing_download_registration_state_request_for_recovery_ =
       connection_->DownloadAuthenticationFactorsRegistrationState(
-          primary_account_,
+          primary_account_, security_domain_id_,
           {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN},
           base::BindOnce(&ICloudKeychainRecoveryFactor::
                              OnRecoveryFactorStateDownloadedForRecovery,
@@ -309,7 +309,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRegistration(
 
   ongoing_download_registration_state_request_for_registration_ =
       connection_->DownloadAuthenticationFactorsRegistrationState(
-          primary_account_,
+          primary_account_, security_domain_id_,
           {trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_ICLOUD_KEYCHAIN},
           base::BindOnce(&ICloudKeychainRecoveryFactor::
                              OnRecoveryFactorStateDownloadedForRegistration,
@@ -384,7 +384,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeyCreatedForRegistration(
       primary_account_.gaia, security_domain_id_);
 
   ongoing_registration_request_ = connection_->RegisterAuthenticationFactor(
-      primary_account_,
+      primary_account_, security_domain_id_,
       GetTrustedVaultKeysWithVersions(vault_keys, last_vault_key_version),
       local_icloud_key->key()->public_key(), ICloudKeychain(),
       base::BindOnce(&ICloudKeychainRecoveryFactor::OnRegistered,

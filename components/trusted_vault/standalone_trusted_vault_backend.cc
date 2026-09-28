@@ -531,7 +531,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
   ongoing_add_recovery_method_request_ =
       connection_->RegisterAuthenticationFactor(
-          *primary_account_,
+          *primary_account_, security_domain_id_,
           GetTrustedVaultKeysWithVersions(vault_keys, last_key_version),
           *imported_public_key,
           UnspecifiedAuthenticationFactorType(method_type_hint),

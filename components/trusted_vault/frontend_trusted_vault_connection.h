@@ -19,14 +19,12 @@ class IdentityManager;
 
 namespace trusted_vault {
 
-enum class SecurityDomainId;
 class TrustedVaultConnection;
 
 // Create a new `TrustedVaultConnection`. This is for cases where a
 // security domain secret is managed outside of //components/trusted_vault.
 // For most cases, see `TrustedVaultClient`.
 std::unique_ptr<TrustedVaultConnection> NewFrontendTrustedVaultConnection(
-    SecurityDomainId security_domain,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 

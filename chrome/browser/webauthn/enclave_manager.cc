@@ -2240,6 +2240,7 @@ class EnclaveManager::StateMachine {
         manager_->trusted_vault_conn_
             ->DownloadAuthenticationFactorsRegistrationState(
                 *primary_account_info_,
+                trusted_vault::SecurityDomainId::kPasskeys,
                 base::BindOnce(
                     [](base::WeakPtr<EnclaveManager::StateMachine> machine,
                        trusted_vault::
@@ -2558,8 +2559,8 @@ class EnclaveManager::StateMachine {
       member_keys_source = store_keys_args_for_joining_->keys;
     }
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, std::move(*member_keys_source),
-        *secure_box_pub_key,
+        *primary_account_info_, trusted_vault::SecurityDomainId::kPasskeys,
+        std::move(*member_keys_source), *secure_box_pub_key,
         trusted_vault::GpmPinMetadata(
             action_->pin_public_key,
             trusted_vault::UsableRecoveryPinMetadata(
@@ -2829,8 +2830,9 @@ class EnclaveManager::StateMachine {
         trusted_vault::SecureBoxPublicKey::CreateByImport(
             base::as_byte_span(user_->member_public_key()));
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, store_keys_args_for_joining_->keys,
-        *secure_box_pub_key, trusted_vault::LocalPhysicalDevice(),
+        *primary_account_info_, trusted_vault::SecurityDomainId::kPasskeys,
+        store_keys_args_for_joining_->keys, *secure_box_pub_key,
+        trusted_vault::LocalPhysicalDevice(),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -2936,6 +2938,7 @@ class EnclaveManager::StateMachine {
         manager_->trusted_vault_conn_
             ->DownloadAuthenticationFactorsRegistrationState(
                 *primary_account_info_,
+                trusted_vault::SecurityDomainId::kPasskeys,
                 base::BindOnce(
                     [](base::RepeatingCallback<void(
                            OpportunisticRetrievalCheck)> cb,
@@ -3002,8 +3005,8 @@ class EnclaveManager::StateMachine {
         TrustedVaultKeyAndVersion(manager_->secret_,
                                   manager_->secret_version_)};
     join_request_ = manager_->trusted_vault_conn_->RegisterAuthenticationFactor(
-        *primary_account_info_, std::move(member_keys_source),
-        icloud_recovery_key->key()->public_key(),
+        *primary_account_info_, trusted_vault::SecurityDomainId::kPasskeys,
+        std::move(member_keys_source), icloud_recovery_key->key()->public_key(),
         trusted_vault::ICloudKeychain(),
         base::BindOnce(&StateMachine::OnJoinedSecurityDomain,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -3163,7 +3166,6 @@ EnclaveManager::EnclaveManager(
       network_context_factory_(network_context_factory),
       url_loader_factory_(url_loader_factory),
       trusted_vault_conn_(trusted_vault::NewFrontendTrustedVaultConnection(
-          trusted_vault::SecurityDomainId::kPasskeys,
           identity_manager,
           url_loader_factory_)),
       trusted_vault_access_token_fetcher_frontend_(
@@ -3982,7 +3984,7 @@ EnclaveManager::CheckGpmPinAvailability(GpmPinAvailabilityCallback callback) {
   CoreAccountInfo account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   return trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
-      account_info,
+      account_info, trusted_vault::SecurityDomainId::kPasskeys,
       base::BindOnce(
           [](GpmPinAvailabilityCallback callback,
              trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
