@@ -881,6 +881,15 @@ suite('ContextualActionMenu', () => {
               `SVG content mismatch between searchbox_config:${
                   intId} and composebox:${stringName}`);
         }
+
+        const newToolIconIds = [108];
+        for (const intId of newToolIconIds) {
+          const intIcon = searchboxConfigIconset.createIcon(`${intId}`);
+          assertTrue(
+              !!intIcon,
+              `Icon for integer ID ${
+                  intId} exists in searchbox_config iconset`);
+        }
       });
   // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/searchbox_config_icons.html.ts:SearchboxConfigIcons)
 

@@ -56,6 +56,29 @@ suite('ComposeboxToolChipTest', () => {
     assertEquals('searchbox_config:94', toolIcon!.icon);
   });
 
+  test('Renders new tool icon defined in toolConfig', async () => {
+    toolChip['inputState'] = new MockInputState({
+      activeTool: ToolMode.kImageGen,
+      toolConfigs: [
+        {
+          tool: ToolMode.kImageGen,
+          menuLabel: 'Create Images',
+          disableActiveModelSelection: false,
+          chipLabel: 'Create Images',
+          icon: 108,
+          hintText: '',
+          aimUrlParams: [],
+          menuTooltip: '',
+        },
+      ],
+    });
+    await microtasksFinished();
+
+    const toolIcon = $$<CrIconElement>(toolChip, '.tool-icon');
+    assertTrue(isVisible(toolIcon));
+    assertEquals('searchbox_config:108', toolIcon!.icon);
+  });
+
   test(
       'Uses searchbox_config:0 when icon is 0 or unspecified in config',
       async () => {
