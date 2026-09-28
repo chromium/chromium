@@ -15,14 +15,28 @@
 
 namespace base {
 
+// These are plain loops instead of `std::ranges::` algorithms because checking
+// the constraints of those costs several milliseconds of compile time in every
+// translation unit that includes this file.
+
 // Checks if any of the elements in |ilist| is true.
 inline constexpr bool any_of(std::initializer_list<bool> ilist) {
-  return std::ranges::contains(ilist, true);
+  for (bool b : ilist) {
+    if (b) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Checks if all of the elements in |ilist| are true.
 inline constexpr bool all_of(std::initializer_list<bool> ilist) {
-  return !std::ranges::contains(ilist, false);
+  for (bool b : ilist) {
+    if (!b) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Counts the elements in |ilist| that are equal to |value|.

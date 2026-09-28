@@ -474,4 +474,20 @@ size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size) {
                          std::wstring_view(src));
 }
 
+bool EqualsCaseInsensitiveASCII(std::string_view a, std::string_view b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+
+bool EqualsCaseInsensitiveASCII(std::u16string_view a, std::u16string_view b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+
+bool EqualsCaseInsensitiveASCII(std::u16string_view a, std::string_view b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+
+bool EqualsCaseInsensitiveASCII(std::string_view a, std::u16string_view b) {
+  return internal::EqualsCaseInsensitiveASCIIT(a, b);
+}
+
 }  // namespace base

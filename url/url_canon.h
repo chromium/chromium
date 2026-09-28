@@ -421,9 +421,8 @@ struct CanonHostInfo {
 
   // Returns a span pointing a valid range of `address`. The size of the
   // resultant span is 4, 16, or 0.
-  base::span<const uint8_t> AddressSpan() const LIFETIME_BOUND {
-    return base::span(address).first(static_cast<size_t>(AddressLength()));
-  }
+  COMPONENT_EXPORT(URL)
+  base::span<const uint8_t> AddressSpan() const LIFETIME_BOUND;
 };
 
 // Deprecated. Please call either CanonicalizeSpecialHost or

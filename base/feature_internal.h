@@ -21,10 +21,16 @@ enum class FeatureMacroHandshake { kSecret };
 // sense: A valid country code consists of exactly two lowercase ASCII letters.
 consteval bool AreCountryCodesValid(
     base::span<const std::string_view> countries) {
-  return std::ranges::all_of(countries, [](std::string_view code) {
-    auto valid_letter = [](char c) { return c >= 'a' && c <= 'z'; };
-    return code.size() == 2 && valid_letter(code[0]) && valid_letter(code[1]);
-  });
+  // This is a plain loop instead of `std::ranges::all_of()` because checking
+  // the constraints of that costs several milliseconds of compile time in
+  // every translation unit that includes this file.
+  auto valid_letter = [](char c) { return c >= 'a' && c <= 'z'; };
+  for (std::string_view code : countries) {
+    if (code.size() != 2 || !valid_letter(code[0]) || !valid_letter(code[1])) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // Packs a variadic list of country codes into a std::array and asserts

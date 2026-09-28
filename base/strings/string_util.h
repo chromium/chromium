@@ -180,21 +180,18 @@ BASE_EXPORT constexpr int CompareCaseInsensitiveASCII(std::u16string_view a,
 // unmodified. To compare all Unicode code points case-insensitively, use
 // base::i18n::ToLower or base::i18n::FoldCase and then compare with either ==
 // or !=.
-inline bool EqualsCaseInsensitiveASCII(std::string_view a, std::string_view b) {
-  return internal::EqualsCaseInsensitiveASCIIT(a, b);
-}
-inline bool EqualsCaseInsensitiveASCII(std::u16string_view a,
-                                       std::u16string_view b) {
-  return internal::EqualsCaseInsensitiveASCIIT(a, b);
-}
-inline bool EqualsCaseInsensitiveASCII(std::u16string_view a,
-                                       std::string_view b) {
-  return internal::EqualsCaseInsensitiveASCIIT(a, b);
-}
-inline bool EqualsCaseInsensitiveASCII(std::string_view a,
-                                       std::u16string_view b) {
-  return internal::EqualsCaseInsensitiveASCIIT(a, b);
-}
+//
+// These are not inline on purpose: this header is included by a third of all
+// files, and every inline function here that calls a function template makes
+// the compiler instantiate that template in all of them.
+BASE_EXPORT bool EqualsCaseInsensitiveASCII(std::string_view a,
+                                            std::string_view b);
+BASE_EXPORT bool EqualsCaseInsensitiveASCII(std::u16string_view a,
+                                            std::u16string_view b);
+BASE_EXPORT bool EqualsCaseInsensitiveASCII(std::u16string_view a,
+                                            std::string_view b);
+BASE_EXPORT bool EqualsCaseInsensitiveASCII(std::string_view a,
+                                            std::u16string_view b);
 
 // These threadsafe functions return references to globally unique empty
 // strings.
@@ -592,33 +589,44 @@ BASE_EXPORT char16_t* WriteInto(std::u16string* str, size_t length_with_null);
 // copies of those strings are created until the final join operation.
 //
 // Use StrCat (in base/strings/strcat.h) if you don't need a separator.
+//
+// These have to be defined here because they are constexpr. They are templates
+// (whose template parameter nobody should pass) so that the compiler only
+// instantiates JoinStringT<> in the files that call JoinString(), and not in
+// every file that includes this header.
+template <typename LazyInstantiation = void>
 constexpr std::string JoinString(span<const std::string> parts,
                                  std::string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
+template <typename LazyInstantiation = void>
 constexpr std::u16string JoinString(span<const std::u16string> parts,
                                     std::u16string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
+template <typename LazyInstantiation = void>
 constexpr std::string JoinString(span<const std::string_view> parts,
                                  std::string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
+template <typename LazyInstantiation = void>
 constexpr std::u16string JoinString(span<const std::u16string_view> parts,
                                     std::u16string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
 // Explicit initializer_list overloads are required to break ambiguity when used
 // with a literal initializer list (otherwise the compiler would not be able to
 // decide between the string and std::string_view overloads).
+template <typename LazyInstantiation = void>
 constexpr std::string JoinString(std::initializer_list<std::string_view> parts,
                                  std::string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
+template <typename LazyInstantiation = void>
 constexpr std::u16string JoinString(
     std::initializer_list<std::u16string_view> parts,
     std::u16string_view separator) {
-  return strings_internal::JoinStringT(parts, separator);
+  return strings_internal::JoinStringT<LazyInstantiation>(parts, separator);
 }
 
 // Replace $1-$2-$3..$9 in the format string with values from |subst|.

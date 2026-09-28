@@ -38,7 +38,11 @@ class BasicHeapVector final
   BasicHeapVector(wtf_size_t size, const T& val) : BaseVector(size, val) {}
 
   // NOLINTNEXTLINE(google-explicit-constructor)
-  BasicHeapVector(const BasicHeapVector& other) : BaseVector(other) {}
+  BasicHeapVector(const BasicHeapVector& other)
+      // The cast makes this an exact match for BaseVector's copy constructor,
+      // so that the compiler doesn't have to check the constraints of
+      // BaseVector's constructor templates for every HeapVector type.
+      : BaseVector(static_cast<const BaseVector&>(other)) {}
 
   template <wtf_size_t otherCapacity>
   // NOLINTNEXTLINE(google-explicit-constructor)

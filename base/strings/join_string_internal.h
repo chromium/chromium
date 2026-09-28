@@ -16,7 +16,13 @@ namespace base::strings_internal {
 // (base::span or std::initializer_list) of strings/StringPieces (std::string,
 // std::u16string, std::string_view or std::u16string_view). |CharT| is either
 // char or char16_t.
-template <typename list_type,
+//
+// |LazyInstantiation| is explicitly passed by the callers in string_util.h,
+// which are templates on it: that makes their calls dependent, so that this
+// function is only instantiated in files that call JoinString(). (Clang
+// instantiates constexpr functions as soon as something references them.)
+template <typename LazyInstantiation,
+          typename list_type,
           typename T,
           typename CharT = typename T::value_type>
 constexpr std::basic_string<CharT> JoinStringT(list_type parts, T sep) {

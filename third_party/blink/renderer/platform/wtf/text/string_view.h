@@ -297,7 +297,7 @@ class WTF_EXPORT StringView {
     if (Is8Bit()) {
       return Span8();
     }
-    return base::as_byte_span(Span16());
+    return base::as_bytes(Span16());
   }
 
   // This is not named impl() like String because it has different semantics.
@@ -618,8 +618,14 @@ inline bool StringView::IsAllSpecialCharacters() const {
   if (empty()) {
     return true;
   }
-  return Is8Bit() ? std::ranges::all_of(Span8(), is_special_character)
-                  : std::ranges::all_of(Span16(), is_special_character);
+  // Not `std::ranges::all_of()`: checking its constraints is expensive at
+  // compile time.
+  if (Is8Bit()) {
+    auto span = Span8();
+    return std::all_of(span.begin(), span.end(), is_special_character);
+  }
+  auto span = Span16();
+  return std::all_of(span.begin(), span.end(), is_special_character);
 }
 
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const StringView&);

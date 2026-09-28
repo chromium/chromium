@@ -115,6 +115,10 @@ bool DoCanonicalizeIPv6Address(std::basic_string_view<CHAR> host_view,
 
 }  // namespace
 
+base::span<const uint8_t> CanonHostInfo::AddressSpan() const {
+  return base::span(address).first(static_cast<size_t>(AddressLength()));
+}
+
 void AppendIPv4Address(base::span<const uint8_t> address, CanonOutput* output) {
   DCHECK_GE(address.size(), 4u);
   for (int i = 0; i < 4; i++) {

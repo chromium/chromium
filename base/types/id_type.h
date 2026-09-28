@@ -58,26 +58,21 @@ template <typename TypeMarker,
           WrappedType... kExtraInvalidValues>
 class IdType : public StrongAlias<TypeMarker, WrappedType> {
  public:
-  static constexpr WrappedType kAllInvalidValues[] = {kInvalidValue,
-                                                      kExtraInvalidValues...};
-
+  // The checks below are fold expressions instead of `std::ranges::`
+  // algorithms because checking the constraints of those costs several
+  // milliseconds of compile time for every IdType.
   static_assert(std::is_unsigned_v<WrappedType> ||
-                    std::ranges::all_of(kAllInvalidValues,
-                                        [](WrappedType v) { return v <= 0; }),
+                    ((kInvalidValue <= 0) && ... && (kExtraInvalidValues <= 0)),
                 "If signed, invalid values should be negative or equal to zero "
                 "to avoid overflow issues.");
 
-  static_assert(std::ranges::all_of(kAllInvalidValues,
-                                    [](WrappedType v) {
-                                      return kFirstGeneratedId != v;
-                                    }),
+  static_assert(((kFirstGeneratedId != kInvalidValue) && ... &&
+                 (kFirstGeneratedId != kExtraInvalidValues)),
                 "The first generated ID cannot be invalid.");
 
   static_assert(std::is_unsigned_v<WrappedType> ||
-                    std::ranges::all_of(kAllInvalidValues,
-                                        [](WrappedType v) {
-                                          return kFirstGeneratedId > v;
-                                        }),
+                    ((kFirstGeneratedId > kInvalidValue) && ... &&
+                     (kFirstGeneratedId > kExtraInvalidValues)),
                 "If signed, the first generated ID must be greater than all "
                 "invalid values so that the monotonically increasing "
                 "GenerateNextId method will never return an invalid value.");
@@ -106,9 +101,8 @@ class IdType : public StrongAlias<TypeMarker, WrappedType> {
       : StrongAlias<TypeMarker, WrappedType>::StrongAlias(kInvalidValue) {}
 
   constexpr bool is_null() const {
-    return std::ranges::any_of(kAllInvalidValues, [this](WrappedType value) {
-      return this->value() == value;
-    });
+    return ((this->value() == kInvalidValue) || ... ||
+            (this->value() == kExtraInvalidValues));
   }
 
   constexpr explicit operator bool() const { return !is_null(); }

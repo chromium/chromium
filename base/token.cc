@@ -31,6 +31,10 @@ Token Token::CreateRandom() {
   return token;
 }
 
+span<const uint8_t, 16> Token::AsBytes() const {
+  return as_byte_span(words_);
+}
+
 std::string Token::ToString() const {
   return StringPrintf("%016" PRIX64 "%016" PRIX64, words_[0], words_[1]);
 }

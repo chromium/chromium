@@ -20,18 +20,16 @@ BASE_EXPORT void StrAppend(std::wstring* dest,
                            span<const std::wstring_view> pieces);
 BASE_EXPORT void StrAppend(std::wstring* dest, span<const std::wstring> pieces);
 
-inline void StrAppend(std::wstring* dest,
-                      std::initializer_list<std::wstring_view> pieces) {
-  StrAppend(dest, span(pieces));
-}
+// Not inline, see the comment in strcat.h.
+BASE_EXPORT void StrAppend(std::wstring* dest,
+                           std::initializer_list<std::wstring_view> pieces);
 
 [[nodiscard]] BASE_EXPORT std::wstring StrCat(
     span<const std::wstring_view> pieces);
 [[nodiscard]] BASE_EXPORT std::wstring StrCat(span<const std::wstring> pieces);
 
-inline std::wstring StrCat(std::initializer_list<std::wstring_view> pieces) {
-  return StrCat(span(pieces));
-}
+[[nodiscard]] BASE_EXPORT std::wstring StrCat(
+    std::initializer_list<std::wstring_view> pieces);
 
 }  // namespace base
 

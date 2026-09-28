@@ -28,17 +28,28 @@ constexpr std::basic_string_view<CharT> MakeStringViewWithNulChars(
 // std:: has no direct equivalent for this; however, it eases span adoption in
 // Chromium, which uses `string`s and `string_view`s in many cases that
 // rightfully should be containers of `uint8_t`.
+//
+// These are not templates, so everything they use gets instantiated in every
+// file that includes this header (which is most files, via base/pickle.h).
+// That is why they use the (pointer, size) constructor of `string_view` and
+// not its constrained range constructor or `as_chars()`.
 constexpr auto as_string_view(span<const char> s LIFETIME_BOUND) {
-  return std::string_view(s);
+  // SAFETY: `s.data()` points to `s.size()` elements.
+  return UNSAFE_BUFFERS(std::string_view(s.data(), s.size()));
 }
 constexpr auto as_string_view(span<const unsigned char> s LIFETIME_BOUND) {
-  return as_string_view(as_chars(s));
+  // SAFETY: `s.data()` points to `s.size()` elements, and `char` may alias
+  // `unsigned char`.
+  return UNSAFE_BUFFERS(
+      std::string_view(reinterpret_cast<const char*>(s.data()), s.size()));
 }
 constexpr auto as_string_view(span<const char16_t> s LIFETIME_BOUND) {
-  return std::u16string_view(s);
+  // SAFETY: `s.data()` points to `s.size()` elements.
+  return UNSAFE_BUFFERS(std::u16string_view(s.data(), s.size()));
 }
 constexpr auto as_string_view(span<const wchar_t> s LIFETIME_BOUND) {
-  return std::wstring_view(s);
+  // SAFETY: `s.data()` points to `s.size()` elements.
+  return UNSAFE_BUFFERS(std::wstring_view(s.data(), s.size()));
 }
 
 }  // namespace base

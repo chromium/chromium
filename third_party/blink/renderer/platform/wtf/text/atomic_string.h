@@ -74,7 +74,8 @@ class WTF_EXPORT AtomicString {
   // contains invalid UTF-8 sequences.
   static AtomicString FromUtf8(base::span<const uint8_t>);
   static AtomicString FromUtf8(std::string_view utf8_string) {
-    return FromUtf8(base::as_byte_span(utf8_string));
+    // Not `base::as_byte_span()`, see String::FromUtf8().
+    return FromUtf8(base::as_bytes(base::span<const char>(utf8_string)));
   }
 
   template <typename IntegerType>

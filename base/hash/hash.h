@@ -35,7 +35,9 @@ BASE_EXPORT uint32_t Hash(const std::string& str);
 // May changed without warning, do not expect stability of outputs.
 BASE_EXPORT size_t FastHash(base::span<const uint8_t> data);
 inline size_t FastHash(std::string_view str) {
-  return FastHash(as_byte_span(str));
+  // Not `as_byte_span(str)`: that is generic and costs several milliseconds of
+  // compile time in every translation unit that includes this file.
+  return FastHash(as_bytes(span<const char>(str)));
 }
 
 // Computes a hash of a memory buffer. This hash function must not change so

@@ -67,14 +67,15 @@ namespace base {
     span<const std::u16string> pieces);
 
 // Initializer list forwards to the array version.
-inline std::string StrCat(std::initializer_list<std::string_view> pieces) {
-  return StrCat(span(pieces));
-}
-
-inline std::u16string StrCat(
-    std::initializer_list<std::u16string_view> pieces) {
-  return StrCat(span(pieces));
-}
+//
+// These are not inline on purpose: this header is included by a third of all
+// files, and converting an initializer_list to a span in an inline function
+// here makes the compiler do class template argument deduction for span<> and
+// check the constraints of its constructors in every one of them.
+[[nodiscard]] BASE_EXPORT std::string StrCat(
+    std::initializer_list<std::string_view> pieces);
+[[nodiscard]] BASE_EXPORT std::u16string StrCat(
+    std::initializer_list<std::u16string_view> pieces);
 
 // StrAppend -------------------------------------------------------------------
 //
@@ -92,16 +93,11 @@ BASE_EXPORT void StrAppend(std::string* dest, span<const std::string> pieces);
 BASE_EXPORT void StrAppend(std::u16string* dest,
                            span<const std::u16string> pieces);
 
-// Initializer list forwards to the array version.
-inline void StrAppend(std::string* dest,
-                      std::initializer_list<std::string_view> pieces) {
-  StrAppend(dest, span(pieces));
-}
-
-inline void StrAppend(std::u16string* dest,
-                      std::initializer_list<std::u16string_view> pieces) {
-  StrAppend(dest, span(pieces));
-}
+// Initializer list forwards to the array version. Not inline, see above.
+BASE_EXPORT void StrAppend(std::string* dest,
+                           std::initializer_list<std::string_view> pieces);
+BASE_EXPORT void StrAppend(std::u16string* dest,
+                           std::initializer_list<std::u16string_view> pieces);
 
 }  // namespace base
 

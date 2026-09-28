@@ -50,6 +50,11 @@ struct ConditionalImpl<false> {
 template <bool B, class T, class F>
 using ConditionalT = ConditionalImpl<B>::template type<T, F>;
 
+// This file intentionally uses the iterator-based algorithms instead of the
+// `std::ranges::` ones: checking the constraints of a `std::ranges::` algorithm
+// costs several milliseconds of compile time for every new combination of
+// container and comparator, and flat_tree is used with a lot of them.
+
 // Helper functions used in DCHECKs below to make sure that inputs tagged with
 // sorted_unique are indeed sorted and unique.
 template <typename Range, typename Comp>
@@ -57,8 +62,8 @@ constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   // Being unique implies that there are no adjacent elements that
   // compare equal. So this checks that each element is strictly less
   // than the element after it.
-  return std::ranges::adjacent_find(range, std::not_fn(comp)) ==
-         std::ranges::end(range);
+  return std::adjacent_find(std::ranges::begin(range), std::ranges::end(range),
+                            std::not_fn(comp)) == std::ranges::end(range);
 }
 
 // Helper inspired by C++20's std::to_array to convert a C-style array to a
@@ -1026,7 +1031,7 @@ template <typename K>
 constexpr auto
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::lower_bound(
     const KeyT<K>& key) const -> const_iterator {
-  return std::ranges::lower_bound(*this, key, KeyValueCompare(comp_));
+  return std::lower_bound(begin(), end(), key, KeyValueCompare(comp_));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
@@ -1042,7 +1047,7 @@ template <typename K>
 constexpr auto
 flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::upper_bound(
     const KeyT<K>& key) const -> const_iterator {
-  return std::ranges::upper_bound(*this, key, KeyValueCompare(comp_));
+  return std::upper_bound(begin(), end(), key, KeyValueCompare(comp_));
 }
 
 // ----------------------------------------------------------------------------
@@ -1111,9 +1116,9 @@ size_t EraseIf(
     base::internal::flat_tree<Key, GetKeyFromValue, KeyCompare, Container>&
         container,
     Predicate pred) {
-  auto removed = std::ranges::remove_if(container, pred);
-  size_t num_removed = removed.size();
-  container.erase(removed.begin(), removed.end());
+  auto removed = std::remove_if(container.begin(), container.end(), pred);
+  size_t num_removed = static_cast<size_t>(container.end() - removed);
+  container.erase(removed, container.end());
   return num_removed;
 }
 

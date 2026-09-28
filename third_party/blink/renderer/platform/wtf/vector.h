@@ -1832,6 +1832,16 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // Returns a span including the unused part of the buffer.
   base::span<T> CapacitySpan() { return Base::BufferSpan(); }
 
+  // Returns a span of the elements of `vector`. `base::span(vector)` does the
+  // same, but it has to check at compile time that `vector` is a contiguous,
+  // sized range, which takes several milliseconds for every Vector type.
+  template <typename VectorType>
+  static auto ElementSpan(VectorType& vector) {
+    // SAFETY: `data()` points to `size()` elements.
+    return UNSAFE_BUFFERS(
+        base::span(base::unchecked, vector.data(), vector.size()));
+  }
+
   bool HasInlineBuffer() const {
     return INLINE_CAPACITY && !this->HasOutOfLineBuffer();
   }
@@ -1914,7 +1924,7 @@ Vector<T, kInlineCapacity, Allocator>::Vector(const Vector& other)
   }
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other.size()));
   size_ = other.size();
-  TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
+  TypeOperations::UninitializedCopy(ElementSpan(other), ElementSpan(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1928,7 +1938,7 @@ Vector<T, kInlineCapacity, Allocator>::Vector(
   }
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other.size()));
   size_ = other.size();
-  TypeOperations::UninitializedCopy(base::span(other), base::span(*this),
+  TypeOperations::UninitializedCopy(ElementSpan(other), ElementSpan(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1938,7 +1948,7 @@ Vector<T, kInlineCapacity, Allocator>::Vector(base::span<const U> other)
     : Base(base::checked_cast<wtf_size_t>(other.size())) {
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), other.size()));
   size_ = base::checked_cast<wtf_size_t>(other.size());
-  TypeOperations::UninitializedCopy(other, base::span(*this),
+  TypeOperations::UninitializedCopy(other, ElementSpan(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
@@ -1982,7 +1992,7 @@ Vector<T, kInlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(other.data(), UNSAFE_TODO(other.data() + size()), data(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      base::span(other).subspan(size()), CapacitySpan().subspan(size()),
+      ElementSpan(other).subspan(size()), CapacitySpan().subspan(size()),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -2017,7 +2027,7 @@ Vector<T, kInlineCapacity, Allocator>::operator=(
   TypeOperations::Copy(other.data(), UNSAFE_TODO(other.data() + size()), data(),
                        VectorOperationOrigin::kRegularModification);
   TypeOperations::UninitializedCopy(
-      base::span(other).subspan(size()), CapacitySpan().subspan(size()),
+      ElementSpan(other).subspan(size()), CapacitySpan().subspan(size()),
       VectorOperationOrigin::kRegularModification);
   size_ = other.size();
 
@@ -2083,7 +2093,7 @@ Vector<T, kInlineCapacity, Allocator>::Vector(std::initializer_list<T> elements)
     : Base(base::checked_cast<wtf_size_t>(elements.size())) {
   UNSAFE_TODO(ANNOTATE_NEW_BUFFER(data(), capacity(), elements.size()));
   size_ = static_cast<wtf_size_t>(elements.size());
-  TypeOperations::UninitializedCopy(base::span(elements), base::span(*this),
+  TypeOperations::UninitializedCopy(base::span(elements), ElementSpan(*this),
                                     VectorOperationOrigin::kConstruction);
 }
 
