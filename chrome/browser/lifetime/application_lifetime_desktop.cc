@@ -175,7 +175,7 @@ void PostTryToCloseBrowsersForProfile(
                                    original_profile
                              : browser->GetProfile() == original_profile;
           if (matches) {
-            UnloadController::From(browser)->ResetTryToCloseWindow();
+            UnloadController::From(browser)->ResetBeforeUnloadForShutdown();
           }
           return true;
         });
@@ -206,7 +206,7 @@ void TryToCloseBrowsersForProfile(
         if (!matches_profile(browser)) {
           return true;
         }
-        if (UnloadController::From(browser)->TryToCloseWindow(
+        if (UnloadController::From(browser)->RunBeforeUnloadForShutdown(
                 skip_beforeunload,
                 base::BindRepeating(&PostTryToCloseBrowsersForProfile,
                                     original_profile, match_original_profile,
