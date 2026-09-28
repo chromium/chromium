@@ -68,6 +68,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 // Exposes `LegacyToolbarMediatorDelegate` and `ToolbarMediatorDelegate` in
 // order to invoke delegate methods in tests.
@@ -387,4 +388,76 @@ TEST_F(MainToolbarCoordinatorTest, TestAssistantButtonTappedInIncognito) {
                 "MobileToolbarAssistantIncognitoSwitchModesTapped"),
             1);
   EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that during page navigation or transitions where the primary toolbar
+// view is temporarily hidden, expanded heights remain non-zero and collapsed
+// heights never exceed expanded heights.
+TEST_F(MainToolbarCoordinatorTest,
+       TestPrimaryToolbarHeightsWhenViewHiddenDuringNavigation) {
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
+  [coordinator_ start];
+
+  // 1. Add an active WebState loading a webpage.
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetBrowserState(profile_.get());
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
+  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
+  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
+  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
+  test_web_state->SetLoading(true);
+  browser()->GetWebStateList()->InsertWebState(
+      std::move(test_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // 2. Simulate the primary toolbar view being hidden during transition.
+  coordinator_.primaryToolbarViewController.view.hidden = YES;
+
+  // Verify the expanded height is non-zero even while the view is hidden.
+  EXPECT_GT([coordinator_ expandedPrimaryToolbarHeight], 0.0);
+  EXPECT_LE([coordinator_ collapsedPrimaryToolbarHeight],
+            [coordinator_ expandedPrimaryToolbarHeight]);
+  EXPECT_LE([coordinator_ collapsedSecondaryToolbarHeight],
+            [coordinator_ expandedSecondaryToolbarHeight]);
+}
+
+// Tests that during page navigation or transitions where the secondary toolbar
+// view is temporarily hidden, expanded heights remain non-zero and collapsed
+// heights never exceed expanded heights when bottom omnibox is available.
+TEST_F(MainToolbarCoordinatorTest,
+       TestSecondaryToolbarHeightsWhenViewHiddenDuringNavigation) {
+  // Bottom omnibox is not supported on all devices (e.g. iPad).
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
+  [coordinator_ start];
+
+  // 1. Add an active WebState loading a webpage.
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetBrowserState(profile_.get());
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
+  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
+  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
+  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
+  test_web_state->SetLoading(true);
+  browser()->GetWebStateList()->InsertWebState(
+      std::move(test_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // 2. Set omnibox to bottom position and simulate secondary view hidden.
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+  coordinator_.secondaryToolbarViewController.view.hidden = YES;
+
+  EXPECT_GT([coordinator_ expandedSecondaryToolbarHeight], 0.0);
+  EXPECT_LE([coordinator_ collapsedSecondaryToolbarHeight],
+            [coordinator_ expandedSecondaryToolbarHeight]);
 }

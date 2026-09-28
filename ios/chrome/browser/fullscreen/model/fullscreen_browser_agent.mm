@@ -564,6 +564,7 @@ void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,
                                                    CGFloat min,
                                                    CGFloat max) {
   CHECK(updating_obscured_insets_);
+  CHECK_LE(min, max);
   if (edge == UIRectEdgeTop) {
     min_insets_.top += min;
     max_insets_.top += max;
