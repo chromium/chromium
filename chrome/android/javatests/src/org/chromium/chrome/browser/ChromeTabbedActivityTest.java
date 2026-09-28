@@ -1319,6 +1319,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @RequiresRestart("Creates an additional window and manipulates multi-window orchestrator state")
     public void testMoveTabsToOtherWindowAndMerge() {
         // 1. Launch a second ChromeTabbedActivity.
