@@ -351,11 +351,11 @@ int64_t ExtractPostId(const WebHistoryItem& item) {
   return item.HttpBody().Identifier();
 }
 
-std::string TrimURL(const std::string& url) {
+std::string TrimURL(std::string_view url) {
   if (url.length() <= kMaxURLLogChars) {
-    return url;
+    return std::string(url);
   }
-  return url.substr(0, kMaxURLLogChars - 3) + "...";
+  return base::StrCat({url.substr(0, kMaxURLLogChars - 3), "..."});
 }
 
 // Calculates transition type based on navigation parameters. Used
@@ -954,7 +954,7 @@ std::optional<WebURL> ApplyFilePathAlias(const WebURL& target) {
 #else
   std::string path = target.GetString().Utf8();
   const std::string file_prefix =
-      std::string(url::kFileScheme) + url::kStandardSchemeSeparator;
+      base::StrCat({url::kFileScheme, url::kStandardSchemeSeparator});
 #endif
   if (!base::StartsWith(path, file_prefix + alias_mapping[0],
                         base::CompareCase::SENSITIVE)) {
@@ -4283,8 +4283,8 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   } else {
     // Set process title for sub-frames and title-less frames in traces.
     GURL loading_url = GetLoadingUrl();
-    if (!loading_url.GetHost().empty() &&
-        loading_url.GetScheme() != url::kFileScheme) {
+    if (!loading_url.host().empty() &&
+        !loading_url.SchemeIs(url::kFileScheme)) {
       std::string frame_title;
       if (frame_->Parent()) {
         frame_title += "Subframe: ";
