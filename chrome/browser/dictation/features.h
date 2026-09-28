@@ -16,6 +16,11 @@ namespace dictation {
 // Enables the dictation feature.
 BASE_DECLARE_FEATURE(kDictation);
 
+// Kill switch for refocusing the target before input so sites that disable
+// editability on blur (e.g. Google Keep) accept dictation. Remove in M159 if
+// no issues are reported.
+BASE_DECLARE_FEATURE(kDictationRefocusBeforeCommit);
+
 // Runs dictation streams in "eval mode" which can be used to record inputs
 // usable for an eval.
 extern const base::FeatureParam<bool> kDictationEvalMode;

@@ -26,6 +26,7 @@
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -325,6 +326,10 @@ void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh) {
   CHECK_EQ(node->current_frame_host(), rfh);
   contents->GetPrimaryFrameTree().SetFocusedFrame(
       node, node->current_frame_host()->GetSiteInstance()->group());
+}
+
+bool IsRenderWidgetHostFocused(const RenderWidgetHost* host) {
+  return static_cast<const RenderWidgetHostImpl*>(host)->is_focused();
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)

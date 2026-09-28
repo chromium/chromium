@@ -1286,9 +1286,6 @@ std::vector<RenderWidgetHostView*> GetInputEventRouterRenderWidgetHostViews(
 // Returns the focused RenderWidgetHost.
 RenderWidgetHost* GetFocusedRenderWidgetHost(WebContents* web_contents);
 
-// Returns whether or not the RenderWidgetHost thinks it is focused.
-bool IsRenderWidgetHostFocused(const RenderWidgetHost*);
-
 // Returns the focused WebContents.
 WebContents* GetFocusedWebContents(WebContents* web_contents);
 

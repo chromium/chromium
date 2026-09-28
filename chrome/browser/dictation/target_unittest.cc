@@ -15,6 +15,8 @@
 #include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "content/public/browser/render_widget_host.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
@@ -44,6 +46,13 @@ class TestTarget : public Target {
   void set_text_preceding_selection(
       std::optional<std::u16string> text_preceding_selection) {
     text_preceding_selection_ = std::move(text_preceding_selection);
+  }
+
+  // Simulates whether the widget has native focus, e.g. false while the user
+  // is interacting with the Dictation UI. The test RenderWidgetHostView always
+  // reports that it has focus, so this can't be simulated directly.
+  void set_has_native_focus(bool has_native_focus) {
+    set_has_native_focus_for_testing(has_native_focus);
   }
 
  private:
@@ -167,6 +176,20 @@ TEST_F(DictationTargetTest, FocusChangeBeforeComposition) {
   target.SetComposition(u"A", true);
   EXPECT_EQ(target.last_sent_composition(), u"A");
   EXPECT_EQ(target.last_sent_commit(), u"");
+}
+
+TEST_F(DictationTargetTest, RichlyEditableSingleLineCommitsViaIme) {
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+
+  target.SetComposition(u"This is a test", true);
+  EXPECT_EQ(target.last_sent_composition(), u"This is a test");
+  EXPECT_EQ(target.last_sent_commit(), u"");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.CommitComposition(u"This is a test", base::NullCallback());
+  EXPECT_EQ(target.last_sent_commit(), u"This is a test");
+  EXPECT_EQ(target.last_sent_paste(), u"");
 }
 
 TEST_F(DictationTargetTest, RichlyEditableNewlinePasteFallback) {
@@ -379,6 +402,207 @@ TEST_F(DictationTargetTest, TargetPreservesTrailingPeriodForMultipleSentences) {
   EXPECT_EQ(target.last_sent_composition(),
             u"First sentence. Second sentence.");
   EXPECT_EQ(target.last_sent_commit(), u"First sentence. Second sentence.");
+}
+
+TEST_F(DictationTargetTest, TakesPageFocusToCommitAndRestoresItAfterwards) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't
+  // have native focus.
+  target.set_has_native_focus(false);
+
+  // The page must be focused while we write to it, otherwise sites which
+  // disable editability on blur will reject the commit.
+  target.CommitComposition(u"hello world", base::NullCallback());
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+  EXPECT_EQ(target.last_sent_commit(), u"hello world");
+
+  // Once the operation completes, the page is returned to its real (unfocused)
+  // state.
+  target.RunPendingCallback();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, TakesPageFocusToCommitAfterFocusedNodeChanged) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't
+  // have native focus.
+  target.set_has_native_focus(false);
+
+  target.SetComposition(u"hello", true);
+  target.RunPendingCallback();
+  target.OnFocusChanged(MakeFocusChange(2));
+
+  // Only the text that wasn't already committed by the focus change is written,
+  // and we still take page focus to write it.
+  target.CommitComposition(u"hello world", base::NullCallback());
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+  EXPECT_EQ(target.last_sent_commit(), u" world");
+  EXPECT_EQ(target.last_sent_paste(), u"");
+
+  target.RunPendingCallback();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, KeepsPageFocusStateIfWidgetHasNativeFocus) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.ManuallyCompleteCompositionCallbacks();
+  target.set_has_native_focus(true);
+
+  // The page is only blurred as a result of the widget losing native focus, so
+  // a widget that still has native focus leaves the page's focus state
+  // unchanged.
+  target.CommitComposition(u"hello", base::NullCallback());
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  target.RunPendingCallback();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, KeepsPageFocusIfWidgetRegainsNativeFocus) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't have
+  // native focus.
+  target.set_has_native_focus(false);
+
+  target.CommitComposition(u"hello", base::NullCallback());
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+
+  // Simulates the widget regaining native focus while we're committing, e.g.
+  // the user switching back to the tab.
+  target.set_has_native_focus(true);
+
+  // We shouldn't blur a widget that genuinely has focus.
+  target.RunPendingCallback();
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, TakesPageFocusForFinalComposition) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+  target.ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't
+  // have native focus.
+  target.set_has_native_focus(false);
+
+  target.SetComposition(u"hello", true);
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+  EXPECT_EQ(target.last_sent_composition(), u"hello");
+
+  target.RunPendingCallback();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, DoesNotTakePageFocusForDroppedPartials) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kDictation, {{"show_partials", "false"}});
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+
+  // Partials that aren't shown never reach the renderer, so they must not churn
+  // the page's focus state.
+  target.SetComposition(u"hello", false);
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+  EXPECT_EQ(target.last_sent_composition(), u"");
+}
+
+TEST_F(DictationTargetTest, HoldsPageFocusAcrossQueuedOperations) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
+  target.ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't
+  // have native focus.
+  target.set_has_native_focus(false);
+
+  target.SetComposition(u"hello", true);
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+
+  // Queue a commit while the composition is still in flight.
+  target.CommitComposition(u"hello world", base::NullCallback());
+
+  // Completing the composition starts the queued commit. Page focus is held
+  // across both operations rather than being toggled in between.
+  target.RunPendingCallback();
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+  EXPECT_EQ(target.last_sent_commit(), u"hello world");
+
+  target.RunPendingCallback();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, ReleasesPageFocusIfTargetDestroyed) {
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  auto target = std::make_unique<TestTarget>(
+      TargetDetails(target_id, /*richly_editable=*/true));
+  target->ManuallyCompleteCompositionCallbacks();
+  // The user is interacting with the Dictation UI, so the widget doesn't have
+  // native focus.
+  target->set_has_native_focus(false);
+
+  target->CommitComposition(u"hello", base::NullCallback());
+  EXPECT_TRUE(content::IsRenderWidgetHostFocused(rwh));
+
+  // The target may be destroyed before the operation completes.
+  target.reset();
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+}
+
+TEST_F(DictationTargetTest, DoesNotTakePageFocusWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDictationRefocusBeforeCommit);
+
+  content::RenderWidgetHost* rwh = main_rfh()->GetRenderWidgetHost();
+  rwh->Blur();
+  ASSERT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/true));
+
+  target.SetComposition(u"hello", true);
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
+
+  target.CommitComposition(u"hello world", base::NullCallback());
+  EXPECT_FALSE(content::IsRenderWidgetHostFocused(rwh));
 }
 
 }  // namespace

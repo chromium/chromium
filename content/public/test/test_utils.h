@@ -37,6 +37,7 @@ class CommandLine;
 namespace content {
 
 class RenderFrameHost;
+class RenderWidgetHost;
 
 // Create an blink::mojom::FetchAPIRequestPtr with given fields.
 blink::mojom::FetchAPIRequestPtr CreateFetchAPIRequest(
@@ -158,6 +159,9 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents);
 // Sets the focused frame of `web_contents` to the `rfh` for tests that rely on
 // the focused frame not being null.
 void FocusWebContentsOnFrame(WebContents* web_contents, RenderFrameHost* rfh);
+
+// Returns whether or not the RenderWidgetHost thinks it is focused.
+bool IsRenderWidgetHostFocused(const RenderWidgetHost* host);
 
 // Helper class to Run and Quit the message loop. Run and Quit can only happen
 // once per instance. Make a new instance for each use. Calling Quit after Run
