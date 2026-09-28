@@ -30,13 +30,14 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -82,6 +83,12 @@ constexpr char kApnLanguage[] = "language";
 constexpr char kApnAttach[] = "attach";
 constexpr base::TimeDelta kMigrationAge = base::Days(5);
 constexpr char kMigrationAgeASCII[] = "5";
+constexpr AccountId::Literal kPrimaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("account@test.com",
+                                            GaiaId::Literal("fakegaia"));
+constexpr AccountId::Literal kSecondaryAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("account2@test.com",
+                                            GaiaId::Literal("fakegaia2"));
 }  // namespace
 
 class TestNetworkMetadataObserver : public NetworkMetadataObserver {
@@ -120,7 +127,14 @@ class TestNetworkMetadataObserver : public NetworkMetadataObserver {
 
 class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
  public:
-  NetworkMetadataStoreNoLoginTest() {
+  NetworkMetadataStoreNoLoginTest() = default;
+  NetworkMetadataStoreNoLoginTest(const NetworkMetadataStoreNoLoginTest&) =
+      delete;
+  NetworkMetadataStoreNoLoginTest& operator=(
+      const NetworkMetadataStoreNoLoginTest&) = delete;
+  ~NetworkMetadataStoreNoLoginTest() override = default;
+
+  void SetUp() override {
     LoginState::Initialize();
     network_configuration_handler_ =
         NetworkConfigurationHandler::InitializeForTest(
@@ -152,50 +166,33 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
     NetworkMetadataStore::RegisterPrefs(user_prefs_->registry());
     NetworkMetadataStore::RegisterPrefs(device_prefs_->registry());
 
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
-    auto account_id =
-        AccountId::FromUserEmailGaiaId("account@test.com", GaiaId("fakegaia"));
-    primary_user_ = fake_user_manager_->AddGaiaUser(
-        account_id, user_manager::UserType::kRegular);
-    auto second_account_id = AccountId::FromUserEmailGaiaId(
-        "account2@test.com", GaiaId("fakegaia2"));
-    secondary_user_ = fake_user_manager_->AddGaiaUser(
-        second_account_id, user_manager::UserType::kRegular);
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kPrimaryAccountId));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kSecondaryAccountId));
 
-    metadata_store_ = std::make_unique<NetworkMetadataStore>(
-        network_configuration_handler_.get(), network_connection_handler_.get(),
-        network_state_handler_, managed_network_configuration_handler_.get(),
-        user_prefs_.get(), device_prefs_.get(),
-        /*is_enterprise_enrolled=*/false);
     metadata_observer_ = std::make_unique<TestNetworkMetadataObserver>();
-    metadata_store_->AddObserver(metadata_observer_.get());
+    SetIsEnterpriseEnrolled(false);
   }
 
-  NetworkMetadataStoreNoLoginTest(const NetworkMetadataStoreNoLoginTest&) =
-      delete;
-  NetworkMetadataStoreNoLoginTest& operator=(
-      const NetworkMetadataStoreNoLoginTest&) = delete;
-
-  ~NetworkMetadataStoreNoLoginTest() override {
+  void TearDown() override {
     network_state_handler_ = nullptr;
     metadata_store_.reset();
     metadata_observer_.reset();
+    user_session_test_environment_.reset();
     user_prefs_.reset();
     device_prefs_.reset();
     managed_network_configuration_handler_.reset();
     network_profile_handler_.reset();
     network_device_handler_.reset();
     network_connection_handler_.reset();
-    fake_user_manager_.Reset();
     network_configuration_handler_.reset();
     NetworkHandler::Shutdown();
     LoginState::Shutdown();
-  }
-
-  void SetUp() override {
-    SetIsEnterpriseEnrolled(false);
   }
 
   // This creates a new NetworkMetadataStore object.
@@ -207,11 +204,8 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
     metadata_store_->AddObserver(metadata_observer_.get());
   }
 
-  void LoginUser(const user_manager::User* user) {
-    fake_user_manager_->UserLoggedIn(
-        user->GetAccountId(),
-        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
-    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
+  void LogIn(const AccountId& account_id) {
+    user_session_test_environment_->LogIn(account_id);
   }
 
   std::string ConfigureService(const std::string& shill_json_string) {
@@ -234,9 +228,6 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
   }
   NetworkStateHandler* network_state_handler() {
     return network_state_handler_;
-  }
-  user_manager::FakeUserManager* fake_user_manager() {
-    return fake_user_manager_.Get();
   }
 
   base::test::SingleThreadTaskEnvironment* task_environment() {
@@ -276,8 +267,6 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
     AssertCustomApnListFirstValue();
   }
 
-  raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
-  raw_ptr<const user_manager::User, DanglingUntriaged> secondary_user_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
@@ -322,17 +311,17 @@ class NetworkMetadataStoreNoLoginTest : public ::testing::Test {
       managed_network_configuration_handler_;
   std::unique_ptr<TestingPrefServiceSimple> device_prefs_;
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> user_prefs_;
-  std::unique_ptr<NetworkMetadataStore> metadata_store_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<TestNetworkMetadataObserver> metadata_observer_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<NetworkMetadataStore> metadata_store_;
 };
 
 class NetworkMetadataStoreTest : public NetworkMetadataStoreNoLoginTest {
  public:
   void SetUp() override {
-    NetworkMetadataStoreNoLoginTest::SetUp();
-    LoginUser(primary_user_);
+    ASSERT_NO_FATAL_FAILURE(NetworkMetadataStoreNoLoginTest::SetUp());
+    LogIn(kPrimaryAccountId);
   }
 };
 
@@ -442,7 +431,9 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
   ASSERT_FALSE(metadata_store()->GetIsFieldExternallyModified(
       kGuid, shill::kProxyConfigProperty));
 
-  LoginUser(secondary_user_);
+  LogIn(kSecondaryAccountId);
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      kSecondaryAccountId);
 
   auto other_properties =
       base::DictValue()
@@ -457,7 +448,8 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
   ASSERT_TRUE(metadata_store()->GetIsFieldExternallyModified(
       kGuid, shill::kProxyConfigProperty));
 
-  LoginUser(primary_user_);
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      kPrimaryAccountId);
   auto owner_properties =
       base::DictValue().Set(shill::kProxyConfigProperty, "new_proxy_details");
 
@@ -477,7 +469,9 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
   ASSERT_EQ(0, metadata_observer()->GetNumberOfUpdates(kGuid));
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  LoginUser(secondary_user_);
+  LogIn(kSecondaryAccountId);
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      kSecondaryAccountId);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
@@ -492,7 +486,8 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
 
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  LoginUser(primary_user_);
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      kPrimaryAccountId);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
@@ -518,58 +513,58 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationRemoved) {
 }
 
 TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks) {
-  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
+  ASSERT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
-  LoginUser(primary_user_);
+  LogIn(kPrimaryAccountId);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  fake_user_manager()->SetIsCurrentUserNew(true);
-  fake_user_manager()->SetOwnerId(primary_user_->GetAccountId());
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetOwnerId(kPrimaryAccountId);
   metadata_store()->LoggedInStateChanged();
   ASSERT_TRUE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
 TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_EnterpriseEnrolled) {
   SetIsEnterpriseEnrolled(true);
-  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
+  ASSERT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
-  LoginUser(primary_user_);
+  LogIn(kPrimaryAccountId);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  fake_user_manager()->SetIsCurrentUserNew(true);
-  fake_user_manager()->SetOwnerId(primary_user_->GetAccountId());
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
+  user_manager::UserManager::Get()->SetOwnerId(kPrimaryAccountId);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
 TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_NotOwner) {
-  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
+  ASSERT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
-  LoginUser(primary_user_);
+  LogIn(kPrimaryAccountId);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  fake_user_manager()->SetIsCurrentUserNew(true);
-  fake_user_manager()->ResetOwnerId();
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
+  ASSERT_FALSE(user_manager::UserManager::Get()->IsCurrentUserOwner());
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
 TEST_F(NetworkMetadataStoreNoLoginTest, OwnOobeNetworks_NotFirstLogin) {
-  ASSERT_EQ(fake_user_manager()->GetLoggedInUsers().size(), 0u);
+  ASSERT_EQ(user_manager::UserManager::Get()->GetLoggedInUsers().size(), 0u);
   ConfigureService(kConfigWifi1Shared);
   base::RunLoop().RunUntilIdle();
 
-  LoginUser(primary_user_);
+  LogIn(kPrimaryAccountId);
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  fake_user_manager()->SetIsCurrentUserNew(false);
-  fake_user_manager()->SetOwnerId(primary_user_->GetAccountId());
+  user_manager::UserManager::Get()->SetIsCurrentUserNew(false);
+  user_manager::UserManager::Get()->SetOwnerId(kPrimaryAccountId);
   metadata_store()->LoggedInStateChanged();
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
