@@ -23,6 +23,10 @@
 <div id="target2"></div>
 
 <script>
+// Force style resolution so that lazy property parsing runs for the rules above
+// (https://crbug.com/560011757).
+internals.updateStyleAndReturnAffectedElementCount();
+
 test(function() {
 	assert_true(internals.isCSSPropertyUseCounted(document, "color"));
 	assert_true(internals.isCSSPropertyUseCounted(document, "background-color"));

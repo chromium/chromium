@@ -1521,6 +1521,10 @@ public final class ProductionSupportedFlagList {
                 "WebRTCBoostMediaIOThreads",
                 "Boosts the thread types of IO threads in the video capture and network utility"
                         + " processes on the WebRTC media path."),
+        Flag.baseFeature(
+                BlinkFeatures.LAZY_PARSE_INLINE_STYLE_SHEETS,
+                "Defers declaration block parsing in inline stylesheets until rules match or"
+                        + " are queried."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
