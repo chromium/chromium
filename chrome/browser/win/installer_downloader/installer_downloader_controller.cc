@@ -183,7 +183,8 @@ void InstallerDownloaderController::RegisterInfoBar() {
               base::BindRepeating([](BrowserWindowInterface* browser) {
                 return browser->GetType() ==
                            BrowserWindowInterface::TYPE_NORMAL &&
-                       !browser->GetProfile()->IsGuestSession();
+                       InstallerDownloaderController::IsEligibleProfile(
+                           *browser->GetProfile());
               }))
           .SetExpireOnNavigation(false)
           // InstallerDownloaderController is registered as a global feature and
@@ -275,16 +276,17 @@ void InstallerDownloaderController::OnRemovedBrowserWindow(
   bwi_and_active_tab_tracker_map_.erase(bwi);
 }
 
+// static
+bool InstallerDownloaderController::IsEligibleProfile(const Profile& profile) {
+  return profile.IsRegularProfile();
+}
+
 bool InstallerDownloaderController::ShouldShowInfobarForCurrentProfile() {
   // The infobar should not be shown on guest profiles.
   BrowserWindowInterface* last_active_window =
       window_tracker_.get_last_active_window();
-  if (!last_active_window ||
-      last_active_window->GetProfile()->IsGuestSession()) {
-    return false;
-  }
-
-  return true;
+  return last_active_window &&
+         IsEligibleProfile(*last_active_window->GetProfile());
 }
 
 void InstallerDownloaderController::MaybeShowInfoBar() {
@@ -462,6 +464,13 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
     return;
   }
 
+  // The active tab can differ from the one the infobar was accepted in. Never
+  // download for, or keep alive, a profile the infobar is not shown for.
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  if (!IsEligibleProfile(*profile)) {
+    return;
+  }
+
   std::optional<GURL> installer_url =
       BuildInstallerDownloadUrl(is_metrics_enabled_callback_.Run());
 
@@ -470,7 +479,6 @@ void InstallerDownloaderController::OnDownloadRequestAccepted(
   }
 
   // Keep the profile alive until the download completes.
-  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   auto keep_alive = std::make_unique<ScopedProfileKeepAlive>(
       profile, ProfileKeepAliveOrigin::kDownloadInProgress);
 

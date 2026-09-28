@@ -15,8 +15,9 @@
 #include "chrome/browser/win/installer_downloader/installer_downloader_active_browser_window_tracker.h"
 #include "components/infobars/core/infobar_manager.h"
 
-class ScopedProfileKeepAlive;
 class BrowserWindowInterface;
+class Profile;
+class ScopedProfileKeepAlive;
 
 namespace base {
 class FilePath;
@@ -80,9 +81,12 @@ class InstallerDownloaderController final
 
   ~InstallerDownloaderController() override;
 
-  // Determines whether the installer downloader infobar should be shown for the
-  // profile associated with the active WebContents. The infobar is not shown
-  // for guest profiles or if there is no active WebContents.
+  // Whether the infobar may be shown to, and download for, `profile`. Only
+  // regular profile qualify, so not Guest and not off-the-record.
+  static bool IsEligibleProfile(const Profile& profile);
+
+  // Whether the infobar may be shown in the last active window, per
+  // IsEligibleProfile().
   bool ShouldShowInfobarForCurrentProfile();
 
   // Called early during the browser startup and will show the installer

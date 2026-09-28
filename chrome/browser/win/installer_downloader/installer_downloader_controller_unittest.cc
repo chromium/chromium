@@ -421,6 +421,32 @@ TEST_F(InstallerDownloaderControllerTest, NoInfobarOnGuestProfile) {
   controller_->MaybeShowInfoBar();
 }
 
+TEST_F(InstallerDownloaderControllerTest, OnlyRegularProfilesAreEligible) {
+  EXPECT_TRUE(InstallerDownloaderController::IsEligibleProfile(profile_));
+  EXPECT_FALSE(InstallerDownloaderController::IsEligibleProfile(
+      *profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+
+  std::unique_ptr<TestingProfile> guest =
+      TestingProfile::Builder().SetGuestSession().Build();
+  EXPECT_FALSE(InstallerDownloaderController::IsEligibleProfile(*guest));
+}
+
+TEST_F(InstallerDownloaderControllerTest,
+       AcceptWithIncognitoTabActiveStartsNoDownload) {
+  content::WebContents* incognito_contents =
+      web_contents_factory_.CreateWebContents(
+          profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  controller_->SetActiveWebContentsCallbackForTesting(
+      base::BindLambdaForTesting(
+          [incognito_contents]() { return incognito_contents; }));
+
+  // The strict mocks fail the test if the URL is built or a download starts.
+  EXPECT_CALL(*mock_model_, StartDownload(_, _, _, _)).Times(0);
+
+  controller_->OnDownloadRequestAccepted(
+      base::FilePath(FILE_PATH_LITERAL("C:\\foo")));
+}
+
 TEST_F(InstallerDownloaderControllerTest, SkipsWhenActiveBrowserHasNoTabs) {
   controller_->SetActiveWebContentsCallbackForTesting(
       base::BindLambdaForTesting(
