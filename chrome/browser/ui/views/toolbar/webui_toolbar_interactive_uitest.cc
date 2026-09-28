@@ -3329,15 +3329,30 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 #if BUILDFLAG(IS_CHROMEOS)
 // Test that on ChromeOS, the avatar button on the overflow menu is enabled
 // in an Incognito profile.
-// TODO(crbug.com/565701478): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
-                       DISABLED_OverflowMenuAvatarButtonChromeOSEnabled) {
+                       OverflowMenuAvatarButtonChromeOSEnabled) {
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_browser);
 
   // Wait until avatar button is visible initially.
   ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}, {},
                                      incognito_browser));
+
+  // Wait until the WebUI knows the forward button should be disabled. In a
+  // newly created window, the WebUI may initially think the forward button is
+  // enabled, before it receives an update disabling it.
+  // TODO(crbug.com/566779862): Remove this once the WebUI toolbar gets the
+  // correct initial state for the forward button.
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return content::EvalJs(GetWebUIWebContents(incognito_browser), R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const forwardButton = app.shadowRoot.querySelector('#forward');
+            return forwardButton.state.enabled === false;
+          })()
+        )")
+        .ExtractBool();
+  }));
 
   // Force all overflowable elements into the overflow menu.
   gfx::Rect window_bounds = incognito_browser->GetWindow()->GetBounds();
