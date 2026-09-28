@@ -64,23 +64,51 @@ class Time {
     this.millisecond_ = millisecond;
   };
 
-  next = (columnType) => {
+  /**
+   * Advance to the next value offered by the given column, wrapping around at
+   * the end of the column's range.
+   * @param {TimeColumnType} columnType
+   * @param {number} granularity Distance between two consecutive values of the
+   *     column, in the column's own units.
+   * @param {boolean} hasAMPM
+   */
+  next = (columnType, granularity, hasAMPM) => {
+    const unitsPerColumn = Time.unitsPerColumn(columnType, hasAMPM);
     switch (columnType) {
       case TimeColumnType.HOUR:
-        this.hour_ = (this.hour_ + 1) % Time.HOUR_VALUES;
+        this.hour_ = (this.hour_ + granularity) % unitsPerColumn;
         break;
       case TimeColumnType.MINUTE:
-        this.minute_ = (this.minute_ + 1) % Time.MINUTE_VALUES;
+        this.minute_ = (this.minute_ + granularity) % unitsPerColumn;
         break;
       case TimeColumnType.SECOND:
-        this.second_ = (this.second_ + 1) % Time.SECOND_VALUES;
+        this.second_ = (this.second_ + granularity) % unitsPerColumn;
         break;
       case TimeColumnType.MILLISECOND:
-        // TODO(https://crbug.com/1008294): Use increments of 1 instead of 100 for milliseconds.
-        // support 100, 200, 300... for milliseconds
-        this.millisecond_ =
-            (Math.round(this.millisecond_ / 100) * 100 + 100) % 1000;
+        this.millisecond_ = (this.millisecond_ + granularity) % unitsPerColumn;
         break;
+    }
+  };
+
+  /**
+   * The value of the given column in the column's own units, without the
+   * localization and 12-hour clock adjustments that value() applies.  Hours
+   * are folded into the range of the column, so 14:00 reports hour 2 on a
+   * 12-hour clock.
+   * @param {TimeColumnType} columnType
+   * @param {boolean} hasAMPM
+   * @return {number}
+   */
+  unitValue = (columnType, hasAMPM) => {
+    switch (columnType) {
+      case TimeColumnType.HOUR:
+        return this.hour_ % Time.unitsPerColumn(columnType, hasAMPM);
+      case TimeColumnType.MINUTE:
+        return this.minute_;
+      case TimeColumnType.SECOND:
+        return this.second_;
+      case TimeColumnType.MILLISECOND:
+        return this.millisecond_;
     }
   };
 
@@ -144,17 +172,141 @@ class Time {
         currentDate.getSeconds(), currentDate.getMilliseconds());
   };
 
-  static numberOfValues = (columnType, hasAMPM) => {
+  /**
+   * Number of the column's own units that the column spans, e.g. 60 for the
+   * minute column.  This is not the number of cells in the column, which also
+   * depends on the granularity imposed by the step attribute.
+   * @param {TimeColumnType} columnType
+   * @param {boolean} hasAMPM
+   * @return {number}
+   */
+  static unitsPerColumn = (columnType, hasAMPM) => {
     switch (columnType) {
       case TimeColumnType.HOUR:
-        return hasAMPM ? Time.HOUR_VALUES_AMPM : Time.HOUR_VALUES;
+        return hasAMPM ? Time.HOUR_UNITS_AMPM : Time.HOUR_UNITS;
       case TimeColumnType.MINUTE:
-        return Time.MINUTE_VALUES;
+        return Time.MINUTE_UNITS;
       case TimeColumnType.SECOND:
-        return Time.SECOND_VALUES;
+        return Time.SECOND_UNITS;
       case TimeColumnType.MILLISECOND:
-        return Time.MILLISECOND_VALUES;
+        return Time.MILLISECOND_UNITS;
     }
+  };
+
+  /**
+   * Length of one of the column's own units, in milliseconds.
+   * @param {TimeColumnType} columnType
+   * @return {number}
+   */
+  static millisecondsPerUnit = (columnType) => {
+    switch (columnType) {
+      case TimeColumnType.HOUR:
+        return 60 * 60 * 1000;
+      case TimeColumnType.MINUTE:
+        return 60 * 1000;
+      case TimeColumnType.SECOND:
+        return 1000;
+      case TimeColumnType.MILLISECOND:
+        return 1;
+    }
+  };
+
+  /**
+   * The granularity that the step attribute imposes on the given column,
+   * expressed in the column's own units, along with the offset that valid
+   * values are aligned to.  A granularity of one means that the column offers
+   * every one of its values.
+   *
+   * This mirrors DateTimeEditBuilder::CreateStep so that the picker offers
+   * exactly the values that stepping the in-page control's fields with the
+   * up and down arrow keys produces.
+   *
+   * @param {TimeColumnType} columnType
+   * @param {boolean} hasAMPM
+   * @return {{granularity: number, stepBase: number}}
+   */
+  static granularityForColumn = (columnType, hasAMPM) => {
+    const defaultGranularity = Time.defaultGranularity(columnType);
+    // Killswitch.  Without it each column falls back to the granularity it
+    // used before the picker took step into account: one cell per value, and
+    // one cell per 100ms for the millisecond column.
+    if (!global.params.timePickerHonorsStep) {
+      return {granularity: defaultGranularity, stepBase: 0};
+    }
+    const millisecondsPerUnit = Time.millisecondsPerUnit(columnType);
+    const unitsPerColumn = Time.unitsPerColumn(columnType, hasAMPM);
+    const millisecondsPerColumn = millisecondsPerUnit * unitsPerColumn;
+    let stepInMilliseconds = Number(global.params.step);
+    if (!Number.isFinite(stepInMilliseconds) || stepInMilliseconds <= 0) {
+      return {granularity: defaultGranularity, stepBase: 0};
+    }
+
+    // A step that spans whole columns leaves this column with a single value.
+    if (stepInMilliseconds % millisecondsPerColumn === 0) {
+      stepInMilliseconds = millisecondsPerColumn;
+    }
+    // A step that does not divide the column evenly, or that is not a whole
+    // number of the column's units, cannot be expressed as a granularity for
+    // this column, so the column keeps offering the values it offers by
+    // default.
+    if (millisecondsPerColumn % stepInMilliseconds !== 0 ||
+        stepInMilliseconds % millisecondsPerUnit !== 0) {
+      return {granularity: defaultGranularity, stepBase: 0};
+    }
+
+    const stepBaseInMilliseconds = Number(global.params.stepBase);
+    const stepBase = Number.isFinite(stepBaseInMilliseconds) ?
+        Time.wrapToColumn(
+            Math.floor(stepBaseInMilliseconds / millisecondsPerUnit),
+            unitsPerColumn) :
+        0;
+    return {
+      granularity: Time.coarsenGranularity(
+          columnType, stepInMilliseconds / millisecondsPerUnit),
+      stepBase: stepBase,
+    };
+  };
+
+  /**
+   * The granularity a column uses when step does not constrain it.  Every
+   * column offers each of its values, except the millisecond column, which
+   * would need a thousand cells to do so.
+   * @param {TimeColumnType} columnType
+   * @return {number}
+   */
+  static defaultGranularity = (columnType) => {
+    return columnType === TimeColumnType.MILLISECOND ?
+        Time.MILLISECOND_GRANULARITY :
+        1;
+  };
+
+  /**
+   * One cell per millisecond that step allows is far more than the millisecond
+   * column can usefully show, so round a fine granularity up to the smallest
+   * granularity the column is willing to display.  The candidates all divide
+   * the column evenly, and only a multiple of the given granularity is chosen,
+   * so every cell remains a value that step allows.
+   * @param {TimeColumnType} columnType
+   * @param {number} granularity
+   * @return {number}
+   */
+  static coarsenGranularity = (columnType, granularity) => {
+    if (columnType !== TimeColumnType.MILLISECOND ||
+        granularity >= Time.MILLISECOND_GRANULARITY) {
+      return granularity;
+    }
+    return Time.MILLISECOND_GRANULARITIES.find(
+               (candidate) => candidate % granularity === 0) ||
+        granularity;
+  };
+
+  /**
+   * @param {number} value
+   * @param {number} unitsPerColumn
+   * @return {number} value folded into the range [0, unitsPerColumn).
+   */
+  static wrapToColumn = (value, unitsPerColumn) => {
+    return ((value % unitsPerColumn) + unitsPerColumn) % unitsPerColumn;
   };
 }
 // See platform/date_components.h.
@@ -162,12 +314,17 @@ Time.Minimum = new Time(0, 0, 0, 0);
 Time.Maximum = new Time(23, 59, 59, 999);
 Time.Maximum_Hour_AMPM = 12;
 Time.ISOStringRegExp = /^(\d+):(\d+):?(\d*).?(\d*)/;
-// Number of values for each column.
-Time.HOUR_VALUES = 24;
-Time.HOUR_VALUES_AMPM = 12;
-Time.MINUTE_VALUES = 60;
-Time.SECOND_VALUES = 60;
-Time.MILLISECOND_VALUES = 10;
+// Number of the column's own units that each column spans.
+Time.HOUR_UNITS = 24;
+Time.HOUR_UNITS_AMPM = 12;
+Time.MINUTE_UNITS = 60;
+Time.SECOND_UNITS = 60;
+Time.MILLISECOND_UNITS = 1000;
+// The finest granularity the millisecond column will display, and the
+// granularities it will fall back on, which are the divisors of
+// MILLISECOND_UNITS that are at least that coarse.
+Time.MILLISECOND_GRANULARITY = 100;
+Time.MILLISECOND_GRANULARITIES = [100, 125, 200, 250, 500, 1000];
 
 class DateTime {
   constructor(date, time) {
@@ -458,7 +615,9 @@ class TimeColumn extends HTMLUListElement {
       this.createAndInitializeAMPMCells_(timePicker);
     } else {
       this.createAndInitializeCells_(timePicker);
-      this.setupScrollHandler_();
+      if (this.isLooping_) {
+        this.setupScrollHandler_();
+      }
     }
 
     this.addEventListener('click', this.onClick_);
@@ -466,48 +625,64 @@ class TimeColumn extends HTMLUListElement {
   };
 
   createAndInitializeCells_ = (timePicker) => {
-    const totalCells = Time.numberOfValues(this.columnType_, timePicker.hasAMPM);
+    const hasAMPM = timePicker.hasAMPM;
     const currentTime = timePicker.initialSelectedTime.clone();
+    const unitsPerColumn = Time.unitsPerColumn(this.columnType_, hasAMPM);
+    const {granularity, stepBase} =
+        Time.granularityForColumn(this.columnType_, hasAMPM);
+    const valuesPerColumn = unitsPerColumn / granularity;
 
-    // The granularity of millisecond cells is once cell per 100ms.
-    // But, we want to have a cell with the exact millisecond value of the
-    // in-page control, so we'll replace the millisecond cell closest to that
-    // value with the exact value.  We do that by figuring out here which of
-    // the cells will be the closest one here, and then matching against that
-    // one in the subsequent loop.
-    let roundedMillisecondValue = 0;
-    if (this.columnType_ === TimeColumnType.MILLISECOND) {
-      const millisecondValue =
-          currentTime.value(TimeColumnType.MILLISECOND, timePicker.hasAMPM);
-      roundedMillisecondValue =
-          (100 * Math.floor((Number(millisecondValue) + 50.0) / 100.0)) % 1000;
-    }
+    // The column shows each of its values once.  Scrolling the column loops by
+    // rotating those cells, which only works when there are enough of them to
+    // cover the visible area plus one offscreen cell above and below it.  A
+    // coarse step can leave the column with fewer values than that, and such a
+    // column scrolls as an ordinary short list instead.
+    const totalCells = valuesPerColumn;
+    this.isLooping_ = totalCells >= TimeColumn.MINIMUM_LOOPING_CELLS;
 
-    const time = new Time(1, 1, 1, 100);
+    // The first cell holds the first value at or after the start of the
+    // column's range, so a column offering every value still starts at one.
+    const firstCellValue = Time.wrapToColumn(
+        stepBase + Math.ceil((1 - stepBase) / granularity) * granularity,
+        unitsPerColumn);
+
+    // The value of the in-page control is not necessarily one of the values
+    // that this column offers, either because it does not match step or
+    // because the millisecond column has a granularity of its own.  Keep it
+    // reachable by giving the closest cell the exact value of the control
+    // instead of the value it would otherwise hold.
+    const currentValue = currentTime.unitValue(this.columnType_, hasAMPM);
+    const nearestValue = Time.wrapToColumn(
+        stepBase +
+            Math.round((currentValue - stepBase) / granularity) * granularity,
+        unitsPerColumn);
+
+    const time = new Time(
+        this.columnType_ === TimeColumnType.HOUR ? firstCellValue : 1,
+        this.columnType_ === TimeColumnType.MINUTE ? firstCellValue : 1,
+        this.columnType_ === TimeColumnType.SECOND ? firstCellValue : 1,
+        this.columnType_ === TimeColumnType.MILLISECOND ? firstCellValue : 100);
     const cells = [];
     let initialCellIndex = -1;
     for (let i = 0; i < totalCells; i++) {
-      let value = time.value(this.columnType_, timePicker.hasAMPM);
+      let value = time.value(this.columnType_, hasAMPM);
 
-      if (this.columnType_ === TimeColumnType.MILLISECOND &&
-          Number(value) === roundedMillisecondValue) {
-        // Set this cell to the exact ms value of the in-page control
-        value =
-            currentTime.value(TimeColumnType.MILLISECOND, timePicker.hasAMPM);
-        initialCellIndex = i;
-      } else if (
-          time.value(this.columnType_, timePicker.hasAMPM) ===
-          currentTime.value(this.columnType_, timePicker.hasAMPM)) {
-        initialCellIndex = i;
+      if (time.unitValue(this.columnType_, hasAMPM) === nearestValue) {
+        value = currentTime.value(this.columnType_, hasAMPM);
+        if (initialCellIndex < 0) {
+          initialCellIndex = i;
+        }
       }
 
       const timeCell = new TimeCell(value, localizeNumber(value));
       cells.push(timeCell);
 
       timeCell.initialOffsetTop = TimeColumn.CELL_HEIGHT * i;
-      timeCell.style.top = `${TimeColumn.SCROLL_OFFSET}px`;
+      if (this.isLooping_) {
+        timeCell.style.top = `${TimeColumn.SCROLL_OFFSET}px`;
+      }
 
-      time.next(this.columnType_);
+      time.next(this.columnType_, granularity, hasAMPM);
     }
     this.selectedTimeCell = this.initialTimeCell_ = cells[initialCellIndex];
     this.cellsInLayoutOrder = cells;
@@ -591,6 +766,12 @@ class TimeColumn extends HTMLUListElement {
   static SCROLL_OFFSET = 100000;
   static CELL_HEIGHT = 36;  // Height of one TimeCell, including border
 
+  // A column is 252px tall, so seven cells are visible at a time.  Rotating
+  // cells to scroll the column relies on there always being a cell just
+  // outside the visible area in both directions, so a column needs at least
+  // this many cells before it can loop.
+  static MINIMUM_LOOPING_CELLS = 10;
+
   // Using position:absolute for TimeCells seems like the natural choice,
   // but absolutely positioned children don't cause the TimeColumn scroll
   // container to expand to hold the cells, so they fall off the end of
@@ -611,6 +792,9 @@ class TimeColumn extends HTMLUListElement {
   // it is invisible to the user -- but it ensures that the cells will
   // always be visible wherever the user scrolls.
   rotateCells_ = (topToBottom) => {
+    if (!this.isLooping_) {
+      return;
+    }
     if (topToBottom) {
       const topCell = this.cellsInLayoutOrder.shift();
       const bottomCell =
@@ -723,12 +907,19 @@ class TimeColumn extends HTMLUListElement {
     }
   };
 
-  scrollToSelectedCell = (cell) => {
-    while(this.cellsInLayoutOrder[1] != this.selectedTimeCell) {
-      this.rotateCells_(/*topToBottom*/true);
-    }
-    this.scrollTop = this.selectedTimeCell.offsetTop;
-  }
+  scrollToSelectedCell =
+      (cell) => {
+        if (this.isLooping_) {
+          while (this.cellsInLayoutOrder[1] != this.selectedTimeCell) {
+            this.rotateCells_(/*topToBottom*/ true);
+          }
+        }
+        // A column that does not loop still holds more cells than fit in the
+        // visible area when it has eight or nine of them, so it scrolls to
+        // the selected cell as well.  A column whose cells all fit does not
+        // scroll, and this leaves it where it is.
+        this.scrollTop = this.selectedTimeCell.offsetTop;
+      }
 
   get selectedTimeCell() {
     return this.selectedTimeCell_;

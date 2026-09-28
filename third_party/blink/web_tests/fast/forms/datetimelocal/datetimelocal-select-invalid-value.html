@@ -18,7 +18,7 @@ let t = async_test('Test select invalid value in datetime-local popup');
 function selectValue() {
   let dateTimeElement = document.getElementById("datetime-local");
   dateTimeElement.addEventListener("change", t.step_func_done(() => {
-    assert_equals(dateTimeElement.value, "2019-02-27T17:03:53");
+    assert_equals(dateTimeElement.value, "2019-02-27T17:03:50");
     // the validity should be false since seconds are not supported.
     assert_false(dateTimeElement.validity.valid);
   }));

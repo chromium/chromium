@@ -6492,6 +6492,12 @@
       status: "stable",
     },
     {
+      // Killswitch for the time picker offering only the values that the step
+      // attribute allows.
+      name: "TimePickerHonorsStep",
+      status: "stable",
+    },
+    {
       name: "TimerThrottlingForBackgroundTabs",
       public: true,
       status: "stable",

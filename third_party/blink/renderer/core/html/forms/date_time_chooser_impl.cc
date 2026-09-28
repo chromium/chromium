@@ -204,6 +204,8 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
   AddProperty("hasAMPM", parameters_->has_ampm, data);
   AddProperty("hasSecond", parameters_->has_second, data);
   AddProperty("hasMillisecond", parameters_->has_millisecond, data);
+  AddProperty("timePickerHonorsStep",
+              RuntimeEnabledFeatures::TimePickerHonorsStepEnabled(), data);
   if (parameters_->suggestions.size()) {
     Vector<String> suggestion_values;
     Vector<String> localized_suggestion_values;

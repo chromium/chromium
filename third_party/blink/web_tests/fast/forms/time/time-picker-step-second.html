@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<input type="time" id="time" value="14:15:30" step="15">
+<script>
+
+// Time columns are laid out as hour, minute, second and, on a 12-hour clock,
+// AM/PM.
+const MINUTE_COLUMN = 1;
+const SECOND_COLUMN = 2;
+
+function columnValues(columnIndex) {
+  const columns = internals.pagePopupWindow.document.querySelectorAll(
+      '.time-column');
+  return Array.from(columns[columnIndex].children)
+      .map((cell) => Number(cell.value));
+}
+
+promise_test(async () => {
+  const input = document.getElementById('time');
+  await openPicker(input);
+
+  const seconds = columnValues(SECOND_COLUMN);
+  assert_greater_than(seconds.length, 0, 'the second column has cells');
+  for (const second of seconds) {
+    assert_equals(second % 15, 0, `second ${second} is a multiple of the step`);
+  }
+  assert_array_equals(
+      [...new Set(seconds)].sort((a, b) => a - b), [0, 15, 30, 45],
+      'the second column offers every second that matches the step');
+
+  // A step of less than a minute leaves the minute column at full granularity.
+  assert_equals(
+      columnValues(MINUTE_COLUMN).length, 60, 'the minute column is unchanged');
+
+  assert_equals(input.value, '14:15:30');
+}, 'The time picker offers only the seconds that the step attribute allows.');
+</script>

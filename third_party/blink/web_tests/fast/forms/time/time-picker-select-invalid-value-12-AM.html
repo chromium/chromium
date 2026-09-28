@@ -11,14 +11,16 @@
 <input type="time" id="time" value="22:15" step="3">
 <script>
 
-let t = async_test('Test select invalid 12AM value in time popup');
+let t = async_test('Test select 12AM value in time popup with a step');
 
 function selectValue() {
   let timeElement = document.getElementById("time");
   timeElement.addEventListener("change", t.step_func_done(() => {
-    assert_equals(timeElement.value, "00:17:02");
-    assert_true(timeElement.validity.stepMismatch);
-    assert_false(timeElement.validity.valid);
+    // The second column only offers seconds that match the step, so the
+    // selected value matches it.
+    assert_equals(timeElement.value, "00:17:06");
+    assert_false(timeElement.validity.stepMismatch);
+    assert_true(timeElement.validity.valid);
   }));
   clickTimeCellAt(0, 2);
   clickTimeCellAt(1, 2);
