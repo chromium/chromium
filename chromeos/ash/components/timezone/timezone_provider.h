@@ -39,6 +39,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneProvider {
 
   // Initiates new request (See TimeZoneRequest for parameters description.)
   void RequestTimezone(const Geoposition& position,
+                       base::Time timestamp,
                        base::TimeDelta timeout,
                        TimeZoneRequest::TimeZoneResponseCallback callback);
 

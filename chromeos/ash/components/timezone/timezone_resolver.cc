@@ -237,7 +237,7 @@ void TZRequest::OnLocationResolved(const Geoposition& position,
   }
 
   resolver_->timezone_provider()->RequestTimezone(
-      position, timeout - elapsed,
+      position, base::Time::Now(), timeout - elapsed,
       base::BindOnce(&TZRequest::OnTimezoneResolved, AsWeakPtr()));
 
   // `OnTimezoneResolved` is responsible for calling `RequestIsFinished()` now.

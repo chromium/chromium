@@ -175,6 +175,7 @@ void RecordUmaResult(TimeZoneRequestResult result, unsigned retries) {
 // |sensor| if this location was determined using hardware sensor.
 GURL TimeZoneRequestURL(const GURL& url,
                         const Geoposition& geoposition,
+                        base::Time timestamp,
                         bool sensor) {
   std::string query(url.GetQuery());
   query += base::StringPrintf(
@@ -188,10 +189,7 @@ GURL TimeZoneRequestURL(const GURL& url,
       query += base::EscapeQueryParamValue(api_key, true);
     }
   }
-  if (!geoposition.timestamp.is_null()) {
-    query += base::StringPrintf(
-        "&%s=%ld", kTimestampString, geoposition.timestamp.ToTimeT());
-  }
+  query += base::StringPrintf("&%s=%ld", kTimestampString, timestamp.ToTimeT());
   query += "&";
   query += kSensorString;
   query += "=";
@@ -373,10 +371,12 @@ TimeZoneRequest::TimeZoneRequest(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     const GURL& service_url,
     const Geoposition& geoposition,
+    base::Time timestamp,
     base::TimeDelta retry_timeout)
     : shared_url_loader_factory_(std::move(factory)),
       service_url_(service_url),
       geoposition_(geoposition),
+      timestamp_(timestamp),
       retry_timeout_abs_(base::TimeTicks::Now() + retry_timeout),
       retry_sleep_on_server_error_(
           base::Seconds(kResolveTimeZoneRetrySleepOnServerErrorSeconds)),
@@ -415,8 +415,8 @@ void TimeZoneRequest::StartRequest() {
 
 void TimeZoneRequest::MakeRequest(TimeZoneResponseCallback callback) {
   callback_ = std::move(callback);
-  request_url_ =
-      TimeZoneRequestURL(service_url_, geoposition_, false /* sensor */);
+  request_url_ = TimeZoneRequestURL(service_url_, geoposition_, timestamp_,
+                                    false /* sensor */);
   StartRequest();
 }
 

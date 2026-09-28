@@ -27,10 +27,11 @@ TimeZoneProvider::~TimeZoneProvider() {
 
 void TimeZoneProvider::RequestTimezone(
     const Geoposition& position,
+    base::Time timestamp,
     base::TimeDelta timeout,
     TimeZoneRequest::TimeZoneResponseCallback callback) {
-  TimeZoneRequest* request(
-      new TimeZoneRequest(shared_url_loader_factory_, url_, position, timeout));
+  TimeZoneRequest* request(new TimeZoneRequest(shared_url_loader_factory_, url_,
+                                               position, timestamp, timeout));
   requests_.push_back(base::WrapUnique(request));
 
   // TimeZoneProvider owns all requests. It is safe to pass unretained "this"

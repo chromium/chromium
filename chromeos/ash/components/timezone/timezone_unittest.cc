@@ -44,7 +44,7 @@ const char kSimpleResponseBody[] =
 struct SimpleRequest {
   SimpleRequest()
       : url("https://localhost/maps/api/timezone/"
-            "json?location=39.603481,-119.682251&timestamp=1331161200&sensor="
+            "json?location=39.603481,-119.682251&timestamp=1451161200&sensor="
             "false"),
         http_response(kSimpleResponseBody) {
     position.latitude = 39.6034810;
@@ -57,6 +57,8 @@ struct SimpleRequest {
         "latitude=39.603481, longitude=-119.682251, accuracy=1.000000, "
         "error_code=0, error_message='', status=0 (NONE)",
         position.ToString());
+
+    timestamp = base::Time::FromTimeT(1451161200);
 
     timezone.dstOffset = 0;
     timezone.rawOffset = -28800;
@@ -73,6 +75,7 @@ struct SimpleRequest {
 
   GURL url;
   Geoposition position;
+  base::Time timestamp;
   std::string http_response;
   TimeZoneResponseData timezone;
 };
@@ -180,7 +183,8 @@ TEST_F(TimeZoneTest, ResponseOK) {
 
   TimeZoneReceiver receiver;
 
-  provider.RequestTimezone(simple_request.position, base::Seconds(1),
+  provider.RequestTimezone(simple_request.position, simple_request.timestamp,
+                           base::Seconds(1),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -204,7 +208,8 @@ TEST_F(TimeZoneTest, ResponseOKWithRetries) {
 
   TimeZoneReceiver receiver;
 
-  provider.RequestTimezone(simple_request.position, base::Seconds(1),
+  provider.RequestTimezone(simple_request.position, simple_request.timestamp,
+                           base::Seconds(1),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));
   receiver.WaitUntilRequestDone();
@@ -232,7 +237,7 @@ TEST_F(TimeZoneTest, InvalidResponse) {
       timeout_seconds * 1000 / kRequestRetryIntervalMilliSeconds);
   ASSERT_GE(expected_retries, 2U);
 
-  provider.RequestTimezone(simple_request.position,
+  provider.RequestTimezone(simple_request.position, simple_request.timestamp,
                            base::Seconds(timeout_seconds),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
                                           base::Unretained(&receiver)));

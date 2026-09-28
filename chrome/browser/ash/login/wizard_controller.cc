@@ -3988,7 +3988,7 @@ void WizardController::OnLocationResolved(const Geoposition& position,
   // WizardController owns TimezoneProvider, so timezone request is silently
   // cancelled on destruction.
   GetTimezoneProvider()->RequestTimezone(
-      position, timeout - elapsed,
+      position, base::Time::Now(), timeout - elapsed,
       base::BindOnce(&WizardController::OnTimezoneResolved,
                      weak_factory_.GetWeakPtr()));
 }
