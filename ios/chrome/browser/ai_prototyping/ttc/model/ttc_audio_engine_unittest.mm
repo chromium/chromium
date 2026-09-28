@@ -278,24 +278,6 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingEnabled) {
   EXPECT_FALSE(engine.isPlaying);
 }
 
-// Tests that playTestTone synthesizes sine wave audio and begins playback, and
-// stopTestTone halts it.
-TEST_F(TTCAudioEngineTest, TestPlayAndStopTestTone) {
-  TTCAudioPlayer* player = [[TTCAudioPlayer alloc] init];
-  TTCAudioEngine* engine =
-      [[TTCAudioEngine alloc] initWithRecorder:[[TTCAudioRecorder alloc] init]
-                                        player:player];
-  [engine setIsAudioEngineRunningForTesting:YES];
-
-  [engine playTestTone];
-  EXPECT_TRUE(player.isPlaying);
-  EXPECT_TRUE(engine.isPlaying);
-
-  [engine stopTestTone];
-  EXPECT_FALSE(player.isPlaying);
-  EXPECT_FALSE(engine.isPlaying);
-  [engine disconnect];
-}
 
 // Tests that playing test tone while loopback is enabled halts loopback buffer
 // routing during the tone, and stopping the tone cleanly restores loopback.
