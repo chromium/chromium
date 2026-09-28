@@ -49,6 +49,7 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
@@ -76,6 +77,8 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/content/public/download_navigation_observer.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/data_protection/features.h"
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
@@ -376,6 +379,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     history_embeddings_tab_helper_ =
         std::make_unique<HistoryEmbeddingsTabHelper>(web_contents);
   }
+
+  download_navigation_observer_ =
+      std::make_unique<download::DownloadNavigationObserver>(
+          web_contents, download::NavigationMonitorFactory::GetForKey(
+                            profile->GetProfileKey()));
 }
 
 TabFeatures::~TabFeatures() = default;

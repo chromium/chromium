@@ -8,15 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace download {
 
 // Forwards navigation events to download service.
 // Each DownloadNavigationObserver is associated with a particular WebContents.
-class DownloadNavigationObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<DownloadNavigationObserver> {
+class DownloadNavigationObserver : public content::WebContentsObserver {
  public:
   DownloadNavigationObserver(content::WebContents* web_contents,
                              NavigationMonitor* navigation_monitor);
@@ -28,8 +25,6 @@ class DownloadNavigationObserver
   ~DownloadNavigationObserver() override;
 
  private:
-  friend class content::WebContentsUserData<DownloadNavigationObserver>;
-
   // content::WebContentsObserver implementation.
   void DidStartLoading() override;
   void DidStopLoading() override;
@@ -39,8 +34,6 @@ class DownloadNavigationObserver
 
   // Used to inform the navigation events to download systems.
   raw_ptr<NavigationMonitor> navigation_monitor_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace download

@@ -648,6 +648,8 @@ if (!is_android) {
       "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
+      "//components/download/content/factory",
+      "//components/download/content/public",
       "//components/enterprise",
       "//components/favicon/content",
       "//components/favicon/core",

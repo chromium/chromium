@@ -142,6 +142,8 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/download/content/factory/navigation_monitor_factory.h"
+#include "components/download/content/public/download_navigation_observer.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
 #include "components/multistep_filter/core/features.h"
@@ -939,6 +941,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     history_embeddings_tab_helper_ =
         std::make_unique<HistoryEmbeddingsTabHelper>(tab.GetContents());
   }
+
+  download_navigation_observer_ =
+      std::make_unique<download::DownloadNavigationObserver>(
+          tab.GetContents(), download::NavigationMonitorFactory::GetForKey(
+                                 profile->GetProfileKey()));
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1283,6 +1290,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     history_embeddings_tab_helper_ =
         std::make_unique<HistoryEmbeddingsTabHelper>(new_contents);
   }
+
+  download_navigation_observer_ =
+      std::make_unique<download::DownloadNavigationObserver>(
+          new_contents, download::NavigationMonitorFactory::GetForKey(
+                            profile->GetProfileKey()));
 }
 
 customize_chrome::SidePanelController*

@@ -37,6 +37,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace download {
+class DownloadNavigationObserver;
+}  // namespace download
+
 namespace enterprise_data_protection {
 class DataProtectionNavigationController;
 }  // namespace enterprise_data_protection
@@ -247,6 +251,8 @@ class TabFeatures {
   std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
   std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
   std::unique_ptr<HistoryEmbeddingsTabHelper> history_embeddings_tab_helper_;
+  std::unique_ptr<download::DownloadNavigationObserver>
+      download_navigation_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

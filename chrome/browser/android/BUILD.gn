@@ -120,6 +120,7 @@ source_set("tabs_impl") {
     "//chrome/browser/plugins",
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
@@ -139,6 +140,8 @@ source_set("tabs_impl") {
     # TODO(crbug.com/489548570): Remove "side_panel/internal/android:dev"
     # from release builds. We need it in tests.
     "//chrome/browser/ui/side_panel/internal/android:dev",
+    "//components/download/content/factory",
+    "//components/download/content/public",
     "//components/external_intents/android",
     "//components/favicon/content",
     "//components/lens",
