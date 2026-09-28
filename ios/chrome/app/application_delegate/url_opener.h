@@ -17,6 +17,8 @@ class PrefService;
 
 // Handles the URL-opening methods of the ApplicationDelegate. This class has
 // only class methods and should not be instantiated.
+// TODO(crbug.com/462018636): Remove this class once `kEnableNewStartupFlow` is
+// fully launched.
 @interface URLOpener : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

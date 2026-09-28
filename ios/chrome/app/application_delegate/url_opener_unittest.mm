@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/check_op.h"
-#import "base/test/with_feature_override.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/app/application_delegate/fake_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
@@ -78,9 +78,15 @@
 
 #pragma mark -
 
+// Tests `URLOpener` with the legacy startup flow.
 class URLOpenerTest : public PlatformTest {
  protected:
-  URLOpenerTest() {
+  void SetUp() override {
+    PlatformTest::SetUp();
+    ResetEnableNewStartupFlowEnabledForTesting();
+    scoped_feature_list_.InitAndDisableFeature(kEnableNewStartupFlow);
+    SaveEnableNewStartupFlowForNextStart();
+
     startup_information_mock_ =
         OCMStrictProtocolMock(@protocol(StartupInformation));
     connection_information_mock_ =
@@ -88,10 +94,12 @@ class URLOpenerTest : public PlatformTest {
     tab_opener_mock_ = OCMStrictProtocolMock(@protocol(TabOpening));
   }
 
-  ~URLOpenerTest() override {
+  void TearDown() override {
     EXPECT_OCMOCK_VERIFY(startup_information_mock_);
     EXPECT_OCMOCK_VERIFY(connection_information_mock_);
     EXPECT_OCMOCK_VERIFY(tab_opener_mock_);
+    ResetEnableNewStartupFlowEnabledForTesting();
+    PlatformTest::TearDown();
   }
 
   id<StartupInformation> startup_information_mock_;
@@ -100,6 +108,7 @@ class URLOpenerTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(URLOpenerTest, HandleOpenURL) {
