@@ -156,7 +156,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc::ArcMetricsService::GetForBrowserContextForTesting(profile);
 
     arc_session_manager_->SetProfile(profile);
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
     run_loop.RunUntilIdle();
   }

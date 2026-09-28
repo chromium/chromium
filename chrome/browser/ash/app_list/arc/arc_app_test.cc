@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -257,11 +258,13 @@ void ArcAppTest::PostProfileSetUp(Profile* profile) {
     // Ensure that the singleton apps::ArcApps is constructed.
     apps::ArcAppsFactory::GetForProfile(profile_);
 
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(
+        ConsentAuditorFactory::GetForProfile(profile_));
 
     arc_play_store_enabled_preference_handler_ =
         std::make_unique<arc::ArcPlayStoreEnabledPreferenceHandler>(
-            profile_, arc_session_manager_.get());
+            profile_, arc_session_manager_.get(),
+            ConsentAuditorFactory::GetForProfile(profile_));
     arc_play_store_enabled_preference_handler_->Start();
   }
 

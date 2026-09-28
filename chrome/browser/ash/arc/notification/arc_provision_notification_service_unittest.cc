@@ -132,7 +132,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Trigger opt-in flow. The notification gets shown when session starts.
   session_manager()->SetSessionState(
@@ -179,7 +179,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Enable ARC. The opt-in flow doesn't take place, and no notification is
   // shown when session starts.
@@ -220,7 +220,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Trigger opt-in flow. The notification gets shown when session starts.
   session_manager()->SetSessionState(
@@ -263,7 +263,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
       prefs::kArcLocationServiceEnabled, std::make_unique<base::Value>(false));
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Trigger opt-in flow. The notification gets shown when session starts.
   session_manager()->SetSessionState(
@@ -302,7 +302,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   SetArcPlayStoreEnabledForProfile(profile(), true);
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Trigger opt-in flow. The notification is not shown when session starts.
   session_manager()->SetSessionState(
@@ -375,7 +375,7 @@ TEST_F(ArcProvisionNotificationServiceOobeTest,
       prefs::kArcEnabled, std::make_unique<base::Value>(true));
 
   arc_session_manager_->SetProfile(profile());
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
 
   // Trigger opt-in flow. The notification is not shown.
   arc_session_manager_->RequestEnable();

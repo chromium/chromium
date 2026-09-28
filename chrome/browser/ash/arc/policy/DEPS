@@ -30,6 +30,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/consent_auditor",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
   ],
   "arc_policy_bridge\\.cc": [

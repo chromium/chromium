@@ -89,7 +89,7 @@ class ArcLockedFullscreenManagerTest
 
     // Initialize session manager with a fake ARC session.
     arc_session_manager_->SetProfile(profile());
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
     arc_session_manager_->RequestEnable();
   }
 

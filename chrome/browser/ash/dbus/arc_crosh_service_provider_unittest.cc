@@ -142,7 +142,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
 
     arc_session_manager_->SetProfile(primary_user_profile);
 
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
     arc_session_manager_->RequestEnable();
     arc_session_manager_->StartArcForTesting();
 

@@ -89,7 +89,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     Profile* profile = profile_manager_->CreateTestingProfile(kProfileName);
 
     arc_session_manager_->SetProfile(profile);
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
     arc_session_manager_->RequestEnable();
 
     instance_ = std::make_unique<FakeAdbdMonitorInstance>();

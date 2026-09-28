@@ -91,7 +91,7 @@ class ArcProvisioningThrottleObserverTest : public testing::Test {
         TestingProfile::kDefaultProfileUserName);
 
     arc_session_manager_->SetProfile(profile());
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
   }
 
   void TearDown() override {

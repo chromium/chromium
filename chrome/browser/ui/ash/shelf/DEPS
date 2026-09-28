@@ -77,6 +77,9 @@ specific_include_rules = {
     "+chrome/browser/ui/test",
     "+chrome/test",
   ],
+  "arc_app_shelf_browsertest\\.cc": [
+    "+chrome/browser/consent_auditor/consent_auditor_factory.h",
+  ],
   "chrome_shelf_controller_browsertest\\.cc": [
     "+chrome/browser/ui/browser_init_state.h",
   ],

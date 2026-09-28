@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -39,8 +38,11 @@ namespace arc {
 
 ArcPlayStoreEnabledPreferenceHandler::ArcPlayStoreEnabledPreferenceHandler(
     Profile* profile,
-    ArcSessionManager* arc_session_manager)
-    : profile_(profile), arc_session_manager_(arc_session_manager) {
+    ArcSessionManager* arc_session_manager,
+    consent_auditor::ConsentAuditor* consent_auditor)
+    : profile_(profile),
+      arc_session_manager_(arc_session_manager),
+      consent_auditor_(CHECK_DEREF(consent_auditor)) {
   CHECK(profile_, base::NotFatalUntil::M160);
   CHECK(arc_session_manager_, base::NotFatalUntil::M160);
 }
@@ -157,8 +159,7 @@ void ArcPlayStoreEnabledPreferenceHandler::OnPreferenceChanged() {
             IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
         play_consent.set_consent_flow(
             UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
-        ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
-            gaia_id, play_consent);
+        consent_auditor_->RecordArcPlayConsent(gaia_id, play_consent);
       }
     }
   }

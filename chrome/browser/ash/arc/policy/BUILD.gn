@@ -86,6 +86,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/arc:test_support",
     "//chrome/browser/ash/policy/core",
+    "//chrome/browser/consent_auditor",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/test:test_support",

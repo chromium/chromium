@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +72,7 @@ class ArcSupportHostTest : public BrowserWithTestWindowTest {
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        profile());
+        profile(), ConsentAuditorFactory::GetForProfile(profile()));
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
   }
 

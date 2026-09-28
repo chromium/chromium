@@ -71,7 +71,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
@@ -263,7 +262,9 @@ void ArcServiceLauncher::MaybeSetProfile(Profile* profile) {
       multi_user_util::GetAccountIdFromProfile(profile));
 }
 
-void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
+void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
+    Profile* profile,
+    consent_auditor::ConsentAuditor* consent_auditor) {
   CHECK(arc_service_manager_, base::NotFatalUntil::M160);
   CHECK(arc_session_manager_, base::NotFatalUntil::M160);
 
@@ -409,10 +410,12 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     web_apk_manager_ = std::make_unique<apps::WebApkManager>(profile);
   }
 
-  arc_session_manager_->Initialize();
+  arc_session_manager_->Initialize(consent_auditor);
+  // Shutdown() resets this before the profiles -- and so their keyed services
+  // -- are destroyed, so holding the ConsentAuditor is safe.
   arc_play_store_enabled_preference_handler_ =
       std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
-          profile, arc_session_manager_.get());
+          profile, arc_session_manager_.get(), consent_auditor);
   arc_play_store_enabled_preference_handler_->Start();
 }
 

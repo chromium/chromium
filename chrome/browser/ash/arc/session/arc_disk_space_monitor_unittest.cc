@@ -91,7 +91,7 @@ class ArcDiskSpaceMonitorTest : public testing::Test {
             base::BindRepeating(FakeArcSession::Create)),
         arc_dlc_installer_.get());
     arc_session_manager_->SetProfile(testing_profile_.get());
-    arc_session_manager_->Initialize();
+    arc_session_manager_->Initialize(/*consent_auditor=*/nullptr);
     arc_session_manager_->RequestEnable();
 
     // ArcDiskSpaceMonitor should be initialized after the session manager is

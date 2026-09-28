@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -320,7 +321,8 @@ class ArcAppShelfBrowserTest : public extensions::ExtensionBrowserTest {
       // StopInstance().
       // TODO(hidehiko): The emulation is not implemented correctly. Fix it.
       arc_session_manager()->SetProfile(profile());
-      arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile());
+      arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(
+          profile(), ConsentAuditorFactory::GetForProfile(profile()));
     }
     app_instance_ = std::make_unique<arc::FakeAppInstance>(app_host());
     arc_brige_service()->app()->SetInstance(app_instance_.get());

@@ -23,6 +23,10 @@ class GURL;
 class PrefService;
 class Profile;
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 // Native interface to control ARC support chrome App.
 // TODO(hidehiko,lhchavez): Move this into extensions/ directory, and put it
 // into "arc" namespace. Add unittests at the time.
@@ -133,11 +137,12 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   using RequestOpenAppCallback =
       base::RepeatingCallback<void(Profile* profile)>;
 
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage` and `consent_auditor` must be
+  // non-null and must outlive `this`.
   ArcSupportHost(PrefService* local_state,
                  const ApplicationLocaleStorage* application_locale_storage,
-                 Profile* profile);
+                 Profile* profile,
+                 consent_auditor::ConsentAuditor* consent_auditor);
 
   ArcSupportHost(const ArcSupportHost&) = delete;
   ArcSupportHost& operator=(const ArcSupportHost&) = delete;
@@ -237,6 +242,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   const raw_ptr<Profile> profile_;
+  const raw_ref<consent_auditor::ConsentAuditor> consent_auditor_;
   RequestOpenAppCallback request_open_app_callback_;
 
   // Not owned.

@@ -44,6 +44,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "crypto/obsolete/sha1.h"
@@ -163,7 +164,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         TestingBrowserProcess::GetGlobal()
             ->GetFeatures()
             ->application_locale_storage(),
-        profile());
+        profile(), ConsentAuditorFactory::GetForProfile(profile()));
     fake_arc_support_ = std::make_unique<FakeArcSupport>(support_host_.get());
     negotiator_ = std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
         profile()->GetPrefs(), support_host(), test_metrics_service_.get());

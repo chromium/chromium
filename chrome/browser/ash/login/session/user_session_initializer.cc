@@ -50,7 +50,9 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -259,7 +261,16 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
         &local_state_.get(), profile);
   }
 
-  arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile);
+  // ConsentAuditor exists only for regular profiles: a guest session's profile
+  // is off the record, and ARC -- the only consumer of this instance -- is not
+  // available there either.
+  consent_auditor::ConsentAuditor* consent_auditor = nullptr;
+  if (profile->IsRegularProfile()) {
+    consent_auditor = ConsentAuditorProvider::Get().Find(
+        CHECK_DEREF(AnnotatedAccountId::Get(profile)));
+  }
+  arc::ArcServiceLauncher::Get()->OnPrimaryUserProfilePrepared(profile,
+                                                               consent_auditor);
   guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile);
 
   crostini::CrostiniManager* crostini_manager =

@@ -107,7 +107,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
             }));
 
     arc_session_manager()->SetProfile(profile());
-    arc_session_manager()->Initialize();
+    arc_session_manager()->Initialize(/*consent_auditor=*/nullptr);
 
     intent_helper_host_ = std::make_unique<FakeIntentHelperHost>(
         arc_bridge_service()->intent_helper());

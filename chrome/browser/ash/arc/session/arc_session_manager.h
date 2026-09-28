@@ -46,6 +46,10 @@ namespace metrics {
 class MetricsService;
 }  // namespace metrics
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 namespace arc {
 
 // The file exists only when ARC container is in use.
@@ -178,8 +182,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   void ExpandPropertyFilesAndReadSalt();
 
   // Initializes ArcSessionManager. Before this runs, Profile must be set
-  // via SetProfile().
-  void Initialize();
+  // via SetProfile(). `consent_auditor` is the one belonging to that profile,
+  // and must be non-null in production. It is only used for the ArcSupportHost
+  // created here, so tests where ShouldUseErrorDialog() is false and no host is
+  // built may pass null.
+  void Initialize(consent_auditor::ConsentAuditor* consent_auditor);
 
   // Set the device scale factor used to start the arc. This must be called
   // before staring mini-ARC.

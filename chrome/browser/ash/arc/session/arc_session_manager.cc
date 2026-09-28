@@ -862,9 +862,13 @@ std::string ArcSessionManager::GetSerialNumber() const {
   return serialno;
 }
 
-void ArcSessionManager::Initialize() {
+void ArcSessionManager::Initialize(
+    consent_auditor::ConsentAuditor* consent_auditor) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   CHECK(profile_, base::NotFatalUntil::M160);
+  if (!consent_auditor) {
+    CHECK_IS_TEST();
+  }
 
   CHECK_EQ(state_, State::NOT_INITIALIZED, base::NotFatalUntil::M160);
   state_ = State::STOPPED;
@@ -883,8 +887,12 @@ void ArcSessionManager::Initialize() {
   // TODO(hidehiko): Revisit to think about lazy initialization.
   if (ShouldUseErrorDialog()) {
     CHECK(!support_host_, base::NotFatalUntil::M160);
+    // ArcSupportHost outlives neither `profile_` nor its keyed services:
+    // ArcServiceLauncher::Shutdown() tears this down before the profiles are
+    // destroyed.
     support_host_ = std::make_unique<ArcSupportHost>(
-        &local_state_.get(), &application_locale_storage_.get(), profile_);
+        &local_state_.get(), &application_locale_storage_.get(), profile_,
+        consent_auditor);
     support_host_->SetErrorDelegate(this);
   }
   auto* prefs = profile_->GetPrefs();

@@ -22,6 +22,10 @@ class ApplicationLocaleStorage;
 class PrefService;
 class Profile;
 
+namespace consent_auditor {
+class ConsentAuditor;
+}  // namespace consent_auditor
+
 namespace metrics {
 class MetricsService;
 }  // namespace metrics
@@ -78,7 +82,10 @@ class ArcServiceLauncher {
   void MaybeSetProfile(Profile* profile);
 
   // Called when the main profile is initialized after user logs in.
-  void OnPrimaryUserProfilePrepared(Profile* profile);
+  // `consent_auditor` is the one belonging to `profile`.
+  void OnPrimaryUserProfilePrepared(
+      Profile* profile,
+      consent_auditor::ConsentAuditor* consent_auditor);
 
   // Called after the main MessageLoop stops, and before the Profile is
   // destroyed.

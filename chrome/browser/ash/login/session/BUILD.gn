@@ -96,6 +96,7 @@ static_library("session") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/consent_auditor:consent_auditor_provider",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/pciguard",

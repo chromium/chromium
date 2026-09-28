@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/ownership",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/consent_auditor",
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
@@ -24,7 +23,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only the test still installs the ConsentAuditor through the //chrome-side
+  # factory; production goes through ash::ConsentAuditorProvider.
   "arc_terms_of_service_default_negotiator_unittest\\.cc": [
+    "+chrome/browser/consent_auditor",
     "+chrome/browser/global_features.h",
   ],
 }

@@ -22,7 +22,6 @@
 #include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -235,10 +234,12 @@ ArcSupportHost::ErrorInfo& ArcSupportHost::ErrorInfo::operator=(
 ArcSupportHost::ArcSupportHost(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
-    Profile* profile)
+    Profile* profile,
+    consent_auditor::ConsentAuditor* consent_auditor)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       profile_(profile),
+      consent_auditor_(CHECK_DEREF(consent_auditor)),
       request_open_app_callback_(base::BindRepeating(&RequestOpenApp)) {
   CHECK(profile_, base::NotFatalUntil::M160);
   content::URLDataSource::Add(profile_,
@@ -766,8 +767,7 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
       play_consent.set_play_terms_of_service_hash(
           arc::GetSha1HashForArcPlayTermsOfService(*tos_content));
     }
-    ConsentAuditorFactory::GetForProfile(profile_)->RecordArcPlayConsent(
-        gaia_id, play_consent);
+    consent_auditor_->RecordArcPlayConsent(gaia_id, play_consent);
 
     // If the user - not policy - controls Backup and Restore setting, record
     // whether consent was given.
@@ -782,9 +782,8 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
                                                 ? UserConsentTypes::GIVEN
                                                 : UserConsentTypes::NOT_GIVEN);
 
-      ConsentAuditorFactory::GetForProfile(profile_)
-          ->RecordArcBackupAndRestoreConsent(gaia_id,
-                                             backup_and_restore_consent);
+      consent_auditor_->RecordArcBackupAndRestoreConsent(
+          gaia_id, backup_and_restore_consent);
     }
 
     // If the user - not policy - controls Location Services setting, record
@@ -808,9 +807,8 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
       location_service_consent.set_status(is_location_service_enabled.value()
                                               ? UserConsentTypes::GIVEN
                                               : UserConsentTypes::NOT_GIVEN);
-      ConsentAuditorFactory::GetForProfile(profile_)
-          ->RecordArcGoogleLocationServiceConsent(gaia_id,
-                                                  location_service_consent);
+      consent_auditor_->RecordArcGoogleLocationServiceConsent(
+          gaia_id, location_service_consent);
     }
 
     if (accepted) {
