@@ -10,8 +10,12 @@
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
+#include "content/public/common/child_process_id.h"
+
+namespace content {
+class RenderProcessHost;
+}  // namespace content
 
 namespace task_manager {
 
@@ -44,7 +48,8 @@ class SpareRenderProcessHostTaskProvider
   void OnSpareRenderProcessHostRemoved(
       content::RenderProcessHost* host) override;
 
-  base::flat_map<int, std::unique_ptr<ChildProcessTask>> tasks_by_rph_id_;
+  base::flat_map<content::ChildProcessId, std::unique_ptr<ChildProcessTask>>
+      tasks_by_rph_id_;
 
   // The subscription for the notifications of the spare host changing.
   base::ScopedObservation<content::SpareRenderProcessHostManager,

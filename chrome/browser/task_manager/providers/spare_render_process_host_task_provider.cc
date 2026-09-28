@@ -4,9 +4,12 @@
 
 #include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
 
-#include "base/functional/bind.h"
+#include <utility>
+
+#include "base/check.h"
 #include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 
 using content::BrowserThread;
@@ -55,7 +58,7 @@ void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
       *host, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
 
   auto [it, inserted] =
-      tasks_by_rph_id_.emplace(host->GetDeprecatedID(), std::move(task));
+      tasks_by_rph_id_.emplace(host->GetID(), std::move(task));
   CHECK(inserted);
 
   NotifyObserverTaskAdded(it->second.get());
@@ -63,7 +66,7 @@ void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostRemoved(
     RenderProcessHost* host) {
-  auto it = tasks_by_rph_id_.find(host->GetDeprecatedID());
+  auto it = tasks_by_rph_id_.find(host->GetID());
   if (it == tasks_by_rph_id_.end()) {
     // This can happen when a spare RenderProcessHost was created but never
     // reached the "ready" state.
