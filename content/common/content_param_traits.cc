@@ -13,13 +13,10 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "ipc/mojo_param_traits.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/net_ipc_param_traits.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
-#include "third_party/blink/public/common/messaging/transferable_message.h"
-#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
@@ -121,57 +118,6 @@ bool ParamTraits<ui::AXMode>::Read(const base::Pickle* m,
   *r = ui::AXMode(value);
   return true;
 }
-
-template <>
-struct ParamTraits<blink::mojom::SerializedBlobPtr> {
-  using param_type = blink::mojom::SerializedBlobPtr;
-  static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, p->uuid);
-    WriteParam(m, p->content_type);
-    WriteParam(m, p->size);
-    WriteParam(m, p->blob.PassPipe().release());
-  }
-
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r) {
-    *r = blink::mojom::SerializedBlob::New();
-    mojo::MessagePipeHandle handle;
-    if (!ReadParam(m, iter, &(*r)->uuid) ||
-        !ReadParam(m, iter, &(*r)->content_type) ||
-        !ReadParam(m, iter, &(*r)->size) || !ReadParam(m, iter, &handle)) {
-      return false;
-    }
-    (*r)->blob = mojo::PendingRemote<blink::mojom::Blob>(
-        mojo::ScopedMessagePipeHandle(handle), blink::mojom::Blob::Version_);
-    return true;
-  }
-};
-
-template <>
-struct ParamTraits<
-    mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>> {
-  using param_type =
-      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>;
-  static void Write(base::Pickle* m, const param_type& p) {
-    // Move the Mojo pipe to serialize the
-    // PendingRemote<FileSystemAccessTransferToken> for a postMessage() target.
-    WriteParam(m, const_cast<param_type&>(p).PassPipe().release());
-  }
-
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r) {
-    mojo::MessagePipeHandle handle;
-    if (!ReadParam(m, iter, &handle)) {
-      return false;
-    }
-    *r = mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>(
-        mojo::ScopedMessagePipeHandle(handle),
-        blink::mojom::FileSystemAccessTransferToken::Version_);
-    return true;
-  }
-};
 
 void ParamTraits<viz::FrameSinkId>::Write(base::Pickle* m,
                                           const param_type& p) {
