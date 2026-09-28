@@ -524,15 +524,23 @@ export class ComposeboxInputElement extends I18nMixinLit
     return (this.$.input as HTMLTextAreaElement).selectionEnd ??
         (this.input ? this.input.length : 0);
   }
+
+  selectAll() {
+    if (this.composeboxSkillsEnabled) {
+      selectContents(this.$.input, this.shadowRoot);
+    } else {
+      (this.$.input as HTMLTextAreaElement).select();
+    }
+    if (!this.disableCaretColorAnimation) {
+      this.updateCaret_();
+    }
+  }
 }
 
 function getCaretCharacterOffsetWithin(
     element: HTMLElement, shadowRoot?: ShadowRoot|null): number {
   let caretOffset = 0;
-  const sel = (shadowRoot && 'getSelection' in shadowRoot ?
-                   (shadowRoot as unknown as Document).getSelection() :
-                   null) ??
-      window.getSelection();
+  const sel = getSelectionIn(shadowRoot);
   if (sel && sel.rangeCount > 0) {
     const range = sel.getRangeAt(0);
     try {
@@ -547,19 +555,34 @@ function getCaretCharacterOffsetWithin(
   return caretOffset;
 }
 
-function setCaretToEnd(
-    element: HTMLElement, shadowRoot?: ShadowRoot|null) {
-  const sel = (shadowRoot && 'getSelection' in shadowRoot ?
-                   (shadowRoot as unknown as Document).getSelection() :
-                   null) ??
+function getSelectionIn(shadowRoot?: ShadowRoot|null): Selection|null {
+  return (shadowRoot && 'getSelection' in shadowRoot ?
+              (shadowRoot as unknown as Document).getSelection() :
+              null) ??
       window.getSelection();
+}
+
+/**
+ * Selects the contents of `element`, or places the caret at the end of it if
+ * `collapseToEnd` is true.
+ */
+function selectContents(
+    element: HTMLElement, shadowRoot?: ShadowRoot|null,
+    collapseToEnd: boolean = false) {
+  const sel = getSelectionIn(shadowRoot);
   if (sel) {
     const range = document.createRange();
     range.selectNodeContents(element);
-    range.collapse(false);
+    if (collapseToEnd) {
+      range.collapse(false);
+    }
     sel.removeAllRanges();
     sel.addRange(range);
   }
+}
+
+function setCaretToEnd(element: HTMLElement, shadowRoot?: ShadowRoot|null) {
+  selectContents(element, shadowRoot, /* collapseToEnd= */ true);
 }
 
 function getTargetSpan(
