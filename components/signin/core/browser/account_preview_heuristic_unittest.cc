@@ -86,22 +86,6 @@ class AccountPreviewHeuristicTest : public testing::Test {
 // Account Data Types Criteria Tests (ComputeAccountPreviewPreference)
 // =============================================================================
 
-TEST(AccountPreviewHeuristicDisabledFeatureTest, ReturnsNullopt) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      switches::kEnableAccountPreviewPreferredAccount);
-
-  AccountPreviewData data = CreatePreviewData(
-      {.passwords = 2 * switches::kPasswordsMedianThreshold.Get()});
-  EXPECT_EQ(ComputeAccountPreviewPreference(GaiaId("user1"), data),
-            std::nullopt);
-  EXPECT_EQ(ComputePreferredAccountForPromo(
-                {AccountPreviewHeuristicContext{.gaia_id = GaiaId("user1"),
-                                                .preview_data = &data}})
-                .preference,
-            std::nullopt);
-}
-
 TEST_F(AccountPreviewHeuristicTest,
        ComputeAccountPreviewPreferencePreferredDataTypesRankingAndQuartile) {
   // Passwords: 2 * Median (ratio=2.0, quartile=kMedianToQ3)

@@ -1071,8 +1071,10 @@ TEST_F(AccountPreviewDataServiceTest,
 }
 
 TEST_F(AccountPreviewDataServiceTest,
-       DoesNotComputePreferredAccountWhenFeatureDisabled) {
-  // Disable preferred account computation feature flag.
+       DoesNotStorePreferredAccountWhenFeatureDisabledButRecordsMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Disable preferred account feature flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       switches::kEnableAccountPreviewPreferredAccount);
@@ -1086,21 +1088,28 @@ TEST_F(AccountPreviewDataServiceTest,
   dict.Set("gaia_id", kFakeGaiaId.ToString());
   prefs_.SetDict(prefs::kAccountPreviewPreference, std::move(dict));
 
-  // Sign in and trigger fetch with a different account.
-  AccountInfo account =
-      identity_test_env_.MakeAccountAvailable("user@gmail.com");
   MockSuccessfulFetch(&test_url_loader_factory_);
 
+  // Sign in and trigger fetch with a different account.
   base::RunLoop run_loop;
   service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
-  service_->OnRefreshTokenUpdatedForAccount(account.GetCoreAccountInfo());
+  AccountInfo account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user@gmail.com", ConsentLevel::kSignin);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(account.GetEmail()), account.GetGaiaId()}});
+#endif
   run_loop.Run();
 
-  // Verify that the preferred account in prefs was NOT overwritten or
-  // recomputed by OnAllFetchesCompleted() because the feature flag is disabled.
+  // Verify that the preferred account in prefs was NOT overwritten by
+  // OnAllFetchesCompleted() because the feature flag is disabled, while
+  // selection heuristic metrics were still recorded.
   EXPECT_THAT(service_->GetPreferredAccountForPromo(),
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, kFakeGaiaId)));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SelectionHeuristic.Reason",
+      AccountPreviewSelectionReason::kSyncDataScore, 1);
 }
 
 TEST_F(AccountPreviewDataServiceTest,

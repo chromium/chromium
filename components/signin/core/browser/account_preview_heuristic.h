@@ -17,8 +17,7 @@
 namespace signin {
 
 // Computes the preview preference (preferred data types and device form factor)
-// for a single account preview data. Returns std::nullopt if the feature flag
-// `switches::kEnableAccountPreviewPreferredAccount` is disabled.
+// for a single account preview data.
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 ComputeAccountPreviewPreference(const GaiaId& gaia_id,
                                 const AccountPreviewData& data);
@@ -48,7 +47,8 @@ struct AccountPreviewHeuristicContext {
 //
 // LINT.IfChange(AccountPreviewSelectionReason)
 enum class AccountPreviewSelectionReason {
-  // No account was selected (e.g. empty accounts list or feature disabled).
+  // No account was selected (e.g. empty accounts list or missing default
+  // account preview data).
   kNoSelection = 0,
   // Priority 1: Default account is not a regular account (managed or child).
   kNonRegularDefault = 1,
@@ -64,8 +64,8 @@ enum class AccountPreviewSelectionReason {
 // Result of evaluating the heuristic to select the preferred account for
 // sign-in promo.
 struct AccountPreviewSelectionResult {
-  // The computed preference for the selected account (if an account was
-  // selected and the feature is enabled).
+  // The computed preference for the selected account, or std::nullopt if no
+  // account was selected.
   std::optional<AccountPreviewDataService::AccountPreviewPreference> preference;
 
   // The GaiaId of the selected account, or std::nullopt if none.

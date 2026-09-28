@@ -591,20 +591,19 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
   return contexts;
 }
 
-void AccountPreviewDataServiceImpl::ComputeAndStorePreferredAccount() {
+void AccountPreviewDataServiceImpl::ComputeAndStorePreferredAccount(
+    base::span<const AccountPreviewHeuristicContext> contexts) {
+  AccountPreviewSelectionResult result =
+      ComputePreferredAccountForPromo(contexts);
   if (base::FeatureList::IsEnabled(
           switches::kEnableAccountPreviewPreferredAccount)) {
-    std::vector<AccountPreviewHeuristicContext> contexts =
-        GetHeuristicContexts();
-    AccountPreviewSelectionResult result =
-        ComputePreferredAccountForPromo(contexts);
     WritePreferredAccountToPrefs(result.preference);
-    metrics_recorder_.RecordSelectionHeuristicResult(contexts, result);
   }
+  metrics_recorder_.RecordSelectionHeuristicResult(contexts, result);
 }
 
-void AccountPreviewDataServiceImpl::ComputeAndStoreSwitchingAccount() {
-  std::vector<AccountPreviewHeuristicContext> contexts = GetHeuristicContexts();
+void AccountPreviewDataServiceImpl::ComputeAndStoreSwitchingAccount(
+    base::span<const AccountPreviewHeuristicContext> contexts) {
   AccountSwitchingSelectionResult result =
       ComputeAccountSwitchingSelection(contexts);
   metrics_recorder_.RecordSwitchingHeuristicResult(result);
@@ -670,8 +669,9 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
 
   RecordAccountsUsedForLastFetch();
 
-  ComputeAndStorePreferredAccount();
-  ComputeAndStoreSwitchingAccount();
+  std::vector<AccountPreviewHeuristicContext> contexts = GetHeuristicContexts();
+  ComputeAndStorePreferredAccount(contexts);
+  ComputeAndStoreSwitchingAccount(contexts);
 
   if (should_reset_periodic_timer) {
     ResetTimer();

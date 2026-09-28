@@ -294,9 +294,11 @@ bool IsCandidatePreferredOverCurrentBest(
   return false;
 }
 
-AccountPreviewDataService::AccountPreviewPreference
-BuildAccountPreviewPreference(const GaiaId& gaia_id,
-                              const AccountPreviewData& data) {
+}  // namespace
+
+std::optional<AccountPreviewDataService::AccountPreviewPreference>
+ComputeAccountPreviewPreference(const GaiaId& gaia_id,
+                                const AccountPreviewData& data) {
   AccountPreviewDataService::AccountPreviewPreference preference;
   preference.gaia_id = gaia_id;
   preference.preferred_data_types = ExtractPreferredDataTypes(data);
@@ -304,25 +306,8 @@ BuildAccountPreviewPreference(const GaiaId& gaia_id,
   return preference;
 }
 
-}  // namespace
-
-std::optional<AccountPreviewDataService::AccountPreviewPreference>
-ComputeAccountPreviewPreference(const GaiaId& gaia_id,
-                                const AccountPreviewData& data) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewPreferredAccount)) {
-    return std::nullopt;
-  }
-
-  return BuildAccountPreviewPreference(gaia_id, data);
-}
-
 AccountPreviewSelectionResult ComputePreferredAccountForPromo(
     base::span<const AccountPreviewHeuristicContext> accounts) {
-  if (!base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewPreferredAccount)) {
-    return {};
-  }
 
   if (accounts.empty() || !accounts[0].preview_data) {
     return {};
@@ -473,7 +458,7 @@ AccountSwitchingSelectionResult ComputeAccountSwitchingSelection(
       result.outcome =
           AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore;
       result.selected_account = best_secondary->gaia_id;
-      result.preference = BuildAccountPreviewPreference(
+      result.preference = ComputeAccountPreviewPreference(
           best_secondary->gaia_id, *best_secondary->preview_data);
       return result;
     }
@@ -483,7 +468,7 @@ AccountSwitchingSelectionResult ComputeAccountSwitchingSelection(
       result.outcome =
           AccountSwitchingSelectionOutcome::kWouldShowDoubledPrimaryScore;
       result.selected_account = best_secondary->gaia_id;
-      result.preference = BuildAccountPreviewPreference(
+      result.preference = ComputeAccountPreviewPreference(
           best_secondary->gaia_id, *best_secondary->preview_data);
       return result;
     }
