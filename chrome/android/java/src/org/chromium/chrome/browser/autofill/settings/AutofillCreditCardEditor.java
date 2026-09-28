@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Spinner;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.AutofillProfile;
@@ -45,14 +43,9 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
     private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     protected CreditCard mCard;
-    // These fields are mutually exclusive. Only one is non-null depending on whether
-    // ChromeFeatureList.sAndroidSettingsContainment is enabled.
-    protected @Nullable Spinner mBillingAddressSpinner;
     protected @Nullable AutoCompleteTextView mBillingAddressDropdown;
     protected @Nullable AutofillProfile mInitialBillingProfile;
-
     protected @Nullable AutofillProfile mSelectedBillingProfile;
-    protected int mInitialBillingAddressPos;
 
     @Override
     public View onCreateView(
@@ -82,7 +75,6 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
                 AutofillProfile profile = billingAddresses.get(i);
                 if (profile != null
                         && TextUtils.equals(profile.getGUID(), mCard.getBillingAddressId())) {
-                    mInitialBillingAddressPos = i;
                     mInitialBillingProfile = profile;
                     mSelectedBillingProfile = profile;
                     break;
@@ -90,35 +82,16 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
             }
         }
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            v.findViewById(R.id.autofill_credit_card_editor_legacy_dropdown_container)
-                    .setVisibility(View.GONE);
-            v.findViewById(R.id.autofill_credit_card_editor_billing_address_outlined_layout)
-                    .setVisibility(View.VISIBLE);
-            mBillingAddressDropdown =
-                    v.findViewById(
-                            R.id.autofill_credit_card_editor_billing_address_spinner_outlined);
-            ArrayAdapter<AutofillProfile> adapter =
-                    new ArrayAdapter<>(
-                            getActivity(),
-                            android.R.layout.simple_dropdown_item_1line,
-                            billingAddresses);
-            mBillingAddressDropdown.setAdapter(adapter);
-            if (mInitialBillingProfile != null) {
-                mBillingAddressDropdown.setText(mInitialBillingProfile.getLabel(), false);
-            }
-        } else {
-            mBillingAddressSpinner =
-                    v.findViewById(R.id.autofill_credit_card_editor_billing_address_spinner);
-            ArrayAdapter<AutofillProfile> adapter =
-                    new ArrayAdapter<>(
-                            getActivity(), android.R.layout.simple_spinner_item, billingAddresses);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            mBillingAddressSpinner.setAdapter(adapter);
-            mBillingAddressSpinner.setSelection(mInitialBillingAddressPos);
-            // TODO(rouslan): Use an [+ ADD ADDRESS] button instead of disabling the dropdown.
-            // http://crbug.com/40474515
-            if (adapter.getCount() == 1) mBillingAddressSpinner.setEnabled(false);
+        mBillingAddressDropdown =
+                v.findViewById(R.id.autofill_credit_card_editor_billing_address_spinner_outlined);
+        ArrayAdapter<AutofillProfile> adapter =
+                new ArrayAdapter<>(
+                        getActivity(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        billingAddresses);
+        mBillingAddressDropdown.setAdapter(adapter);
+        if (mInitialBillingProfile != null) {
+            mBillingAddressDropdown.setText(mInitialBillingProfile.getLabel(), false);
         }
 
         return v;
@@ -127,27 +100,18 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
     @Override
     protected void initializeButtons(View v) {
         super.initializeButtons(v);
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            assert mBillingAddressDropdown != null;
-            mBillingAddressDropdown.setOnItemClickListener(
-                    (parent, view, position, id) -> {
-                        mSelectedBillingProfile =
-                                (AutofillProfile) parent.getItemAtPosition(position);
-                        onBillingAddressSelected(mSelectedBillingProfile);
-                    });
-            mBillingAddressDropdown.setOnFocusChangeListener(
-                    (view, hasFocus) -> {
-                        if (hasFocus) {
-                            KeyboardVisibilityDelegate.getInstance().hideKeyboard(view);
-                        }
-                    });
-        } else {
-            assert mBillingAddressSpinner != null;
-            mBillingAddressSpinner.setOnItemSelectedListener(this);
-            // Listen for touch events on billing address field. We clear the keyboard when user
-            // touches the billing address field because it is a drop down menu.
-            mBillingAddressSpinner.setOnTouchListener(this);
-        }
+        assert mBillingAddressDropdown != null;
+        mBillingAddressDropdown.setOnItemClickListener(
+                (parent, view, position, id) -> {
+                    mSelectedBillingProfile = (AutofillProfile) parent.getItemAtPosition(position);
+                    onBillingAddressSelected(mSelectedBillingProfile);
+                });
+        mBillingAddressDropdown.setOnFocusChangeListener(
+                (view, hasFocus) -> {
+                    if (hasFocus) {
+                        KeyboardVisibilityDelegate.getInstance().hideKeyboard(view);
+                    }
+                });
     }
 
     /**

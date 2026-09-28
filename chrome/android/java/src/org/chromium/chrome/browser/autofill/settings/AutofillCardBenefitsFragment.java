@@ -4,14 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.style.ClickableSpan;
@@ -24,7 +19,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -119,9 +113,6 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         createCardBenefitSwitch();
         createLearnAboutCardBenefitsLink();
         createPreferencesForCardBenefitTerms();
-        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            drawBottomDivider();
-        }
     }
 
     private Context getStyledContext() {
@@ -216,11 +207,6 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         }
     }
 
-    private void drawBottomDivider() {
-        RecyclerView recyclerView = getListView();
-        recyclerView.addItemDecoration(new BottomDividerItemDecoration(getContext()));
-    }
-
     private void openUrlInCct(String url) {
         new CustomTabsIntent.Builder()
                 .setShowTitle(true)
@@ -274,38 +260,6 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
                 ? R.string
                         .autofill_settings_page_card_benefits_toggle_summary_with_issuer_terms_apply_text
                 : R.string.autofill_settings_page_card_benefits_toggle_summary;
-    }
-
-    // Custom ItemDecoration class that adds a divider at the end of the list.
-    private static class BottomDividerItemDecoration extends RecyclerView.ItemDecoration {
-        private static final int[] ATTRS = new int[] {android.R.attr.listDivider};
-        private final Drawable mDivider;
-
-        public BottomDividerItemDecoration(Context context) {
-            final TypedArray a = context.obtainStyledAttributes(ATTRS);
-            mDivider = assertNonNull(a.getDrawable(0));
-            a.recycle();
-        }
-
-        @Override
-        public void onDrawOver(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
-            int lastChildIndex = parent.getChildCount() - 1;
-            if (lastChildIndex < 0) {
-                return;
-            }
-
-            int left = parent.getPaddingLeft();
-            int right = parent.getWidth() - parent.getPaddingRight();
-
-            final View lastChild = parent.getChildAt(lastChildIndex);
-            final Rect bounds = new Rect();
-            parent.getDecoratedBoundsWithMargins(lastChild, bounds);
-            final int bottom = bounds.bottom + Math.round(lastChild.getTranslationY());
-            final int top = bottom - mDivider.getIntrinsicHeight();
-
-            mDivider.setBounds(left, top, right, bottom);
-            mDivider.draw(canvas);
-        }
     }
 
     @Override

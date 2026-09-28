@@ -6,23 +6,16 @@ package org.chromium.chrome.browser.autofill;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 
 import androidx.fragment.app.Fragment;
 
@@ -31,7 +24,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -42,10 +34,7 @@ import org.chromium.ui.text.EmptyTextWatcher;
 /** Base class for Autofill editors (e.g. credit cards and profiles). */
 @NullMarked
 public abstract class AutofillEditorBase extends Fragment
-        implements EmbeddableSettingsPage,
-                OnItemSelectedListener,
-                OnTouchListener,
-                EmptyTextWatcher {
+        implements EmbeddableSettingsPage, EmptyTextWatcher {
     /** We know which profile to edit based on the GUID stuffed in extras. */
     public static final String AUTOFILL_GUID = "guid";
 
@@ -102,10 +91,8 @@ public abstract class AutofillEditorBase extends Fragment
         inflater.inflate(getLayoutId(), contentLayout, true);
         inflater.inflate(R.layout.autofill_editor_base_buttons, contentLayout, true);
 
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            baseView.findViewById(R.id.button_bar)
-                    .setBackgroundColor(SemanticColorUtils.getSettingsBackgroundColor(mContext));
-        }
+        baseView.findViewById(R.id.button_bar)
+                .setBackgroundColor(SemanticColorUtils.getSettingsBackgroundColor(mContext));
 
         return baseView;
     }
@@ -113,19 +100,6 @@ public abstract class AutofillEditorBase extends Fragment
     @Override
     public MonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
-    }
-
-    // Process touch event on spinner views so we can clear the keyboard.
-    @Override
-    @SuppressLint("ClickableViewAccessibility")
-    public boolean onTouch(View v, MotionEvent event) {
-        if (v instanceof Spinner) {
-            InputMethodManager imm =
-                    (InputMethodManager)
-                            v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-        }
-        return false;
     }
 
     @Override
@@ -170,11 +144,10 @@ public abstract class AutofillEditorBase extends Fragment
         assert false;
     }
 
-    /** @return ID of the String to use as the title in the ActionBar. */
+    /**
+     * @return ID of the String to use as the title in the ActionBar.
+     */
     protected abstract int getTitleResourceId(boolean isNewEntry);
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
 
     /** Finishes the current page. */
     protected void finishPage() {

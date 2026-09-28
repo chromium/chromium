@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,6 +45,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ScanCreditCardPromptEntryPoint;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -246,7 +246,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    protected void onBillingAddressSelected(AutofillProfile profile) {
         mScannerManager.fieldEdited(FieldType.UNKNOWN);
     }
 

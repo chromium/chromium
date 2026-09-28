@@ -151,14 +151,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         assumeNonNull(getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mActivity = activity;
         mFragmentManager = fragmentManager;
-        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
-            // TODO(crbug.com/439911511): Set the style directly in the layout instead.
-            mContext =
-                    new ContextThemeWrapper(
-                            activity, R.style.ThemeOverlay_Chromium_Settings_InputFields);
-        } else {
-            mContext = activity;
-        }
+        // TODO(crbug.com/439911511): Set the style directly in the layout instead.
+        mContext =
+                new ContextThemeWrapper(
+                        activity, R.style.ThemeOverlay_Chromium_Settings_InputFields);
 
         mContainerView =
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_editor_dialog, null);

@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -216,9 +215,6 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         }
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {}
 
     @Override
     public void setProfile(Profile profile) {
