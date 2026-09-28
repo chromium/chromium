@@ -13,11 +13,14 @@
 #include <tuple>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/zucchini/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 using vec = std::vector<uint8_t>;
 
@@ -118,10 +121,13 @@ TEST_F(BufferSourceTest, CheckNextValue) {
 
 // Trivial wrapper for uint32_t, to ensure data access is unaligned.
 struct UnalignedUint32T {
+  friend bool operator==(const UnalignedUint32T& lhs,
+                         const UnalignedUint32T& rhs) = default;
   uint32_t value;
 };
 
 struct ValueType {
+  friend bool operator==(const ValueType& lhs, const ValueType& rhs) = default;
   uint32_t a;
   uint16_t b;
 };
@@ -219,36 +225,35 @@ TEST_F(BufferSourceTest, GetPointerAggregate) {
 }
 
 TEST_F(BufferSourceTest, GetArrayIntegral) {
-  EXPECT_EQ(nullptr, source_.GetArray<UnalignedUint32T>(3));
+  EXPECT_THAT(source_.GetArray<UnalignedUint32T>(3), IsEmpty());
 
-  const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
-  EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0x76543210), ptr[0].value);
-  UNSAFE_TODO(EXPECT_EQ(uint32_t(0xFEDCBA98), ptr[1].value));
-  EXPECT_EQ(size_t(2), source_.Remaining());
+  EXPECT_THAT(
+      source_.GetArray<UnalignedUint32T>(2),
+      ElementsAre(UnalignedUint32T{0x76543210}, UnalignedUint32T{0xFEDCBA98}));
+  EXPECT_EQ(2u, source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, GetArrayIntegralMisaligned) {
   source_.Skip(1);
-  EXPECT_EQ(nullptr, source_.GetArray<UnalignedUint32T>(3));
+  EXPECT_THAT(source_.GetArray<UnalignedUint32T>(3), IsEmpty());
 
-  const UnalignedUint32T* ptr = source_.GetArray<UnalignedUint32T>(2);
-  EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0x98765432), ptr[0].value);
-  UNSAFE_TODO(EXPECT_EQ(uint32_t(0x10FEDCBA), ptr[1].value));
-  EXPECT_EQ(size_t(1), source_.Remaining());
+  EXPECT_THAT(
+      source_.GetArray<UnalignedUint32T>(2),
+      ElementsAre(UnalignedUint32T{0x98765432}, UnalignedUint32T{0x10FEDCBA}));
+  EXPECT_EQ(1u, source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, GetArrayAggregate) {
-  const ValueType* ptr = source_.GetArray<ValueType>(2);
-  EXPECT_EQ(nullptr, ptr);
+  EXPECT_THAT(source_.GetArray<ValueType>(2), IsEmpty());
 
-  ptr = source_.GetArray<ValueType>(1);
+  EXPECT_THAT(source_.GetArray<ValueType>(1),
+              ElementsAre(ValueType{0x76543210, 0xBA98}));
+  EXPECT_EQ(4u, source_.Remaining());
+}
 
-  EXPECT_NE(nullptr, ptr);
-  EXPECT_EQ(uint32_t(0x76543210), ptr[0].a);
-  EXPECT_EQ(uint32_t(0xBA98), ptr[0].b);
-  EXPECT_EQ(size_t(4), source_.Remaining());
+TEST_F(BufferSourceTest, GetArrayEmpty) {
+  EXPECT_THAT(source_.GetArray<UnalignedUint32T>(0), IsEmpty());
+  EXPECT_EQ(10u, source_.Remaining());
 }
 
 TEST_F(BufferSourceTest, GetUleb128) {

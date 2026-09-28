@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -108,11 +109,11 @@ class BufferSource : public ConstBufferView {
   }
 
   // Tries to reinterpret data as an array of type |T| with |count| elements,
-  // starting at the cursor, and to return a reinterpreted pointer of type |T|
-  // pointing into the underlying data, while advancing the cursor beyond the
-  // array. Returns nullptr if insufficient data is available.
+  // starting at the cursor, and to return a span of type |T| pointing into the
+  // underlying data, while advancing the cursor beyond the array. Returns an
+  // empty span if insufficient data is available.
   template <class T>
-  const T* GetArray(size_t count) {
+  base::span<const T> GetArray(size_t count) {
     static_assert(std::is_standard_layout<T>::value,
                   "Value type must be a standard layout type");
     // Ensures unaligned data access is allowed. Currently this is not used
@@ -121,11 +122,11 @@ class BufferSource : public ConstBufferView {
     static_assert(alignof(T) == 1, "Value type requires byte alignment");
 
     if (Remaining() / sizeof(T) < count) {
-      return nullptr;
+      return {};
     }
-    const T* array = reinterpret_cast<const T*>(begin());
-    remove_prefix(count * sizeof(T));
-    return array;
+    auto bytes = as_span().first(count * sizeof(T));
+    remove_prefix(bytes.size());
+    return base::subtle::reinterpret_span<const T>(bytes);
   }
 
   // If sufficient data is available, assigns |buffer| to point to a region of

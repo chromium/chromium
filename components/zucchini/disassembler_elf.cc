@@ -269,35 +269,33 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
 
   header_ = source.GetPointer<typename Traits::Elf_Ehdr>();
 
-  sections_count_ = header_->e_shnum;
   source = BufferSource(image_, header_->e_shoff);
-  sections_ = source.GetArray<typename Traits::Elf_Shdr>(sections_count_);
-  if (!sections_)
+  sections_ = source.GetArray<typename Traits::Elf_Shdr>(header_->e_shnum);
+  if (sections_.empty()) {
     return false;
+  }
   offset_t section_table_end =
       base::checked_cast<offset_t>(source.begin() - image_.begin());
 
-  segments_count_ = header_->e_phnum;
   source = BufferSource(image_, header_->e_phoff);
-  segments_ = source.GetArray<typename Traits::Elf_Phdr>(segments_count_);
-  if (!segments_)
+  auto segments = source.GetArray<typename Traits::Elf_Phdr>(header_->e_phnum);
+  if (segments.size() != header_->e_phnum) {
     return false;
+  }
   offset_t segment_table_end =
       base::checked_cast<offset_t>(source.begin() - image_.begin());
 
   // Check string section -- even though we've stopped using them.
   elf::Elf32_Half string_section_id = header_->e_shstrndx;
-  if (string_section_id >= sections_count_)
+  if (string_section_id >= sections_.size()) {
     return false;
-  size_t section_names_size = UNSAFE_TODO(sections_[string_section_id]).sh_size;
+  }
+  size_t section_names_size = sections_[string_section_id].sh_size;
   if (section_names_size > 0) {
     // If nonempty, then last byte of string section must be null.
-    const char* section_names = nullptr;
-    source = BufferSource(image_,
-                          UNSAFE_TODO(sections_[string_section_id].sh_offset));
-    section_names = source.GetArray<char>(section_names_size);
-    if (!section_names ||
-        UNSAFE_TODO(section_names[section_names_size - 1]) != '\0') {
+    source = BufferSource(image_, sections_[string_section_id].sh_offset);
+    auto section_names = source.GetArray<char>(section_names_size);
+    if (section_names.empty() || section_names.back() != '\0') {
       return false;
     }
   }
@@ -305,19 +303,17 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   // Establish bound on encountered offsets.
   offset_t offset_bound = std::max(section_table_end, segment_table_end);
 
-  // Visits |segments_| to get estimate on |offset_bound|.
-  for (const typename Traits::Elf_Phdr* segment = segments_;
-       segment != UNSAFE_TODO(segments_ + segments_count_);
-       UNSAFE_TODO(++segment)) {
+  // Visits |segments| to get estimate on |offset_bound|.
+  for (const typename Traits::Elf_Phdr& segment : segments) {
     // |image_.covers()| is a sufficient check except when size_t is 32 bit and
     // parsing ELF64. In such cases a value-in-range check is needed on the
     // segment. This fixes crbug/1035603.
     offset_t segment_end;
-    base::CheckedNumeric<offset_t> checked_segment_end = segment->p_offset;
-    checked_segment_end += segment->p_filesz;
+    base::CheckedNumeric<offset_t> checked_segment_end = segment.p_offset;
+    checked_segment_end += segment.p_filesz;
     if (!checked_segment_end.AssignIfValid(&segment_end) ||
-        !image_.covers({static_cast<size_t>(segment->p_offset),
-                        static_cast<size_t>(segment->p_filesz)})) {
+        !image_.covers({static_cast<size_t>(segment.p_offset),
+                        static_cast<size_t>(segment.p_filesz)})) {
       return false;
     }
     offset_bound = std::max(offset_bound, segment_end);
@@ -325,19 +321,18 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
 
   // Visit and validate each section; add address translation data to |units|.
   std::vector<AddressTranslator::Unit> units;
-  units.reserve(sections_count_);
-  section_judgements_.reserve(sections_count_);
+  units.reserve(sections_.size());
+  section_judgements_.reserve(sections_.size());
 
-  for (int i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(&sections_[i]);
-    int judgement = JudgeSection<Traits>(image_.size(), section);
+  for (const typename Traits::Elf_Shdr& section : sections_) {
+    int judgement = JudgeSection<Traits>(image_.size(), &section);
     section_judgements_.push_back(judgement);
     if ((judgement & SECTION_BIT_SAFE) == 0)
       return false;
 
-    uint32_t sh_size = base::checked_cast<uint32_t>(section->sh_size);
-    offset_t sh_offset = base::checked_cast<offset_t>(section->sh_offset);
-    rva_t sh_addr = base::checked_cast<rva_t>(section->sh_addr);
+    uint32_t sh_size = base::checked_cast<uint32_t>(section.sh_size);
+    offset_t sh_offset = base::checked_cast<offset_t>(section.sh_offset);
+    rva_t sh_addr = base::checked_cast<rva_t>(section.sh_addr);
     if ((judgement & SECTION_BIT_USEFUL_FOR_ADDRESS_TRANSLATOR) != 0) {
       // Store mappings between RVA and offset.
       units.push_back({sh_offset, sh_size, sh_addr, sh_size});
@@ -362,13 +357,13 @@ template <class TRAITS>
 void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
   DCHECK(reloc_section_dims_.empty());
   DCHECK(exec_headers_.empty());
-  for (elf::Elf32_Half i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(sections_ + i);
+  for (size_t i = 0; i < sections_.size(); ++i) {
+    const typename Traits::Elf_Shdr& section = sections_[i];
     if ((section_judgements_[i] & SECTION_BIT_MAYBE_USEFUL_FOR_POINTERS) != 0) {
-      if (IsRelocSection<Traits>(*section)) {
-        reloc_section_dims_.emplace_back(*section);
-      } else if (IsExecSection<Traits>(*section)) {
-        exec_headers_.push_back(section);
+      if (IsRelocSection<Traits>(section)) {
+        reloc_section_dims_.emplace_back(section);
+      } else if (IsExecSection<Traits>(section)) {
+        exec_headers_.push_back(&section);
       }
     }
   }

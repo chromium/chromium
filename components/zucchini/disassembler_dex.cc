@@ -1813,15 +1813,10 @@ bool DisassemblerDex::ParseHeader() {
   decltype(dex::MapList::size) list_size = 0;
   if (!source.GetValue(&list_size) || list_size > dex::kMaxItemListSize)
     return false;
-  const auto* item_list_ptr = source.GetArray<const dex::MapItem>(list_size);
-  if (!item_list_ptr) {
+  auto item_list = source.GetArray<dex::MapItem>(list_size);
+  if (item_list.empty()) {
     return false;
   }
-  // `BufferSource` (i.e. `zucchini::internal::BufferViewBase`) is an unsafe
-  // class, and should be removed or reimplemented based on `base::span` for
-  // example. Then, this UNSAFE_TODO should be naturally gone.
-  base::span<const dex::MapItem> item_list =
-      UNSAFE_TODO(base::span(item_list_ptr, list_size));
 
   // Read and validate map list, ensuring that required item types are present.
   // GetItemBaseSize() should have an entry for each item.
