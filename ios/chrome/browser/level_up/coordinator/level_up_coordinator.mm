@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -286,6 +288,11 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  // Logs the dismiss the promo sheet via swipe down.
+  if ([self.viewController isKindOfClass:[LevelUpPromoViewController class]]) {
+    base::UmaHistogramEnumeration("IOS.LevelUpPromo.Action",
+                                  PromoStyleSheetAction::kDismissViaSwipe);
+  }
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands)
       dismissLevelUp];
 }
@@ -293,6 +300,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  base::UmaHistogramEnumeration("IOS.LevelUpPromo.Action",
+                                PromoStyleSheetAction::kPrimaryButtonTapped);
   _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
   __weak __typeof(self) weakSelf = self;
   [self stopLevelUpNavigationController:^{
@@ -305,6 +314,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 }
 
 - (void)didTapDismissButton {
+  base::UmaHistogramEnumeration("IOS.LevelUpPromo.Action",
+                                PromoStyleSheetAction::kDismissButtonTapped);
   id<LevelUpCommands> handler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LevelUpCommands);
   [handler dismissLevelUp];

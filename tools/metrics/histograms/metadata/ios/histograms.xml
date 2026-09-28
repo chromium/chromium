@@ -4261,6 +4261,15 @@ chromium-metrics-reviews@google.com.
   <summary>Records the way the app was launched on iOS.</summary>
 </histogram>
 
+<histogram name="IOS.LevelUpPromo.Action" enum="PromoStyleSheetAction"
+    expires_after="2027-09-01">
+  <owner>zijingl@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs user button actions on the Level Up promo onboarding screen.
+  </summary>
+</histogram>
+
 <histogram name="IOS.LinkToText.ShouldOfferResult"
     enum="LinkToTextShouldOfferResult" expires_after="2023-09-03">
   <owner>tmartino@chromium.org</owner>
