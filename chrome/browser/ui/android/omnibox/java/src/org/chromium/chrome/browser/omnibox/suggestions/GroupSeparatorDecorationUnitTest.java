@@ -13,16 +13,16 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,9 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.GroupSeparatorType;
@@ -61,8 +60,7 @@ public class GroupSeparatorDecorationUnitTest {
     private PropertyModel mGapSeparatorModel;
     private PropertyModel mNoSeparatorModel;
 
-    private ActivityController<Activity> mActivityController;
-    private Activity mActivity;
+    private Context mContext;
     private GroupSeparatorDecoration mDecoration;
     private int mExpectedHeight;
 
@@ -87,12 +85,12 @@ public class GroupSeparatorDecorationUnitTest {
                                 GroupSeparatorType.NONE)
                         .build();
 
-        mActivityController = Robolectric.buildActivity(Activity.class);
-        mActivity = mActivityController.setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mDecoration = new GroupSeparatorDecoration(mActivity);
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mDecoration = new GroupSeparatorDecoration(mContext);
 
-        Resources res = mActivity.getResources();
+        Resources res = mContext.getResources();
         mExpectedHeight =
                 res.getDimensionPixelSize(R.dimen.divider_height)
                         + res.getDimensionPixelSize(
@@ -120,11 +118,6 @@ public class GroupSeparatorDecorationUnitTest {
                 .doReturn(mNoSeparatorViewHolder)
                 .when(mRecyclerView)
                 .getChildViewHolder(mChildViewWithNoSeparator);
-    }
-
-    @After
-    public void tearDown() {
-        mActivityController.close();
     }
 
     @Test
@@ -176,8 +169,7 @@ public class GroupSeparatorDecorationUnitTest {
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         int expectedPadding =
-                mActivity
-                        .getResources()
+                mContext.getResources()
                         .getDimensionPixelSize(
                                 R.dimen.omnibox_suggestion_list_divider_line_horizontal_padding);
         int expectedLeft = 10 + expectedPadding;
