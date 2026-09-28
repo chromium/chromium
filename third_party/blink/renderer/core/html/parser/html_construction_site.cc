@@ -1463,19 +1463,26 @@ bool HTMLConstructionSite::IndexOfFirstUnopenFormattingElement(
 
 void HTMLConstructionSite::ReconstructTheActiveFormattingElements() {
   unsigned first_unopen_element_index;
-  if (!IndexOfFirstUnopenFormattingElement(first_unopen_element_index)) {
-    return;
-  }
-
-  unsigned unopen_entry_index = first_unopen_element_index;
-  for (; unopen_entry_index < active_formatting_elements_.size();
-       ++unopen_entry_index) {
-    HTMLFormattingElementList::Entry& unopened_entry =
-        active_formatting_elements_.at(unopen_entry_index);
-    HTMLStackItem* reconstructed =
-        CreateElementFromSavedToken(unopened_entry.StackItem());
+  while (IndexOfFirstUnopenFormattingElement(first_unopen_element_index)) {
+    HTMLStackItem* unopened_item =
+        active_formatting_elements_.at(first_unopen_element_index).StackItem();
+    HTMLStackItem* reconstructed = CreateElementFromSavedToken(unopened_item);
+    // AttachOrFosterParent() can execute script synchronously (e.g. via blur
+    // handlers on foster parenting), which might re-enter the parser and
+    // reallocate active_formatting_elements_. Avoid holding references to an
+    // HTMLFormattingElementList::Entry across the call and re-find the entry
+    // afterwards.
     AttachOrFosterParent(reconstructed);
-    unopened_entry.ReplaceElement(reconstructed);
+    if (first_unopen_element_index < active_formatting_elements_.size() &&
+        active_formatting_elements_.at(first_unopen_element_index)
+                .StackItem() == unopened_item) {
+      active_formatting_elements_.at(first_unopen_element_index)
+          .ReplaceElement(reconstructed);
+    } else if (HTMLFormattingElementList::Entry* entry =
+                   active_formatting_elements_.Find(
+                       unopened_item->GetElement())) {
+      entry->ReplaceElement(reconstructed);
+    }
   }
 }
 
