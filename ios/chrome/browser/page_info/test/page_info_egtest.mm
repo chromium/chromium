@@ -667,7 +667,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 // Tests that tapping on a history entry from the Last Visited subpage dismisses
 // Page Info (which presents the Last Visited subpage) and opens the
 // corresponding URL.
-- (void)testOpeningURLFromLastVisitedDismissesPageInfo {
+// TODO(crbug.com/567149253): Re-enable. The live www.example.com page no longer
+// contains "Example Domain" in its body.
+- (void)DISABLED_testOpeningURLFromLastVisitedDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
@@ -705,7 +707,9 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
 
 // Tests that tapping on a history entry dismisses both full history and the
 // underlying Page Info (which presents the Last Visited subpage).
-- (void)testOpeningURLFromFullHistoryDismissesPageInfo {
+// TODO(crbug.com/567156614): Re-enable. The live www.example.com page no longer
+// contains "Example Domain" in its body.
+- (void)DISABLED_testOpeningURLFromFullHistoryDismissesPageInfo {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
   // Create an entry in History which took place one day ago on
