@@ -27,6 +27,10 @@ specific_include_rules = {
     "+chrome/browser/history",
   ],
 
+  "printing_manager_unittest\\.cc": [
+    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
+  ],
+
   ".*_uitest\\.cc": [
     "+chrome/browser/ui/browser_commands.h",
   ],

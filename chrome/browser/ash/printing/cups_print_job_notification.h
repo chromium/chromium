@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -22,6 +23,10 @@ namespace message_center {
 class Notification;
 }
 
+namespace user_manager {
+class User;
+}
+
 namespace ash {
 
 class CupsPrintJob;
@@ -31,6 +36,7 @@ class CupsPrintJobNotificationManager;
 // according to its state and respond to the user's action.
 class CupsPrintJobNotification : public message_center::NotificationObserver {
  public:
+  // `print_job` must be alive at construction time.
   CupsPrintJobNotification(CupsPrintJobNotificationManager* manager,
                            base::WeakPtr<CupsPrintJob> print_job,
                            Profile* profile);
@@ -40,29 +46,24 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
 
   virtual ~CupsPrintJobNotification();
 
+  // Updates the notification based on the print job's status.
   void OnPrintJobStatusUpdated();
 
-  // message_center::NotificationObserver
+  // message_center::NotificationObserver:
   void Close(bool by_user) override;
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override;
 
-  message_center::Notification* GetNotificationDataForTesting();
-
  private:
-  // Update the notification based on the print job's status.
-  void UpdateNotification();
-  void UpdateNotificationTitle();
-  void UpdateNotificationIcon();
-  void UpdateNotificationBodyMessage();
+  std::unique_ptr<message_center::Notification> CreateNotification();
 
   void CleanUpNotification();
 
-  raw_ptr<CupsPrintJobNotificationManager> notification_manager_;
-  std::unique_ptr<message_center::Notification> notification_;
-  std::string notification_id_;
+  const raw_ptr<CupsPrintJobNotificationManager> notification_manager_;
+  const raw_ref<const user_manager::User> user_;
+  const std::string notification_id_;
   base::WeakPtr<CupsPrintJob> print_job_;
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Whether this print job has been submitted via the Web Printing API.
   // This field is separate from `print_job_` since the WeakPtr might expire
@@ -76,7 +77,7 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   bool closed_in_middle_ = false;
 
   // Timer to close the notification in case of success.
-  std::unique_ptr<base::OneShotTimer> success_timer_;
+  const std::unique_ptr<base::OneShotTimer> success_timer_;
 
   base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_{this};
 };

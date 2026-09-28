@@ -4,20 +4,28 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification.h"
 
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_notification_manager.h"
 #include "chrome/browser/ash/printing/fake_cups_print_job_manager.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -47,12 +55,22 @@ class CupsPrintJobNotificationTest : public testing::Test,
 
   void SetUp() override {
     testing::Test::SetUp();
+    message_center::MessageCenter::Initialize();
+
+    user_ = fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user_manager::StubAccountId());
+    AnnotatedAccountId::Set(&profile_, user_manager::StubAccountId());
 
     // Wait for AppServiceProxy to be ready.
     app_service_test_.SetUp(&profile_);
     if (IsWebPrintingTest()) {
       AddIWA(kAppId, kAppName);
     }
+  }
+
+  void TearDown() override {
+    message_center::MessageCenter::Shutdown();
+    testing::Test::TearDown();
   }
 
   CupsPrintJob CreateCupsPrintJob(const std::string& printer_name,
@@ -71,6 +89,14 @@ class CupsPrintJobNotificationTest : public testing::Test,
           total_page_number, ::printing::PrintJob::Source::kPrintPreview,
           /*source_id=*/std::string(), printing::proto::PrintSettings());
     }
+  }
+
+  const message_center::Notification& GetNotification(
+      const CupsPrintJob& job) const {
+    return CHECK_DEREF(
+        message_center::MessageCenter::Get()->FindNotificationById(
+            CreateUserScopedNotificationId(job.GetUniqueId(),
+                                           user_->username_hash())));
   }
 
   std::unique_ptr<CupsPrintJobNotification> CreateNotificationForJob(
@@ -100,6 +126,9 @@ class CupsPrintJobNotificationTest : public testing::Test,
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
+  raw_ptr<const user_manager::User> user_;
   TestingProfile profile_;
   FakeCupsPrintJobManager print_job_manager_;
   CupsPrintJobNotificationManager notification_manager_;
@@ -119,10 +148,8 @@ TEST_P(CupsPrintJobNotificationTest, ClientUnauthorized) {
   job.set_state(CupsPrintJob::State::STATE_FAILED);
   cups_notification->OnPrintJobStatusUpdated();
 
-  const auto& notification =
-      CHECK_DEREF(cups_notification->GetNotificationDataForTesting());
   EXPECT_THAT(
-      notification,
+      GetNotification(job),
       AllOf(
           Property(&message_center::Notification::title,
                    Eq(l10n_util::GetStringUTF16(
@@ -145,10 +172,8 @@ TEST_P(CupsPrintJobNotificationTest, RunningJob) {
   job.set_state(CupsPrintJob::State::STATE_STARTED);
   cups_notification->OnPrintJobStatusUpdated();
 
-  const auto& notification =
-      CHECK_DEREF(cups_notification->GetNotificationDataForTesting());
   EXPECT_THAT(
-      notification,
+      GetNotification(job),
       AllOf(Property(&message_center::Notification::title,
                      Eq(l10n_util::GetStringUTF16(
                          IDS_PRINT_JOB_PRINTING_NOTIFICATION_TITLE))),
@@ -170,10 +195,8 @@ TEST_P(CupsPrintJobNotificationTest, RunningJobSinglePage) {
   job.set_state(CupsPrintJob::State::STATE_STARTED);
   cups_notification->OnPrintJobStatusUpdated();
 
-  const auto& notification =
-      CHECK_DEREF(cups_notification->GetNotificationDataForTesting());
   EXPECT_THAT(
-      notification,
+      GetNotification(job),
       AllOf(
           Property(&message_center::Notification::title,
                    Eq(l10n_util::GetStringUTF16(
@@ -196,10 +219,8 @@ TEST_P(CupsPrintJobNotificationTest, JobDone) {
   job.set_state(CupsPrintJob::State::STATE_DOCUMENT_DONE);
   cups_notification->OnPrintJobStatusUpdated();
 
-  const auto& notification =
-      CHECK_DEREF(cups_notification->GetNotificationDataForTesting());
   EXPECT_THAT(
-      notification,
+      GetNotification(job),
       AllOf(Property(&message_center::Notification::title,
                      Eq(l10n_util::GetStringUTF16(
                          IDS_PRINT_JOB_DONE_NOTIFICATION_TITLE))),

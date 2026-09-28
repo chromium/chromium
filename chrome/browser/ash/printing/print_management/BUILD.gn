@@ -65,6 +65,7 @@ source_set("unit_tests") {
     ":print_management",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/printing/history",
@@ -75,8 +76,10 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//components/history/core/test",
     "//components/prefs:test_support",
+    "//components/user_manager",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/message_center",
   ]
 
   if (use_cups) {

@@ -128,7 +128,6 @@ static_library("printing") {
     "//chrome/browser/component_updater",
     "//chrome/browser/local_discovery",
     "//chrome/browser/net",
-    "//chrome/browser/notifications",
     "//chrome/browser/printing",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui:chrome_pages",
@@ -146,6 +145,7 @@ static_library("printing") {
     "//components/application_locale_storage",
     "//components/device_event_log",
     "//components/pref_registry",
+    "//components/user_manager",
     "//printing/backend",
     "//third_party/libipp",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
@@ -231,6 +231,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/login/users",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing:test_support",
     "//chrome/browser/ash/printing/enterprise",
@@ -244,6 +245,7 @@ source_set("unit_tests") {
     "//chrome/browser/printing",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/printscanmgr",
@@ -261,6 +263,7 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libipp",
+    "//ui/message_center",
   ]
 
   if (use_cups) {

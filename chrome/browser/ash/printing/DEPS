@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/chromeos/printing",
   "+chrome/browser/local_discovery",
   "+chrome/browser/net",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",

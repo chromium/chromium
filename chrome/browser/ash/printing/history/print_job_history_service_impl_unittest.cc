@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
@@ -12,10 +13,14 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -32,6 +37,12 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
   PrintJobHistoryServiceImplTest() = default;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
+
+    fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user_manager::StubAccountId());
+    AnnotatedAccountId::Set(&profile_, user_manager::StubAccountId());
+
     test_prefs_.SetInitializationCompleted();
     PrintJobHistoryService::RegisterProfilePrefs(test_prefs_.registry());
 
@@ -44,6 +55,7 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
   void TearDown() override {
     print_job_history_service_.reset();
     print_job_manager_.reset();
+    message_center::MessageCenter::Shutdown();
   }
 
   void OnPrintJobSaved(base::RepeatingClosure run_loop_closure, bool success) {
@@ -82,6 +94,8 @@ class PrintJobHistoryServiceImplTest : public ::testing::Test {
   std::vector<printing::proto::PrintJobInfo> entries_;
 
  private:
+  user_manager::TypedScopedUserManager<FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   TestingProfile profile_;
   TestingPrefServiceSimple test_prefs_;
 };

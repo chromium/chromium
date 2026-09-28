@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/settings",
     "//components/prefs:test_support",
     "//components/reporting/client:report_queue",
@@ -87,6 +88,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/message_center",
   ]
 
   if (use_cups) {

@@ -7,24 +7,20 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/check_deref.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_notification_manager.h"
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
-#include "chrome/browser/chromeos/printing/printer_error_codes.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "components/prefs/pref_service.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/image/image.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -32,7 +28,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kCupsPrintJobNotificationId[] =
+constexpr char kSettingsPrintingCupsPrintJobUrl[] =
     "chrome://settings/printing/cups-print-job-notification";
 
 constexpr int64_t kSuccessTimeoutSeconds = 8;
@@ -54,43 +50,54 @@ CupsPrintJobNotification::CupsPrintJobNotification(
     base::WeakPtr<CupsPrintJob> print_job,
     Profile* profile)
     : notification_manager_(manager),
-      notification_id_(print_job->GetUniqueId()),
+      user_(CHECK_DEREF(
+          BrowserContextHelper::Get()->GetUserByBrowserContext(profile))),
+      notification_id_(CreateUserScopedNotificationId(print_job->GetUniqueId(),
+                                                      user_->username_hash())),
       print_job_(print_job),
       profile_(profile),
       is_web_printing_api_initiated_(
           IsPrintJobInitiatedByWebPrintingAPI(*print_job)),
       success_timer_(std::make_unique<base::OneShotTimer>()) {
-  // Create a notification for the print job. The title, body, and icon of the
-  // notification will be updated in UpdateNotification().
-  notification_ = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-      /*title=*/std::u16string(), /*body=*/std::u16string(),
-      /*icon=*/ui::ImageModel(),
-      /*display_source=*/
-      l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
-      GURL(kCupsPrintJobNotificationId),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kCupsPrintJobNotificationId,
-                                 NotificationCatalogName::kCupsPrintJob),
-      message_center::RichNotificationData(),
-      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-          weak_factory_.GetWeakPtr()));
-  std::vector<message_center::ButtonInfo> buttons;
-  buttons.emplace_back(
+  OnPrintJobStatusUpdated();
+}
+
+std::unique_ptr<message_center::Notification>
+CupsPrintJobNotification::CreateNotification() {
+  CHECK(print_job_);
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kSettingsPrintingCupsPrintJobUrl, NotificationCatalogName::kCupsPrintJob);
+  notifier_id.profile_id = user_->GetAccountId().GetUserEmail();
+
+  message_center::RichNotificationData optional_fields;
+  optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_PRINT_JOB_PRINTING_PRINT_MANAGEMENT_PAGE));
   if (is_web_printing_api_initiated_) {
-    buttons.emplace_back(l10n_util::GetStringUTF16(
+    optional_fields.buttons.emplace_back(l10n_util::GetStringUTF16(
         IDS_PRINT_JOB_PRINTING_CONTENT_SETTINGS_PAGE));
   }
-  notification_->set_buttons(buttons);
-  UpdateNotification();
+
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotificationPtr(
+          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
+          /*title=*/std::u16string(), /*message=*/std::u16string(),
+          /*display_source=*/
+          l10n_util::GetStringUTF16(IDS_PRINT_JOB_NOTIFICATION_DISPLAY_SOURCE),
+          notifier_id, optional_fields,
+          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+              weak_factory_.GetWeakPtr()),
+          gfx::VectorIcon::EmptyIcon(),
+          message_center::SystemNotificationWarningLevel::NORMAL);
+
+  printing::internal::UpdateNotificationTitle(notification.get(), *print_job_);
+  printing::internal::UpdateNotificationIcon(notification.get(), *print_job_);
+  printing::internal::UpdateNotificationBodyMessage(notification.get(),
+                                                    *print_job_, *profile_);
+  return notification;
 }
 
 CupsPrintJobNotification::~CupsPrintJobNotification() = default;
-
-void CupsPrintJobNotification::OnPrintJobStatusUpdated() {
-  UpdateNotification();
-}
 
 void CupsPrintJobNotification::Close(bool by_user) {
   if (!by_user)
@@ -126,18 +133,13 @@ void CupsPrintJobNotification::Click(
   }
 }
 
-message_center::Notification*
-CupsPrintJobNotification::GetNotificationDataForTesting() {
-  return notification_.get();
-}
-
 void CupsPrintJobNotification::CleanUpNotification() {
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, notification_id_);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
+                                                           /*by_user=*/false);
   notification_manager_->OnPrintJobNotificationRemoved(this);
 }
 
-void CupsPrintJobNotification::UpdateNotification() {
+void CupsPrintJobNotification::OnPrintJobStatusUpdated() {
   if (!print_job_)
     return;
 
@@ -149,10 +151,6 @@ void CupsPrintJobNotification::UpdateNotification() {
     return;
   }
 
-  UpdateNotificationTitle();
-  UpdateNotificationIcon();
-  UpdateNotificationBodyMessage();
-
   // |STATE_STARTED| and |STATE_PAGE_DONE| are special since if the user closes
   // the notification in the middle, which means they're not interested in the
   // printing progress, we should prevent showing the following printing
@@ -160,9 +158,7 @@ void CupsPrintJobNotification::UpdateNotification() {
   if ((print_job_->state() != CupsPrintJob::State::STATE_STARTED &&
        print_job_->state() != CupsPrintJob::State::STATE_PAGE_DONE) ||
       !closed_in_middle_) {
-    NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-        NotificationHandler::Type::TRANSIENT, *notification_,
-        /*metadata=*/nullptr);
+    message_center::MessageCenter::Get()->AddNotification(CreateNotification());
     if (print_job_->state() == CupsPrintJob::State::STATE_DOCUMENT_DONE) {
       success_timer_->Start(
           FROM_HERE, base::Seconds(kSuccessTimeoutSeconds),
@@ -175,28 +171,6 @@ void CupsPrintJobNotification::UpdateNotification() {
   // and we are not supposed to get any notification update after that.
   if (print_job_->IsJobFinished())
     print_job_ = nullptr;
-}
-
-void CupsPrintJobNotification::UpdateNotificationTitle() {
-  if (!print_job_) {
-    return;
-  }
-  printing::internal::UpdateNotificationTitle(notification_.get(), *print_job_);
-}
-
-void CupsPrintJobNotification::UpdateNotificationIcon() {
-  if (!print_job_) {
-    return;
-  }
-  printing::internal::UpdateNotificationIcon(notification_.get(), *print_job_);
-}
-
-void CupsPrintJobNotification::UpdateNotificationBodyMessage() {
-  if (!print_job_) {
-    return;
-  }
-  printing::internal::UpdateNotificationBodyMessage(notification_.get(),
-                                                    *print_job_, *profile_);
 }
 
 }  // namespace ash
