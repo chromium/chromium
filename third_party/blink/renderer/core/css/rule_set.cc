@@ -86,7 +86,6 @@ static void AddRuleToIntervals(const T* value,
 static void UnmarkAsCoveredByBucketing(CSSSelector& selector);
 
 static inline ValidPropertyFilter DetermineValidPropertyFilter(
-    const AddRuleFlags add_rule_flags,
     const CSSSelector& selector) {
   for (const CSSSelector* component = &selector; component;
        component = component->NextSimpleSelector()) {
@@ -157,7 +156,7 @@ RuleData::RuleData(StyleRule* rule,
           DetermineLinkMatchType(add_rule_flags, Selector(), style_scope)),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
-              DetermineValidPropertyFilter(add_rule_flags, Selector()))),
+              DetermineValidPropertyFilter(Selector()))),
       is_entirely_covered_by_bucketing_(
           false),  // Will be computed in ComputeEntirelyCoveredByBucketing().
       is_easy_(false),  // Ditto.
