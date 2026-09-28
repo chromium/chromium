@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 import android.content.res.Configuration;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -140,7 +142,7 @@ public class TabletPhoneLayoutChangeTest {
 
     @Test
     @MediumTest
-    public void testTabSwitcherStateRetention() throws TimeoutException {
+    public void testTabSwitcherStateRetention_FlakeCheck() throws TimeoutException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -178,21 +180,25 @@ public class TabletPhoneLayoutChangeTest {
         Configuration newConfig = new Configuration(config);
         config.smallestScreenWidthDp =
                 DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + (isTestOnTablet ? -1 : 1);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getLifecycleDispatcher()
-                            .register((DestroyObserver) helper::notifyCalled);
-                    Assert.assertTrue(
-                            "Activity should be ready for tablet mode change.",
-                            cta.getTabletMode().changed);
-                    cta.performOnConfigurationChanged(newConfig);
-                    Assert.assertTrue(
-                            "ChromeActivity#mIsRecreatingForTabletModeChange should be true.",
-                            cta.recreatingForTabletModeChangeForTesting());
-                });
-        mActivityTestRule.recreateActivity();
+        ChromeTabbedActivity newCta =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> {
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getLifecycleDispatcher()
+                                    .register((DestroyObserver) helper::notifyCalled);
+                            Assert.assertTrue(
+                                    "Activity should be ready for tablet mode change.",
+                                    cta.getTabletMode().changed);
+                            cta.performOnConfigurationChanged(newConfig);
+                            Assert.assertTrue(
+                                    "ChromeActivity#mIsRecreatingForTabletModeChange should be"
+                                            + " true.",
+                                    cta.recreatingForTabletModeChangeForTesting());
+                        });
+        mActivityTestRule.getActivityTestRule().setActivity(newCta);
         helper.waitForOnly("Wait for old Activity being destroyed.");
     }
 }
