@@ -28,6 +28,7 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -119,6 +120,7 @@ public class RadioButtonWithIconRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "RadioButton"})
+    @DisabledTest(message = "https://crbug.com/566448123")
     public void testRadioButtonWithIcon() throws Exception {
         mRenderTestRule.render(mRadioButtonWithIcon1, "icon_primary_only");
         mRenderTestRule.render(mRadioButtonWithIcon2, "icon_primary_description");
