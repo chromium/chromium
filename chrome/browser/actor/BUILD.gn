@@ -100,6 +100,7 @@ source_set("actor") {
     ]
     public += [
       "tools/load_and_extract_content_tool_request.h",
+      "tools/switch_tab_tool_request.h",
       "tools/tab_management_tool_request.h",
       "tools/window_management_tool_request.h",
     ]
@@ -300,6 +301,9 @@ source_set("impl") {
       "tools/load_and_extract_content_tool.cc",
       "tools/load_and_extract_content_tool.h",
       "tools/load_and_extract_content_tool_request.cc",
+      "tools/switch_tab_tool.cc",
+      "tools/switch_tab_tool.h",
+      "tools/switch_tab_tool_request.cc",
       "tools/tab_management_tool.cc",
       "tools/tab_management_tool.h",
       "tools/tab_management_tool_request.cc",
@@ -592,6 +596,7 @@ source_set("browser_tests") {
       "tools/scroll_to_tool_browsertest.cc",
       "tools/scroll_tool_browsertest.cc",
       "tools/select_tool_browsertest.cc",
+      "tools/switch_tab_tool_browsertest.cc",
       "tools/tab_management_tool_browsertest.cc",
       "tools/tool_agnostic_browsertest.cc",
       "tools/translate_page_tool_browsertest.cc",

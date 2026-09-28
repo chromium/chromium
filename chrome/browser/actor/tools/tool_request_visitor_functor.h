@@ -30,6 +30,7 @@
 #include "chrome/common/buildflags.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
@@ -71,6 +72,9 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const ScrollToolRequest&) = 0;
   virtual void Apply(const ScrollToToolRequest&) = 0;
   virtual void Apply(const SelectToolRequest&) = 0;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  virtual void Apply(const SwitchTabToolRequest&) = 0;
+#endif
   virtual void Apply(const TranslatePageToolRequest&) = 0;
   virtual void Apply(const TypeToolRequest&) = 0;
   virtual void Apply(const WaitToolRequest&) = 0;

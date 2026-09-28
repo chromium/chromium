@@ -172,6 +172,9 @@ chromium-metrics-reviews@google.com.
   <int value="1801" label="FileUploadEmptyFileList"/>
   <int value="1900" label="SearchServiceUnavailable"/>
   <int value="1901" label="DefaultSearchProviderNotSet"/>
+  <int value="2000" label="PageSearchNoMatch"/>
+  <int value="2001" label="PageSearchAmbiguousMatch"/>
+  <int value="2002" label="PageSearchAlreadyOnMatchingTab"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/actor/public/mojom/actor_types.mojom:ActionResultCode) -->

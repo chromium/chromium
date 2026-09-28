@@ -49,6 +49,9 @@ using ToolRequestVariant = std::variant<
     ScrollToolRequest,
     ScrollToToolRequest,
     SelectToolRequest,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    SwitchTabToolRequest,
+#endif
     TranslatePageToolRequest,
     TypeToolRequest,
     WaitToolRequest>;
@@ -95,6 +98,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const ScrollToolRequest&) override;
   void Apply(const ScrollToToolRequest&) override;
   void Apply(const SelectToolRequest&) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  void Apply(const SwitchTabToolRequest&) override;
+#endif
   void Apply(const TranslatePageToolRequest&) override;
   void Apply(const TypeToolRequest&) override;
   void Apply(const WaitToolRequest&) override;

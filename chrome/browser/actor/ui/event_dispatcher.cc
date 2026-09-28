@@ -99,6 +99,9 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    NoUiEvents<SwitchTabToolRequest>,
+#endif
     NoUiEvents<TranslatePageToolRequest>,
     [](const TypeToolRequest& tr) {
       auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
@@ -139,6 +142,9 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    NoUiEvents<SwitchTabToolRequest>,
+#endif
     NoUiEvents<TranslatePageToolRequest>,
     NoUiEvents<TypeToolRequest>,
     NoUiEvents<WaitToolRequest>,

@@ -578,6 +578,20 @@ enum ActionResultCode {
   // Search could not be performed because default search provider was not set.
   kDefaultSearchProviderNotSet = 1901,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 2000-2099: Errors for page search (switch tab, open known page).
+
+  // The query did not match any page.
+  kPageSearchNoMatch = 2000,
+
+  // The query matched more than one page, so the tool did not act. The message
+  // lists the candidates so the caller can disambiguate and retry.
+  kPageSearchAmbiguousMatch = 2001,
+
+  // The query only matched the currently active tab, so no tab switch was
+  // performed.
+  kPageSearchAlreadyOnMatchingTab = 2002,
+
   // Please see the comment above about adding new values.
 };
 

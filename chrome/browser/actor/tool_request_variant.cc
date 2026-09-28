@@ -98,6 +98,11 @@ void ConvertToVariantFn::Apply(const ScrollToToolRequest& tr) {
 void ConvertToVariantFn::Apply(const SelectToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+void ConvertToVariantFn::Apply(const SwitchTabToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+#endif
 void ConvertToVariantFn::Apply(const TranslatePageToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
