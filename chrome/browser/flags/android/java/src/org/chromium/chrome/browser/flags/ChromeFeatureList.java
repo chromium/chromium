@@ -794,6 +794,8 @@ public abstract class ChromeFeatureList {
     public static final String SUBMENUS_IN_APP_MENU = "SubmenusInAppMenu";
     public static final String SUBMENUS_IN_APP_MENU_LFF = "SubmenusInAppMenuLff";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
+    public static final String SUPPRESS_ACCESSIBILITY_ON_DEFERRED_CONTENT_VIEW =
+            "SuppressAccessibilityOnDeferredContentView";
     public static final String SYNC_ENABLE_NEW_SYNC_DASHBOARD_URL = "SyncEnableNewSyncDashboardUrl";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
