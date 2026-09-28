@@ -1024,7 +1024,9 @@ chromium-metrics-reviews@google.com.
     100) frames available in total.
   </summary>
   <token key="Version" variants="CheckerboardingVersion"/>
-  <token key="Thread" variants="SmoothnessThread"/>
+  <token key="Thread" variants="SmoothnessThread">
+    <variant name=""/>
+  </token>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>
 
