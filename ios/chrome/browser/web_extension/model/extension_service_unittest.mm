@@ -11,9 +11,11 @@
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_impl.h"
 #import "ios/web/public/extension/extension_controller.h"
@@ -410,6 +412,130 @@ API_AVAILABLE(ios(18.4)) {
   // Re-asserting enabled pref does not load again.
   SetOptedIn(true);
   EXPECT_EQ(raw_fake_controller->load_call_count(), 1);
+}
+
+// Tests that ExtensionService blocks startup when
+// kUniversalOptOutExtensionSilent is enabled, and becomes ready after timeout.
+TEST_F(ExtensionServiceTest, TestSilentModeBlocksStartupWithTimeout)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      universal_optout::features::kUniversalOptOutExtensionSilent);
+
+  SetOptedIn(false);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  service.Initialize(web::UniversalOptOutState::kNotEligible);
+
+  EXPECT_FALSE(service.IsReady());
+  EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
+  EXPECT_EQ(raw_fake_controller->last_loaded_extension(),
+            web::BuiltInExtension::kGPCTest);
+
+  base::test::TestFuture<void> ready_future;
+  base::CallbackListSubscription ready_subscription =
+      service.RunWhenReady(ready_future.GetCallback());
+  EXPECT_FALSE(ready_future.IsReady());
+
+  // Advance time past 2 seconds to trigger timeout.
+  task_environment_.FastForwardBy(base::Seconds(2));
+
+  // Should be ready now due to timeout.
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_TRUE(ready_future.IsReady());
+}
+
+// Tests that ExtensionService becomes ready when extension completes loading
+// before timeout in silent mode.
+TEST_F(ExtensionServiceTest, TestSilentModeLoadsBeforeTimeout)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      universal_optout::features::kUniversalOptOutExtensionSilent);
+
+  SetOptedIn(false);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  service.Initialize(web::UniversalOptOutState::kNotEligible);
+
+  EXPECT_FALSE(service.IsReady());
+  EXPECT_EQ(raw_fake_controller->last_loaded_extension(),
+            web::BuiltInExtension::kGPCTest);
+
+  base::test::TestFuture<void> ready_future;
+  base::CallbackListSubscription ready_subscription =
+      service.RunWhenReady(ready_future.GetCallback());
+  EXPECT_FALSE(ready_future.IsReady());
+
+  task_environment_.FastForwardBy(base::Milliseconds(300));
+  raw_fake_controller->CompleteLoad(/*success=*/true);
+
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_TRUE(ready_future.IsReady());
+  EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
+      web::BuiltInExtension::kGPCTest));
+
+  // Pref change should not unload the extension in silent mode.
+  SetOptedIn(false);
+  EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
+      web::BuiltInExtension::kGPCTest));
+}
+
+// Tests that ExtensionService does not load extension and is ready immediately
+// when kUniversalOptOutExtensionSilent is enabled with "controller-only".
+TEST_F(ExtensionServiceTest, TestSilentModeControllerOnlyDoesNotLoadExtension)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      universal_optout::features::kUniversalOptOutExtensionSilent,
+      {{universal_optout::features::
+            kUniversalOptOutExtensionSilentControllerOnly.name,
+        "true"}});
+
+  SetOptedIn(false);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  service.Initialize(web::UniversalOptOutState::kNotEligible);
+
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.WebExtensionsWereLoadedAtStartup());
+  EXPECT_FALSE(raw_fake_controller->HasPendingLoad());
+  EXPECT_EQ(raw_fake_controller->load_call_count(), 0);
+  EXPECT_NE(service.GetExtensionController(), nullptr);
+}
+
+// Tests that silent extension is not loaded if kUniversalOptOutSettings is
+// enabled.
+TEST_F(ExtensionServiceTest, TestSilentModeDisabledWhenSettingsEnabled)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOutExtensionSilent,
+       universal_optout::features::kUniversalOptOutSettings},
+      /*disabled_features=*/{});
+
+  SetOptedIn(false);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  service.Initialize(web::UniversalOptOutState::kNotEligible);
+
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.WebExtensionsWereLoadedAtStartup());
+  EXPECT_FALSE(raw_fake_controller->HasPendingLoad());
+  EXPECT_EQ(raw_fake_controller->load_call_count(), 0);
 }
 
 }  // namespace

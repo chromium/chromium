@@ -366,4 +366,119 @@ TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsNullOnIOS27OrLater) {
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
 
+// Tests that ExtensionService is created when kUniversalOptOutExtensionSilent
+// is enabled, regardless of eligibility or whether other flags are disabled.
+TEST_F(ExtensionServiceFactoryTest,
+       TestFactoryReturnsServiceWhenSilentFlagEnabled) {
+  if (!@available(iOS 18.4, *)) {
+    GTEST_SKIP() << "ExtensionService requires iOS 18.4 or later.";
+  }
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOutExtensionSilent},
+      /*disabled_features=*/{
+          universal_optout::features::kUniversalOptOut,
+          universal_optout::features::kUniversalOptOutExtension,
+          universal_optout::features::kUniversalOptOutSettings});
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ExtensionServiceFactory::GetInstance(),
+                            ExtensionServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      universal_optout::UniversalOptOutServiceFactory::GetInstance(),
+      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
+                          base::Unretained(this), /*eligible=*/false));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(service, nullptr);
+}
+
+// Tests that ExtensionService is created when kUniversalOptOutExtensionSilent
+// is enabled even if eligibility is forced off via experimental flag.
+TEST_F(ExtensionServiceFactoryTest,
+       TestFactoryReturnsServiceWhenSilentFlagEnabledAndForcedOff) {
+  if (!@available(iOS 18.4, *)) {
+    GTEST_SKIP() << "ExtensionService requires iOS 18.4 or later.";
+  }
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOutExtensionSilent},
+      /*disabled_features=*/{});
+  [[NSUserDefaults standardUserDefaults]
+      setInteger:static_cast<NSInteger>(
+                     experimental_flags::UniversalOptOutEligibilityOverride::
+                         kForcedOff)
+          forKey:@"UniversalOptOutEligibilityOverride"];
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ExtensionServiceFactory::GetInstance(),
+                            ExtensionServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      universal_optout::UniversalOptOutServiceFactory::GetInstance(),
+      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
+                          base::Unretained(this), /*eligible=*/true));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(service, nullptr);
+
+  [[NSUserDefaults standardUserDefaults]
+      removeObjectForKey:@"UniversalOptOutEligibilityOverride"];
+}
+
+// Tests that when kUniversalOptOutSettings is enabled,
+// kUniversalOptOutExtensionSilent is considered disabled, and normal extension
+// supersedes test extension.
+TEST_F(ExtensionServiceFactoryTest,
+       TestFactoryReturnsNullWhenSilentAndSettingsBothEnabled) {
+  if (!@available(iOS 18.4, *)) {
+    GTEST_SKIP() << "ExtensionService requires iOS 18.4 or later.";
+  }
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOutExtensionSilent,
+       universal_optout::features::kUniversalOptOutSettings},
+      /*disabled_features=*/{
+          universal_optout::features::kUniversalOptOut,
+          universal_optout::features::kUniversalOptOutExtension});
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ExtensionServiceFactory::GetInstance(),
+                            ExtensionServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      universal_optout::UniversalOptOutServiceFactory::GetInstance(),
+      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
+                          base::Unretained(this), /*eligible=*/false));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
+}
+
+// Tests that ExtensionService is created with an empty controller when
+// kUniversalOptOutExtensionSilent is enabled with "controller-only" parameter.
+TEST_F(ExtensionServiceFactoryTest,
+       TestFactoryReturnsServiceWhenSilentControllerOnly)
+API_AVAILABLE(ios(18.4)) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      universal_optout::features::kUniversalOptOutExtensionSilent,
+      {{universal_optout::features::
+            kUniversalOptOutExtensionSilentControllerOnly.name,
+        "true"}});
+
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(ExtensionServiceFactory::GetInstance(),
+                            ExtensionServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(
+      universal_optout::UniversalOptOutServiceFactory::GetInstance(),
+      base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
+                          base::Unretained(this), /*eligible=*/false));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile.get());
+  ASSERT_NE(service, nullptr);
+  EXPECT_NE(service->GetExtensionController(), nullptr);
+  EXPECT_TRUE(service->IsReady());
+  EXPECT_FALSE(service->WebExtensionsWereLoadedAtStartup());
+}
+
 }  // namespace

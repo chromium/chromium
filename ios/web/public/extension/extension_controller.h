@@ -16,6 +16,7 @@ namespace web {
 // Built-in extensions supported by `ExtensionController`.
 enum class BuiltInExtension {
   kGPC,
+  kGPCTest,
 };
 
 // Interface for managing web extensions.

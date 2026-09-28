@@ -847,3 +847,32 @@ TEST_F(ChromeWebClientTest, ShouldBlockUniversalLinksForURL) {
   EXPECT_FALSE(web_client.ShouldBlockUniversalLinksForURL(
       profile(), GURL(kGoogleSearchURL)));
 }
+
+// Tests that GetExtensionController returns the controller from
+// ExtensionService when kUniversalOptOutExtensionSilent is enabled.
+TEST_F(ChromeWebClientTest, GetExtensionControllerSilentFlag)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      universal_optout::features::kUniversalOptOutExtensionSilent);
+
+  ChromeWebClient web_client;
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      ExtensionServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            auto service = std::make_unique<ExtensionServiceImpl>(
+                CHECK_DEREF(profile->GetPrefs()),
+                web::ExtensionController::Create());
+            service->Initialize(web::UniversalOptOutState::kNotEligible);
+            return service;
+          }));
+  auto profile_with_service = std::move(builder).Build();
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile_with_service.get());
+  ASSERT_TRUE(service);
+  EXPECT_NE(nullptr, service->GetExtensionController());
+  EXPECT_EQ(service->GetExtensionController(),
+            web_client.GetExtensionController(profile_with_service.get()));
+}

@@ -25,7 +25,23 @@ BASE_FEATURE(kUniversalOptOut,
 
 BASE_FEATURE(kUniversalOptOutExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUniversalOptOutExtensionSilent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUniversalOptOutSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kUniversalOptOutExtensionSilentControllerOnly{
+    &kUniversalOptOutExtensionSilent, "controller-only", false};
+
+bool IsUniversalOptOutExtensionSilentEnabled() {
+  if (!base::FeatureList::IsEnabled(kUniversalOptOutExtensionSilent)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(kUniversalOptOutSettings)) {
+    return false;
+  }
+  return true;
+}
 
 bool IsUniversalOptOutEnabled() {
 #if BUILDFLAG(IS_IOS)

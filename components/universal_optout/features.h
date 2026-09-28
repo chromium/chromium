@@ -21,6 +21,19 @@ BASE_DECLARE_FEATURE(kUniversalOptOut);
 // versions (iOS 18.4 to 26).
 BASE_DECLARE_FEATURE(kUniversalOptOutExtension);
 
+// Controls the silent rollout of the Universal Opt-Out extension for telemetry
+// and performance measurement.
+BASE_DECLARE_FEATURE(kUniversalOptOutExtensionSilent);
+
+// If true, only sets the empty controller and does not load the extension.
+extern const base::FeatureParam<bool>
+    kUniversalOptOutExtensionSilentControllerOnly;
+
+// Returns whether the silent Universal Opt-Out extension is enabled.
+// If `kUniversalOptOutSettings` is enabled, this returns false so that the
+// normal extension supersedes the test extension.
+bool IsUniversalOptOutExtensionSilentEnabled();
+
 // Feature flag for the settings page development.
 BASE_DECLARE_FEATURE(kUniversalOptOutSettings);
 

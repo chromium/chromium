@@ -106,5 +106,4 @@ API_AVAILABLE(ios(18.4)) {
   ASSERT_TRUE(it != request.headers.end());
   EXPECT_EQ(it->second, "1");
 }
-
 }  // namespace web

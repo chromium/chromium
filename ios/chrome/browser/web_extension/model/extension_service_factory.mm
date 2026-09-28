@@ -7,8 +7,10 @@
 #import <utility>
 
 #import "base/check_deref.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "components/prefs/pref_service.h"
+#import "components/universal_optout/features.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
@@ -48,7 +50,10 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
     return extension_service;
   }
 
-  if (!IsSupportedOS()) {
+  const bool is_silent =
+      universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+
+  if (!is_silent && !IsSupportedOS()) {
     return nullptr;
   }
 
@@ -58,7 +63,7 @@ std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
   const web::UniversalOptOutState opt_out_state =
       universal_optout::GetUniversalOptOutState(profile->GetPrefs(),
                                                 optout_service);
-  if (opt_out_state == web::UniversalOptOutState::kNotEligible) {
+  if (!is_silent && opt_out_state == web::UniversalOptOutState::kNotEligible) {
     return nullptr;
   }
 

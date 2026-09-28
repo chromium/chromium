@@ -19,12 +19,16 @@
 
 namespace {
 
+// Match pattern for the test GPC extension.
+NSString* const kGPCTestMatchPattern = @"https://browsingtest.appspot.com/*";
+
 // Returns the BuiltInWebExtension instance for the given `extension`.
 API_AVAILABLE(ios(18.4))
 web::BuiltInWebExtension* GetBuiltInWebExtension(
     web::BuiltInExtension extension) {
   switch (extension) {
     case web::BuiltInExtension::kGPC:
+    case web::BuiltInExtension::kGPCTest:
       return web::GPCWebExtension::GetInstance();
   }
 }
@@ -99,13 +103,23 @@ void ExtensionControllerImpl::OnBuiltInWebExtensionCreated(
                    forPermission:permission];
   }
 
-  // Grant all requested match patterns upfront so the extension has access to
-  // all specified URLs.
-  for (WKWebExtensionMatchPattern* pattern in wk_extension
-           .requestedPermissionMatchPatterns) {
-    [context setPermissionStatus:
-                 WKWebExtensionContextPermissionStatusGrantedExplicitly
-                 forMatchPattern:pattern];
+  // Grant match patterns. For kGPCTest, scope the extension to
+  // `kGPCTestMatchPattern` so standard browsing is unaffected.
+  if (extension == BuiltInExtension::kGPCTest) {
+    WKWebExtensionMatchPattern* pattern = [WKWebExtensionMatchPattern
+        matchPatternWithString:kGPCTestMatchPattern];
+    if (pattern) {
+      [context setPermissionStatus:
+                   WKWebExtensionContextPermissionStatusGrantedExplicitly
+                   forMatchPattern:pattern];
+    }
+  } else {
+    for (WKWebExtensionMatchPattern* pattern in wk_extension
+             .requestedPermissionMatchPatterns) {
+      [context setPermissionStatus:
+                   WKWebExtensionContextPermissionStatusGrantedExplicitly
+                   forMatchPattern:pattern];
+    }
   }
 
   NSError* context_error = nil;

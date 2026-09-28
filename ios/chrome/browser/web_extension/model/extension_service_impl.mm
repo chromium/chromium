@@ -7,12 +7,14 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
+#import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/web/public/extension/extension_controller.h"
 #import "ios/web/public/web_client.h"
@@ -68,8 +70,15 @@ base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
 
 void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (state == web::UniversalOptOutState::kNotEligible ||
-      !extension_controller_) {
+  if (!extension_controller_) {
+    is_ready_ = true;
+    return;
+  }
+
+  const bool is_silent =
+      universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+
+  if (!is_silent && state == web::UniversalOptOutState::kNotEligible) {
     is_ready_ = true;
     return;
   }
@@ -80,7 +89,16 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
       base::BindRepeating(&ExtensionServiceImpl::OnOptOutPrefChanged,
                           base::Unretained(this)));
 
-  if (state == web::UniversalOptOutState::kEnabled) {
+  const bool should_load_silent_extension =
+      is_silent &&
+      !universal_optout::features::kUniversalOptOutExtensionSilentControllerOnly
+           .Get();
+
+  const bool should_load_at_startup =
+      should_load_silent_extension ||
+      (!is_silent && state == web::UniversalOptOutState::kEnabled);
+
+  if (should_load_at_startup) {
     extension_load_started_at_startup_ = true;
     is_loading_ = true;
     initialization_start_time_ = base::TimeTicks::Now();
@@ -89,8 +107,13 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
         FROM_HERE, kExtensionLoadingTimeout,
         base::BindOnce(&ExtensionServiceImpl::OnExtensionLoadTimeout,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    web::BuiltInExtension extension_to_load =
+        is_silent ? web::BuiltInExtension::kGPCTest
+                  : web::BuiltInExtension::kGPC;
+
     extension_controller_->LoadBuiltInExtension(
-        web::BuiltInExtension::kGPC,
+        extension_to_load,
         base::BindOnce(&ExtensionServiceImpl::OnExtensionLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -109,8 +132,10 @@ void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
         base::TimeTicks::Now() - extension_load_start_time_);
     extension_load_start_time_ = base::TimeTicks();
   }
-  if (!pref_service_->GetBoolean(
-          universal_optout::prefs::kUniversalOptOutEnabled)) {
+  const bool is_silent =
+      universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  if (!is_silent && !pref_service_->GetBoolean(
+                        universal_optout::prefs::kUniversalOptOutEnabled)) {
     if (extension_controller_ &&
         extension_controller_->IsBuiltInExtensionLoaded(
             web::BuiltInExtension::kGPC)) {
@@ -147,6 +172,9 @@ void ExtensionServiceImpl::NotifyReady() {
 
 void ExtensionServiceImpl::OnOptOutPrefChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (universal_optout::features::IsUniversalOptOutExtensionSilentEnabled()) {
+    return;
+  }
   if (!extension_controller_) {
     return;
   }
