@@ -88,16 +88,28 @@ std::string_view GetDurationOutcomeSuffix(
   return GetPrewarmOutcomeSuffix(outcome);
 }
 
+// `CONNECTION_UNKNOWN` means connected with an undetermined type, so only
+// `CONNECTION_NONE` counts as offline, matching
+// `NetworkConnectionTracker::IsOffline()`.
+bool IsOfflineConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
+  return type == net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;
+}
+
 }  // namespace
 
 DeviceBoundSessionPrewarmer::DeviceBoundSessionPrewarmer(
     GURL prewarm_url,
-    SessionManagerProvider session_manager_provider)
+    SessionManagerProvider session_manager_provider,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : prewarm_url_(std::move(prewarm_url)),
       session_manager_provider_(std::move(session_manager_provider)) {
   CHECK(prewarm_url_.is_valid());
   CHECK(prewarm_url_.SchemeIs(url::kHttpsScheme));
   CHECK(session_manager_provider_);
+  CHECK(network_connection_tracker);
+
+  network_connection_observer_.Observe(network_connection_tracker);
+  is_offline_ = network_connection_tracker->IsOffline();
 }
 
 DeviceBoundSessionPrewarmer::~DeviceBoundSessionPrewarmer() {
@@ -234,6 +246,13 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
   // infinite loops or excessive requests.
   base::TimeDelta delay = std::max(next_refresh_delay, kMinPrewarmInterval);
   timer_.Start(FROM_HERE, delay, this, &DeviceBoundSessionPrewarmer::DoPrewarm);
+}
+
+void DeviceBoundSessionPrewarmer::OnConnectionChanged(
+    net::NetworkChangeNotifier::ConnectionType type) {
+  // TODO(crbug.com/558505615): Trigger a pre-warm when connectivity is
+  // regained while a retry is pending. For now this only tracks state.
+  is_offline_ = IsOfflineConnectionType(type);
 }
 
 // network::mojom::DeviceBoundSessionAccessObserver:

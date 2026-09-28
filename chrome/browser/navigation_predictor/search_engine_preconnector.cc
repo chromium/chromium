@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
+#include "content/public/browser/network_service_instance.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #endif
 
@@ -307,7 +308,8 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
                       return browser_context->GetDefaultStoragePartition()
                           ->GetDeviceBoundSessionManager();
                     },
-                    browser_context_));
+                    browser_context_),
+                content::GetNetworkConnectionTracker());
         device_bound_session_prewarmer_->Start(is_startup);
       }
     }
