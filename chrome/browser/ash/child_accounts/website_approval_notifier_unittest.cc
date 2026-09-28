@@ -9,15 +9,14 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "base/check_deref.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,15 +50,28 @@ class WebsiteApprovalNotifierTest : public testing::Test {
 
   void SetUp() override {
     message_center::MessageCenter::Initialize();
-    user_manager::User* user =
-        fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user->GetAccountId());
-    AnnotatedAccountId::Set(&profile_, user->GetAccountId());
-    notifier_ = std::make_unique<WebsiteApprovalNotifier>(&profile_);
+
+    user_session_test_environment_ =
+        std::make_unique<test::UserSessionTestEnvironment>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+                TestingBrowserProcess::GetGlobal()));
+
+    // WebsiteApprovalNotifier is a Family Link feature for child accounts.
+    const user_manager::User* user =
+        user_session_test_environment_->AddChildUser(
+            user_manager::StubAccountId());
+    user_session_test_environment_->LogIn(user->GetAccountId());
+    user_hash_ = user->username_hash();
+
+    notifier_ =
+        std::make_unique<WebsiteApprovalNotifier>(Profile::FromBrowserContext(
+            BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
   }
 
   void TearDown() override {
     notifier_.reset();
+    user_session_test_environment_.reset();
     message_center::MessageCenter::Shutdown();
   }
 
@@ -76,17 +88,15 @@ class WebsiteApprovalNotifierTest : public testing::Test {
 
   const message_center::Notification* GetApprovalNotification(
       const std::string& hostname) {
-    const user_manager::User& user = CHECK_DEREF(
-        BrowserContextHelper::Get()->GetUserByBrowserContext(&profile_));
     return message_center::MessageCenter::Get()->FindNotificationById(
         CreateUserScopedNotificationId(GetNotificationId(hostname),
-                                       user.username_hash()));
+                                       user_hash_));
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
-  TestingProfile profile_;
+  std::unique_ptr<test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  std::string user_hash_;
   std::unique_ptr<WebsiteApprovalNotifier> notifier_;
 
  private:
