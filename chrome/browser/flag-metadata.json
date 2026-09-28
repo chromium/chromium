@@ -930,11 +930,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "autofill-ai-always-trigger-server-model",
-    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "autofill-ai-available-by-default",
     "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160

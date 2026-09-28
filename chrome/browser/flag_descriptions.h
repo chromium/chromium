@@ -919,12 +919,6 @@ inline constexpr char
         "for testing purposes, regardless of the actual stored user "
         "preference.";
 
-inline constexpr char kAutofillAiAlwaysTriggerServerModelName[] =
-    "Autofill AI always trigger server model";
-inline constexpr char kAutofillAiAlwaysTriggerServerModelDescription[] =
-    "Queries the server model for every form encountered, ignoring server-side "
-    "instructions. Intended for testing only.";
-
 inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeName[] =
     "Autofill AI always show Private AI notice";
 inline constexpr char kAutofillAiAlwaysShowPrivateAiNoticeDescription[] =

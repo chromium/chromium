@@ -12758,12 +12758,6 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)},
 
-    {"autofill-ai-always-trigger-server-model",
-     flag_descriptions::kAutofillAiAlwaysTriggerServerModelName,
-     flag_descriptions::kAutofillAiAlwaysTriggerServerModelDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAiAlwaysTriggerServerModel)},
-
     {"autofill-ai-always-show-private-ai-notice",
      flag_descriptions::kAutofillAiAlwaysShowPrivateAiNoticeName,
      flag_descriptions::kAutofillAiAlwaysShowPrivateAiNoticeDescription, kOsAll,

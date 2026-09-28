@@ -11881,7 +11881,6 @@ from previous Chrome versions.
   <int value="-926780551" label="AndroidZoomIndicator:enabled"/>
   <int value="-926422468" label="disable-embedded-shared-worker"/>
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
-  <int value="-926127240" label="AutofillAiAlwaysTriggerServerModel:enabled"/>
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
   <int value="-924435963" label="MobilePromoOnDesktopForcePromoType:enabled"/>
   <int value="-923736206" label="BookmarkPaneAndroid:enabled"/>
@@ -14152,7 +14151,6 @@ from previous Chrome versions.
   <int value="-234966279" label="PointerEvent:disabled"/>
   <int value="-234687894"
       label="NonValidatingReloadOnRefreshContentV2:disabled"/>
-  <int value="-234683458" label="AutofillAiAlwaysTriggerServerModel:disabled"/>
   <int value="-234231190" label="SharingDeviceRegistration:enabled"/>
   <int value="-233585203" label="RustyJpegFeature:enabled"/>
   <int value="-233334129" label="BiometricTouchToFill:disabled"/>
