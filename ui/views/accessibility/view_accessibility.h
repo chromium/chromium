@@ -763,6 +763,17 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetState(ax::mojom::State state, bool is_enabled);
 
+  void SetIntAttribute(ax::mojom::IntAttribute attribute, int32_t value);
+  void RemoveIntAttribute(ax::mojom::IntAttribute attribute);
+  void SetStringAttribute(ax::mojom::StringAttribute attribute,
+                          const std::string& value);
+  void RemoveStringAttribute(ax::mojom::StringAttribute attribute);
+  void SetBoolAttribute(ax::mojom::BoolAttribute attribute, bool value);
+  void SetFloatAttribute(ax::mojom::FloatAttribute attribute, float value);
+  void SetIntListAttribute(ax::mojom::IntListAttribute attribute,
+                           const std::vector<int32_t>& value);
+  void RemoveIntListAttribute(ax::mojom::IntListAttribute attribute);
+
   // We don't want to fire accessibility events when the view is being
   // initialized and any setters are called from their respective constructors.
   // We only want to fire events of any subtree of views when that subtree of
