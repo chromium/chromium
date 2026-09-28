@@ -7627,6 +7627,60 @@ TEST_F(
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
 
+// Tests that modified fields sharing the same (Type, Value) pair are
+// deduplicated, while fields sharing a value with different types (e.g. City
+// and State both equal to "New York") are kept distinct.
+TEST_F(
+    BrowserAutofillManagerTest,
+    OnDidDetectJavaScriptAutofill_AddressPicker_DeduplicatesSameTypeAndValue) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1, .value = u"123 Main St"},
+                  {.role = ADDRESS_HOME_CITY, .value = u"New York"},
+                  {.role = ADDRESS_HOME_STATE, .value = u"New York"},
+                  // Mirror state fields with the same type and value.
+                  {.role = ADDRESS_HOME_STATE, .value = u"New York"},
+                  {.role = ADDRESS_HOME_STATE, .value = u"New York"}}});
+  FormsSeen({form});
+
+  FormStructure* form_structure =
+      test_api(autofill_manager()).FindCachedFormById(form.global_id());
+  ASSERT_TRUE(form_structure);
+
+  // Case 1: Modifying only the 3 duplicate state fields (all ADDRESS_HOME_STATE
+  // with value "New York") should collapse to 1 unique (Type, Value) pair and
+  // NOT trigger address picker detection.
+  std::vector<JavaScriptFieldModification> duplicate_state_modifications = {
+      {.field_id = form.fields()[2].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[3].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[4].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[2].global_id(), duplicate_state_modifications,
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
+
+  EXPECT_FALSE(form_structure->field(2)->did_trigger_javascript_autofill());
+
+  // Case 2: Modifying Street ("123 Main St"), City ("New York"), and State
+  // ("New York") should NOT deduplicate City and State despite having the same
+  // value, yielding 3 unique (Type, Value) pairs and triggering detection.
+  std::vector<JavaScriptFieldModification> valid_modifications = {
+      {.field_id = form.fields()[0].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[1].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment},
+      {.field_id = form.fields()[2].global_id(),
+       .modification_type = mojom::JavaScriptModificationType::kReassignment}};
+
+  autofill_manager().OnDidDetectJavaScriptAutofill(
+      form, form.fields()[0].global_id(), valid_modifications,
+      base::TimeTicks::Now(), AutofillManagerTestApi::pass_key());
+
+  EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
+}
+
 // Tests that the personalization and trust survey for address autofill is
 // not triggered after submitting an address form with less than three fields.
 TEST_F(BrowserAutofillManagerTest,

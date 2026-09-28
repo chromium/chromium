@@ -190,31 +190,47 @@ JavaScriptDropdownType DetectJavaScriptDropdown(
   // return true) in order not to break correctness.
 
   auto detect_address_picker = [&] {
-    size_t address_fields_count = std::ranges::count_if(
-        field_modifications, [&](const JavaScriptFieldModification& mod) {
-          const AutofillField* field = form.GetFieldById(mod.field_id);
-          return field &&
-                 field->Type().GetGroups().contains(FieldTypeGroup::kAddress);
-        });
+    // Set of field type and value stored in the corresponding field.
+    base::flat_set<std::pair<FieldType, std::u16string_view>>
+        modified_address_fields;
 
-    // If multiple address fields where changed at once, declare the operation
-    // as triggered by an address picker.
-    constexpr size_t kMinFieldsChangedAddressPicker = 3;
-    if (address_fields_count >= kMinFieldsChangedAddressPicker) {
-      return true;
+    // Indicator if all modified fields are address-classified fields.
+    bool all_address_fields = true;
+
+    // Whether the field that triggered the JavaScript autofill operation had
+    // the typed value extended by said operation.
+    bool trigger_field_prefix_completed = false;
+
+    for (const JavaScriptFieldModification& mod : field_modifications) {
+      const AutofillField* field = form.GetFieldById(mod.field_id);
+      if (!field) {
+        continue;
+      }
+      if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+        // Websites often maintain hidden "mirror" inputs with the same semantic
+        // type and value as visible fields to aid browser autofill. Track
+        // unique (Type, Value) pairs so mirror inputs do not artificially
+        // inflate the number of modified address fields, while still keeping
+        // distinct fields that happen to share a value (e.g., City = "New York"
+        // and State = "New York").
+        modified_address_fields.insert(
+            {field->Type().GetAddressType(), field->value()});
+      } else {
+        all_address_fields = false;
+      }
+      if (mod.field_id == trigger_field.global_id() &&
+          mod.modification_type ==
+              mojom::JavaScriptModificationType::kPrefixCompletion) {
+        trigger_field_prefix_completed = true;
+      }
     }
 
-    // Otherwise ensure all modified fields were address fields and that the
-    // trigger field was prefix completed.
-    return address_fields_count == field_modifications.size() &&
-           std::ranges::any_of(field_modifications,
-                               [&](const JavaScriptFieldModification& mod) {
-                                 return mod.field_id ==
-                                            trigger_field.global_id() &&
-                                        mod.modification_type ==
-                                            mojom::JavaScriptModificationType::
-                                                kPrefixCompletion;
-                               });
+    // Declare the operation as triggered by an address picker if at least 3
+    // distinct address fields changed, or if all modified fields were address
+    // fields and the trigger field was prefix completed.
+    constexpr size_t kMinFieldsChangedAddressPicker = 3;
+    return modified_address_fields.size() >= kMinFieldsChangedAddressPicker ||
+           (all_address_fields && trigger_field_prefix_completed);
   };
 
   auto detect_email_picker = [&] {
