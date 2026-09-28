@@ -71,8 +71,9 @@ export class SplitViewData extends ItemData {
     this.tabs = options.tabs;
     this.type = options.splitView ? TabItemType.RECENTLY_CLOSED_SPLIT :
                                     TabItemType.OPEN_SPLIT;
-    this.a11yTypeText =
-        options.splitView ? 'Recently closed split view' : 'Open split view';
+    this.a11yTypeText = loadTimeData.getString(
+        options.splitView ? 'a11yRecentlyClosedSplitView' :
+                            'a11yOpenSplitView');
   }
 
   get title(): string {
@@ -170,8 +171,8 @@ export function ariaLabel(itemData: ItemData): string {
         url => getDisplayHostnameForUrl(new URL(normalizeURL(url))));
     const lastActive = itemData.lastActiveElapsedText;
     const lastActivePart = lastActive ? `, ${lastActive}` : '';
-    return `Split view, ${hostnames[0]}, ${hostnames[1]}${lastActivePart}. ${
-        itemData.a11yTypeText}`;
+    return `${loadTimeData.getString('a11ySplitView')}, ${hostnames[0]}, ${
+        hostnames[1]}${lastActivePart}. ${itemData.a11yTypeText}`;
   }
 
   if (itemData instanceof TabData) {

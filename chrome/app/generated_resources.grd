@@ -12559,11 +12559,20 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_SEARCH_A11Y_OPEN_TAB" desc="Singular form of a11y message announced after user selects an open tab.">
         Open Tab
       </message>
+      <message name="IDS_TAB_SEARCH_A11Y_OPEN_SPLIT_VIEW" is_accessibility_with_no_ui="true" desc="Singular form of a11y message announced after user selects an open split view.">
+        Open split view
+      </message>
       <message name="IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB" desc="Singular form of a11y message announced after user selects a recently closed tab.">
         Recently Closed Tab
       </message>
       <message name="IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB_GROUP" desc="Singular form of a11y message announced after user selects a recently closed tab group.">
         Recently Closed Tab Group
+      </message>
+      <message name="IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_SPLIT_VIEW" is_accessibility_with_no_ui="true" desc="Singular form of a11y message announced after user selects a recently closed split view.">
+        Recently closed split view
+      </message>
+      <message name="IDS_TAB_SEARCH_A11Y_SPLIT_VIEW" is_accessibility_with_no_ui="true" desc="A11y label prefix for a split view row in the tab search list.">
+        Split view
       </message>
       <message name="IDS_TAB_SEARCH_MEDIA_TABS" desc="The label on the tab search list section corresponding to tabs that access audio or video.">
         Audio &amp; Video
