@@ -2247,7 +2247,7 @@ deps = {
     Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '04bfe22876d3bab4260f39491cce7a8df17daa40',
 
   'src/third_party/emoji-metadata/src': {
-    'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '17a56409b86d0da5e01ca38f6498e13b2db16bc3',
+    'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '173b9b26e8fcbcbe64e1ecbf073a21a96b95c6b1',
     'condition': 'checkout_chromeos',
   },
 

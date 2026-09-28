@@ -2,9 +2,9 @@ Name: emoji-metadata
 Short Name: emoji-metadata
 URL: https://github.com/googlefonts/emoji-metadata
 Version: N/A
-Date: 2021-01-05
-Revision: 9d8e5cfe52ee763b7dd91e33e5a50250efbf7135
-Update Mechanism: Manual
+Date: 2026-09-25
+Revision: 173b9b26e8fcbcbe64e1ecbf073a21a96b95c6b1
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 Security Critical: no
