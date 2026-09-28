@@ -192,10 +192,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/signin_promo/SigninPromoMediator.java:Event) -->
 
-<!-- TODO(crbug.com/432174785): Mark this histogram as never_expires. -->
-
 <histogram name="Signin.AccessTokenFetch.Failure.{Error}"
-    enum="OAuthConsumerId" expires_after="2027-02-07">
+    enum="OAuthConsumerId" expires_after="never">
+<!-- expires-never: This is needed as long as Chrome is fetching access tokens
+to monitor/debug fetching OAuth2 Token issues. -->
+
   <owner>triploblastic@google.com</owner>
   <owner>bsazonov@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -207,10 +208,11 @@ chromium-metrics-reviews@google.com.
   <token key="Error" variants="AccessTokenFetchFailureError"/>
 </histogram>
 
-<!-- TODO(crbug.com/432174785): Mark this histogram as never_expires. -->
-
 <histogram name="Signin.AccessTokenFetch.Success" enum="OAuthConsumerId"
-    expires_after="2027-03-07">
+    expires_after="never">
+<!-- expires-never: This is needed as long as Chrome is fetching access tokens
+to monitor/debug fetching OAuth2 Token issues. -->
+
   <owner>triploblastic@google.com</owner>
   <owner>bsazonov@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
