@@ -132,13 +132,13 @@ class CORE_EXPORT StyleResolverState {
   CSSToLengthConversionData UnzoomedLengthConversionData();
 
   CSSToLengthConversionData::Flags TakeLengthConversionFlags() {
-    if (css_to_length_conversion_data_dirty_) {
-      UpdateLengthConversionData();
-    }
     CSSToLengthConversionData::Flags flags = length_conversion_flags_;
     length_conversion_flags_ = 0;
     return flags;
   }
+
+  // See StyleRecalcContext::GetAnchorEvaluator().
+  AnchorEvaluator* GetAnchorEvaluator() const;
 
   void SubtractScrollbarsFromViewportUnits(const gfx::Size& scrollbars) {
     MutableCssToLengthConversionData().SubtractScrollbars(scrollbars);
@@ -312,8 +312,6 @@ class CORE_EXPORT StyleResolverState {
   // When resolving cq* units, this element is used to start the search
   // for suitable size containers.
   Element* ContainerUnitContext() const;
-  // See StyleRecalcContext::GetAnchorEvaluator().
-  AnchorEvaluator* GetAnchorEvaluator() const;
 
   ElementResolveContext element_context_;
   const StyleRecalcContext* style_recalc_context_ = nullptr;
@@ -327,14 +325,8 @@ class CORE_EXPORT StyleResolverState {
   // css_to_length_conversion_data_dirty_ is true. Do not access
   // css_to_length_conversion_data_ directly; prefer
   // CssToLengthConversionData() or MutableCssToLengthConversionData().
-  //
-  // Note that the initial state is clean, since the constructor
-  // initializes css_to_length_conversion_data_ from the given element.
-  // This is not just an optimization, it is needed for correctness;
-  // there is code that doesn't give us a ComputedStyleBuilder to make new
-  // conversion data from.
   mutable CSSToLengthConversionData::Flags length_conversion_flags_ = 0;
-  mutable bool css_to_length_conversion_data_dirty_ = false;
+  mutable bool css_to_length_conversion_data_dirty_ = true;
   mutable bool should_update_line_height_ = false;
   mutable CSSToLengthConversionData css_to_length_conversion_data_;
 

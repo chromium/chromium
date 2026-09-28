@@ -196,6 +196,12 @@ const ComputedStyle* StyleResolverState::CloneStyle() const {
 }
 
 void StyleResolverState::UpdateLengthConversionData() const {
+  if (!style_builder_) [[unlikely]] {
+    css_to_length_conversion_data_dirty_ = false;
+    element_style_resources_.UpdateLengthConversionData(
+        &css_to_length_conversion_data_);
+    return;
+  }
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       *style_builder_, ParentStyle(), RootElementStyle(),
       GetDocument().GetStyleEngine().GetViewportSize(),
@@ -279,6 +285,9 @@ void StyleResolverState::SetLayoutParentStyle(
 }
 
 void StyleResolverState::LoadPendingResources() {
+  if (!element_style_resources_.HasPendingResources()) {
+    return;
+  }
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone())) {
     return;

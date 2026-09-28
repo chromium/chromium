@@ -2687,8 +2687,7 @@ bool StyleResolver::ApplyAnimatedStyle(
 }
 
 void StyleResolver::ApplyAnchorData(StyleResolverState& state) {
-  if (AnchorEvaluator* evaluator =
-          state.CssToLengthConversionData().GetAnchorEvaluator()) {
+  if (AnchorEvaluator* evaluator = state.GetAnchorEvaluator()) {
     // Pre-compute anchor-center offset so that the OOF layout code does not
     // need to set up an AnchorEvaluator but simply retrieve the offsets from
     // the ComputedStyle.

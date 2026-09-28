@@ -74,6 +74,11 @@ class ElementStyleResources {
   SVGResource* GetSVGResourceFromValue(CSSPropertyID,
                                        const cssvalue::CSSURIValue&);
 
+  bool HasPendingResources() const {
+    return !pending_image_properties_.empty() ||
+           !pending_svg_resource_properties_.empty();
+  }
+
   void LoadPendingResources(ComputedStyleBuilder&, const CSSLengthResolver&);
 
   void UpdateLengthConversionData(const CSSToLengthConversionData*);
