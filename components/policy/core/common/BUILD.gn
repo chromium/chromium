@@ -261,6 +261,7 @@ source_set("internal") {
     "//third_party/libxml:xml_writer",
     "//third_party/metrics_proto",
     "//third_party/re2",
+    "//third_party/zlib/google:compression_utils",
     "//ui/base",
     "//url",
   ]

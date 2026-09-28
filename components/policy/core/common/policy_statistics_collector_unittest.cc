@@ -283,7 +283,8 @@ TEST_F(PolicyStatisticsCollectorTest, PolicyLoggerMetrics) {
   policy_statistics_collector_->Initialize();
 
   size_t expected_memory =
-      2 * sizeof(PolicyLogger::Log) + msg1.size() + msg2.size();
+      2 * (sizeof(PolicyLogger::Log) + std::string_view(__FILE__).size()) +
+      msg1.size() + msg2.size();
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.PolicyLogger.MemoryUsage.Uncompressed", expected_memory, 1);
   histogram_tester_.ExpectUniqueSample(
