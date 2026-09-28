@@ -846,10 +846,14 @@ bool ClipboardPromise::RejectIfDocumentNotFocused() {
   // Trusted surfaces (WebUI, DevTools, chrome-untrusted, and Isolated Web Apps)
   // are exempt from the focus requirement. See the corresponding browser-side
   // check in ContentBrowserClient::IsClipboardPasteAllowed().
+  // Prerendering documents are excluded because WebPreferences (which carries
+  // clipboard_focus_exempt from the primary main frame) is shared with the
+  // prerendering page, and prerendering documents must not bind ClipboardHost.
   LocalFrame* frame = window->GetFrame();
   const bool clipboard_focus_exempt =
       frame && frame->GetSettings()->GetClipboardFocusExempt();
-  if (clipboard_focus_exempt || window->document()->hasFocus()) {
+  if (!window->document()->IsPrerendering() &&
+      (clipboard_focus_exempt || window->document()->hasFocus())) {
     return false;
   }
   script_promise_resolver_->RejectWithDOMException(

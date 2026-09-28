@@ -12,16 +12,23 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_test_utils.h"
 #include "third_party/blink/renderer/modules/clipboard/mock_clipboard_permission_service.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -427,34 +434,110 @@ TEST_F(ClipboardChangeEventTest,
 
 // Regression test for crbug.com/500385607: addEventListener('clipboardchange')
 // on a prerendering document must not bind blink.mojom.ClipboardHost.
-class ClipboardChangeEventPrerenderTest : public SimTest {};
+class ClipboardChangeEventPrerenderTest : public SimTest {
+ protected:
+  void SetUp() override {
+    SimTest::SetUp();
+    InitializePrerenderPageRoot();
+    SimRequest resource("https://example.test/", "text/html");
+    LoadURL("https://example.test/");
+    resource.Complete("<!DOCTYPE html><html><body></body></html>");
+    ASSERT_TRUE(GetDocument().IsPrerendering());
 
-TEST_F(ClipboardChangeEventPrerenderTest, NoClipboardHostBindWhilePrerendering) {
-  InitializePrerenderPageRoot();
-  SimRequest resource("https://example.test/", "text/html");
-  LoadURL("https://example.test/");
-  resource.Complete("<!DOCTYPE html><html><body></body></html>");
-  ASSERT_TRUE(GetDocument().IsPrerendering());
+    ASSERT_TRUE(GetDocument()
+                    .GetFrame()
+                    ->GetBrowserInterfaceBroker()
+                    .SetBinderForTesting(
+                        mojom::blink::ClipboardHost::Name_,
+                        base::BindRepeating(
+                            [](int* c, mojo::ScopedMessagePipeHandle) { ++*c; },
+                            base::Unretained(&clipboard_host_bind_count_))));
+  }
 
-  int clipboard_host_bind_count = 0;
-  ASSERT_TRUE(
-      GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::ClipboardHost::Name_,
-          base::BindRepeating(
-              [](int* c, mojo::ScopedMessagePipeHandle) { ++*c; },
-              base::Unretained(&clipboard_host_bind_count))));
+  void TearDown() override {
+    GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+        mojom::blink::ClipboardHost::Name_, {});
+    SimTest::TearDown();
+  }
 
+  int clipboard_host_bind_count_ = 0;
+};
+
+TEST_F(ClipboardChangeEventPrerenderTest,
+       NoClipboardHostBindWhilePrerendering) {
   Navigator* navigator = GetDocument().GetFrame()->DomWindow()->navigator();
   Clipboard* clipboard = Clipboard::clipboard(*navigator);
   auto* listener = MakeGarbageCollected<EventCountingListener>();
   clipboard->addEventListener(event_type_names::kClipboardchange, listener);
   test::RunPendingTasks();
 
-  EXPECT_EQ(clipboard_host_bind_count, 0);
+  EXPECT_EQ(clipboard_host_bind_count_, 0);
+}
 
-  ASSERT_TRUE(
-      GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
-          mojom::blink::ClipboardHost::Name_, {}));
+// Regression test for crbug.com/562821283: When a prerender is initiated while
+// the primary main frame is on a focus-exempt WebUI origin (e.g.,
+// chrome://new-tab-page), WebPreferences propagates clipboard_focus_exempt=true
+// to the prerendering page. Clipboard operations (navigator.clipboard and
+// document.execCommand) on the prerendering document must still reject/fail
+// without binding blink.mojom.ClipboardHost.
+TEST_F(ClipboardChangeEventPrerenderTest,
+       NoClipboardHostBindForClipboardOperationsWhilePrerendering) {
+  GetDocument().GetFrame()->GetSettings()->SetClipboardFocusExempt(true);
+  GetDocument().GetFrame()->GetSettings()->SetJavaScriptCanAccessClipboard(
+      true);
+  GetDocument().GetFrame()->GetSettings()->SetDOMPasteAllowed(true);
+
+  LocalDOMWindow* window = GetDocument().GetFrame()->DomWindow();
+  ScriptState* script_state =
+      ToScriptStateForMainWorld(GetDocument().GetFrame());
+  ScriptState::Scope scope(script_state);
+  DummyExceptionStateForTesting exception_state;
+
+  ScriptPromise<IDLSequence<ClipboardItem>> read_promise =
+      ClipboardPromise::CreateForRead(window, script_state,
+                                      ClipboardReadOptions::Create(),
+                                      exception_state);
+  ScriptPromiseTester read_tester(script_state, read_promise);
+  read_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_tester.IsRejected());
+  EXPECT_EQ(read_tester.ValueAsString(),
+            "NotAllowedError: Document is not focused.");
+
+  ScriptPromise<IDLString> read_text_promise =
+      ClipboardPromise::CreateForReadText(window, script_state,
+                                          exception_state);
+  ScriptPromiseTester read_text_tester(script_state, read_text_promise);
+  read_text_tester.WaitUntilSettled();
+  EXPECT_TRUE(read_text_tester.IsRejected());
+  EXPECT_EQ(read_text_tester.ValueAsString(),
+            "NotAllowedError: Document is not focused.");
+
+  HeapVector<Member<ClipboardItem>> write_items{
+      MakeGarbageCollected<ClipboardItem>(
+          HeapVector<
+              std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>{})};
+  ScriptPromise<IDLUndefined> write_promise = ClipboardPromise::CreateForWrite(
+      window, script_state, write_items, exception_state);
+  ScriptPromiseTester write_tester(script_state, write_promise);
+  write_tester.WaitUntilSettled();
+  EXPECT_TRUE(write_tester.IsRejected());
+  EXPECT_EQ(write_tester.ValueAsString(),
+            "NotAllowedError: Document is not focused.");
+
+  ScriptPromise<IDLUndefined> write_text_promise =
+      ClipboardPromise::CreateForWriteText(window, script_state, "hello",
+                                           exception_state);
+  ScriptPromiseTester write_text_tester(script_state, write_text_promise);
+  write_text_tester.WaitUntilSettled();
+  EXPECT_TRUE(write_text_tester.IsRejected());
+  EXPECT_EQ(write_text_tester.ValueAsString(),
+            "NotAllowedError: Document is not focused.");
+
+  EXPECT_FALSE(GetDocument().execCommand("copy", false, "", exception_state));
+  EXPECT_FALSE(GetDocument().execCommand("cut", false, "", exception_state));
+  EXPECT_FALSE(GetDocument().execCommand("paste", false, "", exception_state));
+
+  EXPECT_EQ(clipboard_host_bind_count_, 0);
 }
 
 }  // namespace blink
