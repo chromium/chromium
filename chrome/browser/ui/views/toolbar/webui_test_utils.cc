@@ -796,6 +796,113 @@ std::u16string AvatarToolbarButtonTestAccessor::GetAccessibilityDescription() {
       GetButton());
 }
 
+AvatarLayoutAttributes AvatarToolbarButtonTestAccessor::GetLayoutAttributes() {
+  static constexpr char kGetLayoutAttributesScript[] = R"(
+    (async () => {
+      const app = document.querySelector('toolbar-app');
+      if (!app) return [];
+      await app.updateComplete;
+      const btn = app.shadowRoot?.querySelector('avatar-button');
+      if (!btn) return [];
+      await btn.updateComplete;
+      const chip = btn.shadowRoot?.querySelector('#button');
+      if (!chip) return [];
+      await chip.updateComplete;
+      const innerButton = chip.shadowRoot?.querySelector('#button');
+      const icon = btn.shadowRoot?.querySelector('#icon');
+      if (!icon) return [];
+      const textEl = btn.shadowRoot?.querySelector('#text');
+      const btnRect = (innerButton || chip).getBoundingClientRect();
+      const iconRect = icon.getBoundingClientRect();
+      const hasLabel = chip.hasAttribute('has-label') && textEl &&
+                       textEl.textContent.trim().length > 0;
+      const rightInset = hasLabel
+          ? Math.round(btnRect.right - textEl.getBoundingClientRect().right)
+          : Math.round(btnRect.right - iconRect.right);
+      return [
+        chip.hasAttribute('has-linear-gradient-ring'),
+        Math.round(iconRect.width),
+        Math.round(iconRect.height),
+        Math.round(iconRect.top - btnRect.top),
+        Math.round(iconRect.left - btnRect.left),
+        Math.round(btnRect.bottom - iconRect.bottom),
+        rightInset,
+      ];
+    })()
+  )";
+
+  return std::visit(
+      absl::Overload{
+          [](AvatarToolbarButton* button) -> AvatarLayoutAttributes {
+            AvatarLayoutAttributes attrs;
+            if (!button) {
+              return attrs;
+            }
+            std::optional<ui::ImageModel> icon =
+                button->GetImageModel(views::Button::ButtonState::STATE_NORMAL);
+            if (icon) {
+              attrs.icon_width = icon->Size().width();
+              attrs.icon_height = icon->Size().height();
+            }
+            attrs.insets = button->GetLayoutInsets().value_or(gfx::Insets());
+            StateProvider* provider =
+                button->state_manager_.GetActiveStateProvider();
+            attrs.has_linear_gradient_ring =
+                provider ? provider->ShouldShowGradientAvatarRing() : false;
+            return attrs;
+          },
+          [this](WebUIAvatarToolbarButton* button) -> AvatarLayoutAttributes {
+            AvatarLayoutAttributes attrs;
+            if (!button) {
+              return attrs;
+            }
+            if (ShouldUseCppFallback(button)) {
+              if (button->state_manager_) {
+                StateProvider* active_provider =
+                    button->state_manager_->GetActiveStateProvider();
+                if (active_provider) {
+                  attrs.has_linear_gradient_ring =
+                      active_provider->ShouldShowGradientAvatarRing();
+                  attrs.insets = active_provider->GetLayoutInsets(
+                      /*total_size=*/attrs.has_linear_gradient_ring ? 20 : 16,
+                      /*avatar_size=*/16,
+                      /*is_label_visible=*/!active_provider->GetText().empty());
+                  attrs.icon_width = attrs.has_linear_gradient_ring ? 20 : 16;
+                  attrs.icon_height = attrs.icon_width;
+                }
+              }
+              return attrs;
+            }
+            content::WebContents* contents = GetWebContents();
+            if (!contents) {
+              return attrs;
+            }
+            auto eval_result =
+                content::EvalJs(contents, kGetLayoutAttributesScript);
+            if (eval_result.is_list()) {
+              const base::ListValue& list = eval_result.ExtractList();
+              if (list.size() == 7) {
+                attrs.has_linear_gradient_ring = list[0].GetBool();
+                attrs.icon_width = list[1].GetInt();
+                attrs.icon_height = list[2].GetInt();
+                attrs.insets =
+                    gfx::Insets::TLBR(list[3].GetInt(), list[4].GetInt(),
+                                      list[5].GetInt(), list[6].GetInt());
+              }
+            }
+            return attrs;
+          },
+      },
+      GetButton());
+}
+
+bool AvatarToolbarButtonTestAccessor::WaitForLinearGradientRing(bool has_ring) {
+  return base::test::RunUntil([this, has_ring]() {
+    auto attrs = GetLayoutAttributes();
+    return attrs.icon_width > 0 && attrs.has_linear_gradient_ring == has_ring;
+  });
+}
+
 void LeftClickExtensionButton(content::WebContents* web_contents,
                               const std::string& id) {
   EXPECT_TRUE(content::ExecJs(

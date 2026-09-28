@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -200,6 +201,13 @@ class AvatarButtonUpdateWaiter : public AvatarToolbarButtonInterface::Observer {
       scoped_observation_{this};
 };
 
+struct AvatarLayoutAttributes {
+  int icon_width = 0;
+  int icon_height = 0;
+  gfx::Insets insets;
+  bool has_linear_gradient_ring = false;
+};
+
 class AvatarToolbarButtonTestAccessor {
  public:
   using ButtonVariant =
@@ -226,6 +234,8 @@ class AvatarToolbarButtonTestAccessor {
   std::u16string GetRenderedTooltipText(const gfx::Point& p);
   std::u16string GetAccessibilityLabel();
   std::u16string GetAccessibilityDescription();
+  AvatarLayoutAttributes GetLayoutAttributes();
+  bool WaitForLinearGradientRing(bool has_ring);
   void Click();
   void SetAnnounceCallbackForTesting(
       base::OnceCallback<void(std::u16string)> callback);
