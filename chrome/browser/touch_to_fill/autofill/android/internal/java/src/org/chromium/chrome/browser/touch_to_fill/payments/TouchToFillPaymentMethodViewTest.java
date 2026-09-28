@@ -924,7 +924,7 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
+        // Make sure touch events are ignored if something is drawn on top of the bottom sheet.
         onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onView(withText(NICKNAMED_VISA_SUGGESTION.getLabel()))
@@ -1240,7 +1240,7 @@ public class TouchToFillPaymentMethodViewTest {
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
+        // Make sure touch events are ignored if something is drawn on top of the bottom sheet.
         onView(withText(LOCAL_IBAN.getLabel()))
                 .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         onView(withText(LOCAL_IBAN.getLabel()))

@@ -160,7 +160,7 @@ final class TouchToFillPaymentMethodViewBinder {
                 || propertyKey == FOCUSED_VIEW_ID_FOR_ACCESSIBILITY) {
             // Intentionally ignored.
         } else if (propertyKey == SHEET_HALF_HEIGHT_DESCRIPTION_ID) {
-            view.setSheetHalfHeigthDescriptionId(model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID));
+            view.setSheetHalfHeightDescriptionId(model.get(SHEET_HALF_HEIGHT_DESCRIPTION_ID));
         } else if (propertyKey == SHEET_FULL_HEIGHT_DESCRIPTION_ID) {
             view.setSheetFullHeightDescriptionId(model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID));
         } else if (propertyKey == SHEET_CLOSED_DESCRIPTION_ID) {

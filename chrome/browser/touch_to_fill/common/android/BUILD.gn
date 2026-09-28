@@ -50,7 +50,7 @@ android_library("java") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/common/BottomSheetFocusHelperRoboelectricTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/common/BottomSheetFocusHelperRobolectricTest.java" ]
 
   deps = [
     ":java",

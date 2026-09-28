@@ -37,7 +37,7 @@ public class KeyboardAccessoryData {
         private final @Nullable Listener mListener;
         private final SettableNonNullObservableSupplier<Integer> mIconIdSupplier;
 
-        /** A Tab's Listener get's notified when e.g. the Tab was assigned a view. */
+        /** A Tab's Listener gets notified when e.g. the Tab was assigned a view. */
         public interface Listener {
             /**
              * Triggered when the tab was successfully created.

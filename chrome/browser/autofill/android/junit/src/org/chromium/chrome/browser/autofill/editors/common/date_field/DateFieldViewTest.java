@@ -218,7 +218,7 @@ public class DateFieldViewTest {
                 mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("1", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
         assertEquals("1800", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
-        // Make sure the hint is selected by checking the the selected item position is 0.
+        // Make sure the hint is selected by checking the selected item position is 0.
         assertEquals(
                 0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
     }
@@ -269,7 +269,7 @@ public class DateFieldViewTest {
         assertEquals(
                 getYearLabel(),
                 mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
-        // Make sure the hint is selected by checking the the selected item position is 0.
+        // Make sure the hint is selected by checking the selected item position is 0.
         assertEquals(
                 0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
     }
@@ -296,7 +296,7 @@ public class DateFieldViewTest {
         // The initial "1800" year should be selected because it's a hint which is used whenever the
         // year is not within the range.
         assertEquals("1800", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
-        // Make sure the hint is selected by checking the the selected item position is 0.
+        // Make sure the hint is selected by checking the selected item position is 0.
         assertEquals(
                 0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
     }

@@ -194,7 +194,7 @@ class TouchToFillPaymentMethodView extends BottomSheetListViewBase {
         }
     }
 
-    public void setSheetHalfHeigthDescriptionId(@StringRes int sheetHalfHeightDescriptionId) {
+    public void setSheetHalfHeightDescriptionId(@StringRes int sheetHalfHeightDescriptionId) {
         mSheetHalfHeightDescriptionId = sheetHalfHeightDescriptionId;
     }
 

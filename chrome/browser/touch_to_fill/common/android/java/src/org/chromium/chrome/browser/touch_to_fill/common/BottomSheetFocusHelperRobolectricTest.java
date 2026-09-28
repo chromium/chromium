@@ -28,7 +28,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for {@link BottomSheetFocusHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class BottomSheetFocusHelperRoboelectricTest {
+public class BottomSheetFocusHelperRobolectricTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 

@@ -141,7 +141,7 @@ keeping them in mind until they are fixed simplifies working with it:
     * the `ManualFillingState` is a cache object that keeps the contents and
       wiring for accessory sheets per tab.
   It's unclear how to resolve this yet but preferably, the `ManualFillingState`
-  could receive a less generic name once it it's not used to store sheet content
+  could receive a less generic name once it's not used to store sheet content
   anymore.
 
 * Despite the name, the manual filling component is not fully modularized since

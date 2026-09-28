@@ -28,7 +28,7 @@ public class EditorDialogToolbar extends Toolbar {
         updateMenu();
     }
 
-    /** Sets whether or not the the delete menu item will be shown. */
+    /** Sets whether or not the delete menu item will be shown. */
     public void setShowDeleteMenuItem(boolean state) {
         mShowDeleteMenuItem = state;
         updateMenu();

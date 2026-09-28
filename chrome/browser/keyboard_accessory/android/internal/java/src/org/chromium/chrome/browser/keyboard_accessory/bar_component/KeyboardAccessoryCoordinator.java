@@ -414,7 +414,7 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
     }
 
     /**
-     * Returns the visibility of the the accessory. The returned property reflects the latest change
+     * Returns the visibility of the accessory. The returned property reflects the latest change
      * while the view might still be in progress of being updated accordingly.
      *
      * @return True if the accessory should be visible, false otherwise.
