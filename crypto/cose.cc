@@ -92,7 +92,7 @@ std::vector<uint8_t> RsaToCoseKey(const EVP_PKEY* key) {
   std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   CHECK(cbor_bytes);
-  return cbor_bytes.value();
+  return std::move(cbor_bytes).value();
 }
 
 std::vector<uint8_t> EcP256ToCoseKey(const keypair::PublicKey& key) {
@@ -116,7 +116,7 @@ std::vector<uint8_t> EcP256ToCoseKey(const keypair::PublicKey& key) {
   std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   CHECK(cbor_bytes);
-  return cbor_bytes.value();
+  return std::move(cbor_bytes).value();
 }
 
 std::vector<uint8_t> Ed25519ToCoseKey(const keypair::PublicKey& key) {
@@ -139,7 +139,7 @@ std::vector<uint8_t> Ed25519ToCoseKey(const keypair::PublicKey& key) {
   std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   CHECK(cbor_bytes);
-  return cbor_bytes.value();
+  return std::move(cbor_bytes).value();
 }
 
 std::vector<uint8_t> MldsaToCoseKey(std::vector<uint8_t> pub_bytes,
@@ -155,7 +155,7 @@ std::vector<uint8_t> MldsaToCoseKey(std::vector<uint8_t> pub_bytes,
   std::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   CHECK(cbor_bytes);
-  return cbor_bytes.value();
+  return std::move(cbor_bytes).value();
 }
 
 }  // namespace

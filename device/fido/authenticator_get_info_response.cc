@@ -159,7 +159,7 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
   auto encoded_bytes =
       cbor::Writer::Write(cbor::Value(std::move(device_info_map)));
   DCHECK(encoded_bytes);
-  return *encoded_bytes;
+  return *std::move(encoded_bytes);
 }
 
 bool AuthenticatorGetInfoResponse::SupportsAtLeast(
