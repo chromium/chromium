@@ -25,8 +25,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
@@ -85,10 +87,13 @@ import java.util.List;
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481445129
 public class OmniboxPedalsTest {
     @Rule
-    public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
+    public final ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
 
-    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Mock private AutocompleteController mAutocompleteController;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
@@ -96,6 +101,7 @@ public class OmniboxPedalsTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        AutocompleteController.setInstanceForTesting(mAutocompleteController);
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
@@ -103,6 +109,12 @@ public class OmniboxPedalsTest {
 
     @After
     public void tearDown() throws Exception {
+        // Only call clearFocus() when the UrlBar still holds focus; when a pedal launches
+        // SettingsActivity (mTargetActivity), the UrlBar is already unfocused while
+        // ChromeTabbedActivity is stopped in the background with stale IME WindowInsets.
+        if (mOmniboxUtils.getFocus()) {
+            mOmniboxUtils.clearFocus();
+        }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     IncognitoTabHostUtils.closeAllIncognitoTabs();
@@ -116,7 +128,6 @@ public class OmniboxPedalsTest {
                                 .getActivity()
                                 .getModalDialogManager()
                                 .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
-        AutocompleteControllerJni.setInstanceForTesting(null);
     }
 
     /**
@@ -135,6 +146,7 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.checkSuggestionsShown();
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("No suggestions with actions", info);
+        mOmniboxUtils.waitAnimationsComplete();
     }
 
     private AutocompleteMatch createPedalSuggestion(@OmniboxPedalId int pedalId) {
