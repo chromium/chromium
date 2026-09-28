@@ -93,6 +93,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         ui::mojom::DragEventSource source) = 0;
     virtual void OnHomeButtonDropUrl(const GURL& url) = 0;
     virtual void OnHomeButtonDropFile(const gfx::PointF& drop_position) = 0;
+    virtual void OnHomeButtonDropText(const std::string& text) = 0;
     virtual void OnToolbarDropFile(const gfx::PointF& drop_position) = 0;
     virtual base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
     OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action) = 0;
@@ -200,6 +201,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
                      ui::mojom::DragEventSource source) override;
   void OnHomeButtonDropUrl(const GURL& url) override;
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
+  void OnHomeButtonDropText(const std::string& text) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
   void ShowAvatarMenu(bool is_pointer_interaction,
                       ShowAvatarMenuCallback callback) override;

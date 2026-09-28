@@ -29,6 +29,7 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onExtensionActionPointerDown',
       'onGlicButtonClicked',
       'onHomeButtonDropFile',
+      'onHomeButtonDropText',
       'onHomeButtonDropUrl',
       'onLhsChipClicked',
       'onLhsChipCollapseAnimationEnded',
@@ -168,6 +169,10 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
 
   onHomeButtonDropFile(dropPosition: PointF) {
     this.methodCalled('onHomeButtonDropFile', dropPosition);
+  }
+
+  onHomeButtonDropText(text: string) {
+    this.methodCalled('onHomeButtonDropText', text);
   }
 
   onToolbarDropFile(dropPosition: PointF) {

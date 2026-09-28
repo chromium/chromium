@@ -53,8 +53,12 @@ class WebUIHomeControlTestBase : public InProcessBrowserTest {
   // Drop of a link, i.e. `text/uri-list` only.
   void SimulateLinkDrop(const std::string& url, DragOrigin origin);
 
-  // Drop of selected text, i.e. `text/plain` only.
-  void SimulateTextDrop(const std::string& text, DragOrigin origin);
+  // Drop of selected text, i.e. `text/plain`. The drop data is built through
+  // `ui::OSExchangeData`, matching `WebContentsViewAura::PrepareDropData`, so
+  // platforms that synthesize a URL from URL-like plain text (Windows,
+  // ChromeOS, Wayland) also add `text/uri-list`, while X11 does not. Returns
+  // whether a URL was synthesized.
+  bool SimulateTextDrop(const std::string& text, DragOrigin origin);
 
   // Drop carrying `url` in both `text/uri-list` and `text/plain`.
   void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin);

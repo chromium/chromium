@@ -54,6 +54,12 @@ class WebUIHomeControl {
   // and displays the undo bubble.
   void OnHomeButtonDropUrl(const GURL& url);
 
+  // Called when plain text is dropped on the home button. Returns whether the
+  // text should be forwarded to the shared toolbar text navigation logic.
+  // Returning false consumes the pending drag state so it does not leak into
+  // subsequent navigations.
+  bool ShouldHandleDropText();
+
   ui::MenuModel* GetMenuModelForTesting() { return &home_menu_; }
 
  private:

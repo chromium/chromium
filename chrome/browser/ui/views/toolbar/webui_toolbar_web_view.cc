@@ -1484,6 +1484,15 @@ void WebUIToolbarWebView::OnHomeButtonDropFile(
   }
 }
 
+void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
+  if (!home_control_.ShouldHandleDropText()) {
+    return;
+  }
+  if (browser_controls_adapter_) {
+    browser_controls_adapter_->NavigateText(text);
+  }
+}
+
 void WebUIToolbarWebView::OnToolbarDropFile(const gfx::PointF& drop_position) {
   if (std::optional<GURL> url = web_view_->ConsumeDroppedUrl(drop_position)) {
     browser_->OpenGURL(*url, WindowOpenDisposition::CURRENT_TAB);

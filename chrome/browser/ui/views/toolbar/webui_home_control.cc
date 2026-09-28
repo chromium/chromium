@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_home_control.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -115,6 +116,25 @@ void WebUIHomeControl::OnHomeButtonDropUrl(const GURL& url) {
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, false);
 
   ShowSetHomePageBubble(old_url, old_is_ntp);
+}
+
+bool WebUIHomeControl::ShouldHandleDropText() {
+#if BUILDFLAG(IS_WIN)
+  // On Windows, `OSExchangeDataProviderWin::GetURLs()` already synthesizes
+  // valid URLs from OS-originated plain-text drags into `text/uri-list`, which
+  // is routed to `OnHomeButtonDropUrl()`. A `text/plain`-only drop from the OS
+  // (e.g. words dragged from Notepad) is therefore non-URL text, which the
+  // native Views home button ignores. Renderer-originated text is still
+  // forwarded so it can be searched for or navigated to.
+  content::WebContents* contents = delegate_->GetWebContents();
+  if (!webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(contents)
+           ->drag_originated_from_renderer()) {
+    webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
+        contents);
+    return false;
+  }
+#endif
+  return true;
 }
 
 void WebUIHomeControl::OnIsPinnedChanged() {

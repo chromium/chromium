@@ -38,12 +38,14 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 WebUIHomeControlTestBase::WebUIHomeControlTestBase() {
@@ -201,12 +203,22 @@ void WebUIHomeControlTestBase::SimulateLinkDrop(const std::string& url,
   PerformDropOnHomeButton(drop_data);
 }
 
-void WebUIHomeControlTestBase::SimulateTextDrop(const std::string& text,
+bool WebUIHomeControlTestBase::SimulateTextDrop(const std::string& text,
                                                 DragOrigin origin) {
+  ui::OSExchangeData data;
+  if (origin == DragOrigin::kWebPage) {
+    data.MarkRendererTaintedFromOrigin(url::Origin());
+  }
+  data.SetString(base::UTF8ToUTF16(text));
+
   content::DropData drop_data;
   drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
-  drop_data.text = base::UTF8ToUTF16(text);
+  drop_data.text = data.GetString();
+  drop_data.url_infos =
+      data.GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+  const bool has_synthesized_url = !drop_data.url_infos.empty();
   PerformDropOnHomeButton(drop_data);
+  return has_synthesized_url;
 }
 
 void WebUIHomeControlTestBase::SimulateLinkWithTextDrop(const std::string& url,

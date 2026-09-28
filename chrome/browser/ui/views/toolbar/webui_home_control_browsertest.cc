@@ -270,15 +270,25 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropPlainText_FromOs) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   SimulateTextDrop("hello world", DragOrigin::kOs);
 
+#if BUILDFLAG(IS_WIN)
+  ExpectDropIgnored();
+#else
   ExpectSearchedFor("hello world");
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromWebPage) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   const GURL url("https://www.example.test/");
-  SimulateTextDrop(url.spec(), DragOrigin::kWebPage);
 
-  ExpectNavigatedTo(url);
+  // Platforms that synthesize `text/uri-list` from URL-like plain text
+  // (Windows, ChromeOS, Wayland) set the home page, matching native Views.
+  // Otherwise (e.g. X11) the text is navigated to.
+  if (SimulateTextDrop(url.spec(), DragOrigin::kWebPage)) {
+    ExpectHomePageSetTo(url);
+  } else {
+    ExpectNavigatedTo(url);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlLink_FromWebPage) {
@@ -304,9 +314,12 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromOs) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   const GURL url("https://www.example.test/");
-  SimulateTextDrop(url.spec(), DragOrigin::kOs);
 
-  ExpectNavigatedTo(url);
+  if (SimulateTextDrop(url.spec(), DragOrigin::kOs)) {
+    ExpectHomePageSetTo(url);
+  } else {
+    ExpectNavigatedTo(url);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFile_FromOs) {
@@ -354,16 +367,14 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropFilePath_FromOs) {
   ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
   const GURL file_url = net::FilePathToFileURL(file_path);
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
-  SimulateTextDrop(file_url.spec(), DragOrigin::kOs);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
-  // every drag as renderer-originated (b/256022714), which limits text drops
-  // to HTTP/HTTPS.
-  ExpectDropIgnored();
-#else
-  ExpectNavigatedTo(file_url);
-#endif
+  // ChromeOS synthesizes the `file:` URL, and `file:` is allowed even though
+  // every ChromeOS drag is treated as renderer-originated (b/256022714).
+  if (SimulateTextDrop(file_url.spec(), DragOrigin::kOs)) {
+    ExpectHomePageSetTo(file_url);
+  } else {
+    ExpectNavigatedTo(file_url);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
@@ -440,15 +451,19 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest,
                        DropPrivilegedUrlText_FromOs) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   const GURL url("chrome://version/");
-  SimulateTextDrop(url.spec(), DragOrigin::kOs);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
-  // every drag as renderer-originated (b/256022714), which limits text drops
-  // to HTTP/HTTPS.
+  // every drag as renderer-originated (b/256022714), which rejects privileged
+  // schemes whether or not a URL was synthesized.
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
   ExpectDropIgnored();
 #else
-  ExpectNavigatedTo(url);
+  if (SimulateTextDrop(url.spec(), DragOrigin::kOs)) {
+    ExpectHomePageSetTo(url);
+  } else {
+    ExpectNavigatedTo(url);
+  }
 #endif
 }
 

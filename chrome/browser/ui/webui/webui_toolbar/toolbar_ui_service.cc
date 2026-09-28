@@ -321,6 +321,12 @@ void ToolbarUIService::OnHomeButtonDropFile(const gfx::PointF& drop_position) {
   }
 }
 
+void ToolbarUIService::OnHomeButtonDropText(const std::string& text) {
+  if (delegate_) {
+    delegate_->OnHomeButtonDropText(text);
+  }
+}
+
 void ToolbarUIService::OnToolbarDropFile(const gfx::PointF& drop_position) {
   if (delegate_) {
     delegate_->OnToolbarDropFile(drop_position);

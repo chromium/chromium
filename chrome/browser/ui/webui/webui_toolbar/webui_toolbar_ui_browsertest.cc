@@ -219,6 +219,7 @@ class MockToolbarUIDelegate
               (override));
   MOCK_METHOD(void, OnHomeButtonDropUrl, (const GURL&), (override));
   MOCK_METHOD(void, OnHomeButtonDropFile, (const gfx::PointF&), (override));
+  MOCK_METHOD(void, OnHomeButtonDropText, (const std::string&), (override));
   MOCK_METHOD(void, OnToolbarDropFile, (const gfx::PointF&), (override));
   MOCK_METHOD(void,
               OnPerformanceInterventionButtonClicked,

@@ -112,11 +112,12 @@ export class HomeButtonElement extends HomeButtonElementBase {
         this.browserProxy_.toolbarUIHandler.onHomeButtonDropUrl(url);
       }
     } else if (e.dataTransfer.types.includes('text/plain')) {
-      // Dropped text never sets the home page. It is handed to the same
-      // channel the toolbar uses, which searches for it or navigates to it.
+      // Dropped text never sets the home page. The browser applies home
+      // button specific platform policy, and may then search for it or
+      // navigate to it.
       const text = e.dataTransfer.getData('text/plain');
       if (text) {
-        this.browserProxy_.browserControlsHandler.navigateText(text);
+        this.browserProxy_.toolbarUIHandler.onHomeButtonDropText(text);
       }
     }
   }

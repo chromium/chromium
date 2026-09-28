@@ -209,6 +209,10 @@ interface ToolbarUIService {
   // home page undo bubble.
   OnHomeButtonDropFile(gfx.mojom.PointF drop_position);
 
+  // Called when plain text (`text/plain` without `text/uri-list`) is dropped
+  // on the home button.
+  OnHomeButtonDropText(string text);
+
   // Navigates the current tab to the currently dragged file at `drop_position`.
   OnToolbarDropFile(gfx.mojom.PointF drop_position);
 
