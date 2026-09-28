@@ -497,7 +497,7 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       gfx::ColorSpace color_space;
       if (const auto& icc_profile = iccs[monitor < iccs.size() ? monitor : 0]) {
         color_space = gfx::ColorSpace(
-            icc_profile->GetSkColorSpace()->makeSRGBGamma().get());
+            icc_profile->GetDisplaySkColorSpace()->makeSRGBGamma().get());
       }
 
       // Most folks do not have an ICC profile set up, but we still want to

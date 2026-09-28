@@ -81,9 +81,10 @@ void DisplayICCProfiles::UpdateIfNeeded() {
     // don't store its data (we will assign the best parametric fit to
     // IOSurfaces, and rely on the system compositor to do conversion to the
     // display profile).
-    if (!icc_profile || !icc_profile->IsSkColorSpaceExact())
+    if (!icc_profile || !icc_profile->IsDisplaySkColorSpaceExact()) {
       continue;
-    ColorSpace color_space(icc_profile->GetSkColorSpace().get());
+    }
+    ColorSpace color_space(icc_profile->GetDisplaySkColorSpace().get());
     map_[color_space] = icc_data;
   }
 }

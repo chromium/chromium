@@ -139,7 +139,7 @@ gfx::ColorSpace ColorProfileReader::GetDisplayColorSpace(
   auto found = display_id_to_profile_map_.find(display_id);
   if (found != display_id_to_profile_map_.end() && found->second) {
     return gfx::ColorSpace(
-        found->second->GetSkColorSpace()->makeSRGBGamma().get());
+        found->second->GetDisplaySkColorSpace()->makeSRGBGamma().get());
   }
   return gfx::ColorSpace::CreateSRGB();
 }

@@ -73,6 +73,17 @@ class SK_API ColorProfile final : public SkRefCnt {
   // as an SkColorSpace, e.g, because it is LUT-based).
   bool IsSkColorSpaceExact() const { return is_sk_color_space_exact_; }
 
+  // Same as GetSkColorSpace and IsSkColorSpaceExact, but for use as a display
+  // profile. This rejects (falls back to sRGB for) profiles with a non-D50
+  // white point, which are broken and which Windows ignores.
+  // https://crbug.com/847024, https://crbug.com/565342193
+  sk_sp<SkColorSpace> GetDisplaySkColorSpace() const {
+    return display_sk_color_space_;
+  }
+  bool IsDisplaySkColorSpaceExact() const {
+    return is_display_sk_color_space_exact_;
+  }
+
   // Transform `rect` in `pixmap`. The source color space is the color space of
   // `this`, and the destination color space is the color space of `pixmap`. If
   // specified, `override_src_color_type` and `override_src_alpha_type` are the
@@ -89,12 +100,16 @@ class SK_API ColorProfile final : public SkRefCnt {
   ColorProfile();
 
   void ComputeSkColorSpace();
+  // Must be called after ComputeSkColorSpace.
+  void ComputeDisplaySkColorSpace();
 
   skcms_ICCProfile profile_;
   // Retains the parsed profile data so that pointers in profile_ remain valid.
   std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile_;
   sk_sp<SkColorSpace> sk_color_space_;
   bool is_sk_color_space_exact_ = false;
+  sk_sp<SkColorSpace> display_sk_color_space_;
+  bool is_display_sk_color_space_exact_ = false;
 };
 
 }  // namespace skia
