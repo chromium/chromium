@@ -68,9 +68,6 @@ class CORE_EXPORT NavigatorUAData : public ScriptWrappable,
   String bitness_;
   bool is_wow64_ = false;
   Vector<String> form_factors_;
-
-  void AddBrandVersion(const String& brand, const String& version);
-  void AddBrandFullVersion(const String& brand, const String& version);
 };
 
 }  // namespace blink
