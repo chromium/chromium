@@ -53,11 +53,13 @@ class ClientSideDetectionIntelligentScanDelegateIOS
   ModelType GetIntelligentScanModelType(
       bool /*log_failed_eligibility_reason*/) override;
 
-  // Starts an intelligent scan for the provided `rendered_texts` and invokes
-  // `callback` with the result upon completion. Returns an unguessable token
-  // identifying the request, or `std::nullopt` if the request could not start.
+  // Starts an intelligent scan for the provided `rendered_texts` and `url`, and
+  // invokes `callback` with the result upon completion. Returns an unguessable
+  // token identifying the request, or `std::nullopt` if the request could not
+  // start.
   std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
+      std::string url,
       IntelligentScanDoneCallback callback) override;
 
   // Cancels a specific intelligent scan identified by `scan_id`. Returns `true`

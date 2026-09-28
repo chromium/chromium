@@ -45,6 +45,7 @@ using RemoteModelExecutionCallback =
     optimization_guide::OptimizationGuideModelExecutionResultCallback;
 
 constexpr std::string_view kTestRenderedText = "test rendered text";
+constexpr std::string_view kTestUrl = "https://example.com";
 constexpr std::string_view kTestBrand = "test_brand";
 constexpr std::string_view kTestIntent = "test_intent";
 constexpr int kMaxScansPerDay = 5;
@@ -92,7 +93,8 @@ class ClientSideDetectionIntelligentScanDelegateIOSTest
           {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
          {kClientSideDetectionServerModelForScamDetectionIos,
           {{"MaxIntelligentScansPerDayIos",
-            base::NumberToString(kMaxScansPerDay)}}}},
+            base::NumberToString(kMaxScansPerDay)}}},
+         {kClientSideDetectionScamDetectionRequestWithUrl, {}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
   }
 };
@@ -258,6 +260,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   optimization_guide::proto::ScamDetectionRequest expected_request;
   expected_request.set_rendered_text(kTestRenderedText);
+  expected_request.set_url(kTestUrl);
   optimization_guide::ModelExecutionOptions expected_options{};
 
   optimization_guide::proto::ScamDetectionResponse returned_response;
@@ -279,7 +282,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
 
   IntelligentScanResult result = future.Get();
@@ -301,6 +305,41 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
       "SBClientPhishing.ServerSideModelExecutionDuration", 1);
 }
 
+TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
+       StartIntelligentScan_UrlOmittedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kClientSideDetectionScamDetectionRequestWithUrl);
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+
+  optimization_guide::proto::ScamDetectionRequest expected_request;
+  expected_request.set_rendered_text(kTestRenderedText);
+  optimization_guide::ModelExecutionOptions expected_options{};
+
+  optimization_guide::proto::ScamDetectionResponse returned_response;
+  returned_response.set_brand(kTestBrand);
+  returned_response.set_intent(kTestIntent);
+
+  EXPECT_CALL(
+      remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kScamDetection,
+                   EqualsProto(expected_request),
+                   ::testing::Eq(expected_options),
+                   ::testing::A<RemoteModelExecutionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              optimization_guide::AnyWrapProto(returned_response),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  base::test::TestFuture<IntelligentScanResult> future;
+  std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
+  ASSERT_TRUE(token.has_value());
+  EXPECT_TRUE(future.Get().execution_success);
+}
+
 // Tests unsuccessful model execution response from remote executor.
 TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
        StartIntelligentScan_ModelResponseUnsuccessful) {
@@ -308,6 +347,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   optimization_guide::proto::ScamDetectionRequest expected_request;
   expected_request.set_rendered_text(kTestRenderedText);
+  expected_request.set_url(kTestUrl);
   optimization_guide::ModelExecutionOptions expected_options{};
 
   EXPECT_CALL(
@@ -329,7 +369,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
 
   IntelligentScanResult result = future.Get();
@@ -373,7 +414,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
 
   IntelligentScanResult result = future.Get();
@@ -403,7 +445,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1u);
 
@@ -422,7 +465,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   EXPECT_FALSE(token.has_value());
 
   IntelligentScanResult result = future.Get();
@@ -439,7 +483,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
 
   EXPECT_TRUE(delegate_->CancelIntelligentScan(*token));
@@ -470,7 +515,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
   EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1u);
   ASSERT_TRUE(saved_callback);
@@ -505,7 +551,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
   for (int i = 0; i < kMaxScansPerDay; ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     delegate_->StartIntelligentScan(std::string(kTestRenderedText),
-                                    base::DoNothing());
+                                    std::string(kTestUrl), base::DoNothing());
     histogram_tester_.ExpectBucketCount(
         "SBClientPhishing.ServerSideModelQuotaCountOnLookup", i + 1, 1);
   }
@@ -521,6 +567,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
@@ -541,6 +588,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     EXPECT_TRUE(token.has_value());
   }
@@ -574,6 +622,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     ASSERT_TRUE(token.has_value());
     EXPECT_FALSE(future.Get().execution_success);
@@ -584,6 +633,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     EXPECT_FALSE(token.has_value());
     ASSERT_TRUE(future.IsReady());
@@ -607,7 +657,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
   for (int i = 0; i < kMaxScansPerDay; ++i) {
     SCOPED_TRACE(testing::Message() << "i=" << i);
     delegate_->StartIntelligentScan(std::string(kTestRenderedText),
-                                    base::DoNothing());
+                                    std::string(kTestUrl), base::DoNothing());
   }
 
   // Reached quota.
@@ -615,6 +665,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     EXPECT_FALSE(token.has_value());
   }
@@ -632,6 +683,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSTest,
     base::test::TestFuture<IntelligentScanResult> future;
     std::optional<base::UnguessableToken> token =
         delegate_->StartIntelligentScan(std::string(kTestRenderedText),
+                                        std::string(kTestUrl),
                                         future.GetCallback());
     EXPECT_TRUE(token.has_value());
   }
@@ -677,7 +729,8 @@ class ClientSideDetectionIntelligentScanDelegateIOSRolloutTest
           {{"MaxIntelligentScansPerDayIos",
             base::NumberToString(kMaxScansPerDay)}}},
          {kClientSideDetectionServerModelRolloutIos,
-          {{"ModelVersion", "2000"}}}},
+          {{"ModelVersion", "2000"}}},
+         {kClientSideDetectionScamDetectionRequestWithUrl, {}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
   }
 };
@@ -689,6 +742,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSRolloutTest,
 
   optimization_guide::proto::ScamDetectionRequest expected_request;
   expected_request.set_rendered_text(kTestRenderedText);
+  expected_request.set_url(kTestUrl);
   optimization_guide::ModelExecutionOptions expected_options{};
 
   optimization_guide::proto::ScamDetectionResponse returned_response;
@@ -709,7 +763,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateIOSRolloutTest,
 
   base::test::TestFuture<IntelligentScanResult> future;
   std::optional<base::UnguessableToken> token = delegate_->StartIntelligentScan(
-      std::string(kTestRenderedText), future.GetCallback());
+      std::string(kTestRenderedText), std::string(kTestUrl),
+      future.GetCallback());
   ASSERT_TRUE(token.has_value());
 
   IntelligentScanResult result = future.Get();

@@ -37,7 +37,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
           IntelligentScanDoneCallback callback);
   ~Inquiry();
 
-  void Start(const std::string& rendered_texts);
+  void Start(const std::string& rendered_texts, const std::string& url);
 
  private:
   void RemoteExecutionCallback(
@@ -65,7 +65,8 @@ ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::~Inquiry() =
     default;
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
-    const std::string& rendered_texts) {
+    const std::string& rendered_texts,
+    const std::string& url) {
   CHECK(!was_start_called_)
       << "Start() should only be called once per inquiry.";
   was_start_called_ = true;
@@ -73,6 +74,10 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
   parent_->AddIntelligentScanQuota();
   ScamDetectionRequest request;
   request.set_rendered_text(rendered_texts);
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionScamDetectionRequestWithUrl)) {
+    request.set_url(url);
+  }
   parent_->remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kScamDetection,
       std::move(request), /*options=*/{},
@@ -191,6 +196,7 @@ ClientSideDetectionIntelligentScanDelegateAndroid::GetIntelligentScanModelType(
 std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     std::string rendered_texts,
+    std::string url,
     IntelligentScanDoneCallback callback) {
   ModelType model_type =
       GetIntelligentScanModelType(/*log_failed_eligibility_reason=*/false);
@@ -214,7 +220,7 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
   std::unique_ptr<Inquiry> new_inquiry =
       std::make_unique<Inquiry>(this, scan_id, std::move(callback));
   inquiries_[scan_id] = std::move(new_inquiry);
-  inquiries_[scan_id]->Start(rendered_texts);
+  inquiries_[scan_id]->Start(rendered_texts, url);
   return scan_id;
 }
 

@@ -41,7 +41,7 @@ class ClientSideDetectionIntelligentScanDelegateIOS::Inquiry {
           IntelligentScanDoneCallback callback);
   ~Inquiry();
 
-  void Start(std::string rendered_texts);
+  void Start(std::string rendered_texts, std::string url);
 
  private:
   void RemoteExecutionCallback(
@@ -125,6 +125,7 @@ ClientSideDetectionIntelligentScanDelegateIOS::GetIntelligentScanModelType(
 std::optional<base::UnguessableToken>
 ClientSideDetectionIntelligentScanDelegateIOS::StartIntelligentScan(
     std::string rendered_texts,
+    std::string url,
     IntelligentScanDoneCallback callback) {
   ModelType model_type =
       GetIntelligentScanModelType(/*log_failed_eligibility_reason=*/false);
@@ -152,7 +153,7 @@ ClientSideDetectionIntelligentScanDelegateIOS::StartIntelligentScan(
   base::UnguessableToken scan_id = base::UnguessableToken::Create();
   auto [it, inserted] = inquiries_.try_emplace(
       scan_id, std::make_unique<Inquiry>(this, scan_id, std::move(callback)));
-  it->second->Start(std::move(rendered_texts));
+  it->second->Start(std::move(rendered_texts), std::move(url));
   return scan_id;
 }
 
@@ -276,7 +277,8 @@ ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::Inquiry(
 ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::~Inquiry() = default;
 
 void ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::Start(
-    std::string rendered_texts) {
+    std::string rendered_texts,
+    std::string url) {
   CHECK(!was_start_called_)
       << "Start() should only be called once per inquiry.";
   was_start_called_ = true;
@@ -285,6 +287,10 @@ void ClientSideDetectionIntelligentScanDelegateIOS::Inquiry::Start(
     parent_->AddIntelligentScanQuota();
     ScamDetectionRequest request;
     request.set_rendered_text(std::move(rendered_texts));
+    if (base::FeatureList::IsEnabled(
+            kClientSideDetectionScamDetectionRequestWithUrl)) {
+      request.set_url(std::move(url));
+    }
     parent_->remote_model_executor_->ExecuteModel(
         optimization_guide::ModelBasedCapabilityKey::kScamDetection,
         std::move(request), /*options=*/{},

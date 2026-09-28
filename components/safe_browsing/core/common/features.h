@@ -160,6 +160,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionRedirectChainKillswitch);
 BASE_DECLARE_FEATURE(kClientSideDetectionRetryLimit);
 extern const base::FeatureParam<int> kClientSideDetectionRetryLimitTime;
 
+// Controls whether the URL is included in ScamDetectionRequest for
+// intelligent scan.
+BASE_DECLARE_FEATURE(kClientSideDetectionScamDetectionRequestWithUrl);
+
 // Controls whether the scam score is included in IntelligentScanInfo.
 BASE_DECLARE_FEATURE(kClientSideDetectionScamScore);
 

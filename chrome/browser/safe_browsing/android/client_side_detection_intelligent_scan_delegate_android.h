@@ -39,6 +39,7 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
       bool log_failed_eligibility_reason) override;
   std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
+      std::string url,
       IntelligentScanDoneCallback callback) override;
   bool CancelIntelligentScan(const base::UnguessableToken& scan_id) override;
   bool ShouldShowScamWarning(

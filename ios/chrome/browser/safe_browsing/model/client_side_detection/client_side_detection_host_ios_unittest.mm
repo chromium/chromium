@@ -152,6 +152,7 @@ class MockIntelligentScanDelegate
       std::optional<base::UnguessableToken>,
       StartIntelligentScan,
       (std::string rendered_texts,
+       std::string url,
        safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
            callback),
       (override));

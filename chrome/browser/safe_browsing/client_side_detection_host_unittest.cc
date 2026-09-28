@@ -318,7 +318,7 @@ class MockIntelligentScanDelegate : public IntelligentScanDelegate {
   MOCK_METHOD(ModelType, GetIntelligentScanModelType, (bool), (override));
   MOCK_METHOD(std::optional<base::UnguessableToken>,
               StartIntelligentScan,
-              (std::string, IntelligentScanDoneCallback),
+              (std::string, std::string, IntelligentScanDoneCallback),
               (override));
   MOCK_METHOD(bool,
               CancelIntelligentScan,
@@ -4572,10 +4572,11 @@ class ClientSideDetectionHostScamDetectionTest
 
   void SetIntelligentScanCallback(bool should_return_response,
                                   std::optional<float> returned_scam_score) {
-    EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _))
+    EXPECT_CALL(*intelligent_scan_delegate_,
+                StartIntelligentScan(_, example_url_.spec(), _))
         .WillOnce(
             [=, this](
-                std::string rendered_text,
+                std::string rendered_text, std::string url,
                 IntelligentScanDelegate::IntelligentScanDoneCallback callback) {
               base::UnguessableToken token = base::UnguessableToken::Create();
               IntelligentScanDelegate::IntelligentScanResult
@@ -4644,6 +4645,14 @@ class ClientSideDetectionHostScamDetectionTest
           } else {
             EXPECT_FALSE(request->intelligent_scan_info().has_scam_score());
           }
+          EXPECT_THAT(
+              request->population().finch_active_groups(),
+              testing::Contains(
+                  base::FeatureList::IsEnabled(
+                      kClientSideDetectionScamDetectionRequestWithUrl)
+                      ? "ClientSideDetectionScamDetectionRequestWithUrl.Enabled"
+                      : "ClientSideDetectionScamDetectionRequestWithUrl."
+                        "Control"));
           std::move(callback).Run(example_url_, returned_is_phishing,
                                   net::HTTP_OK,
                                   returned_intelligent_scan_verdict);
@@ -4769,7 +4778,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       .WillOnce(Return(false));
   // Because the delegate has disabled intelligent scan, we will
   // NOT start the intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
   EXPECT_CALL(*intelligent_scan_delegate_, OnScamWarningShown()).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -4852,7 +4862,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        EmptyInnerTextDoesNotTriggersIntelligentScan) {
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT start the intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
@@ -4882,7 +4893,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   raw_delegate_->SetInnerText("text");
   // Because the inner text is too short, we will NOT start the intelligent
   // scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::TEXT_TOO_SHORT,
@@ -4909,7 +4921,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
        AllowlistedOnHCDoesNotTriggersIntelligentScan) {
   // Because the URL is on the HC allowlist, we will NOT start the intelligent
   // scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/IntelligentScanInfo::ALLOWLISTED,
@@ -4941,7 +4954,8 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
           Return(IntelligentScanDelegate::ModelType::kNotSupportedOnDevice));
   // Because the intelligent scan is unavailable, we will NOT start the
   // intelligent scan.
-  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _)).Times(0);
+  EXPECT_CALL(*intelligent_scan_delegate_, StartIntelligentScan(_, _, _))
+      .Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
       /*expected_no_info_reason=*/
@@ -5081,13 +5095,13 @@ TEST_F(
                          /*intelligent_scan=*/true,
                          /*cache_expression=*/first_url_redirect.GetContent());
 
+  // Re-set the example URL to the final url in the redirect chain.
+  SetExampleUrl(third_url_redirect);
+
   EXPECT_CALL(*intelligent_scan_delegate_,
               ShouldRequestIntelligentScan(IntelligentScanEnabledVerdict()))
       .WillOnce(Return(true));
   SetIntelligentScanCallback(/*should_return_response=*/true);
-
-  // Re-set the example URL to the final url in the redirect chain.
-  SetExampleUrl(third_url_redirect);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
       /*expected_no_info_reason=*/std::nullopt,
@@ -5423,7 +5437,9 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
        ScamScorePopulatedWhenFeatureEnabled) {
-  SetFeatures({kClientSideDetectionScamScore}, {});
+  SetFeatures({kClientSideDetectionScamScore,
+               kClientSideDetectionScamDetectionRequestWithUrl},
+              {});
   SetIntelligentScanCallback(/*should_return_response=*/true);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/true,
