@@ -1570,6 +1570,11 @@ crbug.com/483653 accessibility/scroll-containers.html [ Crash Failure Pass Timeo
 # Temporarily disabled until document marker serialization is enabled for AXInlineTextBox
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 
+# Reproduction for an image losing its image map crash
+crbug.com/500774800 accessibility/image-map-usemap-removed-crash.html [ Crash ]
+crbug.com/500774800 accessibility/image-map-name-changed-crash.html [ Crash ]
+crbug.com/500774800 accessibility/image-map-usemap-removed-successive-images.html [ Crash ]
+
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing usemap from successive images passes the map to the next image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img0" alt="First image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" usemap="#map">
+<img id="img1" alt="Second image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" usemap="#map">
+<img id="img2" alt="Third image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" usemap="#map">
+<map name="map">
+  <area href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Only the first image using the map, #img0, owns the <area>.
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 1);
+
+  // In one batch, the map passes to #img1 and then to #img2. #img1 never
+  // owned the <area>, so the map can only be found through #img0's change.
+  img0.removeAttribute('usemap');
+  img1.removeAttribute('usemap');
+
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 0);
+  assert_equals(accessibilityController.accessibleElementById('img1').childrenCount, 0);
+  assert_equals(accessibilityController.accessibleElementById('img2').childrenCount, 1,
+                'The last image still using the map should own the area');
+}, 'Removing usemap from successive images passes the map to the next image');
+</script>

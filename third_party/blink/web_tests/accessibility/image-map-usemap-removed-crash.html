@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing usemap from an image with an updated area does not crash</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img" alt="Image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" usemap="#map">
+<map name="map">
+  <area id="area" href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // The getter runs UpdateAXForAllDocuments(), which builds the whole tree.
+  // The <img> adopts the <area> of its map as a child.
+  accessibilityController.rootElement;
+
+  // Changing alt queues a tree update for the <area>. Nothing is processed
+  // until the next update.
+  area.setAttribute('alt', 'Updated');
+
+  // Removing usemap severs the image map association in the same batch. This
+  // is the step under test: the <area> queued above no longer has the <img>
+  // as its natural parent, so the <img> must stop caching it as a child.
+  img.removeAttribute('usemap');
+
+  // Updates style, layout and accessibility, which processes the queued
+  // <area> update first. The <img> has to have let go of the <area> by then;
+  // if it still cached it, that update would see a stale parent and crash.
+  const accessibleImg =
+      accessibilityController.accessibleElementById('img');
+  assert_true(!!accessibleImg,
+              'The image should remain in the accessibility tree');
+  assert_equals(accessibleImg.role, 'AXRole: AXImage');
+  assert_equals(accessibleImg.childrenCount, 0,
+                'The image should have no children after removing usemap');
+}, 'Removing usemap from an image with an updated area does not crash');
+</script>
