@@ -546,6 +546,9 @@ size_t GetDropDataSize(const content::DropData& drop_data) {
     size += url_info.title.size() * sizeof(url_info.title[0]);
   }
   for (const auto& item : drop_data.custom_data) {
+    // Custom data types are controlled by the page and written to the drag
+    // data alongside their values, so they count towards the size.
+    size += item.first.size() * sizeof(item.first[0]);
     size += item.second.size() * sizeof(item.second[0]);
   }
   for (const auto& fs_file : drop_data.file_system_files) {

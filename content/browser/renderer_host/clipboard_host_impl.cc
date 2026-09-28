@@ -882,7 +882,7 @@ void ClipboardHostImpl::WriteText(const std::u16string& text) {
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       context_->CreateClipboardEndpoint(),
       {
-          .size = text.size() * sizeof(std::u16string::value_type),
+          .size = data.size(),
           .format_type = ui::ClipboardFormatType::PlainTextType(),
       },
       data,
@@ -901,7 +901,7 @@ void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       context_->CreateClipboardEndpoint(),
       {
-          .size = markup.size() * sizeof(std::u16string::value_type),
+          .size = data.size(),
           .format_type = ui::ClipboardFormatType::HtmlType(),
       },
       data,
@@ -919,7 +919,7 @@ void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       context_->CreateClipboardEndpoint(),
       {
-          .size = markup.size() * sizeof(std::u16string::value_type),
+          .size = data.size(),
           .format_type = ui::ClipboardFormatType::SvgType(),
       },
       data,
@@ -942,18 +942,11 @@ void ClipboardHostImpl::WriteDataTransferCustomData(
   ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.custom_data = data;
 
-  size_t total_size = 0;
-  for (const auto& entry : clipboard_paste_data.custom_data) {
-    total_size +=
-        (entry.first.size() + entry.second.size()) *
-        sizeof(std::u16string::value_type);
-  }
-
   ++pending_writes_;
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       context_->CreateClipboardEndpoint(),
       {
-          .size = total_size,
+          .size = clipboard_paste_data.size(),
           .format_type = ui::ClipboardFormatType::DataTransferCustomType(),
       },
       clipboard_paste_data,
@@ -988,10 +981,10 @@ void ClipboardHostImpl::WriteImage(const SkBitmap& bitmap) {
   GetContentClient()->browser()->IsClipboardCopyAllowedByPolicy(
       context_->CreateClipboardEndpoint(),
       {
-          .size = bitmap.computeByteSize(),
+          .size = data.size(),
           .format_type = ui::ClipboardFormatType::BitmapType(),
       },
-      std::move(data),
+      data,
       base::BindOnce(&ClipboardHostImpl::OnCopyAllowedResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

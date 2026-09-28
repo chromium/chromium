@@ -2121,6 +2121,96 @@ TEST_F(ClipboardHostImplRaceConditionTest,
   EXPECT_EQ(result, u"custom data");
 }
 
+// Records the size passed to the copy and paste policy checks, and allows both
+// actions.
+class PolicySizeInterceptBrowserClient : public TestContentBrowserClient {
+ public:
+  PolicySizeInterceptBrowserClient() = default;
+  ~PolicySizeInterceptBrowserClient() override = default;
+
+  void IsClipboardCopyAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ui::ClipboardMetadata& metadata,
+      const ClipboardPasteData& data,
+      IsClipboardCopyAllowedCallback callback) override {
+    last_copy_size_ = metadata.size;
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+  }
+
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ui::ClipboardMetadata& metadata,
+      ClipboardPasteData data,
+      IsClipboardPasteAllowedCallback callback) override {
+    last_paste_size_ = metadata.size;
+    std::move(callback).Run(std::move(data));
+  }
+
+  std::optional<size_t> last_copy_size() const { return last_copy_size_; }
+  std::optional<size_t> last_paste_size() const { return last_paste_size_; }
+
+ private:
+  std::optional<size_t> last_copy_size_;
+  std::optional<size_t> last_paste_size_;
+};
+
+class ClipboardHostImplPolicySizeTest : public ClipboardHostImplTest {
+ protected:
+  void SetUp() override {
+    ClipboardHostImplTest::SetUp();
+    browser_client_setting_ =
+        std::make_unique<ScopedContentBrowserClientSetting>(&browser_client_);
+  }
+
+  void TearDown() override {
+    browser_client_setting_.reset();
+    ClipboardHostImplTest::TearDown();
+  }
+
+  PolicySizeInterceptBrowserClient& browser_client() { return browser_client_; }
+
+ private:
+  PolicySizeInterceptBrowserClient browser_client_;
+  std::unique_ptr<ScopedContentBrowserClientSetting> browser_client_setting_;
+};
+
+TEST_F(ClipboardHostImplPolicySizeTest, TextSizeIsInBytes) {
+  const std::u16string kText = u"text";
+  const size_t kExpectedSize = kText.size() * sizeof(char16_t);
+
+  mojo_clipboard()->WriteText(kText);
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+  EXPECT_EQ(browser_client().last_copy_size(), kExpectedSize);
+
+  std::u16string result;
+  mojo_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste, &result);
+  EXPECT_EQ(result, kText);
+  EXPECT_EQ(browser_client().last_paste_size(), kExpectedSize);
+}
+
+// Pages control custom data types, so arbitrary data hidden in a type must
+// count towards the size on both copy and paste even if its value is tiny
+// (crbug.com/495437051).
+TEST_F(ClipboardHostImplPolicySizeTest, CustomDataSizeIncludesTypes) {
+  const std::u16string kType(1000, u'x');
+  const size_t kExpectedSize = (kType.size() + 1) * sizeof(char16_t);
+
+  base::flat_map<std::u16string, std::u16string> custom_data;
+  custom_data[kType] = u"A";
+  mojo_clipboard()->WriteDataTransferCustomData(custom_data);
+  mojo_clipboard()->CommitWrite();
+  mojo_clipboard().FlushForTesting();
+  EXPECT_EQ(browser_client().last_copy_size(), kExpectedSize);
+
+  std::u16string result;
+  mojo_clipboard()->ReadDataTransferCustomData(ui::ClipboardBuffer::kCopyPaste,
+                                               kType, &result);
+  EXPECT_EQ(result, u"A");
+  EXPECT_EQ(browser_client().last_paste_size(), kExpectedSize);
+}
+
 // A Context whose answers the test sets, so the host body is exercised
 // against the seam rather than against a frame or a worker.
 class FakeClipboardContext : public ClipboardHostImpl::Context {

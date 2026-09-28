@@ -1475,13 +1475,17 @@ TEST_F(DataProtectionClipboardTest, DragBlocked_CustomDataSize) {
         ]
       })"});
 
-  content::DropData drop_data;
-  drop_data.custom_data[u"type"] = u"long custom payload over 10 bytes";
-  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+  {
+    content::DropData drop_data_allowed;
+    drop_data_allowed.custom_data[u"type"] = u"a";  // 8 + 2 bytes <= 10
+    EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+  }
 
-  content::DropData drop_data_allowed;
-  drop_data_allowed.custom_data[u"type"] = u"a";  // 2 bytes < 10
-  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+  {
+    content::DropData drop_data;
+    drop_data.custom_data[u"long custom type over 10 bytes"] = u"a";
+    EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+  }
 }
 
 TEST_F(DataProtectionClipboardTest, DragBlocked_HTMLOnlySize) {

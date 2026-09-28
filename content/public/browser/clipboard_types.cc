@@ -33,10 +33,13 @@ bool ClipboardPasteData::empty() const {
 }
 
 size_t ClipboardPasteData::size() const {
-  size_t size = text.size() + html.size() + svg.size() + rtf.size() +
-                png.size() + bitmap.computeByteSize();
-  for (const auto& entry : custom_data) {
-    size += entry.second.size();
+  constexpr size_t kUtf16UnitSize = sizeof(std::u16string::value_type);
+  size_t size = (text.size() + html.size() + svg.size()) * kUtf16UnitSize +
+                rtf.size() + png.size() + bitmap.computeByteSize();
+  for (const auto& [type, value] : custom_data) {
+    // Custom data types are controlled by the page and serialized to the
+    // clipboard alongside their values, so they count towards the size.
+    size += (type.size() + value.size()) * kUtf16UnitSize;
   }
   return size;
 }

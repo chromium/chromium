@@ -39,10 +39,11 @@ struct CONTENT_EXPORT ClipboardPasteData {
   // Returns true if all the filds in the struct are null/empty.
   bool empty() const;
 
-  // Returns the sum of the size of all fields except `file_paths`.
-  // Since the meaning of that size could be ambiguous given the differences
-  // between what fields actually represent, this should only be used when only
-  // one field has been populated.
+  // Returns the sum of the size in bytes of all fields except `file_paths`.
+  // UTF-16 fields count 2 bytes per code unit, and `custom_data` counts both
+  // its types and values. Since the meaning of that size could be ambiguous
+  // given the differences between what fields actually represent, this should
+  // only be used when only one field has been populated.
   size_t size() const;
 
   // Override the members of `this` with non-empty members in `other`. This is
