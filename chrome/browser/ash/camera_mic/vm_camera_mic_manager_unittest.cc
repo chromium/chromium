@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/constants/ash_constants.h"
-#include "ash/public/cpp/ash_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_tray.h"
@@ -22,10 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -99,40 +95,31 @@ class VmCameraMicManagerTest : public testing::Test {
     }
   };
 
-  std::string GetNotificationId(VmType vm, NotificationType type) {
-    return ash::kPrivacyIndicatorsNotificationIdPrefix +
-           VmCameraMicManager::GetNotificationId(vm, type);
-  }
+  VmCameraMicManagerTest() = default;
+  VmCameraMicManagerTest(const VmCameraMicManagerTest&) = delete;
+  VmCameraMicManagerTest& operator=(const VmCameraMicManagerTest&) = delete;
 
-  VmCameraMicManagerTest() {
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+  ~VmCameraMicManagerTest() override = default;
 
-    // `VmCameraMicManager` associates its notifications with the primary user,
-    // so log one in before starting the session.
-    const AccountId account_id = AccountId::FromUserEmail("test@example.com");
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
+  // testing::Test:
+  void SetUp() override {
+    ash::AshTestHelper::InitParams params;
+    params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
+    ash_test_helper_.SetUp(std::move(params));
 
     vm_camera_mic_manager_ = std::make_unique<VmCameraMicManager>();
     vm_camera_mic_manager_->OnPrimaryUserSessionStarted();
   }
 
-  VmCameraMicManagerTest(const VmCameraMicManagerTest&) = delete;
-  VmCameraMicManagerTest& operator=(const VmCameraMicManagerTest&) = delete;
-
-  ~VmCameraMicManagerTest() override { fake_user_manager_.Reset(); }
-
-  // testing::Test:
-  void SetUp() override {
-    // Setting ash prefs for testing multi-display.
-    ash::RegisterLocalStatePrefs(local_state_.registry(), /*for_test=*/true);
-
-    ash::AshTestHelper::InitParams params;
-    params.local_state = &local_state_;
-    ash_test_helper_.SetUp(std::move(params));
+  void TearDown() override {
+    vm_camera_mic_manager_.reset();
+    ash_test_helper_.TearDown();
   }
 
-  void TearDown() override { ash_test_helper_.TearDown(); }
+  std::string GetNotificationId(VmType vm, NotificationType type) {
+    return ash::kPrivacyIndicatorsNotificationIdPrefix +
+           VmCameraMicManager::GetNotificationId(vm, type);
+  }
 
   void SetCameraAccessing(VmType vm, bool value) {
     vm_camera_mic_manager_->SetCameraAccessing(vm, value);
@@ -198,15 +185,10 @@ class VmCameraMicManagerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
 
   std::unique_ptr<VmCameraMicManager> vm_camera_mic_manager_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Use this for testing multi-display.
-  TestingPrefServiceSimple local_state_;
 
   ash::AshTestHelper ash_test_helper_;
 };

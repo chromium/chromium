@@ -14,8 +14,9 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
-#include "components/prefs/testing_pref_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -45,6 +46,10 @@ web_app::IwaVersion PinnedVersion() {
   return *web_app::IwaVersion::Create(kTestPinnedVersion);
 }
 
+PrefService& GetLocalState() {
+  return *TestingBrowserProcess::GetGlobal()->local_state();
+}
+
 class FakeKioskAppDataDelegate : public KioskAppDataDelegate {
  public:
   FakeKioskAppDataDelegate() = default;
@@ -58,7 +63,7 @@ class FakeKioskAppDataDelegate : public KioskAppDataDelegate {
     base::FilePath user_data_dir;
     bool has_dir =
         base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    CHECK(has_dir);
+    EXPECT_TRUE(has_dir);
     return user_data_dir;
   }
 
@@ -82,13 +87,13 @@ class KioskIwaDataTest : public testing::Test {
             allow_downgrades};
   }
   FakeKioskAppDataDelegate delegate_;
-  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(KioskIwaDataTest, CreateFailWithEmptyBundleId) {
   constexpr char kEmptyId[] = "";
-  auto iwa_data = KioskIwaData::Create(
-      GetTestUserId(), CreateTestPolicyInfo(kEmptyId), delegate_, local_state_);
+  auto iwa_data =
+      KioskIwaData::Create(GetTestUserId(), CreateTestPolicyInfo(kEmptyId),
+                           delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -96,7 +101,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithBadBundleId) {
   constexpr char kBadWebBundleId[] = "abcd";
   auto iwa_data = KioskIwaData::Create(GetTestUserId(),
                                        CreateTestPolicyInfo(kBadWebBundleId),
-                                       delegate_, local_state_);
+                                       delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -104,7 +109,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithEmptyUrl) {
   constexpr char kEmptyUrl[] = "";
   auto iwa_data = KioskIwaData::Create(
       GetTestUserId(), CreateTestPolicyInfo(kTestWebBundleId, kEmptyUrl),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -112,7 +117,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithBadUrl) {
   constexpr char kBadUrl[] = "http:://update.json";
   auto iwa_data = KioskIwaData::Create(
       GetTestUserId(), CreateTestPolicyInfo(kTestWebBundleId, kBadUrl),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -122,7 +127,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithEmptyUpdateChannel) {
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl,
                            kEmptyUpdateChannel),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->update_channel(),
             web_app::UpdateChannel::default_channel());
@@ -133,7 +138,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithBadChannel) {
   auto iwa_data = KioskIwaData::Create(
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl, kNonUtf8),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -143,7 +148,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithNoPinnedVersion) {
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl, kTestUpdateChannel,
                            kEmptyPinnedVersion),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->pinned_version(), std::nullopt);
 }
@@ -154,7 +159,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithBadPinnedVersion) {
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl, kTestUpdateChannel,
                            kBadVersion),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -164,7 +169,7 @@ TEST_F(KioskIwaDataTest, CreateFailWithDowngradeAndNoPinnedVersion) {
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl, kTestUpdateChannel,
                            kEmptyPinnedVersion, kAllowDowngrades),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   EXPECT_EQ(iwa_data, nullptr);
 }
 
@@ -175,7 +180,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithPinningDowngradeAndNoChannel) {
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl,
                            kEmptyUpdateChannel, kTestPinnedVersion,
                            kAllowDowngrades),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   ASSERT_NE(iwa_data, nullptr);
   EXPECT_EQ(iwa_data->update_channel(),
             web_app::UpdateChannel::default_channel());
@@ -196,7 +201,7 @@ TEST_F(KioskIwaDataTest, CreateSuccessWithAllValues) {
       GetTestUserId(),
       CreateTestPolicyInfo(kTestWebBundleId, kTestUpdateUrl, kTestUpdateChannel,
                            kTestPinnedVersion, kAllowDowngrades),
-      delegate_, local_state_);
+      delegate_, GetLocalState());
   ASSERT_NE(iwa_data, nullptr);
 
   EXPECT_EQ(iwa_data->origin(), kExpectedOrigin);

@@ -16,9 +16,15 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/app/vector_icons",
   "+chrome/browser/ash/borealis",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/video_conference",
   "+chrome/grit",
 
   "+ui/message_center/message_center.h",
 ]
+
+specific_include_rules = {
+  # The test fixture shares the local state owned by TestingBrowserProcess.
+  "vm_camera_mic_manager_unittest\\.cc": [
+    "+chrome/test/base/testing_browser_process.h",
+  ],
+}
