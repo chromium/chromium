@@ -42,6 +42,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyCollections) {
   EXPECT_EQ("test_cue_id", event.cue_id());
   EXPECT_EQ("https://active.com/", event.cue_context().active_page().url());
   EXPECT_EQ("Active Title", event.cue_context().active_page().title());
+  EXPECT_EQ("active.com", event.cue_context().active_page().hostname());
   EXPECT_EQ("[]", event.cue_context().recent_pages());
   EXPECT_EQ("[]", event.cue_context().tabs_shown());
   EXPECT_EQ("test_cuj", event.cue_details().cuj_type());
@@ -68,6 +69,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_NullTabToShow) {
   EXPECT_EQ("test_cue_id", event.cue_id());
   EXPECT_EQ("https://active.com/", event.cue_context().active_page().url());
   EXPECT_EQ("Active Title", event.cue_context().active_page().title());
+  EXPECT_EQ("active.com", event.cue_context().active_page().hostname());
   EXPECT_EQ("[]", event.cue_context().recent_pages());
   // The null handle should be skipped by the internal extractor.
   EXPECT_EQ("[]", event.cue_context().tabs_shown());
@@ -94,6 +96,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent_EmptyBackgroundTab) {
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
   EXPECT_EQ("https://active.com/", event.cue_context().active_page().url());
+  EXPECT_EQ("active.com", event.cue_context().active_page().hostname());
   EXPECT_EQ("Active Title", event.cue_context().active_page().title());
   EXPECT_EQ("[]", event.cue_context().tabs_shown());
   // An empty proto tab has empty strings for URL and Title.
@@ -134,6 +137,7 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
   // Then
   EXPECT_EQ("test_cue_id", event.cue_id());
   EXPECT_EQ("https://active.com/", event.cue_context().active_page().url());
+  EXPECT_EQ("active.com", event.cue_context().active_page().hostname());
   EXPECT_EQ("Active Title", event.cue_context().active_page().title());
 
   // Verify recent_pages (background_tabs)
@@ -148,6 +152,86 @@ TEST(ContextualCueingMetricsTest, CreateEvent) {
             event.system_profile().platform());
   EXPECT_FALSE(event.system_profile().platform().empty());
 }
+
+TEST(ContextualCueingMetricsTest, CreateEvent_NoActiveTab) {
+  // When
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, /*active_tab=*/nullptr,
+      /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"test_cuj");
+
+  // Then
+  EXPECT_EQ("test_cue_id", event.cue_id());
+  // With no active tab, the active page should be left entirely unset rather
+  // than populated with empty strings.
+  EXPECT_FALSE(event.cue_context().has_active_page());
+  EXPECT_EQ("[]", event.cue_context().recent_pages());
+  EXPECT_EQ("[]", event.cue_context().tabs_shown());
+  EXPECT_EQ("test_cuj", event.cue_details().cuj_type());
+}
+
+// Verifies that `active_page.hostname` holds the host component of the active
+// tab's URL, as returned by `GURL::host()`.
+struct HostTestCase {
+  const char* test_name;
+  const char* url;
+  const char* expected_host;
+};
+
+const HostTestCase kHostTestCases[] = {
+    {"BareDomain", "https://active.com/", "active.com"},
+    // Subdomains are preserved; this is what distinguishes the host from an
+    // eTLD+1.
+    {"Subdomain", "https://www.active.com/", "www.active.com"},
+    {"NestedSubdomains", "https://www.foo.bar.active.com/",
+     "www.foo.bar.active.com"},
+    {"MultiLevelPublicSuffix", "https://a.b.co.uk/", "a.b.co.uk"},
+    {"PrivateRegistry", "https://myblog.blogspot.com/", "myblog.blogspot.com"},
+    // Port, path, query, and fragment are not part of the host.
+    {"PortPathQueryFragment", "https://www.active.com:8080/a/b?q=1#frag",
+     "www.active.com"},
+    // Userinfo is not part of the host.
+    {"Userinfo", "https://user:pass@www.active.com/", "www.active.com"},
+    // GURL canonicalizes the host to lowercase.
+    {"Uppercase", "https://WWW.Active.COM/", "www.active.com"},
+    // Hosts that have no registrable domain are still returned verbatim.
+    {"IpAddress", "http://192.168.0.1/", "192.168.0.1"},
+    {"SingleComponentHost", "http://localhost:3000/", "localhost"},
+    // URLs without a host yield an empty string.
+    {"FileUrl", "file:///tmp/bar.html", ""},
+    {"AboutBlank", "about:blank", ""},
+};
+
+class ContextualCueingMetricsHostTest
+    : public testing::TestWithParam<HostTestCase> {};
+
+TEST_P(ContextualCueingMetricsHostTest, CreateEventPopulatesHost) {
+  // Given
+  const HostTestCase& test_case = GetParam();
+  tabs::MockTabInterface active_tab;
+  EXPECT_CALL(active_tab, GetURL())
+      .WillRepeatedly(testing::Return(GURL(test_case.url)));
+  EXPECT_CALL(active_tab, GetTitle())
+      .WillRepeatedly(testing::Return(u"Active Title"));
+
+  // When
+  auto event = internal::CreateContextualCueLogEvent(
+      private_insights::events::ContextualCueLogEvent::SHOWN, "test_cue_id",
+      CueTargetType::kGlic, {}, &active_tab,
+      /*tabs_to_show=*/{}, /*background_tabs=*/{}, /*cuj=*/"test_cuj");
+
+  // Then
+  EXPECT_EQ(test_case.expected_host,
+            event.cue_context().active_page().hostname());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualCueingMetricsHostTest,
+    testing::ValuesIn(kHostTestCases),
+    [](const testing::TestParamInfo<HostTestCase>& info) {
+      return info.param.test_name;
+    });
 
 TEST(ContextualCueingMetricsTest, RecordCueShownMetrics_Pdf) {
   base::HistogramTester histogram_tester;

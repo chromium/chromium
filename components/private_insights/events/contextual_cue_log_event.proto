@@ -10,6 +10,7 @@ message ContextualCueLogEvent {
   message PageInfo {
     string url = 1;
     string title = 2;
+    string hostname = 3;
   }
 
   message CueContext {

@@ -103,6 +103,8 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
         active_tab->GetURL().spec());
     event.mutable_cue_context()->mutable_active_page()->set_title(
         base::UTF16ToUTF8(active_tab->GetTitle()));
+    event.mutable_cue_context()->mutable_active_page()->set_hostname(
+        active_tab->GetURL().host());
   }
 
   event.mutable_cue_context()->set_recent_pages(
