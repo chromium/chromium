@@ -198,6 +198,9 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         when(mIntentDataProvider.get()).thenReturn(mBrowserServicesIntentDataProvider);
+        // HandoffController observes the current tab from HANDOFF_SDK_VERSION on.
+        when(mTabModelSelector.getCurrentTabSupplier())
+                .thenReturn(ObservableSuppliers.alwaysNull());
         mBrowserStateBrowserControlsVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         ObservableSuppliers.alwaysFalse());
