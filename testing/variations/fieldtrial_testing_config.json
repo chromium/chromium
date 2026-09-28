@@ -10824,21 +10824,6 @@
             ]
         }
     ],
-    "IOSReaderModeTriggerHeuristic": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "ReaderModeIgnoreBadgeThreshold"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSaveToDriveSignedOut": [
         {
             "platforms": [

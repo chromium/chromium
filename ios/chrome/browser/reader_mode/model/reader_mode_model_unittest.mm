@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
 
 #import "base/test/task_environment.h"
-#import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_test.h"
@@ -22,15 +20,6 @@ class ReaderModeModelTest : public ReaderModeTest {
   void SetUp() override {
     ReaderModeTest::SetUp();
     web_state_ = CreateWebState();
-
-    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-        feature_engagement::TrackerFactory::GetForProfile(profile()));
-
-    EXPECT_CALL(*mock_tracker_,
-                ShouldTriggerHelpUI(testing::Ref(
-                    feature_engagement::
-                        kIPHiOSReaderModeLargeOmniboxEntrypointFeature)))
-        .WillRepeatedly(testing::Return(true));
   }
 
   void DetachReaderModeTabHelper() {
@@ -40,7 +29,6 @@ class ReaderModeModelTest : public ReaderModeTest {
   web::FakeWebState* web_state() { return web_state_.get(); }
 
  private:
-  raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
 

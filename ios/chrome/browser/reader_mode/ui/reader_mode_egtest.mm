@@ -229,13 +229,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
     config.features_enabled.push_back(kEnableReaderModeOmniboxEntryPointInUS);
   }
 
-  if ([self isRunningTest:@selector(testReaderModeContentSettingsOldToggle)]) {
-    config.features_disabled.push_back(kEnableContentSettingsOptionForLinks);
-  }
-  if ([self isRunningTest:@selector(testReaderModeContentSettingsNewOptions)]) {
-    config.features_enabled.push_back(kEnableContentSettingsOptionForLinks);
-  }
-
   // TODO(crbug.com/517120013): Fix or clean up legacy contextual panel and
   // incognito badge tests under Chrome Next.
   if ([self
@@ -1402,46 +1395,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
                       ContextualPanelEntrypointImageViewMatcher()];
 }
 
-// Tests that disabling kEnableContentSettingsOptionForLinks shows the old
-// Reading Mode toggle in Content Settings.
-- (void)testReaderModeContentSettingsOldToggle {
-  [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
-                                              "/article.html")];
-
-  // Wait for the contextual panel entrypoint to appear.
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      ContextualPanelEntrypointImageViewMatcher()];
-
-  // Open Content Settings.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:chrome_test_util::ContentSettingsButton()];
-
-  // Check that the Reading Mode toggle is visible.
-  id<GREYMatcher> readingModeToggleMatcher =
-      chrome_test_util::TableViewSwitchCell(
-          kSettingsShowReadingModeAvailableCellId, YES);
-  [[EarlGrey selectElementWithMatcher:readingModeToggleMatcher]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Toggle it OFF.
-  [[EarlGrey selectElementWithMatcher:readingModeToggleMatcher]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
-
-  // Go back to the page.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-
-  // Reload the page to ensure the contextual panel entrypoint is updated.
-  [ChromeEarlGrey reload];
-
-  // The contextual panel entrypoint should be hidden.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
-                      ContextualPanelEntrypointImageViewMatcher()];
-}
-
-// Tests that enabling kEnableContentSettingsOptionForLinks shows the new
-// Reading Mode section in Content Settings with multiple options.
+// Tests that the Reading Mode section in Content Settings shows multiple
+// options.
 - (void)testReaderModeContentSettingsNewOptions {
   [self loadURLWithOptimizationGuideHints:self.testServer->GetURL(
                                               "/article.html")];

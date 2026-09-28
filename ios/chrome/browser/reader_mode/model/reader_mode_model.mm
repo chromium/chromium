@@ -16,7 +16,6 @@ namespace {
 // Calls `callback` with the appropriate ContextualPanelItemConfiguration object
 // depend on the value of `current_page_supports_reader_mode`.
 void HandleCurrentPageIsDistillableResult(
-    ProfileIOS* profile,
     base::WeakPtr<web::WebState> web_state,
     ReaderModeModel::FetchConfigurationForWebStateCallback callback,
     std::optional<bool> current_page_supports_reader_mode) {
@@ -34,8 +33,8 @@ void HandleCurrentPageIsDistillableResult(
   std::unique_ptr<ContextualPanelItemConfiguration> configuration;
   if (web_state && current_page_supports_reader_mode &&
       *current_page_supports_reader_mode) {
-    configuration = std::make_unique<ReaderModePanelItemConfiguration>(
-        profile, web_state.get());
+    configuration =
+        std::make_unique<ReaderModePanelItemConfiguration>(web_state.get());
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(configuration)));
@@ -79,6 +78,6 @@ void ReaderModeModel::DelayedFetchConfigurationForWebState(
     return;
   }
   reader_mode_tab_helper->FetchLastCommittedUrlDistillabilityResult(
-      base::BindOnce(&HandleCurrentPageIsDistillableResult, profile_, web_state,
+      base::BindOnce(&HandleCurrentPageIsDistillableResult, web_state,
                      std::move(callback)));
 }

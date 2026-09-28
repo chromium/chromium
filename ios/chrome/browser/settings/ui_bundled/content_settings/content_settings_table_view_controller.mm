@@ -16,7 +16,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/content_settings/block_popups_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -56,7 +55,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSettingsDetectAddresses,
   ItemTypeSettingsMiniMapShowNative,
   ItemTypeSettingsDetectUnits,
-  ItemTypeSettingsShowReadingModeAvailable,
   ItemTypeSettingsReaderMode,
   ItemTypeSettingsWebInspector,
 };
@@ -92,10 +90,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // PrefBackedBoolean for "Detect units" setting state.
 @property(nonatomic, strong, readonly) PrefBackedBoolean* detectUnitsEnabled;
 
-// PrefBackedBoolean for "Show when Reading mode is available" setting state.
-@property(nonatomic, strong, readonly)
-    PrefBackedBoolean* showReadingModeAvailableEnabled;
-
 // The item related to the switch for the "Show Link Preview" setting.
 @property(nonatomic, strong) TableViewSwitchItem* linkPreviewItem;
 
@@ -104,10 +98,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // The item related to the switch for the "Detect units" setting.
 @property(nonatomic, strong) TableViewSwitchItem* detectUnitsItem;
-
-// The item related to the switch for the "Show when Reading mode is available"
-// setting.
-@property(nonatomic, strong) TableViewSwitchItem* showReadingModeAvailableItem;
 
 // The item related to the default mode used to load the pages.
 @property(nonatomic, strong) TableViewDetailIconItem* defaultModeItem;
@@ -175,14 +165,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
         initWithPrefService:prefService
                    prefName:prefs::kDetectUnitsEnabled];
     [_detectUnitsEnabled setObserver:self];
-
-    if (IsReaderModeOmniboxEntryPointEnabled() &&
-        !IsReaderModeContentSettingsForLinkEnabled()) {
-      _showReadingModeAvailableEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:prefService
-                     prefName:prefs::kIosReaderModeShowAvailability];
-      [_showReadingModeAvailableEnabled setObserver:self];
-    }
 
     _requestDesktopSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
@@ -255,9 +237,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_detectUnitsEnabled stop];
   _detectUnitsEnabled.observer = nil;
   _detectUnitsEnabled = nil;
-  [_showReadingModeAvailableEnabled stop];
-  _showReadingModeAvailableEnabled.observer = nil;
-  _showReadingModeAvailableEnabled = nil;
   [_webInspectorEnabled stop];
   _webInspectorEnabled.observer = nil;
   _webInspectorEnabled = nil;
@@ -314,12 +293,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
-  if (!IsReaderModeContentSettingsForLinkEnabled() &&
-      self.showReadingModeAvailableEnabled) {
-    [model addItem:[self showReadingModeAvailableItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
-
   if (web::features::IsWebInspectorSupportEnabled()) {
     self.webInspectorItem = [self webInspectorStateItem];
     [model addSectionWithIdentifier:SectionIdentifierDeveloperTools];
@@ -327,14 +300,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierDeveloperTools];
   }
 
-  if (IsReaderModeContentSettingsForLinkEnabled()) {
-    // Add a new content setting section for Reading Mode that holds multiple
-    // feature options.
-    self.readerModeItem = [self readerModeSectionItem];
-    [model addSectionWithIdentifier:SectionIdentifierReaderMode];
-    [model addItem:self.readerModeItem
-        toSectionWithIdentifier:SectionIdentifierReaderMode];
-  }
+  // Add a content setting section for Reading Mode that holds multiple
+  // feature options.
+  self.readerModeItem = [self readerModeSectionItem];
+  [model addSectionWithIdentifier:SectionIdentifierReaderMode];
+  [model addItem:self.readerModeItem
+      toSectionWithIdentifier:SectionIdentifierReaderMode];
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -430,26 +401,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _linkPreviewItem.accessibilityIdentifier = kSettingsShowLinkPreviewCellId;
   }
   return _linkPreviewItem;
-}
-
-- (TableViewSwitchItem*)showReadingModeAvailableItem {
-  if (!_showReadingModeAvailableItem) {
-    _showReadingModeAvailableItem = [[TableViewSwitchItem alloc]
-        initWithType:ItemTypeSettingsShowReadingModeAvailable];
-
-    _showReadingModeAvailableItem.text =
-        l10n_util::GetNSString(IDS_IOS_READING_MODE_SETTING_TITLE);
-    _showReadingModeAvailableItem.detailText =
-        l10n_util::GetNSString(IDS_IOS_READING_MODE_SETTING_DESCRIPTION);
-    _showReadingModeAvailableItem.on =
-        [self.showReadingModeAvailableEnabled value];
-    _showReadingModeAvailableItem.target = self;
-    _showReadingModeAvailableItem.selector =
-        @selector(showReadingModeAvailableSwitchToggled:);
-    _showReadingModeAvailableItem.accessibilityIdentifier =
-        kSettingsShowReadingModeAvailableCellId;
-  }
-  return _showReadingModeAvailableItem;
 }
 
 - (TableViewSwitchItem*)detectAddressItem {
@@ -597,10 +548,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.linkPreviewEnabled) {
     self.linkPreviewItem.on = [self.linkPreviewEnabled value];
     [self reconfigureCellsForItems:@[ self.linkPreviewItem ]];
-  } else if (observableBoolean == self.showReadingModeAvailableEnabled) {
-    self.showReadingModeAvailableItem.on =
-        [self.showReadingModeAvailableEnabled value];
-    [self reconfigureCellsForItems:@[ self.showReadingModeAvailableItem ]];
   } else if (observableBoolean == self.requestDesktopSetting &&
              self.defaultModeItem) {
     self.defaultModeItem.detailText = [self defaultModeDescription];
@@ -629,12 +576,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL newSwitchValue = sender.isOn;
   self.linkPreviewItem.on = newSwitchValue;
   [self.linkPreviewEnabled setValue:newSwitchValue];
-}
-
-- (void)showReadingModeAvailableSwitchToggled:(UISwitch*)sender {
-  BOOL newSwitchValue = sender.isOn;
-  self.showReadingModeAvailableItem.on = newSwitchValue;
-  [self.showReadingModeAvailableEnabled setValue:newSwitchValue];
 }
 
 - (void)detectAddressesSwitchToggled:(UISwitch*)sender {

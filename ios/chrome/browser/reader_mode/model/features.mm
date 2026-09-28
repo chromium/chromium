@@ -30,23 +30,10 @@ bool IsUSCountryCode() {
 BASE_FEATURE(kEnableReaderModeOmniboxEntryPointInUS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableContentSettingsOptionForLinks,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReaderModeIgnoreBadgeThreshold, base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsReaderModeOmniboxEntryPointEnabled() {
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
     return base::FeatureList::IsEnabled(kEnableReaderModeOmniboxEntryPointInUS);
   }
   return true;
-}
-
-bool IsReaderModeContentSettingsForLinkEnabled() {
-  return base::FeatureList::IsEnabled(kEnableContentSettingsOptionForLinks);
-}
-
-bool ShouldIgnoreReaderModeBadgeThreshold() {
-  return base::FeatureList::IsEnabled(kReaderModeIgnoreBadgeThreshold);
 }

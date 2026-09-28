@@ -1684,17 +1684,6 @@ inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerName[] =
 inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
     "Enables the popup blocker feature row in the Page Action Menu.";
 
-inline constexpr char kReaderModeContentSettingsForLinksName[] =
-    "Enables Content Settings options for Reading Mode";
-inline constexpr char kReaderModeContentSettingsForLinksDescription[] =
-    "Enables Content Settings options for disabling/enabling links in Reading "
-    "Mode.";
-
-inline constexpr char kReaderModeIgnoreBadgeThresholdName[] =
-    "Reader Mode ignore badge threshold";
-inline constexpr char kReaderModeIgnoreBadgeThresholdDescription[] =
-    "When enabled, the badge threshold is ignored for Reader Mode.";
-
 inline constexpr char kReaderModeOmniboxEntrypointInUSName[] =
     "Reader Mode Omnibox Entrypoint In US";
 inline constexpr char kReaderModeOmniboxEntrypointInUSDescription[] =

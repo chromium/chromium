@@ -8594,11 +8594,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "reader-mode-content-settings-for-links",
-    "owners": ["fernandex@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "reader-mode-delay-bottomsheet-peek",
     "owners": [
       "wylieb@google.com",
@@ -8613,11 +8608,6 @@
     // This flag is a utility for testing Reader Mode heuristics or force
     // enabling the feature on every page.
     "expiry_milestone": -1
-  },
-  {
-    "name": "reader-mode-ignore-badge-threshold",
-    "owners": ["olivierrobin@google.com", "qpubert@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 157
   },
   {
     "name": "reader-mode-omnibox-entrypoint-in-us",
