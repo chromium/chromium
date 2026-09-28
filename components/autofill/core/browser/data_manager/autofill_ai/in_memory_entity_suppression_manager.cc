@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
@@ -26,26 +28,32 @@ void InMemoryEntitySuppressionManager::RemoveObserver(Observer* observer) {
 
 bool InMemoryEntitySuppressionManager::SuppressEntity(
     const EntityInstance& entity) {
-  std::vector<EntitySuppressionEntry> entries =
-      GetEntitySuppressionEntries(entity);
-  size_t original_size = suppressed_entries_.size();
-  suppressed_entries_.insert(std::make_move_iterator(entries.begin()),
-                             std::make_move_iterator(entries.end()));
-  bool modified = suppressed_entries_.size() > original_size;
+  bool modified = false;
+  for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
+    if (suppressed_entries_.insert(entry).second) {
+      suppressed_entries_by_entity_id_[entity.guid()].push_back(
+          std::move(entry));
+      modified = true;
+    }
+  }
   if (modified) {
     observers_.Notify(&Observer::OnEntitySuppressionsChanged);
   }
   return modified;
 }
 
-bool InMemoryEntitySuppressionManager::UnsuppressEntity(
-    const EntityInstance& entity) {
-  std::vector<EntitySuppressionEntry> entries =
-      GetEntitySuppressionEntries(entity);
+bool InMemoryEntitySuppressionManager::UndoInSessionSuppressedEntity(
+    const EntityInstance::EntityId& entity_id) {
+  const std::vector<EntitySuppressionEntry>* entries =
+      base::FindOrNull(suppressed_entries_by_entity_id_, entity_id);
+  if (!entries) {
+    return false;
+  }
   size_t original_size = suppressed_entries_.size();
-  for (const EntitySuppressionEntry& entry : entries) {
+  for (const EntitySuppressionEntry& entry : *entries) {
     suppressed_entries_.erase(entry);
   }
+  suppressed_entries_by_entity_id_.erase(entity_id);
   bool modified = suppressed_entries_.size() < original_size;
   if (modified) {
     observers_.Notify(&Observer::OnEntitySuppressionsChanged);
@@ -58,6 +66,7 @@ bool InMemoryEntitySuppressionManager::ClearAllSuppressions() {
     return false;
   }
   suppressed_entries_.clear();
+  suppressed_entries_by_entity_id_.clear();
   observers_.Notify(&Observer::OnEntitySuppressionsChanged);
   return true;
 }

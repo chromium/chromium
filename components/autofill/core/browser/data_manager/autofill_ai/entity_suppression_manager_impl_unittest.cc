@@ -103,12 +103,12 @@ TEST_F(EntitySuppressionManagerImplTest,
 }
 
 // Tests unsuppressing a previously suppressed entity instance.
-TEST_F(EntitySuppressionManagerImplTest, UnsuppressEntity) {
+TEST_F(EntitySuppressionManagerImplTest, UndoInSessionSuppressedEntity) {
   EntityInstance passport = test::GetPassportEntityInstance();
   ASSERT_TRUE(manager().SuppressEntity(passport));
   ASSERT_TRUE(manager().IsSuppressed(passport));
 
-  EXPECT_TRUE(manager().UnsuppressEntity(passport));
+  EXPECT_TRUE(manager().UndoInSessionSuppressedEntity(passport.guid()));
 
   EXPECT_FALSE(manager().IsSuppressed(passport));
 }
@@ -222,7 +222,7 @@ TEST_F(EntitySuppressionManagerImplTest,
 // Tests that observers are notified when an entity is successfully
 // unsuppressed.
 TEST_F(EntitySuppressionManagerImplTest,
-       UnsuppressEntity_NotifiesObserversOnSuccess) {
+       UndoInSessionSuppressedEntity_NotifiesObserversOnSuccess) {
   EntityInstance passport = test::GetPassportEntityInstance();
   ASSERT_TRUE(manager().SuppressEntity(passport));
 
@@ -230,19 +230,19 @@ TEST_F(EntitySuppressionManagerImplTest,
   manager().AddObserver(&observer);
 
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(1);
-  EXPECT_TRUE(manager().UnsuppressEntity(passport));
+  EXPECT_TRUE(manager().UndoInSessionSuppressedEntity(passport.guid()));
 }
 
 // Tests that observers are not notified when unsuppressing an entity that is
 // not suppressed.
 TEST_F(EntitySuppressionManagerImplTest,
-       UnsuppressEntity_DoesNotNotifyObserversIfNotSuppressed) {
+       UndoInSessionSuppressedEntity_DoesNotNotifyObserversIfNotSuppressed) {
   MockEntitySuppressionManagerObserver observer;
   manager().AddObserver(&observer);
 
   EntityInstance passport = test::GetPassportEntityInstance();
   EXPECT_CALL(observer, OnEntitySuppressionsChanged()).Times(0);
-  EXPECT_FALSE(manager().UnsuppressEntity(passport));
+  EXPECT_FALSE(manager().UndoInSessionSuppressedEntity(passport.guid()));
 }
 
 // Tests that remote sync or bridge-triggered updates notify manager observers.

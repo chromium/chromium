@@ -272,8 +272,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   bool SuppressEntityAndOfferUndo(EntityInstance entity,
                                   FieldGlobalId field_id);
 
-  // Unsuppresses `entity` and re-triggers Autofill suggestions on `field_id`.
-  void OnAutofillAiSuppressionUndone(const EntityInstance& entity,
+  // Unsuppresses `entity_id` and re-triggers Autofill suggestions on
+  // `field_id`.
+  void OnAutofillAiSuppressionUndone(EntityInstance::EntityId entity_id,
                                      FieldGlobalId field_id);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();

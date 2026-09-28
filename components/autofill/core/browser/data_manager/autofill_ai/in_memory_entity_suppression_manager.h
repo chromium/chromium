@@ -5,13 +5,17 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_IN_MEMORY_ENTITY_SUPPRESSION_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_AUTOFILL_AI_IN_MEMORY_ENTITY_SUPPRESSION_MANAGER_H_
 
+#include <vector>
+
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace autofill {
+
+class EntityInstance;
 
 // In-memory implementation of EntitySuppressionManager for testing, UI
 // prototyping, and initial feature integration.
@@ -28,7 +32,8 @@ class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   bool SuppressEntity(const EntityInstance& entity) override;
-  bool UnsuppressEntity(const EntityInstance& entity) override;
+  bool UndoInSessionSuppressedEntity(
+      const EntityInstance::EntityId& entity_id) override;
   bool ClearAllSuppressions() override;
   bool IsSuppressed(const EntityInstance& entity) const override;
 
@@ -40,6 +45,9 @@ class InMemoryEntitySuppressionManager : public EntitySuppressionManager {
 
   // Set storing representations of suppressed merge constraint sets.
   absl::flat_hash_set<EntitySuppressionEntry> suppressed_entries_;
+  absl::flat_hash_map<EntityInstance::EntityId,
+                      std::vector<EntitySuppressionEntry>>
+      suppressed_entries_by_entity_id_;
 };
 
 }  // namespace autofill

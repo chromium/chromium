@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/map_util.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_entry.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
@@ -35,28 +36,35 @@ void EntitySuppressionManagerImpl::RemoveObserver(
 bool EntitySuppressionManagerImpl::SuppressEntity(
     const EntityInstance& entity) {
   bool modified = false;
-  for (const EntitySuppressionEntry& entry :
-       GetEntitySuppressionEntries(entity)) {
+  for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
     if (sync_bridge_->Suppress(entry)) {
+      suppressed_entries_by_entity_id_[entity.guid()].push_back(
+          std::move(entry));
       modified = true;
     }
   }
   return modified;
 }
 
-bool EntitySuppressionManagerImpl::UnsuppressEntity(
-    const EntityInstance& entity) {
+bool EntitySuppressionManagerImpl::UndoInSessionSuppressedEntity(
+    const EntityInstance::EntityId& entity_id) {
+  const std::vector<EntitySuppressionEntry>* entries =
+      base::FindOrNull(suppressed_entries_by_entity_id_, entity_id);
+  if (!entries) {
+    return false;
+  }
   bool modified = false;
-  for (const EntitySuppressionEntry& entry :
-       GetEntitySuppressionEntries(entity)) {
+  for (const EntitySuppressionEntry& entry : *entries) {
     if (sync_bridge_->Unsuppress(entry)) {
       modified = true;
     }
   }
+  suppressed_entries_by_entity_id_.erase(entity_id);
   return modified;
 }
 
 bool EntitySuppressionManagerImpl::ClearAllSuppressions() {
+  suppressed_entries_by_entity_id_.clear();
   return sync_bridge_->ClearAllSuppressions();
 }
 

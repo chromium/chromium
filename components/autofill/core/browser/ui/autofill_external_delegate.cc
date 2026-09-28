@@ -1875,7 +1875,7 @@ bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
   if (newly_suppressed) {
     manager_->client().ShowAutofillAiSuggestionRemovedNotification(
         base::BindOnce(&AutofillExternalDelegate::OnAutofillAiSuppressionUndone,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(entity),
+                       weak_ptr_factory_.GetWeakPtr(), entity.guid(),
                        field_id));
     return true;
   }
@@ -1883,11 +1883,11 @@ bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
 }
 
 void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(
-    const EntityInstance& entity,
+    EntityInstance::EntityId entity_id,
     FieldGlobalId field_id) {
   if (EntitySuppressionManager* suppression_manager =
           manager_->client().GetEntitySuppressionManager()) {
-    suppression_manager->UnsuppressEntity(entity);
+    suppression_manager->UndoInSessionSuppressedEntity(entity_id);
   }
 #if BUILDFLAG(IS_ANDROID)
   manager_->driver().RendererShouldTriggerSuggestions(

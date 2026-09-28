@@ -1669,7 +1669,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD1"),
               HasAttributeWithValue(AttributeTypeName::kOrderId, u"ORD2")))));
 
-  suppression_manager().UnsuppressEntity(order1_instance);
+  suppression_manager().UndoInSessionSuppressedEntity(order1_instance.guid());
 }
 
 // Tests that OnEntitySuppressionsChanged is a no-op when the proto cache is

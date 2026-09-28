@@ -176,13 +176,14 @@ autofill::EntitySuppressionManager* GetEntitySuppressionManager(
                  : nullptr;
 }
 
-// Unsuppresses `entity` for `profile`.
-void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
-                      const autofill::EntityInstance& entity) {
+// Unsuppresses `entity_id` for `profile`.
+void UndoInSessionSuppressedEntity(
+    base::WeakPtr<ProfileIOS> profile,
+    const autofill::EntityInstance::EntityId& entity_id) {
   autofill::EntitySuppressionManager* suppressionManager =
       GetEntitySuppressionManager(profile.get());
   if (suppressionManager) {
-    suppressionManager->UnsuppressEntity(entity);
+    suppressionManager->UndoInSessionSuppressedEntity(entity_id);
   }
 }
 
@@ -1108,9 +1109,9 @@ void UnsuppressEntity(base::WeakPtr<ProfileIOS> profile,
   __weak __typeof(self) weakSelf = self;
   base::WeakPtr<ProfileIOS> weakProfile =
       self.profile ? self.profile->AsWeakPtr() : nullptr;
-  autofill::EntityInstance capturedEntity = entity;
+  autofill::EntityInstance::EntityId entityId = entity.guid();
   action.handler = ^{
-    UnsuppressEntity(weakProfile, capturedEntity);
+    UndoInSessionSuppressedEntity(weakProfile, entityId);
     [weakSelf resetSuggestions];
   };
 
