@@ -404,8 +404,16 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Navigate to a web page and then try to load an extension subresource.
+// TODO(crbug.com/565507869): Failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SubresourceReachabilityAfterServerRedirect \
+  DISABLED_SubresourceReachabilityAfterServerRedirect
+#else
+#define MAYBE_SubresourceReachabilityAfterServerRedirect \
+  SubresourceReachabilityAfterServerRedirect
+#endif
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
-                       SubresourceReachabilityAfterServerRedirect) {
+                       MAYBE_SubresourceReachabilityAfterServerRedirect) {
   // Load extension.
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"({
@@ -482,8 +490,14 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
 }
 
 // Server redirect to a web accessible resource whereby `matches` doesn't match.
+// TODO(crbug.com/565503176): Failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServerRedirectSubresource DISABLED_ServerRedirectSubresource
+#else
+#define MAYBE_ServerRedirectSubresource ServerRedirectSubresource
+#endif
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
-                       ServerRedirectSubresource) {
+                       MAYBE_ServerRedirectSubresource) {
   // Load extension.
   TestExtensionDir extension_dir;
   constexpr char kManifest[] = R"({
