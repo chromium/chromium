@@ -20,6 +20,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -32,7 +33,10 @@
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
 #include "extensions/browser/api/printer_provider/printer_provider_print_job.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "printing/pdf_render_settings.h"
 #include "printing/print_job_constants.h"
@@ -40,6 +44,7 @@
 #include "printing/units.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -632,6 +637,123 @@ TEST_F(ExtensionPrinterHandlerTest, GetUsbPrinters) {
 #else
   EXPECT_EQ(0u, call_count);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+TEST_F(ExtensionPrinterHandlerTest, GetUsbPrintersIncognito) {
+  UsbDeviceInfoPtr device0 =
+      fake_usb_manager_.CreateAndAddDevice(0, 0, "Google", "USB Printer", "");
+  UsbDeviceInfoPtr device1 =
+      fake_usb_manager_.CreateAndAddDevice(0, 1, "Google", "USB Printer", "");
+
+  Profile* incognito_profile =
+      env_.profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;
+  fake_usb_manager_.AddReceiver(usb_manager.InitWithNewPipeAndPassReceiver());
+  extensions::UsbDeviceManager::Get(incognito_profile)
+      ->SetDeviceManagerForTesting(std::move(usb_manager));
+
+  ExtensionPrinterHandler incognito_printer_handler(incognito_profile);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Regular platform apps (`kInternal`) are not allowed in incognito.
+  const Extension* extension_1 =
+      env_.MakeExtension(base::test::ParseJsonDict(kExtension1),
+                         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  base::test::TestFuture<base::ListValue> printers_future;
+  base::test::TestFuture<void> done_future;
+  incognito_printer_handler.StartGetPrinters(
+      printers_future.GetRepeatingCallback(), done_future.GetCallback());
+
+  FakePrinterProviderAPI* fake_api = GetPrinterProviderAPI();
+  ASSERT_TRUE(fake_api);
+  ASSERT_EQ(1u, fake_api->pending_get_printers_count());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/563362367): `extension_1` is not allowed in incognito, so
+  // `incognito_printer_handler` should not enumerate USB printers for it and
+  // `printers_future` should not be ready.
+  base::ListValue printers = printers_future.Take();
+  EXPECT_FALSE(done_future.IsReady());
+  auto extension_1_matcher = base::test::IsJson(base::StringPrintf(
+      R"({
+        "id": "provisional-usb:%s:%s",
+        "name": "USB Printer",
+        "extensionName": "Provider 1",
+        "extensionId": "%s",
+        "provisional": true
+      })",
+      extension_1->id().c_str(), device0->guid.c_str(),
+      extension_1->id().c_str()));
+  EXPECT_THAT(printers, testing::ElementsAre(extension_1_matcher));
+
+  fake_api->TriggerNextGetPrintersCallback(base::ListValue(), /*done=*/true);
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_FALSE(printers_future.IsReady());
+
+  // Component platform apps (`kComponent`) are allowed in incognito.
+  base::DictValue manifest = base::test::ParseJsonDict(R"({
+    "name": "Extension",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  manifest.Merge(base::test::ParseJsonDict(kExtension2));
+  scoped_refptr<const Extension> extension_2 =
+      extensions::ExtensionBuilder()
+          .SetManifest(std::move(manifest))
+          .SetID("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb")
+          .SetLocation(extensions::mojom::ManifestLocation::kComponent)
+          .Build();
+  env_.GetExtensionRegistrar()->AddExtension(extension_2.get());
+
+  extensions::DevicePermissionsManager* permissions_manager =
+      extensions::DevicePermissionsManager::Get(env_.profile());
+  permissions_manager->AllowUsbDevice(extension_2->id(), *device0);
+
+  done_future.Clear();
+  incognito_printer_handler.StartGetPrinters(
+      printers_future.GetRepeatingCallback(), done_future.GetCallback());
+
+  ASSERT_EQ(1u, fake_api->pending_get_printers_count());
+  printers = printers_future.Take();
+  EXPECT_FALSE(done_future.IsReady());
+  // Unlike GetUsbPrinters(), DevicePermissionsManager uses a separate instance
+  // for `incognito_profile`, so the ephemeral permission granted for
+  // `device0` on `env_.profile()` does not apply in incognito. As a result,
+  // `extension_2` returns provisional entries for both `device0` and `device1`.
+  //
+  // TODO(crbug.com/563362367): Only `extension_2`'s entries should be returned
+  // in `printers` once non-incognito extensions like `extension_1` are filtered
+  // out for off-the-record profiles.
+  auto extension_2_device0_matcher = base::test::IsJson(base::StringPrintf(
+      R"({
+        "id": "provisional-usb:%s:%s",
+        "name": "USB Printer",
+        "extensionName": "Provider 2",
+        "extensionId": "%s",
+        "provisional": true
+      })",
+      extension_2->id().c_str(), device0->guid.c_str(),
+      extension_2->id().c_str()));
+  auto extension_2_device1_matcher = base::test::IsJson(base::StringPrintf(
+      R"({
+        "id": "provisional-usb:%s:%s",
+        "name": "USB Printer",
+        "extensionName": "Provider 2",
+        "extensionId": "%s",
+        "provisional": true
+      })",
+      extension_2->id().c_str(), device1->guid.c_str(),
+      extension_2->id().c_str()));
+  EXPECT_THAT(printers, testing::UnorderedElementsAre(
+                            extension_1_matcher, extension_2_device0_matcher,
+                            extension_2_device1_matcher));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  fake_api->TriggerNextGetPrintersCallback(base::ListValue(), /*done=*/true);
+  EXPECT_TRUE(done_future.Wait());
+  EXPECT_FALSE(printers_future.IsReady());
 }
 
 TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
