@@ -13333,6 +13333,31 @@
             ]
         }
     ],
+    "OnDemandBackgroundTabContextCaptureOptimization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "active_tab_flush_timeout_seconds": "1",
+                        "cancel_load_on_deselection": "true",
+                        "enable_first_paint": "true",
+                        "first_paint_delay_ms": "0",
+                        "limit_concurrent_load_if_needed": "true",
+                        "maximum_concurrent_load_if_needed": "4",
+                        "minimum_concurrent_load_if_needed": "1",
+                        "skip_delay_for_active_tab": "true"
+                    },
+                    "enable_features": [
+                        "OnDemandBackgroundTabContextCaptureOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDemandSpellcheckInitialization": [
         {
             "platforms": [
