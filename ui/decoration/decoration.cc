@@ -46,7 +46,7 @@ gfx::RoundedCornersF ClampRadiiToBounds(
 std::string MakeLayerName(std::string_view debug_name) {
   constexpr std::string_view kBaseName = "Decoration";
   return debug_name.empty() ? std::string(kBaseName)
-                            : base::StrCat({kBaseName, ":", debug_name});
+                            : base::StrCat({kBaseName, "-", debug_name});
 }
 
 }  // namespace
