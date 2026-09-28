@@ -1100,6 +1100,30 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChange) {
      })())"));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeTimeout) {
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+
+  EXPECT_CALL(mock_context_factory, GetStatusChange)
+      .WillOnce(RunOnceCallback<2>(
+          device::mojom::SmartCardStatusChangeResult::NewError(
+              SmartCardError::kTimeout)));
+
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  EXPECT_EQ("TimeoutError", EvalJs(shell(), R"((async () => {
+       let context = await navigator.smartCard.establishContext();
+       try {
+         await context.getStatusChange(
+             [{readerName: "Fake Reader", currentState: {empty: true}}],
+             {timeout: 4321});
+         return "success";
+       } catch (e) {
+         return e.name;
+       }
+     })())"));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardTest, GetStatusChangeInterruptedByClose) {
   std::optional<SmartCardContext::GetStatusChangeCallback> callback_holder;
   MockSmartCardContextFactory& mock_context_factory =

@@ -153,6 +153,11 @@ void SmartCardError::MaybeReject(
           DOMExceptionCode::kInvalidStateError,
           "The smart card resource manager has shut down.");
       break;
+    // "TimeoutError"
+    case device::mojom::blink::SmartCardError::kTimeout:
+      resolver->RejectWithDOMException(DOMExceptionCode::kTimeoutError,
+                                       "The operation timed out.");
+      break;
     // "AbortError"
     case device::mojom::blink::SmartCardError::kShutdown:
       resolver->RejectWithDOMException(
@@ -204,7 +209,6 @@ void SmartCardError::MaybeReject(
     // Also, technically nothing stops the PC/SC stack from spilling those
     // unexpectedly (eg, in unrelated requests).
     case device::mojom::blink::SmartCardError::kCancelled:
-    case device::mojom::blink::SmartCardError::kTimeout:
     case device::mojom::blink::SmartCardError::kNoReadersAvailable:
     // Errors that indicate bad usage of the API (ie, a programming
     // error in browser code).
