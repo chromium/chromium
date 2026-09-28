@@ -10,8 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
-#include "base/test/scoped_feature_list.h"
-#include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -540,9 +538,6 @@ TEST_P(VideoFrameConverterExtentsTest, ConvertAndScaleExtents) {
 }
 
 TEST(VideoFrameConverterColorSpaceTest, ColorSpaceConversion) {
-  base::test::ScopedFeatureList features(
-      kAccurateVideoFrameConverterColorSpace);
-
   constexpr gfx::Size kTestSize(64, 64);
   auto src_frame = VideoFrame::CreateZeroInitializedFrame(
       PIXEL_FORMAT_ARGB, kTestSize, gfx::Rect(kTestSize), kTestSize,
@@ -652,24 +647,6 @@ TEST(VideoFrameConverterColorSpaceTest, ColorSpaceConversion) {
   src_frame->set_color_space(gfx::ColorSpace());
   ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
   EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC709());
-}
-
-TEST(VideoFrameConverterColorSpaceTest, DisabledFeatureFallsBackToRec601) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kAccurateVideoFrameConverterColorSpace);
-
-  constexpr gfx::Size kTestSize(64, 64);
-  auto src_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_ARGB, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-  auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_I420, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-
-  src_frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-  VideoFrameConverter converter;
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC601());
 }
 
 std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {

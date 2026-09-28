@@ -4,9 +4,7 @@
 
 #include "media/base/video_frame_converter.h"
 
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_frame_converter_internals.h"
 #include "media/base/video_util.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -54,10 +52,6 @@ gfx::ColorSpace VideoFrameConverter::GetDestinationColorSpace(
   const auto& src_cs = src_frame.ColorSpace();
   if (!IsRGB(src_frame.format())) {
     return src_cs;  // YUV color spaces are unchanged.
-  }
-
-  if (!base::FeatureList::IsEnabled(kAccurateVideoFrameConverterColorSpace)) {
-    return gfx::ColorSpace::CreateREC601();
   }
 
   // Invalid color spaces are coerced to limited range BT.709.
