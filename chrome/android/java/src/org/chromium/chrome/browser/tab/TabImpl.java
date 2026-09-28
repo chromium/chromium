@@ -1213,6 +1213,12 @@ class TabImpl implements Tab, TabInternal {
     }
 
     @Override
+    public void setSuppressBeforeUnloadAutoClose(boolean suppress) {
+        TabWebContentsDelegateAndroidImpl.setSuppressBeforeUnloadAutoClose(
+                getWebContents(), suppress);
+    }
+
+    @Override
     public boolean needsReload() {
         var webContents = getWebContents();
         if (webContents == null) return false;

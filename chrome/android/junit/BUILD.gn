@@ -1317,6 +1317,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/tab/TabViewAndroidDelegateTest.java",
       "src/org/chromium/chrome/browser/tab/TabViewManagerUnitTest.java",
+      "src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroidImplUnitTest.java",
       "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabModelObserverUnitTest.java",
       "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplUnitTest.java",
     ]

@@ -14,6 +14,8 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -644,6 +646,20 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             @Nullable WebContents webContents, boolean suppress) {
         TabWebContentsDelegateAndroidImplJni.get()
                 .setSuppressBeforeUnloadAutoClose(webContents, suppress);
+    }
+
+    /**
+     * Reports the result of a {@code beforeunload} dispatch for this tab. Fires for every
+     * completion, including the one Content posts for a page with no handler to run.
+     *
+     * @param proceed Whether the page agreed to be unloaded.
+     */
+    @CalledByNative
+    @VisibleForTesting
+    void onBeforeUnloadFired(boolean proceed) {
+        for (TabObserver observer : mTab.getTabObservers()) {
+            observer.onBeforeUnloadFired(mTab, proceed);
+        }
     }
 
     @NativeMethods

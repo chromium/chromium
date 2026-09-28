@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -14,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -38,6 +42,8 @@ public class PassthroughTabRemoverUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModelActionListener mListener;
     @Mock private Callback<TabClosureParams> mTabClosureCallback;
+
+    @Captor private ArgumentCaptor<TabClosureParams> mParamsCaptor;
 
     private MockTabModel mTabModel;
     private PassthroughTabRemover mPassthroughTabRemover;
@@ -156,10 +162,10 @@ public class PassthroughTabRemoverUnitTest {
 
         mPassthroughTabRemover.prepareCloseTabs(
                 params, /* allowDialog= */ true, mListener, mTabClosureCallback);
-        verify(mTabClosureCallback, never()).onResult(any());
-        verify(mListener)
-                .onConfirmationDialogResult(
-                        DialogType.NONE, ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+
+        // tab1 refused, so the closure narrows to tab0 rather than being abandoned.
+        verify(mTabClosureCallback).onResult(mParamsCaptor.capture());
+        assertEquals(List.of(tab0), mParamsCaptor.getValue().tabs);
     }
 
     @Test
@@ -207,7 +213,112 @@ public class PassthroughTabRemoverUnitTest {
     }
 
     @Test
-    public void testPrepareCloseTabs_BulkTabs_NoStackOverflow() {
+    public void testPrepareCloseTabs_TabClosePrompter_Proceed() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+        PassthroughTabRemover remover =
+                new PassthroughTabRemover(
+                        () -> mTabModel,
+                        (promptedParams, tab, onProceed, onCancel) -> {
+                            onProceed.run();
+                            return true;
+                        });
+
+        remover.prepareCloseTabs(params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+        verify(mTabClosureCallback).onResult(params);
+    }
+
+    @Test
+    public void testPrepareCloseTabs_TabClosePrompter_CancelSparesThatTab() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(tab0, tab1)).build();
+        PassthroughTabRemover remover =
+                new PassthroughTabRemover(
+                        () -> mTabModel,
+                        (promptedParams, tab, onProceed, onCancel) -> {
+                            if (tab == tab1) {
+                                onCancel.run();
+                            } else {
+                                onProceed.run();
+                            }
+                            return true;
+                        });
+
+        remover.prepareCloseTabs(params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+
+        verify(mTabClosureCallback).onResult(mParamsCaptor.capture());
+        assertEquals(List.of(tab0), mParamsCaptor.getValue().tabs);
+    }
+
+    @Test
+    public void testPrepareCloseTabs_TabClosePrompter_TabLeftModelWhileAsking() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        TabClosureParams params = TabClosureParams.closeTabs(List.of(tab0, tab1)).build();
+        PassthroughTabRemover remover =
+                new PassthroughTabRemover(
+                        () -> mTabModel,
+                        (promptedParams, tab, onProceed, onCancel) -> {
+                            // window.close() and closures started elsewhere can take a tab out of
+                            // the model while an earlier tab is still being asked.
+                            if (tab == tab0) mTabModel.removeTab(tab1);
+                            onProceed.run();
+                            return true;
+                        });
+
+        remover.prepareCloseTabs(params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+
+        verify(mTabClosureCallback).onResult(mParamsCaptor.capture());
+        assertEquals(List.of(tab0), mParamsCaptor.getValue().tabs);
+    }
+
+    @Test
+    public void testPrepareCloseTabs_TabClosePrompter_NotAskedWhenNativePageAsks() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        BeforeUnloadCallback callback =
+                (onProceed, onCancel) -> {
+                    onProceed.run();
+                    return true;
+                };
+        tab0.getUserDataHost().setUserData(BeforeUnloadCallback.class, callback);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+        List<Tab> promptedTabs = new ArrayList<>();
+        PassthroughTabRemover remover =
+                new PassthroughTabRemover(
+                        () -> mTabModel,
+                        (promptedParams, tab, onProceed, onCancel) -> {
+                            promptedTabs.add(tab);
+                            onProceed.run();
+                            return true;
+                        });
+
+        remover.prepareCloseTabs(params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+
+        // One prompt per tab: the native page already asked, and it agreed.
+        assertTrue(promptedTabs.isEmpty());
+        verify(mTabClosureCallback).onResult(params);
+    }
+
+    @Test
+    public void testPrepareCloseTabs_TabClosePrompter_NothingToAsk() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).build();
+        PassthroughTabRemover remover =
+                new PassthroughTabRemover(
+                        () -> mTabModel, (promptedParams, tab, onProceed, onCancel) -> false);
+
+        remover.prepareCloseTabs(params, /* allowDialog= */ true, mListener, mTabClosureCallback);
+
+        // A tab no mechanism claims agrees by default.
+        verify(mTabClosureCallback).onResult(params);
+    }
+
+    // No mechanism is registered, so the walk iterates rather than recursing. This covers the
+    // unprompted bulk path only; the nesting that recursion would cause needs a mechanism that
+    // answers synchronously, which the walk's own asserts reject.
+    @Test
+    public void testPrepareCloseTabs_BulkTabs_NoPromptWalksEveryTab() {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < 150; i++) {
             tabs.add(mTabModel.addTab(i));

@@ -74,12 +74,7 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
 
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
         TabModelOrderController orderController = new TabModelOrderControllerImpl(this);
-        TabRemover tabRemover =
-                new PassthroughTabRemover(
-                        () -> {
-                            TabModel regularTabModel = getModel(/* incognito= */ false);
-                            return regularTabModel;
-                        });
+        TabRemover tabRemover = new PassthroughTabRemover(() -> getModel(/* incognito= */ false));
 
         TabModelInternal normalModel =
                 TabModelFactory.createTabModel(

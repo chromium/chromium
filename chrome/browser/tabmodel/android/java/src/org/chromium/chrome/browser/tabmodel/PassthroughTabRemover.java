@@ -24,12 +24,20 @@ import java.util.function.Supplier;
 @NullMarked
 public class PassthroughTabRemover implements TabRemover {
     private final Supplier<@Nullable TabModel> mTabModelSupplier;
+    private final TabClosePrompter mTabClosePrompter;
 
     /**
      * @param tabModelSupplier The supplier of the {@link TabModel}.
      */
     public PassthroughTabRemover(Supplier<@Nullable TabModel> tabModelSupplier) {
+        this(tabModelSupplier, new BeforeUnloadTabClosePrompter());
+    }
+
+    @VisibleForTesting
+    PassthroughTabRemover(
+            Supplier<@Nullable TabModel> tabModelSupplier, TabClosePrompter tabClosePrompter) {
         mTabModelSupplier = tabModelSupplier;
+        mTabClosePrompter = tabClosePrompter;
     }
 
     @Override
@@ -46,13 +54,13 @@ public class PassthroughTabRemover implements TabRemover {
             boolean allowDialog,
             @Nullable TabModelActionListener listener,
             Callback<TabClosureParams> onPreparedCallback) {
-        Runnable proceedWithClose =
-                () -> {
+        Callback<TabClosureParams> proceedWithClose =
+                params -> {
                     if (listener != null) {
                         listener.willPerformActionOrShowDialog(
                                 DialogType.NONE, /* willSkipDialog= */ true);
                     }
-                    onPreparedCallback.onResult(tabClosureParams);
+                    onPreparedCallback.onResult(params);
                     if (listener != null) {
                         listener.onConfirmationDialogResult(
                                 DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
@@ -60,7 +68,7 @@ public class PassthroughTabRemover implements TabRemover {
                 };
 
         if (!allowDialog) {
-            proceedWithClose.run();
+            proceedWithClose.onResult(tabClosureParams);
             return;
         }
 
@@ -68,7 +76,25 @@ public class PassthroughTabRemover implements TabRemover {
                 tabClosureParams.isAllTabs
                         ? TabModelUtils.convertTabListToListOfTabs(getTabModel())
                         : tabClosureParams.tabs;
-        TabRemover.checkBeforeUnloadAndProceed(tabsToClose, listener, proceedWithClose);
+        if (tabsToClose == null) {
+            proceedWithClose.onResult(tabClosureParams);
+            return;
+        }
+
+        TabRemover.checkBeforeUnloadAndProceed(
+                tabClosureParams,
+                tabsToClose,
+                mTabClosePrompter,
+                /* abandonBatchOnCancel= */ tabClosureParams.isAllTabs,
+                listener,
+                confirmedTabs ->
+                        TabRemover.proceedWithConfirmedTabs(
+                                tabClosureParams,
+                                getTabModel(),
+                                tabsToClose,
+                                confirmedTabs,
+                                listener,
+                                proceedWithClose));
     }
 
     @Override

@@ -342,6 +342,20 @@ public interface Tab extends TabLifecycle {
     /** Stop the current navigation. */
     void stopLoading();
 
+    /**
+     * Sets whether the next {@code beforeunload} completion on this tab leaves the page open
+     * instead of letting Content close it.
+     *
+     * <p>A mark covers exactly one completion, and is dropped if none can arrive: the tab's {@link
+     * WebContents} goes away, its primary page changes, or the {@link WebContents} leaves this tab.
+     * A gone renderer is not one of those, because Content's {@code beforeunload} timeout still
+     * produces a completion for the mark to meet. Set it before dispatching {@code beforeunload}
+     * when the caller, rather than Content, decides whether the tab actually closes.
+     *
+     * <p>Does nothing when the tab has no {@link WebContents}: there is no dispatch to answer.
+     */
+    void setSuppressBeforeUnloadAutoClose(boolean suppress);
+
     /** Returns whether the Tab has requested a reload. */
     boolean needsReload();
 

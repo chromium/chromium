@@ -38,6 +38,8 @@ import java.util.function.Supplier;
 @NullMarked
 public class TabRemoverImpl implements TabRemover {
     private final TabModelRemover mTabModelRemover;
+    private final TabRemover.TabClosePrompter mBeforeUnloadPrompter =
+            new BeforeUnloadTabClosePrompter();
 
     /**
      * @param context The activity context.
@@ -80,12 +82,30 @@ public class TabRemoverImpl implements TabRemover {
                         ? TabModelUtils.convertTabListToListOfTabs(
                                 mTabModelRemover.getTabModelInternal())
                         : tabClosureParams.tabs;
+        if (tabsToClose == null) {
+            proceedWithClose(tabClosureParams, allowDialog, listener, onPreparedCallback);
+            return;
+        }
+
         TabRemover.checkBeforeUnloadAndProceed(
+                tabClosureParams,
                 tabsToClose,
+                mBeforeUnloadPrompter,
+                /* abandonBatchOnCancel= */ tabClosureParams.isAllTabs,
                 listener,
-                () ->
-                        proceedWithClose(
-                                tabClosureParams, allowDialog, listener, onPreparedCallback));
+                confirmedTabs ->
+                        TabRemover.proceedWithConfirmedTabs(
+                                tabClosureParams,
+                                mTabModelRemover.getTabModelInternal(),
+                                tabsToClose,
+                                confirmedTabs,
+                                listener,
+                                params ->
+                                        proceedWithClose(
+                                                params,
+                                                allowDialog,
+                                                listener,
+                                                onPreparedCallback)));
     }
 
     private void proceedWithClose(

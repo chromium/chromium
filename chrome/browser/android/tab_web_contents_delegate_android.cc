@@ -310,12 +310,26 @@ void TabWebContentsDelegateAndroid::BeforeUnloadFired(
   if (IsBeforeUnloadAutoCloseSuppressed(web_contents)) {
     SetSuppressBeforeUnloadAutoClose(web_contents, /*suppress=*/false);
     *proceed_to_fire_unload = false;
-    return;
+  } else {
+    // Otherwise the page closes only if the user agreed to leave. Android keeps
+    // no state across the dispatch, so a false `proceed` needs no cleanup.
+    *proceed_to_fire_unload = proceed;
   }
 
-  // Otherwise the page closes only if the user agreed to leave. Android keeps
-  // no state across the dispatch, so a false `proceed` needs no cleanup.
-  *proceed_to_fire_unload = proceed;
+  // Java hears about every completion, marked or not, so that
+  // TabObserver::onBeforeUnloadFired means what its name says. This is the
+  // last statement of the method so that `*proceed_to_fire_unload` is already
+  // written when Java runs. An observer must not destroy the Tab or its
+  // WebContents before returning: Content keeps using this frame after this
+  // method returns, in
+  // RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame and in
+  // RenderFrameHostManager::BeforeUnloadCompleted.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_TabWebContentsDelegateAndroidImpl_onBeforeUnloadFired(env, obj, proceed);
 }
 
 void TabWebContentsDelegateAndroid::RunFileChooser(
