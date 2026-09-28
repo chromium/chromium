@@ -40,6 +40,7 @@ source_set("unit_tests") {
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/layout_guide:layout_guide_scene_agent",
@@ -49,5 +50,6 @@ source_set("unit_tests") {
     "//ios/web/public",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//ui/base",
   ]
 }

@@ -50,6 +50,8 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                            IDS_IOS_ACTOR_WORKLOG_CHIP_FILLING_PASSWORD)
                   icon:SymbolWithPointSize(SymbolKey, kIconSize)];
     case actor::ToolType::kNavigate:
+    case actor::ToolType::kBack:
+    case actor::ToolType::kForward:
       return [[ActuationWorklogChip alloc]
           initWithText:l10n_util::GetNSString(
                            IDS_IOS_ACTOR_WORKLOG_CHIP_NAVIGATING)
@@ -65,7 +67,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
     default:
       return [[ActuationWorklogChip alloc]
           initWithText:l10n_util::GetNSString(
-                           IDS_IOS_ACTOR_WORKLOG_CHIP_PROCESSING)
+                           IDS_IOS_ACTOR_WORKLOG_CHIP_DEFAULT)
                   icon:SymbolWithPointSize(SymbolCursorArrow, kIconSize)];
   }
 }

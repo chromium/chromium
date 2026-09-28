@@ -7,10 +7,12 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
@@ -144,12 +146,13 @@ TEST_F(ActuationWorklogMediatorTest, TestToolExecutionEmitsChipAndItem) {
   ASSERT_EQ(fake_consumer_.chips.count, 2u);
   EXPECT_GT(fake_consumer_.chips[1].text.length, 0u);
 
-  // Unmapped tools emit the catch-all "Processing" chip.
+  // Unmapped tools emit the catch-all fallback chip.
   ExecuteTool(kSelect, @"Selecting item");
   ASSERT_EQ(fake_consumer_.items.count, 3u);
   EXPECT_NSEQ(fake_consumer_.items[2].title, @"Selecting item");
   ASSERT_EQ(fake_consumer_.chips.count, 3u);
-  EXPECT_NSEQ(fake_consumer_.chips[2].text, @"Processing");
+  EXPECT_NSEQ(fake_consumer_.chips[2].text,
+              l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_CHIP_DEFAULT));
 
   // Tools without chips (e.g. kWaitZeroDuration) do not emit a chip.
   ExecuteTool(kWaitZeroDuration, @"Stabilizing");
