@@ -11,6 +11,7 @@
 
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
@@ -242,7 +243,7 @@ class AttemptLoginToolTest : public PlatformTest {
   void TearDown() override {
     [mock_password_controller_ stopMocking];
     mock_password_controller_ = nil;
-    captured_reparse_completion_ = nil;
+    captured_no_forms_found_handler_ = nil;
     PlatformTest::TearDown();
   }
 
@@ -266,7 +267,7 @@ class AttemptLoginToolTest : public PlatformTest {
   }
 
   // Stubs SharedPasswordController on `web_state` to intercept page reparse
-  // requests and capture the completion handler.
+  // requests and capture the no-forms-found handler.
   void MockReparseForms(web::WebState* web_state) {
     SharedPasswordController* controller =
         PasswordTabHelper::FromWebState(web_state)
@@ -274,31 +275,36 @@ class AttemptLoginToolTest : public PlatformTest {
     mock_password_controller_ = OCMPartialMock(controller);
 
     OCMStub([mock_password_controller_
-                actorLoginToolFindsFormsInWebState:(web::WebState*)
-                                                       [OCMArg anyPointer]
-                                 completionHandler:[OCMArg any]])
+                actorLoginToolRescansFormsInWebState:(web::WebState*)
+                                                         [OCMArg anyPointer]
+                                 noFormsFoundHandler:[OCMArg any]])
         .andDo(^(NSInvocation* invocation) {
           reparse_call_count_++;
-          __unsafe_unretained void (^handler)(BOOL) = nil;
+          __unsafe_unretained ProceduralBlock handler = nil;
           [invocation getArgument:&handler atIndex:3];
-          captured_reparse_completion_ = [handler copy];
+          captured_no_forms_found_handler_ = [handler copy];
         });
   }
 
-  // Completes the pending reparse request with `forms_found`. If `forms_found`
-  // is true and `tool` is provided, also notifies `tool` that a password form
-  // was parsed.
+  // Completes the pending reparse request. When `forms_found` is true the
+  // production delegate deliberately stays silent and the result is delivered
+  // through the `PasswordFormCache` observer, so only `tool` is notified.
+  // Otherwise the captured no-forms-found handler is invoked.
   [[nodiscard]] testing::AssertionResult CompleteReparse(
       BOOL forms_found,
       AttemptLoginTool* tool = nullptr) {
-    if (!captured_reparse_completion_) {
+    if (!captured_no_forms_found_handler_) {
       return testing::AssertionFailure()
-             << "captured_reparse_completion_ is nil (no pending reparse "
+             << "captured_no_forms_found_handler_ is nil (no pending reparse "
                 "request).";
     }
-    std::exchange(captured_reparse_completion_, nil)(forms_found);
-    if (forms_found && tool) {
-      tool->OnPasswordFormParsed(nullptr);
+    if (forms_found) {
+      captured_no_forms_found_handler_ = nil;
+      if (tool) {
+        tool->OnPasswordFormParsed(nullptr);
+      }
+    } else {
+      std::exchange(captured_no_forms_found_handler_, nil)();
     }
     return testing::AssertionSuccess();
   }
@@ -315,7 +321,7 @@ class AttemptLoginToolTest : public PlatformTest {
   raw_ptr<ActorTaskFormFillingHandler> form_filling_handler_ptr_ = nullptr;
   FakeActorTaskInterventionDelegate* intervention_delegate_;
   id mock_password_controller_ = nil;
-  void (^captured_reparse_completion_)(BOOL) = nil;
+  ProceduralBlock captured_no_forms_found_handler_ = nil;
   int reparse_call_count_ = 0;
 };
 

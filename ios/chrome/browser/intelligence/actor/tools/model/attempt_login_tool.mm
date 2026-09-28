@@ -272,11 +272,14 @@ void AttemptLoginTool::OnAttemptLogin(
           base::BindOnce(&AttemptLoginTool::OnWebStateRescanComplete,
                          weak_ptr_factory_.GetWeakPtr(),
                          /*forms_found=*/false));
-      auto completion_block = base::CallbackToBlock(
-          base::BindOnce(&AttemptLoginTool::OnDomRescanComplete,
-                         weak_ptr_factory_.GetWeakPtr()));
-      [delegate actorLoginToolFindsFormsInWebState:web_state_.get()
-                                 completionHandler:completion_block];
+      // Mirrors the `rescan_timer_` binding: both the timeout and a
+      // definitively-empty rescan conclude that no forms were found.
+      auto no_forms_found_block = base::CallbackToBlock(
+          base::BindOnce(&AttemptLoginTool::OnWebStateRescanComplete,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         /*forms_found=*/false));
+      [delegate actorLoginToolRescansFormsInWebState:web_state_.get()
+                                 noFormsFoundHandler:no_forms_found_block];
       return;
     }
   }
@@ -285,12 +288,6 @@ void AttemptLoginTool::OnAttemptLogin(
   std::move(execute_callback_)
       .Run(ToolExecutionResult(
           actor_login::LoginResultToActorResult(login_status.value())));
-}
-
-void AttemptLoginTool::OnDomRescanComplete(bool forms_found_in_dom) {
-  if (!forms_found_in_dom) {
-    OnWebStateRescanComplete(/*forms_found=*/false);
-  }
 }
 
 void AttemptLoginTool::OnWebStateRescanComplete(bool forms_found) {

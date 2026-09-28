@@ -198,11 +198,13 @@ const char kHostFrameKey[] = "host_frame";
                completionHandler:
                    (void (^)(const std::vector<FormData>&))completionHandler {
   if (!_webState) {
+    completionHandler({});
     return;
   }
 
   std::optional<GURL> pageURL = _webState->GetLastCommittedURLIfTrusted();
   if (!pageURL) {
+    completionHandler({});
     return;
   }
 
