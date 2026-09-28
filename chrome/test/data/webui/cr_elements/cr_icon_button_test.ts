@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
+import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {down, up} from 'chrome://webui-test/mouse_mock_interactions.js';
@@ -110,6 +111,22 @@ suite('cr-icon-button', function() {
     const wait = eventToPromise('click', button);
     pressAndReleaseKeyOn(button, -1, [], 'Enter');
     return wait;
+  });
+
+  test('control+enter does not emit click event on Mac', () => {
+    let clicked = false;
+    button.addEventListener('click', () => {
+      clicked = true;
+    }, {once: true});
+    const keydown = new KeyboardEvent(
+        'keydown', {key: 'Enter', ctrlKey: true, cancelable: true});
+    button.dispatchEvent(keydown);
+    assertEquals(!isMac, keydown.defaultPrevented);
+    const keyup = new KeyboardEvent(
+        'keyup', {key: 'Enter', ctrlKey: true, cancelable: true});
+    button.dispatchEvent(keyup);
+    assertEquals(!isMac, keyup.defaultPrevented);
+    assertEquals(!isMac, clicked);
   });
 
   test('space emits click event', () => {

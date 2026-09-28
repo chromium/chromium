@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
+import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -124,6 +125,24 @@ suite('cr-checkbox', function() {
     triggerKeyPressEvent(' ');
     await whenChanged;
     assertChecked();
+  });
+
+  test('control+enter does not toggle on Mac', async () => {
+    assertNotChecked();
+    const keydown = new KeyboardEvent(
+        'keydown', {key: 'Enter', ctrlKey: true, cancelable: true});
+    innerCheckbox.dispatchEvent(keydown);
+    assertEquals(!isMac, keydown.defaultPrevented);
+    const keyup = new KeyboardEvent(
+        'keyup', {key: 'Enter', ctrlKey: true, cancelable: true});
+    innerCheckbox.dispatchEvent(keyup);
+    assertEquals(!isMac, keyup.defaultPrevented);
+    await checkbox.updateComplete;
+    if (isMac) {
+      assertNotChecked();
+    } else {
+      assertChecked();
+    }
   });
 
   // <if expr="is_win">

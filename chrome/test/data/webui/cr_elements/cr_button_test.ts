@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -96,6 +97,22 @@ suite('cr-button', function() {
     checkClicks(4);
 
     button.removeEventListener('click', clickHandler);
+  });
+
+  test('control+enter does not click on Mac', () => {
+    let clicked = false;
+    button.addEventListener('click', () => {
+      clicked = true;
+    }, {once: true});
+    const keydown = new KeyboardEvent(
+        'keydown', {key: 'Enter', ctrlKey: true, cancelable: true});
+    button.dispatchEvent(keydown);
+    assertEquals(!isMac, keydown.defaultPrevented);
+    const keyup = new KeyboardEvent(
+        'keyup', {key: 'Enter', ctrlKey: true, cancelable: true});
+    button.dispatchEvent(keyup);
+    assertEquals(!isMac, keyup.defaultPrevented);
+    assertEquals(!isMac, clicked);
   });
 
   test('hidden', () => {

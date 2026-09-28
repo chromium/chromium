@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 
 import type {CrGridElement} from 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -237,6 +238,25 @@ suite('CrElementsGridFocusTest', () => {
 
     // Assert.
     await itemClicked;
+  });
+
+  test('control+enter does not click focused item on Mac', () => {
+    const grid = createGrid(1);
+    (grid.children[0] as HTMLElement).focus();
+    let clicked = false;
+    grid.children[0]!.addEventListener('click', () => {
+      clicked = true;
+    }, {once: true});
+
+    const keydown = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      ctrlKey: true,
+      cancelable: true,
+      bubbles: true,
+    });
+    grid.children[0]!.dispatchEvent(keydown);
+    assertEquals(!isMac, keydown.defaultPrevented);
+    assertEquals(!isMac, clicked);
   });
 
   test('space clicks focused item', async () => {

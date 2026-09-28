@@ -197,6 +197,19 @@ suite('CrActionMenu', function() {
     return;
   });
 
+  test('pressing control+enter when no focus', function() {
+    menu.showAt(dots);
+    assertEquals(menu, document.activeElement);
+    const keydown = new KeyboardEvent(
+        'keydown', {key: 'Enter', ctrlKey: true, cancelable: true});
+    menu.dispatchEvent(keydown);
+    assertEquals(!isMac, keydown.defaultPrevented);
+    assertEquals(!isWindows, dialog.open);
+    if (!isWindows && !isMac) {
+      assertEquals(items[0], getDeepActiveElement());
+    }
+  });
+
   test('pressing enter when when item has focus', function() {
     menu.showAt(dots);
     down();
