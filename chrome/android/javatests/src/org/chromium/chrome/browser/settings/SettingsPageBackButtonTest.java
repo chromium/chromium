@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -59,11 +60,17 @@ import java.util.List;
 /**
  * Integration tests focusing exclusively on back button navigation behavior in {@link
  * SettingsPage}.
+ *
+ * <p>The detailed pane title back button only appears when sub-pages are pushed onto the fragment
+ * back stack. Under SettingsInTabUrlNav, sub-pages replace the detail fragment and back navigation
+ * goes through the tab's navigation history instead, so the button is not shown by design.
+ * TODO(crbug.com/521895796): Cover back navigation under SettingsInTabUrlNav.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+@DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
 @Restriction(DeviceFormFactor.DESKTOP)
 public class SettingsPageBackButtonTest {
     private static final long TIMEOUT_MS = 20000L;
