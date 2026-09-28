@@ -11,6 +11,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -473,8 +474,19 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
     return;
   }
 
-  ViewportAnchor anchor(inner_viewport_scroll_node, outer_viewport_scroll_node,
-                        this);
+  // A Viz display tree mirrors the client's compositor state. The client runs
+  // this same anchoring logic and sends the resulting inner and outer viewport
+  // scroll offsets, so re-running it here applies the correction a second
+  // time, possibly against intermediate state (e.g. SetBrowserControlsParams()
+  // runs this with the new params but the old shown ratio). Any offset change
+  // made here is never corrected, because the client only sends scroll updates
+  // when its own offsets change. Viz has no authority over these offsets, so
+  // don't anchor at all.
+  std::optional<ViewportAnchor> anchor;
+  if (!settings().trees_in_viz_in_viz_process) {
+    anchor.emplace(inner_viewport_scroll_node, outer_viewport_scroll_node,
+                   this);
+  }
   const float top_controls_shown_ratio =
       top_controls_shown_ratio_->Current(IsActiveTree());
   const float bottom_controls_shown_ratio =
@@ -570,7 +582,9 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
     }
   }
 
-  anchor.ResetViewportToAnchoredPosition();
+  if (anchor) {
+    anchor->ResetViewportToAnchoredPosition();
+  }
 
   property_trees->clip_tree_mutable().set_needs_update(true);
   property_trees->set_full_tree_damaged(true);

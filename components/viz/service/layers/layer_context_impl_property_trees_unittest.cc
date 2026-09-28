@@ -2396,6 +2396,114 @@ TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
             gfx::Rect(5, 5, 15, 15));
 }
 
+// The Viz display tree must mirror the client's viewport scroll offsets
+// verbatim. In particular, a browser controls shown ratio change must not make
+// it re-run the viewport anchoring logic (clamp to the recomputed max scroll
+// offset and redistribute the difference between the inner and outer
+// viewports), because the client has already done that and sent us the result.
+// Doing it a second time draws the content at the wrong offset, and nothing
+// re-syncs the scroll offsets afterwards.
+TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
+       BrowserControlsRatioChangeDoesNotClobberViewportScrollOffsets) {
+  constexpr cc::ElementId kOuterElementId(11ULL);
+  constexpr cc::ElementId kInnerElementId(12ULL);
+  // Chosen so that the inner (visual) viewport is scrollable, i.e. the page is
+  // zoomed in. That is what makes the browser controls driven change in the
+  // inner viewport's max scroll offset observable.
+  constexpr float kPageScaleFactor = 2.f;
+  constexpr float kTopControlsHeight = 20.f;
+  const gfx::PointF kInnerScrollOffset(0.f, 35.f);
+  const gfx::PointF kOuterScrollOffset(0.f, 100.f);
+
+  // Describes the viewport scroll nodes and the scroll offsets, which stay
+  // identical across both updates below. Only the browser controls shown ratio
+  // changes.
+  auto add_viewport_state = [&](mojom::LayerTreeUpdate* update) {
+    auto outer = mojom::ScrollNode::New();
+    outer->id = viewport_property_ids.outer_scroll;
+    outer->parent_id = cc::kRootPropertyNodeId;
+    outer->transform_id = viewport_property_ids.page_scale_transform;
+    outer->element_id = kOuterElementId;
+    outer->scrolls_outer_viewport = true;
+    outer->container_bounds = gfx::Size(100, 100);
+    outer->bounds = gfx::Size(100, 400);
+    outer->user_scrollable_horizontal = true;
+    outer->user_scrollable_vertical = true;
+    update->scroll_nodes.push_back(std::move(outer));
+
+    auto inner = mojom::ScrollNode::New();
+    inner->id = viewport_property_ids.inner_scroll;
+    inner->parent_id = viewport_property_ids.outer_scroll;
+    inner->transform_id = viewport_property_ids.page_scale_transform;
+    inner->element_id = kInnerElementId;
+    inner->scrolls_inner_viewport = true;
+    inner->max_scroll_offset_affected_by_page_scale = true;
+    inner->container_bounds = gfx::Size(100, 100);
+    inner->bounds = gfx::Size(100, 100);
+    inner->user_scrollable_horizontal = true;
+    inner->user_scrollable_vertical = true;
+    update->scroll_nodes.push_back(std::move(inner));
+
+    auto scroll_tree_update = mojom::ScrollTreeUpdate::New();
+    for (const auto& [element_id, offset] :
+         {std::make_pair(kInnerElementId, kInnerScrollOffset),
+          std::make_pair(kOuterElementId, kOuterScrollOffset)}) {
+      auto synced = base::MakeRefCounted<cc::SyncedScrollOffset>();
+      synced->SetCurrent(offset);
+      scroll_tree_update->synced_scroll_offsets[element_id] = std::move(synced);
+    }
+    update->scroll_tree_update = std::move(scroll_tree_update);
+
+    update->page_scale_factor = kPageScaleFactor;
+    update->browser_controls_params.top_controls_height = kTopControlsHeight;
+    update->browser_controls_params.browser_controls_shrink_blink_size = false;
+  };
+
+  // The container bounds deltas the client computes for a given shown ratio,
+  // mirroring LayerTreeImpl::UpdateViewportContainerSizes().
+  auto container_bounds_delta_for_ratio = [&](float ratio) {
+    return gfx::Vector2dF(0.f, -kTopControlsHeight * ratio);
+  };
+
+  EXPECT_TRUE(ApplyDefaultUpdate().has_value());
+
+  // Browser controls half shown.
+  auto update1 = CreateDefaultUpdate();
+  add_viewport_state(update1.get());
+  update1->top_controls_shown_ratio = 0.5f;
+  update1->inner_viewport_container_bounds_delta =
+      container_bounds_delta_for_ratio(0.5f);
+  update1->outer_viewport_container_bounds_delta = gfx::ScaleVector2d(
+      container_bounds_delta_for_ratio(0.5f), 1.f / kDefaultMinPageScaleFactor);
+  ASSERT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  // Browser controls fully shown with no scroll node or scroll tree updates in
+  // the packet (matching a frame where the browser controls consume the scroll
+  // delta). This shrinks the inner viewport's max scroll offset, which used to
+  // trigger the spurious re-clamp.
+  auto update2 = CreateDefaultUpdate();
+  update2->page_scale_factor = kPageScaleFactor;
+  update2->browser_controls_params.top_controls_height = kTopControlsHeight;
+  update2->browser_controls_params.browser_controls_shrink_blink_size = false;
+  update2->top_controls_shown_ratio = 1.f;
+  update2->inner_viewport_container_bounds_delta =
+      container_bounds_delta_for_ratio(1.f);
+  update2->outer_viewport_container_bounds_delta = gfx::ScaleVector2d(
+      container_bounds_delta_for_ratio(1.f), 1.f / kDefaultMinPageScaleFactor);
+  ASSERT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+
+  const auto& scroll_tree = layer_context_impl_->host_impl()
+                                ->active_tree()
+                                ->property_trees()
+                                ->scroll_tree();
+  EXPECT_EQ(scroll_tree.current_scroll_offset(kInnerElementId),
+            kInnerScrollOffset);
+  EXPECT_EQ(scroll_tree.current_scroll_offset(kOuterElementId),
+            kOuterScrollOffset);
+}
+
 TEST_F(LayerContextImplUpdateDisplayTreeScrollNodeTest,
        UpdateElasticOverscroll) {
   cc::LayerTreeImpl* active_tree =
