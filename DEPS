@@ -289,7 +289,7 @@ vars = {
   # binary available on `PATH`, or absolute path.
   'reapi_credential_helper': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:22353054fea20f637c8fa302a90daf9e2cc10497',
+  'siso_version': 'git_revision:c574896b272b40aac6e44c228ee0b471ea7e3d7d',
 
   # CPython 3 CIPD package version for Siso hermetic toolchain.
   'cpython3_version': 'version:3@3.11.9.chromium.38',
