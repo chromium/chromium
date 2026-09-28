@@ -40,7 +40,7 @@ recorded_artifacts = []
 
 def Tee(output, logfile):
   logfile.write(output)
-  print(output, end=' ')
+  print(output, end='')
 
 
 def TeeCmd(cmd, logfile, fail_hard=True):
@@ -50,19 +50,16 @@ def TeeCmd(cmd, logfile, fail_hard=True):
   # its stdout buffer and don't give it a stdin.
   # shell=True is required in cmd.exe since depot_tools has an svn.bat, and
   # bat files only work with shell=True set.
-  proc = subprocess.Popen(
+  with subprocess.Popen(
     cmd,
-    bufsize=1,
     shell=sys.platform == 'win32',
-    stdin=open(os.devnull),
+    stdin=subprocess.DEVNULL,
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT,
-  )
-  for line in iter(proc.stdout.readline, ''):
-    Tee(str(line.decode()), logfile)
-    if proc.poll() is not None:
-      break
-  exit_code = proc.wait()
+  ) as proc:
+    for line in iter(proc.stdout.readline, b''):
+      Tee(line.decode(), logfile)
+    exit_code = proc.wait()
   if exit_code != 0 and fail_hard:
     print('Failed:', cmd)
     sys.exit(1)
