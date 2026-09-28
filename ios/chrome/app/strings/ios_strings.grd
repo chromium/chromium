@@ -8324,17 +8324,8 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGNIN_SNACKBAR_UNDO" desc="This string is found on a button that signs the user out when the user taps it. It is on a confirmation message that users see when they sign in to Chrome with their Google Account. This text is a verb and is short for the longer phrase 'Undo my sign-in.' The tone should be informative. [Length: 15em] [iOS only]">
         Undo
       </message>
-      <message name="IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON" desc="This button signs the user out. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
-        Sign Out and Delete
-      </message>
       <message name="IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
         After you sign out, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history, and more.
-      </message>
-      <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
-        Sign out? Unsaved account data will be deleted.
-      </message>
-      <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
-      Tabs will be closed, and data deleted could include passwords, browsing history, cookies, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and delete all the data from the user device. The data remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Clear data
@@ -8506,9 +8497,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SWITCH_ACCOUNTS_IPH_MESSAGE" desc="The IPH message to inform the user that they can switch accounts via the account menu. [iOS only]">
         You can easily switch between accounts
-      </message>
-      <message name="IDS_IOS_SWITCH_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The switch dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
-        Switch accounts? Unsaved account data will be deleted.
       </message>
       <message name="IDS_IOS_SWITCH_PROFILE_CURRENT_PROFILE_TITLE" desc="Title for the switch profile developer panel in Settings-&gt;Switch Profile [iOS only]">
         Current profile

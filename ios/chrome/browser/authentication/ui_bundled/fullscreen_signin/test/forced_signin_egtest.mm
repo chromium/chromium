@@ -417,9 +417,8 @@ void CompleteSigninFlow() {
       assertWithMatcher:grey_nil()];
 
   // Sign out account from account settings.
-  [SigninEarlGreyUI signOutWithClearDataConfirmation:NO
-                                      expectSnackbar:NO
-                                       closeSettings:NO];
+  [SigninEarlGreyUI signOutWithExpectSnackbar:NO
+                                closeSettings:NO];
 
   // Wait and verify that the forced sign-in screen is shown.
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];

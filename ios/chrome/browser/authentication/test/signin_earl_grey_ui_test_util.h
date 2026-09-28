@@ -35,14 +35,11 @@
 // screen. Taps the "Sign Out" button, dismisses the confirmation snackbar and
 // close the settings. Verifies the user is signed-out.
 + (void)signOut;
-// Opens the settings > sync > signout. If `expectClearDataConfirmation` is
-// true, expects the "Sign out and clear data?" confirmation dialog to show up,
-// and accepts it. If `expectsSnackbar`, dismisses it, otherwise check it does
-// not appears. If `closeSettings`, tap on "Done".  Verifies the user is
-// signed-out.
-+ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation
-                          expectSnackbar:(BOOL)expectSnackbar
-                           closeSettings:(BOOL)closeSettings;
+// Opens the settings > sync > signout. If `expectSnackbar`, dismisses it,
+// otherwise check it does not appear. If `closeSettings`, tap on "Done".
+// Verifies the user is signed-out.
++ (void)signOutWithExpectSnackbar:(BOOL)expectSnackbar
+                    closeSettings:(BOOL)closeSettings;
 
 // dismisses the confirmation snackbar on sign-out.
 + (void)dismissSignoutSnackbar;

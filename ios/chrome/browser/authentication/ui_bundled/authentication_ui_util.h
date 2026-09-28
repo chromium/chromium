@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, SignoutActionSheetCoordinatorResult) {
   SignoutActionSheetCoordinatorResultKeepOnDevice,
 };
 
-// Enum to describe all 3 cases for a user being signed-in.
+// Enum to describe the cases for a user being signed-in.
 enum class SignedInUserState {
   // Sign-in with UNO. The sign-out needs to ask confirmation to sign out only
   // if there are unsaved data. When signed out, a snackbar needs to be
@@ -42,13 +42,6 @@ enum class SignedInUserState {
   // Sign-in with UNO, where the user is managed, and was migrated from the
   // syncing state. No data needs to be cleared on signout.
   kManagedAccountAndMigratedFromSyncing,
-  // Signed in with managed account with the ClearDeviceDataOnSignoutForManaged
-  // user feature enabled.
-  // TODO(crbug.com/407498240): Clean this up. Since
-  // SeparateProfilesForManagedAccounts is fully launched (including migrating
-  // pre-existing users), no "clear data on signout" dialog is necessary
-  // anymore.
-  kManagedAccountClearsDataOnSignout
 };
 
 // Sign-out completion block.

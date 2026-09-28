@@ -77,18 +77,6 @@ void CloseHistorySyncSheet(BOOL enableHistorySync) {
   }
 }
 
-// Closes the "Sign out and delete data" dialog. That dialog may be shown when a
-// managed account signs out.
-void CloseManagedAccountSignOutAndDeleteDataDialog() {
-  // Verify whether there is a confirmation dialog and interact with it to
-  // complete the sign-in flow if present.
-  id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
-      actionSheetItemWithAccessibilityLabelID:
-          IDS_IOS_SIGNOUT_AND_DELETE_DIALOG_SIGN_OUT_BUTTON];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:acceptButton];
-  [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
-}
-
 // Taps the sign-in sheet confirmation if the user is not signed-in yet, and
 // the history opt-in confirmation if the user is not opted-in yet.
 void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
@@ -197,20 +185,13 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 }
 
 + (void)signOut {
-  [self signOutWithClearDataConfirmation:NO
-                          expectSnackbar:YES
-                           closeSettings:YES];
+  [self signOutWithExpectSnackbar:YES closeSettings:YES];
 }
 
-+ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation
-                          expectSnackbar:(BOOL)expectSnackbar
-                           closeSettings:(BOOL)closeSettings {
++ (void)signOutWithExpectSnackbar:(BOOL)expectSnackbar
+                    closeSettings:(BOOL)closeSettings {
   [SigninEarlGreyUI openSyncSettings];
   [SigninEarlGreyUI tapSignOutFromSyncSettings];
-
-  if (expectClearDataConfirmation) {
-    CloseManagedAccountSignOutAndDeleteDataDialog();
-  }
 
   if (expectSnackbar) {
     // Close the snackbar, so that it can't obstruct other UI items.

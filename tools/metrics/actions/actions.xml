@@ -36771,6 +36771,8 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
+    (Obsolete) Not recorded anymore as of M156.
+
     Recorded when the user cancels signing-out from a managed account and
     ClearDeviceDataOnSignoutForManaged is enabled. Recorded for iOS only.
   </description>
@@ -36789,6 +36791,8 @@ should be able to be added at any place in this file.
   <owner>chrome-signin-team@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
   <description>
+    (Obsolete) Not recorded anymore as of M156.
+
     Recorded when the user confirms they accept to sign-out from a managed
     account and ClearDeviceDataOnSignoutForManaged is enabled. Recorded for iOS
     only.
