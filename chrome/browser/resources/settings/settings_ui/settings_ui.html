@@ -126,7 +126,9 @@
         </settings-menu>
       </div>
       <settings-main id="main" prefs="{{prefs}}"
-          toolbar-spinner-active="{{toolbarSpinnerActive_}}">
+          toolbar-spinner-active="{{toolbarSpinnerActive_}}"
+          on-search-finished="onSearchFinished_"
+          on-search-result-interaction="onSearchResultInteraction_">
       </settings-main>
       <!-- An additional child of the flex #container to take up space,
            aligned with the right-hand child of the flex toolbar. -->

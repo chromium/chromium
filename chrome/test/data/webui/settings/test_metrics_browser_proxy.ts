@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SuggestionsFromGeminiAction, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
+import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -39,6 +39,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordAiPageHistorySearchInteractions',
       'recordAiPageComposeInteractions',
       'recordAiPageSuggestionsInteractions',
+      'recordSettingsSearchExitReason',
+      'recordSettingsSearchResultDwellTime',
       'recordAutofillSettingsReferrer',
       'recordYourSavedInfoCategoryClick',
       'recordYourSavedInfoDataChipClick',
@@ -46,6 +48,14 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSuggestionsFromGeminiEntryPointClick',
       'recordSuggestionsFromGeminiAction',
     ]);
+  }
+
+  recordSettingsSearchExitReason(reason: SettingsSearchExitReasonDesktop) {
+    this.methodCalled('recordSettingsSearchExitReason', reason);
+  }
+
+  recordSettingsSearchResultDwellTime(time: number) {
+    this.methodCalled('recordSettingsSearchResultDwellTime', time);
   }
 
   recordAction(action: string) {

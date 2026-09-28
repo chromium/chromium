@@ -33535,6 +33535,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.Search.QuerySubmitted">
+  <owner>tommasin@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user has submitted a search query on the Settings page. A
+    query is considered submitted once the user stops typing for a short
+    duration, or acts on the results (e.g. clicks a result) before that,
+    indicating intent to search.
+  </description>
+</action>
+
 <action name="Settings.Searching">
   <owner>dschuyler@chromium.org</owner>
   <description>

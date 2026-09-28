@@ -604,6 +604,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/settings/search/SettingsSearchCoordinator.java:ExitReason) -->
 
+<!-- LINT.IfChange(SettingsSearchExitReasonDesktop) -->
+
+<enum name="SettingsSearchExitReasonDesktop">
+  <int value="0" label="Interacted with a result"/>
+  <int value="1" label="Cleared a query"/>
+  <int value="2" label="Navigated away via sidebar"/>
+  <int value="3" label="Closed or left settings tab"/>
+  <int value="4" label="Navigated back or forward in history"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:SettingsSearchExitReasonDesktop) -->
+
 <!-- LINT.IfChange(SuperEncryptedHashResult) -->
 
 <enum name="SuperEncryptedHashResult">

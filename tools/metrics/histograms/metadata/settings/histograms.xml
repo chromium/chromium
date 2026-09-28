@@ -1256,6 +1256,61 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
+<histogram name="Settings.Search.ExitReasonDesktop"
+    enum="SettingsSearchExitReasonDesktop" expires_after="2027-09-08">
+  <owner>tommasin@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records how a search session in Settings ended. Exactly one sample is logged
+    per session, at the first of: the user interacts with the search results,
+    clears the query, navigates away using the sidebar, navigates back or
+    forward in history, or closes the settings tab. Not logged if the user
+    abandons the search before the query is considered submitted, see the
+    Settings.Search.QuerySubmitted user action.
+
+    &quot;Interacted with a result&quot; is the first click or value change
+    inside the search results area. It measures engagement with the results, not
+    whether the user found or changed the setting they were looking for. For
+    example, opening a result that leads to a subpage (such as &quot;Customize
+    fonts&quot;) ends the session, even though the search is still active on
+    that subpage, and anything the user does afterwards is not tracked. Clicks
+    that land next to a result rather than on one also count, so this bucket is
+    an upper bound.
+  </summary>
+</histogram>
+
+<histogram name="Settings.Search.HasResults" enum="Boolean"
+    expires_after="2027-09-08">
+  <owner>tommasin@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Recorded when a search query is submitted in Settings. True if the query
+    matched 1 or more results, and false if it returned zero matches (failure to
+    match settings cards). Used to calculate zero-result deflection. Not
+    recorded if the user acts on or abandons the search before the search
+    request completes, so the total count of this histogram is slightly below
+    the count of the Settings.Search.QuerySubmitted user action.
+  </summary>
+</histogram>
+
+<histogram name="Settings.Search.ResultDwellTime" units="ms"
+    expires_after="2027-09-08">
+  <owner>tommasin@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the time spent (dwell time) after the first interaction with the
+    search results of a session in Settings before returning to the search box
+    and issuing another query. Interaction is detected from clicks and value
+    changes anywhere in the search results area, and so covers both opening a
+    result, which navigates to the page it lives on, and changing its value in
+    place, for example by flipping a toggle. This is only recorded when a
+    subsequent query is issued within 1 hour; if the user interacts with a
+    result and never issues another query (e.g. they close the tab or succeed in
+    their task), this metric is not recorded. Used to distinguish true success
+    from immediate bounce-backs.
+  </summary>
+</histogram>
+
 <histogram name="Settings.Search.UiOpened" enum="Boolean"
     expires_after="2027-02-28">
   <owner>adelm@google.com</owner>

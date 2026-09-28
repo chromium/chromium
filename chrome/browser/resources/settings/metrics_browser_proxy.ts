@@ -551,7 +551,39 @@ export enum SuggestionsFromGeminiAction {
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionsFromGeminiAction)
 
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsSearchExitReasonDesktop enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(SettingsSearchExitReasonDesktop)
+export enum SettingsSearchExitReasonDesktop {
+  INTERACTED_WITH_RESULT = 0,
+  CLEAR_QUERY = 1,
+  NAVIGATE_SIDEBAR = 2,
+  EXIT_SETTINGS = 3,
+  BACK_NAVIGATION = 4,
+  COUNT = 5,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsSearchExitReasonDesktop)
+
 export interface MetricsBrowserProxy {
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.Search.ExitReasonDesktop histogram
+   */
+  recordSettingsSearchExitReason(reason: SettingsSearchExitReasonDesktop): void;
+
+  /**
+   * Helper function that records the Settings.Search.ResultDwellTime
+   * histogram, using a bucket range of up to one hour. Named rather than
+   * generic so that callers do not need to know which bucket range the
+   * histogram uses.
+   */
+  recordSettingsSearchResultDwellTime(time: number): void;
+
   /**
    * Helper function that calls recordAction with one action from
    * tools/metrics/actions/actions.xml.
@@ -774,6 +806,22 @@ export interface MetricsBrowserProxy {
 export const SAFETY_HUB_SUGGESTIONS_MAX_VALUE = 98;
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
+  recordSettingsSearchExitReason(reason: SettingsSearchExitReasonDesktop) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.Search.ExitReasonDesktop',
+      reason,
+      SettingsSearchExitReasonDesktop.COUNT,
+    ]);
+  }
+
+  recordSettingsSearchResultDwellTime(time: number) {
+    // The caller drops dwell times longer than one hour, which is wider than
+    // the 3 minute range of 'metricsHandler:recordMediumTime'. MetricsHandler
+    // exposes no recordLongTime message, so record through metricsPrivate.
+    chrome.metricsPrivate.recordLongTime(
+        'Settings.Search.ResultDwellTime', time);
+  }
+
   recordAction(action: string) {
     chrome.send('metricsHandler:recordAction', [action]);
   }

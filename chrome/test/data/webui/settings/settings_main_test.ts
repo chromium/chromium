@@ -6,7 +6,8 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsMainElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, Router, routes, setSearchManagerForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchManager} from './test_search_manager.js';
 // clang-format on
@@ -185,4 +186,62 @@ suite('MainPageTests', function() {
             'settingsAltPageTitle',
             loadTimeData.getString('privacyPageTitle')));
   });
+
+  test('fires search-finished when a search completes', async function() {
+    flush();
+
+    searchManager.setMatchesFound(true);
+    let whenFired = eventToPromise('search-finished', settingsMain);
+    await settingsMain.searchContents('foo');
+    let event = await whenFired;
+    assertEquals('foo', event.detail.query);
+    assertGT(event.detail.matchCount, 0);
+
+    searchManager.setMatchesFound(false);
+    whenFired = eventToPromise('search-finished', settingsMain);
+    await settingsMain.searchContents('bar');
+    event = await whenFired;
+    assertEquals('bar', event.detail.query);
+    assertEquals(0, event.detail.matchCount);
+  });
+
+  test(
+      'fires search-result-interaction only while in search mode',
+      async function() {
+        flush();
+
+        // Controls like settings-toggle-button stop 'click' events from
+        // propagating, and fire no 'click' at all when activated with the
+        // keyboard, but they do fire a composed 'change' event.
+        const fireChange = () => {
+          settingsMain.$.switcher.fire('change');
+        };
+
+        // No listener is registered when not searching.
+        let fired = false;
+        settingsMain.addEventListener(
+            'search-result-interaction', () => fired = true);
+        fireChange();
+        assertFalse(fired);
+        settingsMain.$.switcher.click();
+        assertFalse(fired);
+
+        searchManager.setMatchesFound(true);
+        await settingsMain.searchContents('foo');
+
+        fireChange();
+        assertTrue(fired);
+
+        fired = false;
+        settingsMain.$.switcher.click();
+        assertTrue(fired);
+
+        // Both listeners are removed once the search is cleared.
+        await settingsMain.searchContents('');
+        fired = false;
+        fireChange();
+        assertFalse(fired);
+        settingsMain.$.switcher.click();
+        assertFalse(fired);
+      });
 });
