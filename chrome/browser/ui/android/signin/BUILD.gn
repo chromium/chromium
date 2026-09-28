@@ -232,6 +232,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FreManagementNoticeDialogHelperTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninViewBinderTest.java",
   ]
   deps = [
