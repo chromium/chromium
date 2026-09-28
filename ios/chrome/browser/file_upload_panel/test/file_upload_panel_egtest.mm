@@ -174,7 +174,7 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
   XCUIElement* alert = [[springboardApp
       descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
   if ([alert waitForExistenceWithTimeout:1]) {
-    XCUIElement* allowButton = alert.buttons[@"Allow"];
+    XCUIElement* allowButton = alert.buttons[@"Allow"].firstMatch;
     if (![allowButton exists]) {
       allowButton = [alert.buttons elementBoundByIndex:1];
     }

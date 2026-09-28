@@ -116,8 +116,8 @@
                              userInfo:nil];
     return;
   }
-  XCUIElement* button = alert.buttons[text];
-  if (![alert.buttons[text] exists]) {
+  XCUIElement* button = alert.buttons[text].firstMatch;
+  if (![button exists]) {
     *error = [NSError errorWithDomain:kGREYSystemAlertDismissalErrorDomain
                                  code:GREYSystemAlertCustomButtonNotFound
                              userInfo:nil];

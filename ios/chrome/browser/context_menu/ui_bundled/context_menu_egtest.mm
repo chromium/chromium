@@ -369,7 +369,7 @@ void CheckAndAcceptSystemDialog() {
   XCUIElement* alert = [[springboardApp
       descendantsMatchingType:XCUIElementTypeAlert] firstMatch];
   if ([alert waitForExistenceWithTimeout:1]) {
-    XCUIElement* allowButton = alert.buttons[@"Allow"];
+    XCUIElement* allowButton = alert.buttons[@"Allow"].firstMatch;
     if (![allowButton exists]) {
       allowButton = [alert.buttons elementBoundByIndex:1];
     }

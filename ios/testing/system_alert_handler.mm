@@ -31,13 +31,14 @@ BOOL HandleSingleAlert(XCUIElement* alert) {
       NSLog(@"Found alert containing text: %@", text);
 
       for (NSString* button in text_to_buttons[text]) {
-        if (!alert.buttons[button].exists) {
+        XCUIElement* alert_button = alert.buttons[button].firstMatch;
+        if (!alert_button.exists) {
           NSLog(@"Button %@ doesn't exist. Skip tapping.", button);
           continue;
         }
 
         NSLog(@"Tapping alert button: %@", button);
-        [alert.buttons[button] tap];
+        [alert_button tap];
         return YES;
       }
     }
