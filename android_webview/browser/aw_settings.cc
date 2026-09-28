@@ -192,7 +192,6 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateInitialPageScaleLocked(env, obj);
   UpdateWebkitPreferencesLocked(env, obj);
   UpdateUserAgentLocked(env, obj);
-  ResetScrollAndScaleState(env, obj);
   UpdateRendererPreferencesLocked(env, obj);
   UpdateOffscreenPreRasterLocked(env, obj);
   UpdateWillSuppressErrorStateLocked(env, obj);
