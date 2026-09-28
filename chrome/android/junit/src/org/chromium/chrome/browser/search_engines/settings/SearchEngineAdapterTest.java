@@ -317,6 +317,14 @@ public class SearchEngineAdapterTest {
         assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
         assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
+        assertEquals("3", adapter.getValueForTesting());
+
+        // Subsequent refreshes with the same engines should exit early via didSearchEnginesChange
+        // without re-snapshotting or duplicating the fallback DSE.
+        clearInvocations(p1, p2, unknownDse);
+        adapter.onTemplateURLServiceChanged();
+        assertEquals(4, adapter.getCount());
+        verify(unknownDse, never()).getShortName();
     }
 
     @Test
@@ -416,6 +424,7 @@ public class SearchEngineAdapterTest {
         assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
         assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
+        assertEquals("3", adapter.getValueForTesting());
 
         // Test for EEA country.
         doReturn(true).when(mRegionalCapabilities).isInEeaCountry();
@@ -430,6 +439,7 @@ public class SearchEngineAdapterTest {
         assertEquals(p2.getKeyword(), adapter.getItem(1).getKeyword());
         // Item 2 is a divider.
         assertEquals(unknownDse.getKeyword(), adapter.getItem(3).getKeyword());
+        assertEquals("3", adapter.getValueForTesting());
     }
 
     @Test

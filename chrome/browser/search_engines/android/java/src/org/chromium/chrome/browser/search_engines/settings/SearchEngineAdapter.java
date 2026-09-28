@@ -134,8 +134,6 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private boolean mHasLoadObserver;
 
-    private boolean mIsLocationPermissionChanged;
-
     private @MonotonicNonNull Runnable mDisableAutoSwitchRunnable;
     private final ContainmentItemController mContainmentItemController;
     private final SearchEngineSettingsDataProvider mSettingsDataProvider;
@@ -216,32 +214,23 @@ public class SearchEngineAdapter extends BaseAdapter
             return; // Flow continues in onTemplateUrlServiceLoaded below.
         }
 
-        boolean forceRefresh = mIsLocationPermissionChanged;
-        mIsLocationPermissionChanged = false;
-
         // Note: DSE may be null if explicitly blocked by policy.
         @Nullable TemplateUrl defaultSearchEngineTemplateUrl =
                 templateUrlService.getDefaultSearchEngineTemplateUrl();
 
+        List<TemplateUrl> prepopulatedUrls;
+        List<TemplateUrl> recentlyVisitedUrls;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2)) {
             PrepopulatedAndRecentlyVisitedTemplateURLs engines =
                     mSettingsDataProvider.getPrepopulatedAndRecentlyVisitedTemplateURLs();
 
+            prepopulatedUrls = engines.getPrepopulatedUrls();
             // Recently visited search engines may be disabled as site search can set more advanced
             // settings.
-            List<TemplateUrl> recentlyVisitedUrls =
+            recentlyVisitedUrls =
                     OmniboxFeatures.sOmniboxSiteSearch.isEnabled()
                             ? Collections.emptyList()
                             : engines.getRecentlyVisitedUrls();
-
-            if (!didSearchEnginesChange(engines.getPrepopulatedUrls(), mPrepopulatedSearchEngines)
-                    && !didSearchEnginesChange(recentlyVisitedUrls, mRecentSearchEngines)) {
-                if (forceRefresh) notifyDataSetChanged();
-                return;
-            }
-
-            mPrepopulatedSearchEngines = toSnapshots(engines.getPrepopulatedUrls());
-            mRecentSearchEngines = toSnapshots(recentlyVisitedUrls);
         } else {
             RegionalCapabilitiesService regionalCapabilities =
                     RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
@@ -252,60 +241,65 @@ public class SearchEngineAdapter extends BaseAdapter
                     defaultSearchEngineTemplateUrl,
                     regionalCapabilities.isInEeaCountry());
 
-            List<TemplateUrlSnapshot> combinedLists = new ArrayList<>(mPrepopulatedSearchEngines);
-            combinedLists.addAll(mRecentSearchEngines);
-
-            if (!didSearchEnginesChange(templateUrls, combinedLists)) {
-                if (forceRefresh) notifyDataSetChanged();
-                return;
-            }
-
-            mPrepopulatedSearchEngines = new ArrayList<>();
-            mRecentSearchEngines = new ArrayList<>();
-
+            prepopulatedUrls = new ArrayList<>();
+            recentlyVisitedUrls = new ArrayList<>();
             for (int i = 0; i < templateUrls.size(); i++) {
                 TemplateUrl templateUrl = templateUrls.get(i);
-                TemplateUrlSnapshot snapshot = TemplateUrlSnapshot.from(templateUrl);
                 if (getSearchEngineSourceType(templateUrl, defaultSearchEngineTemplateUrl)
                         == TemplateUrlSourceType.RECENT) {
-                    mRecentSearchEngines.add(snapshot);
+                    recentlyVisitedUrls.add(templateUrl);
                 } else {
-                    mPrepopulatedSearchEngines.add(snapshot);
+                    prepopulatedUrls.add(templateUrl);
                 }
             }
         }
 
-        // Convert the TemplateUrl index into an index of mSearchEngines.
-        mSelectedSearchEnginePosition = -1;
+        // Convert the TemplateUrl index into an item index for the view.
+        int selectedSearchEnginePosition = -1;
         if (defaultSearchEngineTemplateUrl != null) {
-            for (int i = 0; i < mPrepopulatedSearchEngines.size(); ++i) {
-                TemplateUrlSnapshot snapshot = mPrepopulatedSearchEngines.get(i);
-                if (snapshot.getId() == defaultSearchEngineTemplateUrl.getId()) {
-                    mSelectedSearchEnginePosition = i;
+            for (int i = 0; i < prepopulatedUrls.size(); ++i) {
+                if (prepopulatedUrls.get(i).getId() == defaultSearchEngineTemplateUrl.getId()) {
+                    selectedSearchEnginePosition = i;
                 }
             }
 
-            for (int i = 0; i < mRecentSearchEngines.size(); ++i) {
-                TemplateUrlSnapshot snapshot = mRecentSearchEngines.get(i);
-                if (snapshot.getId() == defaultSearchEngineTemplateUrl.getId()) {
-                    // Add one to offset the title for the recent search engine list.
-                    mSelectedSearchEnginePosition = i + computeStartIndexForRecentSearchEngines();
+            for (int i = 0; i < recentlyVisitedUrls.size(); ++i) {
+                if (recentlyVisitedUrls.get(i).getId() == defaultSearchEngineTemplateUrl.getId()) {
+                    int offset =
+                            computeStartIndexForRecentSearchEngines(
+                                    prepopulatedUrls, recentlyVisitedUrls);
+                    selectedSearchEnginePosition = offset + i;
                 }
             }
         }
 
-        if (mSelectedSearchEnginePosition == -1) {
-            if (defaultSearchEngineTemplateUrl != null) {
-                mRecentSearchEngines.add(TemplateUrlSnapshot.from(defaultSearchEngineTemplateUrl));
-                mSelectedSearchEnginePosition = mRecentSearchEngines.size() - 1;
-            }
+        boolean didNotFindDseInLists = selectedSearchEnginePosition == -1;
+        if (didNotFindDseInLists && defaultSearchEngineTemplateUrl != null) {
+            // TODO(crbug.com/437052188): It's very likely this is impacting users who have selected
+            // a search engine in a country where SEC program is in effect and have moved/relocated.
+            // If true, these engines should not be suppressed/removed, but appended to recents.
+            recentlyVisitedUrls = new ArrayList<>(recentlyVisitedUrls);
+            recentlyVisitedUrls.add(defaultSearchEngineTemplateUrl);
+
+            int offset =
+                    computeStartIndexForRecentSearchEngines(prepopulatedUrls, recentlyVisitedUrls);
+            selectedSearchEnginePosition = offset + recentlyVisitedUrls.size() - 1;
+        }
+
+        if (!didSearchEnginesChange(prepopulatedUrls, mPrepopulatedSearchEngines)
+                && !didSearchEnginesChange(recentlyVisitedUrls, mRecentSearchEngines)) {
+            return;
+        }
+
+        mPrepopulatedSearchEngines = toSnapshots(prepopulatedUrls);
+        mRecentSearchEngines = toSnapshots(recentlyVisitedUrls);
+        mSelectedSearchEnginePosition = selectedSearchEnginePosition;
+
+        if (didNotFindDseInLists) {
+            // TODO(crbug.com/437052188): address exceptions linked to search engine choice
+            // program and remove the diagnostics logic.
 
             if (VersionInfo.isOfficialBuild()) {
-                // TODO(crbug.com/437052188): address exceptions linked to search engine choice
-                // program and remove the diagnostics logic.
-                // It's very likely this is impacting users who have selected a search engine in a
-                // country where SEC program is in effect and have moved/relocated.
-                // If true, these engines should not be suppressed/removed, but appended to recents.
                 var knownEngines = new StringBuilder(" ");
                 for (var engine : mPrepopulatedSearchEngines) {
                     knownEngines.append(engine.getShortName()).append(", ");
@@ -424,8 +418,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     private static boolean containsTemplateUrl(
             List<TemplateUrlSnapshot> stashedUrls, TemplateUrl targetTemplateUrl) {
-        for (int i = 0; i < stashedUrls.size(); i++) {
-            TemplateUrlSnapshot snapshot = stashedUrls.get(i);
+        for (TemplateUrlSnapshot snapshot : stashedUrls) {
             if (snapshot.getId() == targetTemplateUrl.getId()) {
                 return true;
             }
@@ -652,12 +645,18 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     private int computeStartIndexForRecentSearchEngines() {
+        return computeStartIndexForRecentSearchEngines(
+                mPrepopulatedSearchEngines, mRecentSearchEngines);
+    }
+
+    private static int computeStartIndexForRecentSearchEngines(
+            List<?> prepopulatedEngines, List<?> recentEngines) {
         // If there are custom search engines to show, add 1 for showing the
         // "Recently visited" header.
-        if (mRecentSearchEngines.size() > 0) {
-            return mPrepopulatedSearchEngines.size() + 1;
+        if (recentEngines.size() > 0) {
+            return prepopulatedEngines.size() + 1;
         }
-        return mPrepopulatedSearchEngines.size();
+        return prepopulatedEngines.size();
     }
 
     void setDisableAutoSwitchRunnable(Runnable runnable) {
