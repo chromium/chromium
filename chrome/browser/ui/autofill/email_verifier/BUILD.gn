@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("email_verifier") {
+  public = [
+    "email_verification_controller.h",
+    "email_verification_popup_controller.h",
+    "email_verified_toast_menu_model.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/autofill",
+    "//components/autofill/core/browser",
+    "//content/public/browser",
+    "//net",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/menus",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "email_verification_controller.cc",
+    "email_verification_popup_controller.cc",
+    "email_verified_toast_menu_model.cc",
+  ]
+
+  public_deps = [ ":email_verifier" ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:chrome_pages",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/views/autofill/popup/email_verifier",
+    "//chrome/common:constants",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//ui/views",
+  ]
+}

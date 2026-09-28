@@ -6367,6 +6367,7 @@ test("unit_tests") {
       "//chrome/browser/ui:url_identity",
       "//chrome/browser/ui/actions:unit_tests",
       "//chrome/browser/ui/apps",
+      "//chrome/browser/ui/autofill/email_verifier",
       "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",

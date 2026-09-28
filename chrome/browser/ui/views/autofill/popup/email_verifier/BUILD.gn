@@ -20,6 +20,7 @@ source_set("email_verifier") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/autofill/email_verifier",
     "//chrome/browser/ui/views:layout_provider",
     "//components/favicon/core",
     "//components/strings:components_strings_grit",
