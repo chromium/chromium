@@ -580,54 +580,49 @@ fn add_isolated_origin_internal(
     let entries = cpsp.isolated_origins.entry(site_url).or_default();
 
     // Check if the origin to be added already exists, in which case it may not
-    // need to be added again.
-    let mut should_add = true;
-    for entry in entries.iter() {
+    // need to be added again.  Note that a particular origin might have
+    // multiple entries, each one for a different profile, so all existing
+    // entries need to be checked before concluding that `origin_to_add` really
+    // needs to be added.  An origin that already exists may still be added
+    // again for a different profile (or globally for all profiles), possibly
+    // with a different BrowsingInstance ID cutoff.
+    let already_exists = entries.iter().any(|entry| {
         // TODO(crbug.com/40171707): The exact origin comparison here allows
         // redundant entries with certain uses of `isolate_all_subdomains`.
-        if *entry.origin != *origin_to_add {
-            continue;
-        }
-
-        // If the added origin already exists for the same BrowserContext and
-        // covers the same BrowsingInstances, don't re-add it.
-        if entry.browser_context_id == browser_context_id
-            && entry.matches_browsing_instance(browsing_instance_id)
+        //
+        // Only consider the origin to already exist if it was added for the
+        // same BrowserContext and covers the same BrowsingInstances.
+        if *entry.origin != *origin_to_add
+            || entry.browser_context_id != browser_context_id
+            || !entry.matches_browsing_instance(browsing_instance_id)
         {
-            if entry.applies_to_future_browsing_instances {
-                if applies_to_future_browsing_instances {
-                    // If the existing entry applies to future
-                    // BrowsingInstances, and the new isolated origin is also
-                    // requested to apply to future BrowsingInstances, the
-                    // threshold ID must necessarily be greater than the old ID,
-                    // since NextBrowsingInstanceId() returns monotonically
-                    // increasing IDs.
-                    assert!(entry.browsing_instance_id <= browsing_instance_id);
-                }
-            } else {
-                // If an origin had been added for a specific BrowsingInstance,
-                // we can't later receive a request to isolate that origin
-                // within future BrowsingInstances that start at the same (or
-                // lower) BrowsingInstance. Requests to isolate future
-                // BrowsingInstances should always reference
-                // SiteInstanceImpl::NextBrowsingInstanceId(), which always
-                // refers to an ID that's greater than any existing
-                // BrowsingInstance ID.
-                assert!(!applies_to_future_browsing_instances);
-            }
-            should_add = false;
-            break;
+            return false;
         }
 
-        // Otherwise, allow the origin to be added again for a different profile
-        // (or globally for all profiles), possibly with a different
-        // BrowsingInstance ID cutoff.  Note that a particular origin might have
-        // multiple entries, each one for a different profile, so we must loop
-        // over all such existing entries before concluding that `origin` really
-        // needs to be added.
-    }
+        if entry.applies_to_future_browsing_instances {
+            if applies_to_future_browsing_instances {
+                // If the existing entry applies to future BrowsingInstances,
+                // and the new isolated origin is also requested to apply to
+                // future BrowsingInstances, the threshold ID must necessarily
+                // be greater than the old ID, since NextBrowsingInstanceId()
+                // returns monotonically increasing IDs.
+                assert!(entry.browsing_instance_id <= browsing_instance_id);
+            }
+        } else {
+            // If an origin had been added for a specific BrowsingInstance, we
+            // can't later receive a request to isolate that origin within
+            // future BrowsingInstances that start at the same (or lower)
+            // BrowsingInstance. Requests to isolate future BrowsingInstances
+            // should always reference
+            // SiteInstanceImpl::NextBrowsingInstanceId(), which always refers
+            // to an ID that's greater than any existing BrowsingInstance ID.
+            assert!(!applies_to_future_browsing_instances);
+        }
 
-    if should_add {
+        true
+    });
+
+    if !already_exists {
         entries.push(IsolatedOriginEntry {
             origin: origin_to_add,
             applies_to_future_browsing_instances,
@@ -657,24 +652,16 @@ fn get_isolated_origins(
     let browser_context_id = BrowserContextId(browser_context_id);
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
 
-    for entries in cpsp.isolated_origins.values() {
-        for entry in entries {
-            if has_source && source != entry.source {
-                continue;
-            }
-
-            if !entry.matches_profile(&browser_context_id) {
-                continue;
-            }
-
+    let matching_entries = cpsp.isolated_origins.values().flatten().filter(|entry| {
+        (!has_source || source == entry.source)
+            && entry.matches_profile(&browser_context_id)
             // Do not include origins that only apply to specific
             // BrowsingInstances for this API.
-            if !entry.applies_to_future_browsing_instances {
-                continue;
-            }
+            && entry.applies_to_future_browsing_instances
+    });
 
-            ffi::push_origin_to_vector(&entry.origin, origins.as_mut());
-        }
+    for entry in matching_entries {
+        ffi::push_origin_to_vector(&entry.origin, origins.as_mut());
     }
 }
 
@@ -686,8 +673,6 @@ fn get_matching_process_isolated_origin_from_legacy_origin_list(
 ) -> cxx::UniquePtr<ffi::Origin> {
     let browser_context_id = BrowserContextId(browser_context_id);
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-
-    let mut best_match: Option<&cxx::UniquePtr<ffi::Origin>> = None;
 
     let mut entries_opt = cpsp.isolated_origins.get(&site_url);
 
@@ -704,49 +689,41 @@ fn get_matching_process_isolated_origin_from_legacy_origin_list(
         }
     }
 
-    // Looks for all isolated origins that were already isolated at the time the
-    // BrowsingInstance corresponding to `browsing_instance_id` was created. If
-    // multiple isolated origins are registered with a common domain suffix,
-    // return the most specific one.  For example, if foo.isolated.com and
-    // isolated.com are both isolated origins, bar.foo.isolated.com should
-    // return foo.isolated.com.
-    if let Some(entries) = entries_opt {
-        for entry in entries {
-            // If this isolated origin applies only to a specific profile, don't
-            // use it for a different profile.
-            if !entry.matches_profile(&browser_context_id) {
-                continue;
-            }
+    // All the isolated origins that match `origin` and that were already
+    // isolated at the time the BrowsingInstance corresponding to
+    // `browsing_instance_id` was created.  Entries that apply only to a
+    // specific profile are skipped for other profiles.  The filter is lazy, so
+    // the loop below still examines each entry only once.
+    let matching_entries = entries_opt.into_iter().flatten().filter(|entry| {
+        entry.matches_profile(&browser_context_id)
+            && entry.matches_browsing_instance(browsing_instance_id)
+            && ffi::IsolatedOriginUtil::does_origin_match_isolated_origin(&origin, &entry.origin)
+    });
 
-            if entry.matches_browsing_instance(browsing_instance_id)
-                && ffi::IsolatedOriginUtil::does_origin_match_isolated_origin(
-                    &origin,
-                    &entry.origin,
-                )
-            {
-                // If a match has been found that requires all subdomains to be
-                // isolated then return immediately. `origin` is returned to
-                // ensure proper process isolation, e.g.
-                // https://a.b.c.isolated.com matches an IsolatedOriginEntry
-                // constructed from http://[*.]isolated.com, so
-                // https://a.b.c.isolated.com must be returned.
-                if entry.isolate_all_subdomains {
-                    return ffi::create_origin_with_default_port_if_necessary(&origin);
-                }
+    let mut best_match: Option<&IsolatedOriginEntry> = None;
+    for entry in matching_entries {
+        // If a match has been found that requires all subdomains to be
+        // isolated, return `origin` itself to ensure proper process isolation,
+        // e.g. https://a.b.c.isolated.com matches an IsolatedOriginEntry
+        // constructed from http://[*.]isolated.com, so
+        // https://a.b.c.isolated.com must be returned.
+        if entry.isolate_all_subdomains {
+            return ffi::create_origin_with_default_port_if_necessary(&origin);
+        }
 
-                if best_match.is_none()
-                    || best_match.as_ref().unwrap().host().len() < entry.origin.host().len()
-                {
-                    best_match = Some(&entry.origin);
-                }
-            }
+        // If multiple isolated origins are registered with a common domain
+        // suffix, return the most specific one (i.e., the one with the longest
+        // host).  For example, if foo.isolated.com and isolated.com are both
+        // isolated origins, bar.foo.isolated.com should return
+        // foo.isolated.com.
+        if best_match.is_none_or(|best| best.origin.host().len() < entry.origin.host().len()) {
+            best_match = Some(entry);
         }
     }
 
-    if let Some(best) = best_match {
-        return url::origin::ffi::clone_origin(best);
-    } else {
-        return cxx::UniquePtr::null();
+    match best_match {
+        Some(entry) => url::origin::ffi::clone_origin(&entry.origin),
+        None => cxx::UniquePtr::null(),
     }
 }
 
@@ -797,15 +774,12 @@ fn is_isolated_site_from_source(
     // of origin just to call back into C++ to convert it to a site URL.
     let site_url = ffi::get_site_for_origin(&origin);
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
-    if let Some(entries) = cpsp.isolated_origins.get(&site_url) {
-        let site_origin = url::origin::ffi::create_origin_from_gurl(&site_url);
-        for entry in entries {
-            if entry.source == source && *entry.origin == *site_origin {
-                return true;
-            }
-        }
-    }
-    false
+    let Some(entries) = cpsp.isolated_origins.get(&site_url) else {
+        return false;
+    };
+
+    let site_origin = url::origin::ffi::create_origin_from_gurl(&site_url);
+    entries.iter().any(|entry| entry.source == source && *entry.origin == *site_origin)
 }
 
 fn get_isolated_origin_entry_count_for_testing(origin: cxx::UniquePtr<ffi::Origin>) -> i32 {
