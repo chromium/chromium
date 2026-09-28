@@ -634,7 +634,6 @@ public class TabListMediatorUnitTest {
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(mSavedTabGroup2);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
-        when(mTabModel.getTabGroupTitle(any(Tab.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
         when(mAccessibilityNodeInfo.getExtras()).thenReturn(new Bundle());
 
         mModelList = new TabListModel();

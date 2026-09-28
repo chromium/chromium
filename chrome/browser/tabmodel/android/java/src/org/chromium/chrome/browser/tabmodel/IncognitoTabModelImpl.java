@@ -707,11 +707,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public String getTabGroupTitle(Tab groupedTab) {
-        return mDelegateModel.getTabGroupTitle(groupedTab);
-    }
-
-    @Override
     public void setTabGroupTitle(Token tabGroupId, String title) {
         mDelegateModel.setTabGroupTitle(tabGroupId, title);
     }
@@ -729,11 +724,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public int getTabGroupColorWithFallback(Token tabGroupId) {
         return mDelegateModel.getTabGroupColorWithFallback(tabGroupId);
-    }
-
-    @Override
-    public int getTabGroupColorWithFallback(Tab groupedTab) {
-        return mDelegateModel.getTabGroupColorWithFallback(groupedTab);
     }
 
     @Override

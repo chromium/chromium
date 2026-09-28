@@ -299,7 +299,6 @@ public class StripLayoutHelperTest {
         when(mModel.isTabInTabGroup(any())).thenReturn(false);
         when(mModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
-        when(mModel.getTabGroupTitle(any(Tab.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mModel.setTabRemover(mTabRemover);
         mContext =

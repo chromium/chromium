@@ -549,10 +549,10 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(Arrays.asList(tabList));
         when(mTabModel.getTabCountForGroup(tabGroupId)).thenReturn(tabList.length);
         when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabGroupTitle(tabGroupId)).thenReturn(title);
+        when(mTabModel.getTabGroupColorWithFallback(tabGroupId)).thenReturn(color);
         for (MockTab tab : tabList) {
             tab.setTabGroupId(tabGroupId);
-            when(mTabModel.getTabGroupTitle(tab)).thenReturn(title);
-            when(mTabModel.getTabGroupColorWithFallback(tab)).thenReturn(color);
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
         }
     }

@@ -311,7 +311,6 @@ public class TabGridDialogMediatorUnitTest {
         when(mEditable.toString()).thenReturn(CUSTOMIZED_DIALOG_TITLE);
         when(mRecyclerViewPositionSupplier.get()).thenReturn(null);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
-        when(mTabModel.getTabGroupTitle(any(Tab.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));

@@ -241,16 +241,8 @@ public class TabUndoBarController extends UndoBarController {
         } else if (tabGroupsCount == 1) {
             if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
                 Token tabGroupId = closureMetadata.fullyClosingTabGroupIds.iterator().next();
-                Tab groupedTab = null;
-                for (Tab tab : closedTabs) {
-                    if (tabGroupId.equals(tab.getTabGroupId())) {
-                        groupedTab = tab;
-                        break;
-                    }
-                }
-                assert groupedTab != null;
                 TabModel tabModel = mTabModelSelector.getModel(false);
-                @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(groupedTab);
+                @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(tabGroupId);
                 if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =
                             mContext.getResources()

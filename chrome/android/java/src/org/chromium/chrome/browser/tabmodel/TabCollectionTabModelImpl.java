@@ -1510,13 +1510,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public String getTabGroupTitle(Tab groupedTab) {
-        Token tabGroupId = groupedTab.getTabGroupId();
-        assert tabGroupId != null;
-        return getTabGroupTitle(tabGroupId);
-    }
-
-    @Override
     public void setTabGroupTitle(Token tabGroupId, String title) {
         assertOnUiThread();
         updateTabGroupVisualData(
@@ -1545,13 +1538,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     public @TabGroupColorId int getTabGroupColorWithFallback(Token tabGroupId) {
         int color = getTabGroupColor(tabGroupId);
         return color == TabGroupColorUtils.INVALID_COLOR_ID ? TabGroupColorId.GREY : color;
-    }
-
-    @Override
-    public @TabGroupColorId int getTabGroupColorWithFallback(Tab groupedTab) {
-        Token tabGroupId = groupedTab.getTabGroupId();
-        assert tabGroupId != null;
-        return getTabGroupColorWithFallback(tabGroupId);
     }
 
     @Override

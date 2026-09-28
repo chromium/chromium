@@ -1709,7 +1709,6 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(titleObserver);
                     mCollectionModel.setTabGroupTitle(tabGroupId, testTitle);
                     assertEquals(testTitle, mCollectionModel.getTabGroupTitle(tabGroupId));
-                    assertEquals(testTitle, mCollectionModel.getTabGroupTitle(tab0));
                     mCollectionModel.removeTabGroupObserver(titleObserver);
                 });
         titleChangedHelper.waitForOnly("setTabGroupTitle failed");
@@ -1753,7 +1752,6 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(testColor, mCollectionModel.getTabGroupColor(tabGroupId));
                     assertEquals(
                             testColor, mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
-                    assertEquals(testColor, mCollectionModel.getTabGroupColorWithFallback(tab0));
                     mCollectionModel.removeTabGroupObserver(colorObserver);
                 });
         colorChangedHelper.waitForOnly("setTabGroupColor failed");

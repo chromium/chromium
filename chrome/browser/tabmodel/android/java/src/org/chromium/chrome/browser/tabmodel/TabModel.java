@@ -493,13 +493,8 @@ public interface TabModel extends TabList {
     /**
      * Creates a tab group containing a single tab.
      *
-     * @param tabId The tab id of the tab to create the group for.
+     * @param tab The tab to create the group for.
      */
-    default void createSingleTabGroup(@TabId int tabId) {
-        createSingleTabGroup(getTabByIdChecked(tabId));
-    }
-
-    /** Same as {@link #createSingleTabGroup(int)}, but with a {@link Tab} object. */
     void createSingleTabGroup(Tab tab);
 
     /**
@@ -634,14 +629,6 @@ public interface TabModel extends TabList {
      */
     String getTabGroupTitle(Token tabGroupId);
 
-    /**
-     * @see #getTabGroupTitle(Token). This looks up the tab group via {@code groupedTab}. This is
-     *     primarily to be used if the tab group has already been closed. Prefer the {@link
-     *     TabGroupTitleUtils#getDisplayableTitle} or {@link #getTabGroupTitle(Token)} method in
-     *     most cases.
-     */
-    String getTabGroupTitle(Tab groupedTab);
-
     /** Stores the given title for the tab group. */
     void setTabGroupTitle(Token tabGroupId, String title);
 
@@ -665,14 +652,6 @@ public interface TabModel extends TabList {
      */
     @TabGroupColorId
     int getTabGroupColorWithFallback(Token tabGroupId);
-
-    /**
-     * @see #getTabGroupColorWithFallback(Token). This looks up the tab group via {@code
-     *     groupedTab}. This is primarily to be used if the tab group has already been closed.
-     *     Prefer the {@link #getTabGroupColorWithFallback(Token)} method in most cases.
-     */
-    @TabGroupColorId
-    int getTabGroupColorWithFallback(Tab groupedTab);
 
     /** Stores the given color for the tab group. */
     void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color);

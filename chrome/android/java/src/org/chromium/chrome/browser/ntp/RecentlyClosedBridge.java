@@ -83,8 +83,10 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
         int destinationId = tabIds[0];
+        Tab tab = tabModel.getTabById(destinationId);
+        assert tab != null;
         if (tabIds.length == 1) {
-            tabModel.createSingleTabGroup(destinationId);
+            tabModel.createSingleTabGroup(tab);
         } else {
             for (int id : tabIds) {
                 if (id == destinationId) continue;
@@ -93,8 +95,6 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
             }
         }
 
-        Tab tab = tabModel.getTabById(destinationId);
-        assert tab != null;
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null;
         tabModel.setTabGroupColor(tabGroupId, color);
