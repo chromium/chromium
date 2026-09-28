@@ -1960,6 +1960,9 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY,
       "[{\"service_provider\":\"google\"}]");
   enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::DATA_COPIED,
+      "[{\"service_provider\":\"google\"}]");
+  enterprise_connectors::test::SetAnalysisConnector(
       profile_->GetPrefs(), enterprise_connectors::PRINT,
       "[{\"service_provider\":\"google\"}]");
 #endif
@@ -1991,11 +1994,11 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   info = handler_.GetThreatProtectionInfo(profile_);
 #if BUILDFLAG(IS_CHROMEOS)
-  const size_t expected_size = 8u;
+  const size_t expected_size = 9u;
 #elif BUILDFLAG(IS_ANDROID)
   const size_t expected_size = 4u;
 #else
-  const size_t expected_size = 7u;
+  const size_t expected_size = 8u;
 #endif
   EXPECT_EQ(expected_size, info.FindList("info")->size());
   EXPECT_EQ(
@@ -2022,6 +2025,12 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     base::DictValue value;
     value.Set("title", kManagementOnBulkDataEntryEvent);
     value.Set("permission", kManagementOnBulkDataEntryVisibleData);
+    expected_info.Append(std::move(value));
+  }
+  {
+    base::DictValue value;
+    value.Set("title", kManagementOnDataCopiedEvent);
+    value.Set("permission", kManagementOnDataCopiedVisibleData);
     expected_info.Append(std::move(value));
   }
   {

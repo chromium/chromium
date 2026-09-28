@@ -507,6 +507,8 @@ base::DictValue ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
       {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
        kManagementOnBulkDataEntryVisibleData},
+      {enterprise_connectors::DATA_COPIED, kManagementOnDataCopiedEvent,
+       kManagementOnDataCopiedVisibleData},
       {enterprise_connectors::PRINT, kManagementOnPrintEvent,
        kManagementOnPrintVisibleData},
 #endif

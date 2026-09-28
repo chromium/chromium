@@ -73,6 +73,8 @@ extern const char kManagementOnFileDownloadedEvent[];
 extern const char kManagementOnFileDownloadedVisibleData[];
 extern const char kManagementOnBulkDataEntryEvent[];
 extern const char kManagementOnBulkDataEntryVisibleData[];
+extern const char kManagementOnDataCopiedEvent[];
+extern const char kManagementOnDataCopiedVisibleData[];
 extern const char kManagementOnPrintEvent[];
 extern const char kManagementOnPrintVisibleData[];
 extern const char kManagementOnPageVisitedEvent[];

@@ -62,6 +62,9 @@ const char kManagementOnFileDownloadedVisibleData[] =
 const char kManagementOnBulkDataEntryEvent[] = "managementOnBulkDataEntryEvent";
 const char kManagementOnBulkDataEntryVisibleData[] =
     "managementOnBulkDataEntryVisibleData";
+const char kManagementOnDataCopiedEvent[] = "managementOnDataCopiedEvent";
+const char kManagementOnDataCopiedVisibleData[] =
+    "managementOnDataCopiedVisibleData";
 const char kManagementOnPrintEvent[] = "managementOnPrintEvent";
 const char kManagementOnPrintVisibleData[] = "managementOnPrintVisibleData";
 

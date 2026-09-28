@@ -508,6 +508,12 @@
   <message name="IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA" desc="Description of the visible data for the text entry scanning feature.">
     Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.
   </message>
+  <message name="IDS_MANAGEMENT_TEXT_COPIED_EVENT" desc="Event for the text copy scanning feature.">
+    Text is copied to clipboard
+  </message>
+  <message name="IDS_MANAGEMENT_TEXT_COPIED_VISIBLE_DATA" desc="Description of the visible data for the text copy scanning feature.">
+    Text you cut or copy to the clipboard is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.
+  </message>
   <message name="IDS_MANAGEMENT_PAGE_VISITED_EVENT" desc="Event for the real time URL check feature." formatter_data="android_java">
     Page is visited
   </message>
