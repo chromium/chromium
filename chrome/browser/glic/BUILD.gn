@@ -17,6 +17,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 source_set("glic") {
   sources = [
     "common/local_hotkey_manager.h",
+    "common/observable_value.h",
     "experimental_triggering/actor_log.h",
     "experimental_triggering/glic_experimental_triggering_converters.h",
     "experimental_triggering/glic_experimental_triggering_coordinator.h",
@@ -349,7 +350,6 @@ source_set("impl") {
     "common/instance_independent_hotkey_manager.cc",
     "common/instance_independent_hotkey_manager.h",
     "common/local_hotkey_manager.cc",
-    "common/observable_value.h",
     "common/panel_focus_dependent_hotkey_manager.cc",
     "common/panel_focus_dependent_hotkey_manager.h",
     "common/panel_visibility_dependent_hotkey_manager.cc",

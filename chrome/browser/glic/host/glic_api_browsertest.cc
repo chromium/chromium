@@ -1296,7 +1296,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
   // Verify that the first tab instance is detached before opening the second
   // tab.
   ASSERT_EQ(mojom::PanelStateKind::kDetached,
-            tab0_instance->GetPanelState().kind);
+            tab0_instance->GetPanelState()->kind);
 
   // Select the second tab, open Floaty, and execute the test on the second
   // instance.
@@ -1310,9 +1310,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testThereCanOnlyBeOneFloaty) {
   ContinueJsTest({.instance = tab0_instance});
 
   ASSERT_EQ(mojom::PanelStateKind::kDetached,
-            tab1_instance->GetPanelState().kind);
+            tab1_instance->GetPanelState()->kind);
   ASSERT_EQ(mojom::PanelStateKind::kHidden,
-            tab0_instance->GetPanelState().kind);
+            tab0_instance->GetPanelState()->kind);
 }
 
 #if defined(NOT_VETTED_ON_ANDROID)

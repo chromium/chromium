@@ -262,15 +262,11 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::ClearError() {
   UpdateOverlayState();
 }
 
-void GlicNoWebviewContentsManager::OverlayContentsManager::AttachToHost(
-    Host* host) {
-  panel_state_observation_.Reset();
-  panel_state_observation_.Observe(&host->instance());
-  UpdateOverlayState();
-}
-
-void GlicNoWebviewContentsManager::OverlayContentsManager::PanelStateChanged(
-    const mojom::PanelState& panel_state) {
+void GlicNoWebviewContentsManager::OverlayContentsManager::ObservePanelState(
+    ObservableValueView<mojom::PanelState>& panel_state) {
+  panel_state_ = &panel_state;
+  panel_state_subscription_ = panel_state_->AddObserver(base::BindRepeating(
+      &OverlayContentsManager::UpdateOverlayState, base::Unretained(this)));
   UpdateOverlayState();
 }
 
@@ -303,9 +299,8 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
 mojom::OverlayStatePtr
 GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState() {
   std::optional<mojom::PanelStateKind> panel_state_kind;
-  if (panel_state_observation_.IsObserving()) {
-    panel_state_kind =
-        panel_state_observation_.GetSource()->GetPanelState().kind;
+  if (panel_state_) {
+    panel_state_kind = panel_state_->get().kind;
   }
   return DetermineOverlayState(error_type_, guest_ready_->get(),
                                panel_state_kind);
@@ -555,7 +550,7 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
   }
 
   web_client_manager_.AttachToHost(host);
-  overlay_manager_.AttachToHost(host);
+  overlay_manager_.ObservePanelState(host->instance().GetPanelState());
   // Move from warming pool state to attached-hidden state.
   UpdateDisplayState();
 }

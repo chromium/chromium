@@ -235,7 +235,7 @@ void Host::PanelWillOpen(mojom::InvocationSource invocation_source,
     client->PanelWillOpen(
         glic_instance_
             ? mojom::PanelOpeningData::New(
-                  glic_instance_->GetPanelState().Clone(), invocation_source,
+                  glic_instance_->GetPanelState()->Clone(), invocation_source,
                   std::move(options.prompt_suggestion), options.auto_send,
                   /*skill_to_invoke=*/nullptr,
                   std::move(options.recently_active_conversations),
@@ -424,7 +424,7 @@ void Host::WebClientInitialized() {
 
     client->PanelWillOpen(
         mojom::PanelOpeningData::New(
-            glic_instance_ ? glic_instance_->GetPanelState().Clone()
+            glic_instance_ ? glic_instance_->GetPanelState()->Clone()
                            : mojom::PanelState::New(),
             *invocation_source_, std::move(prompt_suggestion), auto_send,
             /*skill_to_invoke=*/nullptr,

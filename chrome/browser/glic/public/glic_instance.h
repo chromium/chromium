@@ -10,9 +10,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/observer_list_types.h"
-#include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/common/observable_value.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance_id.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -45,12 +44,6 @@ struct ConversationInfo {
   std::string title;
 };
 
-// Observes the state of the glic panel.
-class PanelStateObserver : public base::CheckedObserver {
- public:
-  virtual void PanelStateChanged(const mojom::PanelState& panel_state) = 0;
-};
-
 // Public interface for one instance of the glic web client.
 class GlicInstance {
  public:
@@ -59,11 +52,8 @@ class GlicInstance {
   virtual bool IsShowing() const = 0;
   virtual bool IsActive() = 0;
 
-  virtual void AddStateObserver(PanelStateObserver* observer) = 0;
-  virtual void RemoveStateObserver(PanelStateObserver* observer) = 0;
-
   // Returns the current panel state.
-  virtual mojom::PanelState GetPanelState() = 0;
+  virtual ObservableValueView<mojom::PanelState>& GetPanelState() const = 0;
 
   // TODO(b/501233062): Remove from the public interface once the existing
   // user has migrated away from the API.
@@ -144,21 +134,5 @@ class GlicInstance {
 };
 
 }  // namespace glic
-
-namespace base {
-
-template <>
-struct ScopedObservationTraits<glic::GlicInstance, glic::PanelStateObserver> {
-  static void AddObserver(glic::GlicInstance* source,
-                          glic::PanelStateObserver* observer) {
-    source->AddStateObserver(observer);
-  }
-  static void RemoveObserver(glic::GlicInstance* source,
-                             glic::PanelStateObserver* observer) {
-    source->RemoveStateObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_H_

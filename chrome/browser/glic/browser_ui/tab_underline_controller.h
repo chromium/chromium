@@ -29,8 +29,7 @@ class WebContents;
 namespace glic {
 
 class TabUnderlineController
-    : public GlicInstanceCoordinator::StateObserver,
-      public contextual_tasks::ActiveTaskContextProvider::Observer {
+    : public contextual_tasks::ActiveTaskContextProvider::Observer {
  public:
   class UiDelegate {
    public:
@@ -67,8 +66,7 @@ class TabUnderlineController
   // Called when the glic set of pinned tabs changes.
   void OnPinnedTabsChanged(const std::vector<tabs::TabInterface*>& pinned_tabs);
 
-  // GlicInstanceCoordinator::StateObserver:
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override;
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state);
 
   void OnUserInputSubmitted();
 

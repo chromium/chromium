@@ -109,9 +109,10 @@ GlicPageHandler::GlicPageHandler(
   MarkProcessAsGlic(webui_contents->GetPrimaryMainFrame()->GetProcess());
   host_observation_.Observe(host_);
   host_->WebUIPageHandlerAdded(this);
-  host_->instance().AddStateObserver(this);
-
-  UpdatePageState(host_->instance().GetPanelState().kind);
+  subscriptions_.push_back(
+      host_->instance().GetPanelState().AddObserverAndNotify(
+          base::BindRepeating(&GlicPageHandler::PanelStateChanged,
+                              base::Unretained(this))));
   subscriptions_.push_back(
       GetGlicService()->enabling().RegisterProfileReadyStateChanged(
           base::BindRepeating(&GlicPageHandler::UpdateProfileReadyState,
@@ -121,7 +122,6 @@ GlicPageHandler::GlicPageHandler(
 
 GlicPageHandler::~GlicPageHandler() {
   VLOG(1) << "Glic [PageHandler] Destructor";
-  host_->instance().RemoveStateObserver(this);
   host_->WebUIPageHandlerRemoved(this);
 }
 

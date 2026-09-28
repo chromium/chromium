@@ -119,7 +119,7 @@ class DelegateMultiInstanceImpl : public BaseDelegate {
     return static_cast<GlicInstanceImpl*>(glic_instance_)->HasActiveEmbedder();
   }
   bool IsWindowAttached() const override {
-    return glic_instance_->GetPanelState().kind ==
+    return glic_instance_->GetPanelState()->kind ==
            mojom::PanelStateKind::kAttached;
   }
 

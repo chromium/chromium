@@ -288,7 +288,8 @@ GlicInstanceImpl::GlicInstanceImpl(
               this,
               contextual_cueing_service)),
       last_activation_timestamp_(base::Time::Now()),
-      last_deactivation_timestamp_(base::TimeTicks::Now()) {
+      last_deactivation_timestamp_(base::TimeTicks::Now()),
+      panel_state_(ComputePanelState()) {
   VLOG(1) << "Glic [InstanceImpl] Constructor, id=" << id_.value();
   base::trace_event::EmitNamedTrigger("glic-instance-created");
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::GlicInstanceImpl",
@@ -395,7 +396,7 @@ bool GlicInstanceImpl::HasActiveEmbedder() const {
 }
 
 bool GlicInstanceImpl::IsDetached() {
-  return GetPanelState().kind == mojom::PanelStateKind::kDetached;
+  return GetPanelState()->kind == mojom::PanelStateKind::kDetached;
 }
 
 gfx::Size GlicInstanceImpl::GetPanelSize() {
@@ -785,17 +786,9 @@ void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode,
 
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
-  sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
+  sharing_manager_coordinator_.UpdateState(GetPanelState()->kind,
                                            interaction_mode_);
   ContextAccessIndicatorChanged(host().IsContextAccessIndicatorEnabled());
-}
-
-void GlicInstanceImpl::AddStateObserver(PanelStateObserver* observer) {
-  state_observers_.AddObserver(observer);
-}
-
-void GlicInstanceImpl::RemoveStateObserver(PanelStateObserver* observer) {
-  state_observers_.RemoveObserver(observer);
 }
 
 void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
@@ -1179,10 +1172,10 @@ void GlicInstanceImpl::SetActiveEmbedderAndNotifyVisibilityChange(
   if (active_embedder_key_.has_value()) {
     UpdateLastActiveTime(active_embedder_key_.value());
   }
-  sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
+  UpdatePanelState();
+  sharing_manager_coordinator_.UpdateState(GetPanelState()->kind,
                                            interaction_mode_);
   NotifyVisibilityChange();
-  NotifyPanelStateChanged();
 }
 
 void GlicInstanceImpl::UpdateLastActiveTime(EmbedderKey key) {
@@ -1195,8 +1188,8 @@ void GlicInstanceImpl::UpdateLastActiveTime(EmbedderKey key) {
 void GlicInstanceImpl::ClearActiveEmbedderAndNotifyVisibilityChange() {
   if (active_embedder_key_.has_value()) {
     active_embedder_key_.reset();
+    UpdatePanelState();
     NotifyVisibilityChange();
-    NotifyPanelStateChanged();
     host().PanelWasClosed();
 #if !BUILDFLAG(IS_ANDROID)
     MaybeShowShortcutSnoozePromo();
@@ -1592,12 +1585,16 @@ void GlicInstanceImpl::OnEmbedderWindowActivationChanged(bool has_focus) {
   NotifyInstanceActivationChanged(has_focus);
 }
 
-void GlicInstanceImpl::NotifyPanelStateChanged() {
-  state_observers_.Notify(&PanelStateObserver::PanelStateChanged,
-                          GetPanelState());
+void GlicInstanceImpl::UpdatePanelState() {
+  panel_state_.Set(ComputePanelState());
 }
 
-mojom::PanelState GlicInstanceImpl::GetPanelState() {
+ObservableValueView<mojom::PanelState>& GlicInstanceImpl::GetPanelState()
+    const {
+  return panel_state_.view();
+}
+
+mojom::PanelState GlicInstanceImpl::ComputePanelState() {
   auto* embedder = GetActiveEmbedder();
   if (embedder) {
     return embedder->GetPanelState();

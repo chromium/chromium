@@ -58,8 +58,6 @@ class GlicInstanceCoordinator {
     kNoBoundTabs,
     kTabNotInWindow,
   };
-
-  using StateObserver = PanelStateObserver;
   GlicInstanceCoordinator(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator& operator=(const GlicInstanceCoordinator&) = delete;
   GlicInstanceCoordinator() = default;

@@ -498,7 +498,7 @@ void GlicSkillsClientSession::OnDiscoverySkillsUpdated(
 }
 
 bool GlicSkillsClientSession::Require1PSkillRefresh() {
-  return manager_->instance().GetPanelState().kind !=
+  return manager_->instance().GetPanelState()->kind !=
          mojom::PanelStateKind::kHidden;
 }
 

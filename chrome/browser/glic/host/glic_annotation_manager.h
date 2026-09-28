@@ -60,7 +60,6 @@ class GlicAnnotationManager : public mojom::AnnotationHandler {
   // is navigated from or ScrollTo() is called again.
   class AnnotationTask : public blink::mojom::AnnotationAgentHost,
                          public content::WebContentsObserver,
-                         public PanelStateObserver,
                          public Host::Observer {
    public:
     AnnotationTask(GlicAnnotationManager* manager,
@@ -125,8 +124,7 @@ class GlicAnnotationManager : public mojom::AnnotationHandler {
     // content::WebContentsObserver overrides.
     void PrimaryPageChanged(content::Page& page) override;
 
-    // `PanelStateObserver`:
-    void PanelStateChanged(const mojom::PanelState& panel_state) override;
+    void PanelStateChanged(const mojom::PanelState& panel_state);
 
     // GlicFocusedTabManager::FocusedTabChangedCallback
     void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);
@@ -159,6 +157,7 @@ class GlicAnnotationManager : public mojom::AnnotationHandler {
     // Subscription to listen to focused tab changes/primary page navigations
     // while the task is running. Cleared after the task completes/fails.
     base::CallbackListSubscription tab_change_subscription_;
+    base::CallbackListSubscription panel_state_subscription_;
 
     // Used to subscribe to tab context permission changes.
     PrefChangeRegistrar pref_change_registrar_;

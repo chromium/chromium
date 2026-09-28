@@ -30,11 +30,9 @@ class Widget;
 namespace glic {
 
 // Responsible for managing which browser window is considered "focused".
-class GlicFocusedBrowserManagerImpl
-    : public GlicFocusedBrowserManager,
-      public BrowserCollectionObserver,
-      public views::WidgetObserver,
-      public GlicInstanceCoordinator::StateObserver {
+class GlicFocusedBrowserManagerImpl : public GlicFocusedBrowserManager,
+                                      public BrowserCollectionObserver,
+                                      public views::WidgetObserver {
  public:
   explicit GlicFocusedBrowserManagerImpl(GlicInstance* glic_instance,
                                          Profile* profile);
@@ -77,9 +75,6 @@ class GlicFocusedBrowserManagerImpl
   void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
                                          bool visible) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
-
-  // GlicInstanceCoordinator::StateObserver:
-  void PanelStateChanged(const mojom::PanelState& panel_state) override;
 
   // Sets whether the manager is in testing mode. When in testing mode, logic
   // for determining the active browser is modified to be more deterministic.
@@ -124,6 +119,8 @@ class GlicFocusedBrowserManagerImpl
   void OnBrowserBecameActive(BrowserWindowInterface* browser_interface);
   void OnBrowserBecameInactive(BrowserWindowInterface* browser_interface);
 
+  void PanelStateChanged(const mojom::PanelState& panel_state);
+
   void Initialize();
 
   bool is_initialized_ = false;
@@ -139,6 +136,7 @@ class GlicFocusedBrowserManagerImpl
       widget_observation_{this};
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  base::CallbackListSubscription panel_state_subscription_;
 
   base::OneShotTimer debouncer_;
 

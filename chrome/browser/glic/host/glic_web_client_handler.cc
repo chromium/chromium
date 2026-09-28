@@ -192,7 +192,7 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
 // Monitors the panel state and the browser widget state. Emits an event any
 // time the active state changes.
 // inactive = (panel hidden) || (panel attached) && (window not active)
-class ActiveStateCalculator : public PanelStateObserver {
+class ActiveStateCalculator {
  public:
   // Observes changes to active state.
   class Observer : public base::CheckedObserver {
@@ -201,15 +201,15 @@ class ActiveStateCalculator : public PanelStateObserver {
   };
 
   explicit ActiveStateCalculator(Host* host) : host_(host) {
-    host_->instance().AddStateObserver(this);
-    PanelStateChanged(host_->instance().GetPanelState());
+    panel_state_subscription_ =
+        host_->instance().GetPanelState().AddObserverAndNotify(
+            base::BindRepeating(&ActiveStateCalculator::PanelStateChanged,
+                                base::Unretained(this)));
     // Calculate state immediately to avoid having an outdated state before
     // calc_timer_ triggers recalculation and any observers are attached.
     RecalculateAndNotify();
   }
-  ~ActiveStateCalculator() override {
-    host_->instance().RemoveStateObserver(this);
-  }
+  ~ActiveStateCalculator() = default;
 
   bool IsActive() const { return is_active_; }
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
@@ -217,8 +217,8 @@ class ActiveStateCalculator : public PanelStateObserver {
     observers_.RemoveObserver(observer);
   }
 
-  // GlicInstanceCoordinator::StateObserver implementation.
-  void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
+ private:
+  void PanelStateChanged(const glic::mojom::PanelState& panel_state) {
     panel_state_kind_ = panel_state.kind;
     if (panel_state_kind_ != glic::mojom::PanelStateKind::kHidden) {
       RecalculateAndNotify();
@@ -228,8 +228,6 @@ class ActiveStateCalculator : public PanelStateObserver {
       PostRecalcAndNotify();
     }
   }
-
- private:
   // Calls RecalculateAndNotify after a short delay. This is required to prevent
   // transient states from being emitted.
   void PostRecalcAndNotify() {
@@ -256,6 +254,7 @@ class ActiveStateCalculator : public PanelStateObserver {
   raw_ptr<Host> host_;
   base::ObserverList<Observer> observers_;
   glic::mojom::PanelStateKind panel_state_kind_;
+  base::CallbackListSubscription panel_state_subscription_;
   bool is_active_ = false;
 };
 
@@ -369,7 +368,6 @@ class DebouncerDeduper {
 // then many classes will break.
 class GlicWebClientHandler
     : public mojom::WebClientHandler,
-      public PanelStateObserver,
       public GlicWebClientAccess,
       public BrowserAttachObserver,
       public ActiveStateCalculator::Observer,
@@ -546,7 +544,9 @@ class GlicWebClientHandler
     consent_subscription_ =
         glic_service_->enabling().RegisterOnConsentChanged(base::BindRepeating(
             &GlicWebClientHandler::OnConsentChanged, base::Unretained(this)));
-    host().instance().AddStateObserver(this);
+    panel_state_subscription_ =
+        host().instance().GetPanelState().AddObserver(base::BindRepeating(
+            &GlicWebClientHandler::PanelStateChanged, base::Unretained(this)));
 
     if (base::FeatureList::IsEnabled(
             features::kGlicTabFocusDataDedupDebounce)) {
@@ -598,7 +598,7 @@ class GlicWebClientHandler
     auto state = glic::mojom::WebClientInitialState::New();
     PopulateGlobalClientInitialState(state.get(), profile_);
 
-    state->panel_state = host().instance().GetPanelState().Clone();
+    state->panel_state = host().instance().GetPanelState()->Clone();
 
     state->focused_tab_data =
         CreateFocusedTabData(GetSharingManagerInternal().GetFocusedTabData());
@@ -647,7 +647,7 @@ class GlicWebClientHandler
       mojom::PanelOpeningDataPtr panel_opening_data =
           mojom::PanelOpeningData::New();
       panel_opening_data->panel_state =
-          host().instance().GetPanelState().Clone();
+          host().instance().GetPanelState()->Clone();
       panel_opening_data->invocation_source =
           mojom::InvocationSource::kUnsupported;
       base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", true);
@@ -1741,7 +1741,7 @@ class GlicWebClientHandler
     SetAudioDucking(false, base::DoNothing());
     pref_change_registrar_.Reset();
     local_state_pref_change_registrar_.Reset();
-    host().instance().RemoveStateObserver(this);
+    panel_state_subscription_ = {};
     focus_changed_subscription_ = {};
     pinned_tabs_changed_subscription_ = {};
     pinned_tab_data_changed_subscription_ = {};
@@ -1884,6 +1884,7 @@ class GlicWebClientHandler
   base::CallbackListSubscription act_on_web_capability_changed_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
   base::CallbackListSubscription consent_subscription_;
+  base::CallbackListSubscription panel_state_subscription_;
   mojo::Receiver<mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;
   base::OnceClosure disconnect_callback_;

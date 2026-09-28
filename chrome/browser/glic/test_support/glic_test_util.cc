@@ -155,7 +155,7 @@ void GlicInstanceTracker::Clear() {
     if (!instance) {
       return false;
     }
-    return instance->GetPanelState().kind == state;
+    return instance->GetPanelState()->kind == state;
   });
 }
 

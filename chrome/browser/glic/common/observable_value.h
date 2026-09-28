@@ -100,6 +100,13 @@ class ObservableValue : public ObservableValueView<T> {
 
   // Manually notifies observers with the current value.
   void Notify() { this->callback_list_.Notify(this->value_); }
+
+  // Returns a view to this value. For convenience, allows access while const,
+  // as a view cannot change the value, but only observe it.
+  ObservableValueView<T>& view() const {
+    return const_cast<ObservableValueView<T>&>(
+        static_cast<const ObservableValueView<T>&>(*this));
+  }
 };
 
 }  // namespace glic

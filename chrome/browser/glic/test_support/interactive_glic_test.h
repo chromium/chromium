@@ -766,7 +766,7 @@ class InteractiveGlicTestMixin : public T {
           if (!GetGlicInstance()) {
             return GlicWindowMode::kAttached;
           }
-          return GetGlicInstance()->GetPanelState().kind ==
+          return GetGlicInstance()->GetPanelState()->kind ==
                          mojom::PanelStateKind::kAttached
                      ? GlicWindowMode::kAttached
                      : GlicWindowMode::kDetached;
