@@ -81,7 +81,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/strings/grit/ax_strings.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/image_button.h"
@@ -801,6 +803,9 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   ASSERT_TRUE(incognito_label);
   EXPECT_EQ(incognito_label->GetText(),
             l10n_util::GetStringUTF16(IDS_INCOGNITO));
+  EXPECT_EQ(incognito_button->GetViewAccessibility().GetCachedName(),
+            BrowserActions::GetCleanTitleAndTooltipText(
+                l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 
   // Verify icon override is applied for new tab button.
   auto* new_tab_button =
@@ -1727,6 +1732,9 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(root_titles[0]->GetInsets(), gfx::Insets::VH(0, 12));
   EXPECT_EQ(root_titles[0]->GetContentStart(), 12);
   EXPECT_EQ(root_titles[0]->GetTopMargin(), 8);
+  EXPECT_EQ(root_titles[0]->GetViewAccessibility().GetRoleDescription(),
+            l10n_util::GetStringUTF16(IDS_AX_ROLE_HEADING));
+  EXPECT_TRUE(root_titles[0]->GetViewAccessibility().GetIsEnabled());
 
   // Second header ("Tools and Actions"):
   // - Starts flush with the card (12dp horizontal insets, content start 12)
@@ -1738,6 +1746,9 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(root_titles[1]->GetInsets(), gfx::Insets::VH(0, 12));
   EXPECT_EQ(root_titles[1]->GetContentStart(), 12);
   EXPECT_EQ(root_titles[1]->GetTopMargin(), 16);
+  EXPECT_EQ(root_titles[1]->GetViewAccessibility().GetRoleDescription(),
+            l10n_util::GetStringUTF16(IDS_AX_ROLE_HEADING));
+  EXPECT_TRUE(root_titles[1]->GetViewAccessibility().GetIsEnabled());
 
   // 4. Headers in submenus (not under root).
   views::MenuItemView* tab_groups_item =
@@ -1772,6 +1783,9 @@ TEST_F(ActionAppMenuTest, HeaderAndMenuItemBorderLayout) {
   EXPECT_EQ(submenu_header->GetBorder(), nullptr);
   EXPECT_NE(submenu_header->GetContentStart(), 0);
   EXPECT_EQ(submenu_header->GetTopMargin(), 8);
+  EXPECT_EQ(submenu_header->GetViewAccessibility().GetRoleDescription(),
+            l10n_util::GetStringUTF16(IDS_AX_ROLE_HEADING));
+  EXPECT_TRUE(submenu_header->GetViewAccessibility().GetIsEnabled());
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

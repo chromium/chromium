@@ -29,6 +29,8 @@ class AppMenuFooterView : public views::BoxLayoutView {
   METADATA_HEADER(AppMenuFooterView, views::BoxLayoutView)
 
  public:
+  using ExecuteCommandCallback =
+      base::RepeatingCallback<void(actions::ActionId, int)>;
   using PopulateSubmenuCallback =
       base::RepeatingCallback<void(views::MenuItemView*, actions::BaseAction*)>;
 
@@ -37,7 +39,7 @@ class AppMenuFooterView : public views::BoxLayoutView {
       actions::ActionItem* footer_action_item,
       views::ActionViewController* action_view_controller,
       base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
-      base::RepeatingCallback<void(actions::ActionId)> execute_command_callback,
+      ExecuteCommandCallback execute_command_callback,
       PopulateSubmenuCallback populate_submenu_callback);
   AppMenuFooterView(const AppMenuFooterView&) = delete;
   AppMenuFooterView& operator=(const AppMenuFooterView&) = delete;

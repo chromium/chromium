@@ -62,6 +62,7 @@ AppMenuZoomView::AppMenuZoomView(
     ActionAppMenuMetrics& metrics)
     : browser_window_interface_(browser_window_interface), metrics_(&metrics) {
   CHECK(browser_window_interface_);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -172,6 +173,7 @@ std::unique_ptr<views::ImageButton> AppMenuZoomView::CreateZoomButton(
   auto button =
       std::make_unique<views::ImageButton>(views::Button::PressedCallback());
   button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   button->SetPreferredSize(

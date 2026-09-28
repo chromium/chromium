@@ -19,6 +19,8 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -55,7 +57,7 @@ AppMenuFooterView::AppMenuFooterView(
     actions::ActionItem* footer_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
-    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback,
+    ExecuteCommandCallback execute_command_callback,
     PopulateSubmenuCallback populate_submenu_callback) {
   CHECK(parent_menu_item);
   CHECK(footer_action_item);
@@ -63,6 +65,8 @@ AppMenuFooterView::AppMenuFooterView(
   CHECK(command_to_action_map);
   CHECK(execute_command_callback);
   CHECK(populate_submenu_callback);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 
   const auto* provider = ChromeLayoutProvider::Get();
 
@@ -133,8 +137,10 @@ AppMenuFooterView::AppMenuFooterView(
     (*command_to_action_map)[action_id.value()] = footer_child.get();
 
     if (!has_submenu) {
-      button->SetCallback(
-          base::BindRepeating(execute_command_callback, action_id.value()));
+      button->SetCallback(base::BindRepeating(
+          [](const ExecuteCommandCallback& callback, actions::ActionId id,
+             const ui::Event& event) { callback.Run(id, event.flags()); },
+          execute_command_callback, action_id.value()));
     }
 
     if (const ui::ElementIdentifier element_id =

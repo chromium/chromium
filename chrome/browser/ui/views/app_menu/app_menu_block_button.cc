@@ -58,6 +58,7 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   auto* const ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -136,6 +137,12 @@ class AppMenuBlockButtonActionViewInterface
       action_view_->SetText(*short_text);
     } else {
       action_view_->SetText(action_item->GetText());
+    }
+    const std::u16string_view accessible_name =
+        action_item->GetAccessibleName();
+    if (!accessible_name.empty()) {
+      action_view_->GetViewAccessibility().SetName(
+          std::u16string(accessible_name));
     }
     if (!action_item->GetImage().IsEmpty()) {
       action_view_->SetImageModel(action_item->GetImage());

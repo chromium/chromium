@@ -17,6 +17,8 @@
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/view_class_properties.h"
 
@@ -24,11 +26,13 @@ AppMenuBlockView::AppMenuBlockView(
     actions::ActionItem* block_action_item,
     views::ActionViewController* action_view_controller,
     base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,
-    base::RepeatingCallback<void(actions::ActionId)> execute_command_callback) {
+    ExecuteCommandCallback execute_command_callback) {
   CHECK(block_action_item);
   CHECK(action_view_controller);
   CHECK(command_to_action_map);
   CHECK(execute_command_callback);
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenu);
 
   const auto* provider = ChromeLayoutProvider::Get();
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -47,8 +51,10 @@ AppMenuBlockView::AppMenuBlockView(
         button.get(), block_child_ptr->GetAsWeakPtr());
     (*command_to_action_map)[action_id.value()] = block_child.get();
 
-    button->SetCallback(
-        base::BindRepeating(execute_command_callback, action_id.value()));
+    button->SetCallback(base::BindRepeating(
+        [](const ExecuteCommandCallback& callback, actions::ActionId id,
+           const ui::Event& event) { callback.Run(id, event.flags()); },
+        execute_command_callback, action_id.value()));
 
     if (const ui::ElementIdentifier element_id =
             block_child->GetProperty(views::kElementIdentifierKey)) {

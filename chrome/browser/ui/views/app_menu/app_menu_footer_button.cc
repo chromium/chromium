@@ -60,6 +60,7 @@ AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
 
   // Enable keyboard navigation and focus highlighting.
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   auto* const ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);

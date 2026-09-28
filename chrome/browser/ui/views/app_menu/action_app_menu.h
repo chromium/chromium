@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -58,7 +59,7 @@ class ActionAppMenu : public views::MenuDelegate {
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
 
  private:
-  void CancelAndEvaluate(actions::ActionId action_id);
+  void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   // Recursively populates the menu item with the `base_action_item`'s
   // children.
@@ -112,12 +113,17 @@ class ActionAppMenu : public views::MenuDelegate {
   // The search bar view in the menu, if kChroMenuSearch is enabled.
   raw_ptr<AppMenuSearchBarView> search_bar_ = nullptr;
 
+  // The states associated with the populated app menu.
   bool has_notification_header_ = false;
-
   size_t section_header_count_ = 0;
 
-  // The action to execute when the menu is closed.
-  std::optional<actions::ActionId> action_to_execute_on_close_;
+  struct ActionExecutionParams {
+    actions::ActionId action_id;
+    actions::ActionInvocationContext context;
+  };
+
+  // The action and context to execute when the menu is closed.
+  std::optional<ActionExecutionParams> action_to_execute_on_close_;
 
   // Manages the ActionItem hierarchy and dynamic submenus.
   std::unique_ptr<ActionAppMenuManager> menu_manager_;

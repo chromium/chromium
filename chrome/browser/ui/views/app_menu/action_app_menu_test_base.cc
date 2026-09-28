@@ -95,7 +95,9 @@ void ActionAppMenuTestBase::SetUp() {
 
   add_action(kActionNewTab, u"New Tab");
   add_action(kActionNewWindow, u"New Window");
-  add_action(kActionNewIncognitoWindow, u"New Incognito Window",
+  add_action(kActionNewIncognitoWindow,
+             BrowserActions::GetCleanTitleAndTooltipText(
+                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)),
              l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO));
   add_action(kActionNewIsolatedWindow, u"New Isolated Window");
   add_action(kActionProfileSubmenu, u"Profile");
