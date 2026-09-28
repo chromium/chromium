@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/account_settings/account_setting_service.h"
@@ -41,13 +42,16 @@ class PersonalContextEligibilityServiceImpl
       PersonalContextEligibilityService::Observer* observer) override;
   void RemoveObserver(
       PersonalContextEligibilityService::Observer* observer) override;
+  bool IsInitialized() const override;
   PersonalContextEligibilityState GetEligibilityState() override;
+  bool IsEligibleForEncryption() const override;
   std::optional<PersonalContextNonEligibilityReason> GetNonEligibilityReason()
       const override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -59,9 +63,12 @@ class PersonalContextEligibilityServiceImpl
  private:
   friend class PersonalContextEligibilityServiceImplTestApi;
 
+  bool AreDependentServicesInitialized() const;
+  void OnPrefsInitialized(bool success);
   std::pair<PersonalContextEligibilityState,
             std::optional<PersonalContextNonEligibilityReason>>
   ComputeEligibilityState();
+  bool ComputeEligibilityForEncryption() const;
   void UpdateEligibilityState();
 
   const raw_ptr<account_settings::AccountSettingService>
@@ -78,12 +85,17 @@ class PersonalContextEligibilityServiceImpl
                           account_settings::AccountSettingService::Observer>
       account_settings_observation_{this};
   PrefChangeRegistrar pref_registrar_;
+  bool is_initialized_ = false;
   // Cached last eligibility state.
   PersonalContextEligibilityState eligibility_state_ =
       PersonalContextEligibilityState::kDisabledNotEligible;
+  bool is_eligible_for_encryption_ = false;
   // Cached last non-eligibility reason for logging.
   std::optional<PersonalContextNonEligibilityReason>
       last_non_eligibility_reason_;
+
+  base::WeakPtrFactory<PersonalContextEligibilityServiceImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace personal_context

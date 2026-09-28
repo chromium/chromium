@@ -6,8 +6,9 @@
 
 namespace personal_context {
 
-MockPersonalContextEligibilityService::MockPersonalContextEligibilityService() =
-    default;
+MockPersonalContextEligibilityService::MockPersonalContextEligibilityService() {
+  ON_CALL(*this, IsInitialized).WillByDefault(testing::Return(true));
+}
 MockPersonalContextEligibilityService::
     ~MockPersonalContextEligibilityService() = default;
 

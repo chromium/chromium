@@ -64,9 +64,16 @@ class FakePersonalContextEligibilityService
     observers_.RemoveObserver(observer);
   }
 
+  bool IsInitialized() const override { return true; }
+
   personal_context::PersonalContextEligibilityState GetEligibilityState()
       override {
     return state_;
+  }
+
+  bool IsEligibleForEncryption() const override {
+    return state_ ==
+           personal_context::PersonalContextEligibilityState::kEligible;
   }
 
   std::optional<personal_context::PersonalContextNonEligibilityReason>

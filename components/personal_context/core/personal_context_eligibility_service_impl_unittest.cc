@@ -24,7 +24,10 @@
 #include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -47,6 +50,7 @@ class MockPersonalContextEligibilityServiceObserver
               OnEligibilityStateChanged,
               (PersonalContextEligibilityState),
               (override));
+  MOCK_METHOD(void, OnEncryptionEligibilityChanged, (bool), (override));
 };
 
 class PersonalContextEligibilityServiceImplTest : public testing::Test {
@@ -286,12 +290,13 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
     EXPECT_CALL(mock_account_settings_service_,
                 GetBoolean(AccountSettingWithName(
                     account_settings::kAccountSettingContextPhotos.name)))
-        .Times(0);
+        .WillOnce(Return(false));
 
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
+    EXPECT_FALSE(service().IsEligibleForEncryption());
   }
   {
     // Only Photos enabled.
@@ -302,12 +307,13 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
     EXPECT_CALL(mock_account_settings_service_,
                 GetBoolean(AccountSettingWithName(
                     account_settings::kAccountSettingContextPhotos.name)))
-        .WillOnce(Return(true));
+        .WillRepeatedly(Return(true));
 
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
+    EXPECT_TRUE(service().IsEligibleForEncryption());
   }
 }
 
@@ -534,15 +540,112 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
               account_settings::kAccountSettingContext.name)))
       .WillByDefault(Return(false));
 
-  // Expect that the observer is called with the new state.
   EXPECT_CALL(observer,
               OnEligibilityStateChanged(
                   PersonalContextEligibilityState::kDisabledNotEligible));
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(false));
 
   service().OnAccountSettingsLoaded();
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       IsInitialized_AccountSettingsLoading) {
+  ON_CALL(mock_account_settings_service_, IsLoaded())
+      .WillByDefault(Return(false));
+  CreateService("us");
+
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  EXPECT_FALSE(service().IsInitialized());
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(true));
+  ON_CALL(mock_account_settings_service_, IsLoaded())
+      .WillByDefault(Return(true));
+  service().OnAccountSettingsLoaded();
+
+  EXPECT_TRUE(service().IsInitialized());
+  EXPECT_TRUE(service().IsEligibleForEncryption());
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       IsInitialized_RefreshTokensLoading) {
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+  CreateService("us");
+
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  EXPECT_FALSE(service().IsInitialized());
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(true));
+  identity_test_env_.ReloadAccountsFromDisk();
+
+  EXPECT_TRUE(service().IsInitialized());
+  EXPECT_TRUE(service().IsEligibleForEncryption());
+}
+
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       EncryptionEligibilityRequiresPhotosSetting) {
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  ASSERT_TRUE(service().IsInitialized());
+  ASSERT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  ASSERT_TRUE(service().IsEligibleForEncryption());
+
+  // Disable Photos while keeping Workspace enabled. General eligibility stays
+  // `kEligible`, while encryption eligibility becomes `false`.
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextWorkspace.name)))
+      .WillByDefault(Return(true));
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
+      .WillByDefault(Return(false));
+
+  EXPECT_CALL(observer, OnEligibilityStateChanged).Times(0);
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(false));
+
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextPhotos.name);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  EXPECT_FALSE(service().IsEligibleForEncryption());
+
+  // Re-enabling Photos restores encryption eligibility.
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(observer, OnEligibilityStateChanged).Times(0);
+  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(true));
+
+  service().OnAccountSettingDataUpdated(
+      account_settings::kAccountSettingContextPhotos.name);
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+  EXPECT_TRUE(service().IsEligibleForEncryption());
 }
 
 }  // namespace

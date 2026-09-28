@@ -150,10 +150,12 @@ class MockPersonalContextEligibilityService
 
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
+  MOCK_METHOD(bool, IsInitialized, (), (const, override));
   MOCK_METHOD(personal_context::PersonalContextEligibilityState,
               GetEligibilityState,
               (),
               (override));
+  MOCK_METHOD(bool, IsEligibleForEncryption, (), (const, override));
   MOCK_METHOD(
       std::optional<personal_context::PersonalContextNonEligibilityReason>,
       GetNonEligibilityReason,

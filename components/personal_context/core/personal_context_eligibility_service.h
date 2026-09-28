@@ -28,7 +28,12 @@ class PersonalContextEligibilityService : public KeyedService {
     // eligibility status changes and show/hide the entrypoint. Notifies
     // observers of changes to the value returned by GetEligibilityState().
     virtual void OnEligibilityStateChanged(
-        PersonalContextEligibilityState new_state) = 0;
+        PersonalContextEligibilityState new_state) {}
+
+    // Called once all dependent services are initialized with the initial
+    // encryption eligibility, and subsequently whenever the value returned by
+    // IsEligibleForEncryption() changes.
+    virtual void OnEncryptionEligibilityChanged(bool is_eligible) {}
   };
 
   ~PersonalContextEligibilityService() override = default;
@@ -36,9 +41,19 @@ class PersonalContextEligibilityService : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Returns whether all dependent services have finished initializing.
+  virtual bool IsInitialized() const = 0;
+
   // Sync getter for the current eligibility state. Checks whether the profile
   // is eligible to use Personal Context.
   virtual PersonalContextEligibilityState GetEligibilityState() = 0;
+
+  // Sync getter for whether the profile is eligible to generate and share
+  // Personal Context encryption keys. Requires general Personal Context
+  // eligibility (`GetEligibilityState() == kEligible`) as well as the Google
+  // Photos context account setting (`kAccountSettingContextPhotos`) to be
+  // enabled.
+  virtual bool IsEligibleForEncryption() const = 0;
 
   // Sync getter for the specific reason why the profile is currently
   // ineligible for Personal Context. Returns `std::nullopt` if eligibility has
