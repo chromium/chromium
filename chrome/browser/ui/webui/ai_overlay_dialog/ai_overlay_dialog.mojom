@@ -38,8 +38,6 @@ struct PageContentNode {
 
 // Result payload containing raw JPEG image data bytes and scale metadata.
 struct RawViewportRegionResult {
-  // Deprecated: Migrating to jpeg_bytes. To be removed after internal roll.
-  string jpeg_data_b64;
   mojo_base.mojom.BigBuffer jpeg_bytes;
   int32 width;
   int32 height;
