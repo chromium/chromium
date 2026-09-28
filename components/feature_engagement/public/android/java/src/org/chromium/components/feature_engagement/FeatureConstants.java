@@ -140,13 +140,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
     FeatureConstants.THREE_DOT_MENU_BACK_BUTTON,
-    FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_NTP_SEARCH_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE,
-    FeatureConstants.VIDEO_TUTORIAL_TRY_NOW_FEATURE
+    FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE
     // keep-sorted end
     // FEATURE_CONSTANTS_JAVA_STRING_DEF_END
 })
@@ -532,38 +526,5 @@ public @interface FeatureConstants {
 
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
 
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about an introduction to
-     * chrome.
-     */
-    String VIDEO_TUTORIAL_NTP_CHROME_INTRO_FEATURE = "IPH_VideoTutorial_NTP_ChromeIntro";
-
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about downloading in chrome.
-     */
-    String VIDEO_TUTORIAL_NTP_DOWNLOAD_FEATURE = "IPH_VideoTutorial_NTP_Download";
-
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about how to search in chrome.
-     */
-    String VIDEO_TUTORIAL_NTP_SEARCH_FEATURE = "IPH_VideoTutorial_NTP_Search";
-
-    /**
-     * An IPH feature to show a video tutorial summary card on NTP that takes them to see the video
-     * tutorial list page.
-     */
-    String VIDEO_TUTORIAL_NTP_SUMMARY_FEATURE = "IPH_VideoTutorial_NTP_Summary";
-
-    /**
-     * An IPH feature to show a video tutorial card on NTP to educate about how to use voice search
-     * in chrome.
-     */
-    String VIDEO_TUTORIAL_NTP_VOICE_SEARCH_FEATURE = "IPH_VideoTutorial_NTP_VoiceSearch";
-
-    /**
-     * An IPH feature to show an appropriate help bubble when user clicks on Try Now button on video
-     * tutorial player.
-     */
-    String VIDEO_TUTORIAL_TRY_NOW_FEATURE = "IPH_VideoTutorial_TryNow";
     // FEATURE_CONSTANTS_JAVA_INTERFACE_END
 }

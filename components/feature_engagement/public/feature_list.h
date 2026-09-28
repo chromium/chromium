@@ -222,18 +222,6 @@ DEFINE_VARIATION_PARAM(kIPHTouchToSearchCalloutFeature,
                        "IPH_TouchToSearchCallout");
 DEFINE_VARIATION_PARAM(kIPHTranslateMenuButtonFeature,
                        "IPH_TranslateMenuButton");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPChromeIntroFeature,
-                       "IPH_VideoTutorial_NTP_ChromeIntro");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPDownloadFeature,
-                       "IPH_VideoTutorial_NTP_Download");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSearchFeature,
-                       "IPH_VideoTutorial_NTP_Search");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPVoiceSearchFeature,
-                       "IPH_VideoTutorial_NTP_VoiceSearch");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialNTPSummaryFeature,
-                       "IPH_VideoTutorial_NTP_Summary");
-DEFINE_VARIATION_PARAM(kIPHVideoTutorialTryNowFeature,
-                       "IPH_VideoTutorial_TryNow");
 DEFINE_VARIATION_PARAM(kIPHExploreSitesTileFeature, "IPH_ExploreSitesTile");
 DEFINE_VARIATION_PARAM(kIPHFeedHeaderMenuFeature, "IPH_FeedHeaderMenu");
 DEFINE_VARIATION_PARAM(kIPHFeedSwipeRefresh, "IPH_FeedSwipeRefresh");
@@ -781,12 +769,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHThreeDotMenuBackButton),
         VARIATION_ENTRY(kIPHTouchToSearchCalloutFeature),
         VARIATION_ENTRY(kIPHTranslateMenuButtonFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialNTPChromeIntroFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialNTPDownloadFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialNTPSearchFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialNTPSummaryFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialNTPVoiceSearchFeature),
-        VARIATION_ENTRY(kIPHVideoTutorialTryNowFeature),
 // keep-sorted end
 // VARIATION_ENTRY_ANDROID_END
 #else

@@ -646,24 +646,6 @@ BASE_FEATURE(kIPHTouchToSearchCalloutFeature,
 BASE_FEATURE(kIPHTranslateMenuButtonFeature,
              "IPH_TranslateMenuButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialNTPChromeIntroFeature,
-             "IPH_VideoTutorial_NTP_ChromeIntro",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialNTPDownloadFeature,
-             "IPH_VideoTutorial_NTP_Download",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialNTPSearchFeature,
-             "IPH_VideoTutorial_NTP_Search",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialNTPVoiceSearchFeature,
-             "IPH_VideoTutorial_NTP_VoiceSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialNTPSummaryFeature,
-             "IPH_VideoTutorial_NTP_Summary",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHVideoTutorialTryNowFeature,
-             "IPH_VideoTutorial_TryNow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExploreSitesTileFeature,
              "IPH_ExploreSitesTile",
              base::FEATURE_DISABLED_BY_DEFAULT);
