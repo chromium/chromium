@@ -6,17 +6,15 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/fake_system_properties_observer.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,6 +23,13 @@
 namespace ash::bluetooth_config {
 
 namespace {
+
+constexpr AccountId::Literal kUser1AccountId =
+    AccountId::Literal::FromUserEmailGaiaId("email1@example.com",
+                                            GaiaId::Literal("fakegaia1"));
+constexpr AccountId::Literal kUser2AccountId =
+    AccountId::Literal::FromUserEmailGaiaId("email2@example.com",
+                                            GaiaId::Literal("fakegaia2"));
 
 mojom::PairedBluetoothDevicePropertiesPtr GenerateStubPairedDeviceProperties() {
   auto device_properties = mojom::BluetoothDeviceProperties::New();
@@ -55,13 +60,14 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
-
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
-    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kUser1AccountId));
+    ASSERT_TRUE(
+        user_session_test_environment_->AddRegularUser(kUser2AccountId));
 
     provider_ = std::make_unique<SystemPropertiesProviderImpl>(
         &fake_adapter_state_controller_, &fake_device_cache_);
@@ -69,8 +75,7 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   void TearDown() override {
     provider_.reset();
-    session_manager_.reset();
-    fake_user_manager_.Reset();
+    user_session_test_environment_.reset();
   }
 
   void SetSystemState(mojom::BluetoothSystemState system_state) {
@@ -89,38 +94,18 @@ class SystemPropertiesProviderImplTest : public testing::Test {
     provider_->FlushForTesting();
   }
 
-  const user_manager::User* LogIn(std::string_view email,
-                                  const GaiaId& gaia_id) {
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
-    const user_manager::User* user = fake_user_manager_->AddGaiaUser(
-        account_id, user_manager::UserType::kRegular);
-
-    // Create a session in SessionManager. This will also login the user in
-    // UserManager.
-    session_manager_->CreateSession(
-        user->GetAccountId(),
-        // TODO(crbug.com/278643115): Looks incorrect.
-        // User's username_hash should be set inside CreateSession via
-        // UserManager::UserLoggedIn().
-        user->username_hash(),
-        /*new_user=*/false,
-        /*has_active_session=*/false);
-
-    // Logging in doesn't set the user in UserManager as the active user if
-    // there already is an active user, do so manually.
-    SwitchActiveUser(account_id);
-
-    session_manager_->SessionStarted();
-    return user;
+  void LogIn(const AccountId& account_id) {
+    user_session_test_environment_->LogIn(account_id);
+    provider_->FlushForTesting();
   }
 
   void SwitchActiveUser(const AccountId& account_id) {
-    fake_user_manager_->SwitchActiveUser(account_id);
+    session_manager::SessionManager::Get()->SwitchActiveSession(account_id);
     SetSessionState(session_manager::SessionState::ACTIVE);
   }
 
   void SetSessionState(session_manager::SessionState session_state) {
-    session_manager_->SetSessionState(session_state);
+    session_manager::SessionManager::Get()->SetSessionState(session_state);
     provider_->FlushForTesting();
   }
 
@@ -134,9 +119,8 @@ class SystemPropertiesProviderImplTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
-  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
@@ -199,8 +183,7 @@ TEST_F(SystemPropertiesProviderImplTest, ModificationStateChanges) {
             observer->received_properties_list()[0]->modification_state);
 
   // Log in as the first user. They should be able to modify Bluetooth.
-  const user_manager::User* user1 =
-      LogIn("email1@example.com", GaiaId("fakegaia1"));
+  LogIn(kUser1AccountId);
   ASSERT_EQ(2u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
             observer->received_properties_list()[1]->modification_state);
@@ -211,23 +194,33 @@ TEST_F(SystemPropertiesProviderImplTest, ModificationStateChanges) {
   EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
             observer->received_properties_list()[2]->modification_state);
 
-  // Log in as a second user. They should not be able to modify Bluetooth.
-  LogIn("email2@example.com", GaiaId("fakegaia2"));
+  // Log in as a second user. The session is active again with the first user
+  // still active, so Bluetooth is modifiable.
+  LogIn(kUser2AccountId);
   ASSERT_EQ(4u, observer->received_properties_list().size());
-  EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
+  EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
             observer->received_properties_list()[3]->modification_state);
+
+  // Lock the screen, then switch to the second user. They should not be able
+  // to modify Bluetooth.
+  SetSessionState(session_manager::SessionState::LOCKED);
+  ASSERT_EQ(5u, observer->received_properties_list().size());
+  SwitchActiveUser(kUser2AccountId);
+  ASSERT_EQ(6u, observer->received_properties_list().size());
+  EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
+            observer->received_properties_list()[5]->modification_state);
 
   // Lock the screen. They should not be able to modify Bluetooth.
   SetSessionState(session_manager::SessionState::LOCKED);
-  ASSERT_EQ(5u, observer->received_properties_list().size());
+  ASSERT_EQ(7u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothModificationState::kCannotModifyBluetooth,
-            observer->received_properties_list()[4]->modification_state);
+            observer->received_properties_list()[6]->modification_state);
 
   // Switch to the first user again. They should be able to modify Bluetooth.
-  SwitchActiveUser(user1->GetAccountId());
-  ASSERT_EQ(6u, observer->received_properties_list().size());
+  SwitchActiveUser(kUser1AccountId);
+  ASSERT_EQ(8u, observer->received_properties_list().size());
   EXPECT_EQ(mojom::BluetoothModificationState::kCanModifyBluetooth,
-            observer->received_properties_list()[5]->modification_state);
+            observer->received_properties_list()[7]->modification_state);
 }
 
 TEST_F(SystemPropertiesProviderImplTest, DisconnectToStopObserving) {

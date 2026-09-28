@@ -5,3 +5,12 @@ include_rules = [
   "+components/qr_code_generator/qr_code_generator.h",
   "+components/user_manager",
 ]
+
+specific_include_rules = {
+  ".*test\\.cc": [
+    "+components/account_id",
+    "+components/prefs",
+    "+components/session_manager/test",
+    "+google_apis/gaia",
+  ]
+}

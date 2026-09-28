@@ -15,12 +15,20 @@
 #include "chromeos/ash/services/cellular_setup/esim_test_base.h"
 #include "chromeos/ash/services/cellular_setup/esim_test_utils.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-shared.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash::cellular_setup {
 
 namespace {
+
+constexpr AccountId::Literal kRegularAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@test.com",
+                                            GaiaId::Literal("fakegaia"));
 
 const char kProfileUninstallationResultHistogram[] =
     "Network.Cellular.ESim.ProfileUninstallationResult";
@@ -30,20 +38,6 @@ const char kPendingProfileLatencyHistogram[] =
     "Network.Cellular.ESim.ProfileDownload.PendingProfile.Latency";
 const char kPendingProfileInstallHistogram[] =
     "Network.Cellular.ESim.InstallPendingProfile.Result";
-
-class TestUserManager : public user_manager::FakeUserManager {
- public:
-  explicit TestUserManager(bool is_guest) : is_guest_(is_guest) {
-    user_manager::UserManager::SetInstance(this);
-  }
-  ~TestUserManager() override = default;
-
-  // user_manager::UserManager:
-  bool IsLoggedInAsGuest() const override { return is_guest_; }
-
- private:
-  const bool is_guest_;
-};
 
 mojom::ESimOperationResult UninstallProfile(
     const mojo::Remote<mojom::ESimProfile>& esim_profile) {
@@ -88,8 +82,13 @@ class ESimProfileTest : public ESimTestBase {
   ESimProfileTest() = default;
   ESimProfileTest(const ESimProfileTest&) = delete;
   ESimProfileTest& operator=(const ESimProfileTest&) = delete;
+  ~ESimProfileTest() override = default;
 
   void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
     ESimTestBase::SetUp();
     SetupEuicc();
   }
@@ -98,10 +97,21 @@ class ESimProfileTest : public ESimTestBase {
     HermesProfileClient::Get()->GetTestInterface()->SetEnableProfileBehavior(
         HermesProfileClient::TestInterface::EnableProfileBehavior::
             kConnectableButNotConnected);
+    ESimTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
-  void SetIsGuest(bool is_guest) {
-    test_user_manager_ = std::make_unique<TestUserManager>(is_guest);
+  void LogIn(bool is_guest) {
+    if (is_guest) {
+      user_manager::User* guest_user =
+          user_session_test_environment_->AddGuestUser();
+      ASSERT_TRUE(guest_user);
+      user_session_test_environment_->LogIn(guest_user->GetAccountId());
+    } else {
+      ASSERT_TRUE(
+          user_session_test_environment_->AddRegularUser(kRegularAccountId));
+      user_session_test_environment_->LogIn(kRegularAccountId);
+    }
   }
 
   mojo::Remote<mojom::ESimProfile> GetESimProfileForIccid(
@@ -165,11 +175,13 @@ class ESimProfileTest : public ESimTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestUserManager> test_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(ESimProfileTest, GetProperties) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
@@ -191,7 +203,7 @@ TEST_F(ESimProfileTest, GetProperties) {
 }
 
 TEST_F(ESimProfileTest, InstallProfile) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
   base::HistogramTester histogram_tester;
 
   HermesEuiccClient::TestInterface* euicc_test =
@@ -247,7 +259,7 @@ TEST_F(ESimProfileTest, InstallProfile) {
 }
 
 TEST_F(ESimProfileTest, InstallProfileAlreadyConnected) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
 
   dbus::ObjectPath profile_path =
       HermesEuiccClient::Get()->GetTestInterface()->AddFakeCarrierProfile(
@@ -271,7 +283,7 @@ TEST_F(ESimProfileTest, InstallProfileAlreadyConnected) {
 }
 
 TEST_F(ESimProfileTest, InstallConnectFailure) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
@@ -294,7 +306,7 @@ TEST_F(ESimProfileTest, InstallConnectFailure) {
 }
 
 TEST_F(ESimProfileTest, UninstallProfile) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
 
   base::HistogramTester histogram_tester;
 
@@ -366,7 +378,7 @@ TEST_F(ESimProfileTest, UninstallProfile) {
 }
 
 TEST_F(ESimProfileTest, CannotUninstallProfileAsGuest) {
-  SetIsGuest(true);
+  LogIn(/*is_guest=*/true);
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
@@ -385,7 +397,7 @@ TEST_F(ESimProfileTest, CannotUninstallProfileAsGuest) {
 }
 
 TEST_F(ESimProfileTest, SetProfileNickName) {
-  SetIsGuest(false);
+  LogIn(/*is_guest=*/false);
 
   const std::u16string test_nickname = u"Test nickname";
   base::HistogramTester histogram_tester;
@@ -436,7 +448,7 @@ TEST_F(ESimProfileTest, SetProfileNickName) {
 }
 
 TEST_F(ESimProfileTest, CannotSetProfileNickNameAsGuest) {
-  SetIsGuest(true);
+  LogIn(/*is_guest=*/true);
 
   HermesEuiccClient::TestInterface* euicc_test =
       HermesEuiccClient::Get()->GetTestInterface();
