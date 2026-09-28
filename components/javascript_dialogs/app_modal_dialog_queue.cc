@@ -4,6 +4,9 @@
 
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/no_destructor.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 
@@ -27,9 +30,25 @@ void AppModalDialogQueue::ResetForTesting() {
 }
 
 void AppModalDialogQueue::InvalidateAndClearQueuedDialogs() {
+  // `AppModalDialogController::Invalidate()` runs the dialog's closed callback,
+  // which can synchronously re-enter this queue: it can come back into this
+  // method (e.g. via `ShowNextDialog()` during shutdown), and it can enqueue
+  // new dialogs. Take ownership of the queued dialogs before invalidating any
+  // of them, so that a re-entrant call sees an empty queue and cannot pop and
+  // destroy a dialog whose `Invalidate()` is still on the stack.
+  // See https://crbug.com/560439699.
+  //
+  // The outer loop handles dialogs that were enqueued by the re-entrant calls
+  // made while invalidating; those dialogs must be invalidated as well.
   while (!app_modal_dialog_queue_.empty()) {
-    app_modal_dialog_queue_.front()->Invalidate();
-    app_modal_dialog_queue_.pop_front();
+    DialogQueue dialogs = std::move(app_modal_dialog_queue_);
+    // The state of a moved-from container is unspecified, so explicitly empty
+    // the member queue for any re-entrant caller.
+    app_modal_dialog_queue_.clear();
+    for (std::unique_ptr<AppModalDialogController>& dialog : dialogs) {
+      dialog->Invalidate();
+    }
+    // `dialogs` goes out of scope here, destroying the invalidated dialogs.
   }
 }
 

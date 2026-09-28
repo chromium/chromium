@@ -88,16 +88,25 @@ AppModalDialogController::AppModalDialogController(
       callback_(std::move(callback)) {}
 
 AppModalDialogController::~AppModalDialogController() {
+  // `CompleteDialog()` below can synchronously run more dialog code (it shows
+  // the next dialog in the queue). Invalidate weak pointers first so that any
+  // such code, as well as any stack frame holding a weak pointer to `this`,
+  // sees this dialog as already gone instead of as a half-destroyed object.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   CompleteDialog();
 }
 
 void AppModalDialogController::ShowModalDialog(
     std::unique_ptr<AppModalDialogController> controller) {
   CHECK_EQ(this, controller.get());
+  // Showing the dialog can synchronously close it again, which destroys the
+  // view and with it `this`.
+  base::WeakPtr<AppModalDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   view_ = AppModalDialogManager::GetInstance()->view_factory()->Run(
       std::move(controller));
   view_->ShowAppModalDialog();
-  if (app_modal_dialog_observer) {
+  if (weak_this && app_modal_dialog_observer) {
     app_modal_dialog_observer->Notify(this);
   }
 }
@@ -133,7 +142,20 @@ void AppModalDialogController::Invalidate() {
   }
 
   valid_ = false;
+
+  // The closed callback can synchronously re-enter the dialog machinery: for
+  // example, closing a beforeunload dialog can resume a deferred prerender
+  // activation, which cancels dialogs again. That eventually reaches
+  // `AppModalDialogQueue::GetNextDialog()`, which destroys every invalidated
+  // queued dialog - including `this`, whose `Invalidate()` is still on the
+  // stack. See https://crbug.com/560439699.
+  base::WeakPtr<AppModalDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   CallDialogClosedCallback(false, std::u16string());
+  if (!weak_this) {
+    return;
+  }
+
   if (view_) {
     CloseModalDialog();
   }
@@ -146,14 +168,28 @@ void AppModalDialogController::OnCancel(bool suppress_js_messages) {
   // that were still open in the ModalDialogQueue, which would send activation
   // back to this one. The framework should be improved to handle this, so this
   // is a temporary workaround.
+  //
+  // `CompleteDialog()` shows the next dialog in the queue, which can run
+  // arbitrary code that destroys `this`.
+  base::WeakPtr<AppModalDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   CompleteDialog();
+  if (!weak_this) {
+    return;
+  }
 
   NotifyDelegate(/*success=*/false, std::u16string(), suppress_js_messages);
 }
 
 void AppModalDialogController::OnAccept(const std::u16string& prompt_text,
                                         bool suppress_js_messages) {
+  // See the comment in `OnCancel()`: `CompleteDialog()` can destroy `this`.
+  base::WeakPtr<AppModalDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   CompleteDialog();
+  if (!weak_this) {
+    return;
+  }
 
   NotifyDelegate(/*success=*/true, override_prompt_text_.value_or(prompt_text),
                  suppress_js_messages);
@@ -179,7 +215,20 @@ void AppModalDialogController::NotifyDelegate(bool success,
     return;
   }
 
+  // Mark invalid immediately so that any re-entrant calls (such as OnClose()
+  // from Views during window destruction, or Invalidate() from navigation)
+  // return early. On Views, we can also end up coming through this code path a
+  // second time asynchronously (see https://crbug.com/40085084).
+  valid_ = false;
+
+  // The close callback can destroy `this`, e.g. by closing the dialog and
+  // letting the dialog queue delete it. See https://crbug.com/560439699.
+  base::WeakPtr<AppModalDialogController> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
   CallDialogClosedCallback(success, user_input);
+  if (!weak_this) {
+    return;
+  }
 
   // The close callback above may delete web_contents_, thus removing the extra
   // data from the map owned by ::AppModalDialogManager. Make sure
@@ -191,10 +240,6 @@ void AppModalDialogController::NotifyDelegate(bool success,
       extra_data->second.suppress_javascript_messages_ = suppress_js_messages;
     }
   }
-
-  // On Views, we can end up coming through this code path twice :(.
-  // See https://crbug.com/40085084.
-  valid_ = false;
 }
 
 void AppModalDialogController::CallDialogClosedCallback(

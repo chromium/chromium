@@ -5,9 +5,12 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +27,14 @@ class FakeView : public AppModalDialogView {
 
   void ShowAppModalDialog() override {}
   void ActivateAppModalDialog() override {}
-  void CloseAppModalDialog() override {}
+  // Real views notify their controller that the dialog was dismissed when they
+  // are closed. Note that, unlike the real views, this one keeps `controller_`
+  // alive so that tests control its lifetime.
+  void CloseAppModalDialog() override {
+    if (controller_) {
+      controller_->OnCancel(/*suppress_js_messages=*/false);
+    }
+  }
   void AcceptAppModalDialog() override {}
   void CancelAppModalDialog() override {}
   bool IsShowing() const override { return true; }
@@ -35,7 +45,10 @@ class FakeView : public AppModalDialogView {
 
 class TestDialogControllerBase : public AppModalDialogController {
  public:
-  explicit TestDialogControllerBase(bool* was_destroyed)
+  explicit TestDialogControllerBase(
+      bool* was_destroyed,
+      content::JavaScriptDialogManager::DialogClosedCallback callback =
+          base::DoNothing())
       : AppModalDialogController(nullptr,
                                  &extra_data_,
                                  u"test",
@@ -45,7 +58,7 @@ class TestDialogControllerBase : public AppModalDialogController {
                                  false,
                                  false,
                                  false,
-                                 base::DoNothing()),
+                                 std::move(callback)),
         was_destroyed_(was_destroyed) {}
 
   ~TestDialogControllerBase() override {
@@ -177,6 +190,93 @@ TEST_F(AppModalDialogQueueTest, ShowNextDialogDrainsQueueAfterShutdown) {
   EXPECT_FALSE(queue->HasActiveDialog());
 
   dialog1_ptr->Invalidate();
+}
+
+// Returns a DialogClosedCallback that re-entrantly cancels all dialogs for the
+// test WebContents (nullptr), and records that it ran.
+content::JavaScriptDialogManager::DialogClosedCallback
+MakeReentrantCancelCallback(bool* callback_ran) {
+  return base::BindOnce(
+      [](bool* callback_ran, bool /*success*/,
+         const std::u16string& /*user_input*/) {
+        *callback_ran = true;
+        // This invalidates the active dialog, whose view then dispatches
+        // OnCancel -> CompleteDialog -> ShowNextDialog -> GetNextDialog, which
+        // drains and destroys the invalidated dialogs still in the queue - one
+        // of which is the dialog whose Invalidate() is running this callback.
+        AppModalDialogManager::GetInstance()->CancelDialogs(
+            /*web_contents=*/nullptr, /*reset_state=*/false);
+      },
+      callback_ran);
+}
+
+// Regression test for https://crbug.com/560439699: a queued dialog's closed
+// callback re-entrantly cancels dialogs, which destroys the queued dialogs
+// while AppModalDialogController::Invalidate() and the CancelDialogs() loop
+// iterating the queue are still on the stack.
+TEST_F(AppModalDialogQueueTest, ReentrantCancelDialogsDuringInvalidate) {
+  auto* queue = AppModalDialogQueue::GetInstance();
+  auto* manager = AppModalDialogManager::GetInstance();
+
+  bool dialog1_shown = false;
+  bool dialog1_destroyed = false;
+  bool dialog2_destroyed = false;
+  bool dialog3_destroyed = false;
+  bool callback_ran = false;
+  std::unique_ptr<FakeView> dialog1_view;
+
+  queue->AddDialog(std::make_unique<TestDialogController>(
+      &dialog1_shown, &dialog1_destroyed, &dialog1_view));
+  ASSERT_TRUE(dialog1_shown);
+  ASSERT_TRUE(queue->HasActiveDialog());
+
+  queue->AddDialog(std::make_unique<TestDialogControllerBase>(
+      &dialog2_destroyed, MakeReentrantCancelCallback(&callback_ran)));
+  queue->AddDialog(
+      std::make_unique<TestDialogControllerBase>(&dialog3_destroyed));
+
+  manager->CancelDialogs(/*web_contents=*/nullptr, /*reset_state=*/false);
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(dialog2_destroyed);
+  EXPECT_TRUE(dialog3_destroyed);
+  EXPECT_FALSE(queue->HasActiveDialog());
+  // The active dialog is owned by its view, so it outlives the cancellation.
+  EXPECT_FALSE(dialog1_destroyed);
+}
+
+// Regression test for https://crbug.com/560439699: the same re-entrancy, but
+// entered through AppModalDialogQueue::InvalidateAndClearQueuedDialogs(). The
+// re-entrant ShowNextDialog() must not drain (and destroy) the dialogs that the
+// outer invalidation loop is still walking over.
+TEST_F(AppModalDialogQueueTest, ReentrantCancelDuringCancelAllDialogs) {
+  auto* queue = AppModalDialogQueue::GetInstance();
+
+  bool dialog1_shown = false;
+  bool dialog1_destroyed = false;
+  bool dialog2_destroyed = false;
+  bool dialog3_destroyed = false;
+  bool callback_ran = false;
+  std::unique_ptr<FakeView> dialog1_view;
+
+  queue->AddDialog(std::make_unique<TestDialogController>(
+      &dialog1_shown, &dialog1_destroyed, &dialog1_view));
+  ASSERT_TRUE(dialog1_shown);
+  ASSERT_TRUE(queue->HasActiveDialog());
+
+  queue->AddDialog(std::make_unique<TestDialogControllerBase>(
+      &dialog2_destroyed, MakeReentrantCancelCallback(&callback_ran)));
+  queue->AddDialog(
+      std::make_unique<TestDialogControllerBase>(&dialog3_destroyed));
+
+  queue->CancelAllDialogs();
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(dialog2_destroyed);
+  EXPECT_TRUE(dialog3_destroyed);
+  EXPECT_FALSE(queue->HasActiveDialog());
+  // The active dialog is owned by its view, so it outlives the cancellation.
+  EXPECT_FALSE(dialog1_destroyed);
 }
 
 }  // namespace
