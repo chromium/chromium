@@ -4,13 +4,17 @@
 
 #include "chrome/browser/ui/webui/ash/network_ui/onc_import_message_handler.h"
 
+#include <memory>
+
 #include "base/containers/to_vector.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -29,9 +33,14 @@
 #include "components/server_certificate_database/server_certificate_database_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "crypto/sha2.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+#include "ui/shell_dialogs/selected_file_info.h"
+
 namespace ash {
 
 namespace {
@@ -51,9 +60,15 @@ void GetCertDBOnIOThread(
 
 }  // namespace
 
-OncImportMessageHandler::OncImportMessageHandler() = default;
+OncImportMessageHandler::OncImportMessageHandler(
+    SelectFilePolicyCreator select_file_policy_creator)
+    : select_file_policy_creator_(std::move(select_file_policy_creator)) {}
 
-OncImportMessageHandler::~OncImportMessageHandler() = default;
+OncImportMessageHandler::~OncImportMessageHandler() {
+  if (select_file_dialog_) {
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void OncImportMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -71,10 +86,87 @@ void OncImportMessageHandler::Respond(const std::string& callback_id,
 }
 
 void OncImportMessageHandler::OnImportONC(const base::ListValue& list) {
-  CHECK_EQ(2u, list.size());
-  const std::string& callback_id = list[0].GetString();
-  const std::string& onc_blob = list[1].GetString();
+  if (list.empty() || !list[0].is_string()) {
+    return;
+  }
+
+  // Reject the promise if there is already a select file dialog running.
+  if (select_file_dialog_) {
+    AllowJavascript();
+    Respond(list[0].GetString(), "File selection dialog already open",
+            /*is_error=*/true);
+    return;
+  }
+
+  current_callback_id_ = list[0].GetString();
   AllowJavascript();
+
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  if (!web_contents) {
+    FileSelectionCanceled();
+    return;
+  }
+
+  std::unique_ptr<ui::SelectFilePolicy> select_file_policy;
+  if (select_file_policy_creator_) {
+    select_file_policy = select_file_policy_creator_.Run(web_contents);
+  }
+
+  select_file_dialog_ =
+      ui::SelectFileDialog::Create(this, std::move(select_file_policy));
+
+  if (!select_file_dialog_) {
+    // Resolve the WebUI promise cleanly if the dialog fails to open.
+    FileSelectionCanceled();
+    return;
+  }
+
+  ui::SelectFileDialog::FileTypeInfo file_types;
+  file_types.extensions = {{"onc"}};
+  file_types.include_all_files = true;
+
+  gfx::NativeWindow owning_window = web_contents->GetTopLevelNativeWindow();
+
+  select_file_dialog_->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                  std::u16string(), base::FilePath(),
+                                  &file_types, 0, base::FilePath::StringType(),
+                                  owning_window);
+}
+
+void OncImportMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
+                                           int index) {
+  std::string callback_id = current_callback_id_;
+  current_callback_id_.clear();
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          [](const base::FilePath& file_path) {
+            std::string file_content;
+            base::ReadFileToString(file_path, &file_content);
+            return file_content;
+          },
+          file.path()),
+      base::BindOnce(&OncImportMessageHandler::OnFileReadCompleted,
+                     weak_factory_.GetWeakPtr(), callback_id));
+
+  select_file_dialog_ = nullptr;
+}
+
+void OncImportMessageHandler::FileSelectionCanceled() {
+  std::string callback_id = current_callback_id_;
+  current_callback_id_.clear();
+  Respond(callback_id, "File selection canceled", /*is_error=*/false);
+  select_file_dialog_ = nullptr;
+}
+
+void OncImportMessageHandler::OnFileReadCompleted(
+    const std::string& callback_id,
+    const std::string& onc_blob) {
+  if (onc_blob.empty()) {
+    Respond(callback_id, "File not read", /*is_error=*/false);
+    return;
+  }
 
   // TODO(crbug.com/40753707): Pass the `NssCertDatabaseGetter` to
   // the `CertImporter`. This is not unsafe if the profile shuts down during

@@ -76,6 +76,9 @@ void FakeSelectFileDialog::SelectFileImpl(
 
 bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
                                             std::string_view filter_text) {
+  if (!listener_) {
+    return false;
+  }
   for (size_t index = 0; index < file_types_.extensions.size(); ++index) {
     for (const base::FilePath::StringType& ext :
          file_types_.extensions[index]) {
@@ -91,11 +94,15 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
 
 void FakeSelectFileDialog::CallMultiFilesSelected(
     const std::vector<base::FilePath>& files) {
-  listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
+  if (listener_) {
+    listener_->MultiFilesSelected(FilePathListToSelectedFileInfoList(files));
+  }
 }
 
 void FakeSelectFileDialog::CallFileSelectionCanceled() {
-  listener_->FileSelectionCanceled();
+  if (listener_) {
+    listener_->FileSelectionCanceled();
+  }
 }
 
 void FakeSelectFileDialog::ListenerDestroyed() {

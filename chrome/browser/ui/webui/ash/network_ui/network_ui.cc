@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet/internet_detail_dialog.h"
@@ -1150,7 +1151,12 @@ NetworkUI::NetworkUI(PrefService* local_state, content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   web_ui->AddMessageHandler(
       std::make_unique<network_ui::NetworkConfigMessageHandler>(local_state));
-  web_ui->AddMessageHandler(std::make_unique<OncImportMessageHandler>());
+  // TODO(b/558661978): Migrate to a dedicated ash select file policy.
+  web_ui->AddMessageHandler(std::make_unique<OncImportMessageHandler>(
+      base::BindRepeating([](content::WebContents* web_contents)
+                              -> std::unique_ptr<ui::SelectFilePolicy> {
+        return std::make_unique<ChromeSelectFilePolicy>(web_contents);
+      })));
   web_ui->AddMessageHandler(std::make_unique<NetworkLogsMessageHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<NetworkDiagnosticsMessageHandler>());

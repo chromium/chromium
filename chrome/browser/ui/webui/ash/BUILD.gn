@@ -20,6 +20,7 @@ group("unit_tests") {
     "//chrome/browser/ui/webui/ash/lobster:unit_tests",
     "//chrome/browser/ui/webui/ash/login:unit_tests",
     "//chrome/browser/ui/webui/ash/mako:unit_tests",
+    "//chrome/browser/ui/webui/ash/network_ui:unit_tests",
     "//chrome/browser/ui/webui/ash/parent_access:unit_tests",
     "//chrome/browser/ui/webui/ash/sensor_info:unit_tests",
     "//chrome/browser/ui/webui/ash/settings:unit_tests",

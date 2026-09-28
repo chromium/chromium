@@ -100,6 +100,9 @@ class FakeSelectFileDialog : public SelectFileDialog {
   // Calls the |FileSelectionCanceled()| method on listener().
   void CallFileSelectionCanceled();
 
+  // Returns the listener associated with the dialog.
+  SelectFileDialog::Listener* listener() { return listener_; }
+
   base::WeakPtr<FakeSelectFileDialog> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

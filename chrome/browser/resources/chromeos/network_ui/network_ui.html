@@ -117,8 +117,11 @@
 
     <div>
       <h2>$i18n{importOncButtonText}</h2>
-      <input type="file" id="import-onc" on-change="onImportOncChange_">
-      <div id="onc-import-result"></div>
+      <cr-button class="action-button" id="import-onc"
+          on-click="onImportOncClick_">
+        $i18n{importOncButtonText}
+      </cr-button>
+      <div id="onc-import-result" aria-live="polite"></div>
     </div>
   </div>
 

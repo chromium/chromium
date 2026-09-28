@@ -19,7 +19,7 @@ export interface NetworkUiBrowserProxy {
 
   getFirstWifiNetworkProperties(): Promise<any[]>;
 
-  importOnc(content: string): Promise<[string, boolean]>;
+  importOnc(): Promise<[string, boolean]>;
 
   openCellularActivationUi(): Promise<[boolean]>;
 
@@ -83,8 +83,8 @@ export class NetworkUiBrowserProxyImpl implements NetworkUiBrowserProxy {
     return sendWithPromise('getFirstWifiNetworkProperties');
   }
 
-  importOnc(content: string): Promise<[string, boolean]> {
-    return sendWithPromise('importONC', content);
+  importOnc(): Promise<[string, boolean]> {
+    return sendWithPromise('importONC');
   }
 
   openCellularActivationUi(): Promise<[boolean]> {

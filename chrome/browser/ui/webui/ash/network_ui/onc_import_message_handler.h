@@ -7,11 +7,18 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
 #include "components/server_certificate_database/server_certificate_database.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_policy.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace net {
 class NSSCertDatabase;
@@ -22,9 +29,15 @@ namespace onc {
 class CertificateImporterImpl;
 }
 
-class OncImportMessageHandler : public content::WebUIMessageHandler {
+class OncImportMessageHandler : public content::WebUIMessageHandler,
+                                public ui::SelectFileDialog::Listener {
  public:
-  OncImportMessageHandler();
+  using SelectFilePolicyCreator =
+      base::RepeatingCallback<std::unique_ptr<ui::SelectFilePolicy>(
+          content::WebContents*)>;
+
+  explicit OncImportMessageHandler(
+      SelectFilePolicyCreator select_file_policy_creator);
   ~OncImportMessageHandler() override;
   OncImportMessageHandler(const OncImportMessageHandler&) = delete;
   OncImportMessageHandler& operator=(const OncImportMessageHandler&) = delete;
@@ -68,6 +81,18 @@ class OncImportMessageHandler : public content::WebUIMessageHandler {
                                const std::string& previous_error,
                                bool has_error,
                                bool cert_import_success);
+
+  // ui::SelectFileDialog::Listener:
+  void FileSelected(const ui::SelectedFileInfo& file, int index) override;
+  void FileSelectionCanceled() override;
+
+  void OnFileReadCompleted(const std::string& callback_id,
+                           const std::string& onc_blob);
+
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
+  std::string current_callback_id_;
+
+  SelectFilePolicyCreator select_file_policy_creator_;
 
   base::WeakPtrFactory<OncImportMessageHandler> weak_factory_{this};
 };
