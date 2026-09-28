@@ -153,14 +153,45 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
             nil);
 }
 
+// Tests that requesting a task returns nil without touching `BGTaskScheduler`
+// when background continued processing is unavailable in the current
+// configuration (i.e. the `ios_enable_background_continued_processing` GN arg
+// is false, or the OS is older than iOS 26), even with the killswitch enabled.
+TEST_F(BackgroundContinuedProcessingAppAgentTest,
+       TestRequestTaskFailsWhenUnavailable) {
+  if (IsBackgroundContinuedProcessingEnabled()) {
+    GTEST_SKIP() << "Background continued processing is available.";
+  }
+
+  // `mock_scheduler_` is a strict mock, so any scheduler call would fail.
+  EXPECT_EQ([agent_ requestTaskWithIdentifier:kTestTaskId
+                                configuration:CreateTestConfiguration()],
+            nil);
+}
+
+#pragma mark - BackgroundContinuedProcessingAppAgentAvailableTest
+
+// Fixture for tests that require background continued processing to be
+// available. Tests are skipped when the
+// `ios_enable_background_continued_processing` GN arg is false or the OS is
+// older than iOS 26.
+class BackgroundContinuedProcessingAppAgentAvailableTest
+    : public BackgroundContinuedProcessingAppAgentTest {
+ protected:
+  void SetUp() override {
+    BackgroundContinuedProcessingAppAgentTest::SetUp();
+    if (!IsBackgroundContinuedProcessingEnabled()) {
+      GTEST_SKIP() << "Background continued processing is unavailable.";
+    }
+  }
+};
+
 // Tests that requesting a task succeeds when a scene is in
 // `SceneActivationLevelForegroundInactive` (`foregroundActiveScene` is nil,
 // while `foregroundScenes` still contains the resigning scene).
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestRequestTaskSucceedsWhenSceneForegroundInactive) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  } else {
+  if (@available(iOS 26.0, *)) {
     app_state_helper_.foregroundActiveScene = nil;
     app_state_helper_.foregroundScenes = @[ mock_scene_state_ ];
     OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
@@ -175,12 +206,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 }
 
 // Tests that requesting a task returns nil if system registration fails.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestRequestTaskFailsWhenRegistrationFails) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     StubScheduler(nullptr, /*registration_success=*/NO);
 
@@ -191,12 +218,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 }
 
 // Tests that requesting a task returns nil if system submission fails.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestRequestTaskFailsWhenSubmissionFails) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     NSError* error = [NSError errorWithDomain:@"org.chromium.test"
                                          code:1
@@ -212,12 +235,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 
 // Tests that task registration and submission succeed with expected parameters,
 // auto-incremented identifiers, and complete successfully.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestRequestTaskRegistersAndSubmitsWithSystem) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     __block void (^captured_launch_handler)(BGTask*) = nil;
     __block BGContinuedProcessingTaskRequest* captured_request = nil;
@@ -269,12 +288,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 
 // Tests that the agent retains active task contexts even if the caller drops
 // its reference, and removes it from active tasks upon completion.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestAgentRetainsContextAcrossCallerHandleDrop) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     __block void (^captured_launch_handler)(BGTask*) = nil;
     StubScheduler(&captured_launch_handler);
@@ -321,12 +336,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 
 // Tests that if the system delivers an unrecognized task identifier,
 // the OS task is safely completed with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestLaunchDeliveryWithUnknownIdentifierFailsOSTask) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
     __block void (^captured_launch_handler)(BGTask*) = nil;
@@ -351,12 +362,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 
 // Tests that if the system delivers a task that is not a
 // `BGContinuedProcessingTask`, the OS task is safely completed with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestLaunchDeliveryWithUnexpectedTaskClassFailsOSTask) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
     __block void (^captured_launch_handler)(BGTask*) = nil;
@@ -381,12 +388,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 // Tests that completing the context before the OS delivers the underlying
 // task cancels the scheduled request in `BGTaskScheduler`, and safely marks
 // any subsequent system delivery as completed with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestEarlyCompletionSuccessBeforeOSTaskDelivery) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     __block void (^captured_launch_handler)(BGTask*) = nil;
     StubScheduler(&captured_launch_handler);
@@ -418,12 +421,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 // Tests that failing the context before the OS delivers the underlying task
 // cancels the scheduled request in `BGTaskScheduler`, and safely marks
 // any subsequent system delivery as completed with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestEarlyCompletionFailureBeforeOSTaskDelivery) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     __block void (^captured_launch_handler)(BGTask*) = nil;
     StubScheduler(&captured_launch_handler);
@@ -453,12 +452,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 }
 
 // Tests that deallocating the agent completes all active tasks with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestAgentDeallocCompletesActiveTasks) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
     StubScheduler();
@@ -490,12 +485,8 @@ TEST_F(BackgroundContinuedProcessingAppAgentTest,
 
 // Tests that if the agent is deallocated before the OS invokes `launchHandler`,
 // the task is safely marked completed with failure.
-TEST_F(BackgroundContinuedProcessingAppAgentTest,
+TEST_F(BackgroundContinuedProcessingAppAgentAvailableTest,
        TestLaunchHandlerWhenAgentDeallocatedFailsTask) {
-  if (!@available(iOS 26.0, *)) {
-    GTEST_SKIP() << "BGContinuedProcessingTask requires iOS 26.0+.";
-  }
-
   if (@available(iOS 26.0, *)) {
     OCMStub([mock_scheduler_ cancelTaskRequestWithIdentifier:[OCMArg any]]);
     __block void (^captured_launch_handler)(BGTask*) = nil;

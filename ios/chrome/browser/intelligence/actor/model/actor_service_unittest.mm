@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 
+#import <BackgroundTasks/BackgroundTasks.h>
 #import <UIKit/UIKit.h>
 
 #import <set>
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -19,7 +21,12 @@
 #import "base/types/expected.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/app/background_mode_buildflags.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
+#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
+#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
+#import "ios/chrome/app/background_task/features.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
@@ -29,6 +36,7 @@
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -49,18 +57,6 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-#import <BackgroundTasks/BackgroundTasks.h>
-
-#import "ios/chrome/app/application_delegate/app_state.h"  // nogncheck
-#import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"  // nogncheck
-#import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"  // nogncheck
-#import "ios/chrome/app/background_task/background_continued_processing_task_context.h"  // nogncheck
-#import "ios/chrome/app/background_task/features.h"  // nogncheck
-#import "ios/chrome/app/profile/profile_state.h"     // nogncheck
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"  // nogncheck
-#endif
 
 // TODO(crbug.com/556276928): Centralize fake observer across unit tests.
 @interface FakeActorServiceTaskUpdatesObserver
@@ -126,6 +122,14 @@
 
 namespace actor {
 
+namespace {
+
+// Returns a no-op block for `expirationHandler` in tests.
+ProceduralBlock NoopExpirationHandler() {
+  return ^{
+  };
+}
+
 class ObservingFakeWebState : public web::FakeWebState {
  public:
   void AddObserver(web::WebStateObserver* observer) override {
@@ -170,6 +174,8 @@ class MockActorTask : public ActorTask {
   raw_ptr<bool> stop_called_;
 };
 
+}  // namespace
+
 class ActorServiceTest : public PlatformTest {
  public:
   explicit ActorServiceTest(
@@ -183,7 +189,11 @@ class ActorServiceTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kActorTools);
+    // Backgrounding is disabled by default so that general tests do not
+    // exercise it. `ActorServiceBackgroundingTest` re-enables it.
+    scoped_feature_list_.InitWithFeatures(
+        {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor},
+        {kEnableBackgroundContinuedProcessing});
 
     static_cast<web::FakeWebClient*>(web_client_.Get())
         ->SetJavaScriptFeatures({
@@ -192,6 +202,11 @@ class ActorServiceTest : public PlatformTest {
   }
 
  protected:
+  ActorTaskId CreateTask(ActorService* service,
+                         const std::string& title = "Test Task") {
+    return service->CreateTask(title, /*allow_incognito_web_states=*/false);
+  }
+
   PerformActionsResult PerformActions(
       ActorService* service,
       ActorTaskId task_id,
@@ -261,9 +276,7 @@ TEST_F(ActorServiceTest, CreateTaskGeneratesUniqueIds) {
 
   std::set<ActorTaskId> task_ids;
   for (int i = 0; i < 100; ++i) {
-    ActorTaskId task_id =
-        service->CreateTask("Test Task",
-                            /*allow_incognito_web_states=*/false);
+    ActorTaskId task_id = CreateTask(service);
     EXPECT_FALSE(task_id.is_null());
     EXPECT_TRUE(task_ids.insert(task_id).second);
   }
@@ -275,9 +288,7 @@ TEST_F(ActorServiceTest, RequestTabObservationWithNullWebStateReturnsFailure) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task",
-                          /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   bool callback_called = false;
   service->RequestTabObservation(
@@ -296,9 +307,7 @@ TEST_F(ActorServiceTest, RequestTabObservationWithValidWebState) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task",
-                          /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   web::WebState::CreateParams params(profile_.get());
   auto web_state = web::WebState::Create(params);
@@ -347,8 +356,7 @@ TEST_F(ActorServiceTest, GetWebStateForID_NotControlled) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -372,8 +380,7 @@ TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -408,8 +415,7 @@ TEST_F(ActorServiceTest, AddControlledWebState) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -437,8 +443,7 @@ TEST_F(ActorServiceTest, GetWebStateForID_Incognito_NotAllowed) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
 
@@ -493,7 +498,7 @@ TEST_F(ActorServiceTest, GetActiveTaskState) {
   // No active tasks returns nullopt.
   EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
 
-  service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  CreateTask(service);
   EXPECT_EQ(ActorTaskState::kInit, service->GetActiveTaskState());
 }
 
@@ -503,8 +508,7 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -531,8 +535,7 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -579,8 +582,7 @@ TEST_F(ActorServiceMockTimeTest,
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
@@ -622,8 +624,7 @@ TEST_F(ActorServiceTest, StopTask) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
 
   // Verify that the task exists in service's active tasks.
   ASSERT_TRUE(HasTask(service, task_id));
@@ -657,8 +658,7 @@ TEST_F(ActorServiceTest, TaskUpdatesObserverLifecycle) {
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   service->AddTaskUpdatesObserver(observer);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_NSEQ(@"Test Task", observer.taskTitle);
 
@@ -677,8 +677,7 @@ TEST_F(ActorServiceTest, LateAddedTaskUpdatesObserverAttachesToActiveTasks) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Active Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service, "Active Task");
 
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
@@ -709,8 +708,7 @@ TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
   service->AddTaskUpdatesObserver(observer2);
 
   // Both observers should receive the registration callback on task creation.
-  ActorTaskId task_id =
-      service->CreateTask("Shared Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service, "Shared Task");
   EXPECT_EQ(1, observer1.registeredCount);
   EXPECT_NSEQ(@"Shared Task", observer1.taskTitle);
   EXPECT_EQ(1, observer2.registeredCount);
@@ -728,7 +726,7 @@ TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
   EXPECT_EQ(1, observer2.stoppedCount);
 
   // Creating a new task should only notify observer2.
-  service->CreateTask("Next Task", /*allow_incognito_web_states=*/false);
+  CreateTask(service, "Next Task");
   EXPECT_EQ(1, observer1.registeredCount);
   EXPECT_EQ(2, observer2.registeredCount);
 
@@ -745,30 +743,41 @@ TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
   service->AddTaskUpdatesObserver(observer);
   service->AddTaskUpdatesObserver(observer);
 
-  service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  CreateTask(service);
   EXPECT_EQ(1, observer.registeredCount);
 
   service->RemoveTaskUpdatesObserver(observer);
 }
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-// Test that CreateTask succeeds and falls back gracefully when backgrounding
-// is enabled but no active scene browser exists.
-TEST_F(ActorServiceTest, CreateTask_BackgroundingEnabledNoActiveScene) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kActorTools, kGeminiActor, kGeminiClientMigration,
-       kEnableBackgroundContinuedProcessing},
-      {});
+// Fixture for tests exercising the backgrounding code paths. Re-enables the
+// `kEnableBackgroundContinuedProcessing` killswitch that `ActorServiceTest`
+// disables. Note that `IsGeminiActorBackgroundingEnabled()` can still be false
+// when backgrounding is unavailable in the current configuration (i.e. the
+// `ios_enable_background_continued_processing` GN arg is false, or the OS is
+// older than iOS 26).
+class ActorServiceBackgroundingTest : public ActorServiceTest {
+ protected:
+  void SetUp() override {
+    ActorServiceTest::SetUp();
+    backgrounding_feature_list_.InitAndEnableFeature(
+        kEnableBackgroundContinuedProcessing);
+  }
 
-  EXPECT_TRUE(IsGeminiActorBackgroundingEnabled());
+  base::test::ScopedFeatureList backgrounding_feature_list_;
+};
+
+// Test that `CreateTask` succeeds and falls back gracefully when backgrounding
+// is enabled but no active scene browser exists.
+TEST_F(ActorServiceBackgroundingTest,
+       CreateTask_BackgroundingEnabledNoActiveScene) {
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    GTEST_SKIP() << "Backgrounding is unavailable in this configuration.";
+  }
 
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Background Task",
-                          /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service, "Background Task");
   EXPECT_TRUE(HasTask(service, task_id));
   EXPECT_EQ(service->GetActiveTaskState(), ActorTaskState::kInit);
 
@@ -776,33 +785,72 @@ TEST_F(ActorServiceTest, CreateTask_BackgroundingEnabledNoActiveScene) {
   ASSERT_NE(nullptr, task);
 }
 
-// Test that CreateTask registers a background task with the OS agent when
+// Fixture that attaches a foreground-active scene whose app state vends a
+// mocked `BackgroundContinuedProcessingAppAgent`. This satisfies every
+// precondition of `ActorService::RegisterBackgroundTask()` other than the
+// feature check, so negative tests fail if the feature guard is bypassed.
+class ActorServiceBackgroundingWithAppAgentTest
+    : public ActorServiceBackgroundingTest {
+ protected:
+  void SetUp() override {
+    ActorServiceBackgroundingTest::SetUp();
+
+    mock_app_state_ = OCMClassMock([AppState class]);
+    mock_profile_state_ = OCMClassMock([ProfileState class]);
+    mock_scene_state_ = OCMClassMock([SceneState class]);
+    OCMStub([mock_scene_state_ profileState]).andReturn(mock_profile_state_);
+    OCMStub([mock_profile_state_ appState]).andReturn(mock_app_state_);
+    OCMStub([mock_scene_state_ activationLevel])
+        .andReturn(SceneActivationLevelForegroundActive);
+
+    test_browser_ =
+        std::make_unique<TestBrowser>(profile_.get(), mock_scene_state_);
+    BrowserListFactory::GetForProfile(profile_.get())
+        ->AddBrowser(test_browser_.get());
+
+    mock_agent_ = OCMClassMock([BackgroundContinuedProcessingAppAgent class]);
+    OCMStub([mock_agent_ agentFromApp:mock_app_state_]).andReturn(mock_agent_);
+  }
+
+  void TearDown() override {
+    BrowserListFactory::GetForProfile(profile_.get())
+        ->RemoveBrowser(test_browser_.get());
+    test_browser_.reset();
+    [mock_agent_ stopMocking];
+    [mock_scene_state_ stopMocking];
+    [mock_profile_state_ stopMocking];
+    [mock_app_state_ stopMocking];
+    ActorServiceBackgroundingTest::TearDown();
+  }
+
+  // Creates a task and verifies that it was created without requesting a
+  // background task from the app agent.
+  void CreateTaskAndExpectNoBackgroundTaskRequested() {
+    OCMReject([mock_agent_ requestTaskWithIdentifier:[OCMArg any]
+                                       configuration:[OCMArg any]]);
+
+    ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+    ASSERT_NE(nullptr, service);
+
+    ActorTaskId task_id = CreateTask(service, "Foreground Only Task");
+    EXPECT_TRUE(HasTask(service, task_id));
+    EXPECT_OCMOCK_VERIFY(mock_agent_);
+  }
+
+  id mock_app_state_;
+  id mock_profile_state_;
+  id mock_scene_state_;
+  id mock_agent_;
+  std::unique_ptr<TestBrowser> test_browser_;
+};
+
+// Test that `CreateTask` registers a background task with the OS agent when
 // backgrounding is enabled and an active scene with an app agent exists.
-TEST_F(ActorServiceTest,
+TEST_F(ActorServiceBackgroundingWithAppAgentTest,
        CreateTask_BackgroundingEnabledWithActiveSceneAndAgent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kActorTools, kGeminiActor, kGeminiClientMigration,
-       kEnableBackgroundContinuedProcessing},
-      {});
-
-  EXPECT_TRUE(IsGeminiActorBackgroundingEnabled());
-
-  id mock_app_state = OCMClassMock([AppState class]);
-  id mock_profile_state = OCMClassMock([ProfileState class]);
-  id mock_scene_state = OCMClassMock([SceneState class]);
-  OCMStub([mock_scene_state profileState]).andReturn(mock_profile_state);
-  OCMStub([mock_profile_state appState]).andReturn(mock_app_state);
-  OCMStub([mock_scene_state activationLevel])
-      .andReturn(SceneActivationLevelForegroundActive);
-
-  auto test_browser =
-      std::make_unique<TestBrowser>(profile_.get(), mock_scene_state);
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
-  browser_list->AddBrowser(test_browser.get());
-
-  id mock_agent = OCMClassMock([BackgroundContinuedProcessingAppAgent class]);
-  OCMStub([mock_agent agentFromApp:mock_app_state]).andReturn(mock_agent);
+  if (!IsGeminiActorBackgroundingEnabled()) {
+    GTEST_SKIP() << "Backgrounding is unavailable in this configuration.";
+  }
 
   id mock_scheduler = OCMClassMock([BGTaskScheduler class]);
   OCMStub([mock_scheduler sharedScheduler]).andReturn(mock_scheduler);
@@ -812,15 +860,14 @@ TEST_F(ActorServiceTest,
       [[BackgroundContinuedProcessingTaskConfiguration alloc]
               initWithTitle:@"Dummy"
                    subtitle:@""
-          expirationHandler:^{
-          }];
+          expirationHandler:NoopExpirationHandler()];
   BackgroundContinuedProcessingTaskContext* mock_context =
       [[BackgroundContinuedProcessingTaskContext alloc]
           initWithTaskIdentifier:@"org.chromium.test.task"
                    configuration:dummy_config
                    finishHandler:nil];
 
-  OCMStub([mock_agent
+  OCMStub([mock_agent_
               requestTaskWithIdentifier:[OCMArg any]
                           configuration:[OCMArg checkWithBlock:^BOOL(id val) {
                             captured_config = val;
@@ -831,9 +878,7 @@ TEST_F(ActorServiceTest,
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Registered Task",
-                          /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service, "Registered Task");
   EXPECT_TRUE(HasTask(service, task_id));
 
   ActorTask* task = GetTask(service, task_id);
@@ -847,14 +892,43 @@ TEST_F(ActorServiceTest,
   captured_config.expirationHandler();
   EXPECT_FALSE(HasTask(service, task_id));
 
-  browser_list->RemoveBrowser(test_browser.get());
   [mock_scheduler stopMocking];
-  [mock_agent stopMocking];
-  [mock_scene_state stopMocking];
-  [mock_profile_state stopMocking];
-  [mock_app_state stopMocking];
 }
-#endif
+
+// Test that `CreateTask` does not attempt to register a background task when
+// `kGeminiActorBackgroundingParam` is set to `"false"`.
+TEST_F(ActorServiceBackgroundingWithAppAgentTest,
+       CreateTask_BackgroundingNotRegisteredWhenFeatureParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiActor, {{kGeminiActorBackgroundingParam, "false"}});
+
+  CreateTaskAndExpectNoBackgroundTaskRequested();
+}
+
+// Test that `CreateTask` does not attempt to register a background task when
+// the `kEnableBackgroundContinuedProcessing` killswitch is disabled.
+TEST_F(ActorServiceBackgroundingWithAppAgentTest,
+       CreateTask_BackgroundingNotRegisteredWhenKillswitchDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kEnableBackgroundContinuedProcessing);
+
+  CreateTaskAndExpectNoBackgroundTaskRequested();
+}
+
+// Test that `CreateTask` does not attempt to register a background task when
+// backgrounding is unavailable in the current configuration (i.e. the
+// `ios_enable_background_continued_processing` GN arg is false, or the OS is
+// older than iOS 26), even though all runtime features are enabled.
+TEST_F(ActorServiceBackgroundingWithAppAgentTest,
+       CreateTask_BackgroundingNotRegisteredWhenUnavailable) {
+  if (IsGeminiActorBackgroundingEnabled()) {
+    GTEST_SKIP() << "Backgrounding is available in this configuration.";
+  }
+
+  CreateTaskAndExpectNoBackgroundTaskRequested();
+}
 
 // Test that SetTaskInterventionDelegate sets the intervention delegate on an
 // active task, and that InterruptTask successfully interrupts the task and

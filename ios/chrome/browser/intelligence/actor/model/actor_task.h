@@ -15,7 +15,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
-#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
@@ -24,20 +23,17 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state_observer.h"
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 @class BackgroundContinuedProcessingTaskContext;
-@class NSError;
-
-namespace base {
-class Value;
-}  // namespace base
-#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
-
 @class CRBProtocolObservers;
+@class NSError;
 @protocol ActorTaskInterventionDelegate;
 
 class Browser;
 class BrowserList;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace web {
 class WebState;
@@ -147,12 +143,11 @@ class ActorTask : public web::WebStateObserver,
   // Returns whether this task allows actuating on incognito WebStates.
   bool allow_incognito_web_states() const;
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Sets the background continued processing task context and updates its
-  // subtitle with the latest cached task update, if any.
+  // subtitle with the latest cached task update, if any. No-op if
+  // `GeminiActorBackgrounding` is disabled.
   void SetBackgroundTaskContext(
       BackgroundContinuedProcessingTaskContext* background_task_context);
-#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // web::WebStateObserver overrides.
   void DidStopLoading(web::WebState* web_state) override;
@@ -212,7 +207,6 @@ class ActorTask : public web::WebStateObserver,
   // Handles the user resolving the confirmation.
   void OnInterruptConfirmationResolved();
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Updates the subtitle of the background continued processing task to match
   // `task_update`. Does nothing if `task_update` is empty or identical to the
   // current value.
@@ -243,7 +237,6 @@ class ActorTask : public web::WebStateObserver,
   void OnHeartbeatPingResponse(web::WebStateID web_state_id,
                                const base::Value* result,
                                NSError* error);
-#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -306,14 +299,12 @@ class ActorTask : public web::WebStateObserver,
   // observers inside are held weakly.
   __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
 
-#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
       nil;
 
   // Repeating timer for sending JavaScript heartbeat pings.
   base::RepeatingTimer heartbeat_timer_;
-#endif
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};

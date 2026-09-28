@@ -10,8 +10,9 @@
 // Feature flag acting as a killswitch for background continued processing.
 BASE_DECLARE_FEATURE(kEnableBackgroundContinuedProcessing);
 
-// Returns true if background continued processing is enabled (requires iOS 26
-// and up).
+// Returns true if background continued processing is enabled. Requires iOS 26
+// and up, and the `ios_enable_background_continued_processing` GN arg enabled
+// (which adds the required Info.plist entries).
 bool IsBackgroundContinuedProcessingEnabled();
 
 #endif  // IOS_CHROME_APP_BACKGROUND_TASK_FEATURES_H_
