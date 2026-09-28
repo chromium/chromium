@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/base_export.h"
@@ -257,46 +258,25 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
     ValueHolder(Array& value);       // NOLINT(google-explicit-constructor)
     ValueHolder(Dictionary& value);  // NOLINT(google-explicit-constructor)
     ValueHolder(ValueHolder&&);
+    ~ValueHolder();
 
    protected:
     void WriteToValue(TracedValue* value) const;
     void WriteToValue(const char* name, TracedValue* value) const;
 
    private:
-    union KeptValue {
-      // Copy is handled by the holder (based on
-      // |TracedValue::ValueHolder::kept_value_type_|).
-      int int_value;
-      double double_value;
-      bool bool_value;
-      std::string_view string_piece_value;
-      std::string std_string_value;
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #union
-      RAW_PTR_EXCLUSION void* void_ptr_value;
-      Array array_value;
-      Dictionary dictionary_value;
+    using KeptValue = std::variant<int,
+                                   double,
+                                   bool,
+                                   std::string_view,
+                                   std::string,
+                                   void*,
+                                   Array,
+                                   Dictionary>;
 
-      // Default constructor is implicitly deleted because union field has a
-      // non-trivial default constructor.
-      KeptValue() {}   // NOLINT(modernize-use-equals-default)
-      ~KeptValue() {}  // NOLINT(modernize-use-equals-default)
-    };
-
-    // Reimplementing a subset of C++17 std::variant.
-    enum class KeptValueType {
-      kIntType,
-      kDoubleType,
-      kBoolType,
-      kStringPieceType,
-      kStdStringType,
-      kVoidPtrType,
-      kArrayType,
-      kDictionaryType,
-    };
-
-    KeptValue kept_value_;
-    KeptValueType kept_value_type_;
+    // The `void*` alternative can hold arbitrary non-heap or non-PartitionAlloc
+    // pointers (e.g. 0x1234), so raw_ptr cannot be used in the variant.
+    RAW_PTR_EXCLUSION KeptValue kept_value_;
   };
 
   // |ArrayItem| is a |ValueHolder| which can be used to construct an |Array|.

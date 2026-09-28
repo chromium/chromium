@@ -10,6 +10,7 @@
 #include <atomic>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/bits.h"
@@ -23,6 +24,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace base::trace_event {
 
@@ -668,173 +670,77 @@ void TracedValue::Dictionary::WriteToValue(TracedValue* value) const {
   }
 }
 
-TracedValue::ValueHolder::ValueHolder(int value) {
-  kept_value_.int_value = value;
-  kept_value_type_ = KeptValueType::kIntType;
-}
+TracedValue::ValueHolder::ValueHolder(int value) : kept_value_(value) {}
 
-TracedValue::ValueHolder::ValueHolder(double value) {
-  kept_value_.double_value = value;
-  kept_value_type_ = KeptValueType::kDoubleType;
-}
+TracedValue::ValueHolder::ValueHolder(double value) : kept_value_(value) {}
 
-TracedValue::ValueHolder::ValueHolder(bool value) {
-  kept_value_.bool_value = value;
-  kept_value_type_ = KeptValueType::kBoolType;
-}
+TracedValue::ValueHolder::ValueHolder(bool value) : kept_value_(value) {}
 
-TracedValue::ValueHolder::ValueHolder(std::string_view value) {
-  kept_value_.string_piece_value = value;
-  kept_value_type_ = KeptValueType::kStringPieceType;
-}
+TracedValue::ValueHolder::ValueHolder(std::string_view value)
+    : kept_value_(value) {}
 
-TracedValue::ValueHolder::ValueHolder(std::string value) {
-  new (&kept_value_.std_string_value) std::string(std::move(value));
-  kept_value_type_ = KeptValueType::kStdStringType;
-}
+TracedValue::ValueHolder::ValueHolder(std::string value)
+    : kept_value_(std::move(value)) {}
 
-TracedValue::ValueHolder::ValueHolder(void* value) {
-  kept_value_.void_ptr_value = value;
-  kept_value_type_ = KeptValueType::kVoidPtrType;
-}
+TracedValue::ValueHolder::ValueHolder(void* value) : kept_value_(value) {}
 
-TracedValue::ValueHolder::ValueHolder(const char* value) {
-  kept_value_.string_piece_value = value;
-  kept_value_type_ = KeptValueType::kStringPieceType;
-}
+TracedValue::ValueHolder::ValueHolder(const char* value)
+    : kept_value_(std::string_view(value)) {}
 
-TracedValue::ValueHolder::ValueHolder(TracedValue::Dictionary& value) {
-  new (&kept_value_.dictionary_value) TracedValue::Dictionary(std::move(value));
-  kept_value_type_ = KeptValueType::kDictionaryType;
-}
+TracedValue::ValueHolder::ValueHolder(TracedValue::Dictionary& value)
+    : kept_value_(std::move(value)) {}
 
-TracedValue::ValueHolder::ValueHolder(TracedValue::Array& value) {
-  new (&kept_value_.array_value) TracedValue::Array(std::move(value));
-  kept_value_type_ = KeptValueType::kArrayType;
-}
+TracedValue::ValueHolder::ValueHolder(TracedValue::Array& value)
+    : kept_value_(std::move(value)) {}
 
-TracedValue::ValueHolder::ValueHolder(TracedValue::ValueHolder&& other) {
-  switch (other.kept_value_type_) {
-    case KeptValueType::kIntType: {
-      kept_value_.int_value = other.kept_value_.int_value;
-      break;
-    }
-    case KeptValueType::kDoubleType: {
-      kept_value_.double_value = other.kept_value_.double_value;
-      break;
-    }
-    case KeptValueType::kBoolType: {
-      kept_value_.bool_value = other.kept_value_.bool_value;
-      break;
-    }
-    case KeptValueType::kStringPieceType: {
-      kept_value_.string_piece_value = other.kept_value_.string_piece_value;
-      break;
-    }
-    case KeptValueType::kStdStringType: {
-      new (&kept_value_.std_string_value)
-          std::string(std::move(other.kept_value_.std_string_value));
-      break;
-    }
-    case KeptValueType::kVoidPtrType: {
-      kept_value_.void_ptr_value = other.kept_value_.void_ptr_value;
-      break;
-    }
-    case KeptValueType::kArrayType: {
-      new (&kept_value_.array_value)
-          TracedValue::Array(std::move(other.kept_value_.array_value));
-      break;
-    }
-    case KeptValueType::kDictionaryType: {
-      new (&kept_value_.dictionary_value) TracedValue::Dictionary(
-          std::move(other.kept_value_.dictionary_value));
-      break;
-    }
-  }
-  kept_value_type_ = other.kept_value_type_;
-}
+TracedValue::ValueHolder::ValueHolder(TracedValue::ValueHolder&&) = default;
+
+TracedValue::ValueHolder::~ValueHolder() = default;
 
 void TracedValue::ValueHolder::WriteToValue(TracedValue* value) const {
-  switch (kept_value_type_) {
-    case KeptValueType::kIntType: {
-      value->AppendInteger(kept_value_.int_value);
-      break;
-    }
-    case KeptValueType::kDoubleType: {
-      value->AppendDouble(kept_value_.double_value);
-      break;
-    }
-    case KeptValueType::kBoolType: {
-      value->AppendBoolean(kept_value_.bool_value);
-      break;
-    }
-    case KeptValueType::kStringPieceType: {
-      value->AppendString(kept_value_.string_piece_value);
-      break;
-    }
-    case KeptValueType::kStdStringType: {
-      value->AppendString(kept_value_.std_string_value);
-      break;
-    }
-    case KeptValueType::kVoidPtrType: {
-      value->AppendPointer(kept_value_.void_ptr_value);
-      break;
-    }
-    case KeptValueType::kArrayType: {
-      value->BeginArray();
-      kept_value_.array_value.WriteToValue(value);
-      value->EndArray();
-      break;
-    }
-    case KeptValueType::kDictionaryType: {
-      value->BeginDictionary();
-      kept_value_.dictionary_value.WriteToValue(value);
-      value->EndDictionary();
-      break;
-    }
-  }
+  std::visit(absl::Overload{
+                 [value](int v) { value->AppendInteger(v); },
+                 [value](double v) { value->AppendDouble(v); },
+                 [value](bool v) { value->AppendBoolean(v); },
+                 [value](std::string_view v) { value->AppendString(v); },
+                 [value](const std::string& v) { value->AppendString(v); },
+                 [value](void* v) { value->AppendPointer(v); },
+                 [value](const Array& v) {
+                   value->BeginArray();
+                   v.WriteToValue(value);
+                   value->EndArray();
+                 },
+                 [value](const Dictionary& v) {
+                   value->BeginDictionary();
+                   v.WriteToValue(value);
+                   value->EndDictionary();
+                 },
+             },
+             kept_value_);
 }
 
 void TracedValue::ValueHolder::WriteToValue(const char* name,
                                             TracedValue* value) const {
-  switch (kept_value_type_) {
-    case KeptValueType::kIntType: {
-      value->SetInteger(name, kept_value_.int_value);
-      break;
-    }
-    case KeptValueType::kDoubleType: {
-      value->SetDouble(name, kept_value_.double_value);
-      break;
-    }
-    case KeptValueType::kBoolType: {
-      value->SetBoolean(name, kept_value_.bool_value);
-      break;
-    }
-    case KeptValueType::kStringPieceType: {
-      value->SetString(name, kept_value_.string_piece_value);
-      break;
-    }
-    case KeptValueType::kStdStringType: {
-      value->SetString(name, kept_value_.std_string_value);
-      break;
-    }
-    case KeptValueType::kVoidPtrType: {
-      value->SetPointer(name, kept_value_.void_ptr_value);
-      break;
-    }
-    case KeptValueType::kArrayType: {
-      value->BeginArray(name);
-      kept_value_.array_value.WriteToValue(value);
-      value->EndArray();
-      break;
-    }
-    case KeptValueType::kDictionaryType: {
-      value->BeginDictionary(name);
-      kept_value_.dictionary_value.WriteToValue(value);
-      value->EndDictionary();
-      break;
-    }
-  }
+  std::visit(
+      absl::Overload{
+          [name, value](int v) { value->SetInteger(name, v); },
+          [name, value](double v) { value->SetDouble(name, v); },
+          [name, value](bool v) { value->SetBoolean(name, v); },
+          [name, value](std::string_view v) { value->SetString(name, v); },
+          [name, value](const std::string& v) { value->SetString(name, v); },
+          [name, value](void* v) { value->SetPointer(name, v); },
+          [name, value](const Array& v) {
+            value->BeginArray(name);
+            v.WriteToValue(value);
+            value->EndArray();
+          },
+          [name, value](const Dictionary& v) {
+            value->BeginDictionary(name);
+            v.WriteToValue(value);
+            value->EndDictionary();
+          },
+      },
+      kept_value_);
 }
 
 void TracedValue::ArrayItem::WriteToValue(TracedValue* value) const {
