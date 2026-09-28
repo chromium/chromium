@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 
+import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.SearchView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -197,9 +198,24 @@ public class SearchUtils {
             SearchView searchView, @Nullable String query, @Nullable Activity activity) {
         ImageView clearButton = findSearchClearButton(searchView);
         clearButton.setVisibility(query == null || query.equals("") ? View.GONE : View.VISIBLE);
+        int otherButtonsVisibility = query != null ? View.GONE : View.VISIBLE;
         if (activity != null) {
-            SettingsUtils.setOverflowMenuVisibility(
-                    activity, query != null ? View.GONE : View.VISIBLE);
+            SettingsUtils.setOverflowMenuVisibility(activity, otherButtonsVisibility);
+        }
+        setSiblingActionItemsVisibility(searchView, otherButtonsVisibility);
+    }
+
+    /**
+     * Sets the visibility of the other items (e.g. a help icon) in the action menu that hosts the
+     * search view. The open search view fills the toolbar, so any other action items would be
+     * clipped or pushed off screen. See crbug.com/565633710.
+     */
+    private static void setSiblingActionItemsVisibility(SearchView searchView, int visibility) {
+        if (!(searchView.getParent() instanceof ActionMenuView menuView)) return;
+
+        for (int i = 0; i < menuView.getChildCount(); i++) {
+            View child = menuView.getChildAt(i);
+            if (child != searchView) child.setVisibility(visibility);
         }
     }
 

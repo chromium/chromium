@@ -171,6 +171,7 @@ robolectric_library("junit") {
 
   sources = [
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java",
+    "junit/src/org/chromium/components/browser_ui/settings/SearchUtilsTest.java",
     "junit/src/org/chromium/components/browser_ui/settings/search/BaseSearchIndexProviderTest.java",
     "junit/src/org/chromium/components/browser_ui/settings/search/PreferenceParserTest.java",
     "junit/src/org/chromium/components/browser_ui/settings/search/SettingsIndexDataTest.java",
@@ -185,10 +186,12 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
