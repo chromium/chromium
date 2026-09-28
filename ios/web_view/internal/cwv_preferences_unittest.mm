@@ -63,6 +63,8 @@ class CWVPreferencesTest : public PlatformTest {
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillSafeLifecycleEnabled, false);
     pref_registry->RegisterBooleanPref(
+        ios_web_view::kCWVAutofillScopedFormActivityEnabled, false);
+    pref_registry->RegisterBooleanPref(
         ios_web_view::kPasswordManagerSafeLifecycleEnabled, false);
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillVCNUsageEnabled, false);
@@ -164,6 +166,16 @@ TEST_F(CWVPreferencesTest, AutofillSafeLifecycleEnabled) {
   EXPECT_FALSE(preferences.autofillSafeLifecycleEnabled);
   preferences.autofillSafeLifecycleEnabled = YES;
   EXPECT_TRUE(preferences.autofillSafeLifecycleEnabled);
+}
+
+// Tests CWVPreferences `autofillScopedFormActivityEnabled`.
+TEST_F(CWVPreferencesTest, AutofillScopedFormActivityEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.autofillScopedFormActivityEnabled);
+  preferences.autofillScopedFormActivityEnabled = YES;
+  EXPECT_TRUE(preferences.autofillScopedFormActivityEnabled);
 }
 
 // Tests CWVPreferences `passwordManagerSafeLifecycleEnabled`.

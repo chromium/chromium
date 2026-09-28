@@ -13,6 +13,8 @@ void RegisterCWVAutofillPrefs(PrefRegistrySimple* pref_registry) {
   pref_registry->RegisterBooleanPref(kCWVAutofillAddressSyncEnabled, false);
   pref_registry->RegisterBooleanPref(kCWVAutofillVCNUsageEnabled, false);
   pref_registry->RegisterBooleanPref(kCWVAutofillSafeLifecycleEnabled, false);
+  pref_registry->RegisterBooleanPref(kCWVAutofillScopedFormActivityEnabled,
+                                     false);
 }
 
 bool IsAutofillAddressSyncEnabled(const PrefService* prefs) {
@@ -37,6 +39,14 @@ bool IsAutofillSafeLifecycleEnabled(const PrefService* prefs) {
 
 void SetAutofillSafeLifecycleEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kCWVAutofillSafeLifecycleEnabled, enabled);
+}
+
+bool IsAutofillScopedFormActivityEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kCWVAutofillScopedFormActivityEnabled);
+}
+
+void SetAutofillScopedFormActivityEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kCWVAutofillScopedFormActivityEnabled, enabled);
 }
 
 }  // namespace ios_web_view

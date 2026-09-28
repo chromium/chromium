@@ -134,6 +134,14 @@
   return ios_web_view::IsAutofillSafeLifecycleEnabled(_prefService);
 }
 
+- (void)setAutofillScopedFormActivityEnabled:(BOOL)enabled {
+  ios_web_view::SetAutofillScopedFormActivityEnabled(_prefService, enabled);
+}
+
+- (BOOL)isAutofillScopedFormActivityEnabled {
+  return ios_web_view::IsAutofillScopedFormActivityEnabled(_prefService);
+}
+
 - (void)setTriggerNonFatalCheck:(BOOL)enabled {
   // TODO(crbug.com/503005390): Remove after release integration testing in
   // stable.

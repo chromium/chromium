@@ -5,7 +5,9 @@
 #import <Foundation/Foundation.h>
 
 #import <memory>
+#import <optional>
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
@@ -30,9 +32,12 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_provider_query.h"
+#import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager.h"
@@ -49,6 +54,7 @@
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
@@ -76,9 +82,68 @@ using FieldType = autofill::FormActivityParams::FieldType;
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
+// Records the names of the form activity notifications it receives, so that
+// tests can assert on their absence and see exactly which ones fired.
+@interface FakeFormActivityDelegate : NSObject <CWVAutofillControllerDelegate>
+
+@property(nonatomic, readonly) NSArray<NSString*>* receivedNotifications;
+
+@end
+
+@implementation FakeFormActivityDelegate {
+  NSMutableArray<NSString*>* _receivedNotifications;
+}
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _receivedNotifications = [NSMutableArray array];
+  }
+  return self;
+}
+
+- (NSArray<NSString*>*)receivedNotifications {
+  return [_receivedNotifications copy];
+}
+
+#pragma mark - CWVAutofillControllerDelegate
+
+- (void)autofillController:(CWVAutofillController*)autofillController
+    didFocusOnFieldWithIdentifier:(NSString*)fieldIdentifier
+                        fieldType:(NSInteger)fieldType
+                         formName:(NSString*)formName
+                          frameID:(NSString*)frameID
+                            value:(NSString*)value
+                    userInitiated:(BOOL)userInitiated {
+  [_receivedNotifications addObject:@"didFocusOnField"];
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
+    didInputInFieldWithIdentifier:(NSString*)fieldIdentifier
+                        fieldType:(NSInteger)fieldType
+                         formName:(NSString*)formName
+                          frameID:(NSString*)frameID
+                            value:(NSString*)value
+                    userInitiated:(BOOL)userInitiated {
+  [_receivedNotifications addObject:@"didInputInField"];
+}
+
+- (void)autofillController:(CWVAutofillController*)autofillController
+    didBlurOnFieldWithIdentifier:(NSString*)fieldIdentifier
+                       fieldType:(NSInteger)fieldType
+                        formName:(NSString*)formName
+                         frameID:(NSString*)frameID
+                           value:(NSString*)value
+                   userInitiated:(BOOL)userInitiated {
+  [_receivedNotifications addObject:@"didBlurOnField"];
+}
+
+@end
+
 namespace ios_web_view {
 namespace {
 
+constexpr std::string_view kTestURL = "https://example.com/";
 NSString* const kTestFormName = @"FormName";
 FormRendererId kTestFormRendererID = FormRendererId(0);
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
@@ -106,18 +171,41 @@ class MockOtpUnmaskDelegate : public autofill::OtpUnmaskDelegate {
   base::WeakPtrFactory<MockOtpUnmaskDelegate> weak_factory_{this};
 };
 
-class CWVAutofillControllerTest : public web::WebTest {
+// A `FakeWebState` whose committed URL can be made untrusted. Plain
+// `FakeWebState` always reports its URL as trusted, which leaves the untrusted
+// branch of `-webState:didRegisterFormActivity:inFrame:` unreachable.
+class FakeWebStateWithUntrustableURL : public web::FakeWebState {
+ public:
+  ~FakeWebStateWithUntrustableURL() override = default;
+
+  void set_url_trusted(bool url_trusted) { url_trusted_ = url_trusted; }
+
+  // web::WebState:
+  std::optional<GURL> GetLastCommittedURLIfTrusted() const override {
+    if (!url_trusted_) {
+      return std::nullopt;
+    }
+    return web::FakeWebState::GetLastCommittedURLIfTrusted();
+  }
+
+ private:
+  bool url_trusted_ = true;
+};
+
+class CWVAutofillControllerTestBase : public web::WebTest {
  protected:
-  CWVAutofillControllerTest() {
+  CWVAutofillControllerTestBase() {
     l10n_util::OverrideLocaleWithCocoaLocale();
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
     pref_service_.registry()->RegisterBooleanPref(
         autofill::prefs::kAutofillProfileEnabled, true);
     ios_web_view::RegisterCWVAutofillPrefs(pref_service_.registry());
+    ios_web_view::SetAutofillScopedFormActivityEnabled(&pref_service_, true);
     RegisterWebViewPasswordManagerPrefs(pref_service_.registry());
 
     web_state_.SetBrowserState(&browser_state_);
+    web_state_.SetCurrentURL(GURL(kTestURL));
 
     frame_id_ = base::SysUTF8ToNSString(web::kMainFakeFrameId);
 
@@ -135,6 +223,20 @@ class CWVAutofillControllerTest : public web::WebTest {
         [[FakeAutofillAgent alloc] initWithPrefService:&pref_service_
                                               webState:&web_state_];
 
+    password_controller_ = OCMClassMock([SharedPasswordController class]);
+    form_activity_tab_helper_ =
+        std::make_unique<autofill::TestFormActivityTabHelper>(&web_state_);
+  }
+
+  void SetUp() override {
+    web::WebTest::SetUp();
+
+    web::test::OverrideJavaScriptFeatures(
+        &browser_state_,
+        {autofill::AutofillJavaScriptFeature::GetInstance(),
+         autofill::FormHandlersJavaScriptFeature::GetInstance(),
+         autofill::SuggestionControllerJavaScriptFeature::GetInstance()});
+
     auto password_manager_client =
         std::make_unique<WebViewPasswordManagerClient>(
             &web_state_, /*sync_service=*/nullptr, &pref_service_,
@@ -144,7 +246,6 @@ class CWVAutofillControllerTest : public web::WebTest {
             /*requirements_service=*/nullptr);
     auto password_manager = std::make_unique<password_manager::PasswordManager>(
         password_manager_client.get());
-    password_controller_ = OCMClassMock([SharedPasswordController class]);
     IOSPasswordManagerDriverFactory::CreateForWebState(
         &web_state_, password_controller_, password_manager.get());
     password_manager_client_ = password_manager_client.get();
@@ -162,15 +263,6 @@ class CWVAutofillControllerTest : public web::WebTest {
               passwordManager:std::move(password_manager)
         passwordManagerClient:std::move(password_manager_client)
            passwordController:password_controller_];
-    form_activity_tab_helper_ =
-        std::make_unique<autofill::TestFormActivityTabHelper>(&web_state_);
-  }
-
-  void SetUp() override {
-    web::WebTest::SetUp();
-
-    OverrideJavaScriptFeatures(
-        {autofill::AutofillJavaScriptFeature::GetInstance()});
   }
 
   void TearDown() override {
@@ -180,13 +272,18 @@ class CWVAutofillControllerTest : public web::WebTest {
     web::WebTest::TearDown();
   }
 
-  void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
+  void AddWebFrame(std::unique_ptr<web::FakeWebFrame> frame) {
+    frame->set_browser_state(&browser_state_);
     web_frames_manager_->AddWebFrame(std::move(frame));
   }
 
-  void RegisterFormActivity(bool has_user_gesture = true) {
-    auto frame = web::FakeWebFrame::Create(base::SysNSStringToUTF8(frame_id_),
-                                           /*is_main_frame=*/true, GURL());
+  // Registers a focus event on `kTestFormName` / `kTestFieldIdentifier` in a
+  // newly created main frame, and returns that frame so that callers can post
+  // follow up activity to it.
+  web::WebFrame* RegisterFormActivity(bool has_user_gesture) {
+    auto frame =
+        web::FakeWebFrame::Create(base::SysNSStringToUTF8(frame_id_),
+                                  /*is_main_frame=*/true, GURL(kTestURL));
     web::WebFrame* frame_ptr = frame.get();
     AddWebFrame(std::move(frame));
 
@@ -196,6 +293,90 @@ class CWVAutofillControllerTest : public web::WebTest {
     params.type = ActivityType::kFocus;
     params.has_user_gesture = has_user_gesture;
     form_activity_tab_helper_->FormActivityRegistered(frame_ptr, params);
+    return frame_ptr;
+  }
+
+  web::WebFrame* RegisterFormActivity() {
+    return RegisterFormActivity(/*has_user_gesture=*/true);
+  }
+
+  // Stubs `password_controller_` to always answer "no suggestions available",
+  // recording the query and gesture it was invoked with in
+  // `last_suggestions_query_` / `last_suggestions_had_user_gesture_`.
+  // `ignoringNonObjectArgs` makes the stub match regardless of the gesture
+  // value, so that tests assert on the recorded gesture instead of the mock
+  // silently failing to match (which would strand the fetch completion).
+  void StubPasswordSuggestionsAvailability() {
+    CWVAutofillControllerTestBase* test = this;
+    OCMStub([password_controller_
+                checkIfSuggestionsAvailableForForm:[OCMArg any]
+                                    hasUserGesture:NO
+                                          webState:&web_state_
+                                 completionHandler:[OCMArg any]])
+        .ignoringNonObjectArgs()
+        .andDo(^(NSInvocation* invocation) {
+          __unsafe_unretained FormSuggestionProviderQuery* query = nil;
+          [invocation getArgument:&query atIndex:2];
+          BOOL has_user_gesture = NO;
+          [invocation getArgument:&has_user_gesture atIndex:3];
+          __unsafe_unretained void (^suggestions_available)(BOOL) = nil;
+          [invocation getArgument:&suggestions_available atIndex:5];
+
+          test->last_suggestions_query_ = query;
+          test->last_suggestions_had_user_gesture_ = has_user_gesture;
+          suggestions_available(NO);
+        });
+  }
+
+  // Fetches suggestions for `fieldIdentifier` on `kTestFormName` in the main
+  // frame and waits for the fetch to complete.
+  void FetchSuggestionsForField(NSString* fieldIdentifier) {
+    base::test::TestFuture<NSArray<CWVAutofillSuggestion*>*> suggestions_future;
+
+    [autofill_controller_
+        fetchSuggestionsForFormWithName:kTestFormName
+                        fieldIdentifier:fieldIdentifier
+                              fieldType:(NSInteger)FieldType::kUnknown
+                                frameID:frame_id_
+                      completionHandler:base::CallbackToBlock(
+                                            suggestions_future.GetCallback())];
+
+    ASSERT_TRUE(suggestions_future.Wait());
+  }
+
+  // Returns activity params of `type` describing the default test field in
+  // `frame`.
+  autofill::FormActivityParams FormActivityParamsForType(ActivityType type,
+                                                         web::WebFrame* frame) {
+    autofill::FormActivityParams params;
+    params.form_name = base::SysNSStringToUTF8(kTestFormName);
+    params.field_identifier = base::SysNSStringToUTF8(kTestFieldIdentifier);
+    params.value = base::SysNSStringToUTF8(kTestFieldValue);
+    params.frame_id = frame ? frame->GetFrameId() : std::string();
+    params.has_user_gesture = true;
+    params.type = type;
+    return params;
+  }
+
+  // Returns activity params of `type` describing the default test field, as
+  // reported by the main frame.
+  autofill::FormActivityParams FormActivityParamsForType(ActivityType type) {
+    autofill::FormActivityParams params =
+        FormActivityParamsForType(type, /*frame=*/nullptr);
+    params.frame_id = web::kMainFakeFrameId;
+    return params;
+  }
+
+  // Registers activity of `type` on the default test field in `frame`.
+  void RegisterFieldActivity(web::WebFrame* frame,
+                             ActivityType type,
+                             NSString* value,
+                             bool has_user_gesture) {
+    autofill::FormActivityParams params =
+        FormActivityParamsForType(type, frame);
+    params.value = base::SysNSStringToUTF8(value);
+    params.has_user_gesture = has_user_gesture;
+    form_activity_tab_helper_->FormActivityRegistered(frame, params);
   }
 
   void PrepareFormActivity() {
@@ -241,7 +422,7 @@ class CWVAutofillControllerTest : public web::WebTest {
   autofill::TestPersonalDataManager personal_data_manager_;
   autofill::TestStrikeDatabase strike_database_;
   syncer::TestSyncService sync_service_;
-  web::FakeWebState web_state_;
+  FakeWebStateWithUntrustableURL web_state_;
   NSString* frame_id_;
   web::FakeWebFramesManager* web_frames_manager_;
   autofill::MockAutocompleteHistoryManager autocomplete_history_manager_;
@@ -253,10 +434,33 @@ class CWVAutofillControllerTest : public web::WebTest {
   WebViewPasswordManagerClient* password_manager_client_;
   CWVVCNEnrollmentManager* _retainedEnrollmentManager;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Arguments recorded by `StubPasswordSuggestionsAvailability`.
+  FormSuggestionProviderQuery* last_suggestions_query_;
+  BOOL last_suggestions_had_user_gesture_ = NO;
+};
+
+class CWVAutofillControllerTest : public CWVAutofillControllerTestBase,
+                                  public testing::WithParamInterface<bool> {
+ protected:
+  CWVAutofillControllerTest() {
+    ios_web_view::SetAutofillScopedFormActivityEnabled(&pref_service_,
+                                                       GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, CWVAutofillControllerTest, testing::Bool());
+
+class CWVAutofillControllerScopedFormActivityTest
+    : public CWVAutofillControllerTestBase {
+ protected:
+  CWVAutofillControllerScopedFormActivityTest() {
+    ios_web_view::SetAutofillScopedFormActivityEnabled(&pref_service_, true);
+  }
 };
 
 // Tests CWVAutofillController fetch suggestions for profiles.
-TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
+TEST_P(CWVAutofillControllerTest, FetchProfileSuggestions) {
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:kTestFieldValue
        displayDescription:kTestDisplayDescription
@@ -306,7 +510,7 @@ TEST_F(CWVAutofillControllerTest, FetchProfileSuggestions) {
 }
 
 // Tests CWVAutofillController fetch suggestions for passwords.
-TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
+TEST_P(CWVAutofillControllerTest, FetchPasswordSuggestions) {
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:kTestFieldValue
        displayDescription:nil
@@ -359,7 +563,7 @@ TEST_F(CWVAutofillControllerTest, FetchPasswordSuggestions) {
 }
 
 // Tests CWVAutofillController accepts suggestion.
-TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
+TEST_P(CWVAutofillControllerTest, AcceptSuggestion) {
   FormSuggestion* form_suggestion = [FormSuggestion
       suggestionWithValue:kTestFieldValue
        displayDescription:nil
@@ -396,7 +600,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
 // Tests that accepting a suggestion generated for Form 1 / Field A
 // after focus has rapidly shifted to Form 2 / Field B only fills Form 1 / Field
 // A.
-TEST_F(CWVAutofillControllerTest, AcceptSuggestionAfterFocusShift) {
+TEST_P(CWVAutofillControllerTest, AcceptSuggestionAfterFocusShift) {
   FormSuggestion* form_suggestion = [FormSuggestion
       suggestionWithValue:kTestFieldValue
        displayDescription:nil
@@ -491,7 +695,7 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestionAfterFocusShift) {
 }
 
 // Tests CWVAutofillController accepts credit card as suggestion.
-TEST_F(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
+TEST_P(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   CWVCreditCard* cwv_credit_card =
       [[CWVCreditCard alloc] initWithCreditCard:credit_card];
@@ -520,7 +724,7 @@ TEST_F(CWVAutofillControllerTest, AcceptCreditCardAsSuggestion) {
   EXPECT_OCMOCK_VERIFY(password_controller_);
 }
 
-TEST_F(CWVAutofillControllerTest, AcceptVirtualCreditCardAsSuggestion) {
+TEST_P(CWVAutofillControllerTest, AcceptVirtualCreditCardAsSuggestion) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   credit_card.set_record_type(autofill::CreditCard::RecordType::kVirtualCard);
   CWVCreditCard* cwv_credit_card =
@@ -551,7 +755,7 @@ TEST_F(CWVAutofillControllerTest, AcceptVirtualCreditCardAsSuggestion) {
 }
 
 // Tests CWVAutofillController delegate focus callback is invoked.
-TEST_F(CWVAutofillControllerTest, FocusCallback) {
+TEST_P(CWVAutofillControllerTest, FocusCallback) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -578,7 +782,9 @@ TEST_F(CWVAutofillControllerTest, FocusCallback) {
 }
 
 // Tests CWVAutofillController delegate input callback is invoked.
-TEST_F(CWVAutofillControllerTest, InputCallback) {
+TEST_P(CWVAutofillControllerTest, InputCallback) {
+  web::WebFrame* frame = RegisterFormActivity();
+
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -597,14 +803,15 @@ TEST_F(CWVAutofillControllerTest, InputCallback) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = ActivityType::kInput;
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  form_activity_tab_helper_->FormActivityRegistered(frame, params);
   [delegate verify];
 }
 
 // Tests CWVAutofillController delegate input callback is invoked by keyup
 // events.
-TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
+TEST_P(CWVAutofillControllerTest, InputCallbackFromKeyup) {
+  web::WebFrame* frame = RegisterFormActivity();
+
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -623,13 +830,14 @@ TEST_F(CWVAutofillControllerTest, InputCallbackFromKeyup) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = ActivityType::kKeyUp;
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  form_activity_tab_helper_->FormActivityRegistered(frame, params);
   [delegate verify];
 }
 
 // Tests CWVAutofillController delegate blur callback is invoked.
-TEST_F(CWVAutofillControllerTest, BlurCallback) {
+TEST_P(CWVAutofillControllerTest, BlurCallback) {
+  web::WebFrame* frame = RegisterFormActivity();
+
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -648,13 +856,12 @@ TEST_F(CWVAutofillControllerTest, BlurCallback) {
   params.frame_id = web::kMainFakeFrameId;
   params.type = ActivityType::kBlur;
   params.has_user_gesture = true;
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
-  form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  form_activity_tab_helper_->FormActivityRegistered(frame, params);
 
   [delegate verify];
 }
 // Tests submission handling.
-TEST_F(CWVAutofillControllerTest, SubmitCallback) {
+TEST_P(CWVAutofillControllerTest, SubmitCallback) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -698,7 +905,7 @@ TEST_F(CWVAutofillControllerTest, SubmitCallback) {
 
 // Tests that fetchFullCardDetailsForCard:completionHandler: returns an error
 // when the web frame is missing.
-TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoFrame) {
+TEST_P(CWVAutofillControllerTest, FetchFullCardDetailsNoFrame) {
   CWVCreditCard* card = [[CWVCreditCard alloc]
       initWithCreditCard:autofill::test::GetCreditCard()];
   __block BOOL completion_handler_called = NO;
@@ -715,13 +922,13 @@ TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoFrame) {
 
 // Tests that fetchFullCardDetailsForCard:completionHandler: returns an error
 // when the autofill driver is missing.
-TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoDriver) {
+TEST_P(CWVAutofillControllerTest, FetchFullCardDetailsNoDriver) {
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   std::string frame_id = frame->GetFrameId();
   web::WebFrame* frame_ptr = frame.get();
   AddWebFrame(std::move(frame));
 
-  // Simulate form activity to set _lastFormActivityWebFrameID.
+  // Simulate form activity to populate `_focusedField`.
   autofill::FormActivityParams params;
   params.frame_id = frame_id;
   params.type = ActivityType::kFocus;
@@ -750,12 +957,12 @@ TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoDriver) {
 
 // Tests that fetchFullCardDetailsForCard:completionHandler: returns a full
 // card.
-TEST_F(CWVAutofillControllerTest, FetchFullCardDetails) {
+TEST_P(CWVAutofillControllerTest, FetchFullCardDetails) {
   auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
   std::string frame_id = frame->GetFrameId();
   AddWebFrame(std::move(frame));
 
-  // Simulate form activity to set _lastFormActivityWebFrameID.
+  // Simulate form activity to populate `_focusedField`.
   autofill::FormActivityParams params;
   params.frame_id = frame_id;
   params.type = ActivityType::kFocus;
@@ -775,7 +982,7 @@ TEST_F(CWVAutofillControllerTest, FetchFullCardDetails) {
 }
 
 // Tests that CWVAutofillController notifies user of password leaks.
-TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
+TEST_P(CWVAutofillControllerTest, NotifyUserOfLeak) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -809,7 +1016,7 @@ TEST_F(CWVAutofillControllerTest, NotifyUserOfLeak) {
 }
 
 // Tests that CWVAutofillController suggests passwords to its delegate.
-TEST_F(CWVAutofillControllerTest, SuggestPasswordCallback) {
+TEST_P(CWVAutofillControllerTest, SuggestPasswordCallback) {
   NSString* fake_generated_password = @"12345";
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
@@ -836,7 +1043,7 @@ TEST_F(CWVAutofillControllerTest, SuggestPasswordCallback) {
 
 // Tests that CWVAutofillController automatically saves new profiles if the
 // delegate method is not implemented.
-TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
+TEST_P(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
   auto new_profile = autofill::test::GetFullProfile();
   __block BOOL decision_handler_called = NO;
   auto callback = base::BindOnce(
@@ -855,7 +1062,7 @@ TEST_F(CWVAutofillControllerTest, AutoSaveNewAutofillProfile) {
 }
 
 // Tests that CWVAutofillController's delegate can save a new profile.
-TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
+TEST_P(CWVAutofillControllerTest, SaveNewAutofillProfile) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -894,7 +1101,7 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
 
 // Tests that the delegate is correctly called for showing the unmask
 // authenticator selector.
-TEST_F(CWVAutofillControllerTest, ShowUnmaskAuthenticatorSelectorWithOptions) {
+TEST_P(CWVAutofillControllerTest, ShowUnmaskAuthenticatorSelectorWithOptions) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -999,7 +1206,7 @@ TEST_F(CWVAutofillControllerTest, ShowUnmaskAuthenticatorSelectorWithOptions) {
 // Tests that the delegate is called to load risk data when no
 // `CWVCreditCardVerifier` or `CWVCreditCardSaver` is present and the delegate
 // responds to autofillControllerLoadRiskData:riskDataHandler.
-TEST_F(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
+TEST_P(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -1026,7 +1233,7 @@ TEST_F(CWVAutofillControllerTest, LoadRiskDataViaDelegate) {
 }
 
 // Tests that the delegate is called for VCN enrollment and handles acceptance.
-TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentAccepted) {
+TEST_P(CWVAutofillControllerTest, VirtualCardEnrollmentAccepted) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -1072,7 +1279,7 @@ TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentAccepted) {
 }
 
 // Tests that the delegate is called for VCN enrollment and handles declination.
-TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentDeclined) {
+TEST_P(CWVAutofillControllerTest, VirtualCardEnrollmentDeclined) {
   id delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = delegate;
 
@@ -1107,7 +1314,7 @@ TEST_F(CWVAutofillControllerTest, VirtualCardEnrollmentDeclined) {
 
 // Tests that the decline callback is invoked if the enrollment manager is
 // deallocated before a decision is made.
-TEST_F(CWVAutofillControllerTest,
+TEST_P(CWVAutofillControllerTest,
        VirtualCardEnrollmentImplicitlyDeclinedOnDealloc) {
   autofill::VirtualCardEnrollmentFields enrollmentFields;
   enrollmentFields.credit_card = autofill::test::GetCreditCard();
@@ -1145,7 +1352,7 @@ TEST_F(CWVAutofillControllerTest,
 }
 
 // Tests that the delegate is called to show the OTP input dialog.
-TEST_F(CWVAutofillControllerTest, ShowCardUnmaskOtpInputDialog) {
+TEST_P(CWVAutofillControllerTest, ShowCardUnmaskOtpInputDialog) {
   id mock_delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = mock_delegate;
 
@@ -1178,7 +1385,7 @@ TEST_F(CWVAutofillControllerTest, ShowCardUnmaskOtpInputDialog) {
 }
 
 // Tests that the verification result is passed to the CWVCreditCardOTPVerifier.
-TEST_F(CWVAutofillControllerTest, DidReceiveUnmaskOtpVerificationResult) {
+TEST_P(CWVAutofillControllerTest, DidReceiveUnmaskOtpVerificationResult) {
   id mock_delegate = OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   autofill_controller_.delegate = mock_delegate;
 
@@ -1228,7 +1435,7 @@ TEST_F(CWVAutofillControllerTest, DidReceiveUnmaskOtpVerificationResult) {
   }
 }
 
-TEST_F(CWVAutofillControllerTest, WebStateDestroyedDuringFetch) {
+TEST_P(CWVAutofillControllerTest, WebStateDestroyedDuringFetch) {
   ios_web_view::SetAutofillSafeLifecycleEnabled(&pref_service_, true);
 
   RegisterFormActivity();
@@ -1272,6 +1479,731 @@ TEST_F(CWVAutofillControllerTest, WebStateDestroyedDuringFetch) {
                                           }));
 
   [password_controller_ verify];
+}
+
+// Tests that accepting a credit card suggestion when no field has been focused
+// is a safe no-op.
+TEST_P(CWVAutofillControllerTest,
+       AcceptCreditCardAsSuggestionWithoutFocusedFieldIsNoOp) {
+  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
+  CWVCreditCard* cwv_credit_card =
+      [[CWVCreditCard alloc] initWithCreditCard:credit_card];
+
+  __block BOOL accept_completion_was_called = NO;
+  [autofill_controller_ acceptCreditCardAsSuggestion:cwv_credit_card
+                                             atIndex:0
+                                   completionHandler:^{
+                                     accept_completion_was_called = YES;
+                                   }];
+
+  EXPECT_FALSE(accept_completion_was_called);
+  EXPECT_FALSE([autofill_agent_
+      selectedSuggestionForFormName:kTestFormName
+                    fieldIdentifier:kTestFieldIdentifier
+                            frameID:frame_id_]);
+}
+
+// Tests that public methods that rely on `_focusedField` or `_webState`
+// safely no-op after `-webStateDestroyed:` under both legacy and scoped modes.
+TEST_P(CWVAutofillControllerTest, MethodsNoOpAfterWebStateDestroyed) {
+  web::FakeWebFrame* frame_ptr =
+      static_cast<web::FakeWebFrame*>(RegisterFormActivity());
+
+  [autofill_controller_ webStateDestroyed:&web_state_];
+
+  frame_ptr->ClearJavaScriptCallHistory();
+  [autofill_controller_ focusNextField];
+  [autofill_controller_ focusPreviousField];
+  EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
+
+  __block BOOL fetch_completion_was_called = NO;
+  [autofill_controller_
+      fetchSuggestionsForFormWithName:kTestFormName
+                      fieldIdentifier:kTestFieldIdentifier
+                            fieldType:(NSInteger)FieldType::kUnknown
+                              frameID:frame_id_
+                    completionHandler:^(
+                        NSArray<CWVAutofillSuggestion*>* suggestions) {
+                      fetch_completion_was_called = YES;
+                    }];
+  EXPECT_FALSE(fetch_completion_was_called);
+
+  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
+  CWVCreditCard* cwv_credit_card =
+      [[CWVCreditCard alloc] initWithCreditCard:credit_card];
+  __block BOOL accept_completion_was_called = NO;
+  [autofill_controller_ acceptCreditCardAsSuggestion:cwv_credit_card
+                                             atIndex:0
+                                   completionHandler:^{
+                                     accept_completion_was_called = YES;
+                                   }];
+  EXPECT_FALSE(accept_completion_was_called);
+}
+
+// Tests that suggestions fetched for a field focused with a user gesture are
+// reported as user initiated.
+TEST_P(CWVAutofillControllerTest, FetchSuggestionsAfterFocusWithGesture) {
+  RegisterFormActivity(/*has_user_gesture=*/true);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that suggestions fetched for a field focused without a user gesture
+// (e.g. a field the page autofocused) are reported as not user initiated.
+TEST_P(CWVAutofillControllerTest, FetchSuggestionsAfterGesturelessFocus) {
+  RegisterFormActivity(/*has_user_gesture=*/false);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that really typing into a field that was focused by a script dispatched
+// event promotes the reported gesture, since the keystroke itself is a trusted
+// user interaction with the very field the query is about.
+TEST_P(CWVAutofillControllerTest, InputPromotesGestureOnFocusedField) {
+  NSString* const kTypedValue = @"TypedValue";
+
+  web::WebFrame* frame = RegisterFormActivity(/*has_user_gesture=*/false);
+
+  RegisterFieldActivity(frame, ActivityType::kInput, kTypedValue,
+                        /*has_user_gesture=*/true);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kTypedValue, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kInput, last_suggestions_query_.type);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that a keyup promotes the gesture too, since some fields only emit
+// keyup and never input.
+TEST_P(CWVAutofillControllerTest, KeyUpPromotesGestureOnFocusedField) {
+  NSString* const kTypedValue = @"TypedValue";
+
+  web::WebFrame* frame = RegisterFormActivity(/*has_user_gesture=*/false);
+
+  RegisterFieldActivity(frame, ActivityType::kKeyUp, kTypedValue,
+                        /*has_user_gesture=*/true);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that a script synthesized edit demotes the gesture established by a
+// real focus, so that the reported gesture always describes the most recent
+// interaction with the focused field.
+TEST_P(CWVAutofillControllerTest, UntrustedInputDemotesGestureOnFocusedField) {
+  NSString* const kScriptedValue = @"ScriptedValue";
+
+  web::WebFrame* frame = RegisterFormActivity(/*has_user_gesture=*/true);
+
+  RegisterFieldActivity(frame, ActivityType::kInput, kScriptedValue,
+                        /*has_user_gesture=*/false);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// The activity types that each map to a CWVAutofillControllerDelegate
+// notification.
+constexpr ActivityType kDelegateNotifyingActivityTypes[] = {
+    ActivityType::kFocus, ActivityType::kInput, ActivityType::kKeyUp,
+    ActivityType::kBlur};
+
+// Tests that the recording delegate does observe notifications when the
+// activity is well formed, so that the negative delegate tests below cannot
+// pass vacuously.
+TEST_P(CWVAutofillControllerTest, DelegateNotificationsForValidActivity) {
+  FakeFormActivityDelegate* delegate = [[FakeFormActivityDelegate alloc] init];
+  autofill_controller_.delegate = delegate;
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+
+  for (ActivityType type : kDelegateNotifyingActivityTypes) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    form_activity_tab_helper_->FormActivityRegistered(
+        frame.get(), FormActivityParamsForType(type, frame.get()));
+  }
+
+  EXPECT_NSEQ((@[
+                @"didFocusOnField", @"didInputInField", @"didInputInField",
+                @"didBlurOnField"
+              ]),
+              delegate.receivedNotifications);
+}
+
+// Tests that -focusNextField targets the main frame even after a gestureless
+// form_changed event is registered in a child frame.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FocusNextFieldAfterChildFrameFormChanged) {
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  AddWebFrame(std::move(main_frame));
+
+  auto child_frame = web::FakeWebFrame::CreateChildWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* child_frame_ptr = child_frame.get();
+  AddWebFrame(std::move(child_frame));
+
+  // Focus in the main frame.
+  form_activity_tab_helper_->FormActivityRegistered(
+      main_frame_ptr,
+      FormActivityParamsForType(ActivityType::kFocus, main_frame_ptr));
+
+  // Gestureless form_changed from a child frame.
+  autofill::FormActivityParams form_changed_params =
+      FormActivityParamsForType(ActivityType::kFormChanged, child_frame_ptr);
+  form_changed_params.has_user_gesture = false;
+  form_activity_tab_helper_->FormActivityRegistered(child_frame_ptr,
+                                                    form_changed_params);
+
+  // Clear JavaScript calls from frame setup/mutation tracking.
+  main_frame_ptr->ClearJavaScriptCallHistory();
+  child_frame_ptr->ClearJavaScriptCallHistory();
+
+  // Focus next field should still target the main frame.
+  [autofill_controller_ focusNextField];
+
+  EXPECT_NE(main_frame_ptr->GetLastJavaScriptCall().find(u"selectNextElement"),
+            std::u16string::npos);
+  EXPECT_NE(main_frame_ptr->GetLastJavaScriptCall().find(u"suggestion"),
+            std::u16string::npos);
+  EXPECT_TRUE(child_frame_ptr->GetLastJavaScriptCall().empty());
+}
+
+// Tests that form activity with missing input neither creates state nor clears
+// an already-focused field's state.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FormActivityIgnoredWhenInputMissing) {
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  AddWebFrame(std::move(main_frame));
+
+  auto child_frame = web::FakeWebFrame::CreateChildWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* child_frame_ptr = child_frame.get();
+  AddWebFrame(std::move(child_frame));
+
+  // 1. When no field is focused yet, `input_missing` must not create state.
+  autofill::FormActivityParams missing_focus =
+      FormActivityParamsForType(ActivityType::kFocus, main_frame_ptr);
+  missing_focus.input_missing = true;
+  form_activity_tab_helper_->FormActivityRegistered(main_frame_ptr,
+                                                    missing_focus);
+
+  main_frame_ptr->ClearJavaScriptCallHistory();
+  [autofill_controller_ focusNextField];
+  EXPECT_TRUE(main_frame_ptr->GetLastJavaScriptCall().empty());
+
+  // 2. Once a legitimate focus target is established, a subsequent
+  // `input_missing` event (even from another frame) must be dropped without
+  // clearing the cached focus target.
+  form_activity_tab_helper_->FormActivityRegistered(
+      main_frame_ptr,
+      FormActivityParamsForType(ActivityType::kFocus, main_frame_ptr));
+
+  autofill::FormActivityParams child_missing_params =
+      FormActivityParamsForType(ActivityType::kFocus, child_frame_ptr);
+  child_missing_params.input_missing = true;
+  form_activity_tab_helper_->FormActivityRegistered(child_frame_ptr,
+                                                    child_missing_params);
+
+  main_frame_ptr->ClearJavaScriptCallHistory();
+  child_frame_ptr->ClearJavaScriptCallHistory();
+  [autofill_controller_ focusNextField];
+  EXPECT_NE(main_frame_ptr->GetLastJavaScriptCall().find(u"selectNextElement"),
+            std::u16string::npos);
+  EXPECT_TRUE(child_frame_ptr->GetLastJavaScriptCall().empty());
+}
+
+// Tests that form activity resets tracked state when the page URL is not
+// trusted.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FormActivityResetsWhenURLNotTrusted) {
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  // First establish valid focus.
+  form_activity_tab_helper_->FormActivityRegistered(
+      frame_ptr, FormActivityParamsForType(ActivityType::kFocus, frame_ptr));
+
+  web_state_.set_url_trusted(false);
+
+  form_activity_tab_helper_->FormActivityRegistered(
+      frame_ptr, FormActivityParamsForType(ActivityType::kFocus, frame_ptr));
+
+  frame_ptr->ClearJavaScriptCallHistory();
+
+  // State should have been reset, so focusNextField does not invoke JS.
+  [autofill_controller_ focusNextField];
+  EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
+}
+
+// Tests that form activity resets tracked state when the page URL is empty or
+// invalid.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FormActivityResetsWhenURLEmpty) {
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  // First establish valid focus.
+  form_activity_tab_helper_->FormActivityRegistered(
+      frame_ptr, FormActivityParamsForType(ActivityType::kFocus, frame_ptr));
+
+  web_state_.SetCurrentURL(GURL());
+
+  form_activity_tab_helper_->FormActivityRegistered(
+      frame_ptr, FormActivityParamsForType(ActivityType::kFocus, frame_ptr));
+
+  frame_ptr->ClearJavaScriptCallHistory();
+
+  // State should have been reset, so focusNextField does not invoke JS.
+  [autofill_controller_ focusNextField];
+  EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
+}
+
+// Tests that form activity resets tracked state when the web frame is null.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FormActivityResetsWhenFrameNull) {
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  // First establish valid focus.
+  autofill::FormActivityParams focus_params =
+      FormActivityParamsForType(ActivityType::kFocus, frame_ptr);
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, focus_params);
+
+  // Register form activity with null frame.
+  [autofill_controller_ webState:&web_state_
+         didRegisterFormActivity:FormActivityParamsForType(ActivityType::kFocus,
+                                                           /*frame=*/nullptr)
+                         inFrame:nullptr];
+
+  frame_ptr->ClearJavaScriptCallHistory();
+
+  // State should have been reset, so focusNextField does not invoke JS.
+  [autofill_controller_ focusNextField];
+  EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
+}
+
+// Tests that a suggestion query aimed at a field other than the focused one
+// does not inherit the focused field's renderer IDs, typed value, activity type
+// or user gesture.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FetchSuggestionsForUnfocusedFieldDropsState) {
+  constexpr FormRendererId kFocusedFormRendererID(11);
+  constexpr FieldRendererId kFocusedFieldRendererID(22);
+  NSString* const kOtherFieldIdentifier = @"OtherFieldIdentifier";
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  autofill::FormActivityParams focus_params =
+      FormActivityParamsForType(ActivityType::kFocus, frame_ptr);
+  focus_params.form_renderer_id = kFocusedFormRendererID;
+  focus_params.field_renderer_id = kFocusedFieldRendererID;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, focus_params);
+
+  StubPasswordSuggestionsAvailability();
+
+  // Query a different field than the one holding focus.
+  FetchSuggestionsForField(kOtherFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kOtherFieldIdentifier, last_suggestions_query_.fieldIdentifier);
+  EXPECT_EQ(FormRendererId(), last_suggestions_query_.formRendererID);
+  EXPECT_EQ(FieldRendererId(), last_suggestions_query_.fieldRendererID);
+  EXPECT_EQ(ActivityType::kUnknown, last_suggestions_query_.type);
+  EXPECT_NSEQ(nil, last_suggestions_query_.typedValue);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that focusing field A, then focusing field B, and then querying field A
+// drops state and does not inherit either field A's old state or field B's
+// current state.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       FocusSecondFieldDropsFirstFieldStateOnQuery) {
+  constexpr FormRendererId kFirstFormRendererID(11);
+  constexpr FieldRendererId kFirstFieldRendererID(22);
+  constexpr FormRendererId kSecondFormRendererID(33);
+  constexpr FieldRendererId kSecondFieldRendererID(44);
+  NSString* const kSecondFieldIdentifier = @"SecondFieldIdentifier";
+  NSString* const kSecondFieldValue = @"SecondFieldValue";
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  autofill::FormActivityParams first_focus =
+      FormActivityParamsForType(ActivityType::kFocus, frame_ptr);
+  first_focus.form_renderer_id = kFirstFormRendererID;
+  first_focus.field_renderer_id = kFirstFieldRendererID;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, first_focus);
+
+  autofill::FormActivityParams second_focus =
+      FormActivityParamsForType(ActivityType::kFocus, frame_ptr);
+  second_focus.field_identifier =
+      base::SysNSStringToUTF8(kSecondFieldIdentifier);
+  second_focus.value = base::SysNSStringToUTF8(kSecondFieldValue);
+  second_focus.form_renderer_id = kSecondFormRendererID;
+  second_focus.field_renderer_id = kSecondFieldRendererID;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, second_focus);
+
+  StubPasswordSuggestionsAvailability();
+
+  // Query field A (`kTestFieldIdentifier`) after focus has moved to field B.
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kTestFieldIdentifier, last_suggestions_query_.fieldIdentifier);
+  EXPECT_EQ(FormRendererId(), last_suggestions_query_.formRendererID);
+  EXPECT_EQ(FieldRendererId(), last_suggestions_query_.fieldRendererID);
+  EXPECT_EQ(ActivityType::kUnknown, last_suggestions_query_.type);
+  EXPECT_NSEQ(nil, last_suggestions_query_.typedValue);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that value-changing events (`kInput`, `kKeyUp`, `kChange`, `kBlur`)
+// arriving when no field is focused (`_focusedField` is `std::nullopt`) do not
+// synthesize a focused field record.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       ValueChangeWithoutFocusedFieldIsIgnored) {
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  for (ActivityType type : {ActivityType::kInput, ActivityType::kKeyUp,
+                            ActivityType::kChange, ActivityType::kBlur}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    form_activity_tab_helper_->FormActivityRegistered(
+        frame_ptr, FormActivityParamsForType(type, frame_ptr));
+  }
+
+  frame_ptr->ClearJavaScriptCallHistory();
+  [autofill_controller_ focusNextField];
+  EXPECT_TRUE(frame_ptr->GetLastJavaScriptCall().empty());
+
+  StubPasswordSuggestionsAvailability();
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_EQ(FormRendererId(), last_suggestions_query_.formRendererID);
+  EXPECT_EQ(FieldRendererId(), last_suggestions_query_.fieldRendererID);
+  EXPECT_EQ(ActivityType::kUnknown, last_suggestions_query_.type);
+  EXPECT_NSEQ(nil, last_suggestions_query_.typedValue);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that a field sharing the same `frameID` and `fieldIdentifier` as the
+// focused field, but belonging to a different `formName`, is treated as a
+// distinct field both when receiving activity and when fetching suggestions.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       SameFrameDifferentFormNameDoesNotMatchFocusedField) {
+  constexpr FormRendererId kFocusedFormRendererID(11);
+  constexpr FieldRendererId kFocusedFieldRendererID(22);
+  NSString* const kOtherFormName = @"OtherFormName";
+  NSString* const kOtherFormValue = @"OtherFormValue";
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  autofill::FormActivityParams focus_params =
+      FormActivityParamsForType(ActivityType::kFocus, frame_ptr);
+  focus_params.form_renderer_id = kFocusedFormRendererID;
+  focus_params.field_renderer_id = kFocusedFieldRendererID;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, focus_params);
+
+  // Activity on a different form in the same frame with the same
+  // `kTestFieldIdentifier` must not overwrite the focused field's value or
+  // demote its gesture.
+  autofill::FormActivityParams other_form_input =
+      FormActivityParamsForType(ActivityType::kInput, frame_ptr);
+  other_form_input.form_name = base::SysNSStringToUTF8(kOtherFormName);
+  other_form_input.value = base::SysNSStringToUTF8(kOtherFormValue);
+  other_form_input.has_user_gesture = false;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr,
+                                                    other_form_input);
+
+  StubPasswordSuggestionsAvailability();
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_EQ(kFocusedFormRendererID, last_suggestions_query_.formRendererID);
+  EXPECT_EQ(kFocusedFieldRendererID, last_suggestions_query_.fieldRendererID);
+  EXPECT_NSEQ(kTestFieldValue, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kFocus, last_suggestions_query_.type);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+
+  // Fetching suggestions for `kOtherFormName` with the same `fieldIdentifier`
+  // and `frameID` must not inherit `kTestFormName`'s state.
+  last_suggestions_query_ = nil;
+  base::test::TestFuture<NSArray<CWVAutofillSuggestion*>*> suggestions_future;
+  [autofill_controller_
+      fetchSuggestionsForFormWithName:kOtherFormName
+                      fieldIdentifier:kTestFieldIdentifier
+                            fieldType:(NSInteger)FieldType::kUnknown
+                              frameID:frame_id_
+                    completionHandler:base::CallbackToBlock(
+                                          suggestions_future.GetCallback())];
+  ASSERT_TRUE(suggestions_future.Wait());
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kOtherFormName, last_suggestions_query_.formName);
+  EXPECT_EQ(FormRendererId(), last_suggestions_query_.formRendererID);
+  EXPECT_EQ(FieldRendererId(), last_suggestions_query_.fieldRendererID);
+  EXPECT_EQ(ActivityType::kUnknown, last_suggestions_query_.type);
+  EXPECT_NSEQ(nil, last_suggestions_query_.typedValue);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that a value typed in a child frame is not attached to the suggestion
+// query issued for the field focused in the main frame.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       ChildFrameValueNotUsedForFocusedField) {
+  NSString* const kChildFrameFieldValue = @"ChildFrameFieldValue";
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  AddWebFrame(std::move(main_frame));
+
+  auto child_frame = web::FakeWebFrame::CreateChildWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* child_frame_ptr = child_frame.get();
+  AddWebFrame(std::move(child_frame));
+
+  form_activity_tab_helper_->FormActivityRegistered(
+      main_frame_ptr,
+      FormActivityParamsForType(ActivityType::kFocus, main_frame_ptr));
+
+  // The child frame reports untrusted input on a field that does not hold
+  // focus.
+  RegisterFieldActivity(child_frame_ptr, ActivityType::kInput,
+                        kChildFrameFieldValue, /*has_user_gesture=*/false);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kTestFieldValue, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kFocus, last_suggestions_query_.type);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that leaving a field does not promote the gesture: a blur is not an
+// interaction with the field the suggestion query is about.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       BlurDoesNotPromoteGestureOnFocusedField) {
+  NSString* const kTypedValue = @"TypedValue";
+
+  web::WebFrame* frame = RegisterFormActivity(/*has_user_gesture=*/false);
+
+  RegisterFieldActivity(frame, ActivityType::kBlur, kTypedValue,
+                        /*has_user_gesture=*/true);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  // The blur still refreshes the value it reports...
+  EXPECT_NSEQ(kTypedValue, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kBlur, last_suggestions_query_.type);
+  // ...but it must not make the interaction look user initiated.
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that a `kChange` event on the focused field refreshes the cached value
+// and activity type without promoting or demoting `has_user_gesture` (since
+// `change` on text inputs can fire when clicking elsewhere on the page to leave
+// the field).
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       ChangeRefreshesValueWithoutPromotingGestureOnFocusedField) {
+  NSString* const kChangedValue1 = @"ChangedValue1";
+  NSString* const kChangedValue2 = @"ChangedValue2";
+
+  web::WebFrame* frame = RegisterFormActivity(/*has_user_gesture=*/false);
+
+  RegisterFieldActivity(frame, ActivityType::kChange, kChangedValue1,
+                        /*has_user_gesture=*/true);
+
+  StubPasswordSuggestionsAvailability();
+
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kChangedValue1, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kChange, last_suggestions_query_.type);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
+
+  // When the field is focused with a user gesture, a subsequent `kChange`
+  // refreshes the value while preserving `has_user_gesture = true`.
+  form_activity_tab_helper_->FormActivityRegistered(
+      frame, FormActivityParamsForType(ActivityType::kFocus, frame));
+  RegisterFieldActivity(frame, ActivityType::kChange, kChangedValue2,
+                        /*has_user_gesture=*/false);
+
+  last_suggestions_query_ = nil;
+  FetchSuggestionsForField(kTestFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_NSEQ(kChangedValue2, last_suggestions_query_.typedValue);
+  EXPECT_EQ(ActivityType::kChange, last_suggestions_query_.type);
+  EXPECT_TRUE(last_suggestions_had_user_gesture_);
+}
+
+// Tests that no delegate notification is sent for any activity type when the
+// reported activity is missing its input data.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       NoDelegateNotificationsWhenInputMissing) {
+  FakeFormActivityDelegate* delegate = [[FakeFormActivityDelegate alloc] init];
+  autofill_controller_.delegate = delegate;
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+
+  for (ActivityType type : kDelegateNotifyingActivityTypes) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    autofill::FormActivityParams params =
+        FormActivityParamsForType(type, frame.get());
+    params.input_missing = true;
+    form_activity_tab_helper_->FormActivityRegistered(frame.get(), params);
+  }
+
+  EXPECT_NSEQ(@[], delegate.receivedNotifications);
+}
+
+// Tests that no delegate notification is sent for any activity type when the
+// page URL cannot be trusted.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       NoDelegateNotificationsWhenURLNotTrusted) {
+  FakeFormActivityDelegate* delegate = [[FakeFormActivityDelegate alloc] init];
+  autofill_controller_.delegate = delegate;
+
+  web_state_.set_url_trusted(false);
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+
+  for (ActivityType type : kDelegateNotifyingActivityTypes) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    form_activity_tab_helper_->FormActivityRegistered(
+        frame.get(), FormActivityParamsForType(type, frame.get()));
+  }
+
+  EXPECT_NSEQ(@[], delegate.receivedNotifications);
+}
+
+// Tests that no delegate notification is sent for any activity type when the
+// activity cannot be attributed to a frame. This is an intentional change of
+// the public delegate contract: such activity used to be reported with an empty
+// frame ID.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       NoDelegateNotificationsWhenFrameNull) {
+  FakeFormActivityDelegate* delegate = [[FakeFormActivityDelegate alloc] init];
+  autofill_controller_.delegate = delegate;
+
+  for (ActivityType type : kDelegateNotifyingActivityTypes) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    [autofill_controller_ webState:&web_state_
+           didRegisterFormActivity:FormActivityParamsForType(type,
+                                                             /*frame=*/nullptr)
+                           inFrame:nullptr];
+  }
+
+  EXPECT_NSEQ(@[], delegate.receivedNotifications);
+}
+
+// Tests that non-focus activity (`kInput`, `kKeyUp`, `kBlur`) reported for a
+// field that does not currently hold focus does not trigger delegate
+// notifications when scoped form activity is enabled.
+TEST_F(CWVAutofillControllerScopedFormActivityTest,
+       NoDelegateNotificationsForUnfocusedFieldActivity) {
+  FakeFormActivityDelegate* delegate = [[FakeFormActivityDelegate alloc] init];
+  autofill_controller_.delegate = delegate;
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+
+  for (ActivityType type :
+       {ActivityType::kInput, ActivityType::kKeyUp, ActivityType::kBlur}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "activity type " << static_cast<int>(type));
+    form_activity_tab_helper_->FormActivityRegistered(
+        frame.get(), FormActivityParamsForType(type, frame.get()));
+  }
+
+  EXPECT_NSEQ(@[], delegate.receivedNotifications);
+}
+
+class CWVAutofillControllerLegacyFormActivityTest
+    : public CWVAutofillControllerTestBase {
+ protected:
+  CWVAutofillControllerLegacyFormActivityTest() {
+    ios_web_view::SetAutofillScopedFormActivityEnabled(&pref_service_, false);
+  }
+};
+
+// Tests that `RegisterCWVAutofillPrefs` defaults
+// `kCWVAutofillScopedFormActivityEnabled` to `false` and that disabling the
+// pref preserves the legacy unscoped form activity behavior.
+TEST_F(CWVAutofillControllerLegacyFormActivityTest,
+       FormActivityLegacyBehaviorWhenScopedFormActivityDisabled) {
+  constexpr FormRendererId kInputFormRendererID(10);
+  constexpr FieldRendererId kInputFieldRendererID(20);
+  NSString* const kOtherFieldIdentifier = @"OtherFieldIdentifier";
+
+  TestingPrefServiceSimple default_prefs;
+  ios_web_view::RegisterCWVAutofillPrefs(default_prefs.registry());
+  EXPECT_FALSE(
+      ios_web_view::IsAutofillScopedFormActivityEnabled(&default_prefs));
+
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL(kTestURL));
+  web::FakeWebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  // Without `kFocus`, a `kInput` event still populates the cached renderer IDs
+  // and `typed_value` when the kill switch is disabled.
+  autofill::FormActivityParams input_params =
+      FormActivityParamsForType(ActivityType::kInput, frame_ptr);
+  input_params.form_renderer_id = kInputFormRendererID;
+  input_params.field_renderer_id = kInputFieldRendererID;
+  input_params.value = base::SysNSStringToUTF8(kTestFieldValue);
+  input_params.has_user_gesture = true;
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, input_params);
+
+  StubPasswordSuggestionsAvailability();
+  FetchSuggestionsForField(kOtherFieldIdentifier);
+
+  ASSERT_TRUE(last_suggestions_query_);
+  EXPECT_EQ(kInputFormRendererID, last_suggestions_query_.formRendererID);
+  EXPECT_EQ(kInputFieldRendererID, last_suggestions_query_.fieldRendererID);
+  EXPECT_NSEQ(kTestFieldValue, last_suggestions_query_.typedValue);
+  EXPECT_FALSE(last_suggestions_had_user_gesture_);
 }
 
 }  // namespace

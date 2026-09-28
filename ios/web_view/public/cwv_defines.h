@@ -160,4 +160,7 @@
 // Supports -[CWVWebVIewConfiguration hasActiveWebViews].
 #define IOS_WEB_VIEW_SUPPORTS_HAS_ACTIVE_WEB_VIEWS 1
 
+// Supports -[CWVPreferences autofillScopedFormActivityEnabled].
+#define IOS_WEB_VIEW_SUPPORTS_AUTOFILL_SCOPED_FORM_ACTIVITY 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

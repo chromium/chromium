@@ -19,6 +19,9 @@ inline constexpr char kCWVAutofillVCNUsageEnabled[] =
 inline constexpr char kCWVAutofillSafeLifecycleEnabled[] =
     "cwv.autofill.safe_lifecycle_enabled";
 
+inline constexpr char kCWVAutofillScopedFormActivityEnabled[] =
+    "cwv.autofill.scoped_form_activity_enabled";
+
 // Registers the CWVAutofill preferences for this `pref_registry`.
 void RegisterCWVAutofillPrefs(PrefRegistrySimple* pref_registry);
 
@@ -33,6 +36,10 @@ bool IsAutofillVCNUsageEnabled(const PrefService* prefs);
 void SetAutofillSafeLifecycleEnabled(PrefService* prefs, bool value);
 
 bool IsAutofillSafeLifecycleEnabled(const PrefService* prefs);
+
+void SetAutofillScopedFormActivityEnabled(PrefService* prefs, bool value);
+
+bool IsAutofillScopedFormActivityEnabled(const PrefService* prefs);
 
 void SetUseImageFetcherEnabled(PrefService* prefs, bool value);
 
