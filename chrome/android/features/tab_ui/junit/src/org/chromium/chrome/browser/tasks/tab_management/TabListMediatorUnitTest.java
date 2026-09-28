@@ -1813,9 +1813,9 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isTabModelRestored()).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        createTabGroup(List.of(mTab1, mTab2, newTab), TAB_GROUP_ID);
         when(mTabModel.iterator()).thenAnswer(_ -> List.of(mTab1, mTab2, newTab).iterator());
         when(mTabModel.getCount()).thenReturn(3);
-        when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(List.of(mTab1, mTab2, newTab));
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -1838,9 +1838,9 @@ public class TabListMediatorUnitTest {
         when(mTabModel.isTabModelRestored()).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        createTabGroup(List.of(mTab1, newTab, mTab2), TAB_GROUP_ID);
         when(mTabModel.iterator()).thenAnswer(_ -> List.of(mTab1, newTab, mTab2).iterator());
         when(mTabModel.getCount()).thenReturn(3);
-        when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(List.of(mTab1, newTab, mTab2));
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -1862,9 +1862,10 @@ public class TabListMediatorUnitTest {
 
         when(mTabModel.isTabModelRestored()).thenReturn(true);
 
+        createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         // newTab is of another group.
-        when(mTabModel.getRelatedTabList(eq(TAB1_ID))).thenReturn(List.of(mTab1, mTab2));
+        when(newTab.getTabGroupId()).thenReturn(new Token(111L, 222L));
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -7149,7 +7150,9 @@ public class TabListMediatorUnitTest {
         when(mTabModel.getTabGroupCollapsed(tabGroupId)).thenReturn(true);
         int firstTabId = tabs.get(0).getId();
         when(mTabModel.getGroupLastShownTabId(tabGroupId)).thenReturn(firstTabId);
-        for (Tab tab : tabs) {
+        for (int i = 0; i < tabs.size(); i++) {
+            Tab tab = tabs.get(i);
+            when(mTabModel.getIndexOfTabInGroup(tab)).thenReturn(i);
             when(mTabModel.getRelatedTabList(tab.getId())).thenReturn(tabs);
             when(mTabModel.isTabInTabGroup(tab)).thenReturn(true);
             when(tab.getTabGroupId()).thenReturn(tabGroupId);

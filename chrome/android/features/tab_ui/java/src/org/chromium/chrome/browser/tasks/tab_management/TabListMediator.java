@@ -1073,20 +1073,12 @@ public class TabListMediator implements TabListNotificationHandler {
         mTabClosedFrom.put(tabId, from);
     }
 
-    /**
-     * Returns all {@link Tab}s in the same tab group as the specified tab ID, or a single-element
-     * list if the tab is not in a group. Returns an empty list if the current tab model is null.
-     *
-     * @param id The ID of the tab whose related group members are requested.
-     * @return A list of related {@link Tab} instances.
-     */
-    List<Tab> getRelatedTabsForId(int id) {
-        TabModel tabModel = mCurrentTabModelSupplier.get();
-        return tabModel == null ? new ArrayList<>() : tabModel.getRelatedTabList(id);
-    }
-
+    // TODO(crbug.com/517544602): Delete this helper when removing the feature flag.
     private List<Integer> getRelatedTabIds(int id) {
-        List<Tab> relatedTabs = getRelatedTabsForId(id);
+        TabModel tabModel = mCurrentTabModelSupplier.get();
+        if (tabModel == null) return Collections.emptyList();
+
+        List<Tab> relatedTabs = tabModel.getRelatedTabList(id);
         List<@TabId Integer> tabIds = new ArrayList<>(relatedTabs.size());
         for (Tab tab : relatedTabs) {
             tabIds.add(tab.getId());
@@ -2452,6 +2444,8 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param tabId the {@link Tab} to find the group index of.
      * @return the index for the tab group within {@link mModelList}
      */
+    // TODO(crbug.com/517544602): Delete this legacy fallback method when removing the feature
+    // flag.
     int getIndexForTabIdWithRelatedTabs(int tabId) {
         List<Integer> relatedTabIds = getRelatedTabIds(tabId);
         if (!relatedTabIds.isEmpty()) {

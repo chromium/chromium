@@ -121,11 +121,26 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testGetInsertionIndexOfTab() {
         addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getIndexOfTabInGroup(mTab2)).thenReturn(1);
 
         int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
 
         assertEquals(1, insertionIndex);
+    }
+
+    @Test
+    public void testGetInsertionIndexOfTab_DifferentGroup() {
+        addTabsToModelList(TAB1_ID);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID_2);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+
+        int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
+
+        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
     }
 
     @Test
@@ -143,7 +158,10 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testOnTabAdded_NewTab() {
         addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getIndexOfTabInGroup(mTab2)).thenReturn(1);
 
         int index = mDelegate.onTabAdded(mTab2);
 
@@ -164,7 +182,10 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testDidAddTab() {
         addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getIndexOfTabInGroup(mTab2)).thenReturn(1);
 
         mDelegate.didAddTab(mTab2, TabLaunchType.FROM_CHROME_UI);
 
@@ -174,7 +195,10 @@ public class FlatLayoutDelegateUnitTest {
     @Test
     public void testTabClosureUndone() {
         addTabsToModelList(TAB1_ID);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getIndexOfTabInGroup(mTab2)).thenReturn(1);
 
         mDelegate.tabClosureUndone(mTab2);
 
@@ -534,7 +558,7 @@ public class FlatLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+        when(mTabModel.getIndexOfTabInGroup(mTab2)).thenReturn(1);
 
         // Execute merging mTab2.
         mDelegate.didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
