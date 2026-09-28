@@ -43,30 +43,6 @@ template("mojom_rust") {
       sources_for_rust_metadata += [ rebase_path(s, "//") ]
     }
 
-    # Contains metadata for this target's mojom dependencies.
-    group("${base_name}_meta") {
-      deps = [ ":${base_name}_deps_meta" ]
-      metadata = {
-        mojom_rust_target_map = [
-          {
-            target_name = get_label_info(":${base_name}", "label_no_toolchain")
-            mojom_sources = sources_for_rust_metadata
-          },
-        ]
-      }
-    }
-
-    # Outputs dependency info needed for Rust bindings generation.
-    generated_file("${base_name}_dep_info") {
-      outputs = [ "$target_gen_dir/${base_name}_dep_info.json" ]
-      deps = [ ":${base_name}_meta" ]
-      data_keys = [ "mojom_rust_target_map" ]
-
-      output_conversion = "json"
-
-      visibility = [ ":$rust_generator_target_name" ]
-    }
-
     if (defined(rust_typemaps)) {
       _rust_typemaps = []
       foreach(typemap, rust_typemaps) {
@@ -81,6 +57,33 @@ template("mojom_rust") {
       write_file("$target_gen_dir/${base_name}_typemap.json",
                  _rust_typemaps,
                  "json")
+    }
+
+    # Contains metadata for this target's mojom dependencies.
+    group("${base_name}_meta") {
+      deps = [ ":${base_name}_deps_meta" ]
+      metadata = {
+        mojom_rust_target_map = [
+          {
+            target_name = get_label_info(":${base_name}", "label_no_toolchain")
+            mojom_sources = sources_for_rust_metadata
+            if (defined(_rust_typemaps)) {
+              typemaps = _rust_typemaps
+            }
+          },
+        ]
+      }
+    }
+
+    # Outputs dependency info needed for Rust bindings generation.
+    generated_file("${base_name}_dep_info") {
+      outputs = [ "$target_gen_dir/${base_name}_dep_info.json" ]
+      deps = [ ":${base_name}_meta" ]
+      data_keys = [ "mojom_rust_target_map" ]
+
+      output_conversion = "json"
+
+      visibility = [ ":$rust_generator_target_name" ]
     }
 
     action(rust_generator_target_name) {
@@ -161,13 +164,6 @@ template("mojom_rust") {
       crate_root = rust_crate_root_librs
       sources = [ rust_crate_root_librs ] +
                 get_target_outputs(":$rust_generator_target_name")
-      if (defined(rust_typemaps)) {
-        foreach(typemap, rust_typemaps) {
-          if (defined(typemap.traits_file)) {
-            sources += [ typemap.traits_file ]
-          }
-        }
-      }
       deps = [
         ":$rust_crate_root_target_name",
         ":$rust_generator_target_name",
@@ -179,6 +175,19 @@ template("mojom_rust") {
       ]
 
       public_deps = []
+      if (defined(rust_typemaps)) {
+        foreach(typemap, rust_typemaps) {
+          if (defined(typemap.traits_file)) {
+            sources += [ typemap.traits_file ]
+          }
+          if (defined(typemap.deps)) {
+            deps += typemap.deps
+          }
+          if (defined(typemap.public_deps)) {
+            public_deps += typemap.public_deps
+          }
+        }
+      }
       foreach(d, all_deps) {
         full_name = get_label_info(d, "label_no_toolchain")
         public_deps += [ "${full_name}_rust" ]

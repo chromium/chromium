@@ -80,9 +80,13 @@ def _GetCrateAlias(target_label: str) -> str:
 
 
 def _GetQualifiedName(
-  ty: mojom.Kind, current_module: mojom.Module, source_to_target_map: dict
+  ty: mojom.Kind,
+  current_module: mojom.Module,
+  source_to_target_map: dict,
+  local_name: str = None,
 ) -> str:
-  local_name = _GetLocalName(ty)
+  if local_name is None:
+    local_name = _GetLocalName(ty)
 
   # If the type was defined in this file, we can use its name unqualified
   if ty.module.path == current_module.path:
@@ -111,9 +115,6 @@ def _MojomTypeToRustType(
   typemap: dict,
 ) -> str:
   '''Return the name of the input type in rust syntax'''
-  if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
-    return typemap[ty.qualified_name]['typename']
-
   if mojom.IsNullableKind(ty):
     unnullable = ty.MakeUnnullableKind()
     inner_ty = _MojomTypeToRustType(
@@ -122,6 +123,14 @@ def _MojomTypeToRustType(
     if mojom.IsStructKind(unnullable) or mojom.IsUnionKind(unnullable):
       return f"Option<Box<{inner_ty}>>"
     return f"Option<{inner_ty}>"
+
+  if hasattr(ty, 'qualified_name') and ty.qualified_name in typemap:
+    return _GetQualifiedName(
+      ty,
+      current_module,
+      source_to_target_map,
+      local_name=typemap[ty.qualified_name]['typename'],
+    )
 
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return _GetQualifiedName(ty, current_module, source_to_target_map)
@@ -444,5 +453,11 @@ class Generator(generator.Generator):
             target_name = target['target_name']
             for source in target['mojom_sources']:
               self.source_to_target_map[source] = target_name
+            for typemap in target.get('typemaps', []):
+              for type_entry in typemap.get('types', []):
+                self.typemap[type_entry['mojom']] = {
+                  'typename': type_entry['rust'],
+                  'traits_file': typemap.get('traits_file'),
+                }
 
     self.WriteWithComment(self._GenerateModule(), f"{self.module.path}.rs")
