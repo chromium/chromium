@@ -378,5 +378,36 @@ TEST_F(PopupSearchBarViewTest, TabKeyHandledByDelegateFirst) {
   Mock::VerifyAndClearExpectations(&delegate());
 }
 
+// Tests that pressing Enter (`ui::VKEY_RETURN`) while the clear button is
+// focused clears the input text and moves focus back to the textfield without
+// forwarding the key press to the delegate.
+TEST_F(PopupSearchBarViewTest, EnterOnClearButtonClearsTextAndFocusesInput) {
+  PopupSearchBarView* view =
+      widget().SetContentsView(std::make_unique<PopupSearchBarView>(
+          u"placeholder", /*initial_value=*/u"abc", delegate()));
+  widget().Show();
+  view->Focus();
+
+  // Move focus to the clear button.
+  generator().PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_EQ(widget().GetFocusManager()->GetFocusedView()->GetClassName(),
+            "SearchBarClearButton");
+
+  EXPECT_CALL(delegate(), SearchBarHandleKeyPressed).Times(0);
+  EXPECT_CALL(delegate(), SearchBarOnFocusLost).Times(0);
+  EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"")));
+
+  generator().PressAndReleaseKey(ui::VKEY_RETURN);
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
+
+  EXPECT_EQ(view->GetText(), u"");
+  EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
+  EXPECT_EQ(widget().GetFocusManager()->GetFocusedView()->GetClassName(),
+            "SearchBarTextfield");
+
+  Mock::VerifyAndClearExpectations(&delegate());
+}
+
 }  // namespace
 }  // namespace autofill

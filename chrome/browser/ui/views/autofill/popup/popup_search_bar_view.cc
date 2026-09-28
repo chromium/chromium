@@ -210,6 +210,10 @@ bool PopupSearchBarView::HandleKeyPressed(views::View* sender,
       input_->RequestFocus();
       return true;
     }
+    if (event.key_code() == ui::VKEY_RETURN) {
+      OnClearPressed();
+      return true;
+    }
     if (delegate_->SearchBarHandleKeyPressed(event)) {
       return true;
     }
