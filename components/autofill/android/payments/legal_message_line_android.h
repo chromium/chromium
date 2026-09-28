@@ -5,28 +5,34 @@
 #ifndef COMPONENTS_AUTOFILL_ANDROID_PAYMENTS_LEGAL_MESSAGE_LINE_ANDROID_H_
 #define COMPONENTS_AUTOFILL_ANDROID_PAYMENTS_LEGAL_MESSAGE_LINE_ANDROID_H_
 
-#include <vector>
-
 #include <jni.h>
 
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "third_party/jni_zero/jni_zero.h"
 
-namespace autofill {
+// Must come after headers that specialize FromJniType() / ToJniType().
+#include "components/autofill/android/payments_jni_headers/LegalMessageLine_jni.h"
 
-class LegalMessageLine;
+namespace jni_zero {
 
-class LegalMessageLineAndroid {
- public:
-  static jni_zero::ScopedJavaLocalRef<jobject> ConvertToJavaObject(
-      const LegalMessageLine& legal_message_line);
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<autofill::LegalMessageLine::Link>(
+    JNIEnv* env,
+    const autofill::LegalMessageLine::Link& link) {
+  return autofill::Java_Link_Constructor(env, link.range.start(),
+                                         link.range.end(), link.url.spec());
+}
 
-  static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
-  ConvertToJavaLinkedList(
-      const std::vector<LegalMessageLine>& legal_message_lines);
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<autofill::LegalMessageLine>(
+    JNIEnv* env,
+    const autofill::LegalMessageLine& legal_message_line) {
+  return autofill::Java_LegalMessageLine_Constructor(
+      env, legal_message_line.text(), legal_message_line.links());
+}
 
-  LegalMessageLineAndroid() = delete;
-};
-
-}  // namespace autofill
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_AUTOFILL_ANDROID_PAYMENTS_LEGAL_MESSAGE_LINE_ANDROID_H_

@@ -38,12 +38,10 @@ jni_zero::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
       ui_info.logo_icon_description,
       ResourceMapper::MapToJavaDrawableId(ui_info.issuer_icon_id),
-      LegalMessageLineAndroid::ConvertToJavaLinkedList(
-          ui_info.legal_message_lines),
-      ui_info.card_label, ui_info.card_sub_label, ui_info.card_description,
-      ui_info.title_text, ui_info.confirm_text, ui_info.cancel_text,
-      ui_info.description_text, ui_info.loading_description,
-      ui_info.is_chrome_branding_enabled,
+      ui_info.legal_message_lines, ui_info.card_label, ui_info.card_sub_label,
+      ui_info.card_description, ui_info.title_text, ui_info.confirm_text,
+      ui_info.cancel_text, ui_info.description_text,
+      ui_info.loading_description, ui_info.is_chrome_branding_enabled,
       ResourceMapper::MapToJavaDrawableId(ui_info.google_pay_pill_logo_id));
   // LINT.ThenChange(//components/autofill/android/java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java)
 }

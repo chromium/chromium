@@ -33,7 +33,8 @@ public class AutofillWalletReminderNoticeBottomSheetBridge {
 
     @CalledByNative
     public void requestShowContent(
-            @JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines) {
         Context context = mWindowAndroid.getContext().get();
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(mWindowAndroid);

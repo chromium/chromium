@@ -100,9 +100,7 @@ void AutofillAiSaveUpdateEntityPromptViewAndroid::SetContent(
   if (controller->IsEligibleForWalletPassDisclosure() &&
       !controller->GetPublicPassesNotice().empty()) {
     Java_AutofillAiSaveUpdateEntityPrompt_setPublicPassesNotice(
-        env, java_object_,
-        LegalMessageLineAndroid::ConvertToJavaLinkedList(
-            controller->GetPublicPassesNotice()));
+        env, java_object_, controller->GetPublicPassesNotice());
   }
 }
 

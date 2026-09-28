@@ -22,7 +22,8 @@ public class DetailsForUpsertPass {
 
     @CalledByNative
     public DetailsForUpsertPass(
-            @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines,
             @JniType("std::string") String contextToken) {
         mLegalMessageLines = legalMessageLines;
         mContextToken = contextToken;

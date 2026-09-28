@@ -18,10 +18,7 @@ ToJniType<autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse>(
     const autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse&
         response) {
   return autofill::Java_DetailsForUpsertPass_Constructor(
-      env,
-      autofill::LegalMessageLineAndroid::ConvertToJavaLinkedList(
-          response.legal_message_lines),
-      response.context_token);
+      env, response.legal_message_lines, response.context_token);
 }
 
 template <>

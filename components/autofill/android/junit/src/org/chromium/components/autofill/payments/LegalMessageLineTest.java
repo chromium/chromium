@@ -44,13 +44,4 @@ public class LegalMessageLineTest {
 
         assertThat(line.links, contains(link));
     }
-
-    @Test
-    public void testAddLink_addsOneLinkAfterEmpty() {
-        LegalMessageLine line = new LegalMessageLine(EXAMPLE);
-
-        Link link = new Link(/* start= */ 1, /* end= */ 2, /* url= */ "3");
-        line.addLink(link);
-        assertThat(line.links, contains(link));
-    }
 }

@@ -100,7 +100,8 @@ public class AutofillSaveIbanUiInfo {
             @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String ibanValue,
             boolean isServerSave,
-            @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines,
             @DrawableRes int logoIcon,
             @JniType("std::u16string") String titleText) {
         mAcceptText = Objects.requireNonNull(acceptText, "Accept text can't be null");

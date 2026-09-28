@@ -107,8 +107,10 @@ import java.util.List;
             @DrawableRes int networkIconResource,
             @JniType("GURL") GURL issuerIconUrl,
             @JniType("std::u16string") String cardLabel,
-            @JniType("std::vector") List<LegalMessageLine> googleLegalMessages,
-            @JniType("std::vector") List<LegalMessageLine> issuerLegalMessages,
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> googleLegalMessages,
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> issuerLegalMessages,
             @JniType("std::u16string") String acceptButtonLabel,
             @JniType("std::u16string") String cancelButtonLabel) {
         if (webContents == null || webContents.isDestroyed()) return false;

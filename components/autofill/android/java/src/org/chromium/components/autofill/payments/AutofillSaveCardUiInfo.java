@@ -143,7 +143,8 @@ public class AutofillSaveCardUiInfo {
             @DrawableRes int logoIcon,
             @JniType("std::u16string") String logoIconDescription,
             @DrawableRes int issuerIcon,
-            @JniType("std::vector") List<LegalMessageLine> legalMessageLines,
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines,
             @JniType("std::u16string") String cardLabel,
             @JniType("std::u16string") String cardSubLabel,
             @JniType("std::u16string") String cardDescription,

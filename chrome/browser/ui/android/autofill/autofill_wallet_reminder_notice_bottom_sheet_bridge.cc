@@ -38,8 +38,7 @@ void AutofillWalletReminderNoticeBottomSheetBridge::RequestShowContent(
   if (java_object_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AutofillWalletReminderNoticeBottomSheetBridge_requestShowContent(
-        env, java_object_,
-        LegalMessageLineAndroid::ConvertToJavaLinkedList(legal_message_lines));
+        env, java_object_, legal_message_lines);
   }
 }
 

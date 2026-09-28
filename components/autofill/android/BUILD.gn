@@ -455,11 +455,8 @@ generate_jni("payments_jni_headers") {
   ]
 }
 
-static_library("payments_autofill_cc") {
-  sources = [
-    "payments/legal_message_line_android.cc",
-    "payments/legal_message_line_android.h",
-  ]
+source_set("payments_autofill_cc") {
+  sources = [ "payments/legal_message_line_android.h" ]
   deps = [
     ":payments_jni_headers",
     "//base",

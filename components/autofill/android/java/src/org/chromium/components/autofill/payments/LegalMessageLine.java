@@ -4,8 +4,6 @@
 
 package org.chromium.components.autofill.payments;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -13,6 +11,7 @@ import org.jni_zero.JniType;
 import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,13 +22,13 @@ public class LegalMessageLine {
     /** A link in the legal message line. */
     public static class Link {
         /** The starting inclusive index of the link position in the text. */
-        public int start;
+        public final int start;
 
         /** The ending exclusive index of the link position in the text. */
-        public int end;
+        public final int end;
 
         /** The URL of the link. */
-        public String url;
+        public final String url;
 
         /**
          * Creates a new instance of the link.
@@ -38,7 +37,8 @@ public class LegalMessageLine {
          * @param end The ending exclusive index of the link position in the text.
          * @param url The URL of the link.
          */
-        public Link(int start, int end, String url) {
+        @CalledByNative
+        public Link(int start, int end, @JniType("std::string") String url) {
             this.start = start;
             this.end = end;
             this.url = url;
@@ -60,51 +60,32 @@ public class LegalMessageLine {
     }
 
     /** The plain text legal message line. */
-    public String text;
+    public final String text;
 
     /** A collection of links in the legal message line. */
-    public final List<Link> links = new ArrayList<Link>();
+    public final List<Link> links;
 
     /**
      * Creates a new instance of the legal message line.
      *
      * @param text The plain text legal message.
      */
-    @CalledByNative
-    public LegalMessageLine(@JniType("std::u16string") String text) {
-        this.text = text;
+    public LegalMessageLine(String text) {
+        this(text, Collections.emptyList());
     }
 
     /**
      * Creates a new instance of the legal message line with text and links.
+     *
      * @param text The plain text legal message.
      * @param links List of {@link Link} objects representing the links.
      */
-    @VisibleForTesting
-    public LegalMessageLine(String text, List<Link> links) {
-        this.text = text;
-        links.forEach(this::addLink);
-    }
-
-    /**
-     * Adds a link to this legal message
-     *
-     * @param link The link to be added.
-     */
-    /*package*/ void addLink(Link link) {
-        links.add(link);
-    }
-
-    /**
-     * Adds a link to this legal message.
-     *
-     * @param start The starting inclusive index of the link position in the text.
-     * @param end The ending exclusive index of the link position in the text.
-     * @param url The URL of the link.
-     */
     @CalledByNative
-    private void addLink(int start, int end, @JniType("std::string") String url) {
-        links.add(new Link(start, end, url));
+    public LegalMessageLine(
+            @JniType("std::u16string") String text,
+            @JniType("std::vector<autofill::LegalMessageLine::Link>") List<Link> links) {
+        this.text = text;
+        this.links = new ArrayList<>(links);
     }
 
     @Override

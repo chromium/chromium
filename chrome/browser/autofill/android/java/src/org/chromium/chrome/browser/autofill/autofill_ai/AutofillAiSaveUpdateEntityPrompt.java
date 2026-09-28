@@ -333,7 +333,9 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
      */
     @CalledByNative
     @VisibleForTesting
-    void setPublicPassesNotice(@JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+    void setPublicPassesNotice(
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines) {
         TextView legalMessageView = mDialogView.findViewById(R.id.autofill_ai_public_passes_notice);
         if (legalMessageLines.isEmpty()) {
             legalMessageView.setVisibility(View.GONE);

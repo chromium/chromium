@@ -39,7 +39,8 @@ public class BnplIssuerTosDetail {
             @JniType("std::string") String issuerId,
             boolean isLinkedIssuer,
             @JniType("std::u16string") String issuerName,
-            @JniType("std::vector") List<LegalMessageLine> legalMessageLines) {
+            @JniType("std::vector<autofill::LegalMessageLine>")
+                    List<LegalMessageLine> legalMessageLines) {
         mIssuerId = issuerId;
         mIsLinkedIssuer = isLinkedIssuer;
         mIssuerName = issuerName;

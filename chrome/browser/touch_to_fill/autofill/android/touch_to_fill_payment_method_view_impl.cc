@@ -54,8 +54,7 @@ ConvertBnplIssuerTosDetailToJavaObject(
           ConvertToBnplIssuerIdString(bnpl_issuer_tos_detail.issuer_id)),
       bnpl_issuer_tos_detail.is_linked_issuer,
       bnpl_issuer_tos_detail.issuer_name,
-      LegalMessageLineAndroid::ConvertToJavaLinkedList(
-          bnpl_issuer_tos_detail.legal_message_lines));
+      bnpl_issuer_tos_detail.legal_message_lines);
 }
 
 // TODO(crbug.com/449764859): Refactor BnplIssuerContext to use JNI type

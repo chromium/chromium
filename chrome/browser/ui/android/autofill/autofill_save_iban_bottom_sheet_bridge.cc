@@ -11,13 +11,13 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/autofill/android/payments/legal_message_line_android.h"
-#include "components/autofill/android/payments_jni_headers/AutofillSaveIbanUiInfo_jni.h"
 #include "components/autofill/core/browser/payments/autofill_save_iban_ui_info.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutofillSaveIbanBottomSheetBridge_jni.h"
+#include "components/autofill/android/payments_jni_headers/AutofillSaveIbanUiInfo_jni.h"
 
 namespace autofill {
 
@@ -28,9 +28,7 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
     const AutofillSaveIbanUiInfo& ui_info) {
   return Java_AutofillSaveIbanUiInfo_Constructor(
       env, ui_info.accept_text, ui_info.cancel_text, ui_info.description_text,
-      ui_info.iban_value, ui_info.is_server_save,
-      LegalMessageLineAndroid::ConvertToJavaLinkedList(
-          ui_info.legal_message_lines),
+      ui_info.iban_value, ui_info.is_server_save, ui_info.legal_message_lines,
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),
       ui_info.title_text);
 }
