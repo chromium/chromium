@@ -793,8 +793,6 @@ bool WASAPIAudioInputStream::UpdateFormats() {
     } else {
       const uint32_t format_tag =
           EXTRACT_WAVEFORMATEX_ID(&mix_format.SubFormat);
-      base::UmaHistogramSparse(
-          "Media.Audio.Capture.Win.AudioEngineFormat.Unknown", format_tag);
       SendLogMessage(base::StringPrintf(
           "%s => (WARNING: unknown mix sample format (tag=%#x))", __func__,
           format_tag));
