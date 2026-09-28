@@ -25,6 +25,8 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "google_apis/google_api_keys.h"
 #include "services/image_annotation/image_annotation_service.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -108,6 +110,34 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
   const raw_ptr<Profile> profile_;
 };
 
+class LabelsServiceOnceHelper
+    : public content::WebContentsUserData<LabelsServiceOnceHelper>,
+      public content::WebContentsObserver {
+ public:
+  ~LabelsServiceOnceHelper() override = default;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override {
+    web_contents()->RemoveUserData(UserDataKey());
+  }
+
+ private:
+  explicit LabelsServiceOnceHelper(content::WebContents* web_contents)
+      : content::WebContentsUserData<LabelsServiceOnceHelper>(*web_contents),
+        content::WebContentsObserver(web_contents),
+        scoped_accessibility_mode_(
+            content::BrowserAccessibilityState::GetInstance()
+                ->CreateScopedModeForWebContents(web_contents,
+                                                 ui::AXMode::kLabelImages)) {}
+
+  friend class content::WebContentsUserData<LabelsServiceOnceHelper>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LabelsServiceOnceHelper);
+
 }  // namespace
 
 AccessibilityLabelsService::AccessibilityLabelsService(Profile* profile)
@@ -184,6 +214,8 @@ void AccessibilityLabelsService::EnableLabelsServiceOnce(
   if (!ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
     return;
   }
+
+  LabelsServiceOnceHelper::CreateForWebContents(web_contents);
 
   // TODO(grt): Use ScopedAccessibilityMode here targeting the WC and remove
   // the action.
@@ -302,6 +334,8 @@ static void JNI_ImageDescriptionsController_GetImageDescriptionsOnce(
   if (!web_contents) {
     return;
   }
+
+  LabelsServiceOnceHelper::CreateForWebContents(web_contents);
 
   // We only need to fire this event for the active page.
   ui::AXActionData action_data;

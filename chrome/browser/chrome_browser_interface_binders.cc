@@ -61,6 +61,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -80,6 +81,7 @@
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_mode.h"
 
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
 #include "chrome/browser/android/contextualsearch/unhandled_tap_notifier_impl.h"  // nogncheck crbug.com/40147906
@@ -193,6 +195,12 @@ void BindUnhandledTapWebContentsObserver(
 void BindImageAnnotator(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<image_annotation::mojom::Annotator> receiver) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(frame_host);
+  if (!web_contents || !web_contents->GetAccessibilityMode().has_mode(
+                           ui::AXMode::kLabelImages)) {
+    return;
+  }
   AccessibilityLabelsServiceFactory::GetForProfile(
       Profile::FromBrowserContext(
           frame_host->GetProcess()->GetBrowserContext()))
