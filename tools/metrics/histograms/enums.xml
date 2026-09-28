@@ -10072,6 +10072,7 @@ from previous Chrome versions.
   <int value="-1474724634"
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
+  <int value="-1473803888" label="SendTabToSelfNoTargetDeviceQrCode:enabled"/>
   <int value="-1473668019" label="token-binding:disabled"/>
   <int value="-1473537658" label="DeprecateLowUsageCodecs:disabled"/>
   <int value="-1473345665" label="AndroidDesktopDensity:disabled"/>
@@ -14684,6 +14685,7 @@ from previous Chrome versions.
   <int value="-72590181" label="DrawCutoutEdgeToEdge:enabled"/>
   <int value="-72581685" label="FilesDriveShortcuts:disabled"/>
   <int value="-72455054" label="WebVrAutopresent:disabled"/>
+  <int value="-71797099" label="SendTabToSelfNoTargetDeviceQrCode:disabled"/>
   <int value="-71177609" label="EncryptSessionStorage:enabled"/>
   <int value="-71111904"
       label="enable-device-bound-sessions-dse-prewarmer:enabled"/>

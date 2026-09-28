@@ -4338,6 +4338,12 @@ inline constexpr char kSendTabToSelfGestureDescription[] =
     "Enables detecting physical double-tap gestures to trigger Send Tab To "
     "Self on Android.";
 
+inline constexpr char kSendTabToSelfNoTargetDeviceQrCodeName[] =
+    "Send Tab to Self No Target Device QR Code";
+inline constexpr char kSendTabToSelfNoTargetDeviceQrCodeDescription[] =
+    "Shows a QR code to download and sign in to Chrome on mobile when no "
+    "target devices are found in Send Tab to Self.";
+
 inline constexpr char kSensitiveContentName[] =
     "Redact sensitive content during screen sharing, screen recording, "
     "and similar actions";

@@ -14105,6 +14105,17 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableCardholderNameFixFlow)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    // Guarded to Windows, Mac, and Linux because the QR code URL relies on
+    // `switches::kCrossDeviceSigninFromDesktopUrl` in
+    // `components/signin/public/base/signin_switches.h`.
+    {"send-tab-to-self-no-target-device-qr-code",
+     flag_descriptions::kSendTabToSelfNoTargetDeviceQrCodeName,
+     flag_descriptions::kSendTabToSelfNoTargetDeviceQrCodeDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

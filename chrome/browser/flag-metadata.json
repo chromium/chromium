@@ -8968,6 +8968,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "send-tab-to-self-no-target-device-qr-code",
+    "owners": ["mtatarski@google.com", "treib@chromium.org"],
+    "expiry_milestone": 163
+  },
+  {
     "name": "sensitive-content",
     "owners": ["jkeitel@google.com"],
     "expiry_milestone": 163
