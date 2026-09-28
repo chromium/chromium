@@ -20,6 +20,7 @@ class MockAutofillDialogController : public AutofillDialogController {
               (const std::u16string&,
                const std::u16string&,
                const std::u16string&,
+               const std::u16string&,
                base::OnceClosure),
               (override));
   MOCK_METHOD(void,
@@ -31,7 +32,8 @@ class MockAutofillDialogController : public AutofillDialogController {
   MOCK_METHOD(void, OnDismissed, (), (override));
   MOCK_METHOD(std::u16string, GetTitleText, (), (const, override));
   MOCK_METHOD(std::u16string, GetDescriptionText, (), (const, override));
-  MOCK_METHOD(std::u16string, GetButtonText, (), (const, override));
+  MOCK_METHOD(std::u16string, GetNegativeButtonText, (), (const, override));
+  MOCK_METHOD(std::u16string, GetPositiveButtonText, (), (const, override));
   MOCK_METHOD(content::WebContents&, GetWebContents, (), (const, override));
 };
 

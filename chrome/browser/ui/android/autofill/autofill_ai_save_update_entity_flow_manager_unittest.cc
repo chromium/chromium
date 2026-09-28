@@ -320,7 +320,8 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowLocalSaveNotification) {
       IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL);
 
   EXPECT_CALL(autofill_dialog_controller(),
-              Show(title, description, button, _));
+              Show(title, description, /*positive_button_text=*/button,
+                   /*negative_button_text=*/std::u16string(), _));
   flow_manager().ShowLocalSaveNotification();
 }
 

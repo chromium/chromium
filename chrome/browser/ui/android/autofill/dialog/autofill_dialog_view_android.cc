@@ -36,7 +36,8 @@ void AutofillDialogViewAndroid::Show() {
     Java_AutofillDialogController_show(
         base::android::AttachCurrentThread(), java_object_,
         controller_->GetTitleText(), controller_->GetDescriptionText(),
-        controller_->GetButtonText());
+        controller_->GetPositiveButtonText(),
+        controller_->GetNegativeButtonText());
   }
 }
 

@@ -118,9 +118,10 @@ void AutofillAiSaveUpdateEntityFlowManager::ShowLocalSaveNotification() {
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_DESCRIPTION,
           std::move(google_wallet_text)),
+      /*positive_button_text=*/
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL),
-      base::DoNothing());
+      /*negative_button_text=*/std::u16string(), base::DoNothing());
 }
 
 std::unique_ptr<AutofillMessageModel>

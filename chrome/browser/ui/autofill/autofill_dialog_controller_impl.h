@@ -31,7 +31,8 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   // AutofillDialogController:
   void Show(const std::u16string& title,
             const std::u16string& description,
-            const std::u16string& button_text,
+            const std::u16string& positive_button_text,
+            const std::u16string& negative_button_text,
             base::OnceClosure on_positive_button_clicked_callback) override;
   void ShowLoadingDialog(const std::u16string& title,
                          base::TimeDelta min_time) override;
@@ -41,7 +42,8 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
   void OnDismissed() override;
   std::u16string GetTitleText() const override;
   std::u16string GetDescriptionText() const override;
-  std::u16string GetButtonText() const override;
+  std::u16string GetNegativeButtonText() const override;
+  std::u16string GetPositiveButtonText() const override;
   content::WebContents& GetWebContents() const override;
 
   // Method for tests to inject a mock or test view.
@@ -60,7 +62,8 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
 
   std::u16string title_;
   std::u16string description_;
-  std::u16string button_text_;
+  std::u16string negative_button_text_;
+  std::u16string positive_button_text_;
 
   base::OneShotTimer dismiss_timer_;
   base::ElapsedTimer dialog_show_time_;

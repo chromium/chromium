@@ -16,9 +16,12 @@ class AutofillDialogController {
  public:
   virtual ~AutofillDialogController() = default;
 
+  // Shows the dialog. The negative button is not displayed when an empty
+  // negative button text is passed.
   virtual void Show(const std::u16string& title,
                     const std::u16string& description,
-                    const std::u16string& button_text,
+                    const std::u16string& positive_button_text,
+                    const std::u16string& negative_button_text,
                     base::OnceClosure on_positive_button_clicked_callback) = 0;
 
   virtual void ShowLoadingDialog(const std::u16string& title,
@@ -37,8 +40,10 @@ class AutofillDialogController {
   virtual std::u16string GetTitleText() const = 0;
   // Returns the text to be displayed in the description area of the dialog.
   virtual std::u16string GetDescriptionText() const = 0;
-  // Returns the text to be displayed in the button of the dialog.
-  virtual std::u16string GetButtonText() const = 0;
+  // Returns the text to be displayed in the negative button of the dialog.
+  virtual std::u16string GetNegativeButtonText() const = 0;
+  // Returns the text to be displayed in the positive button of the dialog.
+  virtual std::u16string GetPositiveButtonText() const = 0;
   virtual content::WebContents& GetWebContents() const = 0;
 };
 

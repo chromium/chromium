@@ -25,7 +25,8 @@ AutofillDialogControllerImpl::~AutofillDialogControllerImpl() {
 void AutofillDialogControllerImpl::Show(
     const std::u16string& title,
     const std::u16string& description,
-    const std::u16string& button_text,
+    const std::u16string& positive_button_text,
+    const std::u16string& negative_button_text,
     base::OnceClosure on_positive_button_clicked_callback) {
   if (autofill_dialog_view_) {
     // A dialog is already showing. Ignore the new request.
@@ -36,7 +37,8 @@ void AutofillDialogControllerImpl::Show(
 
   title_ = title;
   description_ = description;
-  button_text_ = button_text;
+  positive_button_text_ = positive_button_text;
+  negative_button_text_ = negative_button_text;
   on_positive_button_clicked_callback_ =
       std::move(on_positive_button_clicked_callback);
 
@@ -61,7 +63,8 @@ void AutofillDialogControllerImpl::ShowLoadingDialog(
 
   title_ = title;
   description_ = u"";
-  button_text_ = u"";
+  negative_button_text_ = u"";
+  positive_button_text_ = u"";
   on_positive_button_clicked_callback_ = base::DoNothing();
 
   if (view_factory_for_test_) {
@@ -88,8 +91,12 @@ std::u16string AutofillDialogControllerImpl::GetDescriptionText() const {
   return description_;
 }
 
-std::u16string AutofillDialogControllerImpl::GetButtonText() const {
-  return button_text_;
+std::u16string AutofillDialogControllerImpl::GetNegativeButtonText() const {
+  return negative_button_text_;
+}
+
+std::u16string AutofillDialogControllerImpl::GetPositiveButtonText() const {
+  return positive_button_text_;
 }
 
 content::WebContents& AutofillDialogControllerImpl::GetWebContents() const {
