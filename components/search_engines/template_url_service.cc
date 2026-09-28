@@ -3196,10 +3196,8 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
       previous_default_search_engine_guid.empty()
           ? nullptr
           : GetTemplateURLForGUID(previous_default_search_engine_guid);
-  if (previous_turl &&
-      previous_turl->starter_pack_id() ==
-          template_url_starter_pack_data::StarterPackId::kNone &&
-      !IsPrepopulatedOrDefaultProviderByPolicy(previous_turl) &&
+  if (previous_turl && !ShowInDefaultList(previous_turl) &&
+      CanMakeDefault(previous_turl) &&
       base::FeatureList::IsEnabled(
           switches::kVisitCustomSearchOnUndefaulting)) {
     UpdateTemplateURLVisitTime(previous_turl);

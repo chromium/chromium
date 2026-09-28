@@ -345,6 +345,30 @@ TEST_P(TemplateURLServiceUpdateLastVisitedTest,
   } else {
     EXPECT_EQ(custom_turl1->last_visited(), kOldTime);
   }
+
+  // Overriding custom_turl2 with an extension should NOT update custom_turl2's
+  // last_visited time, nor should removing the extension update the extension
+  // engine's last_visited time.
+  custom_turl2 = template_url_service().GetTemplateURLForGUID("custom-guid2");
+  ASSERT_TRUE(custom_turl2);
+  TemplateURLData ext_data;
+  ext_data.SetShortName(u"ext");
+  ext_data.SetKeyword(u"ext");
+  ext_data.SetURL("https://ext.com/search?q={searchTerms}");
+  ext_data.sync_guid = "ext-guid";
+  ext_data.last_visited = kOldTime;
+  TemplateURL* ext_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(
+          ext_data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, "ext_id",
+          base::Time::FromTimeT(200), /*wants_to_be_default_engine=*/true));
+  ASSERT_TRUE(ext_turl);
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      &ext_turl->data(), DefaultSearchManager::FROM_EXTENSION);
+  EXPECT_EQ(custom_turl2->last_visited(), base::Time());
+
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      &custom_turl2->data(), DefaultSearchManager::FROM_USER);
+  EXPECT_EQ(ext_turl->last_visited(), kOldTime);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
