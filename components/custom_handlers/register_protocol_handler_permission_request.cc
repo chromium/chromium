@@ -49,10 +49,10 @@ bool RegisterProtocolHandlerPermissionRequest::IsDuplicateOf(
   // The downcast here is safe because PermissionRequest::IsDuplicateOf ensures
   // that both requests are of type kRegisterProtocolHandler.
   return permissions::PermissionRequest::IsDuplicateOf(other_request) &&
-         handler_.protocol() ==
+         handler_.IsEquivalent(
              static_cast<RegisterProtocolHandlerPermissionRequest*>(
                  other_request)
-                 ->handler_.protocol();
+                 ->handler_);
 }
 
 std::u16string

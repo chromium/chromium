@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -568,6 +570,26 @@ class PermissionPromptWaiter
   bool prompt_added_ = false;
 };
 
+// Asks the page in `web_contents` to register `handler_url` for `protocol`,
+// then waits until a permission prompt is showing.
+void RegisterAndWaitForPrompt(WebContents* web_contents,
+                              permissions::PermissionRequestManager* manager,
+                              const std::string& protocol,
+                              const std::string& handler_url) {
+  ASSERT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace("navigator.registerProtocolHandler($1, $2);", protocol,
+                         handler_url)));
+  // Requests() lists only the requests of the prompt being shown. It can be
+  // empty for a moment, because the manager shows prompts from a posted task:
+  // - The first request's prompt is not shown yet.
+  // - A new request that is not a duplicate of the prompt being shown may
+  //   replace that prompt. The old request goes back in the queue.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !manager->Requests().empty();
+  })) << "No permission prompt was shown";
+}
+
 // Verify that when an extension registers a custom protocol handler pointing
 // to a cross-origin HTTP(S) URL as a new registration, the permission prompt UI
 // attributes the request to the extension's own origin and displays the target
@@ -674,6 +696,108 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest,
               testing::HasSubstr(
                   "Open geo links through example.com instead of old.com"));
 }
+
+// Two handlers an extension page asks to register for the same scheme, and
+// whether they are different handlers that each need their own prompt.
+struct HandlerPair {
+  const char* name;
+  // Resolved against the extension page's URL.
+  const char* first_url;
+  const char* second_url;
+  bool expect_separate_prompts;
+};
+
+// The permission request manager merges duplicate requests into one prompt,
+// and the decision on that prompt applies to every merged request. Only
+// requests for the same handler may be merged. Different handlers must each
+// get their own prompt, whether they are on the page's origin or, as
+// extensions may register, on other origins.
+class RegisterProtocolHandlerSameSchemeBrowserTest
+    : public RegisterProtocolHandlerExtensionBrowserTest,
+      public testing::WithParamInterface<HandlerPair> {};
+
+IN_PROC_BROWSER_TEST_P(RegisterProtocolHandlerSameSchemeBrowserTest,
+                       OnePromptPerHandler) {
+#if BUILDFLAG(IS_MAC)
+  ASSERT_TRUE(test::RegisterAppWithLaunchServices());
+#endif
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("protocol_handler"));
+  ASSERT_NE(nullptr, extension);
+  const GURL page_url = extension->GetResourceURL("test.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, permission_request_manager);
+  ProtocolHandlerRegistry* registry =
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(
+          browser()->GetProfile());
+
+  const std::string protocol = "geo";
+  const ProtocolHandler first = ProtocolHandler::CreateProtocolHandler(
+      protocol, page_url.Resolve(GetParam().first_url));
+  const ProtocolHandler second = ProtocolHandler::CreateProtocolHandler(
+      protocol, page_url.Resolve(GetParam().second_url));
+
+  ASSERT_NO_FATAL_FAILURE(
+      RegisterAndWaitForPrompt(web_contents, permission_request_manager,
+                               protocol, GetParam().first_url));
+  ASSERT_NO_FATAL_FAILURE(
+      RegisterAndWaitForPrompt(web_contents, permission_request_manager,
+                               protocol, GetParam().second_url));
+  // `Requests()` holds only the prompt being shown, which covers a single
+  // handler.
+  ASSERT_EQ(1u, permission_request_manager->Requests().size());
+  // A duplicate is merged into the prompt being shown. A different handler
+  // waits in the queue for a prompt of its own.
+  ASSERT_EQ(GetParam().expect_separate_prompts,
+            permission_request_manager->has_pending_requests());
+
+  // Accept whichever request is being shown: exactly that handler must be
+  // registered.
+  PermissionPromptWaiter next_prompt_waiter(permission_request_manager);
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
+  ASSERT_EQ(1u, registry->GetHandlersFor(protocol).size())
+      << "Accepting one prompt registered both handlers";
+  const ProtocolHandler accepted = registry->GetHandlerFor(protocol);
+  const bool first_accepted = accepted.IsEquivalent(first);
+  ASSERT_TRUE(first_accepted || accepted.IsEquivalent(second));
+
+  if (!GetParam().expect_separate_prompts) {
+    // Nothing was queued, so no other prompt can follow.
+    return;
+  }
+
+  // The other handler is then prompted for on its own, and denying it leaves
+  // the accepted handler as the only, default one.
+  const ProtocolHandler& other = first_accepted ? second : first;
+  EXPECT_FALSE(registry->IsIgnored(other));
+  next_prompt_waiter.Wait();
+  ASSERT_EQ(1u, permission_request_manager->Requests().size());
+  permission_request_manager->Deny(/*prompt_options=*/std::monostate());
+  EXPECT_TRUE(registry->IsIgnored(other));
+  EXPECT_EQ(1u, registry->GetHandlersFor(protocol).size());
+  EXPECT_TRUE(registry->GetHandlerFor(protocol).IsEquivalent(accepted));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RegisterProtocolHandlerSameSchemeBrowserTest,
+    testing::Values(
+        // The very same handler twice is a genuine duplicate.
+        HandlerPair{"SameHandler", "handler.html?%s", "handler.html?%s",
+                    /*expect_separate_prompts=*/false},
+        HandlerPair{"SameOrigin", "first.html?%s", "second.html?%s",
+                    /*expect_separate_prompts=*/true},
+        HandlerPair{"CrossOrigin", "https://first.example/?q=%s",
+                    "https://second.example/?q=%s",
+                    /*expect_separate_prompts=*/true}),
+    [](const testing::TestParamInfo<HandlerPair>& info) {
+      return info.param.name;
+    });
 
 IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerExtensionBrowserTest, Basic) {
 #if BUILDFLAG(IS_MAC)
