@@ -40,4 +40,8 @@ CREATE TABLE autofill_ai_entities (guid TEXT NOT NULL PRIMARY KEY, entity_type T
 CREATE TABLE autofill_ai_entities_metadata (entity_guid TEXT NOT NULL PRIMARY KEY, use_count INTEGER DEFAULT 0, use_date INTEGER DEFAULT 0, date_modified INTEGER NOT NULL);
 CREATE TABLE loyalty_cards (loyalty_card_id TEXT PRIMARY KEY NOT NULL, merchant_name TEXT NOT NULL, program_name TEXT NOT NULL, program_logo TEXT NOT NULL, loyalty_card_number TEXT NOT NULL);
 CREATE TABLE valuables_metadata (valuable_id TEXT PRIMARY KEY NOT NULL, use_count INTEGER NOT NULL DEFAULT 0, use_date INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE web_app_manifest_section (expire_date INTEGER NOT NULL DEFAULT 0, id VARCHAR, min_version INTEGER NOT NULL DEFAULT 0, fingerprints BLOB, method_name VARCHAR);
+CREATE TABLE payment_method_manifest (expire_date INTEGER NOT NULL DEFAULT 0, method_name VARCHAR, web_app_id VARCHAR);
+CREATE TABLE secure_payment_confirmation_instrument (credential_id BLOB NOT NULL, relying_party_id VARCHAR NOT NULL, label VARCHAR NOT NULL, icon BLOB NOT NULL, date_created INTEGER NOT NULL DEFAULT 0, user_id BLOB, PRIMARY KEY (credential_id, relying_party_id));
+CREATE TABLE secure_payment_confirmation_browser_bound_key (credential_id BLOB NOT NULL, relying_party_id TEXT NOT NULL, browser_bound_key_id BLOB, last_used TIMESTAMP, PRIMARY KEY (credential_id, relying_party_id));
 COMMIT;

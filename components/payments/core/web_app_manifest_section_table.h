@@ -25,12 +25,18 @@ namespace payments {
 // stores all sections across all of its default applications.
 //
 //  expire_date    The data expiry date in seconds from 1601-01-01 00:00:00 UTC.
-//  method_name    The payment method identifier (acts as partition key).
 //  id             The package name of the Android app. Rows are queried by
 //                 the composite key (method_name, id).
 //  min_version    Minimum version number of the app.
 //  fingerprints   SHA256 fingerprints of signing certificate bytes.
+//  method_name    The payment method identifier (acts as partition key).
 //
+// Note: Due to a mismatch between CreateTablesIfNecessary and
+// MigrateToVersion155AddMethodName in milestones M155 and M156 (fixed in M157),
+// some users will have a version of this table where the `method_name` column
+// is between `expire_date` and `id` rather than at the end. This is not a
+// problem as all accesses to the table explicitly name fields and do not rely
+// on any column ordering.
 class WebAppManifestSectionTable : public WebDatabaseTable {
  public:
   WebAppManifestSectionTable();

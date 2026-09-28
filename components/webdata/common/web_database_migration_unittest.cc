@@ -30,6 +30,8 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/test_encryptor.h"
+#include "components/payments/core/web_app_manifest_section_table.h"
+#include "components/payments/core/web_payments_table.h"
 #include "components/search_engines/keyword_table.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -102,6 +104,8 @@ class WebDatabaseMigrationTest : public testing::Test {
     autofill::ValuablesTable valuables_table;
     KeywordTable keyword_table;
     TokenServiceTable token_service_table;
+    payments::WebAppManifestSectionTable web_app_manifest_section_table;
+    payments::WebPaymentsTable web_payments_table;
 
     WebDatabase db;
     db.AddTable(&address_autofill_table);
@@ -112,6 +116,8 @@ class WebDatabaseMigrationTest : public testing::Test {
     db.AddTable(&keyword_table);
     db.AddTable(&token_service_table);
     db.AddTable(&valuables_table);
+    db.AddTable(&web_app_manifest_section_table);
+    db.AddTable(&web_payments_table);
 
     // This causes the migration to occur.
     ASSERT_EQ(sql::INIT_OK, db.Init(GetDatabasePath(), encryptor_));
@@ -256,6 +262,12 @@ TEST_F(WebDatabaseMigrationTest, MigrateEmptyToCurrent) {
     EXPECT_TRUE(connection.DoesTableExist("keywords"));
     EXPECT_TRUE(connection.DoesTableExist("meta"));
     EXPECT_TRUE(connection.DoesTableExist("token_service"));
+    EXPECT_TRUE(connection.DoesTableExist("web_app_manifest_section"));
+    EXPECT_TRUE(connection.DoesTableExist("payment_method_manifest"));
+    EXPECT_TRUE(
+        connection.DoesTableExist("secure_payment_confirmation_instrument"));
+    EXPECT_TRUE(connection.DoesTableExist(
+        "secure_payment_confirmation_browser_bound_key"));
     // The web_apps and web_apps_icons tables are obsolete as of version 58.
     EXPECT_FALSE(connection.DoesTableExist("web_apps"));
     EXPECT_FALSE(connection.DoesTableExist("web_app_icons"));
@@ -2086,19 +2098,18 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion153ToCurrent) {
 }
 
 // Version 155 adds the method_name column to the web_app_manifest_section table
-// in components/payments/content. That table is not known to webdata_common (it
-// is registered via WebDataServiceWrapper in components/webdata_services), so
-// its migration is tested in
-// WebAppManifestSectionTableTest.MigrationVersion154ToCurrent.
-//
-// TODO(crbug.com/559592119): Refactor code locations to allow testing
-// //components/payments tables in the same place as other tables.
+// and clears existing entries that lacked a method_name.
 TEST_F(WebDatabaseMigrationTest, MigrateVersion154ToCurrent) {
   ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_154.sql")));
   {
     sql::Database connection(sql::test::kTestTag);
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
     EXPECT_EQ(154, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("web_app_manifest_section", "method_name"));
+    ASSERT_TRUE(connection.Execute(
+        "INSERT INTO web_app_manifest_section (expire_date, id, min_version, "
+        "fingerprints) VALUES (9999999, 'com.legacy', 1, X'0102')"));
   }
   DoMigration();
   {
@@ -2106,6 +2117,13 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion154ToCurrent) {
     ASSERT_TRUE(connection.Open(GetDatabasePath()));
     EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
               VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("web_app_manifest_section", "method_name"));
+
+    sql::Statement s(connection.GetUniqueStatement(
+        "SELECT COUNT(*) FROM web_app_manifest_section"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(0, s.ColumnInt(0));
   }
 }
 

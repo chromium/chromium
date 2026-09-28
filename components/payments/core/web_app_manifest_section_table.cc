@@ -85,10 +85,10 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
   return db()->Execute(
       "CREATE TABLE IF NOT EXISTS web_app_manifest_section ( "
       "expire_date INTEGER NOT NULL DEFAULT 0, "
-      "method_name VARCHAR, "
       "id VARCHAR, "
       "min_version INTEGER NOT NULL DEFAULT 0, "
-      "fingerprints BLOB) ");
+      "fingerprints BLOB, "
+      "method_name VARCHAR) ");
 }
 
 bool WebAppManifestSectionTable::MigrateToVersion(
