@@ -59,9 +59,8 @@ void CloseAllPromptsSoon(CloseReason reason) {
 DefaultBrowserInfoBarManager::DefaultBrowserInfoBarManager() = default;
 
 DefaultBrowserInfoBarManager::~DefaultBrowserInfoBarManager() {
-  // The result callback handed to the framework binds `this` unretained, so
-  // no instance may outlive us.
-  HideInfoBar();
+  // The prompt manager can destroy the infobar without calling CloseAll().
+  CloseAllPromptInstances();
 }
 
 void DefaultBrowserInfoBarManager::Show(bool can_pin_to_taskbar) {
@@ -144,8 +143,11 @@ void DefaultBrowserInfoBarManager::CloseAllPromptInstances() {
   browser_tab_strip_tracker_.reset();
 
   for (const auto& infobars_entry : infobars_) {
-    infobars_entry.second->owner()->RemoveObserver(this);
-    infobars_entry.second->RemoveSelf();
+    infobars::InfoBar* infobar = infobars_entry.second;
+    infobar->owner()->RemoveObserver(this);
+    static_cast<ConfirmInfoBarDelegate*>(infobar->delegate())
+        ->RemoveObserver(this);
+    infobar->RemoveSelf();
   }
 
   infobars_.clear();

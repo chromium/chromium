@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -110,4 +113,30 @@ IN_PROC_BROWSER_TEST_P(DefaultBrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(1, g_browser_process->local_state()->GetInteger(
                    prefs::kDefaultBrowserInfobarDeclinedCount));
   EXPECT_EQ(0u, content_infobar_manager->infobars().size());
+}
+
+IN_PROC_BROWSER_TEST_P(DefaultBrowserInfoBarManagerBrowserTest,
+                       DestroyingWithoutCloseAllDetachesFromTabs) {
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+
+  auto infobar_manager = std::make_unique<DefaultBrowserInfoBarManager>();
+  infobar_manager->Show(/*can_pin_to_taskbar=*/false);
+  ASSERT_EQ(1u, InfoBarCountInActiveTab(browser()));
+
+  // A second prompt replaces the first, as DefaultBrowserPromptManager does.
+  infobar_manager = std::make_unique<DefaultBrowserInfoBarManager>();
+  infobar_manager->Show(/*can_pin_to_taskbar=*/false);
+  ASSERT_EQ(1u, InfoBarCountInActiveTab(browser()));
+
+  // The replacement owns the prompt in every tab, not just the active one.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_EQ(1u, InfoBarCountInActiveTab(browser()));
+
+  infobar_manager.reset();
+  EXPECT_EQ(0u, InfoBarCountInActiveTab(browser()));
+
+  // Closing a tab tears down its InfoBarManager, which notifies observers too.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
+  EXPECT_EQ(0u, InfoBarCountInActiveTab(browser()));
 }
