@@ -932,6 +932,108 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testListMenuAndReorderable_DuringTabletSearch() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Arrays.asList(mFolderId2, mFolderId3));
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        BookmarkListEntry entry =
+                mModelList.get(1).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        assertTrue(
+                "Entry should be reorderable in folder mode before search.",
+                mMediator.isReorderable(entry));
+
+        Callback<String> searchTextChangeCallback =
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
+        searchTextChangeCallback.onResult("Folder");
+
+        assertEquals(
+                "UI mode should remain FOLDER on tablet during search.",
+                BookmarkUiMode.FOLDER,
+                mMediator.getCurrentUiMode());
+
+        entry = mModelList.get(1).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        assertFalse(
+                "Entry should not be reorderable during tablet search.",
+                mMediator.isReorderable(entry));
+
+        ModelList menuModelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
+        verifyMenuListItemTitles(
+                menuModelList,
+                R.string.bookmark_item_select,
+                R.string.bookmark_item_edit,
+                R.string.bookmark_item_move,
+                R.string.bookmark_item_delete,
+                R.string.bookmark_show_in_folder);
+
+        // Clearing search should restore reorderability and Move up / Move down menu items.
+        searchTextChangeCallback.onResult("");
+        entry = mModelList.get(1).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        assertTrue(
+                "Entry should be reorderable again after clearing tablet search.",
+                mMediator.isReorderable(entry));
+
+        menuModelList = mMediator.createListMenuModelList(entry, Location.MIDDLE);
+        verifyMenuListItemTitles(
+                menuModelList,
+                R.string.bookmark_item_select,
+                R.string.bookmark_item_edit,
+                R.string.bookmark_item_move,
+                R.string.bookmark_item_delete,
+                R.string.menu_item_move_up,
+                R.string.menu_item_move_down);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testShowInFolder_DuringTabletSearch_SameFolder() {
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.MANUAL);
+        when(mBookmarkModel.searchBookmarks(eq("3"), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+        assertFalse(
+                "Back press should be disabled when state stack has 1 folder and no search.",
+                mBackPressStateSupplier.get());
+
+        Callback<String> searchTextChangeCallback =
+                mModelList.get(0).model.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK);
+        searchTextChangeCallback.onResult("3");
+
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId3);
+        assertTrue(
+                "Back press should be enabled during tablet search.",
+                mBackPressStateSupplier.get());
+        assertFalse(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED));
+
+        BasicListMenu menu =
+                (BasicListMenu) mMediator.createListMenuForBookmark(mModelList.get(1).model);
+        assertNotNull(menu);
+        assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
+
+        // Click "Show in folder" (index 4 for a folder item: Select, Edit, Move, Delete, Show in
+        // folder).
+        clickChildAt(menu, 4);
+
+        assertEquals("", mModelList.get(0).model.get(SearchBoxProperties.SEARCH_TEXT));
+        assertFalse(
+                "Back press should be disabled after Show in folder clears tablet search.",
+                mBackPressStateSupplier.get());
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+        assertTrue(mModelList.get(1).model.get(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED));
+        assertTrue(mModelList.get(2).model.get(ImprovedBookmarkRowProperties.IS_DRAG_ENABLED));
+        assertFalse(mModelList.get(1).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
+        assertTrue(mModelList.get(2).model.get(BookmarkManagerProperties.IS_HIGHLIGHTED));
+    }
+
+    @Test
     public void testSearch() {
         when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
                 .thenReturn(Collections.singletonList(mFolderId3));

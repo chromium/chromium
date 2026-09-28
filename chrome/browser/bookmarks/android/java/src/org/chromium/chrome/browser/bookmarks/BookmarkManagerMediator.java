@@ -127,11 +127,8 @@ class BookmarkManagerMediator
             // but drag-reorder must still be disabled during search because the
             // model list only contains filtered results, not the full folder
             // contents needed by setOrder() / reorderBookmarks().
-            boolean isTabletSearch =
-                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                            && !TextUtils.isEmpty(getCurrentSearchText());
             return enabled
-                    && !isTabletSearch
+                    && !isTabletSearch()
                     && mBookmarkUiPrefs.getBookmarkRowSortOrder() == BookmarkRowSortOrder.MANUAL
                     && mCurrentPowerFilter.isEmpty();
         }
@@ -160,11 +157,7 @@ class BookmarkManagerMediator
                     clearHighlight();
 
                     BookmarkId id = node.getId();
-                    boolean isTabletSearch =
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                                    && !TextUtils.isEmpty(getCurrentSearchText());
-
-                    if (getCurrentUiMode() == BookmarkUiMode.SEARCHING || isTabletSearch) {
+                    if (isSearching()) {
                         // We cannot rely on removing the specific list item that corresponds to the
                         // removed node because the node might be a parent with children also shown
                         // in the list.
@@ -261,11 +254,13 @@ class BookmarkManagerMediator
 
                     mDragReorderableRecyclerViewAdapter.enableDrag();
 
+                    setSearchTextAndUpdateButtonVisibility("");
+                    onBackPressStateChanged();
+
                     BookmarkId currentId = assumeNonNull(getCurrentFolderId());
                     setBookmarks(
                             mBookmarkQueryHandler.buildBookmarkListForParent(
                                     currentId, mCurrentPowerFilter));
-                    setSearchTextAndUpdateButtonVisibility("");
                     if (mIsExitingSearch || !maybeAutoFocusSearchBox()) {
                         clearSearchBoxFocus();
                     }
@@ -607,12 +602,9 @@ class BookmarkManagerMediator
         // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
         if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            String searchText = getCurrentSearchText();
-            if (!TextUtils.isEmpty(searchText)) {
-                onClearSearchTextRunnable();
-                return true;
-            }
+                && isTabletSearch()) {
+            onClearSearchTextRunnable();
+            return true;
         }
 
         if (!mStateStack.isEmpty()) {
@@ -640,8 +632,7 @@ class BookmarkManagerMediator
 
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
             // Escape ONLY clears the search filter. It does not navigate back.
-            String searchText = getCurrentSearchText();
-            if (!TextUtils.isEmpty(searchText)) {
+            if (isTabletSearch()) {
                 onClearSearchTextRunnable();
                 return true;
             }
@@ -703,6 +694,7 @@ class BookmarkManagerMediator
         assert currentId.getType() != BookmarkType.PARTNER : "Cannot reorder partner bookmarks!";
         assert getCurrentUiMode() == BookmarkUiMode.FOLDER
                 : "Can only reorder items from folder mode!";
+        assert !isSearching() : "Cannot reorder items while searching!";
 
         int startIndex = getBookmarkItemStartIndex();
         int endIndex = getBookmarkItemEndIndex();
@@ -733,7 +725,7 @@ class BookmarkManagerMediator
     }
 
     public boolean isReorderable(BookmarkListEntry entry) {
-        if (!mCurrentPowerFilter.isEmpty()) {
+        if (!mCurrentPowerFilter.isEmpty() || isSearching()) {
             return false;
         }
 
@@ -944,7 +936,8 @@ class BookmarkManagerMediator
         @BookmarkUiMode int currentUiMode = getCurrentUiMode();
         @Nullable BookmarkUiState currentState = getCurrentUiState();
         if (Objects.equals(currentState, state)) {
-            if (mNativePage != null && !TextUtils.equals(mNativePage.getUrl(), state.mUrl)) {
+            if ((mNativePage != null && !TextUtils.equals(mNativePage.getUrl(), state.mUrl))
+                    || isTabletSearch()) {
                 notifyUi(state, false);
             }
             return;
@@ -1069,11 +1062,7 @@ class BookmarkManagerMediator
 
         // Condition 3: Are we on a tablet and actively searching?
         // TODO(crbug.com/444674420): Unify back press logic under SelectableListLayout.
-        boolean isSearchingOnTablet = false;
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            String searchText = getCurrentSearchText();
-            isSearchingOnTablet = !TextUtils.isEmpty(searchText);
-        }
+        boolean isSearchingOnTablet = isTabletSearch();
 
         // The handler is enabled if ANY of these conditions are true.
         boolean isEnabled = selectionActive || canNavigateFolders || isSearchingOnTablet;
@@ -1237,14 +1226,11 @@ class BookmarkManagerMediator
         if (mStateStack.isEmpty()) return;
 
         // On tablets, a refresh during a search should re-run the search.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-            String searchText = getCurrentSearchText();
-            if (!TextUtils.isEmpty(searchText)) {
-                setBookmarks(
-                        mBookmarkQueryHandler.buildBookmarkListForSearch(
-                                searchText, mCurrentPowerFilter));
-                return;
-            }
+        if (isTabletSearch()) {
+            setBookmarks(
+                    mBookmarkQueryHandler.buildBookmarkListForSearch(
+                            assumeNonNull(getCurrentSearchText()), mCurrentPowerFilter));
+            return;
         }
 
         // Pop any invalid states from the top of the stack (e.g. if an account bookmark folder was
@@ -1434,6 +1420,7 @@ class BookmarkManagerMediator
         if (mSearchBoxPropertyModel == null) {
             mSearchBoxPropertyModel =
                     new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
+                            .with(SearchBoxProperties.SEARCH_TEXT, "")
                             .with(
                                     SearchBoxProperties.TEXT_CHANGED_CALLBACK,
                                     this::onSearchTextChangeCallback)
@@ -1640,7 +1627,7 @@ class BookmarkManagerMediator
         listItems.add(buildSimpleMenuItem(R.string.bookmark_item_delete));
 
         boolean canReorder = isReorderable(entry);
-        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+        if (isSearching()) {
             listItems.add(buildSimpleMenuItem(R.string.bookmark_show_in_folder));
         } else if (getCurrentUiMode() == BookmarkUiMode.FOLDER
                 && location != Location.SOLO
@@ -1863,7 +1850,11 @@ class BookmarkManagerMediator
     }
 
     private void setSearchTextAndUpdateButtonVisibility(String searchText) {
-        PropertyModel searchModel = assumeNonNull(getSearchBoxPropertyModel());
+        PropertyModel searchModel =
+                TextUtils.isEmpty(searchText)
+                        ? getSearchBoxPropertyModel()
+                        : getOrCreateSearchBoxPropertyModel();
+        if (searchModel == null) return;
         searchModel.set(SearchBoxProperties.SEARCH_TEXT, searchText);
         boolean isVisible = !TextUtils.isEmpty(searchText);
         searchModel.set(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY, isVisible);
@@ -1950,6 +1941,15 @@ class BookmarkManagerMediator
         }
         BookmarkUiState state = mStateStack.peekLast();
         return state == null ? "" : state.mSearchText;
+    }
+
+    private boolean isTabletSearch() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && !TextUtils.isEmpty(getCurrentSearchText());
+    }
+
+    private boolean isSearching() {
+        return getCurrentUiMode() == BookmarkUiMode.SEARCHING || isTabletSearch();
     }
 
     private @Nullable BookmarkUiState getCurrentUiState() {

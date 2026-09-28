@@ -809,6 +809,45 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
+    public void testSearchBookmarks_Tablet_MoveDownReproAndShowInFolder() throws Exception {
+        // Regression test for https://crbug.com/566206510 where reordering filtered search results
+        // via the overflow menu on tablets triggered a native CHECK failure in
+        // BookmarkBridge::ReorderChildren.
+        BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
+        addBookmark(TEST_TITLE_A, mTestUrlA, folder);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE2, mTestPageFoo, folder);
+        addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage, folder);
+        openBookmarkManager();
+        openFolder(folder);
+
+        assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
+        assertEquals("Wrong number of items before starting search.", 3, getBookmarkCount());
+
+        // Search for "Google" so 2 out of the 3 bookmarks in the folder are shown.
+        BookmarkTestUtil.getSearchBoxViewInteraction().perform(replaceText("Google"));
+        RecyclerViewTestUtils.waitForStableMvcRecyclerView(mItemsContainer);
+        assertEquals("Wrong number of items after searching.", 2, getBookmarkCount());
+
+        // Open the 3-dot overflow menu on the first search result.
+        ImprovedBookmarkRow firstRow = getNthBookmarkRow(1);
+        ListMenuButton more = firstRow.findViewById(R.id.more);
+        runOnUiThreadBlocking(more::callOnClick);
+
+        // During tablet search, Move up and Move down must be omitted, and Show in folder must be
+        // shown instead.
+        onView(withText("Move up")).check(doesNotExist());
+        onView(withText("Move down")).check(doesNotExist());
+        onView(withText("Show in folder")).check(matches(isDisplayed())).perform(click());
+
+        // Selecting "Show in folder" should clear the search filter and restore all 3 bookmarks in
+        // the folder.
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(getBookmarkCount(), is(3)));
+        BookmarkTestUtil.getSearchBoxViewInteraction().check(matches(withText("")));
+    }
+
+    @Test
+    @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444847
     public void testSearchBookmarks_Delete() throws Exception {
         BookmarkId testFolder = addFolder(TEST_FOLDER_TITLE);
