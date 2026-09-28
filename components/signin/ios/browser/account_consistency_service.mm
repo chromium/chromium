@@ -231,9 +231,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
     return;
   }
 
-  if (!response_info.for_main_frame &&
-      base::FeatureList::IsEnabled(
-          switches::kIgnoreChromeManageAccountsInSubframes)) {
+  if (!response_info.for_main_frame) {
     std::move(callback).Run(PolicyDecision::Allow());
     return;
   }

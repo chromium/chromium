@@ -663,12 +663,6 @@ BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
-// Killswitch for ignoring X-Chrome-Manage-Accounts header in subframes.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kIgnoreChromeManageAccountsInSubframes);
-#endif
-
-#if BUILDFLAG(IS_IOS)
 // Feature flag to ignore invalid grant errors in AuthenticationService.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);

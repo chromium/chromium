@@ -712,11 +712,6 @@ BASE_FEATURE(kHandleMdmErrorsForDasherAccountsOnAndroid,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kIgnoreChromeManageAccountsInSubframes,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_IOS)
 // Feature flag to ignore invalid grant errors in AuthenticationService.
 BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif

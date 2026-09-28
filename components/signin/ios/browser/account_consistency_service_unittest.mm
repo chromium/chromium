@@ -846,9 +846,6 @@ TEST_F(AccountConsistencyServiceTest, ChromeAddSessionWithEmail) {
 
 // Tests that the X-Chrome-Manage-Accounts header is ignored in a subframe.
 TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsIgnoredInSubframe) {
-  base::test::ScopedFeatureList feature_list(
-      switches::kIgnoreChromeManageAccountsInSubframes);
-
   NSDictionary* headers =
       [NSDictionary dictionaryWithObject:@"action=DEFAULT"
                                   forKey:@"X-Chrome-Manage-Accounts"];
@@ -860,7 +857,7 @@ TEST_F(AccountConsistencyServiceTest, ChromeManageAccountsIgnoredInSubframe) {
 
   SetWebStateHandler(&delegate_);
 
-  // When feature is enabled, header is ignored and response is allowed.
+  // Header is ignored in subframes and response is allowed.
   EXPECT_TRUE(web_state_.ShouldAllowResponse(response,
                                              /* for_main_frame = */ false));
   web_state_.SetCurrentURL(net::GURLWithNSURL(response.URL));
