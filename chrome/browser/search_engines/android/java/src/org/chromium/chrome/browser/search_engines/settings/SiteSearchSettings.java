@@ -64,6 +64,10 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
      * Shared by every section of this page. Owned here rather than by the individual coordinators
      * so that the page is backed by a single provider instance and they share the same scope for
      * metrics purposes.
+     *
+     * <p>TODO(crbug.com/545131041): Record {@code maybeRecordSettingsPageLoadMetrics} for the
+     * aggregated list of engines displayed across all sections of this page before {@code
+     * sOmniboxSiteSearch} launches.
      */
     private @Nullable SearchEngineSettingsDataProvider mSettingsDataProvider;
 

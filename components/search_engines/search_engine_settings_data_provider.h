@@ -168,6 +168,9 @@ class SearchEngineSettingsDataProvider {
   void MaybeRecordSettingsPageLoadMetrics(
       TemplateURL::TemplateURLVectorSpan displayed_engines);
   void MaybeRecordSettingsPageLoadMetrics(
+      std::initializer_list<TemplateURL::TemplateURLVectorSpan>
+          displayed_engine_lists);
+  void MaybeRecordSettingsPageLoadMetrics(
       const CategorizedTemplateUrls& displayed_engines);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -183,6 +186,10 @@ class SearchEngineSettingsDataProvider {
   std::vector<const TemplateURL*> GetTemplateUrlsByCategory(
       JNIEnv* env,
       TemplateUrlCategory category) const;
+
+  void MaybeRecordSettingsPageLoadMetrics(
+      JNIEnv* env,
+      const base::android::JavaRef<jlongArray>& j_engine_ids);
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

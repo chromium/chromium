@@ -724,6 +724,8 @@ public abstract class ChromeFeatureList {
     public static final String POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND =
             "PowerSavingModeBroadcastReceiverInBackground";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
+    public static final String PREPOPULATED_ENGINES_SHADOW_VARIANTS =
+            "PrepopulatedEnginesShadowVariants";
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRICE_ANNOTATIONS = "PriceAnnotations";
     public static final String PRICE_CHANGE_MODULE = "PriceChangeModule";

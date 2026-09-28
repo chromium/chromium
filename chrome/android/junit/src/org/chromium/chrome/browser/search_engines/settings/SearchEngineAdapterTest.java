@@ -9,10 +9,12 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
@@ -57,7 +59,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({
     OmniboxFeatureList.OMNIBOX_SITE_SEARCH,
-    ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2
+    ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2,
+    ChromeFeatureList.PREPOPULATED_ENGINES_SHADOW_VARIANTS
 })
 public class SearchEngineAdapterTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -537,7 +540,7 @@ public class SearchEngineAdapterTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2)
-    public void startAndDestroy_usesAndClosesProvider() {
+    public void startAndRefresh_recordsMetricsAndDestroysProvider() {
         TemplateUrl p1 = buildMockTemplateUrl("p1", 1);
         doReturn(true).when(mTemplateUrlService).isLoaded();
         doReturn(new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(p1), List.of()))
@@ -547,10 +550,55 @@ public class SearchEngineAdapterTest {
         var adapter = new SearchEngineAdapter(mContext, mProfile, null);
         adapter.start();
 
-        // The engine lists come from the data provider.
-        verify(mSettingsDataProvider).getPrepopulatedAndRecentlyVisitedTemplateURLs();
+        // Verifies maybeRecordSettingsPageLoadMetrics is called with displayed engines on start.
+        verify(mSettingsDataProvider)
+                .maybeRecordSettingsPageLoadMetrics(List.of(List.of(p1), List.of()));
 
-        // Destroying the adapter closes the data provider.
+        // Unchanged refresh returns early before calling maybeRecordSettingsPageLoadMetrics again.
+        adapter.onTemplateURLServiceChanged();
+        verify(mSettingsDataProvider, times(1))
+                .maybeRecordSettingsPageLoadMetrics(List.of(List.of(p1), List.of()));
+
+        // Destroying adapter closes the data provider.
+        adapter.destroy();
+        verify(mSettingsDataProvider).close();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2)
+    @EnableFeatures(ChromeFeatureList.PREPOPULATED_ENGINES_SHADOW_VARIANTS)
+    public void testLegacyPath_ThrowsWhenShadowVariantsEnabled() {
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+
+        SearchEngineAdapter adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
+        assertThrows(AssertionError.class, adapter::start);
+    }
+
+    /**
+     * Covers the intended end state of the rollout, where both flags are on. The V2 path must be
+     * taken, so the legacy assert must not fire and metrics must still be recorded.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.SEARCH_SETTINGS_UPDATE_V2,
+        ChromeFeatureList.PREPOPULATED_ENGINES_SHADOW_VARIANTS
+    })
+    public void startAndRefresh_v2PathWithShadowVariantsEnabled() {
+        TemplateUrl p1 = buildMockTemplateUrl("p1", 1);
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn(new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(p1), List.of()))
+                .when(mSettingsDataProvider)
+                .getPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+        SearchEngineAdapter adapter =
+                new SearchEngineAdapter(mContext, mProfile, /* siteSearchClickHandler= */ null);
+        adapter.start();
+
+        verify(mSettingsDataProvider).getPrepopulatedAndRecentlyVisitedTemplateURLs();
+        verify(mSettingsDataProvider)
+                .maybeRecordSettingsPageLoadMetrics(List.of(List.of(p1), List.of()));
+
         adapter.destroy();
         verify(mSettingsDataProvider).close();
     }

@@ -20,7 +20,8 @@
 #import "testing/gtest_mac.h"
 
 SearchEngineTableViewControllerTest::SearchEngineTableViewControllerTest()
-    : prepopulated_search_engine_({
+    : scoped_feature_list_(switches::kSearchSettingsUpdateV2),
+      prepopulated_search_engine_({
           {"bing.com", GURL("https://p2.com?q={searchTerms}")},
           {"duckduckgo.com", GURL("https://p3.com?q={searchTerms}")},
           {"google.com", GURL("https://p1.com?q={searchTerms}")},
@@ -35,7 +36,6 @@ SearchEngineTableViewControllerTest::SearchEngineTableViewControllerTest()
 SearchEngineTableViewControllerTest::~SearchEngineTableViewControllerTest() {}
 
 void SearchEngineTableViewControllerTest::SetUp() {
-  scoped_feature_list_.InitAndEnableFeature(switches::kSearchSettingsUpdateV2);
   LegacyChromeTableViewControllerTest::SetUp();
 
   TestProfileIOS::Builder builder;

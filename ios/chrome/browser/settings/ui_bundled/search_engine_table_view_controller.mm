@@ -260,6 +260,9 @@ const char kUmaSelectDefaultSearchEngine[] =
   TableViewModel* model = self.tableViewModel;
   [self loadSearchEngines];
 
+  _settingsDataProvider->MaybeRecordSettingsPageLoadMetrics(
+      {_firstList, _secondList});
+
   // Add prior search engines.
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];

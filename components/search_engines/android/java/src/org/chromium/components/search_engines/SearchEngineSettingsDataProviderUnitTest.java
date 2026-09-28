@@ -65,4 +65,33 @@ public class SearchEngineSettingsDataProviderUnitTest {
 
         verify(mProviderJni, times(1)).destroy(NATIVE_PROVIDER_PTR);
     }
+
+    @Test
+    public void testGetPrepopulatedAndRecentlyVisitedTemplateURLs() {
+        PrepopulatedAndRecentlyVisitedTemplateURLs expected =
+                new PrepopulatedAndRecentlyVisitedTemplateURLs(List.of(), List.of());
+        when(mProviderJni.getPrepopulatedAndRecentlyVisitedTemplateURLs(NATIVE_PROVIDER_PTR))
+                .thenReturn(expected);
+
+        try (SearchEngineSettingsDataProvider provider =
+                mTemplateUrlService.createSettingsDataProvider()) {
+            assertEquals(expected, provider.getPrepopulatedAndRecentlyVisitedTemplateURLs());
+        }
+    }
+
+    @Test
+    public void testMaybeRecordSettingsPageLoadMetrics() {
+        TemplateUrl t1 = mock(TemplateUrl.class);
+        TemplateUrl t2 = mock(TemplateUrl.class);
+        when(t1.getId()).thenReturn(11L);
+        when(t2.getId()).thenReturn(22L);
+
+        try (SearchEngineSettingsDataProvider provider =
+                mTemplateUrlService.createSettingsDataProvider()) {
+            provider.maybeRecordSettingsPageLoadMetrics(List.of(t1), List.of(t2));
+        }
+
+        verify(mProviderJni)
+                .maybeRecordSettingsPageLoadMetrics(NATIVE_PROVIDER_PTR, new long[] {11L, 22L});
+    }
 }

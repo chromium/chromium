@@ -61,6 +61,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/push_messaging/push_messaging_features.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safety_check/features.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -629,6 +630,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &site_isolation::features::kSiteIsolationEnableMemoryThresholdAndroid,
     &switches::kApplyDeviceChoiceRenewal,
     &switches::kClankDefaultSearchApi,
+    &switches::kPrepopulatedEnginesShadowVariants,
     &switches::kSearchSettingsUpdateV2,
     &sync_preferences::features::kCrossDevicePrefTrackerExtraLogs,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,

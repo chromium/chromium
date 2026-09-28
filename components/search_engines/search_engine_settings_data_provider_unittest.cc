@@ -26,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #endif
@@ -707,6 +709,41 @@ TEST_F(SearchEngineSettingsDataProviderTest,
     EXPECT_TRUE(disabled_ids.Has(
         template_url_starter_pack_data::StarterPackId::kBookmarks));
   }
+}
+TEST_F(SearchEngineSettingsDataProviderSplitRegionTest,
+       RecordsSettingsPageLoadMetricsViaJni) {
+  template_url_service().Load();
+  TemplateURL* legacy_dse = template_url_service().Add(
+      CreatePrepopulatedEngine(TemplateURLPrepopulateData::yahoo_jp));
+  template_url_service().SetUserSelectedDefaultSearchProvider(legacy_dse);
+
+  auto provider = CreateProvider();
+  std::vector<const TemplateURL*> default_urls =
+      provider->GetTemplateUrlsByCategory(TemplateUrlCategory::kDefault);
+  ASSERT_FALSE(default_urls.empty());
+
+  std::vector<int64_t> ids;
+  ids.reserve(default_urls.size());
+  for (const TemplateURL* turl : default_urls) {
+    ids.push_back(turl->id());
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jlongArray> j_ids =
+      base::android::ToJavaLongArray(env, ids);
+
+  provider->MaybeRecordSettingsPageLoadMetrics(env, j_ids);
+
+  histogram_tester().ExpectUniqueSample(kCountOnSettingsPageLoadHistogram, 1,
+                                        1);
+  histogram_tester().ExpectUniqueSample(kDseTypeOnSettingsPageLoadHistogram,
+                                        OseSplitType::kLegacy, 1);
+  histogram_tester().ExpectUniqueSample(kEngineStateOnSettingsPageLoadHistogram,
+                                        OseSplitEngineState::kLegacyDse, 1);
+
+  // Subsequent calls on the same provider instance are a no-op.
+  provider->MaybeRecordSettingsPageLoadMetrics(env, j_ids);
+  histogram_tester().ExpectTotalCount(kCountOnSettingsPageLoadHistogram, 1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

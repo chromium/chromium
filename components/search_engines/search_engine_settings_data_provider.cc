@@ -16,6 +16,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/feature_list.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -220,24 +221,33 @@ void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
 }
 
 void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
-    const CategorizedTemplateUrls& displayed_engines) {
+    std::initializer_list<TemplateURL::TemplateURLVectorSpan>
+        displayed_engine_lists) {
   if (!CanRecordSettingsPageLoadMetrics()) {
     return;
   }
 
+  size_t total_size = 0;
+  for (const auto& list : displayed_engine_lists) {
+    total_size += list.size();
+  }
+
   TemplateURL::TemplateURLVector all_engines;
-  all_engines.reserve(displayed_engines.active_site_shortcuts.size() +
-                      displayed_engines.inactive_site_shortcuts.size() +
-                      displayed_engines.active_feature_shortcuts.size() +
-                      displayed_engines.inactive_feature_shortcuts.size());
-  for (const auto* category : {&displayed_engines.active_site_shortcuts,
-                               &displayed_engines.inactive_site_shortcuts,
-                               &displayed_engines.active_feature_shortcuts,
-                               &displayed_engines.inactive_feature_shortcuts}) {
-    all_engines.insert(all_engines.end(), category->begin(), category->end());
+  all_engines.reserve(total_size);
+  for (const auto& list : displayed_engine_lists) {
+    all_engines.insert(all_engines.end(), list.begin(), list.end());
   }
 
   MaybeRecordSettingsPageLoadMetrics(all_engines);
+}
+
+void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
+    const CategorizedTemplateUrls& displayed_engines) {
+  MaybeRecordSettingsPageLoadMetrics(
+      {displayed_engines.active_site_shortcuts,
+       displayed_engines.inactive_site_shortcuts,
+       displayed_engines.active_feature_shortcuts,
+       displayed_engines.inactive_feature_shortcuts});
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -292,6 +302,24 @@ SearchEngineSettingsDataProvider::GetTemplateUrlsByCategory(
                                    GetDisabledStarterPackIdsForAndroid());
 }
 
+void SearchEngineSettingsDataProvider::MaybeRecordSettingsPageLoadMetrics(
+    JNIEnv* env,
+    const base::android::JavaRef<jlongArray>& j_engine_ids) {
+  if (!CanRecordSettingsPageLoadMetrics()) {
+    return;
+  }
+
+  std::vector<int64_t> ids;
+  base::android::JavaLongArrayToInt64Vector(env, j_engine_ids, &ids);
+  TemplateURL::TemplateURLVector displayed_engines;
+  displayed_engines.reserve(ids.size());
+  for (int64_t id : ids) {
+    if (TemplateURL* turl = template_url_service_->GetTemplateURLForId(id)) {
+      displayed_engines.push_back(turl);
+    }
+  }
+  MaybeRecordSettingsPageLoadMetrics(displayed_engines);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace search_engines

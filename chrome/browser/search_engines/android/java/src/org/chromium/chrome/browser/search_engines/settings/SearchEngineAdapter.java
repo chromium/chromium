@@ -232,6 +232,12 @@ public class SearchEngineAdapter extends BaseAdapter
                             ? Collections.emptyList()
                             : engines.getRecentlyVisitedUrls();
         } else {
+            // The legacy path predates `kSearchSettingsUpdateV2` and does its list building in
+            // Java, bypassing SearchEngineSettingsDataProvider. Documenting that this is not a
+            // configuration we want to be running in prod.
+            assert !ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.PREPOPULATED_ENGINES_SHADOW_VARIANTS);
+
             RegionalCapabilitiesService regionalCapabilities =
                     RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
 
@@ -290,6 +296,9 @@ public class SearchEngineAdapter extends BaseAdapter
                 && !didSearchEnginesChange(recentlyVisitedUrls, mRecentSearchEngines)) {
             return;
         }
+
+        mSettingsDataProvider.maybeRecordSettingsPageLoadMetrics(
+                prepopulatedUrls, recentlyVisitedUrls);
 
         mPrepopulatedSearchEngines = toSnapshots(prepopulatedUrls);
         mRecentSearchEngines = toSnapshots(recentlyVisitedUrls);
