@@ -13,8 +13,6 @@
 
 namespace autofill {
 
-class AutofillClient;
-
 class MockAtMemoryQueryService : public AtMemoryQueryService {
  public:
   MockAtMemoryQueryService();
@@ -28,16 +26,6 @@ class MockAtMemoryQueryService : public AtMemoryQueryService {
        std::u16string_view title,
        base::RepeatingCallback<void(MemorySearchResults)> update_callback),
       (override));
-
-  MOCK_METHOD(void,
-              AuthenticateAndFetchPiiEntity,
-              (const AutofillClient& client,
-               const std::u16string& auth_message,
-               std::u16string_view masked_value,
-               MemoryDataType data_type,
-               base::span<const EntryMetadata> metadata_list,
-               FetchUnmaskedPiiEntitiesCallback callback),
-              (override));
 };
 
 }  // namespace autofill

@@ -16,7 +16,6 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,8 +30,6 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/device_reauth/device_authenticator.h"
-#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
@@ -54,7 +51,6 @@ namespace autofill {
 
 namespace {
 
-using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::personal_context::proto::Any;
@@ -64,8 +60,6 @@ using ::personal_context::proto::Attribute;
 using ::personal_context::proto::AutofillFetchPlan;
 using ::personal_context::proto::AutofillFetchSpecification;
 using ::personal_context::proto::Date;
-using ::personal_context::proto::Entity;
-using ::personal_context::proto::FetchPiiEntitiesResponse;
 using ::personal_context::proto::TypedValue;
 using Filter = ::personal_context::proto::AutofillFetchSpecification::Filter;
 using StringFilter =
@@ -1428,243 +1422,6 @@ TEST_F(AtMemoryQueryServiceTest, Query_PopulatesUrlAndTitle) {
 
   service->Query(u"Alice", GURL("https://example.com/"), u"Example Title",
                  base::DoNothing());
-}
-
-// Tests that when there is no device authenticator,
-// `AuthenticateAndFetchPiiEntity(..)` returns a `kReauthFailed` error and does
-// not fetch from `PersonalContextService`.
-TEST_F(AtMemoryQueryServiceTest,
-       AuthenticateAndFetchPiiEntity_NoAuthenticator) {
-  autofill_client().set_device_authenticator(nullptr);
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities).Times(0);
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kReauthFailed));
-}
-
-// Tests that when `CanAuthenticateWithBiometricOrScreenLock()` returns false,
-// `AuthenticateAndFetchPiiEntity(..)` returns a `kReauthFailed` error and does
-// not trigger authentication or fetch from `PersonalContextService`.
-TEST_F(AtMemoryQueryServiceTest,
-       AuthenticateAndFetchPiiEntity_CannotAuthenticate) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(false));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage).Times(0);
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities).Times(0);
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kReauthFailed));
-}
-
-// Tests that when authentication fails, `AuthenticateAndFetchPiiEntity(..)`
-// returns a `kReauthFailed` error and does not fetch from
-// `PersonalContextService`.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_AuthFails) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
-      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities).Times(0);
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kReauthFailed));
-}
-
-// Tests that when `PersonalContextService` returns a fetch error,
-// `AuthenticateAndFetchPiiEntity(..)` returns a `kFetchFailed` error.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_FetchFails) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
-      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  personal_context::FetchPiiEntitiesResult result(
-      base::unexpected(personal_context::ContextMemoryError::FromExecutionError(
-          personal_context::ContextMemoryError::ExecutionError::
-              kGenericFailure)));
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities)
-      .WillOnce(RunOnceCallback<2>(std::move(result)));
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed));
-}
-
-// Tests that when `PersonalContextService` returns an entity that fails
-// conversion, `AuthenticateAndFetchPiiEntity(..)` returns a `kParseFailed`
-// error.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_ParseFails) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
-      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  FetchPiiEntitiesResponse response;
-  Entity* entity = response.add_entities();
-  // Set an unsupported entity case to trigger std::nullopt conversion safely.
-  entity->mutable_sensitive_pii_presence();
-
-  personal_context::FetchPiiEntitiesResult result(std::move(response));
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities)
-      .WillOnce(RunOnceCallback<2>(std::move(result)));
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kParseFailed));
-}
-
-// Tests a successful end-to-end unmasking flow: authenticates the user,
-// fetches from `PersonalContextService`, and returns the raw unmasked value
-// string.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_Success) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
-      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  FetchPiiEntitiesResponse response;
-  Entity* entity = response.add_entities();
-  entity->mutable_passport()->set_number("987654321");
-  entity->mutable_passport()->set_name("John Doe");
-
-  personal_context::FetchPiiEntitiesResult result(std::move(response));
-
-  EntryMetadata metadata(MemoryDataType::kPassportExpirationDate,
-                         u"Expiration Date", u"2030-01-01");
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities)
-      .WillOnce(RunOnceCallback<2>(std::move(result)));
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"4321",
-      MemoryDataType::kPassportNumber, {{metadata}}, future.GetCallback());
-
-  ASSERT_TRUE(future.Get().has_value());
-  EXPECT_EQ(future.Get().value(), u"987654321");
-}
-
-// Tests that calling `AuthenticateAndFetchPiiEntity(..)` when the network is
-// offline returns a `kNoConnection` error immediately without authentication or
-// calling the service.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_Offline) {
-  net::test::ScopedMockNetworkChangeNotifier notifier;
-  notifier.mock_network_change_notifier()->SetConnectionType(
-      net::NetworkChangeNotifier::CONNECTION_NONE);
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  EXPECT_CALL(mock_service(), FetchPiiEntities).Times(0);
-
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, future.GetCallback());
-
-  EXPECT_THAT(
-      future.Get(),
-      ErrorIs(AtMemoryQueryService::SpiiRetrievalFailureReason::kNoConnection));
-}
-
-// Tests that calling `AuthenticateAndFetchPiiEntity(..)` while authentication
-// is already in progress returns `kReauthInProgress` immediately and doesn't
-// trigger a new authentication request.
-TEST_F(AtMemoryQueryServiceTest, AuthenticateAndFetchPiiEntity_AuthInProgress) {
-  auto mock_authenticator =
-      std::make_unique<device_reauth::MockDeviceAuthenticator>();
-  EXPECT_CALL(*mock_authenticator, CanAuthenticateWithBiometricOrScreenLock())
-      .WillOnce(Return(true));
-  // AuthenticateWithMessage is called but we DO NOT run its callback
-  // immediately, leaving authentication in progress.
-  base::OnceCallback<void(bool)> first_auth_callback;
-  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
-      .WillOnce([&](const std::u16string& message,
-                    base::OnceCallback<void(bool)> callback) {
-        first_auth_callback = std::move(callback);
-      });
-
-  autofill_client().set_device_authenticator(std::move(mock_authenticator));
-
-  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
-
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message", u"1234",
-      MemoryDataType::kPassportNumber, {}, base::DoNothing());
-
-  // Second call should return `kReauthInProgress` immediately.
-  TestFuture<AtMemoryQueryService::SpiiRetrievalResult> second_future;
-  service->AuthenticateAndFetchPiiEntity(
-      autofill_client(), u"auth message 2", u"1234",
-      MemoryDataType::kPassportNumber, {}, second_future.GetCallback());
-
-  EXPECT_THAT(
-      second_future.Get(),
-      ErrorIs(
-          AtMemoryQueryService::SpiiRetrievalFailureReason::kReauthInProgress));
 }
 
 // Tests that secondary metadata attributes are reordered by uniqueness across

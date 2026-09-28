@@ -25,13 +25,11 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_util.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_string_filtering_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/logging_util.h"
@@ -42,7 +40,6 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/dense_set.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
@@ -440,44 +437,6 @@ void QueryPersonalContextDebug(
           std::move(update_callback), std::ref(log_manager)));
 }
 
-// Runs the callback asynchronously on the current sequenced task runner.
-// Used to ensure consistently asynchronous callback execution across all paths,
-// including fast-fail and cancellation paths.
-void RunCallbackAsync(
-    AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback,
-    AtMemoryQueryService::SpiiRetrievalResult result) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-}
-
-// Called when `PersonalContextService` returns the unmasked PII entities.
-// Extracts the unmasked string matching `data_type` and runs the `callback`
-// with the result or a failure reason.
-void OnFetchPiiEntityCompleted(
-    MemoryDataType data_type,
-    AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback,
-    personal_context::FetchPiiEntitiesResult result) {
-  if (!result.response.has_value() || result.response->entities().empty()) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(
-            AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed));
-    return;
-  }
-
-  std::optional<std::u16string> unmasked_value =
-      GetUnmaskedPiiFromEntity(result.response->entities(0), data_type);
-  if (!unmasked_value || unmasked_value->empty()) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(
-            AtMemoryQueryService::SpiiRetrievalFailureReason::kParseFailed));
-    return;
-  }
-
-  RunCallbackAsync(std::move(callback), std::move(*unmasked_value));
-}
-
 bool MatchesStringFilter(
     std::u16string_view entry_string,
     const AutofillFetchSpecification::StringFilter& filter) {
@@ -740,13 +699,8 @@ AtMemoryQueryService::~AtMemoryQueryService() = default;
 
 void AtMemoryQueryService::Shutdown() {
   query_weak_ptr_factory_.InvalidateWeakPtrs();
-  pii_unmasking_weak_ptr_factory_.InvalidateWeakPtrs();
   data_provider_.reset();
   personal_context_service_ = nullptr;
-  if (device_authenticator_) {
-    device_authenticator_->Cancel();
-    device_authenticator_.reset();
-  }
 }
 
 void AtMemoryQueryService::Query(
@@ -779,46 +733,6 @@ void AtMemoryQueryService::Query(
       request_metadata, options,
       base::BindOnce(&AtMemoryQueryService::OnPersonalContextRetrieved,
                      query_weak_ptr_factory_.GetWeakPtr(), callback));
-}
-
-void AtMemoryQueryService::AuthenticateAndFetchPiiEntity(
-    const AutofillClient& client,
-    const std::u16string& auth_message,
-    std::u16string_view masked_value,
-    MemoryDataType data_type,
-    base::span<const EntryMetadata> metadata_list,
-    FetchUnmaskedPiiEntitiesCallback callback) {
-  if (device_authenticator_) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(SpiiRetrievalFailureReason::kReauthInProgress));
-    return;
-  }
-
-  if (net::NetworkChangeNotifier::IsOffline()) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(SpiiRetrievalFailureReason::kNoConnection));
-    return;
-  }
-
-  device_authenticator_ =
-      client.GetDeviceAuthenticator("Autofill.AtMemory.ReauthToUnmask");
-  if (!device_authenticator_ ||
-      !device_authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
-    device_authenticator_.reset();
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(SpiiRetrievalFailureReason::kReauthFailed));
-    return;
-  }
-
-  device_authenticator_->AuthenticateWithMessage(
-      auth_message,
-      base::BindOnce(&AtMemoryQueryService::OnAuthenticationCompleted,
-                     pii_unmasking_weak_ptr_factory_.GetWeakPtr(),
-                     std::u16string(masked_value), data_type,
-                     base::ToVector(metadata_list), std::move(callback)));
 }
 
 void AtMemoryQueryService::OnPersonalContextRetrieved(
@@ -921,43 +835,6 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
                                      std::move(combined_results));
   search_results.server_request_id = std::move(server_request_id);
   callback.Run(std::move(search_results));
-}
-
-void AtMemoryQueryService::OnAuthenticationCompleted(
-    std::u16string masked_value,
-    MemoryDataType data_type,
-    std::vector<EntryMetadata> metadata_list,
-    FetchUnmaskedPiiEntitiesCallback callback,
-    bool auth_succeeded) {
-  device_authenticator_.reset();
-  if (!auth_succeeded) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(SpiiRetrievalFailureReason::kReauthFailed));
-    return;
-  }
-
-  if (!personal_context_service_) {
-    RunCallbackAsync(
-        std::move(callback),
-        base::unexpected(SpiiRetrievalFailureReason::kFetchFailed));
-    return;
-  }
-
-  personal_context::proto::FetchPiiEntitiesRequest request;
-  request.set_feature(
-      personal_context::proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY);
-  *request.add_masked_entities() =
-      ToPersonalContextEntity(masked_value, /*typed_value=*/std::nullopt,
-                              data_type, metadata_list);
-
-  personal_context::ContextMemoryRequestOptions options;
-  options.request_timeout = features::kAutofillAtMemoryRequestTimeout.Get();
-
-  personal_context_service_->FetchPiiEntities(
-      request, options,
-      base::BindOnce(OnFetchPiiEntityCompleted, data_type,
-                     std::move(callback)));
 }
 
 }  // namespace autofill

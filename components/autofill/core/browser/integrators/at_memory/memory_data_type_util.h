@@ -22,7 +22,6 @@
 namespace personal_context::proto {
 class AtMemoryQueryResponse;
 class AtMemorySearchResult;
-class Entity;
 class TypedValue;
 enum MemoryDataType : int;
 }  // namespace personal_context::proto
@@ -71,18 +70,6 @@ bool IsSpiiMemoryDataType(MemoryDataType type);
 std::u16string ObfuscateSpiiValue(MemoryDataType type,
                                   std::u16string_view value);
 
-// Converts a set of memory entry values into `personal_context::proto::Entity`.
-// `value` is the primary value of the memory entry corresponding to the
-// `memory_data_type` (for example, the actual passport number if the type is
-// `kPassportNumber`). `metadata_list` contains the associated attributes (e.g.,
-// expiration date, issuing country) for the memory entry. If `typed_value` is
-// provided, it is used directly instead of parsing `value`.
-personal_context::proto::Entity ToPersonalContextEntity(
-    std::u16string_view value,
-    const std::optional<personal_context::proto::TypedValue>& typed_value,
-    MemoryDataType memory_data_type,
-    base::span<const EntryMetadata> metadata_list);
-
 // Translates Autofill attribute names to entry types.
 MemoryDataType AttributeTypeToMemoryDataType(AttributeType type);
 
@@ -97,12 +84,6 @@ std::string_view MemoryDataTypeToStringView(MemoryDataType type);
 std::vector<MemorySearchResult> ExtractRemoteResults(
     const personal_context::proto::AtMemoryQueryResponse& response,
     std::string_view app_locale);
-
-// Extracts the unmasked PII value from `entity` based on the requested
-// `data_type`.
-std::optional<std::u16string> GetUnmaskedPiiFromEntity(
-    const personal_context::proto::Entity& entity,
-    MemoryDataType data_type);
 
 // The following functions are exposed in the header for testing purposes only:
 
