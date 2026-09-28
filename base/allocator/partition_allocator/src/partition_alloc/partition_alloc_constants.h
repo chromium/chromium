@@ -301,12 +301,6 @@ PA_ALWAYS_INLINE constexpr size_t MaxGigaAllocationSize() {
 #endif
 }
 
-// Same as `MaxAllocationSize()` in partition_alloc_public_constants.h, but for
-// ArrayBuffers, which can be larger.
-PA_ALWAYS_INLINE constexpr size_t MaxDirectMappedArrayBuffer() {
-  return MaxGigaAllocationSize();
-}
-
 // When trying to conserve memory, set the thread cache limit to this.
 static inline constexpr size_t kThreadCacheDefaultSizeThreshold = 512;
 
