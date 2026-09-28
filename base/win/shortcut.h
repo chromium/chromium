@@ -40,6 +40,11 @@ struct BASE_EXPORT ShortcutProperties {
   static constexpr IndividualProperties PROPERTIES_APP_ID = 1U << 5;
   static constexpr IndividualProperties PROPERTIES_TOAST_ACTIVATOR_CLSID = 1U
                                                                            << 6;
+  // Write-only option for CreateOrUpdateShortcutLink: merges |arguments| with
+  // existing arguments on the shortcut (replacing any matching switches). Not
+  // included in PROPERTIES_ALL since it is not a distinct property for
+  // ResolveShortcutProperties.
+  static constexpr IndividualProperties PROPERTIES_ARGUMENTS_TO_MERGE = 1U << 7;
   // Be sure to update the values below when adding a new property.
   static constexpr IndividualProperties PROPERTIES_ALL =
       PROPERTIES_TARGET | PROPERTIES_WORKING_DIR | PROPERTIES_ARGUMENTS |
@@ -62,7 +67,14 @@ struct BASE_EXPORT ShortcutProperties {
 
   void set_arguments(const std::wstring& arguments_in) {
     arguments = arguments_in;
+    options &= ~PROPERTIES_ARGUMENTS_TO_MERGE;
     options |= PROPERTIES_ARGUMENTS;
+  }
+
+  void set_arguments_to_merge(const std::wstring& arguments_in) {
+    arguments = arguments_in;
+    options &= ~PROPERTIES_ARGUMENTS;
+    options |= PROPERTIES_ARGUMENTS_TO_MERGE;
   }
 
   void set_description(const std::wstring& description_in);

@@ -24,7 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
-#include "base/win/shortcut.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
 #include "chrome/installer/setup/install_worker.h"
@@ -97,8 +97,10 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
 
   message.append(" shortcut to ");
   message.append(base::WideToUTF8(properties.target.value()));
-  if (properties.has_arguments())
+  if (properties.has_arguments() || properties.has_arguments_to_merge()) {
+    message.push_back(' ');
     message.append(base::WideToUTF8(properties.arguments));
+  }
 
   if (properties.pin_to_taskbar && CanPinShortcutToTaskbar())
     message.append(" and pinning to the taskbar");
@@ -266,6 +268,14 @@ InstallStatus InstallNewVersion(const InstallParams& install_params,
   return INSTALL_FAILED;
 }
 
+// Returns `--source-shortcut-location=<location_value>` for shortcut tagging.
+std::wstring GetSourceShortcutLocationArg(std::string_view location_value) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(::switches::kSourceShortcutLocation,
+                                 location_value);
+  return command_line.GetArgumentsString();
+}
+
 }  // namespace
 
 void CreateOrUpdateShortcuts(const base::FilePath& target,
@@ -323,8 +333,11 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
 
   if (!do_not_create_desktop_shortcut ||
       shortcut_operation == ShellUtil::SHELL_SHORTCUT_REPLACE_EXISTING) {
+    ShellUtil::ShortcutProperties desktop_properties(base_properties);
+    desktop_properties.set_arguments_to_merge(GetSourceShortcutLocationArg(
+        ::switches::kSourceShortcutLocationDesktop));
     ExecuteAndLogShortcutOperation(ShellUtil::SHORTCUT_LOCATION_DESKTOP,
-                                   base_properties, shortcut_operation);
+                                   desktop_properties, shortcut_operation);
   }
 
   if (!do_not_create_quick_launch_shortcut ||
@@ -338,6 +351,8 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   }
 
   ShellUtil::ShortcutProperties start_menu_properties(base_properties);
+  start_menu_properties.set_arguments_to_merge(GetSourceShortcutLocationArg(
+      ::switches::kSourceShortcutLocationStartMenu));
   if (shortcut_operation == ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS ||
       shortcut_operation ==
           ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL) {

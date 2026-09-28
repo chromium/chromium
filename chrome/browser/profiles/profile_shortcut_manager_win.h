@@ -64,6 +64,12 @@ class ShortcutFilenameMatcher {
 std::wstring CreateProfileShortcutFlags(const base::FilePath& profile_path,
                                         const bool incognito = false);
 
+// Returns the command-line flags for a desktop shortcut to launch Chrome with
+// the given profile (includes `--source-shortcut-location=desktop`).
+std::wstring CreateProfileDesktopShortcutFlags(
+    const base::FilePath& profile_path,
+    bool incognito = false);
+
 }  // namespace internal
 }  // namespace profiles
 

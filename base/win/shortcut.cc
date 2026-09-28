@@ -10,9 +10,11 @@
 #include <shlobj.h>
 #include <wrl/client.h>
 
+#include "base/command_line.h"
 #include "base/files/block_tests_writing_to_special_dirs.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -142,6 +144,37 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
   if (properties.options & ShortcutProperties::PROPERTIES_ARGUMENTS) {
     if (FAILED(i_shell_link->SetArguments(properties.arguments.c_str()))) {
       return false;
+    }
+  } else if (properties.options &
+             ShortcutProperties::PROPERTIES_ARGUMENTS_TO_MERGE) {
+    IShellLink* existing_link =
+        old_i_persist_file.Get()
+            ? old_i_shell_link.Get()
+            : (operation == ShortcutOperation::kUpdateExisting
+                   ? i_shell_link.Get()
+                   : nullptr);
+    wchar_t current_arguments[MAX_PATH] = {};
+    if (existing_link &&
+        FAILED(existing_link->GetArguments(current_arguments, MAX_PATH))) {
+      return false;
+    }
+    if (current_arguments[0] == L'\0') {
+      if (FAILED(i_shell_link->SetArguments(properties.arguments.c_str()))) {
+        return false;
+      }
+    } else {
+      CommandLine merged_cmd =
+          CommandLine::FromString(StrCat({L"program ", current_arguments}));
+      const CommandLine to_merge_cmd =
+          CommandLine::FromString(StrCat({L"program ", properties.arguments}));
+      for (const auto& [switch_name, _] : to_merge_cmd.GetSwitches()) {
+        merged_cmd.RemoveSwitch(switch_name);
+      }
+      merged_cmd.AppendArguments(to_merge_cmd, /*include_program=*/false);
+      if (FAILED(i_shell_link->SetArguments(
+              merged_cmd.GetArgumentsString().c_str()))) {
+        return false;
+      }
     }
   } else if (old_i_persist_file.Get()) {
     wchar_t current_arguments[MAX_PATH] = {};

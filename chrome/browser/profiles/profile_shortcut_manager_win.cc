@@ -233,20 +233,24 @@ bool IsChromeShortcut(const base::FilePath& path,
   return MakeLongFilePath(target_path) == MakeLongFilePath(chrome_exe);
 }
 
-// A functor checks if |path| is the Chrome desktop shortcut (|chrome_exe|)
-// that have the specified |command_line|. If |include_empty_command_lines| is
-// true Chrome desktop shortcuts with empty command lines will also be included.
+// A functor that checks if `path` is a Chrome desktop shortcut (`chrome_exe`)
+// matching the profile specified in `command_line`. If
+// `include_empty_command_lines` is true, Chrome desktop shortcuts without
+// profile arguments (such as default non-profile shortcuts) are also included.
 struct ChromeCommandLineFilter {
   const raw_ref<const base::FilePath> chrome_exe;
-  const raw_ref<const std::wstring> command_line;
-  bool include_empty_command_lines;
+  const bool include_empty_command_lines;
+  base::CommandLine filter_cmd;
 
   ChromeCommandLineFilter(const base::FilePath& chrome_exe,
                           const std::wstring& command_line,
                           bool include_empty_command_lines)
       : chrome_exe(chrome_exe),
-        command_line(command_line),
-        include_empty_command_lines(include_empty_command_lines) {}
+        include_empty_command_lines(include_empty_command_lines),
+        filter_cmd(
+            base::CommandLine::FromString(L"unused_program " + command_line)) {
+    filter_cmd.RemoveSwitch(switches::kSourceShortcutLocation);
+  }
 
   bool operator()(const base::FilePath& path) const {
     std::wstring shortcut_command_line;
@@ -254,14 +258,21 @@ struct ChromeCommandLineFilter {
       return false;
     }
 
-    // TODO(asvitkine): Change this to build a CommandLine object and ensure all
-    // args from |command_line| are present in the shortcut's CommandLine. This
-    // will be more robust when |command_line| contains multiple args.
-    if ((shortcut_command_line.empty() && include_empty_command_lines) ||
-        (shortcut_command_line.find(*command_line) != std::wstring::npos)) {
+    base::CommandLine shortcut_cmd(base::CommandLine::FromString(
+        L"unused_program " + shortcut_command_line));
+    shortcut_cmd.RemoveSwitch(switches::kSourceShortcutLocation);
+
+    // 1. Non-profile shortcuts: have no switches or arguments (aside from
+    // --source-shortcut-location, which was stripped above).
+    if (include_empty_command_lines && shortcut_cmd.GetSwitches().empty() &&
+        shortcut_cmd.GetArgs().empty()) {
       return true;
     }
-    return false;
+
+    // 2. Profile shortcuts: match exact switches and have no extra arguments
+    // (ignoring --source-shortcut-location).
+    return shortcut_cmd.GetSwitches() == filter_cmd.GetSwitches() &&
+           shortcut_cmd.GetArgs().empty();
   }
 };
 
@@ -468,8 +479,8 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
       ListUserDesktopContents(/*filter=*/nullptr);
 
   const std::wstring command_line =
-      profiles::internal::CreateProfileShortcutFlags(params.profile_path,
-                                                     params.incognito);
+      profiles::internal::CreateProfileDesktopShortcutFlags(params.profile_path,
+                                                            params.incognito);
   ChromeCommandLineFilter filter(
       chrome_exe, command_line,
       params.action == ProfileShortcutManagerWin::UPDATE_NON_PROFILE_SHORTCUTS);
@@ -594,10 +605,9 @@ void DeleteDesktopShortcuts(
       !ChromeDesktopShortcutsExist(chrome_exe)) {
     ShellUtil::ShortcutProperties properties(ShellUtil::CURRENT_USER);
     ShellUtil::AddDefaultShortcutProperties(chrome_exe, &properties);
-    if (default_profile_path.has_value()) {
-      properties.set_arguments(profiles::internal::CreateProfileShortcutFlags(
-          default_profile_path.value()));
-    }
+    properties.set_arguments(
+        profiles::internal::CreateProfileDesktopShortcutFlags(
+            default_profile_path.value()));
     properties.set_shortcut_name(
         profiles::internal::GetShortcutFilenameForProfile(std::u16string()));
     ShellUtil::CreateOrUpdateShortcut(
@@ -775,6 +785,15 @@ std::wstring CreateProfileShortcutFlags(const base::FilePath& profile_path,
   }
 
   return flags;
+}
+
+std::wstring CreateProfileDesktopShortcutFlags(
+    const base::FilePath& profile_path,
+    bool incognito) {
+  return base::StrCat(
+      {CreateProfileShortcutFlags(profile_path, incognito), L" --",
+       base::ASCIIToWide(switches::kSourceShortcutLocation), L"=",
+       base::ASCIIToWide(switches::kSourceShortcutLocationDesktop)});
 }
 
 // Returns true iff `shortcut` is a shortcut to the currently running version

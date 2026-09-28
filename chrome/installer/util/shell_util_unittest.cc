@@ -18,6 +18,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/atomic_flag.h"
@@ -27,6 +28,7 @@
 #include "base/win/registry.h"
 #include "base/win/shortcut.h"
 #include "build/branding_buildflags.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -264,6 +266,7 @@ TEST_F(ShellUtilShortcutTest, GetShortcutPath) {
 TEST_F(ShellUtilShortcutTest, TranslateShortcutCreateOrUpdateInfo) {
   ShellUtil::ShortcutLocation location = ShellUtil::SHORTCUT_LOCATION_DESKTOP;
   test_properties_.set_target(chrome_exe_);
+  test_properties_.set_arguments_to_merge(L"--merged-arg");
   ShellUtil::ShortcutOperation operation =
       ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS;
   base::win::ShortcutOperation base_operation;
@@ -275,6 +278,9 @@ TEST_F(ShellUtilShortcutTest, TranslateShortcutCreateOrUpdateInfo) {
       should_install_shortcut, base_shortcut_path));
   EXPECT_EQ(base_operation, base::win::ShortcutOperation::kCreateAlways);
   EXPECT_EQ(base_properties.target, chrome_exe_);
+  EXPECT_EQ(base_properties.arguments, L"--merged-arg");
+  EXPECT_TRUE(base_properties.options &
+              base::win::ShortcutProperties::PROPERTIES_ARGUMENTS_TO_MERGE);
   EXPECT_TRUE(should_install_shortcut);
   EXPECT_EQ(base_shortcut_path,
             GetExpectedShortcutPath(location, test_properties_));
@@ -842,7 +848,10 @@ TEST_F(ShellUtilShortcutTest, ClearShortcutArguments) {
   ShellUtil::ShortcutProperties expected_properties3(test_properties_);
 
   // Shortcut 4: targets "chrome.exe"; has both unknown and known arguments.
-  const std::wstring kKnownArg = L"--app-id";
+  const std::wstring kKnownArg = base::StrCat(
+      {L"--", base::ASCIIToWide(switches::kAppId), L" --",
+       base::ASCIIToWide(switches::kSourceShortcutLocation), L"=",
+       base::ASCIIToWide(switches::kSourceShortcutLocationDesktop)});
   const std::wstring kExpectedArgs = L"foo.com " + kKnownArg;
   test_properties_.set_shortcut_name(L"Chrome 4");
   test_properties_.set_arguments(kExpectedArgs);

@@ -126,6 +126,7 @@ class ShellUtil {
       PROPERTIES_APP_ID = 1 << 4,
       PROPERTIES_SHORTCUT_NAME = 1 << 5,
       PROPERTIES_TOAST_ACTIVATOR_CLSID = 1 << 6,
+      PROPERTIES_ARGUMENTS_TO_MERGE = 1 << 7,
     };
 
     explicit ShortcutProperties(ShellChange level_in);
@@ -147,7 +148,20 @@ class ShellUtil {
       // http://msdn.microsoft.com/library/windows/desktop/bb774954.aspx.
       DCHECK(arguments_in.length() < MAX_PATH);
       arguments = arguments_in;
+      options &= ~PROPERTIES_ARGUMENTS_TO_MERGE;
       options |= PROPERTIES_ARGUMENTS;
+    }
+
+    // Sets the arguments to be merged with existing arguments when updating or
+    // replacing a shortcut (or set directly when creating a new shortcut). Any
+    // switches in |arguments_in| replace matching switches in the existing
+    // shortcut's arguments.
+    // The length of this string must be less than MAX_PATH.
+    void set_arguments_to_merge(const std::wstring& arguments_in) {
+      DCHECK(arguments_in.length() < MAX_PATH);
+      arguments = arguments_in;
+      options &= ~PROPERTIES_ARGUMENTS;
+      options |= PROPERTIES_ARGUMENTS_TO_MERGE;
     }
 
     // Sets the localized description of the shortcut.
@@ -198,6 +212,10 @@ class ShellUtil {
     bool has_target() const { return (options & PROPERTIES_TARGET) != 0; }
 
     bool has_arguments() const { return (options & PROPERTIES_ARGUMENTS) != 0; }
+
+    bool has_arguments_to_merge() const {
+      return (options & PROPERTIES_ARGUMENTS_TO_MERGE) != 0;
+    }
 
     bool has_description() const {
       return (options & PROPERTIES_DESCRIPTION) != 0;

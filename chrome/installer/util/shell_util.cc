@@ -901,8 +901,11 @@ base::win::ShortcutProperties TranslateShortcutProperties(
     shortcut_properties.set_working_dir(properties.target.DirName());
   }
 
-  if (properties.has_arguments())
+  if (properties.has_arguments()) {
     shortcut_properties.set_arguments(properties.arguments);
+  } else if (properties.has_arguments_to_merge()) {
+    shortcut_properties.set_arguments_to_merge(properties.arguments);
+  }
 
   if (properties.has_description())
     shortcut_properties.set_description(properties.description);
@@ -1161,6 +1164,7 @@ bool ShortcutOpListOrRemoveUnknownArgs(
       switches::kApp,
       switches::kAppId,
       switches::kProfileDirectory,
+      switches::kSourceShortcutLocation,
   };
   base::CommandLine desired_args(base::CommandLine::NO_PROGRAM);
   desired_args.CopySwitchesFrom(current_args, kept_switches);
