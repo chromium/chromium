@@ -57,21 +57,6 @@
 
 namespace blink {
 
-namespace {
-
-// Returns the index of the first element in `collection` that does not satisfy
-// `comp`. If no such element is found (i.e. all elements satisfy `comp`),
-// returns `collection.size()`.
-template <typename Collection, typename Value, typename Compare>
-wtf_size_t FindLowerBoundIndex(const Collection& collection,
-                               const Value& value,
-                               Compare comp) {
-  auto it = std::lower_bound(collection.begin(), collection.end(), value, comp);
-  return static_cast<wtf_size_t>(it - collection.begin());
-}
-
-}  // namespace
-
 constexpr wtf_size_t HarfBuzzRunGlyphData::kMaxCharacterIndex;
 constexpr wtf_size_t HarfBuzzRunGlyphData::kMaxGlyphs;
 
@@ -1658,11 +1643,10 @@ void ShapeResult::InsertRun(ShapeResultRun* run) {
     return run->start_index_ > start_index;
   };
 
-  const wtf_size_t index = FindLowerBoundIndex(
-      runs_, run->start_index_, run->IsLtr() ? ltr_comparer : rtl_comparer);
-
-  if (index < runs_.size()) {
-    runs_.insert(index, run);
+  auto it = std::lower_bound(runs_.begin(), runs_.end(), run->start_index_,
+                             run->IsLtr() ? ltr_comparer : rtl_comparer);
+  if (it != runs_.end()) {
+    runs_.insert(CheckedDistance(runs_.begin(), it), run);
   } else {
     // If we didn't find an existing slot to place it, append.
     runs_.push_back(run);

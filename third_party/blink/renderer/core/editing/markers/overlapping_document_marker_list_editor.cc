@@ -10,21 +10,6 @@
 
 namespace blink {
 
-namespace {
-
-// Returns the index of the first element in `collection` that does not satisfy
-// `pred`. If no such element is found (i.e. all elements satisfy `pred`),
-// returns `collection.size()`.
-template <typename Collection, typename T, typename Predicate>
-wtf_size_t GetInsertionIndex(const Collection& collection,
-                             const T& value,
-                             Predicate pred) {
-  auto it = std::lower_bound(collection.begin(), collection.end(), value, pred);
-  return CheckedDistance(collection.begin(), it);
-}
-
-}  // namespace
-
 void OverlappingDocumentMarkerListEditor::AddMarker(
     MarkerList* list,
     DocumentMarker* marker) {
@@ -33,14 +18,14 @@ void OverlappingDocumentMarkerListEditor::AddMarker(
     return;
   }
 
-  list->insert(
-      GetInsertionIndex(*list, marker,
-                        [](const Member<DocumentMarker>& marker_in_list,
-                           const DocumentMarker* marker_to_insert) {
-                          return marker_in_list->StartOffset() <=
-                                 marker_to_insert->StartOffset();
-                        }),
-      marker);
+  auto const pos = std::lower_bound(
+      list->begin(), list->end(), marker,
+      [](const Member<DocumentMarker>& marker_in_list,
+         const DocumentMarker* marker_to_insert) {
+        return marker_in_list->StartOffset() <= marker_to_insert->StartOffset();
+      });
+
+  list->insert(CheckedDistance(list->begin(), pos), marker);
 }
 
 bool OverlappingDocumentMarkerListEditor::MoveMarkers(
