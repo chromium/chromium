@@ -229,7 +229,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             // a restored tab can point at a page whose arguments are gone. Redirect instead of
             // instantiating a page that cannot work.
             SettingsFragmentRegistry.Resolution resolution =
-                    SettingsFragmentRegistry.resolve(initialUrl);
+                    SettingsFragmentRegistry.resolve(initialUrl, assertNonNull(mProfile));
             if (resolution.redirectUrl != null) {
                 SettingsNavigation navigation =
                         SettingsNavigationFactory.createSettingsNavigation(requireContext());

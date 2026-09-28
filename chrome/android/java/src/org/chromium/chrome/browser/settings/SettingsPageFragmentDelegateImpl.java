@@ -441,7 +441,8 @@ public class SettingsPageFragmentDelegateImpl
         // A settings URL is user editable and is replayed from history, so it may be missing
         // arguments its page cannot do without, or name data that has since been deleted. Let the
         // registry decide, and send the user to the fallback page rather than crashing.
-        SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
+        SettingsFragmentRegistry.Resolution resolution =
+                SettingsFragmentRegistry.resolve(url, mProfile);
         if (resolution.redirectUrl != null && mSettingsNavigationDelegate != null) {
             // Replace rather than push: the entry being left is not a page the user can return to.
             mSettingsNavigationDelegate.redirectFromNavigation(resolution.redirectUrl);

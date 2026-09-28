@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideFragment;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.EnhancedProtectionSettingsFragment;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
@@ -65,6 +66,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubNotificationsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubPermissionsFragment;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.search_engines.settings.SiteSearchSettings;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -91,6 +93,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,6 +101,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /** Centralized registry mapping chrome://settings URLs to Fragment classes. */
 @NullMarked
@@ -134,6 +138,7 @@ public class SettingsFragmentRegistry {
         private String[] mRequiredArgKeys = new String[0];
         private @Nullable Consumer<Bundle> mDefaultsProvider;
         private @Nullable ArgValidator mValidator;
+        private @Nullable Predicate<Profile> mAvailability;
         private @Nullable String mFallbackPath;
 
         private RouteSpec(Class<? extends Fragment> fragmentClass) {
@@ -159,8 +164,17 @@ public class SettingsFragmentRegistry {
         }
 
         /**
-         * Declares where to send the user when a required argument is missing. Defaults to the
-         * settings root.
+         * Declares browser state the page needs beyond what the URL carries. The URL is still
+         * correct and works again once the state returns, so failing it redirects to the fallback.
+         */
+        RouteSpec availableWhen(Predicate<Profile> availability) {
+            mAvailability = availability;
+            return this;
+        }
+
+        /**
+         * Declares where to send the user when the page cannot be shown. Defaults to the settings
+         * root.
          */
         RouteSpec fallback(String path) {
             mFallbackPath = path;
@@ -226,10 +240,12 @@ public class SettingsFragmentRegistry {
 
         // You and Google
         //
-        // TODO(crbug.com/542745585): Handle /account differently based on local state
-        // since it's not a static page which is always available.
-        registerMapping("/account", ManageSyncSettings.class);
-        registerMapping("/account/personalize", PersonalizeGoogleServicesSettings.class);
+        // Both pages describe the signed in account, and a URL can be typed or replayed from
+        // history long after the user signed out, so neither is reachable without one.
+        registerMapping("/account", ManageSyncSettings.class)
+                .availableWhen(SettingsFragmentRegistry::hasSignedInAccount);
+        registerMapping("/account/personalize", PersonalizeGoogleServicesSettings.class)
+                .availableWhen(SettingsFragmentRegistry::hasSignedInAccount);
         registerMapping("/googleServices", GoogleServicesSettings.class);
         registerMapping("/googleServices/priceTracking", PriceNotificationSettingsFragment.class);
         registerMapping("/googleServices/contextualSearch", ContextualSearchSettingsFragment.class);
@@ -642,12 +658,16 @@ public class SettingsFragmentRegistry {
      * Resolves a settings URL to the page to show, or to a URL to go to instead.
      *
      * <p>A redirect is returned when the URL cannot produce a usable page: a required argument is
-     * absent, or an argument names something the page cannot render. This is the norm rather than
-     * the exception for settings URLs, which are user editable and are replayed from history after
-     * the data they point at may have been deleted. Callers must honour the redirect instead of
-     * instantiating a page, since the pages themselves respond to missing arguments by crashing.
+     * absent, an argument names something the page cannot render, or the browser is not in a state
+     * the page needs. This is the norm rather than the exception for settings URLs, which are user
+     * editable and are replayed from history after the data they point at may have been deleted.
+     * Callers must honour the redirect instead of instantiating a page, since the pages themselves
+     * respond to missing arguments by crashing.
+     *
+     * @param profile the profile the page would be shown for, checked against {@link
+     *     RouteSpec#availableWhen}.
      */
-    public static Resolution resolve(String url) {
+    public static Resolution resolve(String url, Profile profile) {
         Bundle args = parseUrlArguments(url);
         RouteSpec spec = getRouteSpecForUrl(url);
 
@@ -672,6 +692,11 @@ public class SettingsFragmentRegistry {
             }
         }
 
+        if (spec.mAvailability != null && !spec.mAvailability.test(profile)) {
+            return new Resolution(
+                    /* fragmentClass= */ null, args, settingsUrlForPath(spec.mFallbackPath));
+        }
+
         if (spec.mValidator != null) {
             String redirectUrl = spec.mValidator.validate(args);
             if (redirectUrl != null) {
@@ -680,6 +705,13 @@ public class SettingsFragmentRegistry {
         }
 
         return new Resolution(spec.mFragmentClass, args, /* redirectUrl= */ null);
+    }
+
+    /** Whether {@code profile} has a signed in account for the account pages to describe. */
+    private static boolean hasSignedInAccount(Profile profile) {
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        return identityManager != null && identityManager.hasPrimaryAccount();
     }
 
     /** Returns the settings URL for a registered path, defaulting to the settings root. */

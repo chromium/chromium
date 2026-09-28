@@ -173,8 +173,7 @@ public class SettingsHostFragment extends Fragment
         // correct fragment.
         FragmentManager fragmentManager = getDetailFragmentManager();
         if (fragmentManager.getBackStackEntryCount() <= mPendingPopBackCount) {
-            // Show the main settings UI (which is represented by null).
-            showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
+            showMainSettingsAndRedirectIfNeeded();
         } else {
             var backStackEntry =
                     fragmentManager.getBackStackEntryAt(
@@ -641,10 +640,22 @@ public class SettingsHostFragment extends Fragment
             // transaction while stopped or backgrounded, so onStart() does it instead.
             ++mPendingPopBackCount;
         } else if (action == FinishAction.SHOW_MAIN_SETTINGS) {
-            // The main settings UI is represented by null.
-            showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
+            showMainSettingsAndRedirectIfNeeded();
         } else {
             getDetailFragmentManager().popBackStack();
+        }
+    }
+
+    private void showMainSettingsAndRedirectIfNeeded() {
+        // The main settings UI is represented by null.
+        showFragment(null, /* addToBackStack= */ false, /* tag= */ null);
+        if (ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()
+                && mSettingsNavigation instanceof SettingsInTabNavigationDelegate delegate) {
+            String mainSettingsUrl =
+                    SettingsFragmentRegistry.createUrlForFragment(MainSettings.class, null);
+            if (mainSettingsUrl != null) {
+                delegate.redirectFromNavigation(mainSettingsUrl);
+            }
         }
     }
 
