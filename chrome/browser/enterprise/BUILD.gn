@@ -340,6 +340,7 @@ source_set("enterprise") {
       "connectors/analysis/content_analysis_views.h",
       "connectors/analysis/copy_warning_delegate_tracker.h",
       "connectors/analysis/files_request_handler.h",
+      "connectors/analysis/network_request_content_analysis_info.h",
       "connectors/analysis/page_print_analysis_request.h",
       "connectors/analysis/page_print_request_handler.h",
     ]
@@ -753,6 +754,7 @@ source_set("impl") {
       "connectors/analysis/content_analysis_views.cc",
       "connectors/analysis/copy_warning_delegate_tracker.cc",
       "connectors/analysis/files_request_handler.cc",
+      "connectors/analysis/network_request_content_analysis_info.cc",
       "connectors/analysis/page_print_analysis_request.cc",
       "connectors/analysis/page_print_request_handler.cc",
     ]
