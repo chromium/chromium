@@ -37,18 +37,20 @@
 
 namespace content {
 
+using HandleType = FileSystemAccessPermissionContext::HandleType;
+
 namespace {
 
 // A visitor for a variant of file system access handles that returns the
-// appropriate `FileSystemAccessPermissionContext::HandleType`.
+// appropriate `HandleType`.
 struct GetHandleTypeVisitor {
-  FileSystemAccessPermissionContext::HandleType operator()(
+  HandleType operator()(
       const std::unique_ptr<FileSystemAccessDirectoryHandleImpl>&) const {
-    return FileSystemAccessPermissionContext::HandleType::kDirectory;
+    return HandleType::kDirectory;
   }
-  FileSystemAccessPermissionContext::HandleType operator()(
+  HandleType operator()(
       const std::unique_ptr<FileSystemAccessFileHandleImpl>&) const {
-    return FileSystemAccessPermissionContext::HandleType::kFile;
+    return HandleType::kFile;
   }
 };
 
@@ -86,16 +88,16 @@ blink::mojom::FileSystemAccessEntryPtr CreateEntryForUrl(
     const FileSystemAccessManagerImpl::BindingContext& binding_context,
     const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
     const storage::FileSystemURL& url,
-    FileSystemAccessPermissionContext::HandleType handle_type) {
+    HandleType handle_type) {
   switch (handle_type) {
-    case FileSystemAccessPermissionContext::HandleType::kFile:
+    case HandleType::kFile:
       return blink::mojom::FileSystemAccessEntry::New(
           blink::mojom::FileSystemAccessHandle::NewFile(
               manager.CreateFileHandle(
                   binding_context, url,
                   url.virtual_path().BaseName().AsUTF8Unsafe(), handle_state)),
           url.virtual_path().BaseName().AsUTF8Unsafe());
-    case FileSystemAccessPermissionContext::HandleType::kDirectory:
+    case HandleType::kDirectory:
       return blink::mojom::FileSystemAccessEntry::New(
           blink::mojom::FileSystemAccessHandle::NewDirectory(
               manager.CreateDirectoryHandle(binding_context, url,
@@ -135,6 +137,92 @@ bool RenderFrameHostIsActive(
   }
 
   return rfh->IsActive();
+}
+
+blink::mojom::FileSystemAccessChangePtr CreateChange(
+    FileSystemAccessManagerImpl& manager,
+    const FileSystemAccessManagerImpl::BindingContext& binding_context,
+    const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
+    const storage::FileSystemURL& handle_url,
+    HandleType handle_type,
+    const FileSystemAccessObservationGroup::Change& change,
+    HandleType changed_entry_handle_type) {
+  blink::mojom::FileSystemAccessEntryPtr root_entry = CreateEntryForUrl(
+      manager, binding_context, handle_state, handle_url, handle_type);
+  // TODO(crbug.com/377903461): Don't send a changedHandle for `kDisappeared`
+  // or `kUnknown` events. Renderer side, changedHandle() getter returns null
+  // for these cases.
+  blink::mojom::FileSystemAccessEntryPtr changed_entry =
+      CreateEntryForUrl(manager, binding_context, handle_state, change.url,
+                        changed_entry_handle_type);
+
+  const auto& change_info = change.change_info;
+  // Some platforms do not support ChangeInfo for Local FS changes, in which
+  // case a default, empty ChangeInfo is passed. In this case, report an event
+  // without metadata. Remove this section once ChangeInfo is supported in all
+  // platforms.
+  if (change_info == FileSystemAccessChangeSource::ChangeInfo()) {
+    return blink::mojom::FileSystemAccessChange::New(
+        blink::mojom::FileSystemAccessChangeMetadata::New(
+            std::move(root_entry), std::move(changed_entry),
+            std::vector<std::string>()),
+        blink::mojom::FileSystemAccessChangeType::NewUnknown(
+            blink::mojom::FileSystemAccessChangeTypeUnknown::New()));
+  }
+
+  // TODO(crbug.com/340583257): It is expected that `ChangeInfo.modified_path`
+  // match the path of `Observation::Change.url`. Consider refactoring
+  // Observation::Change so that we do not need to do this check.
+  CHECK_EQ(change.url.virtual_path(), change_info.modified_path);
+
+  const base::FilePath& root_path = handle_url.path();
+  std::optional<base::FilePath> relative_modified_path =
+      GetRelativePath(root_path, change_info.modified_path);
+  // It is expected that modified_path is a descendent of the root,
+  // or the same as the root.
+  CHECK(relative_modified_path.has_value());
+  std::optional<base::FilePath> relative_moved_from_path =
+      change_info.moved_from_path.has_value()
+          ? GetRelativePath(root_path, change_info.moved_from_path.value())
+          : std::nullopt;
+
+  blink::mojom::FileSystemAccessChangeTypePtr mojo_change_type;
+  switch (change_info.change_type) {
+    case FileSystemAccessChangeSource::ChangeType::kUnknown:
+      mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewUnknown(
+          blink::mojom::FileSystemAccessChangeTypeUnknown::New());
+      break;
+    case FileSystemAccessChangeSource::ChangeType::kCreated:
+      mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewAppeared(
+          blink::mojom::FileSystemAccessChangeTypeAppeared::New());
+      break;
+    case FileSystemAccessChangeSource::ChangeType::kDeleted:
+      mojo_change_type =
+          blink::mojom::FileSystemAccessChangeType::NewDisappeared(
+              blink::mojom::FileSystemAccessChangeTypeDisappeared::New());
+      break;
+    case FileSystemAccessChangeSource::ChangeType::kModified:
+      mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewModified(
+          blink::mojom::FileSystemAccessChangeTypeModified::New());
+      break;
+    case FileSystemAccessChangeSource::ChangeType::kMoved:
+      if (relative_moved_from_path.has_value()) {
+        mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewMoved(
+            blink::mojom::FileSystemAccessChangeTypeMoved::New(
+                GetRelativePathAsVectorOfStrings(
+                    relative_moved_from_path.value())));
+      } else {
+        mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewMoved(
+            blink::mojom::FileSystemAccessChangeTypeMoved::New());
+      }
+      break;
+  }
+
+  return blink::mojom::FileSystemAccessChange::New(
+      blink::mojom::FileSystemAccessChangeMetadata::New(
+          std::move(root_entry), std::move(changed_entry),
+          GetRelativePathAsVectorOfStrings(relative_modified_path.value())),
+      std::move(mojo_change_type));
 }
 
 }  // namespace
@@ -227,7 +315,7 @@ void FileSystemAccessObserverObservation::OnChanges(
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
   const auto handle_type = std::visit(GetHandleTypeVisitor(), handle_);
-  std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  std::vector<blink::mojom::FileSystemAccessChangePtr> changes;
   bool observation_root_disappeared = false;
   for (const auto& change : changes_or_error.value()) {
     // TODO(crbug.com/40105284): Consider refactoring to keep the "scope"
@@ -237,104 +325,30 @@ void FileSystemAccessObserverObservation::OnChanges(
     // It is illegal to receive a change outside of the observed scope.
     CHECK(observation_->scope().Contains(change.url));
 
-    blink::mojom::FileSystemAccessEntryPtr root_entry = CreateEntryForUrl(
-        *manager, binding_context, handle_state, handle_url, handle_type);
     const auto& change_info = change.change_info;
-    FileSystemAccessPermissionContext::HandleType changed_entry_handle_type;
+    HandleType changed_entry_handle_type;
     switch (change_info.file_path_type) {
       case FileSystemAccessChangeSource::FilePathType::kUnknown:
         // Fall back to using the same handle type as the root handle.
         changed_entry_handle_type = handle_type;
         break;
       case FileSystemAccessChangeSource::FilePathType::kDirectory:
-        changed_entry_handle_type =
-            FileSystemAccessPermissionContext::HandleType::kDirectory;
+        changed_entry_handle_type = HandleType::kDirectory;
         break;
       case FileSystemAccessChangeSource::FilePathType::kFile:
-        changed_entry_handle_type =
-            FileSystemAccessPermissionContext::HandleType::kFile;
+        changed_entry_handle_type = HandleType::kFile;
         break;
     }
-    // TODO(crbug.com/377903461): Don't send a changedHandle for `kDisappeared`
-    // or `kUnknown` events. Renderer side, changedHandle() getter returns null
-    // for these cases.
-    blink::mojom::FileSystemAccessEntryPtr changed_entry =
-        CreateEntryForUrl(*manager, binding_context, handle_state, change.url,
-                          changed_entry_handle_type);
 
-    // Some platforms do not support ChangeInfo for Local FS changes, in which
-    // case a default, empty ChangeInfo is passed. In this case, report an event
-    // without metadata. Remove this section once ChangeInfo is supported in all
-    // platforms.
-    if (change_info == FileSystemAccessChangeSource::ChangeInfo()) {
-      mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
-          blink::mojom::FileSystemAccessChangeMetadata::New(
-              std::move(root_entry), std::move(changed_entry),
-              std::vector<std::string>()),
-          blink::mojom::FileSystemAccessChangeType::NewUnknown(
-              blink::mojom::FileSystemAccessChangeTypeUnknown::New())));
-      continue;
-    }
-
-    // TODO(crbug.com/340583257): It is expected that `ChangeInfo.modified_path`
-    // match the path of `Observation::Change.url`. Consider refactoring
-    // Observation::Change so that we do not need to do this check.
-    CHECK_EQ(change.url.virtual_path(), change_info.modified_path);
-
-    const base::FilePath& root_path = handle_url.path();
-    std::optional<base::FilePath> relative_modified_path =
-        GetRelativePath(root_path, change_info.modified_path);
-    // It is expected that modified_path is a descendent of the root,
-    // or the same as the root.
-    CHECK(relative_modified_path.has_value());
-    std::optional<base::FilePath> relative_moved_from_path =
-        change_info.moved_from_path.has_value()
-            ? GetRelativePath(root_path, change_info.moved_from_path.value())
-            : std::nullopt;
-
-    blink::mojom::FileSystemAccessChangeTypePtr mojo_change_type;
-    switch (change_info.change_type) {
-      case FileSystemAccessChangeSource::ChangeType::kUnknown:
-        mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewUnknown(
-            blink::mojom::FileSystemAccessChangeTypeUnknown::New());
-        break;
-      case FileSystemAccessChangeSource::ChangeType::kCreated:
-        mojo_change_type =
-            blink::mojom::FileSystemAccessChangeType::NewAppeared(
-                blink::mojom::FileSystemAccessChangeTypeAppeared::New());
-        break;
-      case FileSystemAccessChangeSource::ChangeType::kDeleted:
-        mojo_change_type =
-            blink::mojom::FileSystemAccessChangeType::NewDisappeared(
-                blink::mojom::FileSystemAccessChangeTypeDisappeared::New());
-        break;
-      case FileSystemAccessChangeSource::ChangeType::kModified:
-        mojo_change_type =
-            blink::mojom::FileSystemAccessChangeType::NewModified(
-                blink::mojom::FileSystemAccessChangeTypeModified::New());
-        break;
-      case FileSystemAccessChangeSource::ChangeType::kMoved:
-        if (relative_moved_from_path.has_value()) {
-          mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewMoved(
-              blink::mojom::FileSystemAccessChangeTypeMoved::New(
-                  GetRelativePathAsVectorOfStrings(
-                      relative_moved_from_path.value())));
-        } else {
-          mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewMoved(
-              blink::mojom::FileSystemAccessChangeTypeMoved::New());
-        }
-        break;
-    }
+    blink::mojom::FileSystemAccessChangePtr mojo_change =
+        CreateChange(*manager, binding_context, handle_state, handle_url,
+                     handle_type, change, changed_entry_handle_type);
 
     observation_root_disappeared =
-        mojo_change_type->is_disappeared() &&
+        mojo_change->type->is_disappeared() &&
         observation_->scope().root_url() == change.url;
 
-    mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
-        blink::mojom::FileSystemAccessChangeMetadata::New(
-            std::move(root_entry), std::move(changed_entry),
-            GetRelativePathAsVectorOfStrings(relative_modified_path.value())),
-        std::move(mojo_change_type)));
+    changes.emplace_back(std::move(mojo_change));
 
     if (observation_root_disappeared) {
       break;
@@ -352,7 +366,7 @@ void FileSystemAccessObserverObservation::OnChanges(
   }
   callback_count_++;
 
-  remote_->OnFileChanges(std::move(mojo_changes));
+  remote_->OnFileChanges(std::move(changes));
 
   // Send an "errored" event and destruct if the root of the observation
   // disappeared.
@@ -374,7 +388,7 @@ void FileSystemAccessObserverObservation::HandleError() {
     return;
   }
 
-  std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  std::vector<blink::mojom::FileSystemAccessChangePtr> changes;
   const FileSystemAccessManagerImpl::SharedHandleState& handle_state =
       handle_base.handle_state();
   FileSystemAccessManagerImpl* manager = handle_base.manager();
@@ -382,7 +396,7 @@ void FileSystemAccessObserverObservation::HandleError() {
   // TODO(crbug.com/377903461): Don't send changedHandle for `kErrored` events.
   // Renderer side, changedHandle() getter returns null for this case.
   const auto handle_type = std::visit(GetHandleTypeVisitor(), handle_);
-  mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
+  changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
       blink::mojom::FileSystemAccessChangeMetadata::New(
           CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,
                             handle_type),
@@ -391,7 +405,7 @@ void FileSystemAccessObserverObservation::HandleError() {
           std::vector<std::string>()),
       blink::mojom::FileSystemAccessChangeType::NewErrored(
           blink::mojom::FileSystemAccessChangeTypeErrored::New())));
-  remote_->OnFileChanges(std::move(mojo_changes));
+  remote_->OnFileChanges(std::move(changes));
 
   // Destroys `this`. It not only removes this observation but also its
   // corresponding watch set up by FileSystemAccessWatcherManager if this
@@ -428,7 +442,7 @@ void FileSystemAccessObserverObservation::RenderFrameHostStateChanged(
   // changes are not sent while the page is in BFCache. So, we use
   // ChangeType::kUnknown to signal to the renderer that some changes could be
   // missing.
-  std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  std::vector<blink::mojom::FileSystemAccessChangePtr> changes;
   FileSystemAccessManagerImpl* manager = AsHandleBase(handle_).manager();
   const FileSystemAccessManagerImpl::BindingContext& binding_context =
       AsHandleBase(handle_).context();
@@ -437,7 +451,7 @@ void FileSystemAccessObserverObservation::RenderFrameHostStateChanged(
   const storage::FileSystemURL& handle_url = AsHandleBase(handle_).url();
 
   const auto handle_type = std::visit(GetHandleTypeVisitor(), handle_);
-  mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
+  changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
       blink::mojom::FileSystemAccessChangeMetadata::New(
           CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,
                             handle_type),
@@ -446,7 +460,7 @@ void FileSystemAccessObserverObservation::RenderFrameHostStateChanged(
           std::vector<std::string>()),
       blink::mojom::FileSystemAccessChangeType::NewUnknown(
           blink::mojom::FileSystemAccessChangeTypeUnknown::New())));
-  remote_->OnFileChanges(std::move(mojo_changes));
+  remote_->OnFileChanges(std::move(changes));
   received_changes_while_in_bf_cache_ = false;
 }
 
