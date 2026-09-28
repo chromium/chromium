@@ -30,6 +30,7 @@ source_set("browser_tests") {
     ":tree_builder",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile_manager",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui/media_router",

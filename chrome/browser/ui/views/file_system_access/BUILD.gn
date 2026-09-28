@@ -120,6 +120,7 @@ if (!is_android) {
         "//chrome/browser/file_system_access",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:ui_features",
         "//chrome/browser/ui/actions:actions_headers",
         "//chrome/browser/ui/page_action:icon_type",

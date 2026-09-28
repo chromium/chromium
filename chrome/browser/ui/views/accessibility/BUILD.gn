@@ -158,6 +158,7 @@ if (!is_android) {
     if (is_win) {
       sources += [ "tab_strip_dump_accessibility_events_browsertest.cc" ]
       deps += [
+        "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui/views/tabs:tab",
         "//chrome/browser/ui/views/tabs:tab_strip",
       ]
@@ -175,6 +176,7 @@ if (!is_android) {
         "//chrome/browser/preloading:test_support",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_commands",
+        "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui:browser_window_header",
         "//chrome/browser/ui/views/frame:browser_view_header",
         "//chrome/test:test_support_ui",

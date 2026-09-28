@@ -317,6 +317,7 @@ source_set("impl") {
       "tools/window_management_tool_request.cc",
     ]
     deps += [
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]

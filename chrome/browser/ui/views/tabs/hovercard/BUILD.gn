@@ -155,6 +155,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/performance_controls",
     "//chrome/browser/ui/tabs:features",

@@ -60,6 +60,7 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/notifications",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_tabstrip",
       "//components/pref_registry",
     ]
     if (is_chromeos) {
