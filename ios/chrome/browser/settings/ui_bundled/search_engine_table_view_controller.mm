@@ -18,6 +18,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
+#import "components/search_engines/search_engine_settings_data_provider.h"
 #import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url_service.h"
@@ -82,6 +83,11 @@ const char kUmaSelectDefaultSearchEngine[] =
   raw_ptr<PrefService> _prefService;                // weak
   raw_ptr<regional_capabilities::RegionalCapabilitiesService>
       _regionalCapabilitiesService;  // weak
+  // Prepares the engine lists shown by this screen. Owned for the lifetime of
+  // this controller and reset in `-settingsWillBeDismissed`, since it holds
+  // references to profile-keyed services.
+  std::unique_ptr<search_engines::SearchEngineSettingsDataProvider>
+      _settingsDataProvider;
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -91,15 +97,17 @@ const char kUmaSelectDefaultSearchEngine[] =
   // engine if it's selected as default search engine.
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`,
-  // `TemplateURLService::GetPrepopulatedAndRecentlyVisitedTemplateURLs()`, or
-  // they are owned by `_choiceScreenTemplateUrls`.
+  // `SearchEngineSettingsDataProvider::
+  // GetPrepopulatedAndRecentlyVisitedTemplateURLs()`, or they are owned by
+  // `_choiceScreenTemplateUrls`.
   std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _firstList;
   // The second list in the page which contains all remaining custom search
   // engines.
   // Note that `TemplateURL` pointers should not be freed. They either come from
   // `TemplateURLService::GetTemplateURLs()`,
-  // `TemplateURLService::GetPrepopulatedAndRecentlyVisitedTemplateURLs()`, or
-  // they are owned by `_choiceScreenTemplateUrls`.
+  // `SearchEngineSettingsDataProvider::
+  // GetPrepopulatedAndRecentlyVisitedTemplateURLs()`, or they are owned by
+  // `_choiceScreenTemplateUrls`.
   std::vector<raw_ptr<TemplateURL, DanglingUntriaged>> _secondList;
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
@@ -115,6 +123,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (self) {
     _templateURLService =
         ios::TemplateURLServiceFactory::GetForProfile(profile);
+    _settingsDataProvider =
+        _templateURLService->CreateSearchEngineSettingsDataProvider();
     _observer =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
     _templateURLService->Load();
@@ -309,6 +319,9 @@ const char kUmaSelectDefaultSearchEngine[] =
   // Remove observer bridges.
   _observer.reset();
 
+  // Destroy before the keyed services it references are cleared below.
+  _settingsDataProvider.reset();
+
   // Clear C++ ivars.
   _templateURLService = nullptr;
   _prefService = nullptr;
@@ -477,9 +490,9 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
 
   if (base::FeatureList::IsEnabled(switches::kSearchSettingsUpdateV2)) {
-    // Retrieve separated URLs from the service.
-    TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls urls =
-        _templateURLService->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+    // Retrieve separated URLs from the provider.
+    search_engines::PrepopulatedAndRecentlyVisitedTemplateUrls urls =
+        _settingsDataProvider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
 
     _firstList = std::move(urls.prepopulated_urls);
     _secondList = std::move(urls.recently_visited_urls);

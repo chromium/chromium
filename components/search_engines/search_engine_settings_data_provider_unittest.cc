@@ -527,6 +527,142 @@ TEST_F(SearchEngineSettingsDataProviderTest,
   EXPECT_THAT(result.recently_visited_urls, testing::ElementsAre(custom));
 }
 
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs_Empty) {
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  EXPECT_THAT(data.prepopulated_urls, testing::IsEmpty());
+  EXPECT_THAT(data.recently_visited_urls, testing::IsEmpty());
+}
+
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs_HiddenSkipped) {
+  // Fetch a valid prepopulated engine ID from the test's resolver environment.
+  auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
+  ASSERT_FALSE(prepop_engines.empty());
+  int valid_prepopulate_id = prepop_engines.at(0)->prepopulate_id;
+
+  // Add a user-defined engine and the real prepopulated engine with matching
+  // keywords.
+  TemplateURL* custom_url = AddTemplateURL(u"Custom Engine", u"@conflict");
+  TemplateURL* prepop_url = AddTemplateURL(u"Prepopulated Engine", u"@conflict",
+                                           valid_prepopulate_id);
+
+  ASSERT_TRUE(template_url_service().HiddenFromLists(custom_url));
+  ASSERT_FALSE(template_url_service().HiddenFromLists(prepop_url));
+
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  EXPECT_THAT(data.prepopulated_urls,
+              testing::ElementsAre(HasShortName("Prepopulated Engine")));
+  EXPECT_THAT(data.recently_visited_urls, testing::IsEmpty());
+}
+
+// There is no way to activate/deactivate engines on the platforms that use
+// these lists, so unlike `GetCategorizedTemplateURLs()` there is no notion of
+// "active" here and inactive engines are still returned.
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs_ActiveStatusIgnored) {
+  // Add some prepopulated Template URLs.
+  AddTemplateURL(u"Active Prepop Engine", u"ape", /*prepopulate_id=*/1);
+  AddTemplateURL(u"Inactive Prepop Engine", u"ipe", /*prepopulate_id=*/2,
+                 /*created_by_policy=*/false,
+                 TemplateURLData::ActiveStatus::kFalse);
+
+  // Add recently Visited Template URLs.
+  AddTemplateURL(u"Active Recent Site Search", u"arss");
+  AddTemplateURL(u"Inactive Recent Site Search", u"irss", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/false,
+                 TemplateURLData::ActiveStatus::kFalse);
+
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  EXPECT_THAT(
+      data.prepopulated_urls,
+      testing::UnorderedElementsAre(HasShortName("Active Prepop Engine"),
+                                    HasShortName("Inactive Prepop Engine")));
+  EXPECT_THAT(data.recently_visited_urls,
+              testing::UnorderedElementsAre(
+                  HasShortName("Active Recent Site Search"),
+                  HasShortName("Inactive Recent Site Search")));
+}
+
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs_CategorizationLogic) {
+  // Prepopulated Template URL.
+  AddTemplateURL(u"Prepop Engine", u"pe", /*prepopulate_id=*/1);
+
+  // Recently Visited Template URL (Not default, not starter pack, not
+  // extension).
+  AddTemplateURL(u"Recent Site Search", u"rss");
+
+  // Feature items (Starter Pack / Extensions) should not be included.
+  AddTemplateURL(u"Lens Starter Pack", u"lens", /*prepopulate_id=*/0,
+                 /*created_by_policy=*/false,
+                 TemplateURLData::ActiveStatus::kTrue,
+                 template_url_starter_pack_data::StarterPackId::kTabs);
+  AddExtension(u"Ext Feature", u"ext", TemplateURLData::ActiveStatus::kTrue);
+
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  EXPECT_THAT(data.prepopulated_urls,
+              testing::UnorderedElementsAre(HasShortName("Prepop Engine")));
+  EXPECT_THAT(
+      data.recently_visited_urls,
+      testing::UnorderedElementsAre(HasShortName("Recent Site Search")));
+}
+
+TEST_F(SearchEngineSettingsDataProviderTest,
+       GetPrepopulatedAndRecentlyVisitedTemplateURLs_PrepopulatedSorting) {
+  // Add the prepopulated engines in reverse order.
+  auto prepop_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
+  ASSERT_EQ(3u, prepop_engines.size());
+
+  for (int i = static_cast<int>(prepop_engines.size()) - 1; i >= 0; --i) {
+    AddTemplateURL(prepop_engines.at(i)->short_name(),
+                   prepop_engines.at(i)->keyword(),
+                   prepop_engines.at(i)->prepopulate_id);
+  }
+
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  // Prepopulated engine list matches
+  // `internal::OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically`.
+  EXPECT_THAT(data.prepopulated_urls,
+              testing::ElementsAre(HasShortName(base::UTF16ToASCII(
+                                       (prepop_engines.at(0)->short_name()))),
+                                   HasShortName(base::UTF16ToASCII(
+                                       (prepop_engines.at(1)->short_name()))),
+                                   HasShortName(base::UTF16ToASCII(
+                                       (prepop_engines.at(2)->short_name())))));
+}
+
+TEST_F(
+    SearchEngineSettingsDataProviderTest,
+    GetPrepopulatedAndRecentlyVisitedTemplateURLs_RecentlyVisitedSortingAndFiltering) {
+  // Add some recently visited engines.
+  AddTemplateURL(u"Recent Site Search 1", u"rss1");
+  AddTemplateURL(u"Recent Site Search 2", u"rss2");
+  AddTemplateURL(u"Recent Site Search 3", u"rss3");
+  AddTemplateURL(u"Recent Site Search 4", u"rss4");
+
+  auto provider = CreateProvider();
+  auto data = provider->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
+
+  // Recently visited list matches
+  // `internal::SortAndFilterRecentlyVisitedURLs()`.
+  EXPECT_THAT(
+      data.recently_visited_urls,
+      testing::UnorderedElementsAre(HasShortName("Recent Site Search 4"),
+                                    HasShortName("Recent Site Search 3"),
+                                    HasShortName("Recent Site Search 2")));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(SearchEngineSettingsDataProviderTest,
        GetDisabledStarterPackIdsForAndroid) {

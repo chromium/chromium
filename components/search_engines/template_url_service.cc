@@ -1396,16 +1396,6 @@ TemplateURLService::CreateSearchEngineSettingsDataProvider() {
       *profile_metrics_service_);
 }
 
-#if BUILDFLAG(IS_IOS)
-TemplateURLService::PrepopulatedAndRecentlyVisitedTemplateUrls
-TemplateURLService::GetPrepopulatedAndRecentlyVisitedTemplateURLs() {
-  // TODO(crbug.com/545131041): Remove when iOS migrates to
-  // SearchEngineSettingsDataProvider directly.
-  return CreateSearchEngineSettingsDataProvider()
-      ->GetPrepopulatedAndRecentlyVisitedTemplateURLs();
-}
-#endif  // BUILDFLAG(IS_IOS)
-
 url::Origin TemplateURLService::GetDefaultSearchProviderOrigin() const {
   const TemplateURL* template_url = GetDefaultSearchProvider();
   if (template_url) {

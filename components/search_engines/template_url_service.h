@@ -42,9 +42,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
-#if BUILDFLAG(IS_IOS)
-#include "components/search_engines/search_engine_settings_data_provider.h"
-#endif
 
 class GURL;
 class PrefService;
@@ -146,13 +143,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
     GURL normalized_url;
     std::u16string search_terms;
   };
-
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/545131041): Remove this temporary bridge in Phase 3 when
-  // iOS migrates to SearchEngineSettingsDataProvider directly.
-  using PrepopulatedAndRecentlyVisitedTemplateUrls =
-      search_engines::PrepopulatedAndRecentlyVisitedTemplateUrls;
-#endif  // BUILDFLAG(IS_IOS)
 
   // Values for an enumerated histogram used to track keyword conflicts between
   // search engines created by policy and search engines the user manually
@@ -435,20 +425,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // see `search_engines::SearchEngineSettingsDataProvider`.
   std::unique_ptr<search_engines::SearchEngineSettingsDataProvider>
   CreateSearchEngineSettingsDataProvider();
-
-#if BUILDFLAG(IS_IOS)
-  // Returns an object containing two lists. The first one contains engines that
-  // are prepopulated (in the order defined by the prepopulate_data_resolver,
-  // created by policy or the default search engine. The second one contains
-  // recently visited engines.
-  // In contrast to
-  // `SearchEngineSettingsDataProvider::GetCategorizedTemplateURLs()`, this only
-  // creates these two lists and omits any extension or starter pack shortcuts.
-  // Additionally, as there is no way to activate/deactivate engines on
-  // platforms that use this function, there is no notion of "active" here.
-  PrepopulatedAndRecentlyVisitedTemplateUrls
-  GetPrepopulatedAndRecentlyVisitedTemplateURLs();
-#endif  // BUILDFLAG(IS_IOS)
 
   // Returns the Origin of the user's default search engine. If a default search
   // engine is set and its URL is valid, the Origin of that URL is returned.
