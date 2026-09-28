@@ -1,0 +1,48 @@
+description: >-
+  Verify the crossbench-runner skill correctly assists in running benchmarks and
+  locating results.
+owner: elkurin@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - crossbench-runner
+tests:
+  - vars:
+      query: "How do I run the browser_startup benchmark in Crossbench?"
+    assert:
+      - type: contains
+        value: "cb.py"
+  - vars:
+      query: "How do I run the heavy-meet-note benchmark in Crossbench?"
+    assert:
+      - type: contains
+        value: "run.py"
+      - type: contains
+        value: "--tests"
+  - vars:
+      query: >-
+        Where can I find unmerged metrics per story from a Crossbench run?
+    assert:
+      - type: contains
+        value: "results/latest"
+      - type: contains
+        value: "trace_processor"
+  - vars:
+      query: >-
+        My Crossbench run crashed on a headless Linux VM with WebDriver session
+        not created. How do I fix it?
+    assert:
+      - type: contains
+        value: "xvfb-run"
+  - vars:
+      query: >-
+        I updated bot_platforms.py for a Crossbench benchmark. How do I update
+        the shard maps?
+    assert:
+      - type: contains
+        value: "generate_perf_sharding.py"
