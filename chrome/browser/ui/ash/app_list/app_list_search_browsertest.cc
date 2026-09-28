@@ -17,7 +17,7 @@
 #include "ash/test/active_window_waiter.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
@@ -80,9 +80,9 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
     results_changed_waiter.Wait();
     results_waiter.Wait();
 
-    // Search UI updates are scheduled by posting a task on the main thread, run
-    // loop to run scheduled result update tasks.
-    base::RunLoop().RunUntilIdle();
+    // Wait for the posted search UI updates to show the result list.
+    ASSERT_TRUE(base::test::RunUntil(
+        [] { return AppListTestApi().GetTopVisibleSearchResultListView(); }));
   }
 
   void ClickTopSearchResult(
