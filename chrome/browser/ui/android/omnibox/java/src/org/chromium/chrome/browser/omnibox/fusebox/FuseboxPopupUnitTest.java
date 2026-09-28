@@ -36,12 +36,14 @@ import androidx.window.layout.WindowMetricsCalculatorDecorator;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -87,6 +89,16 @@ public class FuseboxPopupUnitTest {
     private View mContentView;
     private ViewGroup mViewGroup;
 
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        // Pre-initialize ByteBuddy mock classes in the SandboxClassLoader before the per-test 30s
+        // timeout (BaseTimeLimitedStatement) starts. Because JUnit orders @Test methods by
+        // hashCode, testFlingDismissesPopup_whenBottomSheet (-1912151687) always runs first in
+        // each SDK sandbox and otherwise absorbs the one-time cold-start class instrumentation and
+        // mock generation cost inside its per-test timeout window.
+        MockitoAnnotations.openMocks(new FuseboxPopupUnitTest()).close();
+    }
+
     @Before
     public void setUp() {
         WindowMetricsCalculator.overrideDecorator(
@@ -99,7 +111,6 @@ public class FuseboxPopupUnitTest {
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mActivity.setContentView(mContentView);
         mViewGroup = mContentView.findViewById(R.id.fusebox_view_group);
 
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
@@ -135,7 +146,6 @@ public class FuseboxPopupUnitTest {
             boolean useScrollableCarousel,
             @CurrentTabPlacement int currentTabPlacement) {
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
-        mActivity.setContentView(mContentView);
         mFuseboxPopup =
                 new FuseboxPopup(
                         mActivity,
