@@ -67,6 +67,7 @@ import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.util.KeyEventUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -763,15 +764,21 @@ public class KeyboardShortcutsTest {
                 .onMenuOrKeyboardAction(eq(R.id.toggle_caret_browsing), eq(false));
     }
 
-    /** Test that pressing F1 triggers the help action. */
+    /** Tests that pressing F1 from an alphabetic keyboard triggers the help action. */
     @Test
     @SmallTest
     public void testOpenHelp() {
-        // Ensure we handle F1 key
+        KeyEventUtils.setIsFromAlphabeticKeyboardForTesting(true);
         assertTrue(keyDown(KeyEvent.KEYCODE_F1, 0, true));
-
-        // Ensure we trigger the help action
         verify(mMenuOrKeyboardActionController).onMenuOrKeyboardAction(eq(R.id.help_id), eq(false));
+    }
+
+    /** Tests that pressing F1 is ignored when it does not come from an alphabetic keyboard. */
+    @Test
+    @SmallTest
+    public void testOpenHelp_nonAlphabeticKeyboard() {
+        KeyEventUtils.setIsFromAlphabeticKeyboardForTesting(false);
+        assertFalse(dispatchKeyEvent(KeyEvent.KEYCODE_F1, 0));
     }
 
     @Test

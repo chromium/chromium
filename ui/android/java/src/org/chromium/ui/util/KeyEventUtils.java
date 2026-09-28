@@ -4,13 +4,18 @@
 
 package org.chromium.ui.util;
 
+import android.view.InputDevice;
 import android.view.KeyEvent;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Class with helper methods for {@link KeyEvent}. */
 @NullMarked
 public class KeyEventUtils {
+    private static @Nullable Boolean sIsFromAlphabeticKeyboardForTesting;
+
     /**
      * Returns whether the control key is down.
      *
@@ -39,5 +44,20 @@ public class KeyEventUtils {
      */
     public static boolean isAltOn(int metaState) {
         return (metaState & KeyEvent.META_ALT_ON) != 0;
+    }
+
+    /** Modifies the output of {@link #isFromAlphabeticKeyboard(KeyEvent)} for testing. */
+    public static void setIsFromAlphabeticKeyboardForTesting(Boolean isFromAlphabeticKeyboard) {
+        sIsFromAlphabeticKeyboardForTesting = isFromAlphabeticKeyboard;
+        ResettersForTesting.register(() -> sIsFromAlphabeticKeyboardForTesting = null);
+    }
+
+    /** Returns whether the given {@link KeyEvent} originated from an alphabetic keyboard. */
+    public static boolean isFromAlphabeticKeyboard(KeyEvent event) {
+        if (sIsFromAlphabeticKeyboardForTesting != null) {
+            return sIsFromAlphabeticKeyboardForTesting;
+        }
+        InputDevice device = event.getDevice();
+        return device != null && device.getKeyboardType() == InputDevice.KEYBOARD_TYPE_ALPHABETIC;
     }
 }

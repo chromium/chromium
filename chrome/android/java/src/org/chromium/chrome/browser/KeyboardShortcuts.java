@@ -49,6 +49,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.util.KeyEventUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -950,6 +951,13 @@ public class KeyboardShortcuts {
                 // Do not consume the AV device-related keys so that the system will take
                 // an appropriate action, such as switching to TV mode.
                 return false;
+            case KeyEvent.KEYCODE_F1:
+                // Do not consume F1 from non-alphabetic hardware buttons (e.g. physical side
+                // buttons mapped to KEYCODE_F1) so the system can handle actions like screenshots.
+                if (!KeyEventUtils.isFromAlphabeticKeyboard(event)) {
+                    return false;
+                }
+                break;
         }
 
         return null;
