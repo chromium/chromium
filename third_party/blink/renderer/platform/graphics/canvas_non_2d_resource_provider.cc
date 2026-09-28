@@ -847,12 +847,12 @@ void CanvasNon2DResourceProvider::FlushRecording(
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
     EnsureResourceReadyForDraw();
-    auto access = resource_->BeginAccess(/*readonly=*/false);
     EnsureWriteAccess();
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
 
+    auto access = resource_->BeginAccess(/*readonly=*/false);
     gpu::raster::RasterInterface* ri = RasterInterface();
     SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
                                      ? SkColors::kBlack
