@@ -70,11 +70,13 @@ class AccountConsistencyBrowserAgent
       UIViewController* base_view_controller,
       signin::SigninEnabledDataSource* signin_enabled_data_source);
 
-  // Returns whether it is possible to show the browser's account menu.
-  bool CanShowAccountMenu() const;
+  // Returns whether it is possible to show the browser's account menu. Assumes
+  // sign-in is enabled.
+  bool HasPrimaryAccount() const;
 
   // Opens the account menu, offering to switch to a different account (even one
-  // that's in a different profile).
+  // that's in a different profile). Assumes sign-in is enabled and there is a
+  // primary account.
   void ShowAccountMenu(const GURL& url);
 
   // Whether `web_state` is the active one in the active browser.

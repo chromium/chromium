@@ -6,8 +6,9 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/gtest_util.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/signin/ios/browser/fake_signin_enabled_datasource.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
@@ -83,7 +84,8 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
     base_view_controller_mock_ = OCMStrictClassMock([UIViewController class]);
     WebNavigationBrowserAgent::CreateForBrowser(browser_);
     AccountConsistencyBrowserAgent::CreateForBrowser(
-        browser_, base_view_controller_mock_, &signin_enabled_data_source_);
+        browser_, base_view_controller_mock_,
+        AuthenticationServiceFactory::GetForProfile(profile_.get()));
     agent_ = AccountConsistencyBrowserAgent::FromBrowser(browser_);
 
     WebStateList* web_state_list = browser_->GetWebStateList();
@@ -131,7 +133,6 @@ class AccountConsistencyBrowserAgentTest : public PlatformTest {
   raw_ptr<AccountConsistencyBrowserAgent> agent_ = nullptr;
   id<SceneCommands> mock_scene_handler_;
   id<SceneSignInCommands> mock_scene_sign_in_handler_;
-  signin::FakeSigninEnabledDataSource signin_enabled_data_source_;
   id<SettingsCommands> settings_commands_mock_;
   id<BrowserCoordinatorCommands> browser_coordinator_commands_mock_;
   UIViewController* base_view_controller_mock_;
@@ -404,4 +405,32 @@ TEST_F(AccountConsistencyBrowserAgentTest, OnGoIncognitoWhenIncognitoIsActive) {
   agent_->OnGoIncognito(url_, browser_->GetWebStateList()->GetActiveWebState());
   // As the scene is changed, this OnAddAccount is dropped, and the mocks are
   // not asked to present anything, as opposed to OnGoIncognitoWithURL.
+}
+
+// Tests that `SigninEnabled()` returns true when sign-in is allowed, and false
+// when sign-in is disabled.
+TEST_F(AccountConsistencyBrowserAgentTest, SigninEnabled) {
+  EXPECT_TRUE(agent_->SigninEnabled());
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+  EXPECT_FALSE(agent_->SigninEnabled());
+}
+
+// Tests that calling `OnManageAccounts()` when sign-in is disabled triggers a
+// CHECK crash.
+TEST_F(AccountConsistencyBrowserAgentTest,
+       OnManageAccountsSigninDisabledCrash) {
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+  EXPECT_CHECK_DEATH(agent_->OnManageAccounts(
+      GURL(), browser_->GetWebStateList()->GetActiveWebState()));
+}
+
+// Tests that calling `OnAddAccount()` when sign-in is disabled triggers a
+// CHECK crash.
+TEST_F(AccountConsistencyBrowserAgentTest, OnAddAccountSigninDisabledCrash) {
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+  EXPECT_CHECK_DEATH(agent_->OnAddAccount(
+      GURL(), "", browser_->GetWebStateList()->GetActiveWebState()));
 }

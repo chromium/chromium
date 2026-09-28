@@ -301,13 +301,13 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
           return;
         }
       }
-      if (delegate_) {
+      if (delegate_ && delegate_->SigninEnabled()) {
         delegate_->OnAddAccount(continue_url, params.email, web_state_);
       }
       break;
     case signin::GAIA_SERVICE_TYPE_SIGNOUT:
     case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      if (delegate_) {
+      if (delegate_ && delegate_->SigninEnabled()) {
         delegate_->OnManageAccounts(continue_url, web_state_);
       }
       break;
