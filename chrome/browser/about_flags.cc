@@ -14091,6 +14091,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchSettingsWithMoreEnginesName,
      flag_descriptions::kSearchSettingsWithMoreEnginesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kSearchSettingsWithMoreEngines)},
+#if BUILDFLAG(IS_ANDROID)
+    {"signin-button-profile-menu-refinements",
+     flag_descriptions::kSigninButtonProfileMenuRefinementsName,
+     flag_descriptions::kSigninButtonProfileMenuRefinementsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kSigninButtonProfileMenuRefinements)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-auto-projected", flag_descriptions::kAndroidAutoProjectedName,

@@ -9146,6 +9146,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "signin-button-profile-menu-refinements",
+    "owners": [
+      "crowleso@google.com",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "signin-level-up-button",
     "owners": [
       "crowleso@google.com",

@@ -800,6 +800,11 @@ BASE_DECLARE_FEATURE(kSigninButtonProfileMenu);
 // Shows an error card in the profile menu on Desktop Android.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSigninButtonProfileMenuErrorCard);
+
+// Enables fast-follow enhancements and visual adjustments for the desktop-like
+// profile menu on Desktop Android.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSigninButtonProfileMenuRefinements);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables the new visual design for the profile switch interception bubble,

@@ -809,6 +809,9 @@ BASE_FEATURE(kSigninButtonProfileMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSigninButtonProfileMenuErrorCard,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSigninButtonProfileMenuRefinements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
