@@ -134,7 +134,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
     final class UiUpdateRequest {
         /** What triggered a {@link SideUiCoordinator#updateUi} request. */
         @IntDef({
-            UpdateReason.UNSPECIFIED,
             UpdateReason.SIDE_UI_REQUEST,
             UpdateReason.ANDROID_CONFIGURATION_CHANGED,
             UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED,
@@ -145,9 +144,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         })
         @Target(ElementType.TYPE_USE)
         public @interface UpdateReason {
-            /** A request from outside the Side UI framework, with no originating container. */
-            int UNSPECIFIED = 0;
-
             /**
              * A {@link SideUiContainer} requested a UI update. A width of zero denotes a hidden
              * container, so showing and hiding a container are also represented by this value.
@@ -156,30 +152,30 @@ public interface SideUiCoordinator extends SideUiStateProvider {
              * SideUiContainer} rather than a change to the environment the containers are laid out
              * within.
              */
-            int SIDE_UI_REQUEST = 1;
+            int SIDE_UI_REQUEST = 0;
 
             /**
              * The Android {@link android.content.res.Configuration} changed, for example the window
              * size, the orientation or the display density.
              */
-            int ANDROID_CONFIGURATION_CHANGED = 2;
+            int ANDROID_CONFIGURATION_CHANGED = 1;
 
             /** The height of the top browser controls changed. */
-            int TOP_CONTROLS_HEIGHT_CHANGED = 3;
+            int TOP_CONTROLS_HEIGHT_CHANGED = 2;
 
             /** The activity entered fullscreen mode. */
-            int FULL_SCREEN_MODE_ENTERED = 4;
+            int FULL_SCREEN_MODE_ENTERED = 3;
 
             /** The activity exited fullscreen mode. */
-            int FULL_SCREEN_MODE_EXITED = 5;
+            int FULL_SCREEN_MODE_EXITED = 4;
 
             /** An intermediate update during a manual resize. */
-            int RESIZE_LIVE = 6;
+            int RESIZE_LIVE = 5;
 
             /** The final update committing a manual resize. */
-            int RESIZE_COMMITTED = 7;
+            int RESIZE_COMMITTED = 6;
 
-            int NUM_ENTRIES = 8;
+            int NUM_ENTRIES = 7;
         }
 
         /**
@@ -206,25 +202,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         }
 
         /**
-         * Constructs a request with {@link UpdateReason#SIDE_UI_REQUEST}, or {@link
-         * UpdateReason#UNSPECIFIED} if {@code sideUiId} is null.
-         *
-         * @param sideUiId ID of the {@link SideUiContainer} requesting the UI update, or null if
-         *     the request is not from a {@link SideUiContainer}.
-         * @param suppressAnimations Whether animations should be suppressed during the UI update.
-         * @deprecated Only {@link SideUiContainer}s should construct a {@link UiUpdateRequest}
-         *     outside this package; use {@link #UiUpdateRequest(int, boolean)} with a non-null
-         *     {@code sideUiId}.
-         */
-        @Deprecated
-        public UiUpdateRequest(@Nullable @SideUiId Integer sideUiId, boolean suppressAnimations) {
-            this(
-                    sideUiId,
-                    suppressAnimations,
-                    sideUiId != null ? UpdateReason.SIDE_UI_REQUEST : UpdateReason.UNSPECIFIED);
-        }
-
-        /**
          * Constructs a request with an explicit {@link UpdateReason}.
          *
          * <p>Restricted to this package. The {@link UpdateReason}s can describe changes to the
@@ -236,8 +213,7 @@ public interface SideUiCoordinator extends SideUiStateProvider {
          * @param suppressAnimations Whether animations should be suppressed during the UI update.
          * @param updateReason What triggered this request.
          */
-        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-        public UiUpdateRequest(
+        UiUpdateRequest(
                 @Nullable @SideUiId Integer sideUiId,
                 boolean suppressAnimations,
                 @UpdateReason int updateReason) {
@@ -311,7 +287,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         /** Returns the name of the given {@link UpdateReason}. */
         private static String updateReasonToString(@UpdateReason int reason) {
             return switch (reason) {
-                case UpdateReason.UNSPECIFIED -> "UNSPECIFIED";
                 case UpdateReason.SIDE_UI_REQUEST -> "SIDE_UI_REQUEST";
                 case UpdateReason.ANDROID_CONFIGURATION_CHANGED -> "ANDROID_CONFIGURATION_CHANGED";
                 case UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED -> "TOP_CONTROLS_HEIGHT_CHANGED";
