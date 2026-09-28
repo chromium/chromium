@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -30,6 +31,7 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/features.h"
 #include "components/download/public/background_service/logger.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -939,15 +941,25 @@ IN_PROC_BROWSER_TEST_P(BackgroundFetchKillswitchBrowserTest,
                        FetchFromServiceWorker) {
   SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
                 CONTENT_SETTING_ALLOW);
+  base::HistogramTester histogram_tester;
   if (IsRestrictBackgroundFetchFromServiceWorkerEnabled()) {
     // If killswitch is enabled, the fetch should fail with a permission error.
     ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
         "StartFetchFromServiceWorker()", "permissionerror"));
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.BackgroundFetch.FetchStatus", 1 /* kDisallowed */, 1);
   } else {
     // If killswitch is disabled, the fetch should succeed.
     offline_content_provider_observer_->ResumeOnNextUpdate();
     ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(
         "StartFetchFromServiceWorker()", "backgroundfetchsuccess"));
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.BackgroundFetch.FetchStatus",
+        2 /* kAllowedByFeatureFlag */, 1);
 
     // Revoke Automatic Downloads permission.
     SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,

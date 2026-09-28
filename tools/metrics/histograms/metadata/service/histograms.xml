@@ -252,6 +252,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.BackgroundFetch.FetchStatus"
+    enum="ServiceWorkerBackgroundFetchStatus" expires_after="2027-03-17">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <summary>
+    Records the execution context and feature configuration status when
+    BackgroundFetchManager.fetch() is called. Used to measure usage of
+    Background Fetch across different execution contexts.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.BackgroundFetch.{Method}CalledFromServiceWorker"
+    enum="Boolean" expires_after="2027-03-17">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <summary>
+    Records whether BackgroundFetchManager.{Method}() was called from a Service
+    Worker execution context (true) or another context such as Window (false).
+  </summary>
+  <token key="Method">
+    <variant name="Get"/>
+    <variant name="GetIds"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize"
     units="bytes" expires_after="2026-07-05">
   <owner>yyanagisawa@chromium.org</owner>

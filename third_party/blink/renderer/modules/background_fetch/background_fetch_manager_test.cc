@@ -219,4 +219,12 @@ TEST_F(BackgroundFetchManagerTest, ParseAllowlistInvalidAndOpaqueOrigins) {
       SecurityOrigin::CreateFromString("https://example.com")));
 }
 
+TEST_F(BackgroundFetchManagerTest, GetServiceWorkerFetchStatusWindowContext) {
+  V8TestingScope scope;
+  EXPECT_EQ(
+      BackgroundFetchManager::GetServiceWorkerFetchStatus(
+          scope.GetExecutionContext()),
+      BackgroundFetchManager::ServiceWorkerFetchStatus::kNotServiceWorker);
+}
+
 }  // namespace blink

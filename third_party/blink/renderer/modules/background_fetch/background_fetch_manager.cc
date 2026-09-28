@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
@@ -128,47 +129,6 @@ scoped_refptr<BlobDataHandle> ExtractBlobHandle(
   return blob_handle;
 }
 
-// Returns true if Background Fetch is permitted in the current execution
-// context. Usage within Service Worker contexts is restricted.
-bool IsBackgroundFetchAllowedForContext(ExecutionContext* execution_context) {
-  // If the context is not a Service Worker, the restriction does not apply.
-  if (!execution_context->IsServiceWorkerGlobalScope()) {
-    return true;
-  }
-
-  bool restrict_background_fetch_from_service_worker =
-      base::FeatureList::IsEnabled(
-          blink::features::kRestrictBackgroundFetchFromServiceWorker);
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          blink::switches::kRestrictBackgroundFetchFromServiceWorker)) {
-    std::string switch_value = command_line->GetSwitchValueASCII(
-        blink::switches::kRestrictBackgroundFetchFromServiceWorker);
-    restrict_background_fetch_from_service_worker = (switch_value == "true");
-  }
-
-  if (!restrict_background_fetch_from_service_worker) {
-    return true;
-  }
-
-  // Define a local storage wrapper to manage the one-time initialization
-  // and parsing of the allowlist origins.
-  struct ParsedAllowlist {
-    HashSet<scoped_refptr<const SecurityOrigin>> origins;
-    ParsedAllowlist() {
-      std::string allowlist_str =
-          blink::features::kBackgroundFetchFromServiceWorkerAllowListStr.Get();
-      origins = BackgroundFetchManager::ParseAllowlist(allowlist_str);
-    }
-  };
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ParsedAllowlist, parsed_allowlist, ());
-
-  // Check if the current context's origin is present in the list.
-  return parsed_allowlist.origins.Contains(
-      execution_context->GetSecurityOrigin());
-}
-
 }  // namespace
 
 BackgroundFetchManager::BackgroundFetchManager(
@@ -202,6 +162,45 @@ BackgroundFetchManager::ParseAllowlist(const std::string& allowlist_str) {
   return origins;
 }
 
+// static
+BackgroundFetchManager::ServiceWorkerFetchStatus
+BackgroundFetchManager::GetServiceWorkerFetchStatus(
+    ExecutionContext* execution_context) {
+  if (!execution_context->IsServiceWorkerGlobalScope()) {
+    return ServiceWorkerFetchStatus::kNotServiceWorker;
+  }
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          blink::switches::kRestrictBackgroundFetchFromServiceWorker)) {
+    std::string switch_value = command_line->GetSwitchValueASCII(
+        blink::switches::kRestrictBackgroundFetchFromServiceWorker);
+    if (switch_value != "true") {
+      return ServiceWorkerFetchStatus::kAllowedByCommandLineOrPolicy;
+    }
+  } else if (!base::FeatureList::IsEnabled(
+                 blink::features::kRestrictBackgroundFetchFromServiceWorker)) {
+    return ServiceWorkerFetchStatus::kAllowedByFeatureFlag;
+  }
+
+  struct ParsedAllowlist {
+    HashSet<scoped_refptr<const SecurityOrigin>> origins;
+    ParsedAllowlist() {
+      std::string allowlist_str =
+          blink::features::kBackgroundFetchFromServiceWorkerAllowListStr.Get();
+      origins = BackgroundFetchManager::ParseAllowlist(allowlist_str);
+    }
+  };
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ParsedAllowlist, parsed_allowlist, ());
+
+  if (parsed_allowlist.origins.Contains(
+          execution_context->GetSecurityOrigin())) {
+    return ServiceWorkerFetchStatus::kAllowedByOriginAllowlist;
+  }
+
+  return ServiceWorkerFetchStatus::kDisallowed;
+}
+
 ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
     ScriptState* script_state,
     const String& id,
@@ -222,7 +221,11 @@ ScriptPromise<BackgroundFetchRegistration> BackgroundFetchManager::fetch(
     return EmptyPromise();
   }
 
-  if (!IsBackgroundFetchAllowedForContext(execution_context)) {
+  ServiceWorkerFetchStatus sw_fetch_status =
+      GetServiceWorkerFetchStatus(execution_context);
+  base::UmaHistogramEnumeration("ServiceWorker.BackgroundFetch.FetchStatus",
+                                sw_fetch_status);
+  if (sw_fetch_status == ServiceWorkerFetchStatus::kDisallowed) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "backgroundFetch.fetch() is not allowed in service worker "
@@ -405,6 +408,10 @@ BackgroundFetchManager::get(ScriptState* script_state,
     return EmptyPromise();
   }
 
+  base::UmaHistogramBoolean(
+      "ServiceWorker.BackgroundFetch.GetCalledFromServiceWorker",
+      execution_context->IsServiceWorkerGlobalScope());
+
   if (id.empty()) {
     exception_state.ThrowTypeError("The provided id is invalid.");
     return EmptyPromise();
@@ -550,6 +557,10 @@ ScriptPromise<IDLArray<IDLString>> BackgroundFetchManager::getIds(
         "backgroundFetch is not allowed in fenced frames.");
     return ScriptPromise<IDLArray<IDLString>>();
   }
+
+  base::UmaHistogramBoolean(
+      "ServiceWorker.BackgroundFetch.GetIdsCalledFromServiceWorker",
+      execution_context->IsServiceWorkerGlobalScope());
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLArray<IDLString>>>(

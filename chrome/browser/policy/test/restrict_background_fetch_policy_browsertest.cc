@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -101,15 +103,25 @@ IN_PROC_BROWSER_TEST_P(RestrictBackgroundFetchPolicyBrowserTest,
       chrome_test_utils::GetProfile(this)->GetPrefs()->GetBoolean(
           policy_prefs::kRestrictBackgroundFetchFromServiceWorkerEnabled));
 
+  base::HistogramTester histogram_tester;
   if (GetParam() == Policy::kFalse) {
     // If policy is set to false, the restriction is bypassed/allowed.
     ASSERT_EQ("resolved", EvalJs(chrome_test_utils::GetActiveWebContents(this),
                                  "StartFetchFromServiceWorkerResolve()"));
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.BackgroundFetch.FetchStatus",
+        3 /* kAllowedByCommandLineOrPolicy */, 1);
   } else {
     // By default or if policy is set to true, the restriction is active.
     ASSERT_EQ("NotAllowedError",
               EvalJs(chrome_test_utils::GetActiveWebContents(this),
                      "StartFetchFromServiceWorkerResolve()"));
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histogram_tester.ExpectUniqueSample(
+        "ServiceWorker.BackgroundFetch.FetchStatus", 1 /* kDisallowed */, 1);
   }
 }
 

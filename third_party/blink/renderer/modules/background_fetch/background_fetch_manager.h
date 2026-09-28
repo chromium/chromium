@@ -56,8 +56,24 @@ class MODULES_EXPORT BackgroundFetchManager final
   // ExecutionContextLifecycleObserver interface
   void ContextDestroyed() override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ServiceWorkerBackgroundFetchStatus)
+  enum class ServiceWorkerFetchStatus {
+    kNotServiceWorker = 0,
+    kDisallowed = 1,
+    kAllowedByFeatureFlag = 2,
+    kAllowedByCommandLineOrPolicy = 3,
+    kAllowedByOriginAllowlist = 4,
+    kMaxValue = kAllowedByOriginAllowlist,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:ServiceWorkerBackgroundFetchStatus)
+
   static HashSet<scoped_refptr<const SecurityOrigin>> ParseAllowlist(
       const std::string& allowlist_str);
+
+  static ServiceWorkerFetchStatus GetServiceWorkerFetchStatus(
+      ExecutionContext* execution_context);
 
  private:
   friend class BackgroundFetchManagerTest;

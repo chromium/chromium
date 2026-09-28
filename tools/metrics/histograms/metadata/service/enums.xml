@@ -162,6 +162,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/common/service_worker/race_network_request_url_loader_client.cc:DataTransferCompletionResult) -->
 
+<!-- LINT.IfChange(ServiceWorkerBackgroundFetchStatus) -->
+
+<enum name="ServiceWorkerBackgroundFetchStatus">
+  <int value="0" label="NotServiceWorker"/>
+  <int value="1" label="Disallowed"/>
+  <int value="2" label="AllowedByFeatureFlag"/>
+  <int value="3" label="AllowedByCommandLineOrPolicy"/>
+  <int value="4" label="AllowedByOriginAllowlist"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h:ServiceWorkerBackgroundFetchStatus) -->
+
 <enum name="ServiceWorkerDatabaseStatus">
   <int value="0" label="OK"/>
   <int value="1" label="Not Found Error"/>
