@@ -6,6 +6,8 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -15,6 +17,10 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +46,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.ArrayList;
@@ -1125,5 +1132,232 @@ public class BottomSheetListViewBaseUnitTest {
         assertFalse(
                 "The destroyed sheet should no longer listen to adapter changes",
                 adapter.hasObservers());
+    }
+
+    private static class TestItemDivider extends ItemDividerBase {
+        private final Set<Integer> mSkippedItemTypes;
+
+        TestItemDivider(Context context, Set<Integer> skippedItemTypes) {
+            super(context);
+            mSkippedItemTypes = skippedItemTypes;
+        }
+
+        @Override
+        protected boolean shouldSkipItemType(int type) {
+            return mSkippedItemTypes.contains(type);
+        }
+    }
+
+    private static RecyclerView createItemDividerRecyclerView(
+            Context context, RecyclerView.Adapter adapter, List<View> childViews) {
+        return new RecyclerView(context) {
+            @Override
+            public @Nullable Adapter getAdapter() {
+                return adapter;
+            }
+
+            @Override
+            public @Nullable View getChildAt(int index) {
+                // Like the real RecyclerView, return null for positions that have no child view.
+                return index >= 0 && index < childViews.size() ? childViews.get(index) : null;
+            }
+        };
+    }
+
+    private static void assertItemHasBackgroundDrawable(Context context, View view) {
+        assertNotNull(
+                "Decorated view should have a background drawable applied", view.getBackground());
+        assertEquals(
+                "Decorated view should have correct background tint",
+                ColorStateList.valueOf(SemanticColorUtils.getColorSurfaceContainerLow(context)),
+                view.getBackgroundTintList());
+    }
+
+    /**
+     * Corner radii of an item background, in the order top-left, top-right, bottom-right,
+     * bottom-left.
+     */
+    private static float[] getItemCornerRadii(View view) {
+        RippleDrawable ripple = (RippleDrawable) view.getBackground();
+        GradientDrawable shape = (GradientDrawable) ripple.getDrawable(0);
+        float[] radii = getPerCornerRadii(shape);
+        if (radii == null) {
+            // The shape uses one radius for every corner.
+            float radius = shape.getCornerRadius();
+            return new float[] {radius, radius, radius, radius};
+        }
+        // The radii come as (x, y) pairs per corner; the x value is enough here.
+        return new float[] {radii[0], radii[2], radii[4], radii[6]};
+    }
+
+    /** Returns the per-corner radii of a shape, or null if the shape uses one radius. */
+    private static @Nullable float[] getPerCornerRadii(GradientDrawable shape) {
+        try {
+            return shape.getCornerRadii();
+        } catch (NullPointerException e) {
+            // Some Android versions throw here instead of returning null when the shape uses one
+            // radius for every corner.
+            return null;
+        }
+    }
+
+    private static void assertTopCornersRounderThanBottom(String message, View view) {
+        float[] corners = getItemCornerRadii(view);
+        assertTrue(message + " (left side)", corners[0] > corners[3]);
+        assertTrue(message + " (right side)", corners[1] > corners[2]);
+    }
+
+    private static void assertBottomCornersRounderThanTop(String message, View view) {
+        float[] corners = getItemCornerRadii(view);
+        assertTrue(message + " (left side)", corners[3] > corners[0]);
+        assertTrue(message + " (right side)", corners[2] > corners[1]);
+    }
+
+    @Test
+    public void testItemDivider_SingleItem_RoundsAllCorners() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        View view0 = new View(activity);
+        RecyclerView.Adapter adapter = createSheetAdapter(List.of(0));
+        RecyclerView recyclerView =
+                createItemDividerRecyclerView(activity, adapter, List.of(view0));
+
+        TestItemDivider divider = new TestItemDivider(activity, Collections.emptySet());
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertItemHasBackgroundDrawable(activity, view0);
+        float[] corners = getItemCornerRadii(view0);
+        assertTrue("A single item should have rounded corners", corners[0] > 0);
+        for (float corner : corners) {
+            assertEquals(
+                    "A single item should have all four corners equally round",
+                    corners[0],
+                    corner,
+                    0.001f);
+        }
+    }
+
+    @Test
+    public void testItemDivider_TwoItems_RoundsTopAndBottomSeparately() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        View view0 = new View(activity);
+        View view1 = new View(activity);
+        RecyclerView.Adapter adapter = createSheetAdapter(List.of(0, 0));
+        RecyclerView recyclerView =
+                createItemDividerRecyclerView(activity, adapter, List.of(view0, view1));
+
+        TestItemDivider divider = new TestItemDivider(activity, Collections.emptySet());
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertItemHasBackgroundDrawable(activity, view0);
+        assertItemHasBackgroundDrawable(activity, view1);
+        assertTopCornersRounderThanBottom(
+                "The first item should be rounder at the top than at the bottom", view0);
+        assertBottomCornersRounderThanTop(
+                "The last item should be rounder at the bottom than at the top", view1);
+    }
+
+    @Test
+    public void testItemDivider_MultipleItems_RoundsTopMiddleAndBottom() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        View view0 = new View(activity);
+        View view1 = new View(activity);
+        View view2 = new View(activity);
+        View view3 = new View(activity);
+        RecyclerView.Adapter adapter = createSheetAdapter(List.of(0, 0, 0, 0));
+        RecyclerView recyclerView =
+                createItemDividerRecyclerView(
+                        activity, adapter, List.of(view0, view1, view2, view3));
+
+        TestItemDivider divider = new TestItemDivider(activity, Collections.emptySet());
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertItemHasBackgroundDrawable(activity, view0);
+        assertItemHasBackgroundDrawable(activity, view1);
+        assertItemHasBackgroundDrawable(activity, view2);
+        assertItemHasBackgroundDrawable(activity, view3);
+        assertTopCornersRounderThanBottom(
+                "The first item should be rounder at the top than at the bottom", view0);
+        assertBottomCornersRounderThanTop(
+                "The last item should be rounder at the bottom than at the top", view3);
+
+        float firstItemTopCorner = getItemCornerRadii(view0)[0];
+        for (View middleItem : List.of(view1, view2)) {
+            float[] corners = getItemCornerRadii(middleItem);
+            assertEquals(
+                    "A middle item should be as round at the top as at the bottom",
+                    corners[0],
+                    corners[3],
+                    0.001f);
+            assertTrue(
+                    "A middle item should be less round than the top of the first item",
+                    corners[0] < firstItemTopCorner);
+        }
+    }
+
+    @Test
+    public void testItemDivider_SkipsHeadersAndFooters() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        final int headerType = 1;
+        final int bodyType = 0;
+        final int footerType = 2;
+        List<View> views = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            views.add(new View(activity));
+        }
+        // Two headers, two body items, then two footers.
+        RecyclerView.Adapter adapter =
+                createSheetAdapter(
+                        List.of(
+                                headerType,
+                                headerType,
+                                bodyType,
+                                bodyType,
+                                footerType,
+                                footerType));
+        RecyclerView recyclerView = createItemDividerRecyclerView(activity, adapter, views);
+
+        TestItemDivider divider = new TestItemDivider(activity, Set.of(headerType, footerType));
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertNull("The first header should remain undecorated", views.get(0).getBackground());
+        assertNull("The second header should remain undecorated", views.get(1).getBackground());
+        assertItemHasBackgroundDrawable(activity, views.get(2));
+        assertItemHasBackgroundDrawable(activity, views.get(3));
+        assertTopCornersRounderThanBottom(
+                "The first body item should be rounder at the top than at the bottom",
+                views.get(2));
+        assertBottomCornersRounderThanTop(
+                "The last body item should be rounder at the bottom than at the top", views.get(3));
+        assertNull("The first footer should remain undecorated", views.get(4).getBackground());
+        assertNull("The second footer should remain undecorated", views.get(5).getBackground());
+    }
+
+    @Test
+    public void testItemDivider_WhenAllItemsSkipped_DoesNotAddDecorations() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        View view0 = new View(activity);
+        View view1 = new View(activity);
+        View view2 = new View(activity);
+        // All positions are skipped (types 1 and 2).
+        RecyclerView.Adapter adapter = createSheetAdapter(List.of(1, 1, 2));
+        RecyclerView recyclerView =
+                createItemDividerRecyclerView(activity, adapter, List.of(view0, view1, view2));
+
+        TestItemDivider divider = new TestItemDivider(activity, Set.of(1, 2));
+        divider.onDraw(new Canvas(), recyclerView, new RecyclerView.State());
+
+        assertNull("Skipped item should remain undecorated", view0.getBackground());
+        assertNull("Skipped item should remain undecorated", view1.getBackground());
+        assertNull("Skipped item should remain undecorated", view2.getBackground());
     }
 }
