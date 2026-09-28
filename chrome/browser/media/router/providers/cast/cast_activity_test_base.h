@@ -38,7 +38,7 @@ class MockCastSessionClient : public CastSessionClient {
                         content::FrameTreeNodeId tab_id);
   ~MockCastSessionClient() override;
 
-  static const std::vector<MockCastSessionClient*>& instances() {
+  static const std::vector<raw_ptr<MockCastSessionClient>>& instances() {
     return instances_;
   }
 
@@ -68,7 +68,7 @@ class MockCastSessionClient : public CastSessionClient {
                void(blink::mojom::PresentationConnectionCloseReason reason));
 
  private:
-  static std::vector<MockCastSessionClient*> instances_;
+  static std::vector<raw_ptr<MockCastSessionClient>> instances_;
 };
 
 class MockMediaRouterDebugger : public mojom::Debugger {

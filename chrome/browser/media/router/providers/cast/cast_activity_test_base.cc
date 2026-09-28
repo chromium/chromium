@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -46,7 +47,7 @@ MockCastSessionClient::~MockCastSessionClient() {
   std::erase(instances_, this);
 }
 
-std::vector<MockCastSessionClient*> MockCastSessionClient::instances_;
+std::vector<raw_ptr<MockCastSessionClient>> MockCastSessionClient::instances_;
 
 MockCastActivityManager::MockCastActivityManager() = default;
 MockCastActivityManager::~MockCastActivityManager() = default;
@@ -109,7 +110,8 @@ void CastActivityTestBase::RunUntilIdle() {
   testing::Mock::VerifyAndClearExpectations(&socket_service_);
   testing::Mock::VerifyAndClearExpectations(&message_handler_);
   testing::Mock::VerifyAndClearExpectations(&manager_);
-  for (const auto* client : MockCastSessionClient::instances()) {
+  for (const MockCastSessionClient* client :
+       MockCastSessionClient::instances()) {
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }

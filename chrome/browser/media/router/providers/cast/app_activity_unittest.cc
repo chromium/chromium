@@ -204,7 +204,7 @@ TEST_F(AppActivityTest, HandleLeaveSession) {
   AddMockClient("theClientId");
   AddMockClient("leaving");
   AddMockClient("keeping");
-  for (auto* client : MockCastSessionClient::instances()) {
+  for (MockCastSessionClient* client : MockCastSessionClient::instances()) {
     const bool is_leaving = client->client_id() == "leaving";
     EXPECT_CALL(*client,
                 CloseConnection(PresentationConnectionCloseReason::CLOSED))
@@ -274,7 +274,7 @@ TEST_F(AppActivityTest, SetOrUpdateSession) {
 
   ASSERT_EQ(std::nullopt, activity_->session_id());
   route().set_description("");
-  for (auto* client : MockCastSessionClient::instances()) {
+  for (MockCastSessionClient* client : MockCastSessionClient::instances()) {
     EXPECT_CALL(*client, SendMessageToClient).Times(0);
   }
   ASSERT_EQ(session_->GetRouteDescription(), "theStatusText");
@@ -283,7 +283,7 @@ TEST_F(AppActivityTest, SetOrUpdateSession) {
   EXPECT_EQ("theSessionId", activity_->session_id());
 
   route().set_description("");
-  for (auto* client : MockCastSessionClient::instances()) {
+  for (MockCastSessionClient* client : MockCastSessionClient::instances()) {
     // TODO(crbug.com/1291744): Check argument of SendMessageToClient.
     EXPECT_CALL(*client, SendMessageToClient).Times(1);
   }
@@ -297,7 +297,7 @@ TEST_F(AppActivityTest, ClosePresentationConnections) {
 
   AddMockClient("theClientId1");
   AddMockClient("theClientId2");
-  for (auto* client : MockCastSessionClient::instances()) {
+  for (MockCastSessionClient* client : MockCastSessionClient::instances()) {
     EXPECT_CALL(*client, CloseConnection(reason));
   }
   activity_->ClosePresentationConnections(reason);
@@ -307,7 +307,7 @@ TEST_F(AppActivityTest, TerminatePresentationConnections) {
   AddMockClient("theClientId1");
   AddMockClient("theClientId2");
   ASSERT_FALSE(MockCastSessionClient::instances().empty());
-  for (auto* client : MockCastSessionClient::instances()) {
+  for (MockCastSessionClient* client : MockCastSessionClient::instances()) {
     EXPECT_CALL(*client, TerminateConnection());
   }
   activity_->TerminatePresentationConnections();
