@@ -708,6 +708,68 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EnsureDroppedTouchEventsAreAcked) {
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 2lu);
 }
 
+// Regression test for crbug.com/515367462. A platform gesture can turn the
+// ACTION_POINTER_DOWN of a third finger into an ACTION_CANCEL that carries all
+// three pointers, so the TouchCancel reports more cancelled points than were
+// routed as pressed. The cancel must still end the sequence, and the next
+// sequence must keep its target until its TouchEnd.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       TouchCancelWithUnroutedPointsEndsSequence) {
+  view_root_->SetHittestResult(view_root_.get(), false);
+
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  // Second finger down.
+  touch_event.touches_length = 2;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateStationary;
+  touch_event.touches[1].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 2;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  // The third finger arrives as a cancel of all three pointers.
+  blink::WebTouchEvent touch_cancel_event(
+      blink::WebInputEvent::Type::kTouchCancel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_cancel_event.touches_length = 3;
+  for (unsigned i = 0; i < touch_cancel_event.touches_length; ++i) {
+    touch_cancel_event.touches[i].state =
+        blink::WebTouchPoint::State::kStateCancelled;
+  }
+  touch_cancel_event.unique_touch_event_id = 3;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_cancel_event,
+                            ui::LatencyInfo());
+  EXPECT_EQ(nullptr, touch_target());
+
+  // A new single-finger sequence keeps its target until the TouchEnd.
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 4;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchMove);
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateMoved;
+  touch_event.unique_touch_event_id = 5;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  touch_event.unique_touch_event_id = 6;
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(nullptr, touch_target());
+}
+
 // Tests that FindViewFromFrameSinkId correctly verifies the descendant
 // relationship when an expected ancestor is provided. It should return
 // nullptr if the found view is not a descendant of the expected ancestor.

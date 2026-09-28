@@ -964,9 +964,17 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
   if ((touch_event.GetType() == blink::WebInputEvent::Type::kTouchEnd ||
        touch_event.GetType() == blink::WebInputEvent::Type::kTouchCancel) &&
       active_touches_) {
-    active_touches_ -= CountChangedTouchPoints(touch_event);
+    // A TouchCancel can report more cancelled points than were routed as
+    // pressed, e.g. when the platform turns the ACTION_POINTER_DOWN of a new
+    // finger into an ACTION_CANCEL that carries that finger too. Clamp at 0 so
+    // the sequence still ends and |touch_target_| is released below. A
+    // negative count would keep a stale target alive and make the next
+    // sequence drop its target right after its TouchStart
+    // (crbug.com/515367462).
+    active_touches_ =
+        std::max(0, active_touches_ -
+                        static_cast<int>(CountChangedTouchPoints(touch_event)));
   }
-  DCHECK_GE(active_touches_, 0);
 
   // Debugging for crbug.com/814674.
   if (touch_target_ && !IsViewInMap(touch_target_)) {
