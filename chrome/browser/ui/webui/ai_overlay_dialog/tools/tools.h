@@ -22,7 +22,6 @@ class BrowserWindowInterface;
 namespace ttc {
 
 class PageContextMonitor;
-class ToolController;
 
 class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
                        public ai_overlay_dialog::mojom::AiOverlayToolRegistry {
@@ -117,7 +116,6 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   content::WeakDocumentPtr annotation_document_;
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
   base::CancelableTaskTracker task_tracker_;
-  std::unique_ptr<ToolController> tool_controller_;
   base::WeakPtrFactory<AiOverlayTools> weak_factory_{this};
 };
 

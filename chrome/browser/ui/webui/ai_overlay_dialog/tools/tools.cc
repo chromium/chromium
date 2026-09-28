@@ -33,11 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ttc/core/session_controller.h"
-#include "chrome/browser/ttc/core/tool_controller.h"
-#include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/generated_tool_definitions.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -134,16 +130,7 @@ AiOverlayTools::AiOverlayTools(
     PageContextMonitor* page_context_monitor)
     : receiver_(this, std::move(receiver)),
       browser_(browser),
-      page_context_monitor_(page_context_monitor) {
-  if (features::kAiOverlayDialogUsesActor.Get()) {
-    // The actor backed tools are driven by TTC. Without it, fall back to the
-    // non-actor implementations below.
-    if (TtcKeyedService* service =
-            TtcKeyedService::Get(browser_->GetProfile())) {
-      tool_controller_ = std::make_unique<ToolController>(*service);
-    }
-  }
-}
+      page_context_monitor_(page_context_monitor) {}
 
 AiOverlayTools::~AiOverlayTools() = default;
 
@@ -160,27 +147,6 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
   GURL url(url_string);
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     std::move(callback).Run(base::unexpected("Invalid URL"));
-    return;
-  }
-
-  if (tool_controller_) {
-    ToolRequest request;
-    request.name = "open_url";
-    request.arguments.Set("url", url_string);
-    request.arguments.Set("new_tab", new_tab);
-    tool_controller_->ProcessToolCall(
-        std::move(request),
-        base::BindOnce(
-            [](OpenUrlCallback callback, ToolResponse response) {
-              if (response.Ok()) {
-                std::move(callback).Run(std::monostate());
-              } else {
-                std::move(callback).Run(
-                    base::unexpected(response.error().message.value_or(
-                        "Tool execution failed")));
-              }
-            },
-            std::move(callback)));
     return;
   }
 

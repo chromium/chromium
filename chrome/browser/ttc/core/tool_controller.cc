@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/common/actor/action_result.h"
@@ -33,7 +34,8 @@
 
 namespace ttc {
 
-ToolController::ToolController(TtcKeyedService& service) : service_(service) {}
+ToolController::ToolController(SessionControllerImpl& session_controller)
+    : session_controller_(session_controller) {}
 
 ToolController::~ToolController() {
   if (!task_id_.is_null()) {
@@ -186,7 +188,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
 }
 
 Profile* ToolController::GetProfile() {
-  return service_->profile();
+  return session_controller_->GetProfile();
 }
 
 void ToolController::EnsureTaskCreated(
@@ -198,11 +200,16 @@ void ToolController::EnsureTaskCreated(
     return;
   }
 
+  // The session this object belongs to is owned by the TtcKeyedService, so it
+  // is guaranteed to exist.
+  TtcKeyedService* ttc_service = TtcKeyedService::Get(GetProfile());
+  CHECK(ttc_service);
+
   // TODO(b/544821996): Provide an ActorTaskDelegate.
   task_id_ = actor_service->CreateTaskWithOptions(
       actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc, "ttc"),
       actor::GetNullEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, &service_->actor_ui_state_manager());
+      /*delegate=*/nullptr, &ttc_service->actor_ui_state_manager());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

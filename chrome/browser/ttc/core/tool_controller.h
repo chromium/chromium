@@ -23,13 +23,11 @@ class Profile;
 
 namespace ttc {
 
-class TtcKeyedService;
+class SessionControllerImpl;
 
 class ToolController {
  public:
-  // TODO(b/563468348): Change this to take a SessionController& instead once
-  // we remove the AiOverlayTools codepath.
-  explicit ToolController(TtcKeyedService& service);
+  explicit ToolController(SessionControllerImpl& session_controller);
   ~ToolController();
 
   void ProcessToolCall(const ToolRequest& tool_request,
@@ -69,8 +67,8 @@ class ToolController {
       actor::TabObservationStrategy strategy);
 #endif
 
-  // Indirectly owns this object (via SessionController).
-  const raw_ref<TtcKeyedService> service_;
+  // Owns this object.
+  const raw_ref<SessionControllerImpl> session_controller_;
 
   actor::TaskId task_id_;
   base::WeakPtrFactory<ToolController> weak_factory_{this};

@@ -15,7 +15,6 @@ source_set("core") {
     "session_controller.h",
     "session_view.h",
     "states.h",
-    "tool_controller.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service_factory.h",
     "ttc_page_context_monitor.h",
@@ -23,7 +22,6 @@ source_set("core") {
   public_deps = [
     ":features",
     "//base",
-    "//chrome/browser/actor",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ttc/app:public",
@@ -33,6 +31,7 @@ source_set("core") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/content",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 }
@@ -45,13 +44,17 @@ source_set("impl") {
     "session_controller_impl.h",
     "session_view_delegate.h",
     "tool_controller.cc",
+    "tool_controller.h",
     "ttc_actor_ui_state_manager.cc",
     "ttc_actor_ui_state_manager.h",
     "ttc_keyed_service.cc",
     "ttc_keyed_service_factory.cc",
     "ttc_page_context_monitor.cc",
   ]
-  public_deps = [ ":core" ]
+  public_deps = [
+    ":core",
+    "//chrome/browser/actor",
+  ]
   deps = [
     "//base",
     "//chrome/browser/actor/ui",
