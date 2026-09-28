@@ -28,6 +28,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
 
@@ -199,6 +200,9 @@ class Observer : public BrowserCollectionObserver, public AvatarMenuObserver {
       gfx::Image itemIcon =
           profiles::GetAvatarIconForNSMenu(itemData.profile_path);
       item.image = itemIcon.ToNSImage();
+      if (@available(macOS 27, *)) {
+        item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+      }
       item.state =
           itemData.active ? NSControlStateValueOn : NSControlStateValueOff;
     }

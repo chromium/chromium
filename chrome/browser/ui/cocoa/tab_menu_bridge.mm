@@ -22,6 +22,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
@@ -62,9 +63,11 @@ void UpdateItemForWebContents(NSMenuItem* item,
         gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()));
   }
 
-
   item.image = NSImageFromImageSkia(
       tab_ui_helper->GetFavicon().Rasterize(&web_contents->GetColorProvider()));
+  if (@available(macOS 27, *)) {
+    item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
 }
 
 void RemoveMenuItems(NSArray* menu_items) {

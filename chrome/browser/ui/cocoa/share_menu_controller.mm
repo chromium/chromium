@@ -27,6 +27,7 @@
 #include "net/base/apple/url_conversions.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/base_window.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -150,6 +151,9 @@ bool CanShare() {
       keyEquivalent:@""];
   moreItem.target = self;
   moreItem.image = [self moreImage];
+  if (@available(macOS 27, *)) {
+    moreItem.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
   [menu addItem:moreItem];
 }
 
@@ -321,6 +325,9 @@ bool CanShare() {
                                          keyEquivalent:@""];
   item.target = self;
   item.image = service.image;
+  if (@available(macOS 27, *)) {
+    item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
   item.representedObject = service;
   return item;
 }

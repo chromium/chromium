@@ -39,6 +39,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -308,27 +309,29 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
       [[NSMenuItem alloc] initWithTitle:base::SysUTF16ToNSString(display_title)
                                  action:nil
                           keyEquivalent:@""];
-  [item->menu_item setTarget:controller_];
-  [item->menu_item setAction:@selector(openHistoryMenuItem:)];
-  [item->menu_item setTag:tag];
+  NSMenuItem* menu_item = item->menu_item;
+  menu_item.target = controller_;
+  menu_item.action = @selector(openHistoryMenuItem:);
+  menu_item.tag = tag;
   if (item->icon) {
-    [item->menu_item setImage:item->icon];
+    menu_item.image = item->icon;
   } else if (item->tabs.empty()) {
-    [item->menu_item setImage:default_favicon_];
+    menu_item.image = default_favicon_;
   }
-
+  if (@available(macOS 27, *)) {
+    menu_item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
 
   // Add a tooltip if the history item is for a single tab.
   if (item->tabs.empty()) {
     NSString* tooltip = [NSString
         stringWithFormat:@"%@\n%@", base::SysUTF16ToNSString(full_title),
                          base::SysUTF8ToNSString(url)];
-    [item->menu_item setToolTip:tooltip];
+    menu_item.toolTip = tooltip;
   }
 
-  [menu insertItem:item->menu_item atIndex:index];
+  [menu insertItem:menu_item atIndex:index];
 
-  NSMenuItem* menu_item = item->menu_item;
   auto it = menu_item_map_.emplace(menu_item, std::move(item));
   CHECK(it.second);
   return menu_item;
@@ -415,7 +418,10 @@ bool HistoryMenuBridge::AddGroupEntryToMenu(sessions::tab_restore::Group* group,
 
   NSImage* image = NSImageFromImageSkia(group_icon);
   item->icon = image;
-  [item->menu_item setImage:item->icon];
+  item->menu_item.image = item->icon;
+  if (@available(macOS 27, *)) {
+    item->menu_item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
 
   // Create the menu item parent.
   NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
@@ -658,7 +664,11 @@ void HistoryMenuBridge::GotFaviconData(
   NSImage* image = image_result.image.AsNSImage();
   if (image) {
     item->icon = image;
-    [item->menu_item setImage:item->icon];
+    item->menu_item.image = item->icon;
+    if (@available(macOS 27, *)) {
+      item->menu_item.preferredImageVisibility =
+          NSMenuItemImageVisibilityVisible;
+    }
   }
 }
 

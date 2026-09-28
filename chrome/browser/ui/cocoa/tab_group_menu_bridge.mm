@@ -28,6 +28,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
@@ -145,6 +146,9 @@ void TabGroupMenuBridge::BuildMenu() {
                                           : kTabGroupOldIcon,
         gfx::kFaviconSize, color_provider.GetColor(color_id));
     item.image = NSImageFromImageSkia(group_icon);
+    if (@available(macOS 27, *)) {
+      item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+    }
 
     NSMenu* submenu = [[NSMenu alloc] init];
     // Add static menu items for submenu.
@@ -187,6 +191,10 @@ void TabGroupMenuBridge::BuildMenu() {
           GetTabGroupBookmarkColorId(group->color()));
       tab_menu_item.image =
           NSImageFromImageSkia(image.Rasterize(&color_provider));
+      if (@available(macOS 27, *)) {
+        tab_menu_item.preferredImageVisibility =
+            NSMenuItemImageVisibilityVisible;
+      }
 
       if (favicon_service_) {
         favicon_service_->GetFaviconImageForPageURL(
@@ -216,6 +224,9 @@ void TabGroupMenuBridge::OnFaviconReady(
     const favicon_base::FaviconImageResult& result) {
   if (!result.image.IsEmpty()) {
     menu_item.image = result.image.ToNSImage();
+    if (@available(macOS 27, *)) {
+      menu_item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+    }
   }
 }
 

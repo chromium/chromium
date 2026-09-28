@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
+#import "ui/base/cocoa/macos27_sdk.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
@@ -119,6 +120,9 @@ void SetMenuItemIcon(NSMenuItem* menu_item,
   }
 
   menu_item.image = menu_item_image;
+  if (@available(macOS 27, *)) {
+    menu_item.preferredImageVisibility = NSMenuItemImageVisibilityVisible;
+  }
 }
 
 NSImage* CreatePaddedImage(CGFloat width, NSImage* image) {

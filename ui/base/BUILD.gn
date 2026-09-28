@@ -323,6 +323,7 @@ component("base") {
       "cocoa/drag_permission.mm",
       "cocoa/find_pasteboard.h",
       "cocoa/find_pasteboard.mm",
+      "cocoa/macos27_sdk.h",
       "cocoa/menu_utils.h",
       "cocoa/menu_utils.mm",
       "cocoa/nsmenu_additions.h",
