@@ -28,12 +28,10 @@ crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
 # There is no TranslateKit component for Win ARM64.
 crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
 
-# Skip all WPTs on Windows ARM64 because of timeouts and deadlocks.
-crbug.com/543441359 [ win arm64 ] external/wpt/ai/* [ Skip ]
+# DirectML / Direct3D 12 multimodal vision fails on non-NVIDIA Windows GPUs.
+# Win x64 CI is pinned to NVIDIA in mixins.star, whereas Win ARM64 Swarming
+# bots only have integrated Qualcomm Adreno GPUs (qcom:0c36) and must skip.
+crbug.com/547946848 [ win arm64 ] external/wpt/ai/language-model/prompt/multimodal/* [ Skip ]
 
 # Gemma 4 hits early EOS on natural story termination under exact-length regex constraint.
 crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure ]
-
-# DirectML on AMD GPUs produces non-contextual text for multimodal image prompts.
-crbug.com/547946848 external/wpt/ai/language-model/prompt/multimodal/image/blob.tentative.https.window.html [ Failure Pass ]
-crbug.com/547946848 external/wpt/ai/language-model/prompt/multimodal/image/offscreen-canvas.tentative.https.window.html [ Failure Pass ]
