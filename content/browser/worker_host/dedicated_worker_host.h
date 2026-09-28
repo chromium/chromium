@@ -243,10 +243,6 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     return worker_client_security_state_->cross_origin_embedder_policy;
   }
 
-  ServiceWorkerMainResourceHandle* service_worker_handle() {
-    return service_worker_handle_.get();
-  }
-
   bool file_url_support() const { return file_url_support_; }
 
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)

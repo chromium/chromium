@@ -386,8 +386,7 @@ void DedicatedWorkerHost::StartScriptLoad(
     parent_service_worker_client =
         creator_render_frame_host->GetLastCommittedServiceWorkerClient();
   } else {
-    parent_service_worker_client =
-        creator_worker->service_worker_handle()->service_worker_client();
+    parent_service_worker_client = creator_worker->GetServiceWorkerClient();
   }
   std::string fetch_event_client_id;
   if (parent_service_worker_client) {
@@ -612,7 +611,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
-  if (service_worker_handle_->service_worker_client()) {
+  if (GetServiceWorkerClient()) {
     // TODO(crbug.com/40153087): Propagate dedicated worker ukm::SourceId
     // here.
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -643,8 +642,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       BindAndPassRemoteForBackForwardCacheControllerHost(),
       policy_container_host->CreatePolicyContainerForBlink(),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer));
-  if (service_worker_handle_->service_worker_client()) {
-    service_worker_handle_->service_worker_client()->SetContainerReady();
+  if (auto service_worker_client = GetServiceWorkerClient()) {
+    service_worker_client->SetContainerReady();
   }
 }
 
