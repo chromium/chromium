@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cue_infobar_delegate.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service_factory.h"
 #import "ios/chrome/browser/intelligence/contextual_cueing/features.h"
@@ -171,6 +172,14 @@ void ContextualCueingTabHelper::RecordCueClicked() {
   }
 
   DismissFeatureEngagementPromo();
+}
+
+bool ContextualCueingTabHelper::ShowContextualCueInfobar(
+    id<GeminiCommands> gemini_handler) {
+  if (!web_state_) {
+    return false;
+  }
+  return ContextualCueInfobarDelegate::Create(web_state_, gemini_handler);
 }
 
 #pragma mark - web::WebStateObserver
@@ -593,6 +602,9 @@ void ContextualCueingTabHelper::NotifyContextualCueReceived(
 
 void ContextualCueingTabHelper::InvalidateCue() {
   active_category_type_.reset();
+  if (web_state_) {
+    ContextualCueInfobarDelegate::Remove(web_state_);
+  }
   if (!cue_.has_value()) {
     return;
   }

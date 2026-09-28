@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_CONTEXTUAL_CUEING_CONTEXTUAL_CUEING_TAB_HELPER_H_
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <optional>
 #import <string>
@@ -27,6 +29,7 @@
 #import "url/gurl.h"
 
 class ProfileIOS;
+@protocol GeminiCommands;
 
 namespace feature_engagement {
 class Tracker;
@@ -118,6 +121,10 @@ class ContextualCueingTabHelper
   std::optional<page_content_annotations::CategoryType> GetActiveCategoryType()
       const;
 
+  // Shows the contextual cue infobar banner for the current cue. Returns true
+  // if presentation succeeded or was queued.
+  bool ShowContextualCueInfobar(id<GeminiCommands> gemini_handler = nil);
+
   // Records that a contextual cue was shown to the user. Must only be called
   // once per cue presentation. Returns true if the cue is allowed to be shown.
   // Returns false if the Feature Engagement Tracker rejected the promo, in
@@ -146,6 +153,7 @@ class ContextualCueingTabHelper
  private:
   friend class web::WebStateUserData<ContextualCueingTabHelper>;
   friend class ContextualCueingTabHelperTest;
+  friend class ContextualCueInfobarDelegateTest;
 
   explicit ContextualCueingTabHelper(web::WebState* web_state);
 

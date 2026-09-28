@@ -13,6 +13,8 @@ source_set("features") {
 
 source_set("contextual_cueing") {
   sources = [
+    "contextual_cue_infobar_delegate.h",
+    "contextual_cue_infobar_delegate.mm",
     "contextual_cueing_cap_tracker_service.h",
     "contextual_cueing_cap_tracker_service.mm",
     "contextual_cueing_cap_tracker_service_factory.h",
@@ -24,11 +26,22 @@ source_set("contextual_cueing") {
   ]
   deps = [
     "//components/feature_engagement/public",
+    "//components/infobars/core",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/prefs",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+    "//ui/gfx",
   ]
   public_deps = [
     ":features",
@@ -61,6 +74,7 @@ source_set("contextual_cueing") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "contextual_cue_infobar_delegate_unittest.mm",
     "contextual_cueing_cap_tracker_service_unittest.mm",
     "contextual_cueing_evaluator_unittest.mm",
     "contextual_cueing_tab_helper_unittest.mm",
@@ -73,6 +87,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//components/feature_engagement/test:test_support",
+    "//components/infobars/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
@@ -80,8 +95,11 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:test_support",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/on_device_category_classifier",
     "//ios/chrome/browser/intelligence/page_classification",
@@ -89,12 +107,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/optimization_guide/model:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 }
