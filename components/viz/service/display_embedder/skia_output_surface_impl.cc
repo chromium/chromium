@@ -1032,10 +1032,12 @@ void SkiaOutputSurfaceImpl::CopyOutput(
   }
 
   if (request->has_blit_request()) {
-    const auto& sync_token = request->blit_request().sync_token();
-    if (sync_token.HasData()) {
-      resource_sync_tokens_.push_back(sync_token);
-    }
+    const auto& blit_request = request->blit_request();
+    std::vector<gpu::SyncToken> sync_tokens =
+        blit_request.shared_image()->GetSyncTokensForDisplayCompositor(
+            blit_request.sync_token());
+    resource_sync_tokens_.insert(resource_sync_tokens_.end(),
+                                 sync_tokens.begin(), sync_tokens.end());
   }
 
   auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
