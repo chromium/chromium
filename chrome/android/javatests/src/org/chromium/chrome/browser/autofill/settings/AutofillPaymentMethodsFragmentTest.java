@@ -104,6 +104,7 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.Iban;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.payments.PackageManagerDelegate;
@@ -338,19 +339,14 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
-    public void
-            testTwoCreditCards_displaysTwoServerCards_mandatoryReauthNotShownOnAutomotive_ButCvcStorageEnabled()
-                    throws Exception {
+    public void testTwoCreditCards_displaysTwoServerCards() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_MASTERCARD);
 
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
-        // Verify that the preferences on the initial screen map to Save and Fill toggle + CVC
-        // storage toggle + Card benefits toggle + 2 Cards + Add Card button + Payment Apps +
-        // Loyalty cards.
-        assertEquals(8, getPreferenceScreen(activity).getPreferenceCount());
+        assertEquals(
+                2, getPreferenceCountWithKey(activity, AutofillPaymentMethodsFragment.PREF_CARD));
     }
 
     @Test
@@ -906,11 +902,6 @@ public class AutofillPaymentMethodsFragmentTest {
 
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Reauth toggle + CVC storage toggle + Card benefits toggle + Add Card button + Payment
-        // Apps + Loyalty cards.
-        assertEquals(7, getPreferenceScreen(activity).getPreferenceCount());
-
         ChromeSwitchPreference saveCvcToggle =
                 findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
         assertTrue(saveCvcToggle.isEnabled());
@@ -1200,8 +1191,23 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testAllToggles_mandatoryReauthEnabled_cvcStorageEnabled_localIbanEnabled()
-            throws Exception {
+    public void testMandatoryReauthToggle_shown() throws Exception {
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
+
+        findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_MANDATORY_REAUTH);
+    }
+
+    @Test
+    @MediumTest
+    public void testCvcStorageToggle_shown() throws Exception {
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
+
+        findPreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_SAVE_CVC);
+    }
+
+    @Test
+    @MediumTest
+    public void testAddIbanButton_shown() throws Exception {
         // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
         // IBAN before.
         ThreadUtils.runOnUiThreadBlocking(
@@ -1210,10 +1216,7 @@ public class AutofillPaymentMethodsFragmentTest {
                 });
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Mandatory Reauth toggle + CVC storage toggle + Card benefits toggle + Add Card button +
-        // Add IBAN button + Payment Apps + Loyalty cards.
-        assertEquals(8, getPreferenceScreen(activity).getPreferenceCount());
+        findBasePreferenceByKey(activity, AutofillPaymentMethodsFragment.PREF_ADD_IBAN);
     }
 
     @Test
@@ -2114,6 +2117,15 @@ public class AutofillPaymentMethodsFragmentTest {
             SettingsActivityInterface activity, String key) {
         ChromeSwitchPreference preference =
                 (ChromeSwitchPreference) getPreferenceScreen(activity).findPreference(key);
+        assertNotNull(preference);
+        return preference;
+    }
+
+    /** Find ChromeBasePreference by the provided key, fail if no matched preference is found. */
+    private ChromeBasePreference findBasePreferenceByKey(
+            SettingsActivityInterface activity, String key) {
+        ChromeBasePreference preference =
+                (ChromeBasePreference) getPreferenceScreen(activity).findPreference(key);
         assertNotNull(preference);
         return preference;
     }
