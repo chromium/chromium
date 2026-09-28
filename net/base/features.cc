@@ -437,12 +437,6 @@ BASE_FEATURE(kEnableWebTransportDraft07, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebTransportFineGrainedThrottling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, partitioned storage will be allowed even if third-party cookies
-// are disabled by default. Partitioned storage will not be allowed if
-// third-party cookies are disabled due to a specific rule.
-BASE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

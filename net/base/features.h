@@ -489,8 +489,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
 // Enables a smarter throttling strategy based in the server's IP.
 NET_EXPORT BASE_DECLARE_FEATURE(kWebTransportFineGrainedThrottling);
 
-NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
-
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 

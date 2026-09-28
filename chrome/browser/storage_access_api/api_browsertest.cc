@@ -274,11 +274,9 @@ std::string QueryPermission(content::RenderFrameHost* render_frame_host) {
       .ExtractString();
 }
 
-bool ThirdPartyPartitionedStorageAllowedByDefault() {
+bool IsThirdPartyStoragePartitioningEnabled() {
   return base::FeatureList::IsEnabled(
-             net::features::kThirdPartyPartitionedStorageAllowedByDefault) &&
-         base::FeatureList::IsEnabled(
-             net::features::kThirdPartyStoragePartitioning);
+      net::features::kThirdPartyStoragePartitioning);
 }
 
 std::string CookieAttributes(std::string_view domain) {
@@ -2402,7 +2400,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 
-  ExpectStorage(GetFrame(), ThirdPartyPartitionedStorageAllowedByDefault());
+  ExpectStorage(GetFrame(), IsThirdPartyStoragePartitioningEnabled());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   prompt_factory()->set_response_type(
@@ -2448,8 +2446,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostC, "/browsing_data/site_data.html");
 
-  ExpectStorage(GetNestedFrame(),
-                ThirdPartyPartitionedStorageAllowedByDefault());
+  ExpectStorage(GetNestedFrame(), IsThirdPartyStoragePartitioningEnabled());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
 
   prompt_factory()->set_response_type(
@@ -2500,7 +2497,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIStorageBrowserTest,
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 
   storage::test::ExpectCrossTabInfoForFrame(
-      GetFrame(), ThirdPartyPartitionedStorageAllowedByDefault());
+      GetFrame(), IsThirdPartyStoragePartitioningEnabled());
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));

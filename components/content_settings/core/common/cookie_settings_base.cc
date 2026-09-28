@@ -85,13 +85,10 @@ bool IsStorageAccessAllowedByPermissionsPolicy(
       network::mojom::PermissionsPolicyFeature::kStorageAccessAPI, origin);
 }
 
-// Returns true if third-party storage partitioning is active and third-party
-// partitioned storage is allowed by default.
+// Returns true if third-party storage partitioning is active.
 bool IsThirdPartyPartitionedStorageEnabled() {
   return base::FeatureList::IsEnabled(
-             net::features::kThirdPartyStoragePartitioning) &&
-         base::FeatureList::IsEnabled(
-             net::features::kThirdPartyPartitionedStorageAllowedByDefault);
+      net::features::kThirdPartyStoragePartitioning);
 }
 
 }  // namespace

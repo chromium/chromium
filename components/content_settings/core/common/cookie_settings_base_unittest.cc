@@ -283,10 +283,8 @@ TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
 TEST_F(CookieSettingsBaseTest,
        StorageAccessThirdPartyCookieBlockingWithPartitionedStorage) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {net::features::kThirdPartyStoragePartitioning,
-       net::features::kThirdPartyPartitionedStorageAllowedByDefault},
-      {});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
 
   const GURL kThirdPartyUrl("https://3p.com");
   const net::CookieSettingOverrides overrides(
