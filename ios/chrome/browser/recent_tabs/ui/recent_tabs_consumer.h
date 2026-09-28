@@ -7,17 +7,29 @@
 
 #import <Foundation/Foundation.h>
 
+#import <memory>
+
 #import "ios/chrome/browser/recent_tabs/ui/sessions_sync_user_state.h"
 
 namespace sessions {
 class TabRestoreService;
 }
 
+namespace synced_sessions {
+class SyncedSessions;
+}
+
 // RecentTabs Consumer interface.
 @protocol RecentTabsConsumer <NSObject>
 
 // Refreshes the table view to match the current sync state.
-- (void)refreshUserState:(SessionsSyncUserState)state;
+- (void)refreshUserState:(SessionsSyncUserState)state
+                 syncedSessions:
+                     (std::unique_ptr<synced_sessions::SyncedSessions>)
+                         syncedSessions
+    syncDisabledByAdministrator:(BOOL)syncDisabledByAdministrator
+         signinDisabledByPolicy:(BOOL)signinDisabledByPolicy
+           signinDisabledByUser:(BOOL)signinDisabledByUser;
 
 // Refreshes the recently closed tab section.
 - (void)refreshRecentlyClosedTabs;

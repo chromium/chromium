@@ -20,11 +20,6 @@
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/base/user_selectable_type.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
-#import "components/sync_sessions/open_tabs_ui_delegate.h"
-#import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
@@ -60,13 +55,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/sync/model/enterprise_utils.h"
-#import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
@@ -138,6 +126,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // `_syncedSessions`, but `_displayedTabs` allows for filtering to display
   // only particular tabs.
   std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
+
+  BOOL _syncDisabledByAdministrator;
+  BOOL _signinDisabledByPolicy;
+  BOOL _signinDisabledByUser;
 }
 // The service that manages the recently closed tabs
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
@@ -230,38 +222,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
   [self loadModel];
   [self.tableView reloadData];
-}
-
-- (syncer::SyncService*)syncService {
-  DCHECK(_profile);
-  return SyncServiceFactory::GetForProfile(_profile);
-}
-
-// Returns YES if the user cannot turn on sync for enterprise policy reasons.
-- (BOOL)isSyncDisabledByAdministrator {
-  DCHECK(self.syncService);
-  if (self.syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    // Return YES if the SyncDisabled policy is enabled.
-    return YES;
-  }
-
-  if (self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kTabs) ||
-      self.syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kHistory)) {
-    // Return YES if the data type is disabled by the SyncTypesListDisabled
-    // policy.
-    return YES;
-  }
-
-  DCHECK(self.profile);
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  DCHECK(authService);
-  // Return NO is sign-in is disabled by the BrowserSignin policy.
-  return authService->GetServiceStatus() ==
-         AuthenticationService::ServiceStatus::SigninDisabledByPolicy;
 }
 
 #pragma mark - TableViewModel
@@ -521,21 +481,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 // Adds Other Devices Section and its header.
 - (void)addOtherDevicesSectionForState:(SessionsSyncUserState)state {
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  const AuthenticationService::ServiceStatus authServiceStatus =
-      authService->GetServiceStatus();
   // If sign-in is disabled through user Settings, do not show Other Devices
   // section. However, if sign-in is disabled by policy Chrome will
   // continue to show the Other Devices section with a specialized message.
-  switch (authServiceStatus) {
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-      return;
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed:
-      break;
+  if (_signinDisabledByUser) {
+    return;
   }
 
   TableViewModel* model = self.tableViewModel;
@@ -559,7 +509,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         [[TableViewDisclosureHeaderFooterItem alloc]
             initWithType:ItemTypeRecentlyClosedHeader];
     header.text = l10n_util::GetNSString(IDS_IOS_RECENT_TABS_OTHER_DEVICES);
-    if (self.isSyncDisabledByAdministrator) {
+    if (_syncDisabledByAdministrator) {
       header.disabled = YES;
       header.subtitleText =
           l10n_util::GetNSString(IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION);
@@ -570,9 +520,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         [self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices];
   }
 
-  if (!self.isSyncDisabledByAdministrator &&
-      authServiceStatus !=
-          AuthenticationService::ServiceStatus::SigninDisabledByPolicy) {
+  if (!_syncDisabledByAdministrator && !_signinDisabledByPolicy) {
     ItemType itemType;
     NSString* itemSubtitle;
     NSString* itemButtonText;
@@ -804,7 +752,17 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 #pragma mark - Consumer Protocol
 
-- (void)refreshUserState:(SessionsSyncUserState)newSessionState {
+- (void)refreshUserState:(SessionsSyncUserState)newSessionState
+                 syncedSessions:
+                     (std::unique_ptr<synced_sessions::SyncedSessions>)
+                         syncedSessions
+    syncDisabledByAdministrator:(BOOL)syncDisabledByAdministrator
+         signinDisabledByPolicy:(BOOL)signinDisabledByPolicy
+           signinDisabledByUser:(BOOL)signinDisabledByUser {
+  _syncDisabledByAdministrator = syncDisabledByAdministrator;
+  _signinDisabledByPolicy = signinDisabledByPolicy;
+  _signinDisabledByUser = signinDisabledByUser;
+
   if ((newSessionState == self.sessionState &&
        self.sessionState !=
            SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) ||
@@ -815,12 +773,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     // won't change.
     return;
   }
-
-  // A manual item refresh is necessary.
-  sync_sessions::SessionSyncService* syncService =
-      SessionSyncServiceFactory::GetForProfile(self.profile);
-  auto syncedSessions =
-      std::make_unique<synced_sessions::SyncedSessions>(syncService);
 
   std::vector<synced_sessions::DistantTabsSet> displayedTabs;
   for (size_t s = 0; s < syncedSessions->GetSessionCount(); s++) {
