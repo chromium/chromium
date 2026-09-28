@@ -675,25 +675,21 @@ CanvasNon2DResourceProvider::WillDrawInternal() {
   // Determine if a new resource is needed for accelerated resources. Note that
   // for unaccelerated resources, writes to the SharedImage are deferred to
   // ProduceCanvasResource.
-  if (is_software_ || !ShouldReplaceTargetBuffer(cached_content_id_)) {
-    return resource_->BeginAccess(/*readonly=*/false);
+  if (!is_software_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
+    cached_content_id_ = PaintImage::kInvalidContentId;
+    DCHECK(!current_resource_has_write_access_)
+        << "Write access must be released before sharing the resource";
+
+    resource_ = NewOrRecycledResource();
+
+    // As the image might have just been created, we need to ensure that it is
+    // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
+    // requirements (note: as an optimization we could avoid doing this if the
+    // resource was recycled as in that case there are no security implications).
+    is_cleared_ = false;
   }
 
-  std::unique_ptr<gpu::RasterScopedAccess> dst_access;
-  cached_content_id_ = PaintImage::kInvalidContentId;
-  DCHECK(!current_resource_has_write_access_)
-      << "Write access must be released before sharing the resource";
-
-  resource_ = NewOrRecycledResource();
-  dst_access = resource_->BeginAccess(/*readonly=*/false);
-
-  // As the image might have just been created, we need to ensure that it is
-  // cleared on the next BeginRasterCHROMIUM to satisfy service-side security
-  // requirements (note: as an optimization we could avoid doing this if the
-  // resource was recycled as in that case there are no security implications).
-  is_cleared_ = false;
-
-  return dst_access;
+  return resource_->BeginAccess(/*readonly=*/false);
 }
 
 
