@@ -972,10 +972,10 @@
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES" desc="Header for Autofill AI personal context child menu attributing the information to source applications. $1 is the formatted list of sources with citation badges (e.g. Gmail [1] [2] · Photos [1]).">
     Suggested by Gemini · <ph name="SOURCES">$1<ex>Gmail [1] [2] · Photos [1]</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos.">
+  <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos." formatter_data="android_java">
     Photos
   </message>
-  <message name="IDS_AUTOFILL_AI_SOURCE_APP_GMAIL" desc="App name for Gmail.">
+  <message name="IDS_AUTOFILL_AI_SOURCE_APP_GMAIL" desc="App name for Gmail." formatter_data="android_java">
     Gmail
   </message>
   <message name="IDS_AUTOFILL_AI_REMOVE_INFO" desc="Text for a child menu option to remove an Autofill AI suggestion.">
@@ -1917,6 +1917,9 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     </message>
     <message name="IDS_AUTOFILL_AI_ATTRIBUTION_SHEET_CLOSED" desc="Accessibility announcement when the Autofill AI source attribution bottom sheet closes." formatter_data="android_java" is_accessibility_with_no_ui="true">
       Sources sheet closed
+    </message>
+    <message name="IDS_AUTOFILL_AI_ATTRIBUTION_OPEN_SOURCE_DESCRIPTION" desc="Content description for TalkBack on an Autofill AI source card row. $1 is the app name (e.g. Gmail) and $2 is the source record title (e.g. Flight to San Francisco)." formatter_data="android_java" is_accessibility_with_no_ui="true">
+      Open <ph name="APP_NAME">%1$s<ex>Gmail</ex></ph> source: <ph name="TITLE">%2$s<ex>Flight to San Francisco</ex></ph>
     </message>
   </if>
 

@@ -5,9 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(crbug.com/541184524): Used in downstream mediator CL. -->
-<resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources">
+<resources>
     <!-- Fallback unbranded icons for Autofill AI source attribution.
          Overlaid by official Google-branded assets in official builds. -->
     <drawable name="autofill_ai_gmail_24dp">@drawable/ic_outline_email_24dp</drawable>

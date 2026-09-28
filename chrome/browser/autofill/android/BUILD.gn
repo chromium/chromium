@@ -48,6 +48,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionContent.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionView.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionViewBinder.java",
@@ -341,6 +342,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/address/AddressEditorTest.java",
@@ -402,6 +404,7 @@ robolectric_library("junit") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
@@ -420,5 +423,6 @@ robolectric_library("junit") {
     "//ui/accessibility:ui_accessibility_test_support_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
