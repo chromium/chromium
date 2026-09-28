@@ -4,7 +4,9 @@
 
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -22,7 +24,11 @@
 #include "net/quic/quic_context.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_dispatcher_peer.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_session_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
 #include "net/tools/quic/quic_simple_server_socket.h"
@@ -221,6 +227,66 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   url::Origin origin_;
   NetworkAnonymizationKey anonymization_key_;
 };
+
+struct AnticipatedIncomingStreamsTestCase {
+  const char* name;
+  std::optional<uint16_t> unidirectional_hint;
+  std::optional<uint16_t> bidirectional_hint;
+  uint32_t expected_unidirectional_streams;
+  uint32_t expected_bidirectional_streams;
+};
+
+class DedicatedWebTransportHttp3IncomingStreamsTest
+    : public DedicatedWebTransportHttp3Test,
+      public testing::WithParamInterface<AnticipatedIncomingStreamsTestCase> {};
+
+TEST_P(DedicatedWebTransportHttp3IncomingStreamsTest,
+       AdvertisesRequiredStreamLimits) {
+  const AnticipatedIncomingStreamsTestCase& test_case = GetParam();
+  StartServer();
+  WebTransportParameters parameters;
+  parameters.anticipated_concurrent_incoming_unidirectional_streams =
+      test_case.unidirectional_hint;
+  parameters.anticipated_concurrent_incoming_bidirectional_streams =
+      test_case.bidirectional_hint;
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), parameters);
+
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+
+  quic::QuicSession* server_session =
+      quic::test::QuicDispatcherPeer::GetFirstSessionIfAny(
+          server_->dispatcher());
+  ASSERT_TRUE(server_session);
+  quic::UberQuicStreamIdManager* stream_id_manager =
+      quic::test::QuicSessionPeer::ietf_streamid_manager(server_session);
+  EXPECT_EQ(test_case.expected_unidirectional_streams +
+                quic::kHttp3StaticUnidirectionalStreamCount,
+            stream_id_manager->max_outgoing_unidirectional_streams());
+  EXPECT_EQ(test_case.expected_bidirectional_streams,
+            stream_id_manager->max_outgoing_bidirectional_streams());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DedicatedWebTransportHttp3IncomingStreamsTest,
+    testing::Values(
+        AnticipatedIncomingStreamsTestCase{
+            "Unset", std::nullopt, std::nullopt,
+            quic::kDefaultMaxStreamsPerConnection,
+            quic::kDefaultMaxStreamsPerConnection},
+        AnticipatedIncomingStreamsTestCase{"UnidirectionalBelowMinimum", 99,
+                                           101, 100, 101},
+        AnticipatedIncomingStreamsTestCase{"BidirectionalBelowMinimum", 101, 99,
+                                           101, 100},
+        AnticipatedIncomingStreamsTestCase{"MaxUint16AndZero", 65535, 0, 65535,
+                                           100}),
+    [](const testing::TestParamInfo<AnticipatedIncomingStreamsTestCase>& info) {
+      return info.param.name;
+    });
 
 TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   StartServer();

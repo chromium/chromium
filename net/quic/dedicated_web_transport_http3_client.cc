@@ -5,6 +5,7 @@
 #include "net/quic/dedicated_web_transport_http3_client.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string_view>
 #include <vector>
 
@@ -47,6 +48,13 @@ constexpr int kCustomCertificateMaxValidityDays = 14;
 // The time the client would wait for the server to acknowledge the session
 // being closed.
 constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
+
+// The WebTransport specification requires clients to initially permit at
+// least 100 peer-initiated streams of each type, even if the application
+// provides a lower hint.
+constexpr uint32_t kMinimumIncomingWebTransportStreams = 100;
+static_assert(quic::kDefaultMaxStreamsPerConnection >=
+              kMinimumIncomingWebTransportStreams);
 
 // Enables custom congestion control for WebTransport over HTTP/3.
 BASE_FEATURE(kWebTransportCongestionControl, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -769,9 +777,24 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   connection_ = connection.get();
   connection->SetMaxPacketLength(quic_context_->params()->max_packet_length);
 
+  // Configure initial stream limits before constructing `session_` so that
+  // `QuicSession` adds `kHttp3StaticUnidirectionalStreamCount` for HTTP/3
+  // control/QPACK streams and initializes its stream ID managers with the
+  // final values.
+  quic::QuicConfig config = InitializeQuicConfig(*quic_context_->params());
+  if (anticipated_concurrent_incoming_unidirectional_streams_) {
+    config.SetMaxUnidirectionalStreamsToSend(std::max<uint32_t>(
+        kMinimumIncomingWebTransportStreams,
+        *anticipated_concurrent_incoming_unidirectional_streams_));
+  }
+  if (anticipated_concurrent_incoming_bidirectional_streams_) {
+    config.SetMaxBidirectionalStreamsToSend(std::max<uint32_t>(
+        kMinimumIncomingWebTransportStreams,
+        *anticipated_concurrent_incoming_bidirectional_streams_));
+  }
+
   session_ = std::make_unique<DedicatedWebTransportHttp3ClientSession>(
-      InitializeQuicConfig(*quic_context_->params()), supported_versions_,
-      connection.release(),
+      config, supported_versions_, connection.release(),
       quic::QuicServerId(url_.GetHost(), url_.EffectiveIntPort()),
       &crypto_config_, this);
   if (!original_supported_versions_.empty()) {
@@ -790,15 +813,6 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   connection_->set_debug_visitor(event_logger_.get());
   connection_->set_creator_debug_delegate(event_logger_.get());
   AdjustSendAlgorithm(*connection_, congestion_control_hint_);
-
-  if (anticipated_concurrent_incoming_unidirectional_streams_.has_value()) {
-    session_->config()->SetMaxUnidirectionalStreamsToSend(
-        *anticipated_concurrent_incoming_unidirectional_streams_);
-  }
-  if (anticipated_concurrent_incoming_bidirectional_streams_.has_value()) {
-    session_->config()->SetMaxBidirectionalStreamsToSend(
-        *anticipated_concurrent_incoming_bidirectional_streams_);
-  }
 
   session_->Initialize();
   packet_reader_->StartReading();
