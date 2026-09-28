@@ -465,4 +465,16 @@ std::u16string GetAccountPreviewBookmarkManagerPromoTitle(
                    IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_TITLE);
 }
 
+std::u16string GetAccountPreviewPasswordManagerPromoTitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference) {
+  std::optional<int> device_string_id =
+      GetDeviceStringId(preference.other_device_form_factor);
+  return device_string_id.has_value()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE_WITH_DEVICE,
+                   l10n_util::GetStringUTF16(*device_string_id))
+             : l10n_util::GetStringUTF16(
+                   IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE);
+}
+
 }  // namespace signin

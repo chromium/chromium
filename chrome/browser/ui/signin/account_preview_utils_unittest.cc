@@ -1089,4 +1089,47 @@ TEST(
             expected);
 }
 
+TEST(AccountPreviewUtilsTest, PasswordManagerPromoTitleWithoutDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  EXPECT_EQ(GetAccountPreviewPasswordManagerPromoTitle(pref),
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE));
+}
+
+TEST(AccountPreviewUtilsTest, PasswordManagerPromoTitleWithPhoneDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE;
+  std::u16string device_str =
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_PHONE);
+  EXPECT_EQ(GetAccountPreviewPasswordManagerPromoTitle(pref),
+            l10n_util::GetStringFUTF16(
+                IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE_WITH_DEVICE,
+                device_str));
+}
+
+TEST(AccountPreviewUtilsTest, PasswordManagerPromoTitleWithTabletDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET;
+  std::u16string device_str =
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_TABLET);
+  EXPECT_EQ(GetAccountPreviewPasswordManagerPromoTitle(pref),
+            l10n_util::GetStringFUTF16(
+                IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE_WITH_DEVICE,
+                device_str));
+}
+
+TEST(AccountPreviewUtilsTest, PasswordManagerPromoTitleWithDesktopDevice) {
+  AccountPreviewDataService::AccountPreviewPreference pref;
+  pref.other_device_form_factor =
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP;
+  std::u16string device_str =
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_PREVIEW_DEVICE_COMPUTER);
+  EXPECT_EQ(GetAccountPreviewPasswordManagerPromoTitle(pref),
+            l10n_util::GetStringFUTF16(
+                IDS_PASSWORD_MANAGER_UI_SIGNIN_PROMO_CARD_TITLE_WITH_DEVICE,
+                device_str));
+}
+
 }  // namespace signin
