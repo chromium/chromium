@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/session_access.h"
@@ -38,6 +38,11 @@
 // If `earliest_next_refresh_time` is in the past or shorter than the minimum
 // interval, it will schedule the next pre-warming at the minimum interval to
 // avoid infinite loops or excessive requests.
+//
+// Scheduling uses wall-clock time, so a pre-warm due during suspend runs on
+// resume. An unreachable pre-warm is retried as soon as connectivity returns
+// (including network switches), or right away if connectivity returned while
+// it was in flight.
 class DeviceBoundSessionPrewarmer
     : public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public network::mojom::DeviceBoundSessionAccessObserver {
@@ -105,7 +110,15 @@ class DeviceBoundSessionPrewarmer
 
   const GURL prewarm_url_;
   const SessionManagerProvider session_manager_provider_;
-  base::OneShotTimer timer_;
+  base::WallClockTimer timer_;
+
+  // The last pre-warm was unreachable; regaining connectivity retries it.
+  bool retry_on_reconnect_ = false;
+
+  // Set when connectivity returns. If the pre-warm in flight then comes back
+  // unreachable, it may have been sent on the old network, so it's retried
+  // immediately instead of after `kMinPrewarmInterval`.
+  bool retry_on_unreachable_ = false;
 
   // Whether the current pre-warming is the startup pre-warming (from Start())
   // or a subsequent scheduled pre-warming.

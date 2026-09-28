@@ -128,6 +128,8 @@ void DeviceBoundSessionPrewarmer::Start(bool is_startup_prewarm) {
 
 void DeviceBoundSessionPrewarmer::Stop() {
   timer_.Stop();
+  retry_on_reconnect_ = false;
+  retry_on_unreachable_ = false;
   weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
 }
@@ -150,7 +152,7 @@ void DeviceBoundSessionPrewarmer::OnObserverDisconnected() {
   // The network service disconnected (e.g. crash). Schedule DoPrewarm()
   // after `kMinPrewarmInterval` to re-establish the observer and refresh
   // session state.
-  timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
+  timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
                &DeviceBoundSessionPrewarmer::DoPrewarm);
 }
 
@@ -159,13 +161,15 @@ void DeviceBoundSessionPrewarmer::DoPrewarm() {
 
   if (network::mojom::DeviceBoundSessionManager* session_manager =
           session_manager_provider_.Run()) {
+    retry_on_reconnect_ = false;
+    retry_on_unreachable_ = false;
     EnsureObserverBound(session_manager);
     session_manager->PrewarmSessionsForUrl(
         prewarm_url_,
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
   } else {
-    timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
+    timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
   }
 }
@@ -211,6 +215,15 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
         prewarm_timer.Elapsed());
   }
 
+  const bool unreachable = std::ranges::contains(
+      results, net::device_bound_sessions::RefreshResult::kUnreachable);
+  const bool reconnected = std::exchange(retry_on_unreachable_, false);
+  if (unreachable && reconnected) {
+    DoPrewarm();
+    return;
+  }
+  retry_on_reconnect_ = unreachable;
+
   if (std::ranges::any_of(results,
                           &DeviceBoundSessionPrewarmer::IsTransientError)) {
     // If a session failed to refresh due to a transient error, retry after a
@@ -220,7 +233,7 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     // be set far in the future even if another session failed.
     // TODO(crbug.com/544602741): Revisit whether earliest_next_refresh_time
     // should account for failed sessions.
-    timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
+    timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
     return;
   }
@@ -231,8 +244,8 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     return;
   }
 
-  const base::TimeDelta next_refresh_delay =
-      *earliest_next_refresh_time - base::Time::Now();
+  const base::Time now = base::Time::Now();
+  const base::TimeDelta next_refresh_delay = *earliest_next_refresh_time - now;
   // Recorded before clamping to `kMinPrewarmInterval`, so that refreshes that
   // are already due remain visible.
   // TODO(crbug.com/566073494): Also record the time since the last successful
@@ -245,14 +258,26 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
   // interval, schedule the next prewarm after `kMinPrewarmInterval` to avoid
   // infinite loops or excessive requests.
   base::TimeDelta delay = std::max(next_refresh_delay, kMinPrewarmInterval);
-  timer_.Start(FROM_HERE, delay, this, &DeviceBoundSessionPrewarmer::DoPrewarm);
+  timer_.Start(FROM_HERE, now + delay, this,
+               &DeviceBoundSessionPrewarmer::DoPrewarm);
 }
 
 void DeviceBoundSessionPrewarmer::OnConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
-  // TODO(crbug.com/558505615): Trigger a pre-warm when connectivity is
-  // regained while a retry is pending. For now this only tracks state.
+  const bool was_offline = is_offline_;
   is_offline_ = IsOfflineConnectionType(type);
+
+  // Network switches arrive as `CONNECTION_NONE` then the new type, so they
+  // count as regaining connectivity too.
+  if (!was_offline || is_offline_) {
+    return;
+  }
+  if (retry_on_reconnect_) {
+    DoPrewarm();
+  } else {
+    // Harmless when idle: cleared when the next pre-warm is sent.
+    retry_on_unreachable_ = true;
+  }
 }
 
 // network::mojom::DeviceBoundSessionAccessObserver:
@@ -265,6 +290,7 @@ void DeviceBoundSessionPrewarmer::OnDeviceBoundSessionAccessed(
   // TODO(crbug.com/544602741): Consider passing next refresh time in
   // SessionAccess to avoid triggering an immediate prewarm IPC solely to
   // discover `earliest_next_refresh_time`.
+  // TODO(crbug.com/566983318): Avoid overlapping a pre-warm in flight.
   DoPrewarm();
 }
 

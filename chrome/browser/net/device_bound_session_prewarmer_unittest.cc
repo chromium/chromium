@@ -57,6 +57,17 @@ auto RunPrewarmCallbackAndQuit(
   };
 }
 
+// Counts pre-warm calls and answers each with `results` and a next refresh
+// time an hour from now.
+auto CountAndRespond(int& calls, std::vector<RefreshResult> results) {
+  return [&calls, results = std::move(results)](
+             const GURL&, network::mojom::DeviceBoundSessionManager::
+                              PrewarmSessionsForUrlCallback callback) {
+    ++calls;
+    std::move(callback).Run(results, base::Time::Now() + base::Hours(1));
+  };
+}
+
 }  // namespace
 
 class DeviceBoundSessionPrewarmerTest : public testing::Test {
@@ -92,7 +103,7 @@ class DeviceBoundSessionPrewarmerTest : public testing::Test {
   DeviceBoundSessionPrewarmer::SessionManagerProvider GetManagerProvider() {
     return base::BindLambdaForTesting(
         [this]() -> network::mojom::DeviceBoundSessionManager* {
-          return &mock_session_manager();
+          return session_manager_available_ ? &mock_session_manager() : nullptr;
         });
   }
 
@@ -101,10 +112,26 @@ class DeviceBoundSessionPrewarmerTest : public testing::Test {
     return network::TestNetworkConnectionTracker::GetInstance();
   }
 
+  // Observers are notified from a posted task, so drain the queue.
+  void SetConnectionType(net::NetworkChangeNotifier::ConnectionType type) {
+    network_connection_tracker()->SetConnectionType(type);
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+
+  // Drops the connection and brings it back.
+  void ReconnectNetwork() {
+    SetConnectionType(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
+    SetConnectionType(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   GURL target_url_{"https://google.com"};
+  // Clear to simulate the network service being unavailable.
+  bool session_manager_available_ = true;
 
  private:
   network::MockDeviceBoundSessionManager mock_device_bound_session_manager_;
@@ -800,6 +827,224 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .WillOnce(RunPrewarmCallback(base::Time::Now() + base::Hours(1)));
   task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectingRetriesUnreachable) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 2);
+  // Still unreachable, so the next reconnect retries again.
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 3);
+
+  prewarmer.Stop();
+}
+
+// `CONNECTION_UNKNOWN` means connected (e.g. macOS with Wi-Fi plus a VPN).
+TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectingToUnknownTypeRetries) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
+  SetConnectionType(
+      net::NetworkChangeNotifier::ConnectionType::CONNECTION_UNKNOWN);
+  EXPECT_EQ(calls, 2);
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ChangingTypeWithoutGoingOfflineDoesNotRetry) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  SetConnectionType(net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G);
+  EXPECT_EQ(calls, 1);
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectingDoesNotRetryServerError) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kServerError}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 1);
+
+  // The regular retry still runs.
+  task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_EQ(calls, 2);
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectAfterSuccessDoesNotRetry) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(CountAndRespond(calls, {RefreshResult::kUnreachable}))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kRefreshed}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+  task_environment_.FastForwardBy(base::Seconds(60));
+  ASSERT_EQ(calls, 2);
+
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 2);
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectAfterStopDoesNotRetry) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  prewarmer.Stop();
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 1);
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ReconnectWithoutSessionManagerKeepsRetry) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 1);
+
+  session_manager_available_ = false;
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 1);
+
+  session_manager_available_ = true;
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 2);
+
+  prewarmer.Stop();
+}
+
+// The in-flight pre-warm was sent on the old network, so its unreachable
+// result is retried once immediately.
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ReconnectDuringPrewarmRetriesUnreachableOnce) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  network::mojom::DeviceBoundSessionManager::PrewarmSessionsForUrlCallback
+      pending_callback;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(CountAndRespond(calls, {RefreshResult::kUnreachable}))
+      .WillOnce([&](const GURL&, network::mojom::DeviceBoundSessionManager::
+                                     PrewarmSessionsForUrlCallback callback) {
+        ++calls;
+        pending_callback = std::move(callback);
+      })
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  task_environment_.FastForwardBy(base::Seconds(60));
+  ASSERT_EQ(calls, 2);
+
+  // Reconnecting while the retry is in flight waits for its result.
+  ReconnectNetwork();
+  EXPECT_EQ(calls, 2);
+
+  std::move(pending_callback).Run({RefreshResult::kUnreachable}, std::nullopt);
+  EXPECT_EQ(calls, 3);
+
+  // Only once: the next retry waits for the regular interval.
+  task_environment_.FastForwardBy(base::Seconds(59));
+  EXPECT_EQ(calls, 3);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(calls, 4);
+
+  prewarmer.Stop();
+}
+
+// A reconnect during a pre-warm that then succeeds doesn't retry it.
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ReconnectDuringSuccessfulPrewarmDoesNotRetry) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  network::mojom::DeviceBoundSessionManager::PrewarmSessionsForUrlCallback
+      pending_callback;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce([&](const GURL&, network::mojom::DeviceBoundSessionManager::
+                                     PrewarmSessionsForUrlCallback callback) {
+        ++calls;
+        pending_callback = std::move(callback);
+      })
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kRefreshed}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ReconnectNetwork();
+  ASSERT_EQ(calls, 1);
+
+  std::move(pending_callback).Run({RefreshResult::kRefreshed}, std::nullopt);
+  EXPECT_EQ(calls, 1);
+
+  prewarmer.Stop();
+}
+
+// A reconnect while idle doesn't make a later unreachable pre-warm retry
+// immediately.
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       ReconnectWhileIdleDoesNotRetryImmediately) {
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce(CountAndRespond(calls, {RefreshResult::kRefreshed}))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kUnreachable}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ReconnectNetwork();
+  ASSERT_EQ(calls, 1);
+
+  // The scheduled pre-warm fails and waits for the regular retry.
+  task_environment_.FastForwardBy(base::Hours(1));
+  EXPECT_EQ(calls, 2);
+
+  prewarmer.Stop();
 }
 
 struct PrewarmMetricsTestCase {
