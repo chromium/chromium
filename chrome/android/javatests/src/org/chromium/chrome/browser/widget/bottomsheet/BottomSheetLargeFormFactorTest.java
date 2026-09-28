@@ -29,12 +29,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -51,6 +50,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +64,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Build(sdk_is_less_than = 32, message = "crbug.com/565680022")
+@Restriction(DeviceFormFactor.DESKTOP)
 public class BottomSheetLargeFormFactorTest {
     @Rule
     public FreshCtaTransitTestRule mTestRule =
@@ -104,8 +106,6 @@ public class BottomSheetLargeFormFactorTest {
 
         @Override
         public boolean coversBottomControls() {
-            // Isolate desktop bottom margin assertions from asynchronous browser-controls offset
-            // updates on phone AVDs (e.g. android-x64-rel).
             return true;
         }
 
@@ -117,7 +117,6 @@ public class BottomSheetLargeFormFactorTest {
 
     @Before
     public void setUp() {
-        DeviceInfo.setIsDesktopForTesting(true);
         BottomSheetTestSupport.setSmallScreen(false);
         mPage = mTestRule.startOnBlankPage();
         mSheetController =
@@ -144,20 +143,36 @@ public class BottomSheetLargeFormFactorTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(mSheetController.isLargeFormFactorUiEnabled(content));
+                    assertTrue(
+                            "Large form factor UI should be enabled for desktop content",
+                            mSheetController.isLargeFormFactorUiEnabled(content));
                     ViewGroup container = mTestSupport.getSheetContainer();
                     View sheet = container.findViewById(R.id.bottom_sheet);
-                    assertNotNull(sheet);
-                    assertNotNull(sheet.findViewById(R.id.bottom_sheet_close_button));
-                    assertNotNull(sheet.findViewById(R.id.desktop_fallback_shadow));
+                    assertNotNull("Bottom sheet view must be present in container", sheet);
+                    View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+                    assertNotNull(
+                            "Close button view should be present in desktop layout hierarchy",
+                            closeButton);
+                    assertEquals(
+                            "Modal desktop popup content should not display a framework close"
+                                    + " button",
+                            View.GONE,
+                            closeButton.getVisibility());
+                    assertNotNull(
+                            "Desktop fallback shadow view should be present in layout hierarchy",
+                            sheet.findViewById(R.id.desktop_fallback_shadow));
 
+                    // Expected values are read from the same resources that production uses.
                     int expectedBottomMargin =
                             sheet.getResources()
                                     .getDimensionPixelSize(
                                             R.dimen.bottom_sheet_desktop_bottom_margin);
                     MarginLayoutParams containerLp =
                             (MarginLayoutParams) container.getLayoutParams();
-                    assertEquals(expectedBottomMargin, containerLp.bottomMargin);
+                    assertEquals(
+                            "Container bottom margin should match desktop floating bottom margin",
+                            expectedBottomMargin,
+                            containerLp.bottomMargin);
 
                     TypedValue tv = new TypedValue();
                     sheet.getContext()
@@ -166,9 +181,27 @@ public class BottomSheetLargeFormFactorTest {
                     float expectedPopupRadius =
                             tv.getDimension(sheet.getResources().getDisplayMetrics());
                     GradientDrawable bg =
-                            (GradientDrawable)
-                                    sheet.findViewById(R.id.background).getBackground().mutate();
-                    assertEquals(expectedPopupRadius, bg.getCornerRadius(), 0.5f);
+                            (GradientDrawable) sheet.findViewById(R.id.background).getBackground();
+                    float[] radii = getPerCornerRadii(bg);
+                    if (radii != null) {
+                        for (int i = 0; i < radii.length; i++) {
+                            assertEquals(
+                                    "Every corner of the desktop popup background should use"
+                                            + " popupBgCornerRadius (index "
+                                            + i
+                                            + ")",
+                                    expectedPopupRadius,
+                                    radii[i],
+                                    0.5f);
+                        }
+                    } else {
+                        assertEquals(
+                                "Desktop popup background should use popupBgCornerRadius on all"
+                                        + " corners",
+                                expectedPopupRadius,
+                                bg.getCornerRadius(),
+                                0.5f);
+                    }
                 });
     }
 
@@ -195,13 +228,65 @@ public class BottomSheetLargeFormFactorTest {
                 () -> {
                     View sheet = mTestSupport.getSheetContainer().findViewById(R.id.bottom_sheet);
                     View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
-                    assertEquals(View.VISIBLE, closeButton.getVisibility());
-                    assertTrue(closeButton.performClick());
+                    assertEquals(
+                            "Non-modal desktop popup must display the close button",
+                            View.VISIBLE,
+                            closeButton.getVisibility());
+                    assertTrue("Close button click should succeed", closeButton.performClick());
+                    mTestSupport.endAllAnimations();
                 });
 
         closedHelper.waitForOnly();
         pollUiThread(() -> mSheetController.getSheetState() == SheetState.HIDDEN);
-        assertEquals(StateChangeReason.CLOSE_BUTTON, closedReason.get());
+        assertEquals(
+                "Sheet state change reason should be CLOSE_BUTTON",
+                StateChangeReason.CLOSE_BUTTON,
+                closedReason.get());
+        runOnUiThreadBlocking(() -> mSheetController.removeObserver(observer));
+    }
+
+    @Test
+    @MediumTest
+    public void testBackPress_DismissesDesktopPopupToHidden() throws Exception {
+        LffTestBottomSheetContent content = createContent();
+        showContent(content, SheetState.FULL);
+
+        CallbackHelper closedHelper = new CallbackHelper();
+        AtomicInteger closedReason = new AtomicInteger(StateChangeReason.NONE);
+        BottomSheetObserver observer =
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetClosed(@StateChangeReason int reason) {
+                        closedReason.set(reason);
+                        closedHelper.notifyCalled();
+                    }
+                };
+        runOnUiThreadBlocking(() -> mSheetController.addObserver(observer));
+
+        int backPressResult =
+                runOnUiThreadBlocking(
+                        () -> {
+                            BackPressHandler handler =
+                                    mSheetController.getBottomSheetBackPressHandler();
+                            assertTrue(
+                                    "Back press should be consumed when desktop popup sheet is"
+                                            + " open",
+                                    handler.getHandleBackPressChangedSupplier().get());
+                            int result = handler.handleBackPress();
+                            mTestSupport.endAllAnimations();
+                            return result;
+                        });
+        assertEquals(
+                "The sheet back press handler should report that it handled the back press",
+                BackPressResult.SUCCESS,
+                backPressResult);
+
+        closedHelper.waitForOnly();
+        pollUiThread(() -> mSheetController.getSheetState() == SheetState.HIDDEN);
+        assertEquals(
+                "Sheet state change reason should be BACK_PRESS",
+                StateChangeReason.BACK_PRESS,
+                closedReason.get());
         runOnUiThreadBlocking(() -> mSheetController.removeObserver(observer));
     }
 
@@ -215,38 +300,89 @@ public class BottomSheetLargeFormFactorTest {
 
         runOnUiThreadBlocking(
                 () -> {
-                    assertFalse(mSheetController.isLargeFormFactorUiEnabled(content));
+                    assertFalse(
+                            "Large form factor UI should be disabled for opted-out content",
+                            mSheetController.isLargeFormFactorUiEnabled(content));
                     ViewGroup container = mTestSupport.getSheetContainer();
                     View sheet = container.findViewById(R.id.bottom_sheet);
                     View fallbackShadow = sheet.findViewById(R.id.desktop_fallback_shadow);
                     View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
                     View contentContainer = sheet.findViewById(R.id.bottom_sheet_content);
 
-                    assertEquals(View.VISIBLE, fallbackShadow.getVisibility());
-                    assertEquals(View.GONE, closeButton.getVisibility());
+                    assertEquals(
+                            "Fallback shadow should be visible in desktop fallback mode",
+                            View.VISIBLE,
+                            fallbackShadow.getVisibility());
+                    assertEquals(
+                            "Close button should be hidden in desktop fallback mode",
+                            View.GONE,
+                            closeButton.getVisibility());
 
                     MarginLayoutParams containerLp =
                             (MarginLayoutParams) container.getLayoutParams();
-                    assertEquals(0, containerLp.bottomMargin);
+                    assertEquals(
+                            "Fallback container bottom margin should not include the desktop"
+                                    + " floating margin",
+                            0,
+                            containerLp.bottomMargin);
 
                     float expectedTopRadius =
                             sheet.getResources()
                                     .getDimensionPixelSize(R.dimen.bottom_sheet_corner_radius);
                     GradientDrawable bg =
-                            (GradientDrawable)
-                                    sheet.findViewById(R.id.background).getBackground().mutate();
+                            (GradientDrawable) sheet.findViewById(R.id.background).getBackground();
                     float[] radii = bg.getCornerRadii();
-                    assertNotNull(radii);
-                    assertEquals(expectedTopRadius, radii[0], 0.5f);
-                    assertEquals(expectedTopRadius, radii[1], 0.5f);
-                    assertEquals(expectedTopRadius, radii[2], 0.5f);
-                    assertEquals(expectedTopRadius, radii[3], 0.5f);
-                    assertEquals(0f, radii[4], 0.5f);
-                    assertEquals(0f, radii[5], 0.5f);
-                    assertEquals(0f, radii[6], 0.5f);
-                    assertEquals(0f, radii[7], 0.5f);
+                    assertNotNull("Background corner radii array must not be null", radii);
+
+                    // Android GradientDrawable corner radii schema defines 8 float values
+                    // corresponding to [x, y] radius pairs for each of the 4 corners:
+                    // [TopLeft.x, TopLeft.y, TopRight.x, TopRight.y, BottomRight.x, BottomRight.y,
+                    // BottomLeft.x, BottomLeft.y].
+                    // In desktop fallback mode (phone-style sheet), only the top corners are
+                    // rounded while bottom corners remain 0.
+                    assertEquals(
+                            "Top-left X radius should match bottom sheet top corner radius",
+                            expectedTopRadius,
+                            radii[0],
+                            0.5f);
+                    assertEquals(
+                            "Top-left Y radius should match bottom sheet top corner radius",
+                            expectedTopRadius,
+                            radii[1],
+                            0.5f);
+                    assertEquals(
+                            "Top-right X radius should match bottom sheet top corner radius",
+                            expectedTopRadius,
+                            radii[2],
+                            0.5f);
+                    assertEquals(
+                            "Top-right Y radius should match bottom sheet top corner radius",
+                            expectedTopRadius,
+                            radii[3],
+                            0.5f);
+                    assertEquals(
+                            "Bottom-right X radius should be 0 in fallback mode",
+                            0f,
+                            radii[4],
+                            0.5f);
+                    assertEquals(
+                            "Bottom-right Y radius should be 0 in fallback mode",
+                            0f,
+                            radii[5],
+                            0.5f);
+                    assertEquals(
+                            "Bottom-left X radius should be 0 in fallback mode",
+                            0f,
+                            radii[6],
+                            0.5f);
+                    assertEquals(
+                            "Bottom-left Y radius should be 0 in fallback mode",
+                            0f,
+                            radii[7],
+                            0.5f);
 
                     assertEquals(
+                            "Content container height should be MATCH_PARENT in fallback mode",
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             contentContainer.getLayoutParams().height);
                 });
@@ -254,6 +390,17 @@ public class BottomSheetLargeFormFactorTest {
 
     private LffTestBottomSheetContent createContent() {
         return runOnUiThreadBlocking(() -> new LffTestBottomSheetContent(mTestRule.getActivity()));
+    }
+
+    /** Returns the per-corner radii of a shape, or null if the shape uses one radius. */
+    private static @Nullable float[] getPerCornerRadii(GradientDrawable shape) {
+        try {
+            return shape.getCornerRadii();
+        } catch (NullPointerException e) {
+            // Some Android versions throw here instead of returning null when the shape uses one
+            // radius for every corner.
+            return null;
+        }
     }
 
     private void showContent(BottomSheetContent content, @SheetState int targetState) {
