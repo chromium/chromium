@@ -53,6 +53,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
   ScriptPromise<IDLUndefined> Cancel(ScriptState*,
                                      ScriptValue reason,
                                      ExceptionState&) override;
+  void ContextDestroyed() override;
 
   void OnFrameFromSource(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface>);

@@ -92,6 +92,15 @@ ScriptPromise<IDLUndefined> RTCEncodedVideoUnderlyingSource::Cancel(
   return ToResolvedUndefinedPromise(script_state);
 }
 
+void RTCEncodedVideoUnderlyingSource::ContextDestroyed() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  realm_thread_type_lease_ = std::nullopt;
+  if (disconnect_callback_) {
+    std::move(disconnect_callback_).Run();
+  }
+  UnderlyingSourceBase::ContextDestroyed();
+}
+
 void RTCEncodedVideoUnderlyingSource::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(controller_override_);
@@ -163,6 +172,8 @@ void RTCEncodedVideoUnderlyingSource::Close() {
 
 void RTCEncodedVideoUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  realm_thread_type_lease_ = std::nullopt;
+  disconnect_callback_.Reset();
   // This can potentially be called before the stream is constructed and so
   // Controller() is still unset.
   if (GetController()) {

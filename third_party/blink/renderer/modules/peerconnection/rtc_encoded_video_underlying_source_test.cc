@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -148,6 +149,39 @@ TEST_F(RTCEncodedVideoUnderlyingSourceTest,
 
   source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
   EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest,
+       ContextDestroyedCallsDisconnectCallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  Persistent<RTCEncodedVideoUnderlyingSource> source;
+  {
+    V8TestingScope v8_scope;
+    ScriptState* script_state = v8_scope.GetScriptState();
+    source = CreateSource(script_state);
+    source->SetRealmIsBoostableContextForTesting(true);
+    ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+    source->OnFrameFromSource(std::make_unique<MockTransformableVideoFrame>());
+    ASSERT_EQ(source->GetRealmThreadTypeLeasedForTesting(),
+              base::ThreadType::kPresentation);
+
+    EXPECT_CALL(disconnect_callback_, Run());
+  }
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSourceTest,
+       TransferResetsDisconnectCallbackBeforeContextDestroyed) {
+  EXPECT_CALL(disconnect_callback_, Run()).Times(0);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnSourceTransferStarted();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace blink

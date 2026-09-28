@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
@@ -157,6 +158,40 @@ TEST_F(RTCEncodedAudioUnderlyingSourceTest,
   source->OnFrameFromSource(
       std::make_unique<NiceMock<webrtc::MockTransformableAudioFrame>>());
   EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSourceTest,
+       ContextDestroyedCallsDisconnectCallback) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kWebRtcUseMediaThreadTypes);
+  Persistent<RTCEncodedAudioUnderlyingSource> source;
+  {
+    V8TestingScope v8_scope;
+    ScriptState* script_state = v8_scope.GetScriptState();
+    source = CreateSource(script_state);
+    source->SetRealmIsBoostableContextForTesting(true);
+    ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+    source->OnFrameFromSource(
+        std::make_unique<NiceMock<webrtc::MockTransformableAudioFrame>>());
+    ASSERT_EQ(source->GetRealmThreadTypeLeasedForTesting(),
+              base::ThreadType::kAudioProcessing);
+
+    EXPECT_CALL(disconnect_callback_, Run());
+  }
+  EXPECT_FALSE(source->GetRealmThreadTypeLeasedForTesting().has_value());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSourceTest,
+       TransferResetsDisconnectCallbackBeforeContextDestroyed) {
+  EXPECT_CALL(disconnect_callback_, Run()).Times(0);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* source = CreateSource(script_state);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
+
+  source->OnSourceTransferStarted();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace blink
