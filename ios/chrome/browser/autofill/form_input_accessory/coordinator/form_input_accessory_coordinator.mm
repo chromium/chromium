@@ -1091,9 +1091,12 @@ void UndoInSessionSuppressedEntity(
   if (!entity.has_value()) {
     return;
   }
-  suppressionManager->SuppressEntity(*entity);
+  // Copy the entity because suppressing it evicts it from the
+  // `EntityDataManager`, which owns `*entity`.
+  const autofill::EntityInstance entityCopy = *entity;
+  suppressionManager->SuppressEntity(entityCopy);
   [self resetSuggestions];
-  [self showUndoSnackbarForEntity:*entity];
+  [self showUndoSnackbarForEntity:entityCopy];
 }
 
 // Shows a snackbar allowing the user to undo removing `entity`.
