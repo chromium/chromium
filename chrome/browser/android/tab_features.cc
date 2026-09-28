@@ -20,6 +20,9 @@
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
+#include "chrome/browser/finds/core/finds_features.h"
+#include "chrome/browser/finds/core/finds_tab_helper.h"
+#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/glic/glic_marketing_page_tab_helper.h"
 #include "chrome/browser/glic/public/features.h"
@@ -31,10 +34,12 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/site_protection/site_protection_metrics_observer.h"
 #include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
@@ -307,6 +312,17 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   policy_auditor_bridge_ =
       PolicyAuditorBridge::MaybeCreateForWebContents(web_contents);
+
+  if (base::FeatureList::IsEnabled(finds::features::kChromeFinds)) {
+    if (auto* finds_service =
+            finds::FindsServiceFactory::GetForProfile(profile)) {
+      finds_tab_helper_ = std::make_unique<finds::FindsTabHelper>(
+          web_contents, finds_service,
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+          TemplateURLServiceFactory::GetForProfile(profile),
+          profile->GetPrefs());
+    }
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

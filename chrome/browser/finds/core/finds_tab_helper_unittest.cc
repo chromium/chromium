@@ -66,11 +66,10 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
 
-    FindsTabHelper::CreateForWebContents(
+    tab_helper_ = std::make_unique<FindsTabHelper>(
         web_contents(), finds::FindsServiceFactory::GetForProfile(profile()),
         /*opt_guide_service=*/nullptr, template_url_service_,
         profile()->GetPrefs());
-    tab_helper_ = FindsTabHelper::FromWebContents(web_contents());
 
     finds_service_ = FindsServiceFactory::GetForProfile(profile());
     ASSERT_NE(finds_service_, nullptr);
@@ -84,13 +83,13 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
       finds_service_->RemoveObserver(&finds_service_observer_);
     }
     finds_service_ = nullptr;
-    tab_helper_ = nullptr;
+    tab_helper_.reset();
     template_url_service_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void CallDidFinishNavigation(content::NavigationHandle* handle) {
-    static_cast<content::WebContentsObserver*>(tab_helper_)
+    static_cast<content::WebContentsObserver*>(tab_helper_.get())
         ->DidFinishNavigation(handle);
   }
 
@@ -99,7 +98,7 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CallDidFirstVisuallyNonEmptyPaint() {
-    static_cast<content::WebContentsObserver*>(tab_helper_)
+    static_cast<content::WebContentsObserver*>(tab_helper_.get())
         ->DidFirstVisuallyNonEmptyPaint();
   }
 
@@ -138,7 +137,7 @@ class FindsTabHelperTest : public ChromeRenderViewHostTestHarness {
   MockFindsServiceObserver finds_service_observer_;
   raw_ptr<TemplateURLService> template_url_service_ = nullptr;
   raw_ptr<FindsService> finds_service_ = nullptr;
-  raw_ptr<FindsTabHelper> tab_helper_ = nullptr;
+  std::unique_ptr<FindsTabHelper> tab_helper_;
   int srp_return_count_threshold_ = 0;
 };
 

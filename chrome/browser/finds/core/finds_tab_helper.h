@@ -13,7 +13,6 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class NavigationHandle;
@@ -31,9 +30,13 @@ class FindsService;
 class FindsTabHelperTest;
 
 // Tab helper to track user opt-in eligibility.
-class FindsTabHelper : public content::WebContentsObserver,
-                       public content::WebContentsUserData<FindsTabHelper> {
+class FindsTabHelper : public content::WebContentsObserver {
  public:
+  FindsTabHelper(content::WebContents* web_contents,
+                 FindsService* finds_service,
+                 OptimizationGuideKeyedService* opt_guide_service,
+                 TemplateURLService* template_url_service,
+                 PrefService* pref_service);
   FindsTabHelper(const FindsTabHelper&) = delete;
   FindsTabHelper& operator=(const FindsTabHelper&) = delete;
   ~FindsTabHelper() override;
@@ -42,12 +45,6 @@ class FindsTabHelper : public content::WebContentsObserver,
   static bool IsSupportedPlatform();
 
  private:
-  explicit FindsTabHelper(content::WebContents* web_contents,
-                          FindsService* finds_service,
-                          OptimizationGuideKeyedService* opt_guide_service,
-                          TemplateURLService* template_url_service,
-                          PrefService* pref_service);
-  friend class content::WebContentsUserData<FindsTabHelper>;
   friend class FindsTabHelperTest;
 
   // content::WebContentsObserver:
@@ -82,7 +79,6 @@ class FindsTabHelper : public content::WebContentsObserver,
   base::CallbackListSubscription omnibox_tracker_observation_;
 
   base::WeakPtrFactory<FindsTabHelper> weak_ptr_factory_{this};
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace finds

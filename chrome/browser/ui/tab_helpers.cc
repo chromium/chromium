@@ -154,9 +154,6 @@
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
-#include "chrome/browser/finds/core/finds_features.h"
-#include "chrome/browser/finds/core/finds_tab_helper.h"
-#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tab_helper.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
@@ -573,17 +570,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
                           *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
-
-  if (base::FeatureList::IsEnabled(finds::features::kChromeFinds)) {
-    if (auto* finds_service =
-            finds::FindsServiceFactory::GetForProfile(profile)) {
-      finds::FindsTabHelper::CreateForWebContents(
-          web_contents, finds_service,
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-          TemplateURLServiceFactory::GetForProfile(profile),
-          profile->GetPrefs());
-    }
-  }
 
   if (base::FeatureList::IsEnabled(
           page_load_metrics::features::kBeaconLeakageLogging)) {

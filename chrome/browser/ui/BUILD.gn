@@ -1067,8 +1067,6 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/banners",
       "//chrome/browser/facilitated_payments",
-      "//chrome/browser/finds",
-      "//chrome/browser/finds/core",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/plugins",
       "//chrome/browser/ui/android:context_menu_helper",

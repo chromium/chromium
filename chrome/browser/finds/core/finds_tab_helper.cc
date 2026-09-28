@@ -60,8 +60,7 @@ FindsTabHelper::FindsTabHelper(content::WebContents* web_contents,
                                OptimizationGuideKeyedService* opt_guide_service,
                                TemplateURLService* template_url_service,
                                PrefService* pref_service)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<FindsTabHelper>(*web_contents) {
+    : content::WebContentsObserver(web_contents) {
   // FindsTabHelper should only be created when the FindsService is non-null.
   CHECK(finds_service);
   finds_service_ = finds_service;
@@ -223,7 +222,5 @@ void FindsTabHelper::OnOptimizationGuideDecision(
     }
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FindsTabHelper);
 
 }  // namespace finds
