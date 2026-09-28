@@ -136,9 +136,8 @@ class LocalRecoveryFactorsFactoryImpl
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
     local_recovery_factors.emplace_back(
         std::make_unique<PhysicalDeviceRecoveryFactor>(
-            security_domain_id, /*storage=*/storage,
-            /*registration_storage=*/storage, /*key_storage=*/storage,
-            connection, primary_account));
+            /*storage=*/storage, /*registration_storage=*/storage,
+            /*key_storage=*/storage, connection, primary_account));
 #if BUILDFLAG(IS_MAC)
     // Note: The iCloud Keychain recovery factor needs to come after the
     // physical device recovery factor.
@@ -322,6 +321,7 @@ void StandaloneTrustedVaultBackend::AttemptRecoveryFactor(
   CHECK(local_recovery_factor >= 0 &&
         local_recovery_factor < local_recovery_factors_.size());
   local_recovery_factors_[local_recovery_factor]->AttemptRecovery(
+      security_domain_id_,
       base::BindOnce(&StandaloneTrustedVaultBackend::OnKeysRecovered,
                      weak_ptr_factory_.GetWeakPtr(), local_recovery_factor));
 }
@@ -589,9 +589,11 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
     const LocalRecoveryFactorType factor_type = factor->GetRecoveryFactorType();
     ongoing_registration_attempts_[factor_type]++;
     const std::optional<TrustedVaultRecoveryFactorRegistrationStateForUMA>
-        registration_state = factor->MaybeRegister(base::BindOnce(
-            &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
-            weak_ptr_factory_.GetWeakPtr(), factor_type));
+        registration_state = factor->MaybeRegister(
+            security_domain_id_,
+            base::BindOnce(
+                &StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered,
+                weak_ptr_factory_.GetWeakPtr(), factor_type));
 
     if (registration_state.has_value() && should_record_metrics) {
       recovery_factor_registration_state_recorded_to_uma_ = true;
@@ -599,7 +601,7 @@ void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
           base::StrCat({"TrustedVault.RecoveryFactorRegistered.",
                         GetLocalRecoveryFactorNameForUma(factor_type), ".",
                         GetSecurityDomainNameForUma(security_domain_id_)}),
-          factor->IsRegistered());
+          factor->IsRegistered(security_domain_id_));
       RecordTrustedVaultRecoveryFactorRegistrationState(
           factor_type, security_domain_id_, *registration_state);
     }
@@ -628,6 +630,7 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
 
 void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
     LocalRecoveryFactorType local_recovery_factor_type,
+    SecurityDomainId security_domain_id,
     TrustedVaultRegistrationStatus status,
     int key_version,
     bool had_local_keys) {
@@ -691,6 +694,7 @@ void StandaloneTrustedVaultBackend::OnRecoveryFactorRegistered(
 
 void StandaloneTrustedVaultBackend::OnKeysRecovered(
     size_t current_local_recovery_factor,
+    SecurityDomainId security_domain_id,
     LocalRecoveryFactor::RecoveryStatus recovery_status,
     const std::vector<std::vector<uint8_t>>& downloaded_vault_keys,
     int last_vault_key_version) {

@@ -71,7 +71,12 @@ LocalRecoveryFactorType ICloudKeychainRecoveryFactor::GetRecoveryFactorType()
   return LocalRecoveryFactorType::kICloudKeychain;
 }
 
-void ICloudKeychainRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
+void ICloudKeychainRecoveryFactor::AttemptRecovery(
+    SecurityDomainId security_domain_id,
+    AttemptRecoveryCallback cb) {
+  // TODO(crbug.com/542895033): Support multiple security domains in a follow-up
+  // CL.
+  CHECK_EQ(security_domain_id, security_domain_id_);
   if (key_storage_->HasNonConstantKey(primary_account_.gaia,
                                       security_domain_id_)) {
     // iCloud Keychain is only used to recover keys if there were no
@@ -95,7 +100,7 @@ void ICloudKeychainRecoveryFactor::OnICloudKeysRetrievedForRecovery(
     AttemptRecoveryCallback cb,
     std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys) {
   if (local_icloud_keys.empty()) {
-    MarkAsNotRegistered();
+    MarkAsNotRegistered(security_domain_id_);
     FulfillRecoveryWithFailure(
         TrustedVaultDownloadKeysStatusForUMA::kDeviceNotRegistered,
         std::move(cb));
@@ -179,8 +184,8 @@ void ICloudKeychainRecoveryFactor::OnRecoveryFactorStateDownloadedForRecovery(
                                    &MemberKeys::version)
               ->version;
       MarkAsRegistered();
-      std::move(cb).Run(RecoveryStatus::kSuccess, *new_vault_keys,
-                        last_vault_key_version);
+      std::move(cb).Run(security_domain_id_, RecoveryStatus::kSuccess,
+                        *new_vault_keys, last_vault_key_version);
       return;
     }
   }
@@ -189,7 +194,7 @@ void ICloudKeychainRecoveryFactor::OnRecoveryFactorStateDownloadedForRecovery(
   // fail with the last status. This makes sure to record that status only once
   // per recovery attempt rather than once per vault member, which could skew
   // the metrics.
-  MarkAsNotRegistered();
+  MarkAsNotRegistered(security_domain_id_);
   FulfillRecoveryWithFailure(last_status, std::move(cb));
 }
 
@@ -200,19 +205,28 @@ void ICloudKeychainRecoveryFactor::FulfillRecoveryWithFailure(
                                        security_domain_id_, status_for_uma);
 
   base::BindPostTaskToCurrentDefault(
-      base::BindOnce(std::move(cb), RecoveryStatus::kFailure,
+      base::BindOnce(std::move(cb), security_domain_id_,
+                     RecoveryStatus::kFailure,
                      /*new_vault_keys=*/std::vector<std::vector<uint8_t>>(),
                      /*last_vault_key_version=*/0))
       .Run();
 }
 
-bool ICloudKeychainRecoveryFactor::IsRegistered() {
+bool ICloudKeychainRecoveryFactor::IsRegistered(
+    SecurityDomainId security_domain_id) {
+  // TODO(crbug.com/542895033): Support multiple security domains in a follow-up
+  // CL.
+  CHECK_EQ(security_domain_id, security_domain_id_);
   return registration_storage_->IsRecoveryFactorRegistered(
       primary_account_.gaia, security_domain_id_,
       LocalRecoveryFactorType::kICloudKeychain);
 }
 
-void ICloudKeychainRecoveryFactor::MarkAsNotRegistered() {
+void ICloudKeychainRecoveryFactor::MarkAsNotRegistered(
+    SecurityDomainId security_domain_id) {
+  // TODO(crbug.com/542895033): Support multiple security domains in a follow-up
+  // CL.
+  CHECK_EQ(security_domain_id, security_domain_id_);
   registration_storage_->SetRecoveryFactorRegistered(
       primary_account_.gaia, security_domain_id_,
       LocalRecoveryFactorType::kICloudKeychain, false);
@@ -225,8 +239,12 @@ void ICloudKeychainRecoveryFactor::MarkAsRegistered() {
 }
 
 TrustedVaultRecoveryFactorRegistrationStateForUMA
-ICloudKeychainRecoveryFactor::MaybeRegister(RegisterCallback cb) {
-  if (IsRegistered()) {
+ICloudKeychainRecoveryFactor::MaybeRegister(SecurityDomainId security_domain_id,
+                                            RegisterCallback cb) {
+  // TODO(crbug.com/542895033): Support multiple security domains in a follow-up
+  // CL.
+  CHECK_EQ(security_domain_id, security_domain_id_);
+  if (IsRegistered(security_domain_id)) {
     FulfillRegistrationWithFailure(
         TrustedVaultRegistrationStatus::kRegistrationNotAttempted,
         std::move(cb));
@@ -354,6 +372,7 @@ void ICloudKeychainRecoveryFactor::
               ->version;
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(std::move(ongoing_registration_callback_),
+                         security_domain_id_,
                          TrustedVaultRegistrationStatus::kAlreadyRegistered,
                          last_vault_key_version, /*had_local_keys=*/true))
           .Run();
@@ -429,7 +448,7 @@ void ICloudKeychainRecoveryFactor::OnRegistered(
       break;
   }
 
-  std::move(cb).Run(status,
+  std::move(cb).Run(security_domain_id_, status,
                     /*key_version=*/key_version,
                     /*had_local_keys=*/true);
 }
@@ -437,7 +456,8 @@ void ICloudKeychainRecoveryFactor::OnRegistered(
 void ICloudKeychainRecoveryFactor::FulfillRegistrationWithFailure(
     TrustedVaultRegistrationStatus status,
     RegisterCallback cb) {
-  base::BindPostTaskToCurrentDefault(base::BindOnce(std::move(cb), status,
+  base::BindPostTaskToCurrentDefault(base::BindOnce(std::move(cb),
+                                                    security_domain_id_, status,
                                                     /*key_version=*/0,
                                                     /*had_local_keys=*/true))
       .Run();

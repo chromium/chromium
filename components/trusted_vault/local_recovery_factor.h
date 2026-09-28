@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace trusted_vault {
@@ -46,11 +47,13 @@ class LocalRecoveryFactor {
   };
 
   using AttemptRecoveryCallback = base::OnceCallback<void(
+      SecurityDomainId /* security_domain_id */,
       RecoveryStatus /* status */,
       const std::vector<std::vector<uint8_t>>& /* new_vault_keys */,
       int /* last_vault_key_version */)>;
   using RegisterCallback =
-      base::OnceCallback<void(TrustedVaultRegistrationStatus /* status */,
+      base::OnceCallback<void(SecurityDomainId /* security_domain_id */,
+                              TrustedVaultRegistrationStatus /* status */,
                               int /* key_version */,
                               bool /* had_local_keys */)>;
 
@@ -63,18 +66,20 @@ class LocalRecoveryFactor {
   virtual LocalRecoveryFactorType GetRecoveryFactorType() const = 0;
 
   // Attempts a key recovery.
-  virtual void AttemptRecovery(AttemptRecoveryCallback cb) = 0;
+  virtual void AttemptRecovery(SecurityDomainId security_domain_id,
+                               AttemptRecoveryCallback cb) = 0;
 
   // Returns whether the recovery factor is marked as registered.
-  virtual bool IsRegistered() = 0;
+  virtual bool IsRegistered(SecurityDomainId security_domain_id) = 0;
   // Marks the recovery factor as not registered, which makes it eligible for
   // future registration attempts.
-  virtual void MarkAsNotRegistered() = 0;
+  virtual void MarkAsNotRegistered(SecurityDomainId security_domain_id) = 0;
   // Attempts to register the recovery factor in case it's not yet registered
   // and currently available local data is sufficient to do it. It returns an
   // enum representing the registration state, intended to be used for metric
   // recording. `cb` is guaranteed to be invoked.
   virtual TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
+      SecurityDomainId security_domain_id,
       RegisterCallback cb) = 0;
 };
 

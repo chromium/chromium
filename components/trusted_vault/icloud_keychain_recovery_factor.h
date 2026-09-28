@@ -39,12 +39,14 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
 
   LocalRecoveryFactorType GetRecoveryFactorType() const override;
 
-  void AttemptRecovery(AttemptRecoveryCallback cb) override;
+  void AttemptRecovery(SecurityDomainId security_domain_id,
+                       AttemptRecoveryCallback cb) override;
 
-  bool IsRegistered() override;
-  void MarkAsNotRegistered() override;
+  bool IsRegistered(SecurityDomainId security_domain_id) override;
+  void MarkAsNotRegistered(SecurityDomainId security_domain_id) override;
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
+      SecurityDomainId security_domain_id,
       RegisterCallback cb) override;
 
  private:

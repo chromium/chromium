@@ -35,6 +35,17 @@ static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
               "Update kAllSecurityDomainIdValues when adding SecurityDomainId "
               "enum values");
 
+// Returns whether pre-enrollment with a constant key is supported for `domain`.
+inline constexpr bool SupportsConstantKeyPreEnrollment(
+    SecurityDomainId domain) {
+  switch (domain) {
+    case SecurityDomainId::kChromeSync:
+      return true;
+    case SecurityDomainId::kPasskeys:
+      return false;
+  }
+}
+
 std::optional<SecurityDomainId> GetSecurityDomainByName(
     std::string_view domain);
 std::string_view GetSecurityDomainName(SecurityDomainId id);

@@ -118,20 +118,20 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     return LocalRecoveryFactorType::kPhysicalDevice;
   }
 
-  void AttemptRecovery(AttemptRecoveryCallback callback) override {
+  void AttemptRecovery(SecurityDomainId security_domain_id,
+                       AttemptRecoveryCallback callback) override {
     CHECK(connection_);
     CHECK(recovery_callback_.is_null());
     attempt_recovery_was_called_ = true;
 
     if (!is_registered_) {
-      std::move(callback).Run(RecoveryStatus::kFailure,
+      std::move(callback).Run(security_domain_id, RecoveryStatus::kFailure,
                               /*new_vault_keys=*/{},
                               /*last_vault_key_version=*/0);
       return;
     }
-    if (connection_->AreRequestsThrottled(account_,
-                                          SecurityDomainId::kChromeSync)) {
-      std::move(callback).Run(RecoveryStatus::kFailure,
+    if (connection_->AreRequestsThrottled(account_, security_domain_id)) {
+      std::move(callback).Run(security_domain_id, RecoveryStatus::kFailure,
                               /*new_vault_keys=*/{},
                               /*last_vault_key_version=*/0);
       return;
@@ -140,37 +140,45 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     recovery_callback_ = std::move(callback);
   }
 
-  bool IsRegistered() override { return is_registered_; }
+  bool IsRegistered(SecurityDomainId security_domain_id) override {
+    return is_registered_;
+  }
 
-  void MarkAsNotRegistered() override { is_registered_ = false; }
+  void MarkAsNotRegistered(SecurityDomainId security_domain_id) override {
+    is_registered_ = false;
+  }
 
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
+      SecurityDomainId security_domain_id,
       RegisterCallback callback) override {
     CHECK(connection_);
     maybe_register_was_called_ = true;
 
     if (!register_callback_.is_null()) {
       std::move(register_callback_)
-          .Run(TrustedVaultRegistrationStatus::kRegistrationCancelled, 0,
+          .Run(security_domain_id,
+               TrustedVaultRegistrationStatus::kRegistrationCancelled, 0,
                false);
     }
 
     if (is_registered_) {
       std::move(callback).Run(
+          security_domain_id,
           TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kAlreadyRegisteredV1;
     }
     if (storage_->GetLastRegistrationReturnedLocalDataObsolete(
-            account_.gaia, SecurityDomainId::kChromeSync)) {
+            account_.gaia, security_domain_id)) {
       std::move(callback).Run(
+          security_domain_id,
           TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kLocalKeysAreStale;
     }
-    if (connection_->AreRequestsThrottled(account_,
-                                          SecurityDomainId::kChromeSync)) {
+    if (connection_->AreRequestsThrottled(account_, security_domain_id)) {
       std::move(callback).Run(
+          security_domain_id,
           TrustedVaultRegistrationStatus::kRegistrationNotAttempted, 0, false);
       return TrustedVaultRecoveryFactorRegistrationStateForUMA::
           kThrottledClientSide;
@@ -178,6 +186,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
 
     register_callback_ = base::BindOnce(
         base::BindLambdaForTesting([this](RegisterCallback cb,
+                                          SecurityDomainId domain,
                                           TrustedVaultRegistrationStatus status,
                                           int key_version,
                                           bool had_local_keys) {
@@ -187,9 +196,9 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
           }
           if (status == TrustedVaultRegistrationStatus::kLocalDataObsolete) {
             storage_->SetLastRegistrationReturnedLocalDataObsolete(
-                account_.gaia, SecurityDomainId::kChromeSync, true);
+                account_.gaia, domain, true);
           }
-          std::move(cb).Run(status, key_version, had_local_keys);
+          std::move(cb).Run(domain, status, key_version, had_local_keys);
         }),
         std::move(callback));
 
@@ -210,17 +219,21 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   void ExpectAttemptRecoveryAndRunCallback(
       RecoveryStatus status,
       const std::vector<std::vector<uint8_t>>& new_vault_keys,
-      int last_vault_key_version) {
+      int last_vault_key_version,
+      SecurityDomainId domain = SecurityDomainId::kChromeSync) {
     ASSERT_FALSE(recovery_callback_.is_null());
     std::move(recovery_callback_)
-        .Run(status, new_vault_keys, last_vault_key_version);
+        .Run(domain, status, new_vault_keys, last_vault_key_version);
   }
 
-  void ExpectMaybeRegisterAndRunCallback(TrustedVaultRegistrationStatus status,
-                                         int key_version,
-                                         bool had_local_keys) {
+  void ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus status,
+      int key_version,
+      bool had_local_keys,
+      SecurityDomainId domain = SecurityDomainId::kChromeSync) {
     ASSERT_FALSE(register_callback_.is_null());
-    std::move(register_callback_).Run(status, key_version, had_local_keys);
+    std::move(register_callback_)
+        .Run(domain, status, key_version, had_local_keys);
   }
 
   void SetStorage(StandaloneTrustedVaultStorage* storage) {
@@ -271,14 +284,20 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
   LocalRecoveryFactorType GetRecoveryFactorType() const override {
     return delegate_->GetRecoveryFactorType();
   }
-  void AttemptRecovery(AttemptRecoveryCallback callback) override {
-    delegate_->AttemptRecovery(std::move(callback));
+  void AttemptRecovery(SecurityDomainId security_domain_id,
+                       AttemptRecoveryCallback callback) override {
+    delegate_->AttemptRecovery(security_domain_id, std::move(callback));
   }
-  bool IsRegistered() override { return delegate_->IsRegistered(); }
-  void MarkAsNotRegistered() override { delegate_->MarkAsNotRegistered(); }
+  bool IsRegistered(SecurityDomainId security_domain_id) override {
+    return delegate_->IsRegistered(security_domain_id);
+  }
+  void MarkAsNotRegistered(SecurityDomainId security_domain_id) override {
+    delegate_->MarkAsNotRegistered(security_domain_id);
+  }
   TrustedVaultRecoveryFactorRegistrationStateForUMA MaybeRegister(
+      SecurityDomainId security_domain_id,
       RegisterCallback callback) override {
-    return delegate_->MaybeRegister(std::move(callback));
+    return delegate_->MaybeRegister(security_domain_id, std::move(callback));
   }
 
  private:
@@ -839,7 +858,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterRecoveryFactors) {
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, true);
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)
+                  ->IsRegistered(security_domain_id()));
   histogram_tester.ExpectUniqueSample(
       /*name=*/"TrustedVault.RecoveryFactorRegistrationOutcome." +
           GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(kAccountInfo)) +
@@ -921,7 +941,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // TODO(crbug.com/405381481): Note that the fake recovery factor isn't reset
   // by ClearLocalDataForAccount() because it doesn't store its state in the
   // shared storage. Thus, it's reset explicitly here.
-  GetOrCreateRecoveryFactor(kAccountInfo)->MarkAsNotRegistered();
+  GetOrCreateRecoveryFactor(kAccountInfo)
+      ->MarkAsNotRegistered(security_domain_id());
   backend()->ClearLocalDataForAccount(kAccountInfo);
   // Let the registration attempt fail, so the recovery attempt triggered below
   // returns with "not registered" immediately.
@@ -1056,7 +1077,8 @@ TEST_F(
   GetOrCreateRecoveryFactor(kAccountInfo)
       ->ExpectMaybeRegisterAndRunCallback(
           TrustedVaultRegistrationStatus::kSuccess, kNewKeysVersion, true);
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)
+                  ->IsRegistered(security_domain_id()));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -1164,7 +1186,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Pretend that the registration completed successfully for the first factor.
   recovery_factors[0]->ExpectMaybeRegisterAndRunCallback(
       TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, true);
-  EXPECT_TRUE(recovery_factors[0]->IsRegistered());
+  EXPECT_TRUE(recovery_factors[0]->IsRegistered(security_domain_id()));
   histogram_tester.ExpectBucketCount(
       /*name=*/"TrustedVault.RecoveryFactorRegistrationOutcome." +
           GetRecoveryFactorTypeForUMA(recovery_factors[0]) + "." +
@@ -1175,7 +1197,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // Pretend that the registration failed for the second factor.
   recovery_factors[1]->ExpectMaybeRegisterAndRunCallback(
       TrustedVaultRegistrationStatus::kNetworkError, kLastKeyVersion, true);
-  EXPECT_FALSE(recovery_factors[1]->IsRegistered());
+  EXPECT_FALSE(recovery_factors[1]->IsRegistered(security_domain_id()));
   histogram_tester.ExpectBucketCount(
       /*name=*/"TrustedVault.RecoveryFactorRegistrationOutcome." +
           GetRecoveryFactorTypeForUMA(recovery_factors[1]) + "." +
@@ -1411,7 +1433,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           /*had_local_keys=*/false);
 
   // Now the fake recovery factor should be registered.
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)->IsRegistered());
+  EXPECT_TRUE(GetOrCreateRecoveryFactor(kAccountInfo)
+                  ->IsRegistered(security_domain_id()));
 
   // FetchKeys() should trigger keys downloading. Note: unlike tests with
   // following regular key rotation, in this case MarkLocalKeysAsStale() isn't
