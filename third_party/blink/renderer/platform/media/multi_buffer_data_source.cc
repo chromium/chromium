@@ -333,13 +333,6 @@ void MultiBufferDataSource::Stop() {
   {
     base::AutoLock auto_lock(lock_);
     StopInternal_Locked();
-
-    // Cleanup resources immediately if we're already on the right thread.
-    if (render_task_runner_->BelongsToCurrentThread()) {
-      reader_.reset();
-      url_data_.reset();
-      return;
-    }
   }
 
   PostCrossThreadTask(*render_task_runner_, FROM_HERE,
