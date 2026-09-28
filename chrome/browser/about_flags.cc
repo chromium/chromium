@@ -3430,6 +3430,33 @@ const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] =
         {"force light theme", sAndroidThemeResourceProviderParams, nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kClankOmniboxSameOriginCompleteRemovalParams[] = {
+        {"variant", "complete_removal"}};
+const FeatureEntry::FeatureParam kClankOmniboxSameOriginIndicatorParams[] = {
+    {"variant", "indicator"},
+    {"indicator_height_dp", "12"}};
+const FeatureEntry::FeatureParam kClankOmniboxSameOriginPeekParams[] = {
+    {"variant", "peek"},
+    {"peek_duration_ms", "600"}};
+const FeatureEntry::FeatureVariation
+    kClankOmniboxSameOriginMinimizationVariations[] = {
+        {"A1: Complete Removal", kClankOmniboxSameOriginCompleteRemovalParams,
+         nullptr},
+        {"A2: Indicator (12dp)", kClankOmniboxSameOriginIndicatorParams,
+         nullptr},
+        {"A3: Peek (600ms)", kClankOmniboxSameOriginPeekParams, nullptr},
+};
+
+const FeatureEntry::FeatureParam kClankMiniOmnibox44dpParams[] = {
+    {"mini_toolbar_height_dp", "44"}};
+const FeatureEntry::FeatureParam kClankMiniOmnibox40dpParams[] = {
+    {"mini_toolbar_height_dp", "40"}};
+const FeatureEntry::FeatureVariation kClankMiniOmniboxVariations[] = {
+    {"44dp Compact Height", kClankMiniOmnibox44dpParams, nullptr},
+    {"40dp Extra Compact Height", kClankMiniOmnibox40dpParams, nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -11693,6 +11720,21 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowserControlsDebuggingName,
      flag_descriptions::kBrowserControlsDebuggingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBrowserControlsDebugging)},
+
+    {"clank-mini-omnibox", flag_descriptions::kClankMiniOmniboxName,
+     flag_descriptions::kClankMiniOmniboxDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kClankMiniOmnibox,
+                                    kClankMiniOmniboxVariations,
+                                    "ClankMiniOmnibox")},
+
+    {"clank-omnibox-same-origin-minimization",
+     flag_descriptions::kClankOmniboxSameOriginMinimizationName,
+     flag_descriptions::kClankOmniboxSameOriginMinimizationDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kClankOmniboxSameOriginMinimization,
+         kClankOmniboxSameOriginMinimizationVariations,
+         "ClankOmniboxSameOriginMinimization")},
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

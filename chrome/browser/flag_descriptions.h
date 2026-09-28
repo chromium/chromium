@@ -6024,6 +6024,17 @@ inline constexpr char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
+inline constexpr char kClankMiniOmniboxName[] = "Clank Mini-Omnibox";
+inline constexpr char kClankMiniOmniboxDescription[] =
+    "Enables a compact mini-Omnibox toolbar with reduced height and dense "
+    "typography.";
+
+inline constexpr char kClankOmniboxSameOriginMinimizationName[] =
+    "Clank Omnibox Same-Origin Minimization";
+inline constexpr char kClankOmniboxSameOriginMinimizationDescription[] =
+    "Suppresses Omnibox expansion during same-origin navigations when the user "
+    "has scrolled down (Variants A1/A2/A3).";
+
 inline constexpr char kCompositorViewRemeasureFixName[] =
     "compositor-view-remeasure-fix";
 inline constexpr char kCompositorViewRemeasureFixDescription[] =

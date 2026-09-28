@@ -13057,6 +13057,7 @@ from previous Chrome versions.
   <int value="-565003703"
       label="EnableBrowserActuatorForGlicExperimentalTriggering:enabled"/>
   <int value="-563980787" label="disable-webrtc"/>
+  <int value="-563673409" label="ClankOmniboxSameOriginMinimization:disabled"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
   <int value="-563136351"
       label="ContextualTasksOverrideShowBottomSheetOnLargeScreen:enabled"/>
@@ -13949,6 +13950,7 @@ from previous Chrome versions.
   <int value="-296203212"
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:enabled"/>
   <int value="-296179618" label="CookiesWithoutSameSiteMustBeSecure:enabled"/>
+  <int value="-296144024" label="ClankMiniOmnibox:enabled"/>
   <int value="-295753272" label="CaptivePortalPopupWindow:disabled"/>
   <int value="-295715134" label="AndroidAppIntegrationWithFavicon:enabled"/>
   <int value="-295453948" label="cast-streaming-force-disable-hardware-av1"/>
@@ -15814,6 +15816,7 @@ from previous Chrome versions.
   <int value="285387302" label="AvatarToolbarButton:enabled"/>
   <int value="285502038" label="AndroidTabGroupsColorUpdateGM3:disabled"/>
   <int value="286001833" label="TabGroupsNewBadgePromo:enabled"/>
+  <int value="286446695" label="ClankOmniboxSameOriginMinimization:enabled"/>
   <int value="286621673" label="FedCmIframeSupport:enabled"/>
   <int value="286717452" label="ContextualSearchDebug:disabled"/>
   <int value="287599993"
@@ -17003,6 +17006,7 @@ from previous Chrome versions.
   <int value="651562604" label="RawClipboard:enabled"/>
   <int value="651844675" label="EasyUnlockPromotions:enabled"/>
   <int value="651955697" label="FedCmWellKnownEndpointValidation:disabled"/>
+  <int value="652096285" label="ClankMiniOmnibox:disabled"/>
   <int value="652149678" label="EnableBoundSessionCredentials:disabled"/>
   <int value="652290286" label="AccessibilityPageZoomEnhancements:disabled"/>
   <int value="652561231" label="CustomContextMenu:enabled"/>

@@ -486,6 +486,9 @@ public abstract class ChromeFeatureList {
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
     public static final String CLANK_DEFAULT_SEARCH_API = "ClankDefaultSearchApi";
     public static final String CLANK_GLIC_CONTEXT_MENU = "ClankGlicContextMenu";
+    public static final String CLANK_MINI_OMNIBOX = "ClankMiniOmnibox";
+    public static final String CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION =
+            "ClankOmniboxSameOriginMinimization";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
     public static final String CLANK_WHATS_NEW = "ClankWhatsNew";
     public static final String CLEAR_INTENT_WHEN_RECREATED = "ClearIntentWhenRecreated";
@@ -1130,6 +1133,9 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CHROME_NATIVE_URL_OVERRIDING, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sClampAutomotiveScaling =
             newCachedFlag(CLAMP_AUTOMOTIVE_SCALING, true);
+    public static final CachedFlag sClankMiniOmnibox = newCachedFlag(CLANK_MINI_OMNIBOX, false);
+    public static final CachedFlag sClankOmniboxSameOriginMinimization =
+            newCachedFlag(CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, false);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
     public static final CachedFlag sClearIntentWhenRecreated =
@@ -1598,6 +1604,8 @@ public abstract class ChromeFeatureList {
                     sCctTabSwitcherEnabledForEmbedderExperiment,
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,
+                    sClankMiniOmnibox,
+                    sClankOmniboxSameOriginMinimization,
                     sClankStartupLatencyInjection,
                     sClearIntentWhenRecreated,
                     sCommandLineOnNonRooted,
@@ -2164,6 +2172,30 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     CCT_RESIZABLE_FOR_THIRD_PARTIES, "default_policy", "use-denylist");
 
+    /** Compact toolbar height in dp for Experiment B (Mini-Omnibox). */
+    public static final IntCachedFeatureParam sClankMiniOmniboxHeightDp =
+            newIntCachedFeatureParam(CLANK_MINI_OMNIBOX, "mini_toolbar_height_dp", 44);
+
+    /**
+     * Visible indicator strip height in dp for Experiment A2 (Same-Origin Minimization Indicator).
+     */
+    public static final IntCachedFeatureParam sClankOmniboxSameOriginIndicatorHeightDp =
+            newIntCachedFeatureParam(
+                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "indicator_height_dp", 12);
+
+    /**
+     * Variant selector for Experiment A (Same-Origin Minimization): "complete_removal" (A1),
+     * "indicator" (A2), or "peek" (A3).
+     */
+    public static final StringCachedFeatureParam sClankOmniboxSameOriginMinimizationVariant =
+            newStringCachedFeatureParam(
+                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "variant", "complete_removal");
+
+    /** Peek dwell duration in ms before auto-retracting for Experiment A3 (Same-Origin Peek). */
+    public static final IntCachedFeatureParam sClankOmniboxSameOriginPeekDurationMs =
+            newIntCachedFeatureParam(
+                    CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, "peek_duration_ms", 600);
+
     /**
      * A cached parameter representing the amount of latency to inject during Clank startup based on
      * experiment configuration.
@@ -2418,6 +2450,10 @@ public abstract class ChromeFeatureList {
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sCctResizableForThirdPartiesDenylistEntries,
                     sClampAutomotiveScalingMaxScalingPercentage,
+                    sClankMiniOmniboxHeightDp,
+                    sClankOmniboxSameOriginIndicatorHeightDp,
+                    sClankOmniboxSameOriginMinimizationVariant,
+                    sClankOmniboxSameOriginPeekDurationMs,
                     sClankStartupLatencyInjectionAmountMs,
                     sDefaultBrowserPromoEntryPointShowAppMenu,
                     sDesktopUAAllowedOnExternalDisplayForOem,
