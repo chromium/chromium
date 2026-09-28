@@ -943,3 +943,9 @@ BASE_FEATURE(kGeminiInsightsChipAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiInsightsChipAblationEnabled() {
   return base::FeatureList::IsEnabled(kGeminiInsightsChipAblation);
 }
+
+BASE_FEATURE(kGeminiHostExperimentIDs, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiHostExperimentIDsEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiHostExperimentIDs);
+}

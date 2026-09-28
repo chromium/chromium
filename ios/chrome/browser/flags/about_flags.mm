@@ -2815,6 +2815,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAimCobrowseWebSelectionSearchName,
      flag_descriptions::kAimCobrowseWebSelectionSearchDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAimCobrowseWebSelectionSearch)},
+    {"gemini-host-experiment-ids",
+     flag_descriptions::kGeminiHostExperimentIDsName,
+     flag_descriptions::kGeminiHostExperimentIDsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiHostExperimentIDs)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -10561,6 +10561,21 @@
             ]
         }
     ],
+    "IOSGeminiHostExperimentIDs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiHostExperimentIDs"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSHelios": [
         {
             "platforms": [

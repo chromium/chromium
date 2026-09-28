@@ -906,6 +906,12 @@ inline constexpr char kGeminiFRERefactorName[] = "Gemini FRE Refactor";
 inline constexpr char kGeminiFRERefactorDescription[] =
     "Enables the refactored Gemini First Run Experience UI.";
 
+inline constexpr char kGeminiHostExperimentIDsName[] =
+    "Gemini Host Experiment IDs";
+inline constexpr char kGeminiHostExperimentIDsDescription[] =
+    "Passes active Chrome iOS Finch GWS variation IDs to the embedded Gemini "
+    "iOS SDK.";
+
 inline constexpr char kGeminiInsightsChipAblationName[] =
     "Gemini Insights Chip Ablation";
 inline constexpr char kGeminiInsightsChipAblationDescription[] =
