@@ -79,27 +79,29 @@ class PLATFORM_EXPORT ShapeResultView final
 
    public:
     Segment() = default;
-    Segment(const ShapeResult* result, unsigned start_index, unsigned end_index)
+    Segment(const ShapeResult* result,
+            wtf_size_t start_index,
+            wtf_size_t end_index)
         : result(result), start_index(start_index), end_index(end_index) {}
     Segment(const ShapeResultView* view,
-            unsigned start_index,
-            unsigned end_index)
+            wtf_size_t start_index,
+            wtf_size_t end_index)
         : view(view), start_index(start_index), end_index(end_index) {}
     const ShapeResult* result = nullptr;
     const ShapeResultView* view = nullptr;
-    unsigned start_index = 0;
-    unsigned end_index = 0;
+    wtf_size_t start_index = 0;
+    wtf_size_t end_index = 0;
   };
   static ShapeResultView* Create(base::span<const Segment> segments);
 
   // Creates a new ShapeResultView from a single segment.
   static ShapeResultView* Create(const ShapeResult*);
   static ShapeResultView* Create(const ShapeResult*,
-                                 unsigned start_index,
-                                 unsigned end_index);
+                                 wtf_size_t start_index,
+                                 wtf_size_t end_index);
   static ShapeResultView* Create(const ShapeResultView*,
-                                 unsigned start_index,
-                                 unsigned end_index);
+                                 wtf_size_t start_index,
+                                 wtf_size_t end_index);
 
   struct InitData;
   explicit ShapeResultView(const InitData& data);
@@ -111,9 +113,9 @@ class PLATFORM_EXPORT ShapeResultView final
 
   ShapeResult* CreateShapeResult() const;
 
-  unsigned StartIndex() const { return start_index_ + char_index_offset_; }
-  unsigned EndIndex() const { return StartIndex() + num_characters_; }
-  unsigned NumCharacters() const { return num_characters_; }
+  wtf_size_t StartIndex() const { return start_index_ + char_index_offset_; }
+  wtf_size_t EndIndex() const { return StartIndex() + num_characters_; }
+  wtf_size_t NumCharacters() const { return num_characters_; }
   float Width() const { return width_; }
   LayoutUnit SnappedWidth() const { return LayoutUnit::FromFloatCeil(width_); }
   TextDirection Direction() const {
@@ -123,24 +125,24 @@ class PLATFORM_EXPORT ShapeResultView final
   bool IsRtl() const { return blink::IsRtl(Direction()); }
   bool HasVerticalOffsets() const { return has_vertical_offsets_; }
 
-  unsigned NumGlyphs() const;
+  wtf_size_t NumGlyphs() const;
   HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
 
-  unsigned PreviousSafeToBreakOffset(unsigned index) const;
+  wtf_size_t PreviousSafeToBreakOffset(wtf_size_t index) const;
 
   float ForEachGlyph(float initial_advance, GlyphCallback, void* context) const;
   float ForEachGlyph(float initial_advance,
-                     unsigned from,
-                     unsigned to,
-                     unsigned index_offset,
+                     wtf_size_t from,
+                     wtf_size_t to,
+                     wtf_size_t index_offset,
                      GlyphCallback,
                      void* context) const;
 
   float ForEachGraphemeClusters(const StringView& text,
                                 float initial_advance,
-                                unsigned from,
-                                unsigned to,
-                                unsigned index_offset,
+                                wtf_size_t from,
+                                wtf_size_t to,
+                                wtf_size_t index_offset,
                                 GraphemeClusterCallback,
                                 void* context) const;
 
@@ -151,16 +153,17 @@ class PLATFORM_EXPORT ShapeResultView final
 
   void GetRunFontData(HeapVector<ShapeResult::RunFontData>*) const;
 
-  void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
+  void ExpandRangeToIncludePartialGlyphs(wtf_size_t* from,
+                                         wtf_size_t* to) const;
 
   struct RunInfoPart {
     DISALLOW_NEW();
 
    public:
     RunInfoPart(GlyphDataRange range,
-                unsigned start_index,
-                unsigned offset,
-                unsigned num_characters,
+                wtf_size_t start_index,
+                wtf_size_t offset,
+                wtf_size_t num_characters,
                 float width);
 
     PLATFORM_EXPORT void Trace(Visitor*) const;
@@ -177,22 +180,22 @@ class PLATFORM_EXPORT ShapeResultView final
     // |ShapeResultView|. This is analogous to:
     //   CreateReader()[IsRtl() ? -1 : NumGlyphs()].character_index
     // if such |HarfBuzzRunGlyphData| is available.
-    unsigned CharacterIndexOfEndGlyph() const {
+    wtf_size_t CharacterIndexOfEndGlyph() const {
       return num_characters_ + offset_;
     }
 
-    unsigned NumCharacters() const { return num_characters_; }
-    unsigned NumGlyphs() const { return range_.size(); }
+    wtf_size_t NumCharacters() const { return num_characters_; }
+    wtf_size_t NumGlyphs() const { return range_.size(); }
     float Width() const { return width_; }
 
-    unsigned PreviousSafeToBreakOffset(unsigned offset) const;
+    wtf_size_t PreviousSafeToBreakOffset(wtf_size_t offset) const;
 
     // Common signatures with RunInfo, to templatize algorithms.
     const ShapeResultRun* GetRunInfo() const { return range_.GetRun(); }
     const GlyphDataRange& GetGlyphDataRange() const { return range_; }
-    GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
-                                      unsigned end_character_index) const;
-    unsigned OffsetToRunStartIndex() const { return offset_; }
+    GlyphDataRange FindGlyphDataRange(wtf_size_t start_character_index,
+                                      wtf_size_t end_character_index) const;
+    wtf_size_t OffsetToRunStartIndex() const { return offset_; }
 
     // The helper function for implementing |PopulateRunInfoParts()| for
     // handling iterating over |Vector<scoped_refptr<RunInfo>>| and
@@ -200,9 +203,9 @@ class PLATFORM_EXPORT ShapeResultView final
     const RunInfoPart* Get() const { return this; }
 
     template <typename RunType, typename ShapeResultType>
-    static unsigned ComputeStart(const RunType& run,
-                                 const ShapeResultType& result) {
-      const unsigned part_start =
+    static wtf_size_t ComputeStart(const RunType& run,
+                                   const ShapeResultType& result) {
+      const wtf_size_t part_start =
           run.start_index_ + result.StartIndexOffsetForRun();
       if (result.IsLtr()) {
         return part_start;
@@ -214,21 +217,21 @@ class PLATFORM_EXPORT ShapeResultView final
     }
 
     template <typename RunType, typename ShapeResultType>
-    static std::optional<std::pair<unsigned, unsigned>> ComputeStartEnd(
+    static std::optional<std::pair<wtf_size_t, wtf_size_t>> ComputeStartEnd(
         const RunType& run,
         const ShapeResultType& result,
         const Segment& segment) {
       if (!run.GetRunInfo()) {
         return std::nullopt;
       }
-      const unsigned part_start = ComputeStart(run, result);
+      const wtf_size_t part_start = ComputeStart(run, result);
       if (segment.end_index <= part_start) {
         return std::nullopt;
       }
       if (!run.num_characters_) {
         return {{part_start, part_start}};
       }
-      const unsigned part_end = part_start + run.num_characters_;
+      const wtf_size_t part_end = part_start + run.num_characters_;
       if (segment.start_index >= part_end) {
         return std::nullopt;
       }
@@ -238,12 +241,12 @@ class PLATFORM_EXPORT ShapeResultView final
     GlyphDataRange range_;
 
     // Start index for partial run, adjusted to ensure that runs are continuous.
-    unsigned start_index_;
+    wtf_size_t start_index_;
 
     // Offset relative to start index for the original run.
-    unsigned offset_;
+    wtf_size_t offset_;
 
-    unsigned num_characters_;
+    wtf_size_t num_characters_;
     float width_;
   };
 
@@ -256,7 +259,7 @@ class PLATFORM_EXPORT ShapeResultView final
   void PopulateRunInfoParts(const ShapeResultType& result,
                             const Segment& segment);
 
-  unsigned CharacterIndexOffsetForGlyphData(const RunInfoPart&) const;
+  wtf_size_t CharacterIndexOffsetForGlyphData(const RunInfoPart&) const;
 
   template <bool kIsHorizontalRun, bool kHasGlyphOffsets>
   void ComputePartInkBounds(const ShapeResultView::RunInfoPart&,
@@ -277,27 +280,27 @@ class PLATFORM_EXPORT ShapeResultView final
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return parts_; }
 
-  unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
+  wtf_size_t StartIndexOffsetForRun() const { return char_index_offset_; }
 
   HeapVector<RunInfoPart, 1> parts_;
 
-  const unsigned start_index_;
+  const wtf_size_t start_index_;
 
   // Once `parts_` is populated `width_` and `num_characters_` are immutable.
   float width_ = 0;
-  unsigned num_characters_ : 30 = 0;
+  uint32_t num_characters_ : 30 = 0;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can
   // have a different text direction.
-  const unsigned direction_ : 1;
+  const uint32_t direction_ : 1;
 
   // Tracks whether any runs contain glyphs with a y-offset != 0.
-  const unsigned has_vertical_offsets_ : 1;
+  const uint32_t has_vertical_offsets_ : 1;
 
   // Offset of the first component added to the view. Used for compatibility
   // with ShapeResult::SubRange
-  const unsigned char_index_offset_;
+  const wtf_size_t char_index_offset_;
 
  private:
   friend class ShapeResult;
@@ -310,9 +313,9 @@ class PLATFORM_EXPORT ShapeResultView final
 
   template <bool kHasGlyphOffsets>
   float ForEachGlyphImpl(float initial_advance,
-                         unsigned from,
-                         unsigned to,
-                         unsigned index_offset,
+                         wtf_size_t from,
+                         wtf_size_t to,
+                         wtf_size_t index_offset,
                          GlyphCallback,
                          void* context,
                          const RunInfoPart& part) const;

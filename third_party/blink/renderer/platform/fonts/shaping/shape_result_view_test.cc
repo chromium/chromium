@@ -32,8 +32,8 @@ class ShapeResultViewTest : public FontTestBase {
 };
 
 TEST_F(ShapeResultViewTest, ExpandRange) {
-  auto GetExpandedRange = [](const String& text, bool ltr, unsigned from,
-                             unsigned to) -> Vector<unsigned> {
+  auto GetExpandedRange = [](const String& text, bool ltr, wtf_size_t from,
+                             wtf_size_t to) -> Vector<wtf_size_t> {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
     Font* font = test::CreateTestFont(
@@ -45,7 +45,7 @@ TEST_F(ShapeResultViewTest, ExpandRange) {
     const ShapeResultView* shape_result = ShapeResultView::Create(
         shaper.Shape(font, ltr ? TextDirection::kLtr : TextDirection::kRtl));
     shape_result->ExpandRangeToIncludePartialGlyphs(&from, &to);
-    return Vector<unsigned>({from, to});
+    return Vector<wtf_size_t>({from, to});
   };
 
   // "ffi" is a ligature, therefore a single glyph. Any range that includes one
@@ -75,8 +75,8 @@ TEST_F(ShapeResultViewTest,
   const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
   const ShapeResultView* view =
       ShapeResultView::Create(result, result->StartIndex(), result->EndIndex());
-  unsigned from = 0;
-  unsigned end = string.length();
+  wtf_size_t from = 0;
+  wtf_size_t end = string.length();
   view->ExpandRangeToIncludePartialGlyphs(&from, &end);
   EXPECT_EQ(0u, from);
   EXPECT_EQ(string.length(), end);
@@ -210,16 +210,16 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
   const ShapeResult* shape_result =
       shaper.Shape(font, direction, 51, 131, range);
 
-  unsigned start_offset = 59;
-  unsigned end_offset = 118;
+  wtf_size_t start_offset = 59;
+  wtf_size_t end_offset = 118;
   const ShapeResultView* result_view =
       ShapeResultView::Create(shape_result, start_offset, end_offset);
   const ShapeResult* result = result_view->CreateShapeResult();
 
-  unsigned offset = end_offset;
+  wtf_size_t offset = end_offset;
   do {
-    unsigned safe = result_view->PreviousSafeToBreakOffset(offset);
-    unsigned cached_safe = result->CachedPreviousSafeToBreakOffset(offset);
+    wtf_size_t safe = result_view->PreviousSafeToBreakOffset(offset);
+    wtf_size_t cached_safe = result->CachedPreviousSafeToBreakOffset(offset);
     EXPECT_EQ(safe, cached_safe);
   } while (--offset > start_offset);
 }
@@ -414,8 +414,8 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
 TEST_F(ShapeResultViewTest, SpacesInLTR) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
-  constexpr unsigned kStartIndex = 0;
-  constexpr unsigned kLength = 2;
+  constexpr wtf_size_t kStartIndex = 0;
+  constexpr wtf_size_t kLength = 2;
   constexpr float kWidth = 8;
   const auto* result = ShapeResult::CreateForSpaces(
       font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
@@ -437,8 +437,8 @@ TEST_F(ShapeResultViewTest, SpacesInLTR) {
 TEST_F(ShapeResultViewTest, SpacesInRTL) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
-  constexpr unsigned kStartIndex = 0;
-  constexpr unsigned kLength = 2;
+  constexpr wtf_size_t kStartIndex = 0;
+  constexpr wtf_size_t kLength = 2;
   constexpr float kWidth = 8;
   const auto* result = ShapeResult::CreateForSpaces(
       font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
@@ -460,8 +460,8 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;
-  constexpr unsigned kStartIndex = 0;
-  constexpr unsigned kLength = 2;
+  constexpr wtf_size_t kStartIndex = 0;
+  constexpr wtf_size_t kLength = 2;
   const auto* result = ShapeResult::CreateForTabulationCharacters(
       font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
 
@@ -483,8 +483,8 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   constexpr float kPosition = 0;
-  constexpr unsigned kStartIndex = 0;
-  constexpr unsigned kLength = 2;
+  constexpr wtf_size_t kStartIndex = 0;
+  constexpr wtf_size_t kLength = 2;
   const auto* result = ShapeResult::CreateForTabulationCharacters(
       font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
 
