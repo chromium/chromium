@@ -65,3 +65,6 @@ const NSInteger kCustomizationNewBadgeMaxImpressionCount = 3;
 const float kBottomMagicStackPadding = 14.0f;
 
 const CGFloat kNewTabPageHorizontalMargin = 16.0;
+
+const CGFloat kQuickActionsSymbolPointSize = 18.0;
+const CGFloat kQuickActionsSymbolPointSizeUICleanup = 14.0;

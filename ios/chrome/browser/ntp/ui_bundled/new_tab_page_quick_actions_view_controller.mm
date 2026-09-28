@@ -60,6 +60,21 @@ CGFloat HorizontalInsetForQuickActions(
   // Constraints for the leading and trailing edges of the `_buttonStackView`.
   NSLayoutConstraint* _stackViewLeadingConstraint;
   NSLayoutConstraint* _stackViewTrailingConstraint;
+
+  // The custom title for the AIM button.
+  NSString* _aimTitle;
+  // The custom icon for the AIM button.
+  UIImage* _aimIcon;
+}
+
+#pragma mark - Public
+
+- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
+  _aimTitle = [title copy];
+  _aimIcon = icon;
+  [NewTabPageQuickActionsButtonFactory updateButton:_aimButton
+                                          withTitle:_aimTitle
+                                               icon:_aimIcon];
 }
 
 #pragma mark - Accessors & Mutators
@@ -96,7 +111,9 @@ CGFloat HorizontalInsetForQuickActions(
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kDisabled: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _aimButton =
+          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
+                                                             icon:_aimIcon];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
           incognitoSearchButtonWithTitle:YES];
       [_buttonStackView addArrangedSubview:_aimButton];
@@ -106,7 +123,9 @@ CGFloat HorizontalInsetForQuickActions(
     }
     case AimButtonRefactorArm::kImageGenerationQuickAction: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _aimButton =
+          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
+                                                             icon:_aimIcon];
       _aimImageGenerationButton =
           [NewTabPageQuickActionsButtonFactory aimImageGenerationButton];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory
@@ -126,7 +145,9 @@ CGFloat HorizontalInsetForQuickActions(
     }
     case AimButtonRefactorArm::kAttachImageQuickAction: {
       _buttonStackView = [self createButtonStackView];
-      _aimButton = [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:YES];
+      _aimButton =
+          [NewTabPageQuickActionsButtonFactory aimButtonWithTitle:_aimTitle
+                                                             icon:_aimIcon];
       _aimAttachImageButton =
           [NewTabPageQuickActionsButtonFactory aimAttachImageButton];
       _incognitoSearchButton = [NewTabPageQuickActionsButtonFactory

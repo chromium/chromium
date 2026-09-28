@@ -198,6 +198,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   BOOL _isBottomOmnibox;
   // The bottom inset for the feed.
   CGFloat _feedBottomInset;
+  // The title for the AI Mode button.
+  NSString* _aimTitle;
+  // The icon for the AI Mode button.
+  UIImage* _aimIcon;
 }
 
 // Properties synthesized from NewTabPageScrollConsumer.
@@ -236,6 +240,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [[NewTabPageQuickActionsViewController alloc] init];
   _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
   _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+  [_quickActionsViewController setAIMTitle:_aimTitle icon:_aimIcon];
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
   [self.feedWrapperViewController loadViewIfNeeded];
@@ -843,6 +848,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _isAIMAllowed = allowed;
 }
 
+- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
+  _aimTitle = [title copy];
+  _aimIcon = icon;
+  [_quickActionsViewController setAIMTitle:title icon:icon];
+}
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
   if (_isBottomOmnibox == isBottomOmnibox) {
     return;

@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -323,6 +324,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
       _fullscreenBrowserAgentObserverBridge;
   // AIM eligibility service.
   raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // Service vending the AI Mode button configuration.
+  AIModeButtonServiceIOS* _aiModeButtonServiceIOS;
   // AIM eligibility subscription.
   base::CallbackListSubscription _aimEligibilitySubscription;
   // Whether AIM is currently allowed.
@@ -431,6 +434,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
               featureEngagementTracker:(feature_engagement::Tracker*)tracker
                  aimEligibilityService:
                      (AimEligibilityService*)aimEligibilityService
+                aiModeButtonServiceIOS:
+                    (AIModeButtonServiceIOS*)aiModeButtonServiceIOS
                 fullscreenBrowserAgent:
                     (FullscreenBrowserAgent*)fullscreenBrowserAgent {
   self = [super init];
@@ -470,6 +475,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     _signedInIdentity = _authService->GetPrimaryIdentity();
     _tracker = tracker;
     _aimEligibilityService = aimEligibilityService;
+    _aiModeButtonServiceIOS = aiModeButtonServiceIOS;
     if (_aimEligibilityService) {
       __weak __typeof(self) weakSelf = self;
       _aimEligibilitySubscription =
@@ -634,6 +640,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _identityManager = nullptr;
   _aimEligibilitySubscription = {};
   _aimEligibilityService = nullptr;
+  _aiModeButtonServiceIOS = nil;
   _isAIMAllowed = NO;
   self.feedControlDelegate = nil;
   _backgroundCustomizationServiceObserverBridge = nullptr;
@@ -859,6 +866,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setFuseboxEligible:fuseboxEligible];
+  [self.consumer setAIMTitle:_aiModeButtonServiceIOS.title
+                        icon:_aiModeButtonServiceIOS.icon];
 
   if (aimAllowed == _isAIMAllowed) {
     return;

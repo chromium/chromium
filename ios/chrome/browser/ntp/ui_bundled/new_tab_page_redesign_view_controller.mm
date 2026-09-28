@@ -188,6 +188,9 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   NewFeatureBadgeView* _customizationNewFeatureBadge;
   BOOL _didNotifyCustomizationBadgeDisplay;
   BOOL _useNewBadgeForCustomizationMenu;
+
+  NSString* _aimTitle;
+  UIImage* _aimIcon;
 }
 
 - (void)viewDidLoad {
@@ -301,6 +304,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
         [[NewTabPageQuickActionsViewController alloc] init];
     _quickActionsViewController.layoutGuideCenter = self.layoutGuideCenter;
     _quickActionsViewController.NTPShortcutsHandler = self.NTPShortcutsHandler;
+    [_quickActionsViewController setAIMTitle:_aimTitle icon:_aimIcon];
     [self addChildViewController:_quickActionsViewController];
 
     _quickActionsViewController.view.translatesAutoresizingMaskIntoConstraints =
@@ -1393,6 +1397,12 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
   [self updateLeadingView];
   [self updateActionButtons];
+}
+
+- (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
+  _aimTitle = [title copy];
+  _aimIcon = icon;
+  [_quickActionsViewController setAIMTitle:title icon:icon];
 }
 
 - (void)setFuseboxEligible:(BOOL)eligible {

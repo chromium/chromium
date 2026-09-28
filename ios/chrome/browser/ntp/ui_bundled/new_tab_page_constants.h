@@ -87,4 +87,8 @@ extern const float kBottomMagicStackPadding;
 // The horizontal margin on the leading and trailing sides of the NTP content.
 extern const CGFloat kNewTabPageHorizontalMargin;
 
+// The size of the quick actions symbols.
+extern const CGFloat kQuickActionsSymbolPointSize;
+extern const CGFloat kQuickActionsSymbolPointSizeUICleanup;
+
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSTANTS_H_

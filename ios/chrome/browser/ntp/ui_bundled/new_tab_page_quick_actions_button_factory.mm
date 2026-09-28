@@ -24,10 +24,6 @@ using ntp_tiles::AimButtonRefactorArm;
 // The border radius for a quick action button.
 constexpr CGFloat kButtonCornerRadius = 24.0;
 
-// The size of the quick actions symbols.
-constexpr CGFloat kSymbolPointSize = 18.0;
-constexpr CGFloat kSymbolPointSizeUICleanup = 14.0;
-
 // The size of a quick action symbol when its button has no title.
 constexpr CGFloat kSymbolPointSizeNoTitle = 16.0;
 
@@ -50,8 +46,8 @@ CGFloat SymbolPointSizeForButton(BOOL has_title) {
   if (ai_merchandising_chips_enabled && !has_title) {
     return kSymbolPointSizeNoTitle;
   }
-  return IsNewTabPageUICleanupEnabled() ? kSymbolPointSizeUICleanup
-                                        : kSymbolPointSize;
+  return IsNewTabPageUICleanupEnabled() ? kQuickActionsSymbolPointSizeUICleanup
+                                        : kQuickActionsSymbolPointSize;
 }
 
 // Returns the color needed for the background of the button.
@@ -65,17 +61,10 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
   return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
 }
 
-// Creates a new quick action button with the given `icon` and optional `title`.
-UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  configuration.background.backgroundColor =
-      ButtonBackgroundColor(/*color_palette=*/nil);
-  configuration.background.cornerRadius = kButtonCornerRadius;
-  configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
+// Converts a symbol to appropriately sized UIImage.
+UIImage* QuickActionButtonIconWithSymbol(Symbol symbol, bool has_title) {
   UIImage* icon;
-  CGFloat symbolPointSize =
-      SymbolPointSizeForButton(/*has_title=*/title != nil);
+  CGFloat symbolPointSize = SymbolPointSizeForButton(has_title);
   if (IsNewTabPageUICleanupEnabled()) {
     UIImageSymbolConfiguration* symbolConfiguration =
         [UIImageSymbolConfiguration
@@ -85,7 +74,14 @@ UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
   } else {
     icon = SymbolWithPointSize(symbol, symbolPointSize);
   }
-  configuration.image = MakeSymbolMonochrome(icon);
+  return MakeSymbolMonochrome(icon);
+}
+
+// Applies `image` and optional `title` to `configuration`.
+void ConfigureButtonTitleAndIcon(UIButtonConfiguration* configuration,
+                                 UIImage* image,
+                                 NSString* title) {
+  configuration.image = image;
 
   if (title) {
     UIFont* font = PreferredFontForTextStyle(
@@ -96,7 +92,22 @@ UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
     configuration.attributedTitle = attributedTitle;
     configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
     configuration.imagePadding = kSymbolPadding;
+  } else {
+    configuration.attributedTitle = nil;
+    configuration.imagePadding = 0;
   }
+}
+
+// Creates a new quick action button with the given `image` and optional
+// `title`.
+UIButton* CreateQuickActionButton(UIImage* image, NSString* title) {
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.background.backgroundColor =
+      ButtonBackgroundColor(/*color_palette=*/nil);
+  configuration.background.cornerRadius = kButtonCornerRadius;
+  configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
+  ConfigureButtonTitleAndIcon(configuration, image, title);
 
   UIButton* button = [[UIButton alloc] init];
   UIColor* base_tint_color =
@@ -118,22 +129,32 @@ UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
 
 @implementation NewTabPageQuickActionsButtonFactory
 
-+ (UIButton*)aimButtonWithTitle:(BOOL)hasTitle {
++ (UIButton*)aimButtonWithTitle:(NSString*)title icon:(UIImage*)icon {
   // TODO(crbug.com/549020046): Add an accessibility label to this button.
-  NSString* title =
-      hasTitle ? l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_AIM) : nil;
-  UIButton* aimButton =
-      CreateQuickActionButton(SymbolMagnifyingglassSpark, title);
+  UIButton* aimButton = CreateQuickActionButton(icon, title);
   aimButton.accessibilityIdentifier = kNTPAIMQuickActionIdentifier;
   return aimButton;
+}
+
++ (void)updateButton:(UIButton*)button
+           withTitle:(NSString*)title
+                icon:(UIImage*)icon {
+  if (!button) {
+    return;
+  }
+  UIButtonConfiguration* configuration = button.configuration;
+  ConfigureButtonTitleAndIcon(configuration, icon, title);
+  button.configuration = configuration;
 }
 
 + (UIButton*)aimImageGenerationButton {
   CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
            ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
   // TODO(crbug.com/549020046): Add an accessibility label to this button.
+  UIImage* icon =
+      QuickActionButtonIconWithSymbol(SymbolImageCreate, /*has_title=*/false);
   UIButton* aimImageGenerationButton =
-      CreateQuickActionButton(SymbolImageCreate, /*title=*/nil);
+      CreateQuickActionButton(icon, /*title=*/nil);
   aimImageGenerationButton.accessibilityIdentifier =
       kNTPAIMImageGenerationQuickActionIdentifier;
   return aimImageGenerationButton;
@@ -143,8 +164,9 @@ UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
   CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
            ntp_tiles::AimButtonRefactorArm::kAttachImageQuickAction);
   // TODO(crbug.com/549020046): Add an accessibility label to this button.
-  UIButton* aimAttachImageButton =
-      CreateQuickActionButton(SymbolPhotoBadgePlus, /*title=*/nil);
+  UIImage* icon = QuickActionButtonIconWithSymbol(SymbolPhotoBadgePlus,
+                                                  /*has_title=*/false);
+  UIButton* aimAttachImageButton = CreateQuickActionButton(icon, /*title=*/nil);
   aimAttachImageButton.accessibilityIdentifier =
       kNTPAIMAttachImageQuickActionIdentifier;
   return aimAttachImageButton;
@@ -154,7 +176,8 @@ UIButton* CreateQuickActionButton(Symbol symbol, NSString* title) {
   NSString* title =
       hasTitle ? l10n_util::GetNSString(IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)
                : nil;
-  UIButton* incognitoButton = CreateQuickActionButton(SymbolIncognito, title);
+  UIImage* icon = QuickActionButtonIconWithSymbol(SymbolIncognito, hasTitle);
+  UIButton* incognitoButton = CreateQuickActionButton(icon, title);
   incognitoButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_ACCNAME_NEW_INCOGNITO_TAB);
   incognitoButton.accessibilityIdentifier = kNTPIncognitoQuickActionIdentifier;
