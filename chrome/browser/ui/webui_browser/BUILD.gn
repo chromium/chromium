@@ -98,6 +98,7 @@ source_set("impl") {
     "//chrome/browser/resources/webui_toolbar_shared:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_table",
+    "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:browser_window_state",

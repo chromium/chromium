@@ -51,6 +51,7 @@ source_set("impl") {
     ]
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
     deps += [
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
       "//ui/gfx/range",

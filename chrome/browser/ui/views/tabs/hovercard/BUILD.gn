@@ -194,6 +194,7 @@ if (!is_chromeos_device) {
       ":test_support",
       "//chrome/app:command_ids",
       "//chrome/browser/interstitials:test_support",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/interaction",

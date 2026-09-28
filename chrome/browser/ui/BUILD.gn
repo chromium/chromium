@@ -263,6 +263,7 @@ if (!is_android) {
     public_deps = [ "//base" ]
     deps = [
       ":browser_actions",
+      ":browser_command_controller",
       ":browser_select_file_dialog_controller",
       ":browser_window_header",
       ":bubble_anchor_util",
@@ -623,8 +624,154 @@ if (!is_android) {
       deps += [ "//chrome/browser/ash/boca/on_task" ]
     }
   }
-}
 
+  source_set("browser_command_controller") {
+    public = [ "browser_command_controller.h" ]
+    public_deps = [
+      "//base",
+      "//build:buildflag_header_h",
+      "//chrome/browser:command_updater_impl",
+      "//chrome/browser:primitives",
+      "//chrome/browser/ttc/core",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//chrome/common:buildflags",
+      "//components/prefs",
+      "//components/sessions",
+      "//ui/actions",
+      "//ui/base:types",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("browser_command_controller_impl") {
+    sources = [ "browser_command_controller.cc" ]
+    public_deps = [
+      ":browser_command_controller",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":accelerator_table",
+      ":browser_actions",
+      ":browser_element_identifiers",
+      ":browser_select_file_dialog_controller",
+      ":browser_window_header",
+      ":browser_window_state",
+      ":bubble_anchor_util",
+      ":chrome_pages",
+      ":managed_ui",
+      ":singleton_tabs",
+      ":ui_features",
+      "//base",
+      "//chrome/app:command_ids",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/actor/ui:actor_overlay",
+      "//chrome/browser/actor/ui:actor_overlay_web_view",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/browsing_data",
+      "//chrome/browser/devtools",
+      "//chrome/browser/feedback",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:enum",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/prefs",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/sharing_hub",
+      "//chrome/browser/shortcuts",
+      "//chrome/browser/sync",
+      "//chrome/browser/translate",
+      "//chrome/browser/ui/actions",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/customize_chrome",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/fullscreen",
+      "//chrome/browser/ui/interaction",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/navigator",
+      "//chrome/browser/ui/page_info",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/read_anything",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui/inspect",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//chrome/browser/ui/webui/util",
+      "//chrome/browser/ui/window_feature_controller",
+      "//components/bookmarks/browser",
+      "//components/dom_distiller/core",
+      "//components/feed:feature_list",
+      "//components/lens:buildflags",
+      "//components/lens:features",
+      "//components/live_caption",
+      "//components/media_router/browser",
+      "//components/media_router/common",
+      "//components/paint_preview/buildflags",
+      "//components/password_manager/core/browser",
+      "//components/performance_manager",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:features",
+      "//components/saved_tab_groups/public",
+      "//components/search",
+      "//components/segmentation_platform/public",
+      "//components/send_tab_to_self",
+      "//components/signin/public/base",
+      "//components/skills:features",
+      "//components/translate/core/browser",
+      "//components/user_education/common",
+      "//components/webapps/browser",
+      "//content/public/browser",
+      "//content/public/common",
+      "//extensions/buildflags",
+      "//printing/buildflags",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/events",
+    ]
+    if (is_chromeos) {
+      deps += [
+        ":browser_commands_chromeos",
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ui/ash/multi_user",
+        "//chrome/browser/ui/chromeos/locked_state",
+        "//components/session_manager/core",
+      ]
+    }
+    if (is_mac) {
+      deps += [ ":browser_commands_mac" ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+    if (is_linux) {
+      deps += [
+        "//ui/base/ime/linux",
+        "//ui/linux:linux_ui",
+      ]
+    }
+    if (is_win || is_mac || is_linux) {
+      deps += [
+        "//chrome/browser/ui/shortcuts",
+        "//chrome/browser/ui/startup/default_browser_prompt",
+      ]
+    }
+  }
+}
 if (is_mac) {
   source_set("browser_commands_mac") {
     public = [ "browser_commands_mac.h" ]
@@ -1969,8 +2116,7 @@ static_library("ui") {
       # WebUI interface binders for desktop, which need this target's headers.
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
-      "browser_command_controller.cc",
-      "browser_command_controller.h",
+      "browser.h",
       "browser_commands.cc",
       "browser_commands.h",
       "browser_tabstrip.cc",
@@ -1995,6 +2141,8 @@ static_library("ui") {
     deps += [
       ":accelerator_table",
       ":browser_actions",
+      ":browser_command_controller",
+      ":browser_command_controller_impl",
       ":browser_header",
       ":browser_manager_service",
       ":browser_select_file_dialog_controller",
@@ -2347,6 +2495,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/ui/webui_browser:impl",
+
+      # browser_command_controller.cc includes browser_window.h and
+      # browser_commands.h from //chrome/browser/ui:ui.
+      ":browser_command_controller_impl",
 
       # unload_controller.cc includes browser_tabstrip.h, browser_window.h,
       # and browser_commands.h from //chrome/browser/ui:ui.
@@ -4745,6 +4897,7 @@ if (!is_android) {
     deps = [
       ":breadcrumb_manager_browser_agent",
       ":browser_actions",
+      ":browser_command_controller",
       ":browser_instant_controller",
       ":browser_manager_service",
       ":browser_tabrestore",

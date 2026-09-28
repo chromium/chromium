@@ -73,6 +73,7 @@ source_set("exclusive_access") {
     public_deps += [ "//chrome/browser:browser_public_dependencies" ]
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/bookmarks",
     ]

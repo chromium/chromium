@@ -82,6 +82,7 @@ source_set("impl") {
   } else {
     deps += [
       "//chrome/browser/glic",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui/views/side_panel",
     ]
   }

@@ -101,6 +101,7 @@ if (is_chromeos) {
 
     deps = [
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views",
@@ -1663,6 +1664,7 @@ if (is_mac) {
       "//chrome/browser/browsing_data",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:layout_constants",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions",

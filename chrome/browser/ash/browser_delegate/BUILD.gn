@@ -28,6 +28,7 @@ static_library("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:intent_picker_tab_helper",

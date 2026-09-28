@@ -19,7 +19,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
-#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -50,6 +49,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -421,9 +421,11 @@ void FullscreenController::WindowFullscreenStateChanged() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
   if (browser_command_controller_) {
     browser_command_controller_->FullscreenStateChanged();
   }
+#endif
   if (bookmark_bar_controller_) {
     bookmark_bar_controller_->UpdateBookmarkBarState(
         BookmarkBarController::StateChangeReason::kToggleFullscreen);
@@ -431,9 +433,11 @@ void FullscreenController::WindowFullscreenStateChanged() {
 }
 
 void FullscreenController::FullscreenTopUIStateChanged() {
+#if !BUILDFLAG(IS_ANDROID)
   if (browser_command_controller_) {
     browser_command_controller_->FullscreenStateChanged();
   }
+#endif
   if (bookmark_bar_controller_) {
     bookmark_bar_controller_->UpdateBookmarkBarState(
         BookmarkBarController::StateChangeReason::kToolbarOptionChange);

@@ -140,6 +140,7 @@ source_set("impl") {
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/signin",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
@@ -178,13 +179,14 @@ source_set("impl") {
 source_set("test_support") {
   testonly = true
   sources = []
-  deps = []
 
   if (!is_android) {
     sources += [
       "manage_passwords_test.cc",
       "manage_passwords_test.h",
     ]
+
+    deps = [ "//chrome/browser/ui:browser_command_controller" ]
 
     public_deps = [
       "//base/test:test_support",

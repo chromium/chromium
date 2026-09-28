@@ -133,6 +133,7 @@ source_set("impl") {
     sources += [ "tab_matcher_desktop.cc" ]
     deps += [
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs:tab_strip",

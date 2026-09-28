@@ -60,6 +60,7 @@ source_set("browser_tests") {
     ":impl",
     "//chrome/app:command_ids",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui/tabs:features",
     "//chrome/test:test_support",
     "//components/javascript_dialogs",

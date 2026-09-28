@@ -137,6 +137,7 @@ source_set("impl") {
       "modules/v2/tab_groups/tab_groups_page_handler.cc",
     ]
     deps += [
+      "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/tabs:tab_strip",

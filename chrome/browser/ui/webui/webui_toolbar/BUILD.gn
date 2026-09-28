@@ -154,6 +154,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui/webui:theme_colors_source_manager",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/test:test_support",
