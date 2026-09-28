@@ -39,6 +39,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
+class AboutThisSiteTabHelper;
 class AskBeforeHttpDialogController;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
@@ -885,6 +886,8 @@ class TabFeatures {
   std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
       tailored_security_url_observer_;
 #endif
+
+  std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

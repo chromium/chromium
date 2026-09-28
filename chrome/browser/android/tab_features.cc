@@ -36,7 +36,10 @@
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
@@ -338,6 +341,15 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   plugin_observer_android_ =
       GetUserDataFactory().CreateInstance<PluginObserverAndroid>(*tab, *tab,
                                                                  web_contents);
+
+  if (page_info::IsAboutThisSiteFeatureEnabled()) {
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      about_this_site_tab_helper_ =
+          GetUserDataFactory().CreateInstance<AboutThisSiteTabHelper>(
+              *tab, *tab, web_contents, optimization_guide_decider);
+    }
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

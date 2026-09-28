@@ -10,23 +10,34 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace optimization_guide {
 class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // This WebContentsObserver fetches AboutThisSite hints from OptimizationGuide
 // and registers a SidePanel entry.
 class AboutThisSiteTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<AboutThisSiteTabHelper>,
       public page_info::AboutThisSiteService::TabHelper {
  public:
+  DECLARE_USER_DATA(AboutThisSiteTabHelper);
+
+  AboutThisSiteTabHelper(
+      tabs::TabInterface& tab,
+      content::WebContents* web_contents,
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   ~AboutThisSiteTabHelper() override;
   AboutThisSiteTabHelper(const AboutThisSiteTabHelper&) = delete;
   AboutThisSiteTabHelper& operator=(const AboutThisSiteTabHelper&) = delete;
+
+  static AboutThisSiteTabHelper* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver implementation
   void PrimaryPageChanged(content::Page& page) override;
@@ -36,11 +47,6 @@ class AboutThisSiteTabHelper
   GetAboutThisSiteMetadata() const override;
 
  private:
-  explicit AboutThisSiteTabHelper(
-      content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
-  friend class content::WebContentsUserData<AboutThisSiteTabHelper>;
-
   void OnOptimizationGuideDecision(
       const GURL& main_frame_url,
       optimization_guide::OptimizationGuideDecision decision,
@@ -53,9 +59,9 @@ class AboutThisSiteTabHelper
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_ = nullptr;
 
-  base::WeakPtrFactory<AboutThisSiteTabHelper> weak_ptr_factory_{this};
+  ui::ScopedUnownedUserData<AboutThisSiteTabHelper> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<AboutThisSiteTabHelper> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_TAB_HELPER_H_

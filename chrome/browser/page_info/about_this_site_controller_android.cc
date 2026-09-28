@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <jni.h>
+
 #include "base/android/jni_array.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -14,6 +14,7 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -47,7 +48,8 @@ JNI_PageInfoAboutThisSiteController_GetSiteInfo(
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
   auto* web_contents = content::WebContents::FromJavaWebContents(j_webContents);
   auto source_id = web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  auto* tab_helper = AboutThisSiteTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = AboutThisSiteTabHelper::From(
+      tabs::TabInterface::MaybeGetFromContents(web_contents));
   auto info = service->GetAboutThisSiteInfo(url, source_id, tab_helper);
   if (!info)
     return nullptr;

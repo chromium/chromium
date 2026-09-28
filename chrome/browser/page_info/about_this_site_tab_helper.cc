@@ -15,6 +15,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/page_info/core/about_this_site_validation.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -30,16 +31,24 @@ using page_info::about_this_site_validation::AboutThisSiteStatus;
 using page_info::about_this_site_validation::ValidateMetadata;
 using page_info::proto::AboutThisSiteMetadata;
 
+DEFINE_USER_DATA(AboutThisSiteTabHelper);
+
 AboutThisSiteTabHelper::AboutThisSiteTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<AboutThisSiteTabHelper>(*web_contents),
-      optimization_guide_decider_(optimization_guide_decider) {
+      optimization_guide_decider_(optimization_guide_decider),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   DCHECK(optimization_guide_decider_);
 }
 
 AboutThisSiteTabHelper::~AboutThisSiteTabHelper() = default;
+
+// static
+AboutThisSiteTabHelper* AboutThisSiteTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 page_info::AboutThisSiteService::DecisionAndMetadata
 AboutThisSiteTabHelper::GetAboutThisSiteMetadata() const {
@@ -76,5 +85,3 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
   }
   about_this_site_metadata_ = metadata.ParsedMetadata<AboutThisSiteMetadata>();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

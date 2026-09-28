@@ -101,6 +101,7 @@ namespace v8_compile_hints {
 class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
+class AboutThisSiteTabHelper;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
 class FromGWSNavigationAndKeepAliveRequestObserver;
@@ -236,6 +237,7 @@ class TabFeatures {
   std::unique_ptr<offline_pages::AutoFetchNavigationObserver>
       auto_fetch_navigation_observer_;
   std::unique_ptr<PluginObserverAndroid> plugin_observer_android_;
+  std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

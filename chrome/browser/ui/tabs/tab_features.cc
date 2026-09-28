@@ -40,6 +40,10 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/page_info/about_this_site_tab_helper.h"
+#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
@@ -909,6 +913,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 profile));
   }
 #endif
+
+  if (page_info::IsAboutThisSiteFeatureEnabled()) {
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      about_this_site_tab_helper_ =
+          GetUserDataFactory().CreateInstance<AboutThisSiteTabHelper>(
+              tab, tab, tab.GetContents(), optimization_guide_decider);
+    }
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1229,6 +1242,16 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                 profile));
   }
 #endif
+
+  if (about_this_site_tab_helper_) {
+    about_this_site_tab_helper_.reset();
+    if (auto* optimization_guide_decider =
+            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
+      about_this_site_tab_helper_ =
+          GetUserDataFactory().CreateInstance<AboutThisSiteTabHelper>(
+              *tab, *tab, new_contents, optimization_guide_decider);
+    }
+  }
 }
 
 customize_chrome::SidePanelController*

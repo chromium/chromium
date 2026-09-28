@@ -30,6 +30,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
@@ -135,7 +136,8 @@ ChromePageInfoUiDelegate::GetAboutThisSiteInfo() {
           AboutThisSiteServiceFactory::GetForProfile(GetProfile())) {
     return service->GetAboutThisSiteInfo(
         site_url_, web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-        AboutThisSiteTabHelper::FromWebContents(web_contents_));
+        AboutThisSiteTabHelper::From(
+            tabs::TabInterface::MaybeGetFromContents(web_contents_)));
   }
 
   return std::nullopt;

@@ -115,6 +115,7 @@ source_set("impl") {
     "//components/security_state/content",
     "//components/strings:components_strings",
     "//components/subresource_filter/content/browser",
+    "//components/tabs:public",
     "//components/vector_icons",
     "//components/webapps/common",
     "//content/public/common",

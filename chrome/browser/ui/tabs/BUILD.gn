@@ -557,6 +557,8 @@ if (!is_android) {
       "//chrome/browser/metrics",
       "//chrome/browser/navigation_predictor",
       "//chrome/browser/net",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/page_info",
       "//chrome/browser/payments",
       "//chrome/browser/preloading/bookmarkbar_preload",
       "//chrome/browser/preloading/new_tab_page_preload",

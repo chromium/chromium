@@ -48,8 +48,6 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/page_info/about_this_site_tab_helper.h"
-#include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
@@ -281,13 +279,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // --- Section 1: Common tab helpers ---
-  if (page_info::IsAboutThisSiteFeatureEnabled()) {
-    if (auto* optimization_guide_decider =
-            OptimizationGuideKeyedServiceFactory::GetForProfile(profile)) {
-      AboutThisSiteTabHelper::CreateForWebContents(web_contents,
-                                                   optimization_guide_decider);
-    }
-  }
   // AutofillClientProvider initializes ContentAutofillClient for web_contents,
   // which is gated by enable_browser_autofill.
   if (enable_browser_autofill) {
