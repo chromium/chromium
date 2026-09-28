@@ -505,31 +505,23 @@ void DOMWebSocket::send(NotShared<DOMArrayBufferView> array_buffer_view,
   NotifyWebSocketActivity();
 }
 
-void DOMWebSocket::send(Blob* binary_data, ExceptionState& exception_state) {
-  DVLOG(1) << "WebSocket " << this << " send() Sending Blob "
-           << binary_data->Uuid();
-  DCHECK(binary_data);
+void DOMWebSocket::send(Blob* blob, ExceptionState& exception_state) {
+  DVLOG(1) << "WebSocket " << this << " send() Sending Blob " << blob->Uuid();
+  DCHECK(blob);
   if (common_.GetState() == kConnecting) {
     SetInvalidStateErrorForSendMethod(exception_state);
     return;
   }
   if (common_.GetState() == kClosing || common_.GetState() == kClosed) {
-    UpdateBufferedAmountAfterClose(binary_data->size());
+    UpdateBufferedAmountAfterClose(blob->size());
     return;
   }
-  uint64_t size = binary_data->size();
-  buffered_amount_ += size;
+  buffered_amount_ += blob->size();
   DCHECK(channel_);
 
-  // When the runtime type of |binary_data| is File,
-  // binary_data->GetBlobDataHandle()->size() returns -1. However, in order to
-  // maintain the value of |buffered_amount_| correctly, the WebSocket code
-  // needs to fix the size of the File at this point. For this reason,
-  // construct a new BlobDataHandle here with the size that this method
-  // observed.
-  channel_->Send(BlobDataHandle::Create(binary_data->Uuid(),
-                                        binary_data->type(), size,
-                                        binary_data->AsMojoBlob()));
+  // In order to maintain the value of |buffered_amount_| correctly, the
+  // WebSocket code needs to fix the size of the File at this point.
+  channel_->Send(blob->GetBlobDataHandleWithKnownSize());
   NotifyWebSocketActivity();
 }
 
