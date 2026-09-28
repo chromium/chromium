@@ -1489,9 +1489,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     public void maybeCreateActorPipController() {
-        Profile profile = getOriginalProfile();
-        if (profile == null
-                || !GlicEnabling.isProfileEligible(profile)
+        if (getProfileProviderSupplier().get() == null
+                || !GlicEnabling.isProfileEligible(
+                        getProfileProviderSupplier().get().getOriginalProfile())
                 || !ActorUtils.isActorPipSupported()
                 || ActorUtils.isBackgroundActuationEnabled()) {
             return;
