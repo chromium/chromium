@@ -264,8 +264,6 @@ bool ParseIamfCodecId(std::string_view codec_id,
     return false;
   }
 
-  DCHECK_EQ(elem[0], "iamf");
-
   if (StringToAudioCodec(elem[0]) != AudioCodec::kIAMF) {
     DVLOG(4) << __func__ << ": invalid IAMF codec id:" << codec_id;
     return false;
