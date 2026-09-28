@@ -26,6 +26,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.core.widget.ImageViewCompat;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -401,6 +403,7 @@ public class CustomTabToolbarUnitTest {
         mToolbar.onTintChanged(tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         assertEquals(BrandedColorScheme.LIGHT_BRANDED_THEME, mToolbar.getBrandedColorScheme());
+        assertEquals(tint, ImageViewCompat.getImageTintList(mSecurityIcon));
         verify(observer).onColorSchemeChanged(initialColor, BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 

@@ -44,11 +44,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.Dimension;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.Callback;
@@ -699,7 +699,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     private void updateButtonsTint() {
-        updateButtonTint(mLocationBar.getSecurityButton());
+        mLocationBar.updateSecurityButtonTint();
     }
 
     private void updateButtonTint(ImageButton button) {
@@ -1397,11 +1397,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         private void showBrandingIconAndText() {
-            ColorStateList colorStateList =
-                    getContext()
-                            .getColorStateList(
-                                    mLocationBarDataProvider.getSecurityIconColorStateList());
-            ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
+            updateSecurityButtonTint();
             mAnimDelegate.updateSecurityButton(R.drawable.chromelogo16);
 
             mUrlCoordinator.setUrlBarData(
@@ -1427,6 +1423,22 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
 
+        private void updateSecurityButtonTint() {
+            if (mLocationBarDataProvider == null) {
+                ImageViewCompat.setImageTintList(mSecurityButton, mTint);
+                return;
+            }
+            @ColorRes
+            int colorStateListRes = mLocationBarDataProvider.getSecurityIconColorStateList();
+            if (colorStateListRes == 0) return;
+            ColorStateList colorStateList =
+                    (colorStateListRes == R.color.default_red
+                                    || colorStateListRes == R.color.baseline_error_80)
+                            ? getContext().getColorStateList(colorStateListRes)
+                            : mTint;
+            ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
+        }
+
         private void updateSecurityIcon() {
             if (mState == STATE_TITLE_ONLY || mCurrentlyShowingBranding) return;
 
@@ -1437,11 +1449,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()));
             }
             if (securityIconResource != 0) {
-                ColorStateList colorStateList =
-                        getContext()
-                                .getColorStateList(
-                                        mLocationBarDataProvider.getSecurityIconColorStateList());
-                ImageViewCompat.setImageTintList(mSecurityButton, colorStateList);
+                updateSecurityButtonTint();
             }
             mAnimDelegate.updateSecurityButton(securityIconResource);
             mSecurityIconResourceForTesting = securityIconResource;
@@ -1789,8 +1797,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     AppCompatResources.getDrawable(
                             getContext(), R.drawable.custom_tabs_url_bar_omnibox_bg);
             mOmniboxBackground.mutate();
-            mOmniboxBackground.setTint(
-                    ContextCompat.getColor(getContext(), R.color.toolbar_text_box_bg_color));
+            updateOmniboxBackground();
             mLocationBarFrameLayout.setBackground(mOmniboxBackground);
             var lp = mLocationBarFrameLayout.getLayoutParams();
             lp.height =
@@ -1849,6 +1856,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         }
                     });
             updateAnimationsForOmnibox();
+            updateSecurityIcon();
         }
 
         private void updateAnimationsForOmnibox() {
