@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/policy/core/common/policy_types.h"
@@ -82,6 +83,18 @@ class ConnectorsServiceBase {
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+
+#if !BUILDFLAG(IS_IOS)
+  // Get the AnalysisSettings that apply to a network request made to
+  // `request_url` from a tab whose URL is `tab_url`. This returns
+  // std::nullopt if Connectors are disabled, if `tab_url` is exempt from
+  // analysis, if the "OnNetworkRequestEnterpriseConnector" policy doesn't
+  // match the two URLs or if there is no DM token to use for the scope of the
+  // policy.
+  std::optional<AnalysisSettings> GetNetworkRequestAnalysisSettings(
+      const GURL& tab_url,
+      const GURL& request_url);
+#endif  // !BUILDFLAG(IS_IOS)
 
   virtual std::optional<std::string> GetBrowserDmToken() const = 0;
 

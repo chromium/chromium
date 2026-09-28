@@ -18,6 +18,19 @@
 
 namespace enterprise_connectors {
 
+namespace {
+
+// Returns the URL that should be matched against Connector policies for
+// `url`. Blob and filesystem URLs are matched against their inner URL.
+GURL GetUrlToMatch(const GURL& url) {
+  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
+    return url.inner_url() ? *url.inner_url() : GURL(url.GetPath());
+  }
+  return url;
+}
+
+}  // namespace
+
 ConnectorsServiceBase::ConnectorsServiceBase(
     std::unique_ptr<ConnectorsManagerBase> manager)
     : connectors_manager_base_(std::move(manager)) {
@@ -128,16 +141,28 @@ std::optional<AnalysisSettings> ConnectorsServiceBase::GetAnalysisSettings(
     return std::nullopt;
   }
 
-  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
-    GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.GetPath());
-    return GetCommonAnalysisSettings(
-        connectors_manager_base_->GetAnalysisSettings(inner, connector),
-        connector);
+  return GetCommonAnalysisSettings(
+      connectors_manager_base_->GetAnalysisSettings(GetUrlToMatch(url),
+                                                    connector),
+      connector);
+}
+
+#if !BUILDFLAG(IS_IOS)
+std::optional<AnalysisSettings>
+ConnectorsServiceBase::GetNetworkRequestAnalysisSettings(
+    const GURL& tab_url,
+    const GURL& request_url) {
+  if (!ConnectorsEnabled() ||
+      IsURLExemptFromAnalysis(tab_url, AnalysisConnector::NETWORK_REQUEST)) {
+    return std::nullopt;
   }
 
   return GetCommonAnalysisSettings(
-      connectors_manager_base_->GetAnalysisSettings(url, connector), connector);
+      connectors_manager_base_->GetNetworkRequestAnalysisSettings(
+          GetUrlToMatch(tab_url), request_url),
+      AnalysisConnector::NETWORK_REQUEST);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 std::optional<AnalysisSettings>
 ConnectorsServiceBase::GetCommonAnalysisSettings(
