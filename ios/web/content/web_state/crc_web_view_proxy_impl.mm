@@ -25,6 +25,7 @@
 @synthesize contentView = _contentView;
 @synthesize allowsLinkPreview = _allowsLinkPreview;
 @synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
+@synthesize obscuredContentInsets = _obscuredContentInsets;
 @dynamic keyboardVisible;
 
 - (instancetype)init {

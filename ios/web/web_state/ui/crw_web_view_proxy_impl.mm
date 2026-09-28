@@ -111,6 +111,19 @@ UIView* GetFirstResponderSubview(UIView* view) {
   _webController.allowsLinkPreview = allowsLinkPreview;
 }
 
+- (UIEdgeInsets)obscuredContentInsets {
+  if (@available(iOS 26.0, *)) {
+    return _webController.obscuredContentInsets;
+  }
+  return UIEdgeInsetsZero;
+}
+
+- (void)setObscuredContentInsets:(UIEdgeInsets)obscuredContentInsets {
+  if (@available(iOS 26.0, *)) {
+    _webController.obscuredContentInsets = obscuredContentInsets;
+  }
+}
+
 - (CGRect)bounds {
   return [_contentView bounds];
 }

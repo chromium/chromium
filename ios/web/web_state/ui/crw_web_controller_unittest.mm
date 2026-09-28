@@ -69,6 +69,7 @@
 
 @interface CRWWebController (Testing)
 @property(nonatomic, readonly) CRWWKNavigationHandler* navigationHandler;
+- (void)setWebView:(WKWebView*)webView;
 @end
 
 @interface CRWWKNavigationHandler (Testing)
@@ -252,6 +253,12 @@ class CRWWebControllerTest : public WebTestWithWebController {
     OCMStub([result allowsLinkPreview]);
     OCMStub([result setAllowsLinkPreview:NO]);
     OCMStub([result setAllowsLinkPreview:YES]);
+    if (@available(iOS 26.0, *)) {
+      OCMStub([result obscuredContentInsets])
+          .andDo(^(NSInvocation* invocation) {
+            [invocation setReturnValue:&mock_web_view_obscured_content_insets_];
+          });
+    }
     OCMStub([result isLoading]);
     OCMStub([result stopLoading]);
     OCMStub([result removeFromSuperview]);
@@ -263,6 +270,7 @@ class CRWWebControllerTest : public WebTestWithWebController {
 
   __weak id<WKNavigationDelegate> navigation_delegate_;
   NSString* custom_user_agent_;
+  UIEdgeInsets mock_web_view_obscured_content_insets_ = UIEdgeInsetsZero;
   UIScrollView* scroll_view_;
   id mock_web_view_;
   CRWFakeBackForwardList* fake_wk_list_;
@@ -317,6 +325,38 @@ TEST_F(CRWWebControllerTest, SetAllowsLinkPreview) {
   EXPECT_TRUE(web_controller().allowsLinkPreview);
   web_controller().allowsLinkPreview = NO;
   EXPECT_FALSE(web_controller().allowsLinkPreview);
+}
+
+// Tests obscuredContentInsets default value and setting this property.
+TEST_F(CRWWebControllerTest, SetObscuredContentInsets) {
+  if (@available(iOS 26.0, *)) {
+    ASSERT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+        UIEdgeInsetsZero, web_controller().obscuredContentInsets));
+    UIEdgeInsets test_insets = UIEdgeInsetsMake(10, 20, 30, 40);
+    OCMExpect([mock_web_view_ setObscuredContentInsets:test_insets])
+        .andDo(^(NSInvocation* invocation) {
+          mock_web_view_obscured_content_insets_ = test_insets;
+        });
+    web_controller().obscuredContentInsets = test_insets;
+    EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+        test_insets, web_controller().obscuredContentInsets));
+  }
+}
+
+// Tests that unconfigured obscuredContentInsets does not overwrite
+// existing webView obscuredContentInsets.
+TEST_F(CRWWebControllerTest, UnsetObscuredContentInsetsPreservesWebViewInsets) {
+  if (@available(iOS 26.0, *)) {
+    [web_controller() setWebView:nil];
+    UIEdgeInsets external_insets = UIEdgeInsetsMake(10, 20, 30, 40);
+    mock_web_view_obscured_content_insets_ = external_insets;
+
+    OCMReject([mock_web_view_ setObscuredContentInsets:UIEdgeInsetsZero]);
+    [web_controller() setWebView:mock_web_view_];
+
+    EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(
+        external_insets, web_controller().obscuredContentInsets));
+  }
 }
 
 // Tests that a web view is created after calling -[ensureWebViewCreated] and

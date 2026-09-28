@@ -85,6 +85,10 @@ class WebStateImpl;
 // Whether or not long pressing a link in the web view renders a link preview.
 @property(nonatomic) BOOL allowsLinkPreview;
 
+// The insets that specify the portion of the web view that is obscured by UI
+// elements.
+@property(nonatomic) UIEdgeInsets obscuredContentInsets API_AVAILABLE(ios(26));
+
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
     BOOL keepsRenderProcessAlive;

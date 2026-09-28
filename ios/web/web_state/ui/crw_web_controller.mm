@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import <optional>
 #import <string_view>
 
 #import "base/apple/foundation_util.h"
@@ -219,6 +220,9 @@ JavaScriptCompletionBlock WrapCompletionBlock(
   BOOL _webUsageEnabled;
   // Default URL (about:blank).
   GURL _defaultURL;
+
+  // Obscured content insets set by caller.
+  std::optional<UIEdgeInsets> _obscuredContentInsets;
 
   // Updates SSLStatus for current navigation item.
   CRWSSLStatusUpdater* _SSLStatusUpdater;
@@ -439,6 +443,30 @@ JavaScriptCompletionBlock WrapCompletionBlock(
   self.webView.allowsLinkPreview = allowsLinkPreview;
 }
 
+- (UIEdgeInsets)obscuredContentInsets {
+  if (@available(iOS 26.0, *)) {
+    if (self.webView) {
+      return self.webView.obscuredContentInsets;
+    }
+    if (_obscuredContentInsets.has_value()) {
+      return *_obscuredContentInsets;
+    }
+  }
+  return UIEdgeInsetsZero;
+}
+
+- (void)setObscuredContentInsets:(UIEdgeInsets)obscuredContentInsets {
+  if (@available(iOS 26.0, *)) {
+    // Store it to an optional instance variable as well as
+    // self.webView.obscuredContentInsets because self.webView may be nil. When
+    // self.webView is nil, it will be set later in -setWebView:. Storing as
+    // std::optional ensures -setWebView: never overwrites
+    // _webView.obscuredContentInsets if this setter is never called.
+    _obscuredContentInsets = obscuredContentInsets;
+    self.webView.obscuredContentInsets = obscuredContentInsets;
+  }
+}
+
 #pragma mark - Private properties accessors
 
 - (void)setWebView:(CRWWebView*)webView {
@@ -489,6 +517,11 @@ JavaScriptCompletionBlock WrapCompletionBlock(
     _webView.allowsBackForwardNavigationGestures =
         _allowsBackForwardNavigationGestures;
     _webView.allowsLinkPreview = _allowsLinkPreview;
+    if (@available(iOS 26.0, *)) {
+      if (_obscuredContentInsets.has_value()) {
+        _webView.obscuredContentInsets = *_obscuredContentInsets;
+      }
+    }
   }
   self.webViewNavigationObserver.webView = _webView;
 

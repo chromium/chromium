@@ -23,13 +23,22 @@
 // setting the `obscuredInsets` property will not have any effect.
 @property(nonatomic, assign) BOOL ignoreObscuredInsets;
 
-// Web view's obscured insets. If `ignoreObscuredInsets` is set to `YES` then
-// setting this property will not have any effect.
+// Web view's obscured insets. Setting this property also updates
+// `UIScrollView.contentInset` and `contentOffset` (on iOS 26+) or resizes the
+// web view's frame (on earlier iOS versions) in addition to updating the
+// underlying web view's `obscuredContentInsets`. If `ignoreObscuredInsets` is
+// set to `YES` then setting this property will not have any effect.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
 // Sets the obscured insets with an initial velocity for spring animations.
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
           initialVelocity:(CGFloat)initialVelocity;
+
+// The insets that specify the portion of the web view that is obscured by UI
+// elements. Unlike `obscuredInsets`, this property is forwarded directly to the
+// underlying web view's `obscuredContentInsets` without modifying
+// `UIScrollView.contentInset`, `contentOffset`, or the web view's frame.
+@property(nonatomic) UIEdgeInsets obscuredContentInsets API_AVAILABLE(ios(26));
 
 // Sets the web view's min and max viewport insets.
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset

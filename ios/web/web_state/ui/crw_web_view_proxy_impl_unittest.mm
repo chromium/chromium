@@ -126,4 +126,23 @@ TEST_F(CRWWebViewProxyImplTest, IgnoreObscuredInsets) {
                                             fakeContentView.obscuredInsets));
 }
 
+// Tests obscuredContentInsets property is delegated to CRWWebController.
+TEST_F(CRWWebViewProxyImplTest, ObscuredContentInsets) {
+  if (@available(iOS 26.0, *)) {
+    CRWWebController* mockWebController =
+        OCMStrictClassMock([CRWWebController class]);
+    CRWWebViewProxyImpl* proxy =
+        [[CRWWebViewProxyImpl alloc] initWithWebController:mockWebController];
+
+    UIEdgeInsets test_insets = UIEdgeInsetsMake(10, 20, 30, 40);
+    OCMStub([mockWebController obscuredContentInsets]).andReturn(test_insets);
+    EXPECT_TRUE(UIEdgeInsetsEqualToEdgeInsets(test_insets,
+                                              proxy.obscuredContentInsets));
+
+    OCMExpect([mockWebController setObscuredContentInsets:test_insets]);
+    proxy.obscuredContentInsets = test_insets;
+    EXPECT_OCMOCK_VERIFY((id)mockWebController);
+  }
+}
+
 }  // namespace

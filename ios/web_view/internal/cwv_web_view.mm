@@ -511,6 +511,24 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   _webState->GetWebViewProxy().allowsLinkPreview = allowsLinkPreview;
 }
 
+- (UIEdgeInsets)obscuredContentInsets {
+  if (@available(iOS 26.0, *)) {
+    if ([self isWebStateSafeToUse]) {
+      return _webState->GetWebViewProxy().obscuredContentInsets;
+    }
+  }
+  return UIEdgeInsetsZero;
+}
+
+- (void)setObscuredContentInsets:(UIEdgeInsets)insets {
+  if (@available(iOS 26.0, *)) {
+    if (![self isWebStateSafeToUse]) {
+      return;
+    }
+    _webState->GetWebViewProxy().obscuredContentInsets = insets;
+  }
+}
+
 - (void)goBack {
   if (![self isWebStateSafeToUse]) {
     return;

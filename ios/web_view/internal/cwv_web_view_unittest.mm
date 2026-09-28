@@ -386,4 +386,23 @@ TEST_F(CWVWebViewTest, EncodeDecodeOptimizedAfterShutdown) {
   }
 }
 
+// Tests that setting obscuredContentInsets on CWVWebView stores and returns the
+// value, and applies it to the underlying proxy/controller on iOS 26+.
+TEST_F(CWVWebViewTest, ObscuredContentInsets) {
+  if (@available(iOS 26.0, *)) {
+    CWVWebView* web_view = CreateWebView();
+    ASSERT_TRUE(test::LoadUrl(web_view, [NSURL URLWithString:@"about:blank"]));
+
+    UIEdgeInsets insets = UIEdgeInsetsMake(10, 20, 30, 40);
+    ASSERT_FALSE(
+        UIEdgeInsetsEqualToEdgeInsets(insets, web_view.obscuredContentInsets));
+    web_view.obscuredContentInsets = insets;
+
+    EXPECT_TRUE(
+        UIEdgeInsetsEqualToEdgeInsets(insets, web_view.obscuredContentInsets));
+
+    [web_view shutDown];
+  }
+}
+
 }  // namespace ios_web_view

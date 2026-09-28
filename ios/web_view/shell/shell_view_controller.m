@@ -72,6 +72,8 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 - (void)reloadOrStop;
 // Disconnects and release the |webView|.
 - (void)removeWebView;
+// Sets or resets obscured content insets for testing on iOS 26+.
+- (void)setObscuredContentInsets:(BOOL)enabled;
 // Resets translate settings back to default.
 - (void)resetTranslateSettings;
 @end
@@ -836,6 +838,21 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          }]];
   }
 
+  if (@available(iOS 26.0, *)) {
+    BOOL zeroInsets = UIEdgeInsetsEqualToEdgeInsets(
+        self.webView.obscuredContentInsets, UIEdgeInsetsZero);
+    NSString* title = zeroInsets
+                          ? @"Simulate Obscured Header/Footer (Set Insets)"
+                          : @"Reset Obscured Insets (UIEdgeInsetsZero)";
+    [alertController
+        addAction:[UIAlertAction
+                      actionWithTitle:title
+                                style:UIAlertActionStyleDefault
+                              handler:^(UIAlertAction* action) {
+                                [weakSelf setObscuredContentInsets:zeroInsets];
+                              }]];
+  }
+
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -858,6 +875,19 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
   [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)setObscuredContentInsets:(BOOL)enabled {
+  if (@available(iOS 26.0, *)) {
+    if (enabled) {
+      UIEdgeInsets sampleInsets = UIEdgeInsetsMake(80, 0, 80, 0);
+      self.webView.obscuredContentInsets = sampleInsets;
+      NSLog(@"Toggled obscuredContentInsets ON");
+    } else {
+      self.webView.obscuredContentInsets = UIEdgeInsetsZero;
+      NSLog(@"Toggled obscuredContentInsets OFF");
+    }
+  }
 }
 
 - (void)checkLeakedPasswords {

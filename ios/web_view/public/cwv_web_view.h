@@ -166,6 +166,17 @@ CWV_EXPORT
 // https://developer.apple.com/documentation/uikit/uiresponder/1621119-inputaccessoryview?language=objc
 @property(nonatomic, strong, nullable) UIView* inputAccessoryView;
 
+// Edge insets on all sides, relative to the web view's coordinate space, which
+// shrink the bounds of the layout viewport. Obscured content areas (that is,
+// parts of the web view that overlap with obscured content insets) should be
+// covered by UI elements managed by the client, such as a navigation bar or
+// buttons. The web view automatically adjusts how fixed and sticky elements are
+// rendered near edges with non-zero obscured insets, to ensure compatibility
+// and legibility.
+//
+// All edge insets must be non-negative. Defaults to 0 on all sides.
+@property(nonatomic) UIEdgeInsets obscuredContentInsets API_AVAILABLE(ios(26));
+
 - (instancetype)initWithFrame:(CGRect)frame
                 configuration:(CWVWebViewConfiguration*)configuration;
 
