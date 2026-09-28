@@ -3915,6 +3915,10 @@
       status: "stable",
     },
     {
+      name: "LayoutContainingBlockReturnsBox",
+      status: "stable",
+    },
+    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {

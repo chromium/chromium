@@ -1391,6 +1391,9 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
 
 LayoutBox* LayoutObject::ContainingNGBox() const {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutContainingBlockReturnsBoxEnabled()) {
+    return ContainingBlock();
+  }
   if (auto* parent = Parent()) {
     // Media and Canvas elements may have children that participate
     // in layout with fragments that need invalidation after subtree layout.
@@ -1908,6 +1911,10 @@ LayoutBox* LayoutObject::ContainingBlockForFixedPosition(
 
 LayoutBox* LayoutObject::InclusiveContainingBlock(AncestorSkipInfo* skip_info) {
   NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::LayoutContainingBlockReturnsBoxEnabled()) {
+    auto* box = DynamicTo<LayoutBox>(this);
+    return box ? box : ContainingBlock(skip_info);
+  }
   auto* layout_block = DynamicTo<LayoutBlock>(this);
   return layout_block ? layout_block : ContainingBlock(skip_info);
 }

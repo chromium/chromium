@@ -214,8 +214,21 @@ LayoutBox* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   LayoutObject* object = Parent();
   if (!object) {
     if (const auto* part = DynamicTo<LayoutCustomScrollbarPart>(this)) {
+      if (RuntimeEnabledFeatures::LayoutContainingBlockReturnsBoxEnabled()) {
+        return part->GetScrollableArea()->GetLayoutBox();
+      }
       object = part->GetScrollableArea()->GetLayoutBox();
     }
+  }
+
+  if (RuntimeEnabledFeatures::LayoutContainingBlockReturnsBoxEnabled()) {
+    while (object && !object->IsBox()) {
+      if (skip_info) {
+        skip_info->Update(*object);
+      }
+      object = object->Parent();
+    }
+    return To<LayoutBox>(object);
   }
 
   while (object && !object->IsLayoutBlock()) {
