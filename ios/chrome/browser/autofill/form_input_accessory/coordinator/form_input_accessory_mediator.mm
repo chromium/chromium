@@ -471,6 +471,7 @@ bool IsStateless() {
 }
 
 - (void)resetSuggestions {
+  _suggestionsHaveBeenShown = NO;
   [self.consumer showAccessorySuggestions:@[]];
   [self updateSuggestionsIfNeeded];
 }
@@ -581,6 +582,7 @@ bool IsStateless() {
   [self setLastFocusFormActivityWebFrameID:frame];
 
   if (isSelectOne && isDefaultViewEnabled) {
+    _suggestionsHaveBeenShown = NO;
     [self.consumer showNavigationButtons];
     return;
   }
@@ -710,14 +712,14 @@ bool IsStateless() {
 
   BOOL enabledBeforeUpdate = _suggestionsEnabled;
   _suggestionsEnabled = enabled;
-  if (base::FeatureList::IsEnabled(
+  if (!enabled) {
+    return;
+  }
+  if (!enabledBeforeUpdate || !_suggestionsHaveBeenShown ||
+      !base::FeatureList::IsEnabled(
           kThrottleFormInputAccessorySuggestionRefresh)) {
-    if (enabled && !enabledBeforeUpdate) {
-      // Only update suggestions if the suggestions went from disabled to
-      // enabled.
-      [self updateSuggestionsIfNeeded];
-    }
-  } else if (enabled) {
+    // Only update suggestions if the suggestions went from disabled to
+    // enabled, or if suggestions have not yet been shown.
     [self updateSuggestionsIfNeeded];
   }
 }
@@ -804,6 +806,7 @@ bool IsStateless() {
 - (void)reset {
   _lastSeenParams = autofill::FormActivityParams();
   _hasLastSeenParams = NO;
+  _suggestionsHaveBeenShown = NO;
   self.consumer.contentEditable = NO;
   [self.consumer showAccessorySuggestions:@[]];
 
@@ -892,6 +895,7 @@ bool IsStateless() {
   // Post it to the consumer.
   self.consumer.mainFillingProduct = mainFillingProduct;
   self.consumer.currentFieldId = _lastSeenParams.field_renderer_id;
+  _suggestionsHaveBeenShown = suggestions.count > 0;
   [self.consumer showAccessorySuggestions:suggestions];
   if (firstSuggestion) {
     SuggestionProviderType providerType =

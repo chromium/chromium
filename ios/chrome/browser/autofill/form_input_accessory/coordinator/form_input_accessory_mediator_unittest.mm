@@ -79,6 +79,8 @@ FormSuggestion* CreateFormSuggestion(NSString* value) {
            requiresReauth:NO];
 }
 
+NSString* const kTestSuggestionValue = @"value";
+
 }  // namespace
 
 // Test implementation of FormSuggestionProvider.
@@ -974,4 +976,51 @@ TEST_F(FormInputAccessoryMediatorTest,
   [mediator_ disconnect];
 
   EXPECT_EQ(mediator_.lastFocusedFieldGlobalId, std::nullopt);
+}
+
+// Test that `setSuggestionsEnabled:YES` with
+// `kThrottleFormInputAccessorySuggestionRefresh` enabled refreshes suggestions
+// when suggestions have not yet been shown (even though `suggestionsEnabled` is
+// `YES` by default), and throttles redundant refreshes once suggestions have
+// been shown.
+TEST_F(FormInputAccessoryMediatorTest,
+       SetSuggestionsEnabledThrottlesOnlyAfterSuggestionsShown) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kThrottleFormInputAccessorySuggestionRefresh);
+
+  CaptureAccessorySuggestions();
+  FormActivityParams params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+  NSMutableArray<FormSuggestionsReadyCompletion>* suggestions_completions =
+      SetUpProviderWithPendingSuggestionQueries(params);
+
+  // Register a form activity so `_hasLastSeenParams` is set, and return empty
+  // suggestions initially so `_suggestionsHaveBeenShown` remains `NO`.
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        params);
+  ASSERT_EQ(suggestions_completions.count, 1ul);
+  suggestions_completions[0](@[], provider_);
+  EXPECT_EQ(received_suggestions_.count, 0u);
+
+  // Even though `suggestionsEnabled` is `YES` by default, calling
+  // `setSuggestionsEnabled:YES` must refresh suggestions because no
+  // suggestions have been shown yet.
+  [mediator_ setSuggestionsEnabled:YES];
+  ASSERT_EQ(suggestions_completions.count, 2ul);
+
+  // Deliver non-empty suggestions so `_suggestionsHaveBeenShown` becomes `YES`.
+  NSArray<FormSuggestion*>* suggestions =
+      @[ CreateFormSuggestion(kTestSuggestionValue) ];
+  suggestions_completions[1](suggestions, provider_);
+  EXPECT_EQ(received_suggestions_.count, 1u);
+
+  // Calling `setSuggestionsEnabled:YES` again while `suggestionsEnabled` is
+  // already `YES` and suggestions have been shown should now be throttled.
+  [mediator_ setSuggestionsEnabled:YES];
+  EXPECT_EQ(suggestions_completions.count, 2ul);
+
+  // Disabling and re-enabling suggestions should still trigger a refresh.
+  [mediator_ setSuggestionsEnabled:NO];
+  [mediator_ setSuggestionsEnabled:YES];
+  EXPECT_EQ(suggestions_completions.count, 3ul);
 }
