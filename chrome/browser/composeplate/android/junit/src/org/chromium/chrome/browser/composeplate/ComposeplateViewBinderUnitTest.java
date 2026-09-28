@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.composeplate;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.ContextThemeWrapper;
@@ -178,6 +180,69 @@ public class ComposeplateViewBinderUnitTest {
         View composeplateButton = mView.findViewById(R.id.composeplate_button);
         assertEquals(aiModeButtonUiConfig.tooltip, composeplateButton.getTooltipText());
         assertEquals(aiModeButtonUiConfig.a11yLabel, composeplateButton.getContentDescription());
+    }
+
+    @Test
+    public void testSetAiModeButtonIcon_withMockView() {
+        ComposeplateProperties.AiModeButtonIcon icon =
+                new ComposeplateProperties.AiModeButtonIcon(
+                        new ColorDrawable(Color.RED), /* shouldTint= */ true);
+        mPropertyModel.set(ComposeplateProperties.AI_MODE_BUTTON_ICON, icon);
+        verify(mViewMock).setAiModeButtonIcon(eq(icon));
+    }
+
+    @Test
+    public void testSetAiModeButtonIcon_Tinted() {
+        testSetAiModeButtonIconImpl(/* shouldTint= */ true);
+    }
+
+    @Test
+    public void testSetAiModeButtonIcon_NotTinted() {
+        testSetAiModeButtonIconImpl(/* shouldTint= */ false);
+    }
+
+    /**
+     * Verifies that switching from a full color icon back to a monochrome one restores the tint
+     * declared in the layout, even if no ColorStateList has been set.
+     */
+    @Test
+    public void testSetAiModeButtonIcon_RestoresLayoutTint() {
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+        ImageView iconView = mView.findViewById(R.id.composeplate_button_icon);
+        ColorStateList layoutTint = iconView.getImageTintList();
+
+        setAiModeButtonIcon(/* shouldTint= */ false);
+        assertNull(iconView.getImageTintList());
+
+        setAiModeButtonIcon(/* shouldTint= */ true);
+        assertEquals(layoutTint, iconView.getImageTintList());
+    }
+
+    private void testSetAiModeButtonIconImpl(boolean shouldTint) {
+        // Bind PropertyModel with mView.
+        PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
+        ImageView iconView = mView.findViewById(R.id.composeplate_button_icon);
+        ColorStateList colorStateList = mContext.getColorStateList(R.color.default_red);
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, colorStateList);
+
+        Drawable drawable = setAiModeButtonIcon(shouldTint);
+
+        assertEquals(drawable, iconView.getDrawable());
+        assertEquals(shouldTint ? colorStateList : null, iconView.getImageTintList());
+
+        // A later ColorStateList, e.g. from a background change, must not tint a full color icon.
+        ColorStateList newColorStateList =
+                mContext.getColorStateList(R.color.default_icon_color_dark);
+        mPropertyModel.set(ComposeplateProperties.COLOR_STATE_LIST, newColorStateList);
+        assertEquals(shouldTint ? newColorStateList : null, iconView.getImageTintList());
+    }
+
+    private Drawable setAiModeButtonIcon(boolean shouldTint) {
+        Drawable drawable = new ColorDrawable(Color.RED);
+        mPropertyModel.set(
+                ComposeplateProperties.AI_MODE_BUTTON_ICON,
+                new ComposeplateProperties.AiModeButtonIcon(drawable, shouldTint));
+        return drawable;
     }
 
     private static AiModeButtonUiConfig createAiModeButtonUiConfig() {

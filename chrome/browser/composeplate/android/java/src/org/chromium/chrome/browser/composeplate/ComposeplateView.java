@@ -26,6 +26,13 @@ public class ComposeplateView extends LinearLayout {
 
     private @Nullable View mComposeplateButton;
     private @Nullable View mIncognitoButton;
+    private @Nullable ImageView mComposeplateButtonIcon;
+
+    /** The tint of the icons, initially the one declared in the layout. */
+    private @Nullable ColorStateList mIconTint;
+
+    /** Whether the AI Mode button icon should be tinted, see {@link #setAiModeButtonIcon}. */
+    private boolean mShouldTintAiModeButtonIcon = true;
 
     public ComposeplateView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -37,6 +44,10 @@ public class ComposeplateView extends LinearLayout {
 
         mComposeplateButton = findViewById(R.id.composeplate_button);
         mIncognitoButton = findViewById(R.id.incognito_button);
+        mComposeplateButtonIcon = findViewById(R.id.composeplate_button_icon);
+        if (mComposeplateButtonIcon != null) {
+            mIconTint = mComposeplateButtonIcon.getImageTintList();
+        }
     }
 
     /**
@@ -59,10 +70,10 @@ public class ComposeplateView extends LinearLayout {
     void setColorStateList(@Nullable ColorStateList colorStateList) {
         if (colorStateList == null) return;
 
-        if (mComposeplateButton != null) {
-            setColorStateList(
-                    mComposeplateButton.findViewById(R.id.composeplate_button_icon),
-                    colorStateList);
+        mIconTint = colorStateList;
+        // A full color AI Mode button icon keeps its own colors.
+        if (mShouldTintAiModeButtonIcon) {
+            setColorStateList(mComposeplateButtonIcon, colorStateList);
         }
 
         if (mIncognitoButton != null) {
@@ -103,6 +114,19 @@ public class ComposeplateView extends LinearLayout {
 
         ViewCompat.setTooltipText(mComposeplateButton, aiModeButtonUiConfig.tooltip);
         mComposeplateButton.setContentDescription(aiModeButtonUiConfig.a11yLabel);
+    }
+
+    /**
+     * Updates the icon of the AI Mode button.
+     *
+     * @param aiModeButtonIcon The icon to show on the AI Mode button, and whether to tint it.
+     */
+    void setAiModeButtonIcon(ComposeplateProperties.AiModeButtonIcon aiModeButtonIcon) {
+        if (mComposeplateButtonIcon == null) return;
+
+        mShouldTintAiModeButtonIcon = aiModeButtonIcon.shouldTint;
+        mComposeplateButtonIcon.setImageDrawable(aiModeButtonIcon.drawable);
+        mComposeplateButtonIcon.setImageTintList(mShouldTintAiModeButtonIcon ? mIconTint : null);
     }
 
     private void setColorStateList(@Nullable ImageView view, ColorStateList colorStateList) {

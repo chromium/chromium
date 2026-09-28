@@ -23,9 +23,12 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,6 +52,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -78,6 +82,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.segmentation_platform.client_util.HomeModulesRankingHelper;
@@ -182,6 +187,9 @@ public class NewTabPageCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableNullableObservableSupplier<AiModeButtonUiConfig>
             mAiModeButtonUiConfigSupplier = ObservableSuppliers.createNullable();
+    private final SettableNonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier =
+            ObservableSuppliers.createNonNull(
+                    new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
 
     @Before
     public void setUp() {
@@ -218,6 +226,8 @@ public class NewTabPageCoordinatorUnitTest {
         mAiModeButtonUiConfigSupplier.set(createAiModeButtonUiConfig(/* isGoogle= */ true));
         when(mSearchEngineService.getAiModeButtonUiConfigSupplier())
                 .thenReturn(mAiModeButtonUiConfigSupplier);
+        when(mSearchEngineService.getAiModeButtonIconSupplier())
+                .thenReturn(mAiModeButtonIconSupplier);
 
         when(mMostRecentTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         when(mTab.getProfile()).thenReturn(mProfile);
@@ -894,6 +904,92 @@ public class NewTabPageCoordinatorUnitTest {
         // Verifies that even when composeplate is enabled and Google is the search provider,
         // disabling incognito mode hides the composeplate button.
         verify(mMockComposeplate).setVisibility(eq(false), anyBoolean());
+    }
+
+    /** Verifies that a monochrome resource icon is tinted like the other composeplate icons. */
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testAiModeButtonIconChanged_ResourceIcon() {
+        testAiModeButtonIconChangedImpl(
+                new StatusIconResource(R.drawable.ic_search_24dp, Resources.ID_NULL),
+                /* expectedShouldTint= */ true);
+    }
+
+    /** Verifies that a full color favicon isn't tinted, which would render it as a silhouette. */
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testAiModeButtonIconChanged_BitmapIcon() {
+        testAiModeButtonIconChangedImpl(
+                createBitmapAiModeButtonIcon(), /* expectedShouldTint= */ false);
+    }
+
+    /**
+     * Verifies that the icon is still updated while the AI Mode button is hidden. Otherwise, as the
+     * supplier doesn't notify an unchanged icon, the button would show a stale icon once shown.
+     */
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testAiModeButtonIconChanged_WhileButtonHidden() {
+        setupMockSubCoordinators();
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ false);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        clearInvocations(mMockComposeplate);
+
+        mAiModeButtonIconSupplier.set(createBitmapAiModeButtonIcon());
+
+        verify(mMockComposeplate).updateAiModeButtonIcon(any(), eq(false));
+    }
+
+    /**
+     * Verifies that a newly created composeplate shows the current icon, since the icon observer is
+     * notified before the composeplate exists.
+     */
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testAiModeButtonIcon_AppliedToNewComposeplate() {
+        mCoordinator.destroy();
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mAiModeButtonIconSupplier.set(
+                new StatusIconResource(JUnitTestGURLs.RED_1.getSpec(), bitmap, Resources.ID_NULL));
+
+        createCoordinator();
+
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        ImageView iconView = mNewTabPageLayout.findViewById(R.id.composeplate_button_icon);
+        assertEquals(bitmap, ((BitmapDrawable) iconView.getDrawable()).getBitmap());
+        // A full color favicon isn't tinted, even after the composeplate background is applied.
+        assertNull(iconView.getImageTintList());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.AIM3P_ENTRYPOINT)
+    public void testDestroy_RemovesAiModeButtonIconObserver() {
+        assertTrue(mAiModeButtonIconSupplier.hasObservers());
+
+        mCoordinator.destroy();
+
+        assertFalse(mAiModeButtonIconSupplier.hasObservers());
+
+        // Recreates the coordinator since #tearDown() destroys it.
+        createCoordinator();
+    }
+
+    private void testAiModeButtonIconChangedImpl(
+            StatusIconResource icon, boolean expectedShouldTint) {
+        setupMockSubCoordinators();
+        clearInvocations(mMockComposeplate);
+
+        mAiModeButtonIconSupplier.set(icon);
+
+        verify(mMockComposeplate).updateAiModeButtonIcon(any(), eq(expectedShouldTint));
+    }
+
+    /** Returns a full color icon, as fetched from a third party search engine's favicon URL. */
+    private static StatusIconResource createBitmapAiModeButtonIcon() {
+        return new StatusIconResource(
+                JUnitTestGURLs.RED_1.getSpec(),
+                Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
+                Resources.ID_NULL);
     }
 
     private void testAiModeButtonUiConfigImpl(

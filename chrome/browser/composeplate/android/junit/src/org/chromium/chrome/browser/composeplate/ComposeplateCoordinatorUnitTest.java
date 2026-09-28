@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -202,6 +205,20 @@ public class ComposeplateCoordinatorUnitTest {
                 aiModeButtonUiConfig,
                 mPropertyModel.get(ComposeplateProperties.AI_MODE_BUTTON_UI_CONFIG));
         verify(mComposeplateView).setAiModeButtonUiConfig(eq(aiModeButtonUiConfig));
+    }
+
+    @Test
+    public void testUpdateAiModeButtonIcon() {
+        assertNull(mPropertyModel.get(ComposeplateProperties.AI_MODE_BUTTON_ICON));
+
+        Drawable drawable = new ColorDrawable(Color.RED);
+        mCoordinator.updateAiModeButtonIcon(drawable, /* shouldTint= */ false);
+
+        ComposeplateProperties.AiModeButtonIcon icon =
+                mPropertyModel.get(ComposeplateProperties.AI_MODE_BUTTON_ICON);
+        assertEquals(drawable, icon.drawable);
+        assertFalse(icon.shouldTint);
+        verify(mComposeplateView).setAiModeButtonIcon(eq(icon));
     }
 
     private void verifyComposeplateWidth(int lateralMargin) {
