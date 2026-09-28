@@ -10,7 +10,6 @@
 #import <utility>
 #import <vector>
 
-#import "base/barrier_callback.h"
 #import "base/base64.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
@@ -136,29 +135,6 @@ void PopulateTabObservationFromResponse(
   }
 }
 
-// Processes the responses from PageContextWrapper by populating the
-// TabObservation protos, serializes them, and calls the completion block.
-void ProcessContextsAndComplete(
-    std::vector<std::unique_ptr<actor::TabObservationResponse>> responses,
-    void (^completionBlock)(NSArray<NSData*>*)) {
-  if (!completionBlock) {
-    return;
-  }
-
-  NSMutableArray<NSData*>* serializedTabObservations = [NSMutableArray array];
-  for (const auto& response : responses) {
-    if (!response) {
-      continue;
-    }
-    optimization_guide::proto::TabObservation tabObservation;
-    PopulateTabObservationFromResponse(&tabObservation, *response);
-    [serializedTabObservations
-        addObject:SerializeProtoToNSData(tabObservation)];
-  }
-
-  completionBlock(serializedTabObservations);
-}
-
 // Populates an `ActionsResult` proto from `result` and sets `outResultCode`.
 optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
     const actor::PerformActionsResult& result,
@@ -197,16 +173,6 @@ optimization_guide::proto::ActionsResult ActionsResultFromPerformActionsResult(
 
   // TODO(crbug.com/504704411): Populate WindowObservation here.
   return actionsResult;
-}
-
-// Creates a serialized ActionsResult representing a failure.
-NSData* CreateSerializedFailureActionsResult(
-    actor::mojom::ActionResultCode resultCode,
-    const std::string& errorMessage) {
-  optimization_guide::proto::ActionsResult actionsResult;
-  actionsResult.set_action_result(static_cast<int32_t>(resultCode));
-  actionsResult.set_error_message(errorMessage);
-  return SerializeProtoToNSData(actionsResult);
 }
 
 // Injects the current tab and window ID into the given action depending on its
@@ -454,136 +420,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   // TODO(crbug.com/496163970): Implement and test.
 }
 
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
-                      taskUpdate:(NSString*)taskUpdate
-          serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
-                 completionBlock:(void (^)(NSData* serializedActionsResult))
-                                     completionBlock {
-  CHECK(completionBlock);
-
-  web::WebStateID webStateId = [self webStateIDForTaskID:taskID];
-  if (!webStateId.valid()) {
-    completionBlock(CreateSerializedFailureActionsResult(
-        actor::mojom::ActionResultCode::kTaskWentAway,
-        "Failed to perform actions: Task ID not found."));
-    return;
-  }
-
-  std::vector<optimization_guide::proto::Action> actions;
-  for (NSData* data in serializedActionProtos) {
-    optimization_guide::proto::Action action;
-    if (!action.ParseFromArray([data bytes], [data length])) {
-      completionBlock(CreateSerializedFailureActionsResult(
-          actor::mojom::ActionResultCode::kArgumentsInvalid,
-          "Failed to parse action proto"));
-      return;
-    }
-    InjectDataIntoAction(action, webStateId, *_browserId);
-    actions.push_back(action);
-  }
-
-  __weak GeminiActuationHandler* weakSelf = self;
-  _actorService->PerformActions(
-      taskID, actions, base::SysNSStringToUTF8(taskUpdate),
-      base::BindOnce(
-          [](__weak GeminiActuationHandler* weakSelf, actor::ActorTaskId taskID,
-             void (^completionBlock)(NSData*),
-             actor::PerformActionsResult result) {
-            GeminiActuationHandler* strongSelf = weakSelf;
-            if (!strongSelf) {
-              if (completionBlock) {
-                completionBlock(CreateSerializedFailureActionsResult(
-                    actor::mojom::ActionResultCode::kExecutorDestroyed,
-                    "Handler destroyed before actions completed"));
-              }
-              return;
-            }
-            [strongSelf handleActionResults:std::move(result)
-                                     taskID:taskID
-                            completionBlock:completionBlock];
-          },
-          weakSelf, taskID, completionBlock));
-}
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)requestActionablePageContextForWebStateIDs:
-            (NSArray<NSNumber*>*)webStateIDs
-                                            taskID:(actor::ActorTaskId)taskID
-                                   completionBlock:
-                                       (void (^)(NSArray<NSData*>*
-                                                     serializedTabObservations))
-                                           completionBlock {
-  if (!completionBlock) {
-    return;
-  }
-
-  if ([webStateIDs count] == 0) {
-    completionBlock(@[]);
-    return;
-  }
-
-  NSSet<NSNumber*>* uniqueWebStateIDs = [NSSet setWithArray:webStateIDs];
-
-  auto barrier =
-      base::BarrierCallback<std::unique_ptr<actor::TabObservationResponse>>(
-          [uniqueWebStateIDs count],
-          base::BindOnce(
-              [](void (^completionBlock)(NSArray<NSData*>*),
-                 std::vector<std::unique_ptr<actor::TabObservationResponse>>
-                     responses) {
-                ProcessContextsAndComplete(std::move(responses),
-                                           completionBlock);
-              },
-              completionBlock));
-
-  for (NSNumber* nsId in uniqueWebStateIDs) {
-    web::WebStateID webStateId =
-        web::WebStateID::FromSerializedValue([nsId intValue]);
-    web::WebState* webState =
-        _actorService->GetWebStateForID(webStateId, taskID);
-    if (webState) {
-      _actorService->RequestTabObservation(
-          taskID, webState,
-          base::BindOnce(
-              [](web::WebStateID webStateId,
-                 base::RepeatingCallback<void(
-                     std::unique_ptr<actor::TabObservationResponse>)> barrier,
-                 PageContextWrapperCallbackResponse response) {
-                barrier.Run(std::make_unique<actor::TabObservationResponse>(
-                    webStateId, std::move(response), true));
-              },
-              webStateId, barrier));
-    } else {
-      barrier.Run(std::make_unique<actor::TabObservationResponse>(
-          webStateId, base::unexpected(PageContextWrapperError::kGenericError),
-          false));
-    }
-  }
-}
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)pauseTaskWithID:(actor::ActorTaskId)taskID {
-  _actorService->PauseTask(taskID, /*from_actor=*/true);
-}
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)interruptTaskWithID:(actor::ActorTaskId)taskID
-                     reason:(actor::ActorTaskInterruptReason)reason {
-  _actorService->InterruptTask(taskID, reason);
-}
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)stopTaskWithID:(actor::ActorTaskId)taskID
-                reason:(actor::ActorTaskStoppedReason)reason {
-  _actorService->StopTask(taskID, reason);
-}
-
 #pragma mark - ActorTaskUpdatesObserver
 
 // Aborts any pending request callback when a task stops externally.
@@ -724,22 +560,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     _activeCallbacks.erase(it);
     std::move(callback).Run(response);
   }
-}
-
-// TODO(crbug.com/556739755): Cleanup deprecated helper once deprecated delegate
-// methods are removed.
-- (void)handleActionResults:(actor::PerformActionsResult)result
-                     taskID:(actor::ActorTaskId)taskID
-            completionBlock:(void (^)(NSData*))completionBlock {
-  if (!completionBlock) {
-    return;
-  }
-
-  actor::mojom::ActionResultCode resultCode;
-  optimization_guide::proto::ActionsResult actionsResult =
-      ActionsResultFromPerformActionsResult(result, resultCode);
-  NSData* data = SerializeProtoToNSData(actionsResult);
-  completionBlock(data);
 }
 
 // TODO(crbug.com/559608376): Query the active WebStateID directly from

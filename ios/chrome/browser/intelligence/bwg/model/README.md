@@ -34,8 +34,8 @@ Due to the comprehensive integration of Gemini, the components are categorized i
     Implements the [GeminiActuationDelegate](./gemini_actuation_delegate.h) protocol, bridging between the Gemini UI and the C++ `actor::ActorService`.
 *   **Capabilities**:
     *   Creates automated browser automation tasks.
-    *   Executes serialized action Protos (e.g., clicking, typing, navigating).
-    *   Captures page inner-text and screenshot context across multiple controlled tabs asynchronously via `base::BarrierCallback`.
+    *   Executes serialized action Protos (e.g., clicking, typing, navigating) and returns resulting tab observations.
+    *   Handles yield instructions (user confirmation, clarification, takeover, pause, and task completion).
 
 ### 4. Smart Suggestions & zero-state Chips
 *   **[gemini_suggestion_handler.h](./gemini_suggestion_handler.h) & [gemini_suggestion_handler.mm](./gemini_suggestion_handler.mm)**:

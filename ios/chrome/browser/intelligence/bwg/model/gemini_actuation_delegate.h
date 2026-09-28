@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import <vector>
-
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 
 @protocol ActorTaskUpdatesObserver;
@@ -50,47 +48,6 @@
 // Asynchronously register an intervention delegate (1-to-1).
 - (void)setTaskInterventionDelegate:(id<ActorTaskInterventionDelegate>)delegate
                           forTaskID:(actor::ActorTaskId)taskID;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
-                      taskUpdate:(NSString*)taskUpdate
-          serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
-                      completion:
-                          (void (^)(BOOL success,
-                                    std::vector<bool> results))completionBlock;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)performActionsWithTaskID:(actor::ActorTaskId)taskID
-                      taskUpdate:(NSString*)taskUpdate
-          serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
-                 completionBlock:
-                     (void (^)(NSData* serializedActionsResult))completionBlock;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)requestActionablePageContextForWebStateIDs:
-            (NSArray<NSNumber*>*)webStateIDs
-                                            taskID:(actor::ActorTaskId)taskID
-                                   completionBlock:
-                                       (void (^)(NSArray<NSData*>*
-                                                     serializedTabObservations))
-                                           completionBlock;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)pauseTaskWithID:(actor::ActorTaskId)taskID;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)interruptTaskWithID:(actor::ActorTaskId)taskID
-                     reason:(actor::ActorTaskInterruptReason)reason;
-
-// TODO(crbug.com/556739755): Cleanup deprecated method once
-// `dispatchActuationRequest` lands.
-- (void)stopTaskWithID:(actor::ActorTaskId)taskID
-                reason:(actor::ActorTaskStoppedReason)reason;
 
 @end
 
