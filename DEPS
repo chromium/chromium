@@ -3714,7 +3714,7 @@ deps = {
 
   'src/chrome/browser/ttc/resources/internal': {
       'url': Var('chrome_git') + '/chrome/browser/ttc/resources/internal.git' + '@' +
-        'e94fbbe2cd4cba80c988a36c902515eae329ccf6',
+        'baa547de4e4b4eef5687a3a7b4d383e7254ed300',
       'condition': 'checkout_src_internal',
   },
 
