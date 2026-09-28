@@ -90,6 +90,8 @@ source_set("test_support") {
     "web_test_suite.mm",
     "web_test_with_web_controller.h",
     "web_test_with_web_controller.mm",
+    "web_test_with_web_state_impl.h",
+    "web_test_with_web_state_impl.mm",
     "wk_web_view_crash_utils.h",
     "wk_web_view_crash_utils.mm",
   ]

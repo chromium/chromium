@@ -36,12 +36,12 @@
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #import "ios/web/public/test/fakes/fake_web_state_observer.h"
-#import "ios/web/public/test/web_test.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_presenter.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
+#import "ios/web/test/web_test_with_web_state_impl.h"
 #import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
 #import "ios/web/web_state/deprecated/global_web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -133,13 +133,11 @@ class MockWebStatePolicyDecider : public WebStatePolicyDecider {
 }  // namespace
 
 // Test fixture for web::WebStateImpl class.
-class WebStateImplTest : public web::WebTest {
+class WebStateImplTest : public WebTestWithWebStateImpl {
  public:
-  WebStateImplTest() : WebTest() { IgnoreOverRealizationCheck(); }
-
-  template <typename... Args>
-  std::unique_ptr<WebStateImpl> CreateWebStateImpl(Args&&... args) {
-    return std::make_unique<WebStateImpl>(std::forward<Args>(args)...);
+  using PassKey = base::PassKey<WebStateImplTest>;
+  WebStateImplTest() : WebTestWithWebStateImpl(PassKey{}) {
+    IgnoreOverRealizationCheck();
   }
 };
 
@@ -1271,7 +1269,7 @@ TEST_F(WebStateImplTest, NavigationStartTrigger) {
 // for non-secure origins.
 TEST_F(WebStateImplTest, RequestGeolocationPermissionInsecureOrigin) {
   std::unique_ptr<WebStateImpl> web_state =
-      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
   FakeWebStateDelegate delegate;
   delegate.SetPermissionDecision(PermissionDecisionGrant);
   web_state->SetDelegate(&delegate);
@@ -1296,7 +1294,7 @@ TEST_F(WebStateImplTest, RequestGeolocationPermissionInsecureOrigin) {
 // request to the delegate for secure origins.
 TEST_F(WebStateImplTest, RequestGeolocationPermissionSecureOriginWithDelegate) {
   std::unique_ptr<WebStateImpl> web_state =
-      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
   FakeWebStateDelegate delegate;
   delegate.SetPermissionDecision(PermissionDecisionGrant);
   web_state->SetDelegate(&delegate);
@@ -1321,7 +1319,7 @@ TEST_F(WebStateImplTest, RequestGeolocationPermissionSecureOriginWithDelegate) {
 TEST_F(WebStateImplTest,
        RequestGeolocationPermissionSecureOriginWithoutDelegate) {
   std::unique_ptr<WebStateImpl> web_state =
-      std::make_unique<WebStateImpl>(WebState::CreateParams(GetBrowserState()));
+      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
 
   __block bool called = false;
   __block WKPermissionDecision result_decision = WKPermissionDecisionDeny;

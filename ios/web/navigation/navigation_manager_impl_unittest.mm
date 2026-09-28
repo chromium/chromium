@@ -34,6 +34,7 @@
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/crw_fake_web_view_navigation_proxy.h"
 #import "ios/web/test/test_url_constants.h"
+#import "ios/web/test/web_test_with_web_state_impl.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/base/apple/url_conversions.h"
@@ -2871,12 +2872,16 @@ TEST_P(NavigationManagerDetachedModeTest, NotSerializable) {
   EXPECT_FALSE(manager_->GetPendingItemImpl()->ShouldSkipSerialization());
 }
 
-class NavigationManagerSerialisationTest : public PlatformTest {
+class NavigationManagerSerialisationTest : public WebTestWithWebStateImpl {
  public:
-  NavigationManagerSerialisationTest() {
-    web_state_ = WebStateImpl::CreateWithFakeWebViewNavigationProxyForTesting(
-        WebState::CreateParams(&browser_state_),
-        [[CRWFakeWebViewNavigationProxy alloc] init]);
+  using PassKey = base::PassKey<NavigationManagerSerialisationTest>;
+  NavigationManagerSerialisationTest() : WebTestWithWebStateImpl(PassKey{}) {}
+
+  void SetUp() override {
+    WebTestWithWebStateImpl::SetUp();
+    web_state_ =
+        CreateWebStateImpl(WebState::CreateParams(GetBrowserState()),
+                           [[CRWFakeWebViewNavigationProxy alloc] init]);
   }
 
   ~NavigationManagerSerialisationTest() override {}
@@ -2888,11 +2893,7 @@ class NavigationManagerSerialisationTest : public PlatformTest {
 
   WebStateImpl* web_state() { return web_state_.get(); }
 
-  BrowserState* browser_state() { return &browser_state_; }
-
  private:
-  WebTaskEnvironment task_environment_;
-  FakeBrowserState browser_state_;
   std::unique_ptr<WebStateImpl> web_state_;
 };
 
@@ -3045,8 +3046,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto) {
   // perform a session restore and access the view to force instantiation
   // of the WKWebView.
   std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
+      CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
   std::ignore = web_state->GetView();
 
   NavigationManagerImpl& navigation_manager =
@@ -3076,8 +3076,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_Empty) {
   // perform a session restore and access the view to force instantiation
   // of the WKWebView.
   std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
+      CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
   std::ignore = web_state->GetView();
 
   NavigationManagerImpl& navigation_manager =
@@ -3105,8 +3104,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreFromProto_LastItemIndex) {
   // perform a session restore and access the view to force instantiation
   // of the WKWebView.
   std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
+      CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
   std::ignore = web_state->GetView();
 
   NavigationManagerImpl& navigation_manager =
@@ -3152,8 +3150,7 @@ TEST_F(NavigationManagerSerialisationTest, RestoreVirtualURLFromProto) {
   // perform a session restore and access the view to force instantiation
   // of the WKWebView.
   std::unique_ptr<web::WebStateImpl> web_state =
-      std::make_unique<web::WebStateImpl>(
-          web::WebState::CreateParams(browser_state()));
+      CreateWebStateImpl(web::WebState::CreateParams(GetBrowserState()));
   std::ignore = web_state->GetView();
 
   NavigationManagerImpl& navigation_manager =

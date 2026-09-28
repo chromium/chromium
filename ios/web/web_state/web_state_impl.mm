@@ -80,7 +80,7 @@ void IgnoreOverRealizationCheck() {
 
 #pragma mark - WebStateImpl public methods
 
-WebStateImpl::WebStateImpl(const CreateParams& params) {
+WebStateImpl::WebStateImpl(PassKey, const CreateParams& params) {
   AddWebStateImplMarker();
 
   const base::Time creation_time = base::Time::Now();
@@ -95,7 +95,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
   SendGlobalCreationEvent();
 }
 
-WebStateImpl::WebStateImpl(BrowserState* browser_state,
+WebStateImpl::WebStateImpl(PassKey,
+                           BrowserState* browser_state,
                            WebStateID unique_identifier,
                            proto::WebStateMetadataStorage metadata,
                            WebStateStorageLoader storage_loader,
@@ -109,7 +110,7 @@ WebStateImpl::WebStateImpl(BrowserState* browser_state,
   SendGlobalCreationEvent();
 }
 
-WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
+WebStateImpl::WebStateImpl(PassKey, CloneFrom, const RealizedWebState& pimpl) {
   AddWebStateImplMarker();
 
   // Serialize `pimpl` state to protobuf message.
@@ -132,6 +133,14 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
                         std::move(session_fetcher));
 
   SendGlobalCreationEvent();
+}
+
+WebStateImpl::WebStateImpl(TestKey,
+                           const CreateParams& params,
+                           id<CRWWebViewNavigationProxy> web_view_for_testing)
+    : WebStateImpl(base::PassKey<WebStateImpl>{}, params) {
+  RealizedState()->SetWebViewNavigationProxyForTesting(  // IN-TEST
+      web_view_for_testing);
 }
 
 WebStateImpl::~WebStateImpl() {
@@ -161,18 +170,6 @@ WebStateImpl* WebStateImpl::FromWebState(WebState* web_state) {
   WebStateImpl* web_state_impl = static_cast<WebStateImpl*>(web_state);
   DCHECK_CALLED_ON_VALID_SEQUENCE(web_state_impl->sequence_checker_);
   return web_state_impl;
-}
-
-/* static */
-std::unique_ptr<WebStateImpl>
-WebStateImpl::CreateWithFakeWebViewNavigationProxyForTesting(
-    const WebState::CreateParams& params,
-    id<CRWWebViewNavigationProxy> web_view_for_testing) {
-  DCHECK(web_view_for_testing);
-  auto web_state = std::make_unique<WebStateImpl>(params);
-  web_state->pimpl_->SetWebViewNavigationProxyForTesting(  // IN-TEST
-      web_view_for_testing);
-  return web_state;
 }
 
 #pragma mark - WebState implementation
@@ -523,7 +520,8 @@ std::unique_ptr<WebState> WebStateImpl::Clone() const {
   CHECK(IsRealized());
   CHECK(!is_being_destroyed_);
 
-  return std::make_unique<WebStateImpl>(CloneFrom{}, *pimpl_);
+  return std::make_unique<WebStateImpl>(base::PassKey<WebStateImpl>{},
+                                        CloneFrom{}, *pimpl_);
 }
 
 bool WebStateImpl::IsRealized() const {

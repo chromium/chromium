@@ -26,7 +26,8 @@ using ConcreteWebStateType = WebStateImpl;
 
 /* static */
 std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
-  return std::make_unique<ConcreteWebStateType>(params);
+  return std::make_unique<ConcreteWebStateType>(base::PassKey<WebState>{},
+                                                params);
 }
 
 /* static */
@@ -37,8 +38,9 @@ std::unique_ptr<WebState> WebState::CreateWithStorage(
     WebStateStorageLoader storage_loader,
     NativeSessionFetcher session_fetcher) {
   return std::make_unique<ConcreteWebStateType>(
-      browser_state, unique_identifier, std::move(metadata),
-      std::move(storage_loader), std::move(session_fetcher));
+      base::PassKey<WebState>{}, browser_state, unique_identifier,
+      std::move(metadata), std::move(storage_loader),
+      std::move(session_fetcher));
 }
 
 }  // namespace web

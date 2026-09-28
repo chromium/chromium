@@ -20,6 +20,7 @@
 #import "base/observer_list.h"
 #import "base/sequence_checker.h"
 #import "base/time/time.h"
+#import "base/types/pass_key.h"
 #import "base/values.h"
 #import "ios/web/navigation/navigation_manager_delegate.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
@@ -49,6 +50,7 @@ enum Permission : NSUInteger;
 enum PermissionState : NSUInteger;
 class SessionCertificatePolicyCacheImpl;
 class WebFramesManagerImpl;
+class WebTestWithWebStateImpl;
 
 // Implementation of WebState.
 // Generally mirrors //content's WebContents implementation.
@@ -64,6 +66,11 @@ class WebFramesManagerImpl;
 //    writing them out for session saves.
 class WebStateImpl final : public WebState {
  public:
+  // Restrict access to WebStateImpl constructors.
+  using Self = WebStateImpl;
+  using TestKey = base::PassKey<WebTestWithWebStateImpl>;
+  using PassKey = base::PassKey<Self, WebState, WebTestWithWebStateImpl>;
+
   // Empty structure used to mark the constructor used to implement Clone.
   struct CloneFrom {};
 
@@ -74,19 +81,26 @@ class WebStateImpl final : public WebState {
   class SerializedData;
 
   // Constructor for WebStateImpls created for new sessions.
-  explicit WebStateImpl(const CreateParams& params);
+  WebStateImpl(PassKey pass_key, const CreateParams& params);
 
   // Constructor for WebStateImpls created for deserialized sessions. The
   // callbacks are used to load the complete serialized data from disk when
   // the WebState transition to the realized state.
-  WebStateImpl(BrowserState* browser_state,
+  WebStateImpl(PassKey pass_key,
+               BrowserState* browser_state,
                WebStateID unique_identifier,
                proto::WebStateMetadataStorage metadata,
                WebStateStorageLoader storage_loader,
                NativeSessionFetcher session_fetcher);
 
   // Constructor for cloned WebStateImpl.
-  WebStateImpl(CloneFrom, const RealizedWebState& pimpl);
+  WebStateImpl(PassKey pass_key, CloneFrom, const RealizedWebState& pimpl);
+
+  // Constructor for WebStateImpls with a fake CRWWebViewNavigationProxy
+  // (restricted to tests only).
+  WebStateImpl(TestKey pass_key,
+               const CreateParams& params,
+               id<CRWWebViewNavigationProxy> web_view_for_testing);
 
   WebStateImpl(const WebStateImpl&) = delete;
   WebStateImpl& operator=(const WebStateImpl&) = delete;
@@ -97,13 +111,6 @@ class WebStateImpl final : public WebState {
   // safe (i.e. that the pointer points to a WebStateImpl and not another
   // sub-class of WebState).
   static WebStateImpl* FromWebState(WebState* web_state);
-
-  // Factory function creating a WebStateImpl with a fake
-  // CRWWebViewNavigationProxy for testing.
-  static std::unique_ptr<WebStateImpl>
-  CreateWithFakeWebViewNavigationProxyForTesting(
-      const CreateParams& params,
-      id<CRWWebViewNavigationProxy> web_view_for_testing);
 
   // Gets/Sets the CRWWebController that backs this object.
   CRWWebController* GetWebController();

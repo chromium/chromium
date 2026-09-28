@@ -13,6 +13,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
+#import "base/types/pass_key.h"
 #import "build/blink_buildflags.h"
 #import "content/public/browser/web_contents_delegate.h"
 #import "content/public/browser/web_contents_observer.h"
@@ -52,7 +53,14 @@ class ContentWebState : public WebState,
                         public content::WebContentsObserver,
                         public content::WebContentsDelegate {
  public:
-  explicit ContentWebState(const CreateParams& params);
+  using PassKey = base::PassKey<WebState>;
+
+  // For compatibility with WebStateImpl.
+  template <typename... Args>
+  ContentWebState(PassKey pass_key, Args&&... args)
+      : ContentWebState(std::forward<Args>(args)...) {}
+
+  ContentWebState(const CreateParams& params);
 
   // Constructor for ContentWebState created for deserialized sessions.
   ContentWebState(BrowserState* browser_state,
