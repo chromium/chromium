@@ -23,6 +23,14 @@ namespace signin {
 
 namespace {
 
+// Maximum primary account sync data score at or above which account switching
+// is never offered.
+constexpr int kSwitchingPrimaryScoreUpperLimit = 6;
+
+// Upper bound for the low primary account sync data score bracket (0 to 2),
+// where the secondary account score must exceed `primary_score`.
+constexpr int kSwitchingLowPrimaryScoreThreshold = 2;
+
 // Threshold values for quartile classification of sync data counts.
 struct SyncDataTypeThresholds {
   size_t q1 = 0;
@@ -286,6 +294,16 @@ bool IsCandidatePreferredOverCurrentBest(
   return false;
 }
 
+AccountPreviewDataService::AccountPreviewPreference
+BuildAccountPreviewPreference(const GaiaId& gaia_id,
+                              const AccountPreviewData& data) {
+  AccountPreviewDataService::AccountPreviewPreference preference;
+  preference.gaia_id = gaia_id;
+  preference.preferred_data_types = ExtractPreferredDataTypes(data);
+  preference.other_device_form_factor = ExtractOtherDeviceFormFactor(data);
+  return preference;
+}
+
 }  // namespace
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
@@ -296,11 +314,7 @@ ComputeAccountPreviewPreference(const GaiaId& gaia_id,
     return std::nullopt;
   }
 
-  AccountPreviewDataService::AccountPreviewPreference preference;
-  preference.gaia_id = gaia_id;
-  preference.preferred_data_types = ExtractPreferredDataTypes(data);
-  preference.other_device_form_factor = ExtractOtherDeviceFormFactor(data);
-  return preference;
+  return BuildAccountPreviewPreference(gaia_id, data);
 }
 
 AccountPreviewSelectionResult ComputePreferredAccountForPromo(
@@ -310,7 +324,7 @@ AccountPreviewSelectionResult ComputePreferredAccountForPromo(
     return {};
   }
 
-  if (accounts.empty()) {
+  if (accounts.empty() || !accounts[0].preview_data) {
     return {};
   }
 
@@ -330,7 +344,8 @@ AccountPreviewSelectionResult ComputePreferredAccountForPromo(
 
   // Priority 2: If an AGA (external app primary) account exists, select it.
   for (const auto& account : accounts) {
-    if (account.is_external_app_primary && account.is_regular_account()) {
+    if (account.preview_data && account.is_external_app_primary &&
+        account.is_regular_account()) {
       result.selected_account = account.gaia_id;
       result.selection_reason =
           AccountPreviewSelectionReason::kExternalAppPrimary;
@@ -343,7 +358,7 @@ AccountPreviewSelectionResult ComputePreferredAccountForPromo(
   // Priority 3: Compare sync data between all regular accounts.
   const AccountPreviewHeuristicContext* best_candidate = nullptr;
   for (const auto& account : accounts) {
-    if (!account.is_regular_account()) {
+    if (!account.preview_data || !account.is_regular_account()) {
       continue;
     }
     result.account_scores[account.gaia_id] =
@@ -362,6 +377,120 @@ AccountPreviewSelectionResult ComputePreferredAccountForPromo(
   result.selection_reason = AccountPreviewSelectionReason::kSyncDataScore;
   result.preference = ComputeAccountPreviewPreference(
       best_candidate->gaia_id, *best_candidate->preview_data);
+  return result;
+}
+
+AccountSwitchingSelectionResult ComputeAccountSwitchingSelection(
+    base::span<const AccountPreviewHeuristicContext> accounts) {
+  AccountSwitchingSelectionResult result;
+  if (accounts.empty() || !accounts[0].is_primary) {
+    result.outcome =
+        AccountSwitchingSelectionOutcome::kWouldNotShowNoPrimaryAccount;
+    return result;
+  }
+
+  if (accounts.size() < 2) {
+    result.outcome =
+        AccountSwitchingSelectionOutcome::kWouldNotShowNotEnoughAccounts;
+    return result;
+  }
+
+  // The first account in the list (`accounts[0]`) is the primary account.
+  const AccountPreviewHeuristicContext& primary_account = accounts[0];
+  if (!primary_account.is_regular_account()) {
+    result.outcome =
+        AccountSwitchingSelectionOutcome::kWouldNotShowNonRegularPrimaryAccount;
+    return result;
+  }
+
+  if (primary_account.is_external_app_primary) {
+    result.outcome = AccountSwitchingSelectionOutcome::
+        kWouldNotShowExternalAppPrimaryAccount;
+    return result;
+  }
+
+  if (!primary_account.preview_data) {
+    result.outcome = AccountSwitchingSelectionOutcome::
+        kWouldNotShowPrimaryMissingPreviewData;
+    return result;
+  }
+
+  bool has_regular_secondary = false;
+  bool has_regular_secondary_with_preview_data = false;
+  const AccountPreviewHeuristicContext* best_secondary = nullptr;
+  SyncDataScore best_secondary_score;
+  for (const auto& account : accounts.subspan(1u)) {
+    if (!account.is_regular_account()) {
+      continue;
+    }
+    has_regular_secondary = true;
+    if (!account.preview_data) {
+      continue;
+    }
+    has_regular_secondary_with_preview_data = true;
+    if (!account.has_other_devices()) {
+      continue;
+    }
+    SyncDataScore score = CalculateSyncDataScore(*account.preview_data);
+    if (!best_secondary || score > best_secondary_score) {
+      best_secondary = &account;
+      best_secondary_score = score;
+    }
+  }
+
+  if (!has_regular_secondary) {
+    result.outcome = AccountSwitchingSelectionOutcome::
+        kWouldNotShowNoRegularSecondaryAccount;
+    return result;
+  }
+
+  if (!has_regular_secondary_with_preview_data) {
+    result.outcome = AccountSwitchingSelectionOutcome::
+        kWouldNotShowSecondaryMissingPreviewData;
+    return result;
+  }
+
+  if (!best_secondary) {
+    result.outcome = AccountSwitchingSelectionOutcome::
+        kWouldNotShowNoSecondaryWithOtherDevices;
+    return result;
+  }
+
+  const int primary_score =
+      CalculateSyncDataScore(*primary_account.preview_data).total_score;
+  const int secondary_score = best_secondary_score.total_score;
+
+  if (primary_score >= kSwitchingPrimaryScoreUpperLimit) {
+    result.outcome =
+        AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryExceedsUpperLimit;
+    return result;
+  }
+
+  // For primary score Y in {0, 2}, secondary score X must satisfy X > Y.
+  // For primary score Y in {3, 5}, secondary score X must satisfy X > 2 * Y.
+  if (primary_score <= kSwitchingLowPrimaryScoreThreshold) {
+    if (secondary_score > primary_score) {
+      result.outcome =
+          AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore;
+      result.selected_account = best_secondary->gaia_id;
+      result.preference = BuildAccountPreviewPreference(
+          best_secondary->gaia_id, *best_secondary->preview_data);
+      return result;
+    }
+  } else {
+    CHECK_LT(primary_score, kSwitchingPrimaryScoreUpperLimit);
+    if (secondary_score > 2 * primary_score) {
+      result.outcome =
+          AccountSwitchingSelectionOutcome::kWouldShowDoubledPrimaryScore;
+      result.selected_account = best_secondary->gaia_id;
+      result.preference = BuildAccountPreviewPreference(
+          best_secondary->gaia_id, *best_secondary->preview_data);
+      return result;
+    }
+  }
+
+  result.outcome = AccountSwitchingSelectionOutcome::
+      kWouldNotShowSecondaryDoesNotMeetThreshold;
   return result;
 }
 

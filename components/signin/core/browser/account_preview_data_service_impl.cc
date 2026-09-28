@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
-#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -553,6 +552,8 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
   // the platform's default account for promos).
   std::vector<AccountInfo> ordered_accounts =
       GetOrderedAccountsForDisplay(identity_manager_, local_state_);
+  CoreAccountId primary_account_id =
+      identity_manager_->GetPrimaryAccountId(ConsentLevel::kSignin);
 
 #if BUILDFLAG(IS_ANDROID)
   std::optional<GaiaId> external_app_account =
@@ -560,14 +561,23 @@ AccountPreviewDataServiceImpl::GetHeuristicContexts() const {
 #endif
   std::vector<AccountPreviewHeuristicContext> contexts;
   for (const AccountInfo& account : ordered_accounts) {
-    auto cache_it = cached_data_.find(account.GetGaiaId());
-    if (cache_it == cached_data_.end()) {
+    const bool is_primary = account.GetAccountId() == primary_account_id;
+    if (!is_primary &&
+        (!identity_manager_->HasAccountWithRefreshToken(
+             account.GetAccountId()) ||
+         identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+             account.GetAccountId()))) {
       continue;
     }
 
+    auto cache_it = cached_data_.find(account.GetGaiaId());
+    const AccountPreviewData* preview_data =
+        cache_it != cached_data_.end() ? &cache_it->second : nullptr;
+
     contexts.push_back(AccountPreviewHeuristicContext{
         .gaia_id = account.GetGaiaId(),
-        .preview_data = raw_ref(cache_it->second),
+        .preview_data = preview_data,
+        .is_primary = is_primary,
         .is_managed = account.IsManaged() == signin::Tribool::kTrue,
         .is_child = account.IsChildAccount() == signin::Tribool::kTrue,
 #if BUILDFLAG(IS_ANDROID)
@@ -591,6 +601,13 @@ void AccountPreviewDataServiceImpl::ComputeAndStorePreferredAccount() {
     WritePreferredAccountToPrefs(result.preference);
     metrics_recorder_.RecordSelectionHeuristicResult(contexts, result);
   }
+}
+
+void AccountPreviewDataServiceImpl::ComputeAndStoreSwitchingAccount() {
+  std::vector<AccountPreviewHeuristicContext> contexts = GetHeuristicContexts();
+  AccountSwitchingSelectionResult result =
+      ComputeAccountSwitchingSelection(contexts);
+  metrics_recorder_.RecordSwitchingHeuristicResult(result);
 }
 
 std::vector<CoreAccountInfo>
@@ -654,6 +671,7 @@ void AccountPreviewDataServiceImpl::OnAllFetchesCompleted(
   RecordAccountsUsedForLastFetch();
 
   ComputeAndStorePreferredAccount();
+  ComputeAndStoreSwitchingAccount();
 
   if (should_reset_periodic_timer) {
     ResetTimer();

@@ -4480,6 +4480,22 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SwitchingHeuristic.WouldShowPromo{ProfileIndex}"
+    enum="AccountSwitchingSelectionOutcome" expires_after="2027-08-26">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the outcome of the account switching heuristic evaluation (whether
+    an account switching promo would be shown and in which score bracket, or why
+    it would not be shown). Recorded once per day at most when the switching
+    account selection is computed or updated for a profile (after preview data
+    is fetched for all accounts).
+
+    {ProfileIndex}
+  </summary>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+</histogram>
+
 <histogram name="Signin.SyncButtons.Shown" enum="SyncButtonsType"
     expires_after="2027-03-07">
   <owner>tju@google.com</owner>

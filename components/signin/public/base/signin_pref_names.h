@@ -29,6 +29,8 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewDataLastFetchAccounts[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewSelectionHeuristicScoresLastRecordedPref[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kAccountPreviewSwitchingHeuristicLastRecordedPref[];
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAccountPreviewExternalAppAccount[];

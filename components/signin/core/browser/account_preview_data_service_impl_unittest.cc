@@ -1181,6 +1181,89 @@ TEST_F(AccountPreviewDataServiceTest,
           .is_null());
 }
 
+TEST_F(AccountPreviewDataServiceTest,
+       RecordsSwitchingHeuristicMetricsWhenSignedInWithMultipleAccounts) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo",
+      AccountSwitchingSelectionOutcome::
+          kWouldNotShowNoSecondaryWithOtherDevices,
+      1);
+  EXPECT_FALSE(
+      prefs_.GetTime(prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref)
+          .is_null());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RecordsSwitchingHeuristicNoPrimaryWhenSignedOut) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo acc1 = identity_test_env_.MakeAccountAvailable("acc1@gmail.com");
+  AccountInfo acc2 = identity_test_env_.MakeAccountAvailable("acc2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(acc1.GetEmail()), acc1.GetGaiaId()},
+       {std::string(acc2.GetEmail()), acc2.GetGaiaId()}});
+#endif
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo",
+      AccountSwitchingSelectionOutcome::kWouldNotShowNoPrimaryAccount, 1);
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RecordsSwitchingHeuristicMissingPreviewDataOnFetchFailure) {
+  base::HistogramTester histogram_tester;
+
+  signin::WaitForRefreshTokensLoaded(identity_test_env_.identity_manager());
+
+  MockFailedStatsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+  MockFailedPreviewsFetch(&test_url_loader_factory_, net::ERR_FAILED);
+
+  base::RunLoop run_loop;
+  service_->SetAllDataAvailableCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo primary = identity_test_env_.MakePrimaryAccountAvailable(
+      "primary@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary.GetEmail()), primary.GetGaiaId()},
+       {std::string(secondary.GetEmail()), secondary.GetGaiaId()}});
+#endif
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo",
+      AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryMissingPreviewData,
+      1);
+}
+
 TEST_F(AccountPreviewDataServiceTest, ReadPreviewPreferenceFromPrefsDataTypes) {
   base::DictValue dict;
   dict.Set("gaia_id", "test_gaia_id");
@@ -2070,6 +2153,51 @@ TEST_F(AccountPreviewDataServiceTest,
   ASSERT_EQ(1u, last_fetch_accounts.size());
   EXPECT_EQ(account2.GetGaiaId().ToString(),
             last_fetch_accounts[0].GetString());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       PrimaryAccountInPersistentErrorAbortsRecomputation) {
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user1@gmail.com", ConsentLevel::kSignin);
+  AccountInfo secondary_account =
+      identity_test_env_.MakeAccountAvailable("user2@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts(
+      {{std::string(primary_account.GetEmail()), primary_account.GetGaiaId()},
+       {std::string(secondary_account.GetEmail()),
+        secondary_account.GetGaiaId()}});
+#endif
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  AllDataAvailableWaiter waiter(service_.get());
+  waiter.Wait();
+
+  ASSERT_TRUE(
+      service_->GetAccountPreviewData(primary_account.GetGaiaId()).has_value());
+  ASSERT_TRUE(service_->GetAccountPreviewData(secondary_account.GetGaiaId())
+                  .has_value());
+  EXPECT_THAT(
+      service_->GetPreferredAccountForPromo(),
+      testing::Optional(testing::Field(&AccountPreviewPreference::gaia_id,
+                                       primary_account.GetGaiaId())));
+
+  // Invalidate the primary account with a persistent error.
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      primary_account.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  // Primary account cache is cleared, secondary account remains cached.
+  EXPECT_FALSE(
+      service_->GetAccountPreviewData(primary_account.GetGaiaId()).has_value());
+  EXPECT_TRUE(service_->GetAccountPreviewData(secondary_account.GetGaiaId())
+                  .has_value());
+
+  // Because the primary account is still the first/default account and has no
+  // cached preview data, recomputation aborts and does not select the secondary
+  // account.
+  EXPECT_EQ(service_->GetPreferredAccountForPromo(), std::nullopt);
 }
 
 TEST_F(AccountPreviewDataServiceTest,

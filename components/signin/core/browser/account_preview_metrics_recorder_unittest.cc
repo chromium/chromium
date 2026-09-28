@@ -236,7 +236,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx{
       .gaia_id = GaiaId("user0"),
-      .preview_data = raw_ref(data),
+      .preview_data = &data,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
@@ -294,7 +294,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx{
       .gaia_id = primary_info.GetGaiaId(),
-      .preview_data = raw_ref(data),
+      .preview_data = &data,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
@@ -354,15 +354,15 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx0{
       .gaia_id = primary_info.GetGaiaId(),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
   };
   AccountPreviewHeuristicContext ctx1{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
   AccountPreviewHeuristicContext ctx2{
       .gaia_id = GaiaId("user2"),
-      .preview_data = raw_ref(data2),
+      .preview_data = &data2,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2};
@@ -427,11 +427,11 @@ TEST_F(
 
   AccountPreviewHeuristicContext ctx0{
       .gaia_id = primary_info.GetGaiaId(),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
   };
   AccountPreviewHeuristicContext ctx1{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
@@ -497,19 +497,19 @@ TEST_F(
 
   AccountPreviewHeuristicContext ctx0{
       .gaia_id = primary_info.GetGaiaId(),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
   };
   AccountPreviewHeuristicContext ctx1{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
   AccountPreviewHeuristicContext ctx2{
       .gaia_id = GaiaId("user2"),
-      .preview_data = raw_ref(data2),
+      .preview_data = &data2,
   };
   AccountPreviewHeuristicContext ctx3{
       .gaia_id = GaiaId("user3"),
-      .preview_data = raw_ref(data3),
+      .preview_data = &data3,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1, ctx2,
@@ -552,12 +552,12 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx0{
       .gaia_id = GaiaId("user0"),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
       .is_managed = true,
   };
   AccountPreviewHeuristicContext ctx1{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx0, ctx1};
@@ -607,11 +607,11 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx0{
       .gaia_id = GaiaId("user0"),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
   };
   AccountPreviewHeuristicContext ctx1{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
       .is_external_app_primary = true,
   };
 
@@ -659,7 +659,7 @@ TEST_F(AccountPreviewMetricsRecorderTest,
 
   AccountPreviewHeuristicContext ctx{
       .gaia_id = GaiaId("user0"),
-      .preview_data = raw_ref(data),
+      .preview_data = &data,
   };
 
   std::vector<AccountPreviewHeuristicContext> accounts = {ctx};
@@ -693,6 +693,63 @@ TEST_F(AccountPreviewMetricsRecorderTest,
   histogram_tester.ExpectTotalCount("Signin.SelectionHeuristic.Reason", 2);
   histogram_tester.ExpectTotalCount(
       "Signin.SelectionHeuristicScore.PreferredAccount.SingleAccount", 2);
+}
+
+TEST_F(AccountPreviewMetricsRecorderTest,
+       RecordSwitchingHeuristicResultAndDailyRateLimit) {
+  base::HistogramTester histogram_tester;
+  AccountPreviewMetricsRecorder recorder(*pref_service(), *identity_manager(),
+                                         profile_metrics_service_);
+
+  AccountPreviewData primary_data;
+  AccountPreviewData secondary_data;
+  secondary_data.counts[syncer::PASSWORDS] =
+      switches::kPasswordsQ1Threshold.Get();
+  secondary_data.devices.push_back(DevicePreview{});
+
+  AccountPreviewHeuristicContext primary_ctx{
+      .gaia_id = GaiaId("primary"),
+      .preview_data = &primary_data,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext secondary_ctx{
+      .gaia_id = GaiaId("secondary"),
+      .preview_data = &secondary_data,
+  };
+
+  std::vector<AccountPreviewHeuristicContext> accounts = {primary_ctx,
+                                                          secondary_ctx};
+  AccountSwitchingSelectionResult result =
+      ComputeAccountSwitchingSelection(accounts);
+
+  // 1st recording succeeds.
+  recorder.RecordSwitchingHeuristicResult(result);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo",
+      AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SwitchingHeuristic.WouldShowPromo.Profile1",
+      AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore, 1);
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref),
+            base::Time::Now());
+
+  // 2nd call immediately after is rate-limited.
+  recorder.RecordSwitchingHeuristicResult(result);
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+                                    1);
+
+  // Fast forward 23 hours -> still rate-limited.
+  task_environment_.FastForwardBy(base::Hours(23));
+  recorder.RecordSwitchingHeuristicResult(result);
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+                                    1);
+
+  // Fast forward 2 more hours (total 25 hours) -> records again.
+  task_environment_.FastForwardBy(base::Hours(2));
+  recorder.RecordSwitchingHeuristicResult(result);
+  histogram_tester.ExpectTotalCount("Signin.SwitchingHeuristic.WouldShowPromo",
+                                    2);
 }
 
 }  // namespace signin

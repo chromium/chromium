@@ -24,6 +24,7 @@ class IdentityManager;
 struct AccountPreviewData;
 struct AccountPreviewHeuristicContext;
 struct AccountPreviewSelectionResult;
+struct AccountSwitchingSelectionResult;
 
 class AccountPreviewMetricsRecorder {
  public:
@@ -43,6 +44,9 @@ class AccountPreviewMetricsRecorder {
   void RecordSelectionHeuristicResult(
       base::span<const AccountPreviewHeuristicContext> accounts,
       const AccountPreviewSelectionResult& selection_result);
+
+  void RecordSwitchingHeuristicResult(
+      const AccountSwitchingSelectionResult& switching_result);
 
  private:
   raw_ref<PrefService> pref_service_;

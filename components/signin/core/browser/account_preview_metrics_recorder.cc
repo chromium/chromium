@@ -208,7 +208,7 @@ void AccountPreviewMetricsRecorder::RecordSelectionHeuristicResult(
     if (has_primary_account && account.gaia_id == primary_account.gaia) {
       continue;
     }
-    if (!account.is_regular_account()) {
+    if (!account.is_regular_account() || !account.preview_data) {
       continue;
     }
     auto score_it = selection_result.account_scores.find(account.gaia_id);
@@ -225,6 +225,23 @@ void AccountPreviewMetricsRecorder::RecordSelectionHeuristicResult(
 
   pref_service_->SetTime(
       prefs::kAccountPreviewSelectionHeuristicScoresLastRecordedPref, now);
+}
+
+void AccountPreviewMetricsRecorder::RecordSwitchingHeuristicResult(
+    const AccountSwitchingSelectionResult& switching_result) {
+  base::Time last_recorded = pref_service_->GetTime(
+      prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref);
+  base::Time now = base::Time::Now();
+  if (!last_recorded.is_null() && now >= last_recorded &&
+      (now - last_recorded) < base::Days(1)) {
+    return;
+  }
+
+  profile_metrics_service_->UmaHistogramEnumeration(
+      "Signin.SwitchingHeuristic.WouldShowPromo", switching_result.outcome);
+
+  pref_service_->SetTime(
+      prefs::kAccountPreviewSwitchingHeuristicLastRecordedPref, now);
 }
 
 }  // namespace signin

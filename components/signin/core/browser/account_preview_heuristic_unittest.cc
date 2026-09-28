@@ -97,7 +97,7 @@ TEST(AccountPreviewHeuristicDisabledFeatureTest, ReturnsNullopt) {
             std::nullopt);
   EXPECT_EQ(ComputePreferredAccountForPromo(
                 {AccountPreviewHeuristicContext{.gaia_id = GaiaId("user1"),
-                                                .preview_data = raw_ref(data)}})
+                                                .preview_data = &data}})
                 .preference,
             std::nullopt);
 }
@@ -233,7 +233,7 @@ TEST_F(AccountPreviewHeuristicTest, SingleValidAccountReturnsPreference) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
   AccountPreviewHeuristicContext account{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data),
+      .preview_data = &data,
   };
 
   auto pref = ComputePreferredAccountForPromo({account}).preference;
@@ -290,11 +290,11 @@ TEST_F(AccountPreviewHeuristicTest,
 
   AccountPreviewHeuristicContext account_a{
       .gaia_id = GaiaId("user_a"),
-      .preview_data = raw_ref(data_a),
+      .preview_data = &data_a,
   };
   AccountPreviewHeuristicContext account_b{
       .gaia_id = GaiaId("user_b"),
-      .preview_data = raw_ref(data_b),
+      .preview_data = &data_b,
   };
 
   // Account B should win because new data types do not contribute to sync data
@@ -313,7 +313,7 @@ TEST_F(AccountPreviewHeuristicTest,
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext context{
       .gaia_id = GaiaId("user1"),
-      .preview_data = raw_ref(data),
+      .preview_data = &data,
   };
   EXPECT_TRUE(context.is_regular_account());
 
@@ -333,7 +333,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_acc{
       .gaia_id = GaiaId("default"),
-      .preview_data = raw_ref(default_data),
+      .preview_data = &default_data,
   };
 
   // Managed candidate is not preferred.
@@ -341,7 +341,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext managed_candidate{
       .gaia_id = GaiaId("managed"),
-      .preview_data = raw_ref(managed_data),
+      .preview_data = &managed_data,
       .is_managed = true,
   };
   auto pref = ComputePreferredAccountForPromo({default_acc, managed_candidate})
@@ -354,7 +354,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext child_candidate{
       .gaia_id = GaiaId("child"),
-      .preview_data = raw_ref(child_data),
+      .preview_data = &child_data,
       .is_child = true,
   };
   pref = ComputePreferredAccountForPromo({default_acc, child_candidate})
@@ -367,14 +367,14 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext managed_default{
       .gaia_id = GaiaId("managed_default"),
-      .preview_data = raw_ref(managed_default_data),
+      .preview_data = &managed_default_data,
       .is_managed = true,
   };
   AccountPreviewData consumer_data = CreatePreviewData(
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext consumer_candidate{
       .gaia_id = GaiaId("consumer"),
-      .preview_data = raw_ref(consumer_data),
+      .preview_data = &consumer_data,
   };
   pref = ComputePreferredAccountForPromo({managed_default, consumer_candidate})
              .preference;
@@ -384,7 +384,7 @@ TEST_F(AccountPreviewHeuristicTest, Disqualifications) {
   // If default account is child (Priority 1), it is selected.
   AccountPreviewHeuristicContext child_default{
       .gaia_id = GaiaId("child_default"),
-      .preview_data = raw_ref(child_data),
+      .preview_data = &child_data,
       .is_child = true,
   };
   pref = ComputePreferredAccountForPromo({child_default, consumer_candidate})
@@ -398,7 +398,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext default_aga{
       .gaia_id = GaiaId("default_aga"),
-      .preview_data = raw_ref(default_aga_data),
+      .preview_data = &default_aga_data,
       .is_external_app_primary = true,
   };
 
@@ -409,7 +409,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
   AccountPreviewHeuristicContext candidate_cross_more{
       .gaia_id = GaiaId("candidate_cross_more"),
-      .preview_data = raw_ref(candidate_cross_more_data),
+      .preview_data = &candidate_cross_more_data,
   };
   // AGA default account is Priority 2, so it is selected over secondary
   // candidates.
@@ -423,7 +423,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext candidate_single_more{
       .gaia_id = GaiaId("candidate_single_more"),
-      .preview_data = raw_ref(candidate_single_more_data),
+      .preview_data = &candidate_single_more_data,
   };
   pref = ComputePreferredAccountForPromo({default_aga, candidate_single_more})
              .preference;
@@ -437,7 +437,7 @@ TEST_F(AccountPreviewHeuristicTest, DefaultAgaPrimary) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
   AccountPreviewHeuristicContext candidate_cross_equal{
       .gaia_id = GaiaId("candidate_cross_equal"),
-      .preview_data = raw_ref(candidate_cross_equal_data),
+      .preview_data = &candidate_cross_equal_data,
   };
   pref = ComputePreferredAccountForPromo({default_aga, candidate_cross_equal})
              .preference;
@@ -450,7 +450,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_single{
       .gaia_id = GaiaId("default"),
-      .preview_data = raw_ref(default_data),
+      .preview_data = &default_data,
   };
 
   AccountPreviewData candidate_cross_equal_data = CreatePreviewData(
@@ -460,7 +460,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
   AccountPreviewHeuristicContext candidate_cross_equal{
       .gaia_id = GaiaId("candidate_equal"),
-      .preview_data = raw_ref(candidate_cross_equal_data),
+      .preview_data = &candidate_cross_equal_data,
   };
   // Equal sync data -> Candidate wins.
   auto pref =
@@ -476,7 +476,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultSingleDevice) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
   AccountPreviewHeuristicContext candidate_cross_less{
       .gaia_id = GaiaId("candidate_less"),
-      .preview_data = raw_ref(candidate_cross_less_data),
+      .preview_data = &candidate_cross_less_data,
   };
   // Less sync data -> Default remains preferred.
   pref = ComputePreferredAccountForPromo({default_single, candidate_cross_less})
@@ -493,7 +493,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
   AccountPreviewHeuristicContext default_cross{
       .gaia_id = GaiaId("default"),
-      .preview_data = raw_ref(default_data),
+      .preview_data = &default_data,
   };
 
   AccountPreviewData candidate_cross_equal_data = CreatePreviewData(
@@ -503,7 +503,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
   AccountPreviewHeuristicContext candidate_cross_equal{
       .gaia_id = GaiaId("candidate_equal"),
-      .preview_data = raw_ref(candidate_cross_equal_data),
+      .preview_data = &candidate_cross_equal_data,
   };
   // Equal sync data -> Default remains preferred (requires strictly more).
   auto pref =
@@ -519,7 +519,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateCrossDeviceDefaultCrossDevice) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)});
   AccountPreviewHeuristicContext candidate_cross_more{
       .gaia_id = GaiaId("candidate_more"),
-      .preview_data = raw_ref(candidate_cross_more_data),
+      .preview_data = &candidate_cross_more_data,
   };
   // Strictly more sync data -> Candidate wins.
   pref = ComputePreferredAccountForPromo({default_cross, candidate_cross_more})
@@ -533,14 +533,14 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext default_single{
       .gaia_id = GaiaId("default"),
-      .preview_data = raw_ref(default_data),
+      .preview_data = &default_data,
   };
 
   AccountPreviewData candidate_single_equal_data = CreatePreviewData(
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext candidate_single_equal{
       .gaia_id = GaiaId("candidate_equal"),
-      .preview_data = raw_ref(candidate_single_equal_data),
+      .preview_data = &candidate_single_equal_data,
   };
   // Equal sync data -> Default remains preferred.
   auto pref =
@@ -553,7 +553,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateSingleDeviceDefaultSingleDevice) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext candidate_single_more{
       .gaia_id = GaiaId("candidate_more"),
-      .preview_data = raw_ref(candidate_single_more_data),
+      .preview_data = &candidate_single_more_data,
   };
   // Strictly more sync data -> Candidate wins.
   pref =
@@ -568,7 +568,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext candidate_aga{
       .gaia_id = GaiaId("candidate_aga"),
-      .preview_data = raw_ref(candidate_aga_data),
+      .preview_data = &candidate_aga_data,
       .is_external_app_primary = true,
   };
 
@@ -579,7 +579,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
   AccountPreviewHeuristicContext default_cross_more{
       .gaia_id = GaiaId("default_cross"),
-      .preview_data = raw_ref(default_cross_more_data),
+      .preview_data = &default_cross_more_data,
   };
   // AGA candidate (Priority 2) wins over non-managed default account.
   auto pref =
@@ -592,7 +592,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       {.passwords = switches::kPasswordsMedianThreshold.Get()});
   AccountPreviewHeuristicContext default_single_more{
       .gaia_id = GaiaId("default_single"),
-      .preview_data = raw_ref(default_single_more_data),
+      .preview_data = &default_single_more_data,
   };
   pref = ComputePreferredAccountForPromo({default_single_more, candidate_aga})
              .preference;
@@ -606,7 +606,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP)});
   AccountPreviewHeuristicContext default_cross_equal{
       .gaia_id = GaiaId("default_cross_equal"),
-      .preview_data = raw_ref(default_cross_equal_data),
+      .preview_data = &default_cross_equal_data,
   };
   pref = ComputePreferredAccountForPromo({default_cross_equal, candidate_aga})
              .preference;
@@ -618,7 +618,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext managed_default{
       .gaia_id = GaiaId("managed_default"),
-      .preview_data = raw_ref(managed_default_data),
+      .preview_data = &managed_default_data,
       .is_managed = true,
   };
   pref = ComputePreferredAccountForPromo({managed_default, candidate_aga})
@@ -630,7 +630,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   // selected.
   AccountPreviewHeuristicContext managed_aga{
       .gaia_id = GaiaId("managed_aga"),
-      .preview_data = raw_ref(candidate_aga_data),
+      .preview_data = &candidate_aga_data,
       .is_managed = true,
       .is_external_app_primary = true,
   };
@@ -643,7 +643,7 @@ TEST_F(AccountPreviewHeuristicTest, CandidateAgaPrimary) {
   // selected.
   AccountPreviewHeuristicContext child_aga{
       .gaia_id = GaiaId("child_aga"),
-      .preview_data = raw_ref(candidate_aga_data),
+      .preview_data = &candidate_aga_data,
       .is_child = true,
       .is_external_app_primary = true,
   };
@@ -659,13 +659,13 @@ TEST_F(AccountPreviewHeuristicTest,
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext acc1{
       .gaia_id = GaiaId("acc1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
   AccountPreviewData data2 = CreatePreviewData(
       {.passwords = switches::kPasswordsQ1Threshold.Get() / 2});
   AccountPreviewHeuristicContext acc2{
       .gaia_id = GaiaId("acc2"),
-      .preview_data = raw_ref(data2),
+      .preview_data = &data2,
   };
   AccountPreviewData data3 = CreatePreviewData(
       {.passwords = switches::kPasswordsMedianThreshold.Get()},
@@ -674,7 +674,7 @@ TEST_F(AccountPreviewHeuristicTest,
           sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_TABLET)});
   AccountPreviewHeuristicContext acc3{
       .gaia_id = GaiaId("acc3"),
-      .preview_data = raw_ref(data3),
+      .preview_data = &data3,
   };
 
   // acc3 beats acc1 and acc2.
@@ -701,7 +701,7 @@ TEST_F(AccountPreviewHeuristicTest,
       {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
-      .preview_data = raw_ref(data_1q4),
+      .preview_data = &data_1q4,
   };
 
   AccountPreviewData data_2q3 = CreatePreviewData({
@@ -710,7 +710,7 @@ TEST_F(AccountPreviewHeuristicTest,
   });
   AccountPreviewHeuristicContext acc_2q3{
       .gaia_id = GaiaId("acc_2q3"),
-      .preview_data = raw_ref(data_2q3),
+      .preview_data = &data_2q3,
   };
 
   // acc_1q4 is preferred as it has higher data type score.
@@ -735,7 +735,7 @@ TEST_F(AccountPreviewHeuristicTest,
       {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
-      .preview_data = raw_ref(data_1q4),
+      .preview_data = &data_1q4,
   };
 
   AccountPreviewData data_2q3_1q1 = CreatePreviewData({
@@ -745,7 +745,7 @@ TEST_F(AccountPreviewHeuristicTest,
   });
   AccountPreviewHeuristicContext acc_2q3_1q1{
       .gaia_id = GaiaId("acc_2q3_1q1"),
-      .preview_data = raw_ref(data_2q3_1q1),
+      .preview_data = &data_2q3_1q1,
   };
 
   // acc_2q3_1q1 is preferred as it has higher data type score.
@@ -773,7 +773,7 @@ TEST_F(AccountPreviewHeuristicTest,
       {.passwords = switches::kPasswordsQ3Threshold.Get() + 1});
   AccountPreviewHeuristicContext acc_1q4{
       .gaia_id = GaiaId("acc_1q4"),
-      .preview_data = raw_ref(data_1q4),
+      .preview_data = &data_1q4,
   };
 
   AccountPreviewData data_low_quartiles = CreatePreviewData({
@@ -784,7 +784,7 @@ TEST_F(AccountPreviewHeuristicTest,
   });
   AccountPreviewHeuristicContext acc_low_quartiles{
       .gaia_id = GaiaId("acc_low_quartiles"),
-      .preview_data = raw_ref(data_low_quartiles),
+      .preview_data = &data_low_quartiles,
   };
 
   // acc_1q4 is preferred as it has higher sync data score.
@@ -808,11 +808,11 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
 
   AccountPreviewHeuristicContext acc0{
       .gaia_id = GaiaId("acc0"),
-      .preview_data = raw_ref(data0),
+      .preview_data = &data0,
   };
   AccountPreviewHeuristicContext acc1{
       .gaia_id = GaiaId("acc1"),
-      .preview_data = raw_ref(data1),
+      .preview_data = &data1,
   };
 
   // Empty accounts
@@ -857,7 +857,7 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
   });
   AccountPreviewHeuristicContext acc2{
       .gaia_id = GaiaId("acc2"),
-      .preview_data = raw_ref(data2),
+      .preview_data = &data2,
       .is_managed = true,
   };
   std::vector<AccountPreviewHeuristicContext> accounts3 = {acc0, acc1, acc2};
@@ -871,6 +871,415 @@ TEST_F(AccountPreviewHeuristicTest, ComputePreferredAccountForPromoResult) {
   EXPECT_EQ(p3_result.account_scores.at(GaiaId("acc0")), 2);
   EXPECT_EQ(p3_result.account_scores.at(GaiaId("acc1")), 8);
   EXPECT_FALSE(p3_result.account_scores.contains(GaiaId("acc2")));
+}
+
+// =============================================================================
+// Account Switching Selection Heuristic Tests
+// (ComputeAccountSwitchingSelection)
+// =============================================================================
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionPreconditions) {
+  AccountSwitchingSelectionResult empty_result =
+      ComputeAccountSwitchingSelection({});
+  EXPECT_EQ(empty_result.outcome,
+            AccountSwitchingSelectionOutcome::kWouldNotShowNoPrimaryAccount);
+  EXPECT_EQ(empty_result.selected_account, std::nullopt);
+  EXPECT_EQ(empty_result.preference, std::nullopt);
+
+  AccountPreviewData data = CreatePreviewData({
+      .passwords = switches::kPasswordsQ3Threshold.Get(),
+  });
+  AccountPreviewHeuristicContext signed_out_acc0{
+      .gaia_id = GaiaId("acc0"),
+      .preview_data = &data,
+      .is_primary = false,
+  };
+  AccountPreviewHeuristicContext signed_out_acc1{
+      .gaia_id = GaiaId("acc1"),
+      .preview_data = &data,
+  };
+  AccountSwitchingSelectionResult no_primary_result =
+      ComputeAccountSwitchingSelection({signed_out_acc0, signed_out_acc1});
+  EXPECT_EQ(no_primary_result.outcome,
+            AccountSwitchingSelectionOutcome::kWouldNotShowNoPrimaryAccount);
+  EXPECT_EQ(no_primary_result.selected_account, std::nullopt);
+
+  AccountPreviewHeuristicContext primary_acc{
+      .gaia_id = GaiaId("acc0"),
+      .preview_data = &data,
+      .is_primary = true,
+  };
+  AccountSwitchingSelectionResult single_result =
+      ComputeAccountSwitchingSelection({primary_acc});
+  EXPECT_EQ(single_result.outcome,
+            AccountSwitchingSelectionOutcome::kWouldNotShowNotEnoughAccounts);
+  EXPECT_EQ(single_result.selected_account, std::nullopt);
+  EXPECT_EQ(single_result.preference, std::nullopt);
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionDisqualifications) {
+  std::vector<DevicePreview> devices = {CreateDevicePreview(
+      "dev1", base::Time::Now(),
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
+  AccountPreviewData low_data = CreatePreviewData();
+  AccountPreviewData high_data_no_devices = CreatePreviewData({
+      .passwords = switches::kPasswordsQ3Threshold.Get(),
+  });
+  AccountPreviewData high_data = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ3Threshold.Get(),
+      },
+      devices);
+
+  AccountPreviewHeuristicContext primary{
+      .gaia_id = GaiaId("primary"),
+      .preview_data = &low_data,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext secondary{
+      .gaia_id = GaiaId("secondary"),
+      .preview_data = &high_data,
+  };
+
+  // Primary is managed -> kWouldNotShowNonRegularPrimaryAccount.
+  primary.is_managed = true;
+  auto res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowNonRegularPrimaryAccount);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  primary.is_managed = false;
+
+  // Primary is child -> kWouldNotShowNonRegularPrimaryAccount.
+  primary.is_child = true;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowNonRegularPrimaryAccount);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  primary.is_child = false;
+
+  // Primary is AGA -> kWouldNotShowExternalAppPrimaryAccount.
+  primary.is_external_app_primary = true;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowExternalAppPrimaryAccount);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  primary.is_external_app_primary = false;
+
+  // Primary has missing preview data -> kWouldNotShowPrimaryMissingPreviewData.
+  primary.preview_data = nullptr;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryMissingPreviewData);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  primary.preview_data = &low_data;
+
+  // Regular secondary has missing preview data ->
+  // kWouldNotShowSecondaryMissingPreviewData.
+  secondary.preview_data = nullptr;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowSecondaryMissingPreviewData);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  secondary.preview_data = &high_data;
+
+  // Regular secondary has no other devices ->
+  // kWouldNotShowNoSecondaryWithOtherDevices.
+  AccountPreviewHeuristicContext secondary_no_devices{
+      .gaia_id = GaiaId("secondary_no_devices"),
+      .preview_data = &high_data_no_devices,
+  };
+  res = ComputeAccountSwitchingSelection({primary, secondary_no_devices});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowNoSecondaryWithOtherDevices);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Only secondary is managed -> kWouldNotShowNoRegularSecondaryAccount.
+  secondary.is_managed = true;
+  res = ComputeAccountSwitchingSelection({primary, secondary});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowNoRegularSecondaryAccount);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Managed secondary, secondary with missing preview data, and single-device
+  // secondary are ignored while regular secondary with other devices is
+  // selected.
+  AccountPreviewHeuristicContext secondary_missing_data{
+      .gaia_id = GaiaId("secondary_missing_data"),
+      .preview_data = nullptr,
+  };
+  AccountPreviewHeuristicContext regular_secondary{
+      .gaia_id = GaiaId("regular_secondary"),
+      .preview_data = &high_data,
+  };
+  res = ComputeAccountSwitchingSelection(
+      {primary, secondary, secondary_missing_data, secondary_no_devices,
+       regular_secondary});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("regular_secondary"));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionPrimaryLowScore0To2) {
+  std::vector<DevicePreview> devices = {CreateDevicePreview(
+      "dev1", base::Time::Now(),
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
+  // Primary Y in {0, 2}: needs secondary X >= Y + 1.
+  AccountPreviewData score0 = CreatePreviewData({}, devices);
+  AccountPreviewData score1 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ1Threshold.Get() / 2,
+      },
+      devices);
+  AccountPreviewData score2 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ1Threshold.Get(),
+      },
+      devices);
+  AccountPreviewData score3 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ1Threshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+      },
+      devices);
+
+  AccountPreviewHeuristicContext primary0{
+      .gaia_id = GaiaId("primary0"),
+      .preview_data = &score0,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext sec0{
+      .gaia_id = GaiaId("sec0"),
+      .preview_data = &score0,
+  };
+  AccountPreviewHeuristicContext sec1{
+      .gaia_id = GaiaId("sec1"),
+      .preview_data = &score1,
+  };
+  AccountPreviewHeuristicContext sec2{
+      .gaia_id = GaiaId("sec2"),
+      .preview_data = &score2,
+  };
+  AccountPreviewHeuristicContext sec3{
+      .gaia_id = GaiaId("sec3"),
+      .preview_data = &score3,
+  };
+
+  // Y = 0, X = 0 -> does not meet threshold (X >= 1 required).
+  auto res = ComputeAccountSwitchingSelection({primary0, sec0});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowSecondaryDoesNotMeetThreshold);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Y = 0, X = 1 -> meets threshold (1 >= 0 + 1).
+  res = ComputeAccountSwitchingSelection({primary0, sec1});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("sec1"));
+  ASSERT_TRUE(res.preference.has_value());
+  EXPECT_EQ(res.preference->gaia_id, GaiaId("sec1"));
+
+  // Primary Y = 2: needs X >= 3.
+  AccountPreviewHeuristicContext primary2{
+      .gaia_id = GaiaId("primary2"),
+      .preview_data = &score2,
+      .is_primary = true,
+  };
+
+  // Y = 2, X = 2 -> does not meet threshold (X >= 3 required).
+  res = ComputeAccountSwitchingSelection({primary2, sec2});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowSecondaryDoesNotMeetThreshold);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Y = 2, X = 3 -> meets threshold (3 >= 2 + 1).
+  res = ComputeAccountSwitchingSelection({primary2, sec3});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("sec3"));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionPrimaryDoubledScore3To5) {
+  std::vector<DevicePreview> devices = {CreateDevicePreview(
+      "dev1", base::Time::Now(),
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
+  // Primary Y = 3 (1xQ2 + 1xQ1): needs X > 6 (i.e. X >= 7).
+  AccountPreviewData score3 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ1Threshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+      },
+      devices);
+  AccountPreviewData score6 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsMedianThreshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get(),
+      },
+      devices);
+  AccountPreviewData score7 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsMedianThreshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get(),
+          .autofill = switches::kAutofillQ1Threshold.Get() / 2,
+      },
+      devices);
+  // Primary Y = 5 (1xQ3 + 1xQ1): needs X > 10 (i.e. X >= 11).
+  AccountPreviewData score5 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsMedianThreshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get() / 2,
+      },
+      devices);
+  AccountPreviewData score10 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ3Threshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get(),
+      },
+      devices);
+  AccountPreviewData score11 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ3Threshold.Get(),
+          .bookmarks = switches::kBookmarksQ1Threshold.Get(),
+          .autofill = switches::kAutofillQ1Threshold.Get() / 2,
+      },
+      devices);
+
+  AccountPreviewHeuristicContext primary3{
+      .gaia_id = GaiaId("primary3"),
+      .preview_data = &score3,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext sec6{
+      .gaia_id = GaiaId("sec6"),
+      .preview_data = &score6,
+  };
+  AccountPreviewHeuristicContext sec7{
+      .gaia_id = GaiaId("sec7"),
+      .preview_data = &score7,
+  };
+
+  // Y = 3, X = 6 -> does not meet threshold (6 <= 2 * 3).
+  auto res = ComputeAccountSwitchingSelection({primary3, sec6});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowSecondaryDoesNotMeetThreshold);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Y = 3, X = 7 -> meets threshold (7 > 2 * 3).
+  res = ComputeAccountSwitchingSelection({primary3, sec7});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowDoubledPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("sec7"));
+
+  // Y = 5, X = 10 -> does not meet threshold (10 <= 2 * 5).
+  AccountPreviewHeuristicContext primary5{
+      .gaia_id = GaiaId("primary5"),
+      .preview_data = &score5,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext sec10{
+      .gaia_id = GaiaId("sec10"),
+      .preview_data = &score10,
+  };
+  AccountPreviewHeuristicContext sec11{
+      .gaia_id = GaiaId("sec11"),
+      .preview_data = &score11,
+  };
+  res = ComputeAccountSwitchingSelection({primary5, sec10});
+  EXPECT_EQ(res.outcome, AccountSwitchingSelectionOutcome::
+                             kWouldNotShowSecondaryDoesNotMeetThreshold);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+
+  // Y = 5, X = 11 -> meets threshold (11 > 2 * 5).
+  res = ComputeAccountSwitchingSelection({primary5, sec11});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowDoubledPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("sec11"));
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionPrimaryExceedsUpperLimit6Plus) {
+  std::vector<DevicePreview> devices = {CreateDevicePreview(
+      "dev1", base::Time::Now(),
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
+  // Primary X = 6 (1xQ3 + 1xQ2): cutoff at 6+, never switches even if secondary
+  // has maximum possible score (32).
+  AccountPreviewData score6 = CreatePreviewData({
+      .passwords = switches::kPasswordsMedianThreshold.Get(),
+      .bookmarks = switches::kBookmarksQ1Threshold.Get(),
+  });
+  AccountPreviewData score32 = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ3Threshold.Get(),
+          .bookmarks = switches::kBookmarksQ3Threshold.Get(),
+          .autofill = switches::kAutofillQ3Threshold.Get(),
+          .wallet = switches::kAutofillWalletMetadataQ3Threshold.Get(),
+      },
+      devices);
+
+  AccountPreviewHeuristicContext primary6{
+      .gaia_id = GaiaId("primary6"),
+      .preview_data = &score6,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext sec32{
+      .gaia_id = GaiaId("sec32"),
+      .preview_data = &score32,
+  };
+
+  auto res = ComputeAccountSwitchingSelection({primary6, sec32});
+  EXPECT_EQ(
+      res.outcome,
+      AccountSwitchingSelectionOutcome::kWouldNotShowPrimaryExceedsUpperLimit);
+  EXPECT_EQ(res.selected_account, std::nullopt);
+  EXPECT_EQ(res.preference, std::nullopt);
+}
+
+TEST_F(AccountPreviewHeuristicTest,
+       ComputeAccountSwitchingSelectionSecondaryTieBreaking) {
+  std::vector<DevicePreview> devices = {CreateDevicePreview(
+      "dev1", base::Time::Now(),
+      sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_PHONE)};
+  AccountPreviewData primary_data = CreatePreviewData();
+  // Secondary A: 2xQ3 (score 8) with device
+  AccountPreviewData sec_2q3_data = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsMedianThreshold.Get(),
+          .bookmarks = switches::kBookmarksMedianThreshold.Get(),
+      },
+      devices);
+  // Secondary B: 1xQ4 (score 8, higher Q4 count wins tie-breaker) with device
+  AccountPreviewData sec_1q4_data = CreatePreviewData(
+      {
+          .passwords = switches::kPasswordsQ3Threshold.Get(),
+      },
+      devices);
+
+  AccountPreviewHeuristicContext primary{
+      .gaia_id = GaiaId("primary"),
+      .preview_data = &primary_data,
+      .is_primary = true,
+  };
+  AccountPreviewHeuristicContext sec_2q3{
+      .gaia_id = GaiaId("sec_2q3"),
+      .preview_data = &sec_2q3_data,
+  };
+  AccountPreviewHeuristicContext sec_1q4{
+      .gaia_id = GaiaId("sec_1q4"),
+      .preview_data = &sec_1q4_data,
+  };
+
+  auto res = ComputeAccountSwitchingSelection({primary, sec_2q3, sec_1q4});
+  EXPECT_EQ(res.outcome,
+            AccountSwitchingSelectionOutcome::kWouldShowLowPrimaryScore);
+  EXPECT_EQ(res.selected_account, GaiaId("sec_1q4"));
 }
 
 }  // namespace signin

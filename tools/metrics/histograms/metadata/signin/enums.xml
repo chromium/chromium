@@ -311,6 +311,32 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
+<!-- LINT.IfChange(AccountSwitchingSelectionOutcome) -->
+
+<enum name="AccountSwitchingSelectionOutcome">
+  <int value="0" label="Would show: Low primary score (0-2)"/>
+  <int value="1" label="Would show: Doubled primary score (3-5)"/>
+  <int value="2"
+      label="Would not show: Secondary score does not meet threshold"/>
+  <int value="3"
+      label="Would not show: Primary score exceeds upper limit (6+)"/>
+  <int value="4" label="Would not show: Non-regular primary account"/>
+  <int value="5" label="Would not show: No regular secondary account"/>
+  <int value="6" label="Would not show: External app primary account (AGA)"/>
+  <int value="7" label="Would not show: Not enough accounts"/>
+  <int value="8" label="Would not show: No primary account"/>
+  <int value="9"
+      label="Would not show: No regular secondary account with other devices"/>
+  <int value="10"
+      label="Would not show: Primary account missing preview data (fetch
+             failed)"/>
+  <int value="11"
+      label="Would not show: Secondary accounts missing preview data (fetch
+             failed)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_preview_heuristic.h:AccountSwitchingSelectionOutcome) -->
+
 <!-- LINT.IfChange(AgeMismatchPromptMode) -->
 
 <enum name="AgeMismatchPromptMode">
