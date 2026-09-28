@@ -225,6 +225,7 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
 
   auto dialog_model =
       ui::DialogModel::Builder()
+          .SetInternalName("CrossDeviceSigninQrBubbleViews")
           .SetTitle(l10n_util::GetStringUTF16(
               IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE))
           .SetDialogDestroyingCallback(std::move(cleanup_closure))

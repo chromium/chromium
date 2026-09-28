@@ -89,8 +89,13 @@ class CrossDeviceSigninQrBubbleHandler
         account_info.IsEmpty() ? std::nullopt : account_info.GetAvatarImage();
     base::expected<gfx::ImageSkia, qr_code_generator::Error> qr_image;
     if (avatar_image.has_value()) {
+      // Normalize the avatar to a fixed square size: the QR generator requires
+      // a square center image and clamps it to a fraction of the code width,
+      // so this only needs to be at least as large as that slot. Without this,
+      // small avatars would be drawn at their native (tiny) size.
+      constexpr int kQrCenterAvatarSize = 96;
       gfx::Image round_avatar = profiles::GetSizedAvatarIcon(
-          avatar_image.value(), avatar_image->Width(), avatar_image->Height(),
+          avatar_image.value(), kQrCenterAvatarSize, kQrCenterAvatarSize,
           profiles::SHAPE_CIRCLE);
       qr_image = qr_code_generator::GenerateImage(
           base::as_byte_span(qr_code_url_.spec()),

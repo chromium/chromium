@@ -40,6 +40,7 @@ CookieClearOnExitMigrationNoticePixelTest.*
 CookieControlsBubbleViewPixelTest.*
 *CreatePopupRowViewTest.*
 *CreatePopupRowViewWithNoUserEducationRateLimitTest.*
+CrossDeviceSigninQrBubbleUIPixelTest.*
 CryptoModulePasswordDialogTest.*
 *DataControlsDialogUiTest.*
 DashboardKombuchaInteractiveUITest.*

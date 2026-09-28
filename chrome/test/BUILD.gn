@@ -3287,6 +3287,7 @@ if (!is_android) {
     }
 
     if (enable_dice_support) {
+      sources += [ "../browser/ui/views/profiles/cross_device_signin_qr_bubble_ui_browsertest.cc" ]
       if (is_win || is_linux) {
         sources += [
           "../browser/ui/views/profiles/first_run_default_browser_ui_browsertest.cc",
