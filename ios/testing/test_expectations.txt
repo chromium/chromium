@@ -199,3 +199,6 @@ crbug.com/565749273 [ iPad Device ] GeminiLiveTestCase/testTapLiveButtonShowsSha
 # Gardening suppression 2026-09-25
 crbug.com/561644215 AssistantAIMTestCase/testAssistantClosedOnStartSurfaceAfterWarmStart [ Pass Failure ]
 crbug.com/561644215 AssistantAIMTestCase/testAssistantHiddenOnNTPAfterColdStart [ Pass Failure ]
+
+# Gardening suppression 2026-09-28
+crbug.com/567129485 [ iPhone Simulator ] PasswordControllerEGTest/testLoginEventReported [ Pass Failure ]
