@@ -4545,12 +4545,21 @@ void HttpStreamFactoryJobControllerTest::TestOnConnectionInitialized(
     bool use_alternative_job,
     int rv,
     bool expect_immediate_resume) {
+  // Explicitly disable the kAdditionalDelayMainJob feature, since this would
+  // add a delay to the main job and cause the test to fail on Android where it
+  // is enabled by default.
+  AddScopedFeatureList().InitAndDisableFeature(
+      net::features::kAdditionalDelayMainJob);
+
   session_deps_.alternate_host_resolver =
       std::make_unique<HangingHostResolver>();
 
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
+
+  tcp_data_ = std::make_unique<SequencedSocketData>();
+  tcp_data_->set_connect_data(MockConnect(ASYNC, ERR_IO_PENDING));
 
   Initialize(request_info);
 
@@ -4585,14 +4594,20 @@ void HttpStreamFactoryJobControllerTest::TestOnConnectionInitialized(
     job = job_factory_.dns_alpn_h3_job();
   }
 
+  base::HistogramTester histogram_tester;
   if (expect_immediate_resume) {
     base::RunLoop run_loop;
     EXPECT_CALL(*job_factory_.main_job(), Resume())
         .Times(1)
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce([this, &run_loop]() {
+          job_factory_.main_job()->DoResume();
+          run_loop.Quit();
+        });
     job_controller_->OnConnectionInitialized(job, rv);
     FastForwardBy(base::TimeDelta());
     run_loop.Run();
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::TimeDelta(), 1);
   } else {
     EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
     job_controller_->OnConnectionInitialized(job, rv);
@@ -4601,17 +4616,21 @@ void HttpStreamFactoryJobControllerTest::TestOnConnectionInitialized(
     base::RunLoop run_loop;
     EXPECT_CALL(*job_factory_.main_job(), Resume())
         .Times(1)
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce([this, &run_loop]() {
+          job_factory_.main_job()->DoResume();
+          run_loop.Quit();
+        });
     FastForwardBy(base::Milliseconds(150));
     run_loop.Run();
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.HttpStreamFactory.MainJobWaitTime", base::Milliseconds(150), 1);
   }
   EXPECT_TRUE(job_controller_->main_job());
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest,
        OnConnectionInitializedResumesMainJobImmediatelyWithFastFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
       {});
   TestOnConnectionInitialized(/*use_alternative_job=*/true,
@@ -4622,8 +4641,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 TEST_F(
     HttpStreamFactoryJobControllerTest,
     OnConnectionInitializedDnsAlpnH3JobResumesMainJobImmediatelyWithFastFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
       {});
   TestOnConnectionInitialized(/*use_alternative_job=*/false,
@@ -4633,8 +4651,7 @@ TEST_F(
 
 TEST_F(HttpStreamFactoryJobControllerTest,
        OnConnectionInitializedWithPendingResumesMainJobWithDelayWithFastFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
       {});
   TestOnConnectionInitialized(/*use_alternative_job=*/true, ERR_IO_PENDING,
@@ -4644,8 +4661,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 TEST_F(
     HttpStreamFactoryJobControllerTest,
     OnConnectionInitializedDnsAlpnH3JobWithPendingResumesMainJobWithDelayWithFastFail) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
+  AddScopedFeatureList().InitWithFeaturesAndParameters(
       {{features::kAsyncDnsQuicJob, {{"AsyncDnsQuicJobFastFail", "true"}}}},
       {});
   TestOnConnectionInitialized(/*use_alternative_job=*/false, ERR_IO_PENDING,
@@ -6399,6 +6415,8 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // The main job should be resumed quickly after resolving the host.
   EXPECT_TRUE(job_controller_->main_job()->is_waiting());
 
+  base::HistogramTester histogram_tester;
+
   // Resolve the host resolve request from `dns_alpn_h3_job`.
   session_deps_.host_resolver->ResolveAllPending();
   base::RunLoop().RunUntilIdle();
@@ -6409,12 +6427,12 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
                   /*dns_alpn_h3_job_exists=*/false,
                   "DNS ALPN job must be deleted.");
   EXPECT_FALSE(job_controller_->main_job()->is_waiting());
+  histogram_tester.ExpectTotalCount("Net.HttpStreamFactory.MainJobWaitTime", 1);
 
   // The host resolve request from the main job must be resolved using the
   // cached result.
   EXPECT_TRUE(tcp_data_->socket());
 
-  base::HistogramTester histogram_tester;
   MakeMainJobSucceed(/*expect_stream_ready=*/true);
   // Net.AlternateProtocolUsage records
   // ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON, when only main job exists.

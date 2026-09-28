@@ -693,6 +693,7 @@ int HttpStreamFactory::Job::DoWait() {
                                   NetLogEventPhase::BEGIN, "should_wait",
                                   should_wait);
   if (should_wait) {
+    wait_start_time_ = base::TimeTicks::Now();
     return ERR_IO_PENDING;
   }
 
@@ -702,6 +703,11 @@ int HttpStreamFactory::Job::DoWait() {
 int HttpStreamFactory::Job::DoWaitComplete(int result) {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_JOB_WAITING);
   DCHECK_EQ(OK, result);
+  if (wait_start_time_.has_value()) {
+    CHECK_EQ(job_type_, JobType::MAIN);
+    base::UmaHistogramTimes("Net.HttpStreamFactory.MainJobWaitTime",
+                            base::TimeTicks::Now() - *wait_start_time_);
+  }
   next_state_ = STATE_INIT_CONNECTION;
   return OK;
 }

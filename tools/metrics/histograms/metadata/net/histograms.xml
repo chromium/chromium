@@ -3973,6 +3973,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpStreamFactory.MainJobWaitTime" units="ms"
+    expires_after="2027-09-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The actual elapsed time that an HttpStreamFactory main Job spent waiting for
+    other job(s) to complete or make progress before resuming to initiate a
+    connection. Recorded in DoWaitComplete() only when the main job actually
+    waited (`should_wait` was true) and was subsequently resumed (not recorded
+    if another job succeeded while the main job was still waiting).
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpStreamFactory.OnStreamReadyCallbackDelay" units="ms"
     expires_after="2026-11-15">
   <owner>bashi@chromium.org</owner>

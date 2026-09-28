@@ -506,6 +506,9 @@ class HttpStreamFactory::Job
   // The time when the connection setup attempt has started.
   std::optional<base::TimeTicks> init_connection_time_;
 
+  // The time when this job started waiting for other job(s).
+  std::optional<base::TimeTicks> wait_start_time_;
+
   // Keeps track of the connection management config.
   std::optional<ConnectionManagementConfig> management_config_;
 
