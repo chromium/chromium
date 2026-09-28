@@ -18,6 +18,7 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace headless {
@@ -73,6 +74,8 @@ class DISPLAY_EXPORT ScreenWinHeadless
   bool IsHeadless() const override;
 
   // ScreenWin:
+  std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
+      HANDLE source_device) const override;
   HMONITOR HMONITORFromScreenPoint(
       const gfx::Point& screen_point) const override;
   HMONITOR HMONITORFromScreenRect(const gfx::Rect& screen_rect) const override;

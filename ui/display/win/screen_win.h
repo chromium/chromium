@@ -8,6 +8,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -112,6 +113,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the number of physical pixels per inch for a display associated
   // with the point.
   virtual gfx::Vector2dF GetPixelsPerInch(const gfx::PointF& point) const;
+
+  // Returns the per-axis PPI for a pointer device, or nullopt when the device's
+  // physical range cannot be retrieved.
+  virtual std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
+      HANDLE source_device) const;
 
   // Returns the result of GetSystemMetrics for |metric| scaled to |monitor|'s
   // DPI. Use this function if you're already working with screen pixels, as

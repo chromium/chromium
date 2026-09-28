@@ -444,18 +444,22 @@ std::optional<MONITORINFOEX> GetMonitorInfoFromHMONITOR(HMONITOR monitor) {
   return monitor_info;
 }
 
-std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
+std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDeviceImpl(
     HANDLE source_device) {
   static const auto get_pointer_device_rects =
       reinterpret_cast<decltype(&::GetPointerDeviceRects)>(
           base::win::GetUser32FunctionPointer("GetPointerDeviceRects"));
   RECT device_rect, screen_rect;
-  if (!get_pointer_device_rects ||
-      !get_pointer_device_rects(source_device, &device_rect, &screen_rect))
+  if (!source_device || !get_pointer_device_rects ||
+      !get_pointer_device_rects(source_device, &device_rect, &screen_rect)) {
     return std::nullopt;
+  }
 
   const gfx::RectF device{gfx::Rect(device_rect)};
   const gfx::RectF screen{gfx::Rect(screen_rect)};
+  if (device.IsEmpty() || screen.IsEmpty()) {
+    return std::nullopt;
+  }
   constexpr float kHimetricPerInch = 2540.0f;
   const float himetric_per_pixel_x = device.width() / screen.width();
   const float himetric_per_pixel_y = device.height() / screen.height();
@@ -477,7 +481,7 @@ std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
     for (const auto& device : *pointer_devices) {
       if (device.pointerDeviceType == POINTER_DEVICE_TYPE_TOUCH &&
           device.monitor == monitor) {
-        return GetPixelsPerInchForPointerDevice(device.device);
+        return GetPixelsPerInchForPointerDeviceImpl(device.device);
       }
     }
   }
@@ -797,6 +801,11 @@ gfx::Vector2dF ScreenWin::GetPixelsPerInch(const gfx::PointF& point) const {
       GetScreenWinDisplayVia(&ScreenWin::GetScreenWinDisplayNearestDIPPoint,
                              gfx::ToFlooredPoint(point));
   return screen_win_display.pixels_per_inch();
+}
+
+std::optional<gfx::Vector2dF> ScreenWin::GetPixelsPerInchForPointerDevice(
+    HANDLE source_device) const {
+  return GetPixelsPerInchForPointerDeviceImpl(source_device);
 }
 
 int ScreenWin::GetSystemMetricsForMonitor(HMONITOR monitor, int metric) const {

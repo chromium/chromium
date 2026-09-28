@@ -205,6 +205,12 @@ Display ScreenWinHeadless::GetPrimaryDisplay() const {
   return Display::GetDefaultDisplay();
 }
 
+std::optional<gfx::Vector2dF>
+ScreenWinHeadless::GetPixelsPerInchForPointerDevice(HANDLE) const {
+  // Headless mode does not support physical pointer devices.
+  return std::nullopt;
+}
+
 HMONITOR ScreenWinHeadless::HMONITORFromScreenPoint(
     const gfx::Point& screen_point) const {
   NOTREACHED();

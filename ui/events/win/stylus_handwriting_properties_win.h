@@ -10,17 +10,19 @@
 
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
 // Structure to hold stylus handwriting specific details. This is only intended
 // to be used in the Browser process.
-struct StylusHandwritingPropertiesWin {
-  StylusHandwritingPropertiesWin() = default;
+struct EVENTS_EXPORT StylusHandwritingPropertiesWin {
+  StylusHandwritingPropertiesWin();
   StylusHandwritingPropertiesWin(uint32_t handwriting_pointer_id,
-                                 uint64_t handwriting_stroke_id)
-      : handwriting_pointer_id(handwriting_pointer_id),
-        handwriting_stroke_id(handwriting_stroke_id) {}
+                                 uint64_t handwriting_stroke_id);
+  StylusHandwritingPropertiesWin(uint32_t handwriting_pointer_id,
+                                 uint64_t handwriting_stroke_id,
+                                 std::optional<gfx::Vector2dF> pixels_per_inch);
   // The pointer id supplied by the OS which is used for communication with
   // the Shell Handwriting API. The handwriting pointer id is different from
   // `PointerDetails.id` which is a generated id created by
@@ -30,6 +32,9 @@ struct StylusHandwritingPropertiesWin {
   // It is used for communication with the Shell Handwriting API. Assigned on
   // WM_POINTERDOWN.
   uint64_t handwriting_stroke_id = 0;
+  // The initiating pointer device's pixels per inch.
+  // See display::win::ScreenWin::GetPixelsPerInchForPointerDevice().
+  gfx::Vector2dF pixels_per_inch;
 };
 
 // Returns keys used to store handwriting pointer and stroke ids in the event
@@ -43,14 +48,14 @@ EVENTS_EXPORT const char* GetPropertyHandwritingStrokeIdKeyForTesting();
 EVENTS_EXPORT Event::Properties CreateEventPropertiesForTesting(
     const StylusHandwritingPropertiesWin& properties);
 
-// Sets stylus handwriting properties (stroke and pointer ids) to the provided
-// event.
+// Sets stylus handwriting properties (stroke id, pointer id, and pixels per
+// inch) to the provided event.
 EVENTS_EXPORT void SetStylusHandwritingProperties(
     Event& event,
     const StylusHandwritingPropertiesWin& properties);
 
-// Gets stylus handwriting properties (stroke and pointer ids) if such exist
-// from the provided event.
+// Gets stylus handwriting properties (stroke id, pointer id, and pixels per
+// inch) if such exist from the provided event.
 EVENTS_EXPORT std::optional<StylusHandwritingPropertiesWin>
 GetStylusHandwritingProperties(const Event& event);
 

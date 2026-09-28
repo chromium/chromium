@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/stylus_handwriting/win/features.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 
@@ -114,11 +115,10 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
   std::optional<ui::StylusHandwritingPropertiesWin> handwriting_properties;
   if (stylus_handwriting::win::IsStylusHandwritingWinEnabled() &&
       message == WM_POINTERDOWN) {
-    handwriting_properties =
-        std::make_optional<ui::StylusHandwritingPropertiesWin>();
-    handwriting_properties->handwriting_pointer_id = pointer_id;
-    handwriting_properties->handwriting_stroke_id =
-        ui::GetHandwritingStrokeId(pointer_id);
+    handwriting_properties.emplace(
+        pointer_id, ui::GetHandwritingStrokeId(pointer_id),
+        display::win::GetScreenWin()->GetPixelsPerInchForPointerDevice(
+            pointer_pen_info.pointerInfo.sourceDevice));
   }
 
   return GenerateTouchEvent(message, pointer_id, pointer_pen_info.pointerInfo,

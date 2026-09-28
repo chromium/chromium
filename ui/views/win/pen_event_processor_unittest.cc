@@ -13,7 +13,9 @@
 #include "base/win/scoped_winrt_initializer.h"
 #include "components/stylus_handwriting/win/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/win/dpi.h"
 #include "ui/events/win/stylus_handwriting_properties_win.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/sequential_id_generator.h"
 
 namespace {
@@ -362,6 +364,10 @@ TEST_F(PenProcessorTest, StylusHandwritingPropertiesDMEnabled) {
   ASSERT_TRUE(properties.has_value());
   EXPECT_EQ(properties->handwriting_pointer_id, pointer_id);
   EXPECT_EQ(properties->handwriting_stroke_id, 0U);
+  const int fallback_pixels_per_inch =
+      display::win::GetDPIFromScalingFactor(1.0f);
+  EXPECT_EQ(properties->pixels_per_inch,
+            gfx::Vector2dF(fallback_pixels_per_inch, fallback_pixels_per_inch));
 
   pen_info.pointerInfo.pointerFlags = POINTER_FLAG_NONE;
   pen_info.pointerInfo.ButtonChangeType = POINTER_CHANGE_FIRSTBUTTON_UP;

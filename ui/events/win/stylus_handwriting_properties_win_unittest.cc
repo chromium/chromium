@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 
@@ -22,6 +23,7 @@ TouchEvent GetTouchEvent() {
 
 constexpr uint32_t kValidPointerId = 10;
 constexpr uint64_t kValidStrokeId = std::numeric_limits<uint32_t>::max() + 1;
+constexpr gfx::Vector2dF kValidPixelsPerInch(192.4f, 287.6f);
 
 constexpr uint64_t kInvalidPointerId = kValidStrokeId;
 constexpr uint32_t kInvalidStrokeId = kValidPointerId;
@@ -30,7 +32,8 @@ constexpr uint32_t kInvalidStrokeId = kValidPointerId;
 
 TEST(StylusHandwritingPropertiesWinTest, SetGetProperties) {
   TouchEvent event = GetTouchEvent();
-  StylusHandwritingPropertiesWin properties(kValidPointerId, kValidStrokeId);
+  StylusHandwritingPropertiesWin properties(kValidPointerId, kValidStrokeId,
+                                            kValidPixelsPerInch);
   SetStylusHandwritingProperties(event, properties);
 
   const std::optional<StylusHandwritingPropertiesWin> result_properties =
@@ -38,6 +41,7 @@ TEST(StylusHandwritingPropertiesWinTest, SetGetProperties) {
   ASSERT_TRUE(result_properties.has_value());
   EXPECT_EQ(result_properties->handwriting_pointer_id, kValidPointerId);
   EXPECT_EQ(result_properties->handwriting_stroke_id, kValidStrokeId);
+  EXPECT_EQ(result_properties->pixels_per_inch, kValidPixelsPerInch);
 }
 
 TEST(StylusHandwritingPropertiesWinTest, PropertiesNotSet) {
