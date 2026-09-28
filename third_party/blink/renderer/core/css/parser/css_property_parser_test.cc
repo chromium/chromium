@@ -274,12 +274,12 @@ TEST(CSSPropertyParserTest, ListStyleTypeSymbolsFunctionUseCounter) {
 
   // A non-symbols() list-style-type value does not trigger the use counter.
   CSSParser::ParseSingleValue(CSSPropertyID::kListStyleType, "disc", context);
-  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kSymbolsFunction));
 
   // Parsing a symbols() value triggers the use counter.
   CSSParser::ParseSingleValue(CSSPropertyID::kListStyleType, "symbols(\"a\")",
                               context);
-  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kSymbolsFunction));
 }
 
 TEST(CSSPropertyParserTest, CounterWithSymbolsFunctionUseCounter) {
@@ -293,12 +293,12 @@ TEST(CSSPropertyParserTest, CounterWithSymbolsFunctionUseCounter) {
 
   // A counter() without symbols() does not trigger the use counter.
   CSSParser::ParseSingleValue(CSSPropertyID::kContent, "counter(c)", context);
-  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+  EXPECT_FALSE(doc->IsWebDXFeatureCounted(WebDXFeature::kSymbolsFunction));
 
   // A counter() using symbols() as its counter style triggers the use counter.
   CSSParser::ParseSingleValue(CSSPropertyID::kContent,
                               "counter(c, symbols(\"a\"))", context);
-  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kDRAFT_Symbols));
+  EXPECT_TRUE(doc->IsWebDXFeatureCounted(WebDXFeature::kSymbolsFunction));
 }
 
 TEST(CSSPropertyParserTest, GradientUseCount) {

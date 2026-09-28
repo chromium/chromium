@@ -3059,7 +3059,7 @@ CSSValue* ConsumeCounterContent(CSSParserTokenStream& stream,
       } else if (CSSValue* symbols =
                      css_parsing_utils::ConsumeCounterStyleSymbolsFunction(
                          stream)) {
-        context.Count(WebDXFeature::kDRAFT_Symbols);
+        context.Count(WebDXFeature::kSymbolsFunction);
         list_style = symbols;
       } else {
         list_style =
@@ -6715,7 +6715,7 @@ const CSSValue* ListStyleType::ParseSingleValue(
 
   if (auto* symbols =
           css_parsing_utils::ConsumeCounterStyleSymbolsFunction(stream)) {
-    context.Count(WebDXFeature::kDRAFT_Symbols);
+    context.Count(WebDXFeature::kSymbolsFunction);
     return symbols;
   }
 

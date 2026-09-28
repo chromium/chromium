@@ -9265,7 +9265,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="443" label="DRAFT_HTMLSetterMethods"/>
   <int value="444" label="DRAFT_HTMLStreamMethods"/>
   <int value="445" label="CanvasHtml"/>
-  <int value="446" label="DRAFT_Symbols"/>
+  <int value="446" label="SymbolsFunction"/>
   <int value="447" label="JSSelfProfilingMarkers"/>
   <int value="448" label="DRAFT_Haptics"/>
   <int value="449" label="LargestContentfulPaint"/>

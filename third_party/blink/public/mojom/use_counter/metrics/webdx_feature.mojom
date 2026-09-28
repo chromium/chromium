@@ -507,7 +507,7 @@ enum WebDXFeature {
   kDRAFT_HTMLSetterMethods = 443,
   kDRAFT_HTMLStreamMethods = 444,
   kCanvasHtml = 445,
-  kDRAFT_Symbols = 446,
+  kSymbolsFunction = 446,
   kJSSelfProfilingMarkers = 447,
   kDRAFT_Haptics = 448,
   kLargestContentfulPaint = 449,
