@@ -2792,6 +2792,13 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       builder.DisableMonolithicOverflowPropagation();
       is_repeatable = true;
     } else {
+      DCHECK(!!RuntimeEnabledFeatures::FragmentedOofInCbEnabled() !=
+             !!fragmentainer_constraint_space);
+      const ConstraintSpace& space =
+          RuntimeEnabledFeatures::FragmentedOofInCbEnabled()
+              ? GetConstraintSpace()
+              : *fragmentainer_constraint_space;
+
       // Note that we pass the pristine size of the fragmentainer here, which
       // means that we're not going to make room for any cloned borders that
       // might exist in the containing block chain of the OOF. This is
@@ -2800,20 +2807,10 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       // should behave when contained by something with cloned box decorations.
       //
       // See https://github.com/w3c/csswg-drafts/issues/10553
-
-      if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
-        DCHECK(!fragmentainer_constraint_space);
-        SetupSpaceBuilderForFragmentation(container_builder_, node,
-                                          block_offset, &builder);
-      } else {
-        DCHECK(fragmentainer_constraint_space);
-        SetupSpaceBuilderForFragmentation(
-            *fragmentainer_constraint_space, node,
-            fragmentainer_constraint_space->FragmentainerOffset() +
-                block_offset,
-            fragmentainer_constraint_space->FragmentainerBlockSize(),
-            node_info.requires_content_before_breaking, &builder);
-      }
+      SetupSpaceBuilderForFragmentation(
+          space, node, space.FragmentainerOffset() + block_offset,
+          space.FragmentainerBlockSize(),
+          node_info.requires_content_before_breaking, &builder);
 
       // Out-of-flow positioned elements whose containing block is inside
       // clipped overflow shouldn't generate any additional fragmentainers. Just
@@ -2836,17 +2833,19 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       }
     }
   } else if (GetConstraintSpace().IsInitialColumnBalancingPass()) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     SetupSpaceBuilderForFragmentation(
         GetConstraintSpace(), node,
         GetConstraintSpace().FragmentainerOffset() + block_offset,
         GetConstraintSpace().FragmentainerBlockSize(),
         /*requires_content_before_breaking=*/false, &builder);
   }
-  ConstraintSpace space = builder.ToConstraintSpace();
 
-  if (is_repeatable)
-    return node.LayoutRepeatableRoot(space, break_token);
-  return node.Layout(space, break_token);
+  ConstraintSpace child_space = builder.ToConstraintSpace();
+  if (is_repeatable) {
+    return node.LayoutRepeatableRoot(child_space, break_token);
+  }
+  return node.Layout(child_space, break_token);
 }
 
 void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
