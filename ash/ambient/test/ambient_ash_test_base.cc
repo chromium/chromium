@@ -650,7 +650,8 @@ AmbientWeatherController* AmbientAshTestBase::weather_controller() {
 
 std::vector<AmbientContainerView*> AmbientAshTestBase::GetContainerViews() {
   std::vector<AmbientContainerView*> result;
-  for (auto* ctrl : RootWindowController::root_window_controllers()) {
+  for (ash::RootWindowController* ctrl :
+       RootWindowController::root_window_controllers()) {
     auto* widget = ctrl->ambient_widget_for_testing();
     if (widget) {
       auto* view = widget->GetContentsView();

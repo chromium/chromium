@@ -513,7 +513,7 @@ class FillLayoutManager : public aura::LayoutManager {
 }  // namespace
 
 // static
-std::vector<RootWindowController*>*
+std::vector<raw_ptr<RootWindowController>>*
     RootWindowController::root_window_controllers_ = nullptr;
 
 RootWindowController::~RootWindowController() {
@@ -977,7 +977,7 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
   DCHECK(GetHost());
 
   if (!root_window_controllers_) {
-    root_window_controllers_ = new std::vector<RootWindowController*>;
+    root_window_controllers_ = new std::vector<raw_ptr<RootWindowController>>;
   }
   root_window_controllers_->push_back(this);
 

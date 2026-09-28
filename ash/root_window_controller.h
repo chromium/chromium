@@ -101,9 +101,10 @@ class ASH_EXPORT RootWindowController {
   // Returns the RootWindowController of the target root window.
   static RootWindowController* ForTargetRootWindow();
 
-  static std::vector<RootWindowController*> root_window_controllers() {
-    return root_window_controllers_ ? *root_window_controllers_
-                                    : std::vector<RootWindowController*>();
+  static std::vector<raw_ptr<RootWindowController>> root_window_controllers() {
+    return root_window_controllers_
+               ? *root_window_controllers_
+               : std::vector<raw_ptr<RootWindowController>>();
   }
 
   AshWindowTreeHost* ash_host() { return ash_host_.get(); }
@@ -360,7 +361,7 @@ class ASH_EXPORT RootWindowController {
 
   std::unique_ptr<WorkAreaInsets> work_area_insets_;
 
-  static std::vector<RootWindowController*>* root_window_controllers_;
+  static std::vector<raw_ptr<RootWindowController>>* root_window_controllers_;
 };
 
 }  // namespace ash

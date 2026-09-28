@@ -36,7 +36,7 @@ void ArcNotificationManagerDelegateImpl::ShowMessageCenter() {
 
 void ArcNotificationManagerDelegateImpl::HideMessageCenter() {
   // Close the message center on all the displays.
-  for (auto* root_window_controller :
+  for (ash::RootWindowController* root_window_controller :
        RootWindowController::root_window_controllers()) {
     root_window_controller->GetStatusAreaWidget()
         ->notification_center_tray()

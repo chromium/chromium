@@ -3021,8 +3021,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCaptureScreenshot(
 void CaptureModeController::PerformScreenshotsOfAllDisplays(
     BehaviorType behavior_type) {
   // Get a vector of RootWindowControllers with primary root window at first.
-  const std::vector<RootWindowController*> controllers =
-      RootWindowController::root_window_controllers();
+  const auto controllers = RootWindowController::root_window_controllers();
   // Capture screenshot for each individual display.
   int display_index = 1;
   for (RootWindowController* controller : controllers) {

@@ -66,7 +66,8 @@ void FullscreenNotificationBlocker::OnFullscreenStateChanged(
   // Block notifications if all displays have a fullscreen window.  Otherwise
   // include the notification and only fullscreen windows will filter it.
   all_fullscreen_ = true;
-  for (auto* controller : RootWindowController::root_window_controllers()) {
+  for (ash::RootWindowController* controller :
+       RootWindowController::root_window_controllers()) {
     // During shutdown |controller| can be nullptr.
     controller = RootWindowController::ForWindow(controller->GetRootWindow());
 

@@ -967,8 +967,10 @@ void AccessibilityManager::HandleAccessibilityGesture(
 
 void AccessibilityManager::SetTouchAccessibilityAnchorPoint(
     const gfx::Point& anchor_point) {
-  for (auto* rwc : RootWindowController::root_window_controllers())
+  for (ash::RootWindowController* rwc :
+       RootWindowController::root_window_controllers()) {
     rwc->SetTouchAccessibilityAnchorPoint(anchor_point);
+  }
 }
 
 void AccessibilityManager::EnableAutoclick(bool enabled) {
