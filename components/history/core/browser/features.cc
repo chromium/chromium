@@ -164,4 +164,6 @@ BASE_FEATURE(kDeferHistoryBackendInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHistoryReportClusterDatabaseMetrics,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHistoryQueryBatchedLookups, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace history

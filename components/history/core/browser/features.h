@@ -96,6 +96,11 @@ BASE_DECLARE_FEATURE(kDeferHistoryBackendInit);
 COMPONENT_EXPORT(HISTORY_FEATURES)
 BASE_DECLARE_FEATURE(kHistoryReportClusterDatabaseMetrics);
 
+// When enabled, replaces the 1 + 2N SQLite query loop in
+// HistoryBackend::QueryHistoryBasic with a two-phase batched fetch strategy.
+COMPONENT_EXPORT(HISTORY_FEATURES)
+BASE_DECLARE_FEATURE(kHistoryQueryBatchedLookups);
+
 }  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_FEATURES_H_

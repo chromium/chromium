@@ -2537,6 +2537,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.QueryHistoryBasic.Duration" units="ms"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the backend thread execution duration (in milliseconds) for
+    HistoryBackend::QueryHistoryBasic to scan visits, look up URL rows, and
+    attach visit content annotations.
+  </summary>
+</histogram>
+
+<histogram name="History.QueryHistoryBasic.ResultCount" units="results"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the number of URLResult items assembled and returned by
+    HistoryBackend::QueryHistoryBasic.
+  </summary>
+</histogram>
+
 <histogram name="History.QueryMostRepeatedQueriesTimeV2" units="ms"
     expires_after="2023-12-20">
   <owner>mahmadi@chromium.org</owner>
