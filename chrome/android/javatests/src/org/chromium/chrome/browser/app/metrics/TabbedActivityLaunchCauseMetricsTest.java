@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
@@ -126,6 +127,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/567102829")
     public void testRecreationMetrics() throws Throwable {
         final int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.RECREATION);
         // If this is the first test in the batch, opens an NTP. Otherwise, opens a blank page.
