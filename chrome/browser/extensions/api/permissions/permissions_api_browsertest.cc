@@ -1588,8 +1588,15 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
 
 // Test that adding and removing host access requests are throttled when
 // the cooldown is active.
+// TODO(crbug.com/565866457): Flaky on Debug, ASan, and MSan due to 200ms
+// real-time cooldown.
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_HostAccessRequestCooldown DISABLED_HostAccessRequestCooldown
+#else
+#define MAYBE_HostAccessRequestCooldown HostAccessRequestCooldown
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
-                       HostAccessRequestCooldown) {
+                       MAYBE_HostAccessRequestCooldown) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Extension")
           .AddHostPermission("*://*.requested.com/*")
