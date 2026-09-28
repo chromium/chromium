@@ -11,6 +11,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +33,21 @@ final class TouchToFillAutofillProperties {
     static final ReadableObjectPropertyKey<Runnable> DISMISS_HANDLER =
             new ReadableObjectPropertyKey<>("dismiss_handler");
 
-    static final PropertyKey[] ALL_KEYS = {VISIBLE, SHEET_ITEMS, DISMISS_HANDLER};
+    /** Announced by screen readers when the sheet is opened at full height. */
+    static final WritableIntPropertyKey SHEET_FULL_HEIGHT_DESCRIPTION_ID =
+            new WritableIntPropertyKey("sheet_full_height_description_id");
+
+    /** Announced by screen readers when the sheet is closed. */
+    static final WritableIntPropertyKey SHEET_CLOSED_DESCRIPTION_ID =
+            new WritableIntPropertyKey("sheet_closed_description_id");
+
+    static final PropertyKey[] ALL_KEYS = {
+        VISIBLE,
+        SHEET_ITEMS,
+        DISMISS_HANDLER,
+        SHEET_FULL_HEIGHT_DESCRIPTION_ID,
+        SHEET_CLOSED_DESCRIPTION_ID
+    };
 
     private TouchToFillAutofillProperties() {}
 }

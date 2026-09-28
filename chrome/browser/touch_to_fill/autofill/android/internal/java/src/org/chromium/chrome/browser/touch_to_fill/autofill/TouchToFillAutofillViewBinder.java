@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.touch_to_fill.autofill;
 
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_CLOSED_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.VISIBLE;
 
@@ -25,6 +27,10 @@ final class TouchToFillAutofillViewBinder {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
         } else if (propertyKey == SHEET_ITEMS) {
             TouchToFillAutofillCoordinator.setUpSheetItems(model, view);
+        } else if (propertyKey == SHEET_FULL_HEIGHT_DESCRIPTION_ID) {
+            view.setSheetFullHeightDescriptionId(model.get(SHEET_FULL_HEIGHT_DESCRIPTION_ID));
+        } else if (propertyKey == SHEET_CLOSED_DESCRIPTION_ID) {
+            view.setSheetClosedDescriptionId(model.get(SHEET_CLOSED_DESCRIPTION_ID));
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

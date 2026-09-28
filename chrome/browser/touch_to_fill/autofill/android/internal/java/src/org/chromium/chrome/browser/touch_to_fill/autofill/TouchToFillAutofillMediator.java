@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.touch_to_fill.autofill;
 
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_CLOSED_DESCRIPTION_ID;
+import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_FULL_HEIGHT_DESCRIPTION_ID;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.autofill.TouchToFillAutofillProperties.VISIBLE;
 
@@ -50,6 +52,13 @@ class TouchToFillAutofillMediator {
         sheetItems.add(new ListItem(ItemType.HEADER, createHeader()));
         sheetItems.add(new ListItem(ItemType.FILL_BUTTON, createFillButton()));
         sheetItems.add(new ListItem(ItemType.TEXT_BUTTON, createSettingsButton()));
+
+        mModel.set(
+                SHEET_FULL_HEIGHT_DESCRIPTION_ID,
+                R.string.autofill_personal_context_notice_sheet_full_height);
+        mModel.set(
+                SHEET_CLOSED_DESCRIPTION_ID,
+                R.string.autofill_personal_context_notice_sheet_closed);
 
         mBottomSheetFocusHelper.registerForOneTimeUse();
         mModel.set(VISIBLE, true);
