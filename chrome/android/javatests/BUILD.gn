@@ -1569,6 +1569,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
 
   sources = [
     "src/org/chromium/chrome/browser/tabmodel/ArchivedTabCreatorTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/BeforeUnloadTabCloseTest.java",
     "src/org/chromium/chrome/browser/tabmodel/ChromeTabCreatorTest.java",
     "src/org/chromium/chrome/browser/tabmodel/ContextMenuLoadUrlParamsTest.java",
     "src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java",
