@@ -46,7 +46,8 @@ found in the LICENSE file.
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="2dp"
                 android:gravity="center_horizontal"
-                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:accessibilityHeading="true" />
 
             <org.chromium.ui.widget.TextViewWithClickableSpans
                 android:id="@+id/disclaimer_description"
@@ -88,7 +89,8 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
-                        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+                        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                        android:accessibilityHeading="true" />
 
                     <org.chromium.ui.widget.TextViewWithLeading
                         android:id="@+id/profile_information_details"
@@ -129,7 +131,8 @@ found in the LICENSE file.
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="2dp"
-                        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+                        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                        android:accessibilityHeading="true" />
 
                     <org.chromium.ui.widget.TextViewWithLeading
                         android:id="@+id/device_information_details"
