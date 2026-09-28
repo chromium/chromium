@@ -4,21 +4,19 @@
 
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
 
-#include <algorithm>
+#include <utility>
 
-#include "base/feature_list.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -35,108 +32,11 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
-#include "google_apis/gaia/gaia_id.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
-
-namespace {
-
-constexpr int kBatchUploadBookmarkPromoMaxDismissCount = 3;
-constexpr base::TimeDelta
-    kBatchUploadBookmarkPromoMinimumDelayToShowAfterDismiss = base::Days(7);
-
-GaiaId GetPrimaryAccountGaiaId(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  // Identity manager is null in incognito mode.
-  if (!identity_manager) {
-    return GaiaId();
-  }
-  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-      .gaia;
-}
-
-// Computes whether the promo can be shown based on previous occurrences of it
-// being shown.
-bool CanShowBatchUploadPromo(Profile* profile) {
-  BatchUploadService* batch_upload_service =
-      BatchUploadServiceFactory::GetForProfile(profile);
-  if (batch_upload_service &&
-      !batch_upload_service->CanShowPromo(
-          BatchUploadService::EntryPoint::kBookmarksManagerPromoCard)) {
-    return false;
-  }
-
-  GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
-  if (gaia_id.empty()) {
-    return false;
-  }
-
-  auto [dismiss_count, last_dismiss_time] =
-      SigninPrefs(*profile->GetPrefs())
-          .GetBookmarkBatchUploadPromoDismissCountWithLastTime(gaia_id);
-
-  if (dismiss_count > kBatchUploadBookmarkPromoMaxDismissCount) {
-    return false;
-  }
-
-  // If no dismiss were recorded yet, then the promo can always be shown.
-  // Otherwise, we can only show the promo if a minimum duration has passed
-  // since the last dismiss time.
-  return !last_dismiss_time.has_value() ||
-         (base::Time::Now() - last_dismiss_time.value() >
-          kBatchUploadBookmarkPromoMinimumDelayToShowAfterDismiss);
-}
-
-base::DictValue GetBatchUploadPromoData(bool can_show,
-                                        int local_bookmark_count,
-                                        bool has_non_bookmark_local_data) {
-  base::DictValue promo_data;
-  promo_data.Set("canShow", can_show);
-  promo_data.Set("promoSubtitle",
-                 l10n_util::GetPluralStringFUTF16(
-                     has_non_bookmark_local_data
-                         ? IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS_COMBO
-                         : IDS_BATCH_UPLOAD_PROMO_SUBTITLE_BOOKMARKS,
-                     local_bookmark_count));
-  return promo_data;
-}
-
-// Return an empty result; should not show the promo.
-base::DictValue GetEmptyBatchUploadPromoData() {
-  return GetBatchUploadPromoData(/*can_show=*/false,
-                                 /*local_bookmark_count=*/0,
-                                 /*has_non_bookmark_local_data=*/false);
-}
-
-base::DictValue GetBatchUploadDataFromProfileAndLocalData(
-    Profile* profile,
-    const std::map<syncer::DataType, syncer::LocalDataDescription>&
-        local_data) {
-  int local_bookmark_count =
-      local_data.contains(syncer::BOOKMARKS)
-          ? local_data.at(syncer::BOOKMARKS).local_data_models.size()
-          : 0;
-
-  bool has_non_bookmark_local_data = std::ranges::any_of(
-      local_data, [](const std::pair<syncer::DataType,
-                                     syncer::LocalDataDescription>& data) {
-        return data.first != syncer::BOOKMARKS &&
-               !data.second.local_data_models.empty();
-      });
-
-  bool can_show = local_bookmark_count != 0 && CanShowBatchUploadPromo(profile);
-  return GetBatchUploadPromoData(can_show, local_bookmark_count,
-                                 has_non_bookmark_local_data);
-}
-
-}  // namespace
 
 BookmarksMessageHandler::BookmarksMessageHandler() = default;
 
@@ -162,20 +62,21 @@ void BookmarksMessageHandler::RegisterMessages() {
       base::BindRepeating(&BookmarksMessageHandler::HandleSingleUploadClicked,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getBatchUploadPromoInfo",
-      base::BindRepeating(
-          &BookmarksMessageHandler::HandleGetBatchUploadPromoData,
-          base::Unretained(this)));
+      "getPromoData",
+      base::BindRepeating(&BookmarksMessageHandler::HandleGetPromoData,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "onBatchUploadPromoClicked",
-      base::BindRepeating(
-          &BookmarksMessageHandler::HandleOnBatchUploadPromoClicked,
-          base::Unretained(this)));
+      "onPromoShown",
+      base::BindRepeating(&BookmarksMessageHandler::HandleOnPromoShown,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "onBatchUploadPromoDismissed",
-      base::BindRepeating(
-          &BookmarksMessageHandler::HandleOnBatchUploadPromoDismissed,
-          base::Unretained(this)));
+      "onPromoClicked",
+      base::BindRepeating(&BookmarksMessageHandler::HandleOnPromoClicked,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "onPromoDismissed",
+      base::BindRepeating(&BookmarksMessageHandler::HandleOnPromoDismissed,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openBookmarks",
       base::BindRepeating(&BookmarksMessageHandler::HandleOpenBookmarks,
@@ -186,6 +87,8 @@ void BookmarksMessageHandler::OnJavascriptAllowed() {
   Profile* profile = Profile::FromWebUI(web_ui());
   CHECK(!profile->IsGuestSession(),
         base::NotFatalUntil(base::NotFatalUntil::M140));
+  EnsurePromoDelegatesInitialized();
+
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       policy::policy_prefs::kIncognitoModeAvailability,
@@ -195,10 +98,14 @@ void BookmarksMessageHandler::OnJavascriptAllowed() {
       bookmarks::prefs::kEditBookmarksEnabled,
       base::BindRepeating(&BookmarksMessageHandler::UpdateCanEditBookmarks,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kAccountPreviewPreference,
+      base::BindRepeating(&BookmarksMessageHandler::RequestPromoDataUpdate,
+                          base::Unretained(this)));
 
   // Identity manager is null in incognito mode.
-  if (auto* identtiy_manager = IdentityManagerFactory::GetForProfile(profile)) {
-    identity_manager_observation_.Observe(identtiy_manager);
+  if (auto* identity_manager = IdentityManagerFactory::GetForProfile(profile)) {
+    identity_manager_observation_.Observe(identity_manager);
   }
   // Sync Service is null in incognito mode.
   if (auto* sync_service = SyncServiceFactory::GetForProfile(profile)) {
@@ -213,6 +120,50 @@ void BookmarksMessageHandler::OnJavascriptDisallowed() {
   identity_manager_observation_.Reset();
   sync_service_observation_.Reset();
   bookmark_model_observation_.Reset();
+  active_promo_delegate_ = nullptr;
+  promo_delegates_.clear();
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void BookmarksMessageHandler::EnsurePromoDelegatesInitialized() {
+  if (!promo_delegates_.empty()) {
+    return;
+  }
+  // Currently, the registered promo delegates are mutually exclusive (e.g., by
+  // sign-in state). If non-mutually-exclusive promos are added in the future,
+  // a sequential fallback mechanism (evaluating the next delegate when an
+  // earlier delegate asynchronously resolves `can_show` to false) will be
+  // needed to enforce promo priority.
+  Profile* profile = Profile::FromWebUI(web_ui());
+  PrefService* pref_service = profile->GetPrefs();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::IsSyncAllowed(profile)
+          ? SyncServiceFactory::GetForProfile(profile)
+          : nullptr;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  promo_delegates_.push_back(std::make_unique<AccountAwareSignInPromoDelegate>(
+      pref_service, identity_manager, sync_service,
+      AccountPreviewDataServiceFactory::GetForProfile(profile)));
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+  promo_delegates_.push_back(std::make_unique<BatchUploadPromoDelegate>(
+      pref_service, identity_manager, sync_service,
+      BatchUploadServiceFactory::GetForProfile(profile)));
+}
+
+void BookmarksMessageHandler::UpdateActivePromoDelegate() {
+  active_promo_delegate_ = nullptr;
+  if (!CanEditBookmarks()) {
+    return;
+  }
+  EnsurePromoDelegatesInitialized();
+  for (const auto& delegate : promo_delegates_) {
+    if (delegate->CanShowPromo()) {
+      active_promo_delegate_ = delegate.get();
+      return;
+    }
+  }
 }
 
 int BookmarksMessageHandler::GetIncognitoAvailability() {
@@ -365,101 +316,129 @@ void BookmarksMessageHandler::HandleSingleUploadClicked(
 void BookmarksMessageHandler::UpdateCanEditBookmarks() {
   FireWebUIListener("can-edit-bookmarks-changed",
                     base::Value(CanEditBookmarks()));
+  RequestPromoDataUpdate();
 }
 
-void BookmarksMessageHandler::HandleGetBatchUploadPromoData(
-    const base::ListValue& args) {
+void BookmarksMessageHandler::HandleGetPromoData(const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
 
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (!SyncServiceFactory::IsSyncAllowed(profile) ||
-      !CanShowBatchUploadPromo(profile) || !CanEditBookmarks()) {
-    ResolveJavascriptCallback(callback_id, GetEmptyBatchUploadPromoData());
+  UpdateActivePromoDelegate();
+  if (!active_promo_delegate_) {
+    ResolveJavascriptCallback(callback_id, BookmarkPromoData().ToDict());
     return;
   }
 
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(profile);
-  CHECK(batch_upload);
-  batch_upload->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
-      &BookmarksMessageHandler::OnGetLocalDataDescriptionReceived,
-      weak_ptr_factory_.GetWeakPtr(), callback_id.Clone()));
+  BookmarkPromoDelegate* delegate = active_promo_delegate_.get();
+  delegate->GetPromoData(base::BindOnce(
+      &BookmarksMessageHandler::OnPromoDataReceived,
+      weak_ptr_factory_.GetWeakPtr(), callback_id.Clone(), delegate));
 }
 
-void BookmarksMessageHandler::OnGetLocalDataDescriptionReceived(
+void BookmarksMessageHandler::OnPromoDataReceived(
     base::Value callback_id,
-    std::map<syncer::DataType, syncer::LocalDataDescription> local_data) {
-  ResolveJavascriptCallback(callback_id,
-                            GetBatchUploadDataFromProfileAndLocalData(
-                                Profile::FromWebUI(web_ui()), local_data));
+    const BookmarkPromoDelegate* delegate,
+    BookmarkPromoData promo_data) {
+  if (delegate != active_promo_delegate_.get()) {
+    return;
+  }
+  if (!promo_data.can_show) {
+    active_promo_delegate_ = nullptr;
+  }
+  ResolveJavascriptCallback(callback_id, promo_data.ToDict());
 }
 
-void BookmarksMessageHandler::FireOnGetLocalDataDescriptionReceived(
-    std::map<syncer::DataType, syncer::LocalDataDescription> local_data) {
-  FireWebUIListener("batch-upload-promo-info-updated",
-                    GetBatchUploadDataFromProfileAndLocalData(
-                        Profile::FromWebUI(web_ui()), local_data));
+void BookmarksMessageHandler::FirePromoDataUpdated(
+    const BookmarkPromoDelegate* delegate,
+    BookmarkPromoData promo_data) {
+  if (delegate != active_promo_delegate_.get()) {
+    return;
+  }
+  if (!promo_data.can_show) {
+    active_promo_delegate_ = nullptr;
+  }
+  FireWebUIListener("promo-data-updated", promo_data.ToDict());
 }
 
-void BookmarksMessageHandler::RequestLocalDataDescriptionsUpdate() {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  if (!SyncServiceFactory::IsSyncAllowed(profile) ||
-      !CanShowBatchUploadPromo(profile) || !CanEditBookmarks()) {
-    FireOnGetLocalDataDescriptionReceived(/*data=*/{});
+void BookmarksMessageHandler::RequestPromoDataUpdate() {
+  UpdateActivePromoDelegate();
+  if (!active_promo_delegate_) {
+    FirePromoDataUpdated(/*delegate=*/nullptr, BookmarkPromoData());
     return;
   }
 
-  BatchUploadService* batch_upload =
-      BatchUploadServiceFactory::GetForProfile(profile);
-  CHECK(batch_upload);
-  batch_upload->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
-      &BookmarksMessageHandler::FireOnGetLocalDataDescriptionReceived,
-      weak_ptr_factory_.GetWeakPtr()));
+  BookmarkPromoDelegate* delegate = active_promo_delegate_.get();
+  delegate->GetPromoData(
+      base::BindOnce(&BookmarksMessageHandler::FirePromoDataUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), delegate));
 }
 
-void BookmarksMessageHandler::HandleOnBatchUploadPromoClicked(
+void BookmarksMessageHandler::HandleOnPromoShown(const base::ListValue& args) {
+  if (!CanEditBookmarks() || !active_promo_delegate_) {
+    return;
+  }
+  active_promo_delegate_->OnPromoShown();
+}
+
+void BookmarksMessageHandler::HandleOnPromoClicked(
     const base::ListValue& args) {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  CHECK(CanEditBookmarks());
-  CHECK(SyncServiceFactory::IsSyncAllowed(profile));
-  CHECK(CanShowBatchUploadPromo(profile));
-
-  BatchUploadService* service =
-      BatchUploadServiceFactory::GetForProfile(profile);
-  CHECK(service);
-  auto* tab = tabs::TabInterface::GetFromContents(web_ui()->GetWebContents());
-  if (!tab) {
+  if (!CanEditBookmarks() || !active_promo_delegate_) {
+    RequestPromoDataUpdate();
     return;
   }
-  auto* browser_window = tab->GetBrowserWindowInterface();
+  auto* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
+  BrowserWindowInterface* browser_window =
+      tab ? tab->GetBrowserWindowInterface()
+          : ProfileBrowserCollection::GetForProfile(
+                Profile::FromWebUI(web_ui()))
+                ->GetLastActiveBrowser();
   if (!browser_window) {
     return;
   }
-  service->OpenBatchUpload(
-      browser_window,
-      BatchUploadService::EntryPoint::kBookmarksManagerPromoCard);
+  active_promo_delegate_->OnPromoClicked(browser_window);
 }
 
-void BookmarksMessageHandler::HandleOnBatchUploadPromoDismissed(
+void BookmarksMessageHandler::HandleOnPromoDismissed(
     const base::ListValue& args) {
-  Profile* profile = Profile::FromWebUI(web_ui());
-  GaiaId gaia_id = GetPrimaryAccountGaiaId(profile);
-  CHECK(!gaia_id.empty());
-  SigninPrefs(*profile->GetPrefs())
-      .IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(gaia_id);
+  if (!active_promo_delegate_) {
+    return;
+  }
+  active_promo_delegate_->OnPromoDismissed();
+  active_promo_delegate_ = nullptr;
 }
 
 void BookmarksMessageHandler::OnRefreshTokensLoaded() {
-  RequestLocalDataDescriptionsUpdate();
+  RequestPromoDataUpdate();
+}
+
+void BookmarksMessageHandler::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  RequestPromoDataUpdate();
+}
+
+void BookmarksMessageHandler::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  RequestPromoDataUpdate();
+}
+
+void BookmarksMessageHandler::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  RequestPromoDataUpdate();
+}
+
+void BookmarksMessageHandler::OnAccountsInCookieUpdated(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+    const GoogleServiceAuthError& error) {
+  RequestPromoDataUpdate();
 }
 
 void BookmarksMessageHandler::OnStateChanged(
     syncer::SyncService* sync_service) {
   if (sync_service->GetTransportState() !=
       syncer::SyncService::TransportState::CONFIGURING) {
-    RequestLocalDataDescriptionsUpdate();
+    RequestPromoDataUpdate();
 
     // Check if the bookmark sync state has changed.
     const bool new_active_state =
@@ -486,22 +465,22 @@ void BookmarksMessageHandler::ExtensiveBookmarkChangesBeginning() {
 void BookmarksMessageHandler::ExtensiveBookmarkChangesEnded() {
   batch_updates_ongoing_ = false;
 
-  if (need_local_count_update_) {
-    RequestLocalDataDescriptionsUpdate();
-    need_local_count_update_ = false;
+  if (need_promo_data_update_) {
+    RequestPromoDataUpdate();
+    need_promo_data_update_ = false;
   }
   FireWebUIListener("import-ended");
 }
 
 void BookmarksMessageHandler::BookmarkModelLoaded(bool ids_reassigned) {
-  RequestLocalDataDescriptionsUpdate();
+  RequestPromoDataUpdate();
 }
 
 void BookmarksMessageHandler::RequestUpdateOrWaitForBatchUpdateEnd() {
   if (batch_updates_ongoing_) {
-    need_local_count_update_ = true;
+    need_promo_data_update_ = true;
   } else {
-    RequestLocalDataDescriptionsUpdate();
+    RequestPromoDataUpdate();
   }
 }
 

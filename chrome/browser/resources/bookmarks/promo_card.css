@@ -54,6 +54,12 @@
   width: fit-content;
 }
 
+#avatar {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
   #image {
     content: url(images/batch_upload_bookmarks_promo_dark.svg);

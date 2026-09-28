@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BrowserProxy} from 'chrome://bookmarks/bookmarks.js';
-import {IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarkPromoType, IncognitoAvailability} from 'chrome://bookmarks/bookmarks.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
@@ -20,9 +20,10 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
       'getCanUploadBookmarkToAccountStorage',
       'recordInHistogram',
       'onSingleBookmarkUploadClicked',
-      'getBatchUploadPromoInfo',
-      'onBatchUploadPromoClicked',
-      'onBatchUploadPromoDismissed',
+      'getPromoData',
+      'onPromoShown',
+      'onPromoClicked',
+      'onPromoDismissed',
     ]);
   }
 
@@ -53,19 +54,26 @@ export class TestBookmarksBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('onSingleBookmarkUploadClicked', [bookmarkId]);
   }
 
-  getBatchUploadPromoInfo() {
-    this.methodCalled('getBatchUploadPromoInfo');
+  getPromoData() {
+    this.methodCalled('getPromoData');
     return Promise.resolve({
+      promoType: BookmarkPromoType.NONE,
       canShow: false,
+      promoTitle: '',
       promoSubtitle: '',
+      actionButtonText: '',
     });
   }
 
-  onBatchUploadPromoClicked() {
-    this.methodCalled('onBatchUploadPromoClicked');
+  onPromoShown() {
+    this.methodCalled('onPromoShown');
   }
 
-  onBatchUploadPromoDismissed() {
-    this.methodCalled('onBatchUploadPromoDismissed');
+  onPromoClicked() {
+    this.methodCalled('onPromoClicked');
+  }
+
+  onPromoDismissed() {
+    this.methodCalled('onPromoDismissed');
   }
 }

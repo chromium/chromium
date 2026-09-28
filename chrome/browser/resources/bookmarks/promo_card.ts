@@ -12,7 +12,8 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BatchUploadPromoData, BrowserProxy} from './browser_proxy.js';
+import type {BrowserProxy, PromoCardData} from './browser_proxy.js';
+import {BookmarkPromoType} from './constants.js';
 import {getCss} from './promo_card.css.js';
 import {getHtml} from './promo_card.html.js';
 
@@ -42,38 +43,49 @@ export class PromoCardElement extends PromoCardElementBase {
 
   static override get properties() {
     return {
-      batchUploadPromoData_: {type: Object},
+      promoData_: {type: Object},
     };
   }
 
-  protected accessor batchUploadPromoData_: BatchUploadPromoData = {
+  protected accessor promoData_: PromoCardData = {
+    promoType: BookmarkPromoType.NONE,
     canShow: false,
+    promoTitle: '',
     promoSubtitle: '',
+    actionButtonText: '',
+    promoAvatarUrl: '',
   };
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.browserProxy_.getBatchUploadPromoInfo().then(
-        this.updateBatchUploadPromoData_.bind(this));
+    this.browserProxy_.getPromoData().then(this.updatePromoData_.bind(this));
     this.addWebUiListener(
-        'batch-upload-promo-info-updated',
-        this.updateBatchUploadPromoData_.bind(this));
+        'promo-data-updated', this.updatePromoData_.bind(this));
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
-  private updateBatchUploadPromoData_(promoData: BatchUploadPromoData) {
-    this.batchUploadPromoData_ = promoData;
-    this.propagateShouldShowPromo_(this.batchUploadPromoData_.canShow);
+  private updatePromoData_(promoData: PromoCardData) {
+    const isNewPromoShown =
+        (this.promoData_.canShow !== promoData.canShow ||
+         this.promoData_.promoType !== promoData.promoType) &&
+        promoData.canShow;
+    this.promoData_ = promoData;
+    if (isNewPromoShown) {
+      this.browserProxy_.onPromoShown();
+    }
+    this.propagateShouldShowPromo_(this.promoData_.canShow);
   }
 
-  protected onSaveToAccountClick_() {
-    this.browserProxy_.onBatchUploadPromoClicked();
+  protected onActionButtonClick_() {
+    this.browserProxy_.onPromoClicked();
   }
 
   protected onCloseClick_() {
-    this.browserProxy_.onBatchUploadPromoDismissed();
+    this.promoData_.canShow = false;
+    this.promoData_.promoType = BookmarkPromoType.NONE;
+    this.browserProxy_.onPromoDismissed();
     // Allows to close the promo right away instead of waiting for the
     // notification from the browser.
     this.propagateShouldShowPromo_(false);

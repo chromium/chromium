@@ -741,6 +741,15 @@
     <message name="IDS_BATCH_UPLOAD_PROMO_TITLE" desc="Title of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. This promo leads to the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
       Get your bookmarks and more on all your devices
     </message>
+    <message name="IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_TITLE" desc="Title of the sign-in promo card in the Bookmark Manager when the user is signed in on the web and their account has bookmarks.">
+      Get your bookmarks and more on all your devices
+    </message>
+    <message name="IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_TITLE_WITH_DEVICE" desc="Title of the sign-in promo card in the Bookmark Manager informing the user they can access their bookmarks from their other device.">
+      Get your bookmarks and more from <ph name="DEVICE">$1<ex>your phone</ex></ph>
+    </message>
+    <message name="IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_SUBTITLE" desc="Subtitle of the sign-in promo card in the Bookmark Manager when the user is signed in on the web and their account has bookmarks.">
+      To quickly get to your favorite sites using bookmarks from across your devices, sign in as <ph name="EMAIL">$1<ex>camille.c.walsh@gmail.com</ex></ph>
+    </message>
     <if expr="use_titlecase">
       <message name="IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL" desc="Affirmative button of the Batch Upload promo. This promo appears to inform the user that there are items saved only to their device; this subtitle mentions how many bookmarks (and other items, if any) are on the device. If the user chooses to save items in their Google Account, the user can access them on any device where they’re signed in to Chrome. When the user clicks this button, the items aren’t saved yet: the user first sees the Batch Upload dialog, where the user can select the checkboxes for the items that they want to save in their Google Account. The tone should be motivating.">
         Save in Account

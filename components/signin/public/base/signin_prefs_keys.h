@@ -97,6 +97,16 @@ inline constexpr std::string_view kAddressSignInPromoDismissCount =
 inline constexpr std::string_view kBookmarkSignInPromoDismissCount =
     "BookmarkSignInPromoDismissCount";
 
+// Pref to store the number of times the bookmark manager signin promo has been
+// shown per account.
+inline constexpr std::string_view kBookmarkManagerSignInPromoShownCount =
+    "BookmarkManagerSignInPromoShownCount";
+
+// Pref to store the number of times the bookmark manager signin promo has been
+// dismissed per account.
+inline constexpr std::string_view kBookmarkManagerSignInPromoDismissCount =
+    "BookmarkManagerSignInPromoDismissCount";
+
 // Pref to store the number of times the password bubble signin promo
 // has been dismissed per account.
 inline constexpr std::string_view kPasswordSignInPromoDismissCount =

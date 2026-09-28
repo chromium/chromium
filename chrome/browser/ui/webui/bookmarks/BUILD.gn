@@ -9,11 +9,13 @@ if (!is_android) {
   source_set("bookmarks") {
     sources = [
       "bookmark_prefs.cc",
+      "bookmark_promo_delegate.cc",
       "bookmarks_message_handler.cc",
       "bookmarks_ui.cc",
     ]
     public = [
       "bookmark_prefs.h",
+      "bookmark_promo_delegate.h",
       "bookmarks_message_handler.h",
       "bookmarks_ui.h",
     ]
@@ -33,12 +35,14 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/bookmarks",
       "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:metrics_handler",
       "//chrome/browser/ui/webui:plural_string_handler",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui/page_not_available_for_guest",
+      "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/common",
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
@@ -48,6 +52,7 @@ if (!is_android) {
       "//components/favicon_base",
       "//components/policy/core/common",
       "//components/prefs",
+      "//components/signin/core/browser",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager",
       "//components/strings:components_strings",
@@ -64,6 +69,28 @@ if (!is_android) {
     }
   }
 
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "bookmark_promo_delegate_unittest.cc" ]
+    deps = [
+      ":bookmarks",
+      "//base/test:test_support",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/profiles/batch_upload",
+      "//chrome/browser/profiles/batch_upload:test_support",
+      "//components/prefs",
+      "//components/signin/core/browser:test_support",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//components/sync/service",
+      "//components/sync_preferences:test_support",
+      "//testing/gtest",
+      "//ui/base",
+    ]
+  }
+
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -73,6 +100,7 @@ if (!is_android) {
       "//chrome/browser/bookmarks",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles/batch_upload:test_support",
+      "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui/views/bookmarks:test_support",
@@ -82,11 +110,14 @@ if (!is_android) {
       "//components/bookmarks/managed",
       "//components/bookmarks/test",
       "//components/prefs",
+      "//components/signin/core/browser",
+      "//components/signin/core/browser:test_support",
       "//components/signin/public/base",
       "//components/signin/public/identity_manager:test_support",
       "//components/sync_bookmarks",
       "//content/public/browser",
       "//content/test:test_support",
+      "//services/network:test_support",
       "//ui/views",
     ]
   }

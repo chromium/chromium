@@ -133,6 +133,13 @@ class SigninPrefs {
   void IncrementBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
+  void IncrementBookmarkManagerSigninPromoImpressionCount(
+      const GaiaId& gaia_id);
+  int GetBookmarkManagerSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
+  void IncrementBookmarkManagerSigninPromoDismissCount(const GaiaId& gaia_id);
+  int GetBookmarkManagerSigninPromoDismissCount(const GaiaId& gaia_id) const;
+
   void IncrementSearchAIModeSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetSearchAIModeSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 

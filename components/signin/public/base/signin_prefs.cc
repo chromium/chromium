@@ -267,6 +267,30 @@ int SigninPrefs::GetBookmarkSigninPromoImpressionCount(
           : signin::internal::kBookmarkSignInPromoShownCount);
 }
 
+void SigninPrefs::IncrementBookmarkManagerSigninPromoImpressionCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kBookmarkManagerSignInPromoShownCount);
+}
+
+int SigninPrefs::GetBookmarkManagerSigninPromoImpressionCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kBookmarkManagerSignInPromoShownCount);
+}
+
+void SigninPrefs::IncrementBookmarkManagerSigninPromoDismissCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id, signin::internal::kBookmarkManagerSignInPromoDismissCount);
+}
+
+int SigninPrefs::GetBookmarkManagerSigninPromoDismissCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id, signin::internal::kBookmarkManagerSignInPromoDismissCount);
+}
+
 void SigninPrefs::IncrementSearchAIModeSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
   IncrementIntPrefForAccount(

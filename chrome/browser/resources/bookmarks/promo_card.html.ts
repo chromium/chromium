@@ -12,14 +12,18 @@ export function getHtml(this: PromoCardElement) {
   <img id="image" class="banner" alt="">
   <div id="promoContent">
     <h2 id="title" class="label">
-      $i18n{bookmarkPromoCardTitle}
+      ${this.promoData_.promoTitle}
     </h2>
     <div id="description" class="cr-secondary-text label">
-      ${this.batchUploadPromoData_.promoSubtitle}
+      ${this.promoData_.promoSubtitle}
     </div>
     <cr-button id="actionButton" class="action-button"
-        @click="${this.onSaveToAccountClick_}">
-      $i18n{saveToAccount}
+        @click="${this.onActionButtonClick_}">
+      ${this.promoData_.promoAvatarUrl ? html`
+        <img id="avatar" slot="prefix-icon"
+            src="${this.promoData_.promoAvatarUrl}" alt="">
+      ` : ''}
+      ${this.promoData_.actionButtonText}
     </cr-button>
   </div>
   <cr-icon-button id="closeButton" class="icon-clear no-overlap"

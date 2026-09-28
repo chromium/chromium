@@ -4,12 +4,16 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import type {IncognitoAvailability} from './constants.js';
+import type {BookmarkPromoType, IncognitoAvailability} from './constants.js';
 
 // This is the data structure that is received from the browser.
-export interface BatchUploadPromoData {
+export interface PromoCardData {
+  promoType: BookmarkPromoType;
   canShow: boolean;
+  promoTitle: string;
   promoSubtitle: string;
+  actionButtonText: string;
+  promoAvatarUrl?: string;
 }
 
 export interface BrowserProxy {
@@ -19,12 +23,11 @@ export interface BrowserProxy {
   recordInHistogram(histogram: string, bucket: number, maxBucket: number): void;
   onSingleBookmarkUploadClicked(bookmarkId: string): void;
 
-  // Promo/BatchUpload functions
-  // TODO(crbug.com/411439975): Consider using it's own handler, with a mojo
-  // implementation.
-  getBatchUploadPromoInfo(): Promise<BatchUploadPromoData>;
-  onBatchUploadPromoClicked(): void;
-  onBatchUploadPromoDismissed(): void;
+  // Promo card functions
+  getPromoData(): Promise<PromoCardData>;
+  onPromoShown(): void;
+  onPromoClicked(): void;
+  onPromoDismissed(): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -49,16 +52,20 @@ export class BrowserProxyImpl implements BrowserProxy {
     chrome.send('onSingleBookmarkUploadClicked', [bookmarkId]);
   }
 
-  getBatchUploadPromoInfo() {
-    return sendWithPromise<BatchUploadPromoData>('getBatchUploadPromoInfo');
+  getPromoData() {
+    return sendWithPromise<PromoCardData>('getPromoData');
   }
 
-  onBatchUploadPromoClicked(): void {
-    chrome.send('onBatchUploadPromoClicked');
+  onPromoShown(): void {
+    chrome.send('onPromoShown');
   }
 
-  onBatchUploadPromoDismissed(): void {
-    chrome.send('onBatchUploadPromoDismissed');
+  onPromoClicked(): void {
+    chrome.send('onPromoClicked');
+  }
+
+  onPromoDismissed(): void {
+    chrome.send('onPromoDismissed');
   }
 
   static getInstance(): BrowserProxy {

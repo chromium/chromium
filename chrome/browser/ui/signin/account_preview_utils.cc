@@ -453,4 +453,16 @@ std::optional<std::string> GetAccountPreviewProfileSeparationSubtitle(
   return std::nullopt;
 }
 
+std::u16string GetAccountPreviewBookmarkManagerPromoTitle(
+    const AccountPreviewDataService::AccountPreviewPreference& preference) {
+  std::optional<int> device_string_id =
+      GetDeviceStringId(preference.other_device_form_factor);
+  return device_string_id.has_value()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_TITLE_WITH_DEVICE,
+                   l10n_util::GetStringUTF16(*device_string_id))
+             : l10n_util::GetStringUTF16(
+                   IDS_BOOKMARK_MANAGER_SIGNIN_PROMO_TITLE);
+}
+
 }  // namespace signin

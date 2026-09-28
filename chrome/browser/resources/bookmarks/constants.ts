@@ -81,6 +81,17 @@ export enum IncognitoAvailability {
   FORCED = 2,
 }
 
+// LINT.IfChange(BookmarkPromoType)
+/**
+ * Mirrors the C++ BookmarkPromoType enum.
+ */
+export enum BookmarkPromoType {
+  NONE = 0,
+  BATCH_UPLOAD = 1,
+  ACCOUNT_AWARE_SIGNIN = 2,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/bookmarks/bookmark_promo_delegate.h:BookmarkPromoType)
+
 export const LOCAL_STORAGE_FOLDER_STATE_KEY: string = 'folderOpenState';
 
 export const LOCAL_STORAGE_TREE_WIDTH_KEY: string = 'treeWidth';

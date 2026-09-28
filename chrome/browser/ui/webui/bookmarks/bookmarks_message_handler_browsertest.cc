@@ -11,7 +11,9 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
@@ -22,14 +24,20 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -61,15 +69,33 @@ class BookmarkMessageHandlerTest : public InProcessBrowserTest {
     handler_->HandleSingleUploadClicked(args);
   }
 
-  void SendHandleGetBatchUploadPromoData(const std::string& callback_id) {
+  void SendHandleGetPromoData(const std::string& callback_id) {
     base::ListValue args;
     args.Append(callback_id);
-    handler_->HandleGetBatchUploadPromoData(args);
+    handler_->HandleGetPromoData(args);
+  }
+
+  void SendHandleOnPromoShown() {
+    base::ListValue args;
+    handler_->HandleOnPromoShown(args);
+  }
+
+  void SendHandleOnPromoClicked() {
+    base::ListValue args;
+    handler_->HandleOnPromoClicked(args);
+  }
+
+  void SendHandleOnPromoDismissed() {
+    base::ListValue args;
+    handler_->HandleOnPromoDismissed(args);
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
 
   void ResetWithProfile(Profile* profile) {
+    if (handler_ && handler_->IsJavascriptAllowed()) {
+      handler_->DisallowJavascript();
+    }
     webui_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile));
     web_ui_.set_web_contents(webui_contents_.get());
@@ -329,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerBatchUploadTest,
 
   batch_upload_test_helper().SetReturnDescriptions(syncer::BOOKMARKS, 1);
 
-  SendHandleGetBatchUploadPromoData("test-callback-id-1");
+  SendHandleGetPromoData("test-callback-id-1");
 
   ASSERT_FALSE(web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data_initial =
@@ -344,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerBatchUploadTest,
   SigninPrefs(*profile->GetPrefs())
       .SetBatchUploadLastUploadRemainingLocalDataCount(gaia_id, 1);
 
-  SendHandleGetBatchUploadPromoData("test-callback-id-2");
+  SendHandleGetPromoData("test-callback-id-2");
 
   ASSERT_FALSE(web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -355,3 +381,210 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerBatchUploadTest,
   ASSERT_TRUE(response);
   EXPECT_FALSE(*response->FindBool("canShow"));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class BookmarkMessageHandlerAccountAwarePromoTest
+    : public SigninBrowserTestBaseT<BookmarkMessageHandlerTest> {
+ public:
+  void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) override {
+    SigninBrowserTestBaseT<BookmarkMessageHandlerTest>::
+        OnWillCreateBrowserContextServices(context);
+    AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<signin::TestAccountPreviewDataService>();
+        }));
+  }
+
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBaseT<BookmarkMessageHandlerTest>::SetUpOnMainThread();
+    // SigninBrowserTestBaseT::SetUpOnMainThread calls
+    // BookmarkMessageHandlerTest::SetUpOnMainThread which signs in a primary
+    // account; clear the primary account so the profile is in web-only
+    // signed-in state.
+    identity_test_env()->ClearPrimaryAccount();
+    ResetWithProfile(browser()->GetProfile());
+  }
+
+  AccountInfo SetUpWebSignedInPreferredAccount(bool include_bookmarks) {
+    Profile* profile = browser()->GetProfile();
+    std::vector<AccountInfo> accounts =
+        SetAccountsCookiesAndTokens({"camille.c.walsh@gmail.com"});
+    AccountInfo account_info =
+        signin::WithGeneratedUserInfo(accounts[0], "Camille");
+
+    auto* preview_service = static_cast<signin::TestAccountPreviewDataService*>(
+        AccountPreviewDataServiceFactory::GetForProfile(profile));
+    CHECK(preview_service);
+    signin::AccountPreviewDataService::AccountPreviewPreference pref;
+    pref.gaia_id = account_info.GetGaiaId();
+    if (include_bookmarks) {
+      pref.preferred_data_types = {
+          {.data_type = syncer::BOOKMARKS,
+           .quartile = signin::SyncDataQuartile::kAboveQ3}};
+    } else {
+      pref.preferred_data_types = {
+          {.data_type = syncer::PASSWORDS,
+           .quartile = signin::SyncDataQuartile::kAboveQ3}};
+    }
+    preview_service->SetPreferredAccountForPromo(pref);
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+    // Trigger `prefs::kAccountPreviewPreference` observers to mirror
+    // `AccountPreviewDataServiceImpl`.
+    profile->GetPrefs()->SetDict(
+        prefs::kAccountPreviewPreference,
+        base::DictValue().Set("include_bookmarks", include_bookmarks));
+    return account_info;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableAccountPreviewPreferredAccountFollowup};
+};
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       ShownWhenPreferredAccountHasBookmarks) {
+  AccountInfo account =
+      SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
+
+  SendHandleGetPromoData("callback-1");
+  ASSERT_FALSE(web_ui()->call_data().empty());
+  const base::DictValue* response =
+      web_ui()->call_data().back()->arg3()->GetIfDict();
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(*response->FindBool("canShow"));
+  EXPECT_EQ("Get your bookmarks and more on all your devices",
+            *response->FindString("promoTitle"));
+  EXPECT_EQ(
+      "To quickly get to your favorite sites using bookmarks from across your "
+      "devices, sign in as camille.c.walsh@gmail.com",
+      *response->FindString("promoSubtitle"));
+  EXPECT_EQ("Continue as Camille", *response->FindString("actionButtonText"));
+  EXPECT_FALSE(response->FindString("promoAvatarUrl")->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       NotShownWhenPreferredAccountLacksBookmarks) {
+  SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/false);
+
+  SendHandleGetPromoData("callback-1");
+  ASSERT_FALSE(web_ui()->call_data().empty());
+  const base::DictValue* response =
+      web_ui()->call_data().back()->arg3()->GetIfDict();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(*response->FindBool("canShow"));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       MaxShownCountLimit) {
+  base::HistogramTester histogram_tester;
+  AccountInfo account =
+      SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
+  SigninPrefs signin_prefs(*browser()->GetProfile()->GetPrefs());
+
+  for (int i = 0; i < 5; ++i) {
+    ResetWithProfile(browser()->GetProfile());
+    SendHandleGetPromoData("callback-" + base::NumberToString(i));
+    const base::DictValue* response =
+        web_ui()->call_data().back()->arg3()->GetIfDict();
+    ASSERT_TRUE(response);
+    EXPECT_TRUE(*response->FindBool("canShow"));
+    SendHandleOnPromoShown();
+    EXPECT_EQ(i + 1, signin_prefs.GetBookmarkManagerSigninPromoImpressionCount(
+                         account.GetGaiaId()));
+    histogram_tester.ExpectUniqueSample(
+        "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkManager,
+        i + 1);
+    histogram_tester.ExpectUniqueSample(
+        "Signin.SignIn.Offered.WithDefault",
+        signin_metrics::AccessPoint::kBookmarkManager, i + 1);
+  }
+
+  // 6th page load should not show the promo.
+  ResetWithProfile(browser()->GetProfile());
+  SendHandleGetPromoData("callback-6");
+  const base::DictValue* response =
+      web_ui()->call_data().back()->arg3()->GetIfDict();
+  ASSERT_TRUE(response);
+  EXPECT_FALSE(*response->FindBool("canShow"));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       MaxDismissCountLimit) {
+  AccountInfo account =
+      SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
+  SigninPrefs signin_prefs(*browser()->GetProfile()->GetPrefs());
+
+  // 1st show & dismiss.
+  SendHandleGetPromoData("callback-1");
+  EXPECT_TRUE(
+      *web_ui()->call_data().back()->arg3()->GetIfDict()->FindBool("canShow"));
+  SendHandleOnPromoDismissed();
+  EXPECT_EQ(1, signin_prefs.GetBookmarkManagerSigninPromoDismissCount(
+                   account.GetGaiaId()));
+
+  // 2nd show & dismiss on a new page load.
+  ResetWithProfile(browser()->GetProfile());
+  SendHandleGetPromoData("callback-2");
+  EXPECT_TRUE(
+      *web_ui()->call_data().back()->arg3()->GetIfDict()->FindBool("canShow"));
+  SendHandleOnPromoDismissed();
+  EXPECT_EQ(2, signin_prefs.GetBookmarkManagerSigninPromoDismissCount(
+                   account.GetGaiaId()));
+
+  // 3rd page load should not show the promo because dismiss count reached 2.
+  ResetWithProfile(browser()->GetProfile());
+  SendHandleGetPromoData("callback-3");
+  EXPECT_FALSE(
+      *web_ui()->call_data().back()->arg3()->GetIfDict()->FindBool("canShow"));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       ClickSignsInAccount) {
+  AccountInfo account =
+      SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  SendHandleGetPromoData("callback-1");
+  EXPECT_TRUE(
+      *web_ui()->call_data().back()->arg3()->GetIfDict()->FindBool("canShow"));
+
+  SendHandleOnPromoClicked();
+  EXPECT_TRUE(
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_EQ(account.GetAccountId(), identity_manager->GetPrimaryAccountId(
+                                        signin::ConsentLevel::kSignin));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerAccountAwarePromoTest,
+                       ClickAndDismissAfterPromoBecameIneligible) {
+  SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/true);
+
+  SendHandleGetPromoData("callback-1");
+  const base::DictValue* response =
+      web_ui()->call_data().back()->arg3()->GetIfDict();
+  ASSERT_TRUE(response);
+  EXPECT_TRUE(*response->FindBool("canShow"));
+
+  // Make the promo ineligible by updating the preferred account so it has no
+  // bookmark preview data. This triggers `prefs::kAccountPreviewPreference`
+  // observers, firing a `"promo-data-updated"` WebUI listener event with
+  // `canShow = false`.
+  SetUpWebSignedInPreferredAccount(/*include_bookmarks=*/false);
+  const content::TestWebUI::CallData& listener_data =
+      *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", listener_data.function_name());
+  EXPECT_EQ("promo-data-updated", listener_data.arg1()->GetString());
+  EXPECT_FALSE(*listener_data.arg2()->GetIfDict()->FindBool("canShow"));
+
+  // Clicking or dismissing after becoming ineligible (including a double
+  // dismiss) should return early without crashing.
+  SendHandleOnPromoClicked();
+  SendHandleOnPromoDismissed();
+  SendHandleOnPromoDismissed();
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
