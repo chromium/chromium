@@ -693,7 +693,8 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
 
 #if BUILDFLAG(IS_ANDROID)
-  if (supports_adaptive_refresh_rate_) {
+  if (supports_adaptive_refresh_rate_ &&
+      !interval_decider_use_fixed_intervals_) {
     matchers.push_back(std::make_unique<UserInputBoostMatcher>());
     if (!adaptive_refresh_rate_velocity_points_.empty()) {
       matchers.push_back(std::make_unique<SlowScrollThrottleMatcher>(
