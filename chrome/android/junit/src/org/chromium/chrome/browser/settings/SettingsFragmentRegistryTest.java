@@ -35,6 +35,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicActorLoginPermissionsFragment;
 import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicSettings;
+import org.chromium.chrome.browser.language.settings.AlwaysTranslateListFragment;
+import org.chromium.chrome.browser.language.settings.NeverTranslateListFragment;
+import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -62,7 +65,9 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /** Unit tests for {@link SettingsFragmentRegistry}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -787,6 +792,84 @@ public class SettingsFragmentRegistryTest {
         SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
         assertEquals(url, expectedRedirectUrl, resolution.redirectUrl);
         assertNull(url, resolution.fragmentClass);
+    }
+
+    @Test
+    public void testLanguagePickerUrls() {
+        assertLanguagePickerUrl(
+                "chrome://settings/languages/currentDeviceLanguage",
+                SelectLanguageFragment.AppLanguagePickerFragment.class);
+        assertLanguagePickerUrl(
+                "chrome://settings/languages/addLanguage",
+                SelectLanguageFragment.ContentLanguagePickerFragment.class);
+        assertLanguagePickerUrl(
+                "chrome://settings/languages/translateIntoLanguage",
+                SelectLanguageFragment.TranslateTargetLanguagePickerFragment.class);
+        assertLanguagePickerUrl(
+                "chrome://settings/languages/alwaysTranslate/addLanguage",
+                SelectLanguageFragment.AlwaysTranslateLanguagePickerFragment.class);
+        assertLanguagePickerUrl(
+                "chrome://settings/languages/neverTranslate/addLanguage",
+                SelectLanguageFragment.NeverTranslateLanguagePickerFragment.class);
+
+        // The two list pages keep their own Urls.
+        assertEquals(
+                "chrome://settings/languages/alwaysTranslate",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        AlwaysTranslateListFragment.class, null));
+        assertEquals(
+                "chrome://settings/languages/neverTranslate",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        NeverTranslateListFragment.class, null));
+    }
+
+    @Test
+    public void testEveryLanguagePickerIsRegistered() {
+        // Under Url navigation a picker is shown by navigating to its Url, so one without a
+        // registered Url cannot be opened at all.
+        for (Class<? extends SelectLanguageFragment> picker : SelectLanguageFragment.ALL_PICKERS) {
+            assertNotNull(
+                    picker.getName(), SettingsFragmentRegistry.createUrlForFragment(picker, null));
+        }
+    }
+
+    @Test
+    public void testEveryLanguagePickerReturnsToARegisteredPage() throws Exception {
+        // A picker finishes by navigating to the page that asked for the language, which is where
+        // the selection is delivered. That needs the page to have a Url.
+        for (Class<? extends SelectLanguageFragment> picker : SelectLanguageFragment.ALL_PICKERS) {
+            Class<? extends Fragment> requestingPage =
+                    picker.getDeclaredConstructor().newInstance().getRequestingFragmentForTesting();
+            assertNotNull(
+                    picker.getName() + " returns to " + requestingPage.getName(),
+                    SettingsFragmentRegistry.createUrlForFragment(requestingPage, null));
+        }
+    }
+
+    @Test
+    public void testLanguageSelectionResultKeysAreDistinct() {
+        // A result written for one page must never be delivered to another. See
+        // SelectLanguageFragment.resultKey().
+        Set<String> resultKeys = new HashSet<>();
+        for (Class<? extends SelectLanguageFragment> picker : SelectLanguageFragment.ALL_PICKERS) {
+            assertTrue(
+                    "Duplicate result key for " + picker.getName(),
+                    resultKeys.add(SelectLanguageFragment.resultKey(picker)));
+        }
+    }
+
+    private void assertLanguagePickerUrl(
+            String url, Class<? extends SelectLanguageFragment> expectedPicker) {
+        assertEquals(expectedPicker, SettingsFragmentRegistry.getFragmentClassForUrl(url));
+
+        // Navigating the tab goes through resolve(), so the picker has to be reachable that way
+        // too rather than only through the raw path lookup.
+        SettingsFragmentRegistry.Resolution resolution = SettingsFragmentRegistry.resolve(url);
+        assertNull(url, resolution.redirectUrl);
+        assertEquals(url, expectedPicker, resolution.fragmentClass);
+
+        // And the picker generates the same Url back.
+        assertEquals(url, SettingsFragmentRegistry.createUrlForFragment(expectedPicker, null));
     }
 
     /** The page a settings path resolves to, or null if the path is not registered. */

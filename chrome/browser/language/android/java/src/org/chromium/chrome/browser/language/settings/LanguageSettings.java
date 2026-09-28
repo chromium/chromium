@@ -81,13 +81,57 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         mPrefChangeRegistrar = PrefServiceUtil.createFor(getProfile());
 
         // Create the correct version of language settings.
-        if (shouldShowDetailedPreferences()) {
+        boolean detailed = shouldShowDetailedPreferences();
+        if (detailed) {
             createDetailedPreferences();
         } else {
             createBasicPreferences();
         }
 
+        listenForSelectedLanguages(detailed);
+
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
+    }
+
+    /**
+     * Listens for each kind of language this page asks the picker for.
+     *
+     * <p>Listening here, rather than when the picker is opened, is what lets the selection arrive
+     * under Url navigation: the picker occupies this page's navigation entry, so by the time it has
+     * a selection this instance is gone and a new one has been created to receive it. Each picker
+     * has its own key, so a selection can only be applied as what it was asked for.
+     *
+     * @param detailed Whether the detailed preferences were created. Only they have an app language
+     *     and a translate target to apply a selection to.
+     */
+    private void listenForSelectedLanguages(boolean detailed) {
+        if (!SelectLanguageFragment.usesUrlNavigation(this)) return;
+
+        listenForSelectedLanguage(
+                SelectLanguageFragment.ContentLanguagePickerFragment.class,
+                REQUEST_CODE_ADD_ACCEPT_LANGUAGE);
+        if (!detailed) return;
+
+        listenForSelectedLanguage(
+                SelectLanguageFragment.AppLanguagePickerFragment.class,
+                REQUEST_CODE_CHANGE_APP_LANGUAGE);
+        listenForSelectedLanguage(
+                SelectLanguageFragment.TranslateTargetLanguagePickerFragment.class,
+                REQUEST_CODE_CHANGE_TARGET_LANGUAGE);
+    }
+
+    private void listenForSelectedLanguage(
+            Class<? extends SelectLanguageFragment> picker, int requestCode) {
+        getParentFragmentManager()
+                .setFragmentResultListener(
+                        SelectLanguageFragment.resultKey(picker),
+                        this,
+                        (String requestKey, Bundle result) -> {
+                            String code =
+                                    result.getString(SelectLanguageFragment.KEY_SELECTED_LANGUAGE);
+                            assumeNonNull(code);
+                            onSelectLanguageResult(requestCode, code);
+                        });
     }
 
     @Override
@@ -399,6 +443,18 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      */
     private void launchSelectLanguage(
             Class<? extends SelectLanguageFragment> picker, final int requestCode) {
+        if (SelectLanguageFragment.usesUrlNavigation(this)) {
+            // The selection comes back through the listener registered in onCreatePreferences(),
+            // so this page does not need to survive to receive it.
+            SettingsNavigationFactory.createSettingsNavigation(getContext())
+                    .startSettings(
+                            getActivity(),
+                            picker,
+                            /* fragmentArgs= */ null,
+                            /* addToBackStack= */ true);
+            return;
+        }
+
         if (!ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
             // Use an Intent with extra. Return value is received via onActivityResult.
             Intent intent =
@@ -421,11 +477,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
                 });
         // Deliberately uses the non-tab-scoped navigation. Language selection relies on the
         // androidx Fragment Result API, which requires this fragment to stay alive on the fragment
-        // back stack until SelectLanguageFragment pops itself. SettingsInTabUrlNav navigates via
-        // Tab.loadUrl() and replaces the detail fragment with addToBackStack=false, which destroys
-        // this fragment (dropping the result listener) and turns the picker's popBackStack() into
-        // a no-op. See crbug.com/555347875; URL navigation is re-landed for languages separately.
-        // Do not change to createSettingsNavigation(getContext()).
+        // back stack until SelectLanguageFragment pops itself.
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(
                         getActivity(),
@@ -442,6 +494,16 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void setLanguageListPreferenceClickListener(LanguageItemListPreference listPreference) {
         listPreference.setOnPreferenceClickListener(
                 preference -> {
+                    if (SelectLanguageFragment.usesUrlNavigation(this)) {
+                        SettingsNavigationFactory.createSettingsNavigation(getContext())
+                                .startSettings(
+                                        getActivity(),
+                                        listPreference.getFragmentClass(),
+                                        /* fragmentArgs= */ null,
+                                        /* addToBackStack= */ true);
+                        return true;
+                    }
+
                     // Deliberately uses the non-tab-scoped navigation so the list page is pushed
                     // onto the fragment back stack. SelectLanguageFragment, launched from that
                     // page, returns its result by popping the back stack, so the list page must be

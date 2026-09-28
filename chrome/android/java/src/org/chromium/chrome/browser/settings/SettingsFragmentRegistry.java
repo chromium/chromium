@@ -43,7 +43,10 @@ import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicSettings;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
+import org.chromium.chrome.browser.language.settings.AlwaysTranslateListFragment;
 import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.language.settings.NeverTranslateListFragment;
+import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.ExtendedPreloadingSettingsFragment;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
@@ -365,14 +368,29 @@ public class SettingsFragmentRegistry {
         registerMainMenuAnchor(ChosenObjectSettings.class, SiteSettings.MAIN_MENU_KEY);
 
         // Languages, Downloads, Tabs, Homepage
-        //
-        // Only the top-level languages page is URL routed. The subpages (language picker, always
-        // and never translate lists) exchange the selected language using the androidx Fragment
-        // Result API, which requires the calling fragment to remain on the fragment back stack.
-        // URL navigation replaces detail fragments with addToBackStack=false, which breaks that
-        // contract. See crbug.com/555347875; these routes are restored once the subpages no longer
-        // depend on the fragment back stack.
         registerMapping("/languages", LanguageSettings.class);
+        registerMapping("/languages/alwaysTranslate", AlwaysTranslateListFragment.class);
+        registerMapping("/languages/neverTranslate", NeverTranslateListFragment.class);
+
+        // The language picker shows a different list, and its selection means something different,
+        // depending on which page asked for it. Each of those is its own page as far as the user is
+        // concerned, so each is its own subclass with its own Url.
+        registerMapping(
+                "/languages/currentDeviceLanguage",
+                SelectLanguageFragment.AppLanguagePickerFragment.class);
+        registerMapping(
+                "/languages/addLanguage",
+                SelectLanguageFragment.ContentLanguagePickerFragment.class);
+        registerMapping(
+                "/languages/translateIntoLanguage",
+                SelectLanguageFragment.TranslateTargetLanguagePickerFragment.class);
+        registerMapping(
+                "/languages/alwaysTranslate/addLanguage",
+                SelectLanguageFragment.AlwaysTranslateLanguagePickerFragment.class);
+        registerMapping(
+                "/languages/neverTranslate/addLanguage",
+                SelectLanguageFragment.NeverTranslateLanguagePickerFragment.class);
+
         registerMapping("/downloads", DownloadSettings.class);
 
         // About & Developer
@@ -479,23 +497,6 @@ public class SettingsFragmentRegistry {
                         bundle.putInt(key, Integer.parseInt(val));
                     } catch (NumberFormatException e) {
                         bundle.putInt(key, defaultValue);
-                    }
-                });
-    }
-
-    // Currently unused: its only caller was the "potentialLanguages" mapping, removed along with
-    // the languages subpage routes. Retained for when those routes are re-landed.
-    @SuppressWarnings("unused")
-    private static void registerShortParameterMapping(
-            String queryParam, String argKey, short defaultValue) {
-        registerParameterMapping(
-                queryParam,
-                argKey,
-                (bundle, key, val) -> {
-                    try {
-                        bundle.putShort(key, Short.parseShort(val));
-                    } catch (NumberFormatException e) {
-                        bundle.putShort(key, defaultValue);
                     }
                 });
     }
