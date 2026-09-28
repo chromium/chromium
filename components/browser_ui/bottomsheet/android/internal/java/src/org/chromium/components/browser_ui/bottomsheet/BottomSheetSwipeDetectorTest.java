@@ -501,4 +501,91 @@ public final class BottomSheetSwipeDetectorTest {
         assertFalse(
                 "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
+
+    /**
+     * Creates a quick vertical swipe from {@code y1} to {@code y2}: a down event, ten move events
+     * spread over {@code durationMs}, and an up event at the end. Every event has its own time.
+     */
+    private static List<MotionEvent> createQuickSwipe(float y1, float y2, long durationMs) {
+        int moveEventCount = 10;
+        long downTime = 1000;
+        List<MotionEvent> events = new ArrayList<>();
+        events.add(MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, 0, y1, 0));
+        for (int i = 1; i <= moveEventCount; i++) {
+            // The last move happens one step before the up event, so no two events share a time.
+            long eventTime = downTime + durationMs * i / (moveEventCount + 1);
+            float y = y1 + (y2 - y1) * i / moveEventCount;
+            events.add(MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, 0, y, 0));
+        }
+        events.add(
+                MotionEvent.obtain(
+                        downTime, downTime + durationMs, MotionEvent.ACTION_UP, 0, y2, 0));
+        return events;
+    }
+
+    /** Applies every event of {@code swipe} except the final up event. */
+    private static void dragWithoutReleasing(
+            List<MotionEvent> swipe, BottomSheetSwipeDetector detector) {
+        applyGestureStream(swipe.subList(0, swipe.size() - 1), detector);
+    }
+
+    /** Applies only the final up event of {@code swipe}. */
+    private static void release(List<MotionEvent> swipe, BottomSheetSwipeDetector detector) {
+        applyGestureStream(swipe.subList(swipe.size() - 1, swipe.size()), detector);
+    }
+
+    /**
+     * A quick flick carries the sheet past where the finger stopped, but never beyond the top or
+     * bottom limit.
+     */
+    @Test
+    public void testFastFling_UpAndDown_ClampedToScreenBounds() {
+        final float dragDistance = 300;
+        // Much smaller than the extra distance a quick flick adds.
+        final float gapLeftAfterDrag = dragDistance / 10;
+        final float fingerStartY = 800;
+        final long swipeDurationMs = 66;
+
+        // Upward: start low enough that the drag alone stops just short of the top.
+        mSwipeableBottomSheet.setSheetOffset(
+                SCREEN_HEIGHT - dragDistance - gapLeftAfterDrag, /* shouldAnimate= */ false);
+        List<MotionEvent> upSwipe =
+                createQuickSwipe(fingerStartY, fingerStartY - dragDistance, swipeDurationMs);
+        dragWithoutReleasing(upSwipe, mSwipeDetector);
+        assertEquals(
+                "Before release, the drag alone should leave the sheet short of the top",
+                SCREEN_HEIGHT - gapLeftAfterDrag,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        release(upSwipe, mSwipeDetector);
+        assertEquals(
+                "The upward flick should carry the sheet to the top and stop there",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertTrue(
+                "Sheet should be animating after upward fling.",
+                mSwipeableBottomSheet.shouldBeAnimating);
+
+        // Downward: start high enough that the drag alone stops just short of the bottom.
+        mSwipeableBottomSheet.setSheetOffset(
+                MIN_SHEET_OFFSET + dragDistance + gapLeftAfterDrag, /* shouldAnimate= */ false);
+        List<MotionEvent> downSwipe =
+                createQuickSwipe(fingerStartY, fingerStartY + dragDistance, swipeDurationMs);
+        dragWithoutReleasing(downSwipe, mSwipeDetector);
+        assertEquals(
+                "Before release, the drag alone should leave the sheet short of the bottom",
+                MIN_SHEET_OFFSET + gapLeftAfterDrag,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        release(downSwipe, mSwipeDetector);
+        assertEquals(
+                "The downward flick should carry the sheet to the bottom and stop there",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+        assertTrue(
+                "Sheet should be animating after downward fling.",
+                mSwipeableBottomSheet.shouldBeAnimating);
+    }
 }
