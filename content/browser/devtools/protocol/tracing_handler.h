@@ -146,6 +146,8 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   CONTENT_EXPORT static void AddPidsToProcessFilter(
       const std::unordered_set<base::ProcessId>& included_process_ids,
       perfetto::TraceConfig& trace_config);
+  CONTENT_EXPORT static void FilterUntrustedDataSources(
+      perfetto::TraceConfig& trace_config);
   // Resolves the screenshot-capture parameters supplied to `Tracing.start`,
   // applying defaults when unset and validating that the combined memory
   // budget (`size * size * 4 * count`) does not exceed the per-session cap.
@@ -201,6 +203,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, ProcessFilterClearsRegex);
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, ProcessFilterAppendsPids);
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, ResolveScreenshotParams);
+  FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest, FilterUntrustedDataSources);
 };
 
 }  // namespace protocol
