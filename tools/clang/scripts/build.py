@@ -21,6 +21,7 @@ this build script on Mac:
 
 import argparse
 import atexit
+import datetime
 import glob
 import io
 import json
@@ -89,6 +90,13 @@ FUCHSIA_SDK_DIR = os.path.join(
   CHROMIUM_DIR, 'third_party', 'fuchsia-sdk', 'sdk'
 )
 PINNED_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
+
+# Depot_tools ships git as `git.bat` on Windows.  `RunCommand` goes through a
+# shell, which finds it by itself, but `subprocess` needs the exact name.
+GIT_EXE = 'git.bat' if sys.platform.startswith('win') else 'git'
+
+# Name of the file that `WriteGitCommitInfo` writes into a git checkout.
+GIT_COMMIT_INFO_FILENAME = 'git-commit-info'
 
 BUG_REPORT_URL = (
   'https://crbug.com in the Tools>LLVM component,'
@@ -350,10 +358,9 @@ def GetCommitDescription(commit):
   """Get the output of `git describe`.
 
   Needs to be called from inside the git repository dir."""
-  git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
   return subprocess.check_output(
     [
-      git_exe,
+      GIT_EXE,
       'describe',
       '--long',
       '--abbrev=8',
@@ -362,6 +369,46 @@ def GetCommitDescription(commit):
     ],
     universal_newlines=True,
   ).rstrip()
+
+
+def WriteGitCommitInfo(git_repository, commit, tz):
+  """Record `commit`'s metadata in `<git_repository>/git-commit-info`.
+
+  Source tarballs contain the checkout, but not its `.git` directory - see
+  https://ci.chromium.org/ui/p/infra/builders/cron/publish_tarball.  Builds
+  from such a tarball can therefore only get the git metadata from a file that
+  was written while the `.git` directory was still around.
+
+  `git-commit-info` is an upstream Rust convention: Rust's bootstrap build
+  system (`x.py` / `x.ps1`) writes it into Rust's own source tarballs, and
+  reads it when `.git` is missing (see `fn read_commit_info_file` in the
+  `rust-lang/rust` repo [1]).  We also co-opt this convention for the LLVM
+  checkout (read by `build_crubit.py` for `CRUBIT_LLVM_DEV_DATE` after
+  https://crrev.com/c/8265258).
+
+  The file format is therefore fixed by upstream Rust and must not change (at
+  least for the Rust checkout): 3 lines - the commit hash, the short commit
+  hash, and the commit date in `YYYY-MM-DD` format.
+
+  `tz` is the timezone of the date.  `None` keeps the timezone that the commit
+  itself records (this matches Rust's bootstrap [2]).
+
+  [1] https://github.com/rust-lang/rust/blob/77027b64d82d1e92f9ce2ea9042081c4567f5524/src/bootstrap/src/utils/channel.rs#L145-L163
+  [2] https://github.com/rust-lang/rust/blob/77027b64d82d1e92f9ce2ea9042081c4567f5524/src/bootstrap/src/utils/channel.rs#L63-L70
+  """
+  commit_hash, commit_date_str = subprocess.check_output(
+    [GIT_EXE, '-C', git_repository, 'log', '-1', '--format=%H %cI', commit],
+    universal_newlines=True,
+  ).split()
+  commit_date = datetime.datetime.fromisoformat(commit_date_str)
+  if tz is not None:
+    commit_date = commit_date.astimezone(tz)
+  info_file = os.path.join(git_repository, GIT_COMMIT_INFO_FILENAME)
+  print(f'Writing {commit_hash} / {commit_date:%Y-%m-%d} to {info_file}')
+  with open(info_file, 'w') as f:
+    f.write(f'{commit_hash}\n')
+    f.write(f'{commit_hash[:9]}\n')
+    f.write(f'{commit_date:%Y-%m-%d}\n')
 
 
 def AddCMakeToPath():
@@ -1066,6 +1113,13 @@ def main():
       CheckoutGitRepo(
         'LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR
       )
+      # Record the revision that we checked out, so that builds from a source
+      # tarball (which has no `.git` directory) can still read it.  We use
+      # `checkout_revision` rather than `HEAD`, because the cherry-picks below
+      # (if any) commit with a dummy date (see `GIT_METADATA_OVERRIDES`).  The
+      # date has to be UTC, because that is what Crubit expects (see
+      # `crubit/cargo/build/get_llvm_commit_date.py`).
+      WriteGitCommitInfo(LLVM_DIR, checkout_revision, tz=datetime.timezone.utc)
       # TODO(crbug.com/549080734): remove once we roll past this revision
       GitCherryPick(LLVM_DIR, '061865f32607cd064ab944407cc863186702d6f1')
       # TODO(crbug.com/559560868): remove once we roll past this revision
