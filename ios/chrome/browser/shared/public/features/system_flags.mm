@@ -87,6 +87,8 @@ NSString* const kForceMultiProfileForcedMigrationDone =
 NSString* const kShowBackendPromoDebugTools = @"ShowBackendPromoDebugTools";
 NSString* const kForcedPushNotificationType = @"ForcedPushNotificationType";
 NSString* const kForcedPushNotificationDelay = @"ForcedPushNotificationDelay";
+NSString* const kEnableAppSwitcherAISummarizationTestingExternalURL =
+    @"EnableAppSwitcherAISummarizationTestingExternalURL";
 }  // namespace
 
 namespace experimental_flags {
@@ -451,6 +453,14 @@ UniversalOptOutEligibilityOverride GetUniversalOptOutEligibilityOverride() {
     default:
       return UniversalOptOutEligibilityOverride::kDefault;
   }
+}
+
+bool IsAppSwitcherAISummarizationTestingExternalURLEnabled() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return [[NSUserDefaults standardUserDefaults]
+             boolForKey:kEnableAppSwitcherAISummarizationTestingExternalURL] ||
+         command_line->HasSwitch(
+             switches::kEnableAppSwitcherAISummarizationTestingExternalURL);
 }
 
 }  // namespace experimental_flags

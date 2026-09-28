@@ -53,6 +53,9 @@ extern const char kForceFeedSigninPromo[];
 // due to distillation delay.
 extern const char kForceReaderModeDistillationTimeout[];
 
+// Enables AI summarization external URL testing for App Switcher.
+extern const char kEnableAppSwitcherAISummarizationTestingExternalURL[];
+
 }  // namespace switches
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_

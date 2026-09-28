@@ -33,4 +33,7 @@ const char kForceFeedSigninPromo[] = "force-feed-signin-promo";
 const char kForceReaderModeDistillationTimeout[] =
     "force-reader-mode-distillation-timeout";
 
+const char kEnableAppSwitcherAISummarizationTestingExternalURL[] =
+    "enable-app-switcher-ai-summarization-testing-external-url";
+
 }  // namespace switches

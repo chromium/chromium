@@ -224,6 +224,9 @@ enum class UniversalOptOutEligibilityOverride {
 // Returns the forced state of Universal Opt-Out eligibility.
 UniversalOptOutEligibilityOverride GetUniversalOptOutEligibilityOverride();
 
+// Whether App Switcher AI summarization external URL testing is enabled.
+bool IsAppSwitcherAISummarizationTestingExternalURLEnabled();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
