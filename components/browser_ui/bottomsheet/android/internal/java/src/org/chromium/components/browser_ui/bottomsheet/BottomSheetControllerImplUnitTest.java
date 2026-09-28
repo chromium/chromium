@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
@@ -38,16 +39,20 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -784,5 +789,308 @@ public class BottomSheetControllerImplUnitTest {
         mController.runSheetInitializerForTesting();
         doReturn(500).when(mBottomSheet).getMaxSheetHeight();
         assertEquals(500, mController.getMaxSheetHeight());
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShowContent_HighPrioritySheetPreemptsAndRestoresLowerPrioritySheet() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+
+        BottomSheetContent contentA = mock(BottomSheetContent.class);
+        BottomSheetType typeA = new BottomSheetType.Builder().setSuppressible(true).build();
+        when(contentA.getSheetType()).thenReturn(typeA);
+        when(contentA.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        BottomSheetContent contentB = mock(BottomSheetContent.class);
+        BottomSheetType typeB =
+                new BottomSheetType.Builder().setUserInitiated(true).setModal(true).build();
+        when(contentB.getSheetType()).thenReturn(typeB);
+        when(contentB.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // 1. Show suppressible sheet A.
+        boolean shownA = mController.requestShowContent(contentA, /* animate= */ true);
+        assertTrue("Sheet A should be shown", shownA);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(contentA);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+
+        // 2. Incoming high-priority modal sheet B preempts sheet A.
+        boolean preempted = mController.requestShowContent(contentB, /* animate= */ true);
+        assertTrue("Sheet B should preempt sheet A", preempted);
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+
+        // Simulate sheet A going to HIDDEN state.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        verify(contentA, never()).destroy();
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(contentB);
+
+        // 3. Close sheet B.
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        verify(contentB).destroy();
+        verify(contentA, never()).destroy();
+
+        // 4. Sheet A was kept aside while B was shown, and comes back after B closes.
+        InOrder inOrder = inOrder(mBottomSheet);
+        inOrder.verify(mBottomSheet).showContent(contentA);
+        inOrder.verify(mBottomSheet).showContent(contentB);
+        inOrder.verify(mBottomSheet).showContent(contentA);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShowContent_IncomingPersistentSheetDiscardsPreemptedSheet() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+
+        // Sheet A is an ordinary sheet that can be pushed aside.
+        BottomSheetContent contentA = mock(BottomSheetContent.class);
+        BottomSheetType typeA = new BottomSheetType.Builder().setSuppressible(true).build();
+        when(contentA.getSheetType()).thenReturn(typeA);
+        when(contentA.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // Sheet B is persistent. A persistent sheet does not keep the sheet it replaces.
+        BottomSheetContent contentB = mock(BottomSheetContent.class);
+        BottomSheetType typeB =
+                new BottomSheetType.Builder()
+                        .setUserInitiated(true)
+                        .setPersistent(true)
+                        .setModal(true)
+                        .build();
+        when(contentB.getSheetType()).thenReturn(typeB);
+        when(contentB.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+
+        // 1. Show sheet A.
+        boolean shownA = mController.requestShowContent(contentA, /* animate= */ true);
+        assertTrue("Sheet A should be shown", shownA);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(contentA);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+
+        // 2. Incoming persistent sheet B preempts sheet A.
+        boolean preempted = mController.requestShowContent(contentB, /* animate= */ true);
+        assertTrue("Sheet B should preempt sheet A", preempted);
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true);
+
+        // Simulate sheet A going to HIDDEN state.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+        verify(contentA).destroy();
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(contentB);
+
+        // 3. Close sheet B.
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+
+        // 4. Sheet A is not brought back after B closes; the sheet is left empty.
+        InOrder inOrder = inOrder(mBottomSheet);
+        inOrder.verify(mBottomSheet).showContent(contentA);
+        inOrder.verify(mBottomSheet).showContent(contentB);
+        inOrder.verify(mBottomSheet).showContent(null);
+
+        // Ensure contentA wasn't shown a second time
+        verify(mBottomSheet, times(1)).showContent(contentA);
+    }
+
+    @Test
+    public void testBackPress_WhenContentHandlesBack_CallsContentOnBackPressed() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+
+        BackPressHandler backPressHandler = mController.getBottomSheetBackPressHandler();
+        int result = backPressHandler.handleBackPress();
+
+        assertEquals(
+                "Back press should return SUCCESS when content handles back press",
+                BackPressResult.SUCCESS,
+                result);
+        verify(content).onBackPressed();
+        verify(mBottomSheet, never()).setSheetState(anyInt(), anyBoolean(), anyInt());
+        verify(mBottomSheet, never()).setSheetState(anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testBackPress_WhenContentDoesNotHandleBack_CollapsesSheet() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        // The opening and current states differ from the collapse target, so only the lowest
+        // swipable state can explain where the sheet goes.
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.HALF);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.FULL);
+        BackPressHandler backPressHandler = mController.getBottomSheetBackPressHandler();
+
+        when(mBottomSheet.getMinSwipableSheetState()).thenReturn(SheetState.PEEK);
+        assertEquals(
+                "Back press should return SUCCESS when collapsing the sheet to PEEK",
+                BackPressResult.SUCCESS,
+                backPressHandler.handleBackPress());
+        verify(mBottomSheet).setSheetState(SheetState.PEEK, true, StateChangeReason.BACK_PRESS);
+
+        when(mBottomSheet.getMinSwipableSheetState()).thenReturn(SheetState.HIDDEN);
+        assertEquals(
+                "Back press should return SUCCESS when collapsing the sheet to HIDDEN",
+                BackPressResult.SUCCESS,
+                backPressHandler.handleBackPress());
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true, StateChangeReason.BACK_PRESS);
+
+        verify(content, never()).onBackPressed();
+    }
+
+    @Test
+    public void testBackPressSupplier_UpdatesWhenSheetStateOrSuppressionChanges() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+
+        NonNullObservableSupplier<Boolean> backPressSupplier =
+                mController.getBottomSheetBackPressHandler().getHandleBackPressChangedSupplier();
+        assertFalse("Initially false before any content is shown", backPressSupplier.get());
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(content.shouldRestoreStateOnUnsuppress()).thenReturn(true);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HALF);
+
+        // 1. Simulate sheet open -> supplier flips to true.
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        assertTrue(
+                "Supplier should be true when sheet is open and unsuppressed",
+                backPressSupplier.get());
+
+        // 2. Suppress sheet with token -> supplier flips to false.
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+        assertFalse(
+                "Supplier should be false when sheet is suppressed with token",
+                backPressSupplier.get());
+
+        // 3. Unsuppress sheet -> supplier flips back to true.
+        mController.unsuppressSheet(token);
+        assertTrue("Supplier should be true when sheet is unsuppressed", backPressSupplier.get());
+
+        // 4. Close sheet -> supplier flips to false.
+        when(mBottomSheet.isSheetOpen()).thenReturn(false);
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.BACK_PRESS);
+        assertFalse("Supplier should be false when sheet is closed", backPressSupplier.get());
+    }
+
+    @Test
+    public void testSuppressionTokens_SheetRemainsHiddenUntilAllTokensReleased() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.shouldRestoreStateOnUnsuppress()).thenReturn(true);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.HALF);
+
+        NonNullObservableSupplier<Boolean> backPressSupplier =
+                mController.getBottomSheetBackPressHandler().getHandleBackPressChangedSupplier();
+        mBottomSheetObserverCaptor.getValue().onSheetOpened(StateChangeReason.NONE);
+        assertTrue("An open sheet should handle back presses", backPressSupplier.get());
+
+        // 1. The first suppression hides the sheet.
+        int token1 = mController.suppressSheet(StateChangeReason.NONE);
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, false, StateChangeReason.NONE);
+        assertFalse("A suppressed sheet should not handle back presses", backPressSupplier.get());
+
+        // The sheet is now hidden and not moving. If a second suppression saved the state
+        // again, it would save HIDDEN instead of HALF.
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.NONE);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+
+        // 2. A second suppression while the sheet is already hidden.
+        int token2 = mController.suppressSheet(StateChangeReason.NONE);
+
+        // 3. Releasing the first token keeps the sheet hidden because token 2 is still held.
+        mController.unsuppressSheet(token1);
+        assertFalse(
+                "The sheet should stay suppressed while another token is held",
+                backPressSupplier.get());
+        verify(mBottomSheet, never()).setSheetState(eq(SheetState.HALF), anyBoolean());
+
+        // 4. Releasing the last token restores the state from before the first suppression.
+        mController.unsuppressSheet(token2);
+        assertTrue(
+                "The sheet should handle back presses again once all tokens are released",
+                backPressSupplier.get());
+        verify(mBottomSheet).setSheetState(SheetState.HALF, true);
+    }
+
+    @Test
+    public void testLegacyBackPress_HandlesOrCollapses() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        when(content.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(content);
+        when(mBottomSheet.isSheetOpen()).thenReturn(true);
+        // The opening and current states differ from the collapse target, so only the lowest
+        // swipable state can explain where the sheet goes.
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.HALF);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheet.getMinSwipableSheetState()).thenReturn(SheetState.PEEK);
+
+        // 1. Content handles back press -> returns true without changing sheet state.
+        when(content.handleBackPress()).thenReturn(true);
+        assertTrue(
+                "handleBackPress should return true when content handles back press",
+                mController.handleBackPress());
+        verify(content).handleBackPress();
+        verify(mBottomSheet, never()).setSheetState(anyInt(), anyBoolean(), anyInt());
+        verify(mBottomSheet, never()).setSheetState(anyInt(), anyBoolean());
+
+        // 2. Content does not handle back press -> collapses to the lowest swipable state.
+        when(content.handleBackPress()).thenReturn(false);
+        assertTrue(
+                "handleBackPress should return true when collapsing the sheet to PEEK",
+                mController.handleBackPress());
+        verify(mBottomSheet).setSheetState(SheetState.PEEK, true, StateChangeReason.BACK_PRESS);
+
+        when(mBottomSheet.getMinSwipableSheetState()).thenReturn(SheetState.HIDDEN);
+        assertTrue(
+                "handleBackPress should return true when collapsing the sheet to HIDDEN",
+                mController.handleBackPress());
+        verify(mBottomSheet).setSheetState(SheetState.HIDDEN, true, StateChangeReason.BACK_PRESS);
+
+        // 3. Suppressed sheet does not handle back press.
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+        assertFalse(
+                "handleBackPress should return false when sheet is suppressed",
+                mController.handleBackPress());
+        mController.unsuppressSheet(token);
+
+        // 4. Sheet is not open -> returns false.
+        when(mBottomSheet.isSheetOpen()).thenReturn(false);
+        assertFalse(
+                "handleBackPress should return false when sheet is not open",
+                mController.handleBackPress());
     }
 }
