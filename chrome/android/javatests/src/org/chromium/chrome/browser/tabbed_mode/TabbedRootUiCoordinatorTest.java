@@ -962,7 +962,7 @@ public class TabbedRootUiCoordinatorTest {
                 .getEntryPointDisplayReason(any(), any());
 
         try {
-            mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");
+            mPage = mActivityTestRule.startOnBlankPage();
 
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
@@ -995,7 +995,7 @@ public class TabbedRootUiCoordinatorTest {
                 .when(bridgeMock)
                 .getEntryPointDisplayReason(any(), any());
         try {
-            mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");
+            mPage = mActivityTestRule.startOnBlankPage();
 
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
