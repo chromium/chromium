@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
+#include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
@@ -303,6 +304,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     oom_intervention_tab_helper_ =
         std::make_unique<OomInterventionTabHelper>(web_contents);
   }
+
+  policy_auditor_bridge_ =
+      PolicyAuditorBridge::MaybeCreateForWebContents(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

@@ -76,6 +76,19 @@ source_set("oom_intervention") {
   ]
 }
 
+source_set("policy_auditor_bridge") {
+  sources = [
+    "policy/policy_auditor_bridge.cc",
+    "policy/policy_auditor_bridge.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//url",
+  ]
+  deps = [ "//chrome/android:chrome_jni_headers" ]
+}
+
 source_set("tabs_impl") {
   # TODO(crbug.com/486820940): Split tab_android.cc into smaller build target
   # files.
@@ -83,6 +96,7 @@ source_set("tabs_impl") {
 
   deps = [
     ":oom_intervention",
+    ":policy_auditor_bridge",
     ":tabs_public",
     "//chrome/browser/actor",
     "//chrome/browser/actor/android",
@@ -414,8 +428,6 @@ if (is_android) {
       "persisted_tab_data/sensitivity_persisted_tab_data_android.cc",
       "persisted_tab_data/sensitivity_persisted_tab_data_android.h",
       "policy/policy_auditor.cc",
-      "policy/policy_auditor_bridge.cc",
-      "policy/policy_auditor_bridge.h",
       "preferences/about_settings_bridge.cc",
       "preferences/autofill/autofill_payment_methods_delegate.cc",
       "preferences/autofill/autofill_payment_methods_delegate.h",
@@ -523,6 +535,7 @@ if (is_android) {
       ":delta_file_proto",
       ":language_data_proto",
       ":oom_intervention",
+      ":policy_auditor_bridge",
       ":profile_key_startup_accessor",
       ":profile_token",
       ":sensitivity_data_proto",

@@ -5,6 +5,7 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "base/memory/ptr_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/android/gurl_android.h"
@@ -19,7 +20,6 @@ using content::NavigationHandle;
 using content::RenderFrameHost;
 using content::WebContents;
 using content::WebContentsObserver;
-using content::WebContentsUserData;
 using url::GURLAndroid;
 
 namespace {
@@ -31,20 +31,18 @@ bool HasPolicyAuditor(JNIEnv* env) {
 }  // namespace
 
 PolicyAuditorBridge::PolicyAuditorBridge(WebContents* web_contents)
-    : WebContentsObserver(web_contents),
-      WebContentsUserData<PolicyAuditorBridge>(*web_contents) {}
+    : WebContentsObserver(web_contents) {}
 
 PolicyAuditorBridge::~PolicyAuditorBridge() = default;
 
 // static
-void PolicyAuditorBridge::CreateForWebContents(WebContents* web_contents) {
+std::unique_ptr<PolicyAuditorBridge>
+PolicyAuditorBridge::MaybeCreateForWebContents(WebContents* web_contents) {
   if (HasPolicyAuditor(AttachCurrentThread())) {
-    WebContentsUserData<PolicyAuditorBridge>::CreateForWebContents(
-        web_contents);
+    return base::WrapUnique(new PolicyAuditorBridge(web_contents));
   }
+  return nullptr;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PolicyAuditorBridge);
 
 void PolicyAuditorBridge::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
