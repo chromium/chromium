@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
@@ -29,13 +30,13 @@ class FakeAudioTrackSource : public webrtc::AudioSourceInterface {
   void AddSink(webrtc::AudioTrackSinkInterface* sink) override;
   void RemoveSink(webrtc::AudioTrackSinkInterface* sink) override;
 
-  const std::vector<webrtc::AudioTrackSinkInterface*>& sinks() const;
+  const std::vector<raw_ptr<webrtc::AudioTrackSinkInterface>>& sinks() const;
 
  protected:
   ~FakeAudioTrackSource() override;
 
  private:
-  std::vector<webrtc::AudioTrackSinkInterface*> sinks_;
+  std::vector<raw_ptr<webrtc::AudioTrackSinkInterface>> sinks_;
 };
 
 class FakeAudioTrack : public webrtc::AudioTrackInterface {

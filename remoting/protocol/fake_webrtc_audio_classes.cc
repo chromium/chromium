@@ -35,7 +35,7 @@ void FakeAudioTrackSource::RemoveSink(webrtc::AudioTrackSinkInterface* sink) {
   std::erase(sinks_, sink);
 }
 
-const std::vector<webrtc::AudioTrackSinkInterface*>&
+const std::vector<raw_ptr<webrtc::AudioTrackSinkInterface>>&
 FakeAudioTrackSource::sinks() const {
   return sinks_;
 }
