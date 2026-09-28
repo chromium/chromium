@@ -56,6 +56,22 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     : public HttpTransaction,
       public HttpStreamRequest::Delegate {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(TerminalState)
+  enum class TerminalState : uint8_t {
+    kAborted = 0,
+    kNetworkChangedBeforeSendingRequest = 1,
+    kOtherErrorBeforeSendingRequest = 2,
+    kNetworkChangedAfterSendingRequest = 3,
+    kOtherErrorAfterSendingRequest = 4,
+    kResponseOk = 5,
+    kSuccess = 6,
+    kMaxValue = kSuccess,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpNetworkTransactionTerminalState)
+
   static constexpr char kAsyncRetryOnTooManyConnectionErrorsFirstHistogram[] =
       "Net.NetworkTransaction.AsyncRetryOnTooManyConnectionErrors.First";
 
@@ -155,6 +171,10 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   FRIEND_TEST_ALL_PREFIXES(SpdyNetworkTransactionTest,
                            FlowControlNegativeSendWindowSize);
 
+  // Note: The declaration order of states is load-bearing. States from
+  // STATE_SEND_REQUEST_COMPLETE onward must remain after STATE_SEND_REQUEST, as
+  // DoLoop() relies on `state >= STATE_SEND_REQUEST_COMPLETE` to determine if
+  // the HTTP request has been sent when recording terminal metrics.
   enum State {
     STATE_CREATE_STREAM,
     STATE_CREATE_STREAM_COMPLETE,
@@ -551,6 +571,12 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
+
+  // Records whether a network change error or some other error happened, and if
+  // so whether it happened before or after sending the request. May be set
+  // multiple times if the transaction is restarted. The destructor records the
+  // final value to a histogram.
+  TerminalState terminal_state_ = TerminalState::kAborted;
 
   // If set, these values are used as DNS resolution times, rather than
   // using DNS times coming from the established stream.

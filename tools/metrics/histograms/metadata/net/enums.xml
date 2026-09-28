@@ -1003,6 +1003,36 @@ historical analysis. -->
   <int value="18" label="QuicProtocolError"/>
 </enum>
 
+<!-- LINT.IfChange(HttpNetworkTransactionTerminalState) -->
+
+<enum name="HttpNetworkTransactionTerminalState">
+  <int value="0" label="Aborted">
+    The transaction was aborted before a response was received, or after a
+    restart.
+  </int>
+  <int value="1" label="NetworkChangedBeforeSendingRequest">
+    The transaction failed with ERR_NETWORK_CHANGED before sending the request.
+  </int>
+  <int value="2" label="OtherErrorBeforeSendingRequest">
+    The transaction failed with an error other than ERR_NETWORK_CHANGED before
+    sending the request.
+  </int>
+  <int value="3" label="NetworkChangedAfterSendingRequest">
+    The transaction failed with ERR_NETWORK_CHANGED after sending the request.
+  </int>
+  <int value="4" label="OtherErrorAfterSendingRequest">
+    The transaction failed with an error other than ERR_NETWORK_CHANGED after
+    sending the request.
+  </int>
+  <int value="5" label="ResponseOk">
+    There was no network error but the body was not completely read. Either the
+    request was aborted or the response body was not needed.
+  </int>
+  <int value="6" label="Success">The response body was read to the end.</int>
+</enum>
+
+<!-- LINT.ThenChange(//net/http/http_network_transaction.h:TerminalState) -->
+
 <!-- LINT.IfChange(HttpsNotAttemptedReason) -->
 
 <enum name="HttpsNotAttemptedReason">

@@ -29571,4 +29571,307 @@ TEST_P(HttpNetworkTransactionTest, ProxyAdditionalCapacity) {
   }
 }
 
+TEST_P(HttpNetworkTransactionTest, TerminalStateAborted) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kAborted, 1);
+}
+
+TEST_P(HttpNetworkTransactionTest,
+       TerminalStateNetworkChangedBeforeSendingRequest) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(ASYNC, ERR_NETWORK_CHANGED));
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_CHANGED));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample("Net.NetworkTransaction.TerminalState",
+                                       HttpNetworkTransaction::TerminalState::
+                                           kNetworkChangedBeforeSendingRequest,
+                                       1);
+}
+
+TEST_P(HttpNetworkTransactionTest,
+       TerminalStateOtherErrorBeforeSendingRequest) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_REFUSED));
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_REFUSED));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kOtherErrorBeforeSendingRequest,
+      1);
+}
+
+TEST_P(HttpNetworkTransactionTest,
+       TerminalStateNetworkChangedAfterSendingRequest) {
+  MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+  MockRead reads[] = {MockRead(ASYNC, ERR_NETWORK_CHANGED)};
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_CHANGED));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kNetworkChangedAfterSendingRequest,
+      1);
+}
+
+TEST_P(HttpNetworkTransactionTest, TerminalStateOtherErrorAfterSendingRequest) {
+  MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+  MockRead reads[] = {MockRead(ASYNC, ERR_CONNECTION_RESET)};
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsError(ERR_CONNECTION_RESET));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kOtherErrorAfterSendingRequest, 1);
+}
+
+TEST_P(HttpNetworkTransactionTest, TerminalStateOtherErrorWhileReadingBody) {
+  MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+  MockRead reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\nContent-Length: 10\r\n\r\n"),
+      MockRead(ASYNC, ERR_CONNECTION_RESET),
+  };
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+  std::string response_data;
+  EXPECT_THAT(ReadTransaction(trans.get(), &response_data),
+              IsError(ERR_CONNECTION_RESET));
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kOtherErrorAfterSendingRequest, 1);
+}
+
+TEST_P(HttpNetworkTransactionTest, TerminalStateTunnelConnectionFailedInRead) {
+  session_deps_.proxy_resolution_service =
+      ConfiguredProxyResolutionService::CreateFixedForTest(
+          "myproxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  MockWrite writes[] = {
+      MockWrite("CONNECT www.example.org:443 HTTP/1.1\r\n"
+                "Host: www.example.org:443\r\n"
+                "Proxy-Connection: keep-alive\r\n"
+                "User-Agent: test-ua\r\n\r\n"),
+  };
+  MockRead reads[] = {
+      MockRead("HTTP/1.1 407 Proxy Authentication Required\r\n"),
+      MockRead("Proxy-Authenticate: Basic realm=\"MyRealm1\"\r\n"),
+      MockRead("Content-Length: 10\r\n\r\n"),
+      MockRead("0123456789"),
+      MockRead(SYNCHRONOUS, ERR_UNEXPECTED),
+  };
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("https://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+  std::string response_data;
+  EXPECT_THAT(ReadTransaction(trans.get(), &response_data),
+              IsError(ERR_TUNNEL_CONNECTION_FAILED));
+
+  session->CloseAllConnections(ERR_FAILED, "Very good reason");
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kOtherErrorAfterSendingRequest, 1);
+}
+
+TEST_P(HttpNetworkTransactionTest, TerminalStateResponseOk) {
+  MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+  MockRead reads[] = {MockRead("HTTP/1.1 200 OK\r\n\r\n")};
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kResponseOk, 1);
+}
+
+TEST_P(HttpNetworkTransactionTest, TerminalStateSuccessMultiChunkBody) {
+  MockWrite writes[] = {
+      MockWrite("GET / HTTP/1.1\r\n"
+                "Host: www.example.org\r\n"
+                "Connection: keep-alive\r\n\r\n")};
+  MockRead reads[] = {
+      MockRead("HTTP/1.1 200 OK\r\n\r\n"),
+      MockRead("hello "),
+      MockRead("world"),
+      MockRead(SYNCHRONOUS, OK),
+  };
+
+  StaticSocketDataProvider data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session = CreateSession(&session_deps_);
+
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.org/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  TestCompletionCallback callback;
+  auto trans =
+      std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
+  int rv = trans->Start(&request, callback.callback(), NetLogWithSource());
+  EXPECT_THAT(callback.GetResult(rv), IsOk());
+
+  std::string response_data;
+  EXPECT_THAT(ReadTransaction(trans.get(), &response_data), IsOk());
+  EXPECT_EQ("hello world", response_data);
+
+  trans.reset();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Net.NetworkTransaction.TerminalState",
+      HttpNetworkTransaction::TerminalState::kSuccess, 1);
+}
+
 }  // namespace net

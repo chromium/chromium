@@ -360,6 +360,9 @@ HttpNetworkTransaction::~HttpNetworkTransaction() {
         kMaxRetryAttemptsOnConnectionErrors + 1);
   }
 
+  base::UmaHistogramEnumeration("Net.NetworkTransaction.TerminalState",
+                                terminal_state_);
+
 #if BUILDFLAG(ENABLE_REPORTING)
   // If no error or success report has been generated yet at this point, then
   // this network transaction was prematurely cancelled.
@@ -402,10 +405,12 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
               NetLogWithSourceToFlow(net_log), "url", request_info->url);
 
   if (session_->power_suspended()) {
+    terminal_state_ = TerminalState::kOtherErrorBeforeSendingRequest;
     return ERR_NETWORK_IO_SUSPENDED;
   }
 
   if (request_info->load_flags & LOAD_ONLY_FROM_CACHE) {
+    terminal_state_ = TerminalState::kOtherErrorBeforeSendingRequest;
     return ERR_CACHE_MISS;
   }
 
@@ -471,6 +476,7 @@ int HttpNetworkTransaction::RestartIgnoringLastError(
   if (!CheckMaxRestarts())
     return ERR_TOO_MANY_RETRIES;
 
+  terminal_state_ = TerminalState::kAborted;
   next_state_ = STATE_CREATE_STREAM;
 
   int rv = DoLoop(OK);
@@ -662,6 +668,7 @@ int HttpNetworkTransaction::Read(IOBuffer* buf,
     DCHECK(proxy_info_.AnyProxyInChain(
         [](const ProxyServer& s) { return s.is_http_like(); }));
     DCHECK_EQ(headers->response_code(), HTTP_PROXY_AUTHENTICATION_REQUIRED);
+    terminal_state_ = TerminalState::kOtherErrorAfterSendingRequest;
     return ERR_TUNNEL_CONNECTION_FAILED;
   }
 
@@ -1040,8 +1047,10 @@ int HttpNetworkTransaction::DoLoop(int result) {
   DCHECK(next_state_ != STATE_NONE);
 
   int rv = result;
+  State last_state = STATE_NONE;
   do {
     State state = next_state_;
+    last_state = state;
     next_state_ = STATE_NONE;
     switch (state) {
       case STATE_CREATE_STREAM:
@@ -1137,6 +1146,29 @@ int HttpNetworkTransaction::DoLoop(int result) {
         NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
+
+  // Update `terminal_state_` on final states only.
+  if (rv <= 0 && rv != ERR_IO_PENDING) {
+    const bool sent_request = last_state >= STATE_SEND_REQUEST_COMPLETE;
+    switch (rv) {
+      case OK:
+        terminal_state_ = last_state == STATE_READ_BODY_COMPLETE
+                              ? TerminalState::kSuccess
+                              : TerminalState::kResponseOk;
+        break;
+
+      case ERR_NETWORK_CHANGED:
+        terminal_state_ =
+            sent_request ? TerminalState::kNetworkChangedAfterSendingRequest
+                         : TerminalState::kNetworkChangedBeforeSendingRequest;
+        break;
+
+      default:
+        terminal_state_ = sent_request
+                              ? TerminalState::kOtherErrorAfterSendingRequest
+                              : TerminalState::kOtherErrorBeforeSendingRequest;
+    }
+  }
 
   return rv;
 }
@@ -2336,6 +2368,7 @@ void HttpNetworkTransaction::ResetStateForAuthRestart() {
   remote_endpoint_ = IPEndPoint();
   net_error_details_.quic_broken = false;
   net_error_details_.quic_connection_error = quic::QUIC_NO_ERROR;
+  terminal_state_ = TerminalState::kAborted;
 #if BUILDFLAG(ENABLE_REPORTING)
   network_error_logging_report_generated_ = false;
   start_timeticks_ = base::TimeTicks::Now();

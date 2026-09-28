@@ -4767,6 +4767,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.TerminalState"
+    enum="HttpNetworkTransactionTerminalState" expires_after="2027-03-21">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the final outcome of an HttpNetworkTransaction, categorizing whether
+    it succeeded, failed with ERR_NETWORK_CHANGED, or failed with another error,
+    and whether any error occurred before or after sending the HTTP request.
+    Recorded once per HttpNetworkTransaction when it is destroyed.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.NetworkTransaction.TooManyRetriesOnConnectionErrors{Protocol}"
     enum="Boolean" expires_after="2027-03-07">
