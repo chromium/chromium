@@ -94,6 +94,12 @@ void CobrowseTabHelper::DidStartNavigation(
 
   const GURL& url = navigation_context->GetUrl();
 
+  // Do not hide or trigger the assistant for temporary about:blank or invalid
+  // URL navigations while loading.
+  if (!url.is_valid() || url.IsAboutBlank()) {
+    return;
+  }
+
   // If the session is active and we navigate to an AIM URL, update the context
   // before `ShouldHideAssistant` hides the UI and returns early. This ensures
   // follow-up AIM queries (which happen in the same tab) correctly sync their

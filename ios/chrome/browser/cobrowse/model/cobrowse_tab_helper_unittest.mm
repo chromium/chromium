@@ -312,6 +312,49 @@ TEST_F(CobrowseTabHelperTest, NoCloseAssistantOnRegularSearchNavigation) {
   [mock_scene_commands_handler() verify];
 }
 
+// Tests that hideAssistant is NOT called when navigating to about:blank.
+TEST_F(CobrowseTabHelperTest, NoHideAssistantOnAboutBlankNavigation) {
+  GURL about_blank_url("about:blank");
+
+  web::FakeWebState* web_state = CreateAndInsertWebState({});
+  web_state->WasShown();
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(about_blank_url);
+
+  [[mock_scene_commands_handler() reject] closeAssistant];
+  [[mock_scene_commands_handler() reject] hideAssistant];
+  [[mock_scene_commands_handler() reject] showAssistant];
+  [[mock_scene_commands_handler() reject] showAssistantInMinimizedState:YES];
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+}
+
+// Tests that showAssistant is NOT called when navigating to about:blank even
+// if the opener was an AIM URL.
+TEST_F(CobrowseTabHelperTest, NoTriggerFromOpenerOnAboutBlankNavigation) {
+  GURL aim_url("https://www.google.com/search?q=test&udm=50");
+  GURL about_blank_url("about:blank");
+
+  web::FakeWebState* opener = CreateAndInsertWebState(aim_url);
+  web::FakeWebState* web_state = CreateAndInsertWebStateWithOpener({}, opener);
+  web_state->WasShown();
+  CobrowseTabHelper* tab_helper = CobrowseTabHelper::FromWebState(web_state);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(about_blank_url);
+
+  [[mock_scene_commands_handler() reject] showAssistantInMinimizedState:YES];
+  [[mock_scene_commands_handler() reject] hideAssistant];
+
+  tab_helper->DidStartNavigation(web_state, &context);
+
+  [mock_scene_commands_handler() verify];
+}
+
 // Tests that hideAssistant is called when navigating to an AIM search URL.
 TEST_F(CobrowseTabHelperTest, HideAssistantOnAimSearchNavigation) {
   GURL aim_search_url("https://www.google.com/search?q=test&udm=50");
