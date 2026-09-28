@@ -168,6 +168,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/views/animations",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/saved_tab_groups/public",

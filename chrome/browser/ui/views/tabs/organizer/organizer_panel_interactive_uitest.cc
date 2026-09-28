@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
@@ -359,23 +360,27 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayGrabsFocusOnOpen) {
                                     &views::View::HasFocus, true));
 }
 
+// This test checks that the organizer panel closes when focus is switched to
+// another UI element like the web contents.
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayClosesOnFocusLost) {
   RunTestSequence(SetVerticalTabsEnabled(false), OpenOrganizerPanel(),
-                  // Focus the omnibox.
-                  FocusElement(kOmniboxElementId), WaitForPanelClose(),
-                  CheckControllerState(false));
+                  // Focus the web contents.
+                  FocusElement(ContentsWebView::kContentsWebViewElementId),
+                  WaitForPanelClose(), CheckControllerState(false));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayRestoresFocusOnClose) {
-  RunTestSequence(
-      SetVerticalTabsEnabled(false),
-      // Focus the omnibox.
-      FocusElement(kOmniboxElementId),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true),
-      OpenOrganizerPanel(),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
-      CloseOrganizerPanel(),
-      CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, true));
+  RunTestSequence(SetVerticalTabsEnabled(false),
+                  // Focus the web contents.
+                  FocusElement(ContentsWebView::kContentsWebViewElementId),
+                  CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                                    &views::View::HasFocus, true),
+                  OpenOrganizerPanel(),
+                  CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                                    &views::View::HasFocus, false),
+                  CloseOrganizerPanel(),
+                  CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                                    &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, TrayDoesNotCloseOnClickInside) {
