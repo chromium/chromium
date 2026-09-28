@@ -4,20 +4,35 @@
 
 source_set("tools") {
   sources = [
+    "ttc_actuation_data_types.h",
+    "ttc_actuation_data_types.mm",
     "ttc_tool_definitions.h",
     "ttc_tool_definitions.mm",
+    "ttc_tool_validator.h",
+    "ttc_tool_validator.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//url",
+  ]
+  public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
   frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ttc_tool_definitions_unittest.mm" ]
+  sources = [
+    "ttc_tool_definitions_unittest.mm",
+    "ttc_tool_validator_unittest.mm",
+  ]
   deps = [
     ":tools",
     "//base",
+    "//components/actor/public/mojom:mojo_bindings",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
+    "//url",
   ]
   frameworks = [ "Foundation.framework" ]
 }
