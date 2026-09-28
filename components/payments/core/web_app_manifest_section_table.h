@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_WEB_APP_MANIFEST_SECTION_TABLE_H_
-#define COMPONENTS_PAYMENTS_CONTENT_WEB_APP_MANIFEST_SECTION_TABLE_H_
+#ifndef COMPONENTS_PAYMENTS_CORE_WEB_APP_MANIFEST_SECTION_TABLE_H_
+#define COMPONENTS_PAYMENTS_CORE_WEB_APP_MANIFEST_SECTION_TABLE_H_
 
 #include <string>
 #include <vector>
 
-#include "components/payments/content/web_app_manifest.h"
+#include "components/payments/core/web_app_manifest_section.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -72,4 +72,4 @@ class WebAppManifestSectionTable : public WebDatabaseTable {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_WEB_APP_MANIFEST_SECTION_TABLE_H_
+#endif  // COMPONENTS_PAYMENTS_CORE_WEB_APP_MANIFEST_SECTION_TABLE_H_

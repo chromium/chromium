@@ -41,9 +41,9 @@
 #include "components/webdata/common/webdata_constants.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "components/payments/content/web_app_manifest_section_table.h"
-#include "components/payments/content/web_payments_table.h"
 #include "components/payments/content/web_payments_web_data_service.h"
+#include "components/payments/core/web_app_manifest_section_table.h"
+#include "components/payments/core/web_payments_table.h"
 #endif
 
 namespace {

@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/web_payments_table.h"
+#include "components/payments/core/web_payments_table.h"
 
 #include <time.h>
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
+#include "components/payments/core/browser_bound_key_metadata.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
-#include "content/public/common/content_features.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 

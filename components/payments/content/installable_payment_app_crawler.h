@@ -18,7 +18,7 @@
 #include "components/payments/content/manifest_verifier.h"
 #include "components/payments/content/payment_manifest_downloader.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
-#include "components/payments/content/web_app_manifest.h"
+#include "components/payments/content/web_app_installation_info.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"

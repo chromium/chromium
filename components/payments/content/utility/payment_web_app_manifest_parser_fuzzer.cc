@@ -12,8 +12,9 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
-#include "components/payments/content/web_app_manifest.h"
+#include "components/payments/content/web_app_installation_info.h"
 #include "components/payments/core/error_logger.h"
+#include "components/payments/core/web_app_manifest_section.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string json_data(reinterpret_cast<const char*>(data), size);

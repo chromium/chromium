@@ -10,6 +10,8 @@ static_library("core") {
     "android_app_description.h",
     "android_app_description_tools.cc",
     "android_app_description_tools.h",
+    "browser_bound_key_metadata.cc",
+    "browser_bound_key_metadata.h",
     "csp_checker.h",
     "error_logger.cc",
     "error_logger.h",
@@ -59,6 +61,12 @@ static_library("core") {
     "sizes.h",
     "url_util.cc",
     "url_util.h",
+    "web_app_manifest_section.cc",
+    "web_app_manifest_section.h",
+    "web_app_manifest_section_table.cc",
+    "web_app_manifest_section_table.h",
+    "web_payments_table.cc",
+    "web_payments_table.h",
   ]
 
   if (!is_android) {
@@ -91,6 +99,7 @@ static_library("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//sql",
     "//third_party/re2",
     "//ui/base",
     "//url",
@@ -101,6 +110,7 @@ static_library("core") {
   }
 
   public_deps = [
+    "//components/webdata/common",
     "//services/network/public/cpp",
     "//third_party/libaddressinput",
   ]
@@ -187,6 +197,8 @@ source_set("unit_tests") {
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
     "url_util_unittest.cc",
+    "web_app_manifest_section_table_unittest.cc",
+    "web_payments_table_unittest.cc",
   ]
 
   if (!is_android) {
@@ -214,10 +226,12 @@ source_set("unit_tests") {
     "//components/strings:components_strings_grit",
     "//components/ukm",
     "//components/ukm:test_support",
+    "//components/webdata/common",
     "//net:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//sql",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",

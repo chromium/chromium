@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_
-#define COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_
+#ifndef COMPONENTS_PAYMENTS_CORE_WEB_PAYMENTS_TABLE_H_
+#define COMPONENTS_PAYMENTS_CORE_WEB_PAYMENTS_TABLE_H_
 
 #include <memory>
 #include <optional>
@@ -12,7 +12,7 @@
 
 #include "base/strings/cstring_view.h"
 #include "base/time/time.h"
-#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
+#include "components/payments/core/browser_bound_key_metadata.h"
 #include "components/webdata/common/web_database_table.h"
 
 class WebDatabase;
@@ -182,4 +182,4 @@ class WebPaymentsTable : public WebDatabaseTable {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_
+#endif  // COMPONENTS_PAYMENTS_CORE_WEB_PAYMENTS_TABLE_H_

@@ -133,8 +133,8 @@ static_library("content") {
 # Files used by content and utility.
 static_library("content_common") {
   sources = [
-    "web_app_manifest.cc",
-    "web_app_manifest.h",
+    "web_app_installation_info.cc",
+    "web_app_installation_info.h",
   ]
 
   deps = [
@@ -157,10 +157,6 @@ static_library("utils") {
     "service_worker_payment_app_finder.h",
     "ssl_validity_checker.cc",
     "ssl_validity_checker.h",
-    "web_app_manifest_section_table.cc",
-    "web_app_manifest_section_table.h",
-    "web_payments_table.cc",
-    "web_payments_table.h",
     "web_payments_web_data_service.cc",
     "web_payments_web_data_service.h",
   ]
@@ -171,7 +167,6 @@ static_library("utils") {
     "//components/autofill/core/browser",
     "//components/link_header_util",
     "//components/network_session_configurator/common",
-    "//components/payments/content/browser_binding:browser_bound_key_metadata",
     "//components/payments/content/icon",
     "//components/payments/content/utility",
     "//components/payments/core",
@@ -208,7 +203,6 @@ static_library("test_support") {
     ":utils",
     "//base/test:test_support",
     "//components/os_crypt/browser:test_support",
-    "//components/payments/content/browser_binding:browser_bound_key_metadata",
     "//components/payments/core",
     "//components/webdata/common",
     "//components/webdata_services",
@@ -258,8 +252,6 @@ source_set("payment_content_unit_tests") {
     "secure_payment_confirmation_service_unittest.cc",
     "secure_payment_confirmation_validation_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
-    "web_app_manifest_section_table_unittest.cc",
-    "web_payments_table_unittest.cc",
     "web_payments_web_data_service_unittest.cc",
   ]
 

@@ -11,7 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "components/payments/content/web_app_manifest.h"
+#include "components/payments/content/web_app_installation_info.h"
+#include "components/payments/core/web_app_manifest_section.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

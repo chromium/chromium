@@ -40,7 +40,6 @@ source_set("passkey_browser_binder") {
   ]
   public_deps = [ ":interface" ]
   deps = [
-    ":browser_bound_key_metadata",
     "//base",
     "//components/payments/content:utils",
     "//components/payments/core",
@@ -53,7 +52,6 @@ source_set("passkey_browser_binder_unittests") {
   visibility = [ "//components/payments/*" ]
   sources = [ "passkey_browser_binder_unittest.cc" ]
   deps = [
-    ":browser_bound_key_metadata",
     ":fake_browser_bound_key_store",
     ":interface",
     ":passkey_browser_binder",
@@ -156,14 +154,6 @@ source_set("fake_browser_bound_key_store") {
     "//base",
     "//device/fido",
   ]
-}
-
-source_set("browser_bound_key_metadata") {
-  sources = [
-    "browser_bound_key_metadata.cc",
-    "browser_bound_key_metadata.h",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("test_support") {

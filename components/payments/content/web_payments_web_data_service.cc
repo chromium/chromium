@@ -12,9 +12,9 @@
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/payments/content/web_app_manifest_section_table.h"
-#include "components/payments/content/web_payments_table.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
+#include "components/payments/core/web_app_manifest_section_table.h"
+#include "components/payments/core/web_payments_table.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_database_service.h"
 

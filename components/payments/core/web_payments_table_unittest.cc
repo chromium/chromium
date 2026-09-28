@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/web_payments_table.h"
+#include "components/payments/core/web_payments_table.h"
 
 #include <stdint.h>
 
@@ -17,11 +17,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_database.h"
-#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
+#include "components/payments/core/browser_bound_key_metadata.h"
 
 #include <compare>
 

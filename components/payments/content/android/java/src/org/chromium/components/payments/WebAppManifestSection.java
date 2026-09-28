@@ -6,7 +6,7 @@ package org.chromium.components.payments;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Java equivalent of components/payments/content/web_app_manifest.h:WebAppManifestSection */
+/** Java equivalent of components/payments/core/web_app_manifest_section.h:WebAppManifestSection */
 @NullMarked
 public final class WebAppManifestSection {
     /**

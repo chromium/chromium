@@ -19,6 +19,7 @@ static_library("webdata_services") {
     "//components/autofill/core/common",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/payments/core",
     "//components/search_engines",
     "//components/signin/public/webdata",
     "//components/sync",
