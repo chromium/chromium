@@ -54,6 +54,9 @@ using ::testing::IsEmpty;
 using ::testing::IsTrue;
 using ::testing::Not;
 
+// The iOS simulator does not support VideoToolbox low-latency rate control.
+constexpr bool kRequireLowDelay = !TARGET_OS_SIMULATOR;
+
 class BaseTestVEAClient : public VideoEncodeAccelerator::Client {
  public:
   BaseTestVEAClient() = default;
@@ -559,6 +562,7 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeCameraCaptureNv12Frame) {
         Bitrate::ConstantBitrate(300000u), 30,
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
         VideoEncodeAccelerator::Config::ContentType::kCamera);
+    config.require_low_delay = kRequireLowDelay;
 
     ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
         << GetProfileName(profile);
@@ -653,6 +657,7 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
           Bitrate::ConstantBitrate(300000u), 30,
           VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
           VideoEncodeAccelerator::Config::ContentType::kCamera);
+      config.require_low_delay = kRequireLowDelay;
 
       ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
           << GetProfileName(profile);
@@ -788,6 +793,7 @@ TEST(VTVideoEncodeAcceleratorTest,
           Bitrate::ConstantBitrate(300000u), 30,
           VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
           VideoEncodeAccelerator::Config::ContentType::kCamera);
+      config.require_low_delay = kRequireLowDelay;
 
       ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok())
           << GetProfileName(profile);
@@ -878,6 +884,7 @@ TEST(VTVideoEncodeAcceleratorTest, RejectsOpaqueSharedImagesInI420Session) {
           Bitrate::ConstantBitrate(300000u), 30,
           VideoEncodeAccelerator::Config::StorageType::kShmem,
           VideoEncodeAccelerator::Config::ContentType::kCamera);
+      config.require_low_delay = kRequireLowDelay;
 
       ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok());
 
@@ -940,6 +947,7 @@ TEST(VTVideoEncodeAcceleratorTest, RejectsUnsupportedOpaqueSharedImageFormats) {
         Bitrate::ConstantBitrate(300000u), 30,
         VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer,
         VideoEncodeAccelerator::Config::ContentType::kCamera);
+    config.require_low_delay = kRequireLowDelay;
 
     ASSERT_TRUE(encoder->Initialize(config, &client, nullptr).is_ok());
 
