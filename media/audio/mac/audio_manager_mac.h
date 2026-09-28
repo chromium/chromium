@@ -132,8 +132,6 @@ class MEDIA_EXPORT AudioManagerMac : public AudioManagerApple {
   static AudioDeviceID FindFirstOutputSubdevice(
       AudioDeviceID aggregate_device_id);
 
-  static int GetMinAudioBufferSizeMacOS(int min_buffer_size, int sample_rate);
-
   // Returns a vector with the IDs of all devices related to the given
   // |device_id|. The vector is empty if there are no related devices or
   // if there is an error.
