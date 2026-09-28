@@ -1023,6 +1023,61 @@ public class SettingsPageTest {
     }
 
     /**
+     * Regression test for https://crbug.com/563047017 under SettingsInTabUrlNav. Loading root
+     * settings in two-column mode fills the detail pane with a default page. Leaving two-column
+     * mode must then show root settings rather than that page, which the user never navigated to.
+     */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testRootSettingsShownAfterLeavingTwoColumn_urlNav() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        boolean isTwoColumn =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var hostFragment =
+                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
+                            return hostFragment != null
+                                    && hostFragment.isTwoColumnSettingsVisible();
+                        });
+        Assume.assumeTrue("Settings must start in two-column mode.", isTwoColumn);
+
+        // Resize container to narrow width (500px <= 632dp threshold) to force single-column mode.
+        setSettingsContainerWidth(500);
+        try {
+            ensureSingleColumnMode();
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        var hostFragment =
+                                SettingsHostFragment.get(mActivityTestRule.getActivity());
+                        return hostFragment != null
+                                && hostFragment.getMainFragment() instanceof MainSettings;
+                    },
+                    "Root settings should be shown after leaving two-column mode.");
+        } finally {
+            setSettingsContainerWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+    }
+
+    /** Sets the width of the view containing the settings page and requests a layout pass. */
+    private void setSettingsContainerWidth(int width) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var activity = mActivityTestRule.getActivity();
+                    View settingsActivity = activity.findViewById(R.id.settings_activity);
+                    assertNotNull(settingsActivity);
+                    View parent = (View) settingsActivity.getParent();
+                    var lp = parent.getLayoutParams();
+                    lp.width = width;
+                    parent.setLayoutParams(lp);
+                    ViewUtils.requestLayout(parent, "SettingsPageTest.setSettingsContainerWidth");
+                });
+    }
+
+    /**
      * Regression test for crbug.com/562619494: when display density changes such that the scaled
      * width drops below 600dp (the tablet threshold), the tab should still host SettingsPage, the
      * search box should remain functional, and no orphaned fragments should remain.

@@ -545,6 +545,15 @@ public class SettingsHostFragment extends Fragment
                 if (initialFragment != null) {
                     multiColumnSettings.showDetailFragment(
                             initialFragment, /* addToBackStack= */ false, /* tag= */ null);
+                    // showDetailFragment() opens the sliding pane. In two-column mode the pane is
+                    // not slideable, so opening it has no visual effect, but it still latches
+                    // SlidingPaneLayout's preserved open state. Leaving two-column mode would then
+                    // show this default detail fragment instead of the root settings that were
+                    // requested. Undo it, as MultiColumnSettings.ensureInitialDetailFragment()
+                    // does. https://crbug.com/563047017
+                    if (multiColumnSettings.isTwoColumn()) {
+                        multiColumnSettings.getSlidingPaneLayout().closePane();
+                    }
                 }
                 return true;
             }
