@@ -58,6 +58,10 @@ class MockReadAloudPlaybackController
                const media::AudioParameters& params),
               (override));
   MOCK_METHOD(void,
+              SetPlaybackMode,
+              (read_aloud::mojom::PlaybackMode mode),
+              (override));
+  MOCK_METHOD(void,
               SetTextContent,
               (std::vector<read_aloud::mojom::TextSegmentPtr> segments),
               (override));

@@ -45,6 +45,7 @@ class MockClient : public read_aloud::mojom::ReadAloudPlaybackControllerClient {
 
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,
+      read_aloud::mojom::Speaker speaker,
       uint64_t sequence_id,
       RequestSpeechSynthesisCallback callback) override {
     std::move(callback).Run(mojo_base::BigBuffer(), false);

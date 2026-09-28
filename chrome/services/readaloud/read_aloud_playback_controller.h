@@ -73,6 +73,7 @@ class ReadAloudPlaybackController
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
       media::mojom::ReadWriteAudioDataPipePtr data_pipe,
       const media::AudioParameters& params) override;
+  void SetPlaybackMode(read_aloud::mojom::PlaybackMode mode) override;
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override;
   void Play() override;
@@ -134,6 +135,9 @@ class ReadAloudPlaybackController
 
   // Active text segments currently loaded for playback in this session.
   std::vector<read_aloud::mojom::TextSegmentPtr> segments_;
+  // Current playback mode (Classic full text vs AI Overview summary dialogue).
+  read_aloud::mojom::PlaybackMode playback_mode_ =
+      read_aloud::mojom::PlaybackMode::kClassic;
   // Current playback rate multiplier (clamped between kMinPlaybackRate and
   // kMaxPlaybackRate).
   float playback_rate_ = 1.0f;

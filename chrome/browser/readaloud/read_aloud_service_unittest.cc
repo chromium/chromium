@@ -169,6 +169,10 @@ class FakePlaybackController
     }
   }
 
+  void SetPlaybackMode(read_aloud::mojom::PlaybackMode mode) override {
+    playback_mode_ = mode;
+  }
+
   void SetTextContent(
       std::vector<read_aloud::mojom::TextSegmentPtr> segments) override {
     received_segments_ = std::move(segments);
@@ -237,6 +241,10 @@ class FakePlaybackController
     return client_.get();
   }
 
+  read_aloud::mojom::PlaybackMode playback_mode() const {
+    return playback_mode_;
+  }
+
  private:
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{
       this};
@@ -254,6 +262,8 @@ class FakePlaybackController
   float last_playback_rate_ = 1.0f;
   base::OnceClosure initialize_audio_callback_;
   int initialize_audio_called_count_ = 0;
+  read_aloud::mojom::PlaybackMode playback_mode_ =
+      read_aloud::mojom::PlaybackMode::kClassic;
 };
 }  // namespace
 
@@ -1203,7 +1213,8 @@ TEST_F(ReadAloudServiceTest,
        RequestSpeechSynthesisDelegatesToBrokerAndHandlesError) {
   bool callback_called = false;
   service()->RequestSpeechSynthesis(
-      /*text_chunk=*/u"Hello world", /*sequence_id=*/1,
+      /*text_chunk=*/u"Hello world",
+      /*speaker=*/read_aloud::mojom::Speaker::kSpeaker1, /*sequence_id=*/1,
       base::BindLambdaForTesting(
           [&](mojo_base::BigBuffer response_bytes, bool success) {
             callback_called = true;

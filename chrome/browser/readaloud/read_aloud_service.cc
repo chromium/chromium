@@ -285,10 +285,11 @@ void ReadAloudService::OnArticleReady(
   }
 
   // Rule of Two Enforcement: Distilled webpage text originates from untrusted
-  // renderer content. To adhere to Chromium security guidelines, ReadAloudService
-  // (privileged Browser process) must not parse, sanitize, or tokenize the raw text.
-  // We package the raw page strings directly into Mojo TextSegment structs and
-  // forward them to the sandboxed Utility process for chunking and synthesis.
+  // renderer content. To adhere to Chromium security guidelines,
+  // ReadAloudService (privileged Browser process) must not parse, sanitize, or
+  // tokenize the raw text. We package the raw page strings directly into Mojo
+  // TextSegment structs and forward them to the sandboxed Utility process for
+  // chunking and synthesis.
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   segments.reserve(article_proto->pages_size());
   for (int i = 0; i < article_proto->pages_size(); ++i) {
@@ -343,10 +344,11 @@ void ReadAloudService::ProvideInitialMetadata() {
   }
 }
 
-// Ensures the sandboxed ReadAloudPlaybackController utility process is running and
-// bound. Uses `controller_binder_` if provided (e.g. in unit tests); otherwise
-// launches `ReadAloudPlaybackControllerFactory` via ServiceProcessHost and requests
-// a new controller instance with our client observer remote.
+// Ensures the sandboxed ReadAloudPlaybackController utility process is running
+// and bound. Uses `controller_binder_` if provided (e.g. in unit tests);
+// otherwise launches `ReadAloudPlaybackControllerFactory` via
+// ServiceProcessHost and requests a new controller instance with our client
+// observer remote.
 void ReadAloudService::EnsurePlaybackControllerConnected() {
   if (utility_player_.is_bound()) {
     return;
@@ -498,7 +500,8 @@ void ReadAloudService::OnTextChunked(
 
 void ReadAloudService::RequestSpeechSynthesis(
     const std::u16string& text_chunk,
-    uint64_t sequence_id,
+    read_aloud::mojom::Speaker /*speaker*/,  // TODO(b/559821661)
+    uint64_t /*sequence_id*/,
     read_aloud::mojom::ReadAloudPlaybackControllerClient::
         RequestSpeechSynthesisCallback callback) {
   if (!speech_synthesis_broker_) {

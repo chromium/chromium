@@ -226,6 +226,7 @@ class ReadAloudService
   void OnTextChunked(const std::vector<std::u16string>& chunks) override;
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,
+      read_aloud::mojom::Speaker speaker,
       uint64_t sequence_id,
       read_aloud::mojom::ReadAloudPlaybackControllerClient::
           RequestSpeechSynthesisCallback callback) override;

@@ -84,8 +84,11 @@ class MockReadAloudPlaybackControllerClient
     // No-op for testing.
   }
 
-  using SpeechSynthesisHandler = base::RepeatingCallback<void(
-      const std::u16string&, uint64_t, RequestSpeechSynthesisCallback)>;
+  using SpeechSynthesisHandler =
+      base::RepeatingCallback<void(const std::u16string&,
+                                   read_aloud::mojom::Speaker,
+                                   uint64_t,
+                                   RequestSpeechSynthesisCallback)>;
 
   void set_synthesis_handler(SpeechSynthesisHandler handler) {
     synthesis_handler_ = std::move(handler);
@@ -93,11 +96,13 @@ class MockReadAloudPlaybackControllerClient
 
   void RequestSpeechSynthesis(
       const std::u16string& text_chunk,
+      read_aloud::mojom::Speaker speaker,
       uint64_t sequence_id,
       RequestSpeechSynthesisCallback callback) override {
     synthesis_request_count_++;
     if (synthesis_handler_) {
-      synthesis_handler_.Run(text_chunk, sequence_id, std::move(callback));
+      synthesis_handler_.Run(text_chunk, speaker, sequence_id,
+                             std::move(callback));
       return;
     }
     std::move(callback).Run(mojo_base::BigBuffer(), true);
@@ -210,7 +215,8 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
 
   void SetMockSynthesisResponse(const std::string& response_bytes) {
     mock_client_->set_synthesis_handler(base::BindRepeating(
-        [](const std::string& bytes, const std::u16string&, uint64_t,
+        [](const std::string& bytes, const std::u16string&,
+           read_aloud::mojom::Speaker, uint64_t,
            read_aloud::mojom::ReadAloudPlaybackControllerClient::
                RequestSpeechSynthesisCallback callback) {
           std::move(callback).Run(
