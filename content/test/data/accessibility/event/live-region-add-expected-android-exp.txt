@@ -1,3 +1,0 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [Before] class_name=android.widget.TextView
-=== END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [After] class_name=android.widget.TextView

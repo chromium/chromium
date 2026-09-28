@@ -128,13 +128,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           const ui::AXNode* node) override;
 
-  void FireAriaNotificationEvent(
-      ui::BrowserAccessibility* node,
-      const std::string& announcement,
-      ax::mojom::AriaNotificationPriority priority_property,
-      ax::mojom::AriaNotificationInterrupt interrupt_property,
-      const std::string& type) override;
-
   void FireLocationChanged(ui::BrowserAccessibility* node);
 
   // Helper functions to compute the next start and end index when moving

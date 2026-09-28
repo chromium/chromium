@@ -449,7 +449,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Dispatches LIVE_REGION_NODE_CHANGED AxGeneratedEvents over the JNI Bridge.
   void HandleLiveRegionNodeChanged(int32_t unique_id);
   void HandleDefaultActionVerbChanged(int32_t unique_id);
-  void AnnounceLiveRegionText(const std::u16string& text);
   void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id, int32_t subType);

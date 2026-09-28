@@ -41,7 +41,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @EnableFeatures({
-    ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
     ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION,
     ContentFeatureList.ACCESSIBILITY_SET_SELECTABLE_ON_ALL_NODES_WITH_TEXT
 })
@@ -702,36 +701,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
-    })
     public void test_ariaLive() {
         performAriaTest("aria-live.html");
     }
 
     @Test
     @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
-    public void test_ariaLive_exp() {
-        performAriaTest("aria-live.html", "aria-live-exp");
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({
-        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE
-    })
     public void test_ariaLiveWithContent() {
         performAriaTest("aria-live-with-content.html");
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
-    public void test_ariaLiveWithContent_exp() {
-        performAriaTest("aria-live-with-content.html", "aria-live-with-content-exp");
     }
 
     @Test

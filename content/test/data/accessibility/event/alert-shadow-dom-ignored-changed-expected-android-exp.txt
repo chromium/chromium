@@ -1,3 +1,0 @@
-=== END INITIAL PAGE LOAD ===
-TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Settings saved successfully!] class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Settings saved successfully!] class_name=android.view.View

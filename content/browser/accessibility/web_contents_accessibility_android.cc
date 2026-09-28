@@ -1198,28 +1198,6 @@ void WebContentsAccessibilityAndroid::HandleDefaultActionVerbChanged(
                                                                    unique_id);
 }
 
-void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
-    const std::u16string& text) {
-  CHECK(!base::FeatureList::IsEnabled(
-      features::kAccessibilityDeprecateTypeAnnounce))
-      << "No views should be forcing an announcement outside approved "
-         "instances.";
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
-  if (obj.is_null()) {
-    return;
-  }
-
-  // Do not announce empty text.
-  if (text.empty()) {
-    return;
-  }
-
-  Java_WebContentsAccessibilityImpl_announceLiveRegionText(
-      env, obj, base::android::ConvertUTF16ToJavaString(env, text));
-}
-
 void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();

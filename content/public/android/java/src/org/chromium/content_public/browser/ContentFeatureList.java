@@ -30,16 +30,10 @@ public class ContentFeatureList {
     // Alphabetical:
     public static final String ACCESSIBILITY_ATOMIC_LIVE_REGIONS = "AccessibilityAtomicLiveRegions";
 
-    public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
-            "AccessibilityDeprecateTypeAnnounce";
-
     public static final String ACCESSIBILITY_EXTENDED_SELECTION = "AccessibilityExtendedSelection";
 
     public static final String ACCESSIBILITY_IME_GET_FORMATTED_TEXT =
             "AccessibilityImeGetFormattedText";
-
-    public static final String ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE =
-            "AccessibilityImproveLiveRegionAnnounce";
 
     public static final String ACCESSIBILITY_PAGE_ZOOM_V2 = "AccessibilityPageZoomV2";
 

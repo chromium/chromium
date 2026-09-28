@@ -2618,23 +2618,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void handleLiveRegionNodeChanged(int id) {
-        // NOTE: If we are using TYPE_ANNOUNCEMENT for live region changes instead of
-        // WINDOW_CONTENT_CHANGED, our node change will be routed through announceLiveRegionText()
-        // below instead.
-        if (ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE)
-                || ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)) {
-            if (isAccessibilityEnabled()) {
-                AccessibilityEvent event =
-                        buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-                if (event == null) return;
-                // If the event is LIVE_REGION_NODE_CHANGED, we want the
-                // Android system to know about every single node that was affected. Therefore, we
-                // do not queue these events, but instead send them right away.
-                requestSendAccessibilityEvent(
-                        event, WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED, id);
-            }
+        if (isAccessibilityEnabled()) {
+            AccessibilityEvent event =
+                    buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            if (event == null) return;
+            // If the event is LIVE_REGION_NODE_CHANGED, we want the
+            // Android system to know about every single node that was affected. Therefore, we
+            // do not queue these events, but instead send them right away.
+            requestSendAccessibilityEvent(
+                    event, WindowContentChangedSubtype.LIVE_REGION_NODE_CHANGED, id);
         }
     }
 
@@ -2649,24 +2641,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             event.setSource(mView, virtualViewId);
             event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_UNDEFINED);
             requestSendAccessibilityEvent(event, WindowContentChangedSubtype.NONE, virtualViewId);
-        }
-    }
-
-    @CalledByNative
-    private void announceLiveRegionText(String text) {
-        assert !ContentFeatureMap.isEnabled(
-                        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
-                : "No views should be forcing an announcement outside approved instances.";
-        if (isAccessibilityEnabled()) {
-            AccessibilityEvent event =
-                    AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);
-            if (event == null) {
-                return;
-            }
-
-            event.getText().add(text);
-            event.setContentDescription(null);
-            requestSendAccessibilityEvent(event);
         }
     }
 

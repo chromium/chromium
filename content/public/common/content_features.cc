@@ -1409,11 +1409,6 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
     &kAccessibilityDeprecateJavaNodeCache, "disable_cache", false};
 
-// When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
-// the web contents.
-BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, extended selections are sent to Android through setSelection
 // API.
 BASE_FEATURE(kAccessibilityExtendedSelection, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1426,14 +1421,6 @@ BASE_FEATURE(kAccessibilitySyncFocusOnViewFocusGain,
 // formatted text from the TextInputState.
 BASE_FEATURE(kAccessibilityImeGetFormattedText,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, WINDOW_CONTENT_CHANGED events will be sent for each
-// LIVE_REGION_NODE_CHANGED rather than TYPE_ANNOUNCEMENT.
-// kAccessibilityDeprecateTypeAnnounce also encompasses ariaNotify, whereas this
-// flag does not. This flag focuses solely on the LIVE_REGION_NODE_CHANGED
-// generated events.
-BASE_FEATURE(kAccessibilityImproveLiveRegionAnnounce,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, allows Android to fire WINDOW_CONTENT_CHANGED events for value
 // changes made to slider controls.

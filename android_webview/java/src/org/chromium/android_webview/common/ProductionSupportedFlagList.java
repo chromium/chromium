@@ -1175,17 +1175,10 @@ public final class ProductionSupportedFlagList {
                 "WebViewPersistentMetricsInNoBackupDir",
                 "Migrate the persistent metrics file to the nobackupfiles directory."),
         Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
-                "When enabled, sends live region node changes via WINDOW_CONTENT_CHANGED events"
-                        + " instead of TYPE_ANNOUNCEMENT."),
-        Flag.baseFeature(
                 "ConnectionKeepAliveForHttp2",
                 "When enabled, WebView#preconnect will use a ConnectionKeepAliveConfig for"
                     + " NetworkContext::PreconnectSocket in HTTP2, and will be informed when the"
                     + " connection drops"),
-        Flag.baseFeature(
-                ContentFeatures.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE,
-                "When enabled, TYPE_ANNOUNCE events will no longer be sent from Chrome."),
         Flag.baseFeature(
                 AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS_KEYBOARD_ATTACHED,
                 "When enabled, the Android framework will be notified when the text cursor or input"

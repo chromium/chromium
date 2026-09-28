@@ -556,34 +556,16 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       //  This event is fired when an object appears in a live region.
-      if (base::FeatureList::IsEnabled(
-              features::kAccessibilityImproveLiveRegionAnnounce)) {
-        bool is_atomic = node->data().IsAtomicLiveRegionRoot() ||
-                         node->data().IsContainedInAtomicLiveRegion();
-        // If kAccessibilityAtomicLiveRegions is enabled and our node is atomic,
-        // it will have been handled by the LIVE_REGION_CHANGED case above.
-        // Otherwise, fire a WINDOW_CONTENT_CHANGED event to inform the Android
-        // Framework of the individual node change.
-        if (!(is_atomic && base::FeatureList::IsEnabled(
-                               features::kAccessibilityAtomicLiveRegions))) {
-          wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
-        }
+      bool is_atomic = node->data().IsAtomicLiveRegionRoot() ||
+                       node->data().IsContainedInAtomicLiveRegion();
+      // If kAccessibilityAtomicLiveRegions is enabled and our node is atomic,
+      // it will have been handled by the LIVE_REGION_CHANGED case above.
+      // Otherwise, fire a WINDOW_CONTENT_CHANGED event to inform the Android
+      // Framework of the individual node change.
+      if (!(is_atomic && base::FeatureList::IsEnabled(
+                             features::kAccessibilityAtomicLiveRegions))) {
+        wcax->HandleLiveRegionNodeChanged(android_node->GetUniqueId());
       }
-      // TODO(crbug.com/507858294): Remove TYPE_ANNOUNCE and new live region
-      // behavior flags once stability has been reached in several stable
-      // releases.
-      if (!base::FeatureList::IsEnabled(
-              features::kAccessibilityDeprecateTypeAnnounce)) {
-        // If we don't support WINDOW_CONTENT_CHANGED events BUT have not yet
-        // deprecated TYPE_ANNOUNCEMENT, we should fire a TYPE_ANNOUNCEMENT
-        // event which contains the text of the changed node.
-        std::u16string text = android_node->GetTextContentUTF16();
-        wcax->AnnounceLiveRegionText(text);
-      }
-      // If kAccessibilityImproveLiveRegionAnnounce is disabled and
-      // kAccessibilityDeprecateTypeAnnounce is enabled, we choose not to fire
-      // an event here. However, this should not happen in practice as we should
-      // not deprecate TYPE_ANNOUNCEMENT until we have landed its replacements.
       break;
     }
     case ui::AXEventGenerator::Event::MENU_POPUP_START: {
@@ -752,27 +734,6 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
-  }
-}
-
-void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
-    ui::BrowserAccessibility* node,
-    const std::string& announcement,
-    ax::mojom::AriaNotificationPriority priority_property,
-    ax::mojom::AriaNotificationInterrupt interrupt_property,
-    const std::string& type) {
-  CHECK(node, base::NotFatalUntil::M159);
-
-  auto* wcax = GetWebContentsAXFromRootManager();
-  if (!wcax) {
-    return;
-  }
-
-  // TODO(aleventhal): If aria-notification becomes a web standard, a solution
-  // that doesn't use a forced announcement must be implemented.
-  if (!base::FeatureList::IsEnabled(
-          features::kAccessibilityDeprecateTypeAnnounce)) {
-    wcax->AnnounceLiveRegionText(base::UTF8ToUTF16(announcement));
   }
 }
 
