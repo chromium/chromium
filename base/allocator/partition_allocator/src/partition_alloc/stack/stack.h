@@ -63,6 +63,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) StackTopRegistry {
   static StackTopRegistry& Get();
   void NotifyThreadCreated();
   void NotifyThreadDestroyed();
+
+  // Overwrites the stack top recorded for the current thread. Unlike
+  // `NotifyThreadCreated()` this succeeds when an entry already exists.
+  // See `MessagePumpAndroid::MaybeUpdatePseudoStackTop()` in
+  // base/message_loop/message_pump_android.cc.
+  void OverwriteCurrentThreadStackTop(void* stack_top);
+
   void* GetCurrentThreadStackTop() const;
 
  private:

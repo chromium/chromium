@@ -1334,6 +1334,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Android uses a different way to set the stack top to the top of the Chrome
+  // portion of the stack while ignoring the Android Framework portion.
+  // See `MessagePumpAndroid::MaybeUpdatePseudoStackTop()` in
+  // base/message_loop/message_pump_android.cc for more details. This is done to
+  // improve startup performance and reduce ANRs, see crbug.com/518605818.
+  partition_alloc::internal::StackTopRegistry::Get().NotifyThreadCreated();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   for (size_t partition_index = 0;
        partition_index < allocator_shim::kNumPartitions; partition_index++) {
     allocator_shim::internal::PartitionAllocMalloc::Allocator(partition_index)

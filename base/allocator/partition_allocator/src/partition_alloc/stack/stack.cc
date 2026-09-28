@@ -172,6 +172,13 @@ void StackTopRegistry::NotifyThreadDestroyed() {
   stack_tops_.erase(tid);
 }
 
+void StackTopRegistry::OverwriteCurrentThreadStackTop(void* stack_top) {
+  PA_DCHECK(stack_top);
+  const auto tid = base::PlatformThread::CurrentId();
+  ScopedGuard guard(lock_);
+  stack_tops_.insert_or_assign(tid, stack_top);
+}
+
 void* StackTopRegistry::GetCurrentThreadStackTop() const {
   const auto tid = base::PlatformThread::CurrentId();
   ScopedGuard guard(lock_);

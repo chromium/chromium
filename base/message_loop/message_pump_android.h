@@ -6,6 +6,7 @@
 #define BASE_MESSAGE_LOOP_MESSAGE_PUMP_ANDROID_H_
 
 #include <jni.h>
+#include <stdint.h>
 
 #include <memory>
 #include <optional>
@@ -83,6 +84,11 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
 
   void OnReturnFromLooper();
 
+  // Records the current stack pointer as the "pseudo stack top" for
+  // conservative stack scanning if this pump runs on the main thread.
+  // See message_pump_android.cc for more details.
+  void MaybeUpdatePseudoStackTop();
+
   // Unlike other platforms, we don't control the message loop as it's
   // controlled by the Android Looper, so we can't run a RunLoop to keep the
   // Thread this pump belongs to alive. However, threads are expected to have an
@@ -123,6 +129,14 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
   // Whether this message serves a MessagePumpType::UI, and therefore can
   // consult with the input hint living on the UI thread.
   bool is_type_ui_ = false;
+
+  // Whether this message pump is running on the main thread, and therefore
+  // should update the pseudo stack top for conservative stack scanning.
+  const bool should_update_pseudo_stack_top_;
+
+  // The highest stack address observed by MaybeUpdatePseudoStackTop() so far,
+  // or 0 if none. Only used when PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  [[maybe_unused]] uintptr_t pseudo_stack_top_ = 0;
 
   // The IOWatcher for this thread, lazily initialized as needed.
   std::unique_ptr<IOWatcher> io_watcher_;

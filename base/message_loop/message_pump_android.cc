@@ -30,9 +30,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/task_features.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/stack/stack.h"  // nogncheck
+#endif
 
 using base::android::InputHintChecker;
 using base::android::InputHintResult;
@@ -353,7 +359,9 @@ class IOWatcherImpl : public IOWatcher {
 }  // namespace
 
 MessagePumpAndroid::MessagePumpAndroid()
-    : env_(base::android::AttachCurrentThread()) {
+    : env_(base::android::AttachCurrentThread()),
+      should_update_pseudo_stack_top_(PlatformThread::CurrentId().raw() ==
+                                      getpid()) {
   // The Android native ALooper uses epoll to poll our file descriptors and wake
   // us up. We use a simple level-triggered eventfd to signal that non-delayed
   // work is available, and a timerfd to signal when delayed work is ready to
@@ -389,6 +397,7 @@ MessagePumpAndroid::~MessagePumpAndroid() {
 }
 
 void MessagePumpAndroid::OnDelayedLooperCallback() {
+  MaybeUpdatePseudoStackTop();
   OnReturnFromLooper();
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
@@ -446,6 +455,7 @@ void MessagePumpAndroid::DoDelayedLooperWork() {
 }
 
 void MessagePumpAndroid::OnNonDelayedLooperCallback() {
+  MaybeUpdatePseudoStackTop();
   OnReturnFromLooper();
   // There may be non-Chromium callbacks on the same ALooper which may have left
   // a pending exception set, and ALooper does not check for this between
@@ -616,6 +626,41 @@ void MessagePumpAndroid::OnReturnFromLooper() {
         InputHintResult::kBackToNative);
   }
   checker.set_is_after_input_yield(false);
+}
+
+// Records an approximation of the top of the stack ("pseudo stack top") for
+// conservative stack scanning, which is much cheaper to obtain than
+// `partition_alloc::internal::GetStackTop()`.
+//
+// This is called at the two entry points from the Android Looper into the
+// Chrome native library. Running any native message loop task on the UI thread
+// requires going through one of them first. The Looper starts running before
+// the Chrome native code is even loaded and never returns, so a stack address
+// taken next to it separates the Chrome part of the stack from the Android
+// Framework part below it.
+//
+// The highest address ever observed here is kept, since the depth of the
+// Android Framework frames below us varies between wakeups. The highest address
+// is cached in `pseudo_stack_top_` so that we only notify the StackTopRegistry
+// on the rare occasions when the value actually grows.
+//
+// We restrict this to the main thread. Before the main thread has pumped its
+// first task, the stack top is unset and PartitionAlloc's `StackTopRegistry`
+// will return `nullptr`.
+void MessagePumpAndroid::MaybeUpdatePseudoStackTop() {
+  if (!should_update_pseudo_stack_top_) {
+    return;
+  }
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  void* stack_pointer = partition_alloc::internal::GetStackPointer();
+  uintptr_t stack_address = reinterpret_cast<uintptr_t>(stack_pointer);
+  if (stack_address <= pseudo_stack_top_) {
+    return;
+  }
+  pseudo_stack_top_ = stack_address;
+  partition_alloc::internal::StackTopRegistry::Get()
+      .OverwriteCurrentThreadStackTop(stack_pointer);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void MessagePumpAndroid::ScheduleDelayedWork(
