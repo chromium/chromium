@@ -117,8 +117,10 @@ ExtensionsMenuView::ExtensionsMenuView(
 
   SetEnableArrowKeyTraversal(true);
 
-  // Let anchor view's MenuButtonController handle the highlight.
-  set_highlight_button_when_shown(false);
+  if (anchor.GetIfView()) {
+    // Let anchor view's MenuButtonController handle the highlight.
+    set_highlight_button_when_shown(false);
+  }
 
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

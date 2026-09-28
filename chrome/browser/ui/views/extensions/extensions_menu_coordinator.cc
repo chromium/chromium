@@ -91,8 +91,10 @@ ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
   bubble_delegate->set_fixed_width(
       views::LayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_EXTENSIONS_MENU_WIDTH));
-  // Let anchor view's MenuButtonController handle the highlight.
-  bubble_delegate->set_highlight_button_when_shown(false);
+  if (anchor.GetIfView()) {
+    // Let anchor view's MenuButtonController handle the highlight.
+    bubble_delegate->set_highlight_button_when_shown(false);
+  }
   bubble_delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   bubble_delegate->SetEnableArrowKeyTraversal(true);
 

@@ -2413,6 +2413,18 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveUiTest,
     EXPECT_TRUE(
         base::test::RunUntil([&]() { return coordinator->IsShowing(); }));
 
+    // Verify button becomes highlighted.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(
+                 web_contents,
+                 "document.querySelector('toolbar-app').shadowRoot"
+                 ".querySelector('#extensions').shadowRoot"
+                 ".querySelector('webui-toolbar-extension[data-key=\"\"]')"
+                 ".shadowRoot.querySelector('cr-button')"
+                 ".hasAttribute('is-menu-open')")
+          .ExtractBool();
+    }));
+
     // Toggle it back off.
     LeftClickExtensionButton(web_contents, "");
 
