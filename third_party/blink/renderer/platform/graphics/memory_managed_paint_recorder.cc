@@ -39,10 +39,6 @@ MemoryManagedPaintRecorder::MemoryManagedPaintRecorder(gfx::Size size,
 
 MemoryManagedPaintRecorder::~MemoryManagedPaintRecorder() = default;
 
-void MemoryManagedPaintRecorder::SetClient(Client* client) {
-  client_ = client;
-}
-
 void MemoryManagedPaintRecorder::DisableLineDrawingAsPaths() {
   main_canvas_.DisableLineDrawingAsPaths();
   if (side_canvas_) {

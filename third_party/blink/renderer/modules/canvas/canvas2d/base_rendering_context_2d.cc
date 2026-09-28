@@ -192,26 +192,6 @@ void BaseRenderingContext2D::ResetRecorder() {
   recorder_.reset();
 }
 
-std::unique_ptr<MemoryManagedPaintRecorder>
-BaseRenderingContext2D::ReleaseRecorder() {
-  if (recorder_) {
-    recorder_->SetClient(nullptr);
-  }
-  return std::move(recorder_);
-}
-
-void BaseRenderingContext2D::SetRecorder(
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder,
-    bool is_graphite) {
-  if (recorder) {
-    recorder->SetClient(this);
-  }
-  recorder_ = std::move(recorder);
-  if (recorder_ && is_graphite) {
-    recorder_->DisableLineDrawingAsPaths();
-  }
-}
-
 void BaseRenderingContext2D::UpdateRecordingLimits(bool is_graphite) {
   max_recorded_op_bytes_ =
       static_cast<size_t>(is_graphite ? features::kMaxRecordedOpGraphiteKB.Get()

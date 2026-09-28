@@ -303,9 +303,6 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void ConfigureRecorder(const gfx::Size& size, bool is_graphite);
   void ResetRecorder();
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
-  void SetRecorder(std::unique_ptr<MemoryManagedPaintRecorder> recorder,
-                   bool is_graphite);
 
   explicit BaseRenderingContext2D(
       CanvasRenderingContextHost* canvas,

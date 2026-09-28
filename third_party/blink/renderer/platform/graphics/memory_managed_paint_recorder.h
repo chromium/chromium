@@ -45,8 +45,6 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
   explicit MemoryManagedPaintRecorder(gfx::Size size, Client* client);
   ~MemoryManagedPaintRecorder();
 
-  void SetClient(Client* client);
-
   const gfx::Size& size() const { return size_; }
 
   // See comments around `RecordPaintCanvas::maybe_draw_lines_as_paths_` for
@@ -124,7 +122,7 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  private:
   // Pointer to the client interested in events from this
   // `MemoryManagedPaintRecorder`. If `nullptr`, notifications are disabled.
-  raw_ptr<Client> client_ = nullptr;
+  const raw_ptr<Client> client_;
 
   const gfx::Size size_;
 
