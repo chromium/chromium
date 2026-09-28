@@ -440,6 +440,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Editor bubble ('Focus group')"/>
   <int value="1" label="Tab context menu ('Focus tab group')"/>
   <int value="2" label="Tab context menu ('Focus tab(s)')"/>
+  <int value="3" label="Bookmarks bar context menu ('Focus group')"/>
+  <int value="4" label="App menu ('Focus group')"/>
+  <int value="5" label="Organizer panel context menu ('Focus group')"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusEntryPoint) -->
@@ -458,6 +461,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Tab outside focused group closed"/>
   <int value="9" label="Tab context menu ('Unfocus tab group')"/>
   <int value="10" label="Tab group created or opened"/>
+  <int value="11" label="Bookmarks bar context menu ('Unfocus group')"/>
+  <int value="12" label="App menu ('Unfocus group')"/>
+  <int value="13" label="Organizer panel context menu ('Unfocus group')"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusExitReason) -->

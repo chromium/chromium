@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -111,6 +113,38 @@ GetSavedTabGroupSubmenuOpenedMetric(
     case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
       return tab_groups::saved_tab_groups::metrics::
           SavedTabGroupOpenedSubmenuDesktop::kOrganizerPanel;
+  }
+}
+
+TabGroupFocusEntryPoint GetTabGroupFocusEntryPoint(
+    const tab_groups::TabGroupMenuContext& context) {
+  switch (context) {
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU:
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU:
+      return TabGroupFocusEntryPoint::kBookmarksBarContextMenu;
+    case tab_groups::TabGroupMenuContext::APP_MENU:
+      return TabGroupFocusEntryPoint::kAppMenu;
+    case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
+      return TabGroupFocusEntryPoint::kOrganizerPanel;
+    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
+      // The Mac system menu does not offer a focus option.
+      NOTREACHED();
+  }
+}
+
+TabGroupFocusExitReason GetTabGroupFocusExitReason(
+    const tab_groups::TabGroupMenuContext& context) {
+  switch (context) {
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU:
+    case tab_groups::TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU:
+      return TabGroupFocusExitReason::kBookmarksBarContextMenu;
+    case tab_groups::TabGroupMenuContext::APP_MENU:
+      return TabGroupFocusExitReason::kAppMenu;
+    case tab_groups::TabGroupMenuContext::ORGANIZER_PANEL:
+      return TabGroupFocusExitReason::kOrganizerPanel;
+    case tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU:
+      // The Mac system menu does not offer an unfocus option.
+      NOTREACHED();
   }
 }
 
@@ -859,6 +893,40 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
           "TabGroups_SavedTabGroups_MoveGroupToNewWindow"));
       SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(browser, uuid);
       break;
+    case TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP: {
+      std::optional<tab_groups::SavedTabGroup> saved_group =
+          tab_group_service->GetGroup(uuid);
+      if (!saved_group.has_value()) {
+        break;
+      }
+
+      std::optional<LocalTabGroupID> local_group_id =
+          saved_group->local_group_id();
+      if (!local_group_id.has_value()) {
+        local_group_id = OpenSavedTabGroup(browser, uuid,
+                                           OpeningSource::kOpenedFromRevisitUi,
+                                           tab_group_service);
+        if (!local_group_id.has_value()) {
+          break;
+        }
+      }
+
+      BrowserWindowInterface* target_browser =
+          SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value());
+      if (!target_browser) {
+        break;
+      }
+
+      TabStripModel* const tab_strip_model = target_browser->GetTabStripModel();
+      if (tab_strip_model->GetFocusedGroup() == local_group_id.value()) {
+        tab_strip_model->ExitFocusMode(GetTabGroupFocusExitReason(context));
+      } else {
+        base::UmaHistogramEnumeration("TabGroups.Focus.EntryPoint",
+                                      GetTabGroupFocusEntryPoint(context));
+        tab_strip_model->EnterFocusMode(local_group_id.value());
+      }
+      break;
+    }
     case TabGroupMenuAction::Type::PIN_OR_UNPIN_GROUP:
 
       if (std::optional<tab_groups::SavedTabGroup> group =

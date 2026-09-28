@@ -399,6 +399,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "zoom_minus_menu_refresh_old.icon",
     "zoom_minus_old.icon",
     "zoom_out.icon",
+    "zoom_out_map.icon",
     "zoom_out_map_old.icon",
     "zoom_plus_chrome_refresh_old.icon",
     "zoom_plus_menu_refresh_old.icon",

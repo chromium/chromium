@@ -432,8 +432,10 @@ class SavedTabGroupInteractiveTest
       CHECK(submenu);
 
       // There are 5 menu items in the menu not including the separator or
-      // tabs: Open, move, unpin, delete, and the tabs title
-      int num_non_tab_items_in_menu = 5;
+      // tabs: Open, move, unpin, delete, and the tabs title (plus Focus group
+      // when kTabGroupsFocusing is enabled).
+      int num_non_tab_items_in_menu =
+          base::FeatureList::IsEnabled(features::kTabGroupsFocusing) ? 6 : 5;
       const int total_items = submenu->GetMenuItems().size();
       const int num_tabs = total_items - num_non_tab_items_in_menu;
       EXPECT_EQ(num_tabs, expected_count);

@@ -974,8 +974,10 @@ TabGroupEditorBubbleView::BuildUnfocusGroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UnfocusGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kZoomOutMapOldIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kZoomOutMapIcon
+                                         : kZoomOutMapOldIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
 
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleUnfocusGroupButtonId);

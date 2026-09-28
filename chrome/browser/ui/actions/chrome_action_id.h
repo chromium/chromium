@@ -93,6 +93,7 @@
   E(kActionCreateNewTabGroup, IDC_CREATE_NEW_TAB_GROUP) \
   E(kActionTabGroupOpenInBrowser) \
   E(kActionTabGroupOpenInNewWindow) \
+  E(kActionToggleTabGroupFocus) \
   E(kActionTabGroupPin) \
   E(kActionTabGroupDelete) \
   E(kActionFocusNextTabGroup, IDC_FOCUS_NEXT_TAB_GROUP) \

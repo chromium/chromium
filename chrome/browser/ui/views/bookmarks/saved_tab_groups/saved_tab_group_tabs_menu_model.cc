@@ -38,6 +38,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
                                       kMoveGroupToNewWindowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kOpenGroup);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
+                                      kToggleGroupFocusStateMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel,
                                       kToggleGroupPinStateMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(STGTabsMenuModel, kTab);
@@ -99,6 +101,38 @@ void STGTabsMenuModel::Build(
       latest_command_id,
       TabGroupMenuAction{TabGroupMenuAction::Type::OPEN_OR_MOVE_TO_NEW_WINDOW,
                          sync_id_.value()});
+
+  // Add item: focus or unfocus group.
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    bool is_group_focused = false;
+    if (saved_group.local_group_id().has_value()) {
+      if (const BrowserWindowInterface* browser_with_group =
+              SavedTabGroupUtils::GetBrowserWithTabGroupId(
+                  saved_group.local_group_id().value())) {
+        is_group_focused =
+            browser_with_group->GetTabStripModel()->GetFocusedGroup() ==
+            saved_group.local_group_id();
+      }
+    }
+    latest_command_id = get_next_command_id.Run();
+    AddItemWithStringIdAndIcon(
+        latest_command_id,
+        is_group_focused ? IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP
+                         : IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP,
+        ui::ImageModel::FromVectorIcon(
+            is_group_focused ? features::IsRoundedIconsEnabled()
+                                   ? kZoomOutMapIcon
+                                   : kZoomOutMapOldIcon
+            : features::IsRoundedIconsEnabled() ? kZoomInMapIcon
+                                                : kZoomInMapOldIcon,
+            ui::kColorMenuIcon, kUIUpdateIconSize));
+    SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
+                           kToggleGroupFocusStateMenuItem);
+    command_id_to_action_.emplace(
+        latest_command_id,
+        TabGroupMenuAction{TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP,
+                           sync_id_.value()});
+  }
 
   // Add item: pin or unpin.
   if (context_ != TabGroupMenuContext::ORGANIZER_PANEL) {

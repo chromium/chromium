@@ -8,11 +8,14 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"  // For IDS_OPEN_GROUP_IN_BROWSER_MENU
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -134,6 +137,106 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                  base::Unretained(this)));
 
   EXPECT_FALSE(IsPinItemPresent(&organizer_model));
+}
+
+class SavedTabGroupTabsMenuModelFocusingBrowserTest
+    : public SavedTabGroupTabsMenuModelBrowserTest {
+ public:
+  SavedTabGroupTabsMenuModelFocusingBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
+                       ToggleFocusGroupFromBookmarksBarContextMenu) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  group.SetLocalGroupId(local_id);
+  GetSyncService()->AddGroup(group);
+
+  STGTabsMenuModel model(
+      browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  // Verify "Focus group" appears immediately after "Move group to new window".
+  EXPECT_EQ(model.GetLabelAt(1),
+            l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW));
+  EXPECT_EQ(model.GetLabelAt(2),
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP));
+
+  // Execute "Focus group".
+  model.ActivatedAt(2);
+  ASSERT_TRUE(tsm->GetFocusedGroup().has_value());
+  EXPECT_EQ(tsm->GetFocusedGroup().value(), local_id);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.EntryPoint",
+      TabGroupFocusEntryPoint::kBookmarksBarContextMenu, 1);
+
+  // Rebuild model when group is focused; verify label updates to "Unfocus
+  // group".
+  STGTabsMenuModel focused_model(
+      browser(), TabGroupMenuContext::SAVED_TAB_GROUP_BUTTON_CONTEXT_MENU);
+  focused_model.Build(
+      group, base::BindRepeating(
+                 &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                 base::Unretained(this)));
+  EXPECT_EQ(
+      focused_model.GetLabelAt(2),
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP));
+
+  // Execute "Unfocus group".
+  focused_model.ActivatedAt(2);
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kBookmarksBarContextMenu, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelFocusingBrowserTest,
+                       ToggleFocusGroupFromAppMenu) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
+  TabStripModel* const tsm = browser()->GetTabStripModel();
+  TabGroupId local_id = tsm->AddToNewGroup({0});
+
+  SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
+                      std::nullopt);
+  group.SetLocalGroupId(local_id);
+  GetSyncService()->AddGroup(group);
+
+  STGTabsMenuModel model(browser(), TabGroupMenuContext::APP_MENU);
+  model.Build(group,
+              base::BindRepeating(
+                  &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                  base::Unretained(this)));
+
+  model.ActivatedAt(2);
+  ASSERT_TRUE(tsm->GetFocusedGroup().has_value());
+  EXPECT_EQ(tsm->GetFocusedGroup().value(), local_id);
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.EntryPoint",
+                                      TabGroupFocusEntryPoint::kAppMenu, 1);
+
+  STGTabsMenuModel focused_model(browser(), TabGroupMenuContext::APP_MENU);
+  focused_model.Build(
+      group, base::BindRepeating(
+                 &SavedTabGroupTabsMenuModelBrowserTest::GetNextCommandId,
+                 base::Unretained(this)));
+  focused_model.ActivatedAt(2);
+  EXPECT_FALSE(tsm->GetFocusedGroup().has_value());
+  histogram_tester.ExpectUniqueSample("TabGroups.Focus.ExitReason",
+                                      TabGroupFocusExitReason::kAppMenu, 1);
 }
 
 }  // namespace tab_groups

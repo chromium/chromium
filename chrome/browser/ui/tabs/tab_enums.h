@@ -126,7 +126,10 @@ enum class TabGroupFocusEntryPoint {
   kEditorBubble = 0,
   kTabContextMenu = 1,
   kTabContextMenuNonGroup = 2,
-  kMaxValue = kTabContextMenuNonGroup,
+  kBookmarksBarContextMenu = 3,
+  kAppMenu = 4,
+  kOrganizerPanel = 5,
+  kMaxValue = kOrganizerPanel,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusEntryPoint)
 
@@ -145,7 +148,10 @@ enum class TabGroupFocusExitReason {
   kTabOutsideGroupClosed = 8,
   kTabContextMenu = 9,
   kGroupCreated = 10,
-  kMaxValue = kGroupCreated,
+  kBookmarksBarContextMenu = 11,
+  kAppMenu = 12,
+  kOrganizerPanel = 13,
+  kMaxValue = kOrganizerPanel,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupFocusExitReason)
 

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_tabs_menu_model.h"
@@ -204,6 +205,52 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
 
   move_or_open_item->SetEnabled(should_enable_move);
   parent_item->AddChild(std::move(move_or_open_item));
+
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    bool is_group_focused = false;
+    if (is_local) {
+      if (const BrowserWindowInterface* browser_with_group =
+              tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+                  group->local_group_id().value())) {
+        is_group_focused =
+            browser_with_group->GetTabStripModel()->GetFocusedGroup() ==
+            group->local_group_id();
+      }
+    }
+
+    auto focus_item =
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                &TabGroupDynamicMenu::PerformTabGroupAction,
+                base::Unretained(this),
+                tab_groups::TabGroupMenuAction::Type::FOCUS_OR_UNFOCUS_GROUP,
+                browser_window_interface_))
+            .SetActionId(kActionToggleTabGroupFocus)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP))
+            .SetImage(ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled() ? kZoomInMapIcon
+                                                  : kZoomInMapOldIcon))
+            .SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                         AppMenuActionItem::DisplayType::kRow)
+            .Build();
+
+    focus_item->SetProperty(kSavedTabGroupGuidKey,
+                            std::make_unique<base::Uuid>(uuid));
+    if (is_group_focused) {
+      focus_item->SetProperty(
+          AppMenuActionItem::kTextOverrideKey,
+          std::make_unique<std::u16string>(l10n_util::GetStringUTF16(
+              IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)));
+      focus_item->SetProperty(
+          AppMenuActionItem::kIconOverrideKey,
+          std::make_unique<ui::ImageModel>(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kZoomOutMapIcon
+                                                : kZoomOutMapOldIcon)));
+    }
+
+    parent_item->AddChild(std::move(focus_item));
+  }
 
   bool group_pinned = group->is_pinned();
   std::optional<std::u16string> pin_text_override =
