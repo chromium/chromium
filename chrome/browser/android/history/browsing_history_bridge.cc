@@ -27,6 +27,13 @@
 
 namespace jni_zero {
 template <>
+inline std::vector<int64_t> FromJniType<std::vector<int64_t>>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_object) {
+  return FromJniArray<std::vector<int64_t>>(env, j_object);
+}
+
+template <>
 inline ScopedJavaLocalRef<jobject> ToJniType<std::vector<int64_t>>(
     JNIEnv* env,
     const std::vector<int64_t>& vec) {
@@ -218,17 +225,26 @@ void BrowsingHistoryBridge::OnQueryComplete(
 void BrowsingHistoryBridge::MarkItemForRemoval(
     const GURL& url,
     const std::optional<std::string>& app_id,
-    const std::vector<int64_t>& timestamps) {
+    const std::map<GURL, std::vector<int64_t>>& native_timestamps_map) {
   BrowsingHistoryService::HistoryEntry entry;
   entry.url = url;
   entry.app_id = app_id;
-  for (int64_t val : timestamps) {
-    // Since the similar visits grouping logic does not yet exist on Android,
-    // we'll only pass the timestamps for the same url. See b/460405414 for more
-    // details.
-    // TODO(b/483287809): Enable similar visits grouping for Android.
-    entry.all_timestamps[entry.url].insert(
-        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(val)));
+  if (base::FeatureList::IsEnabled(
+          history::kBrowsingHistorySimilarVisitsGrouping)) {
+    for (const auto& [item_url, timestamps] : native_timestamps_map) {
+      for (int64_t val : timestamps) {
+        entry.all_timestamps[item_url].insert(
+            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(val)));
+      }
+    }
+  } else {
+    auto url_and_timestamps = native_timestamps_map.find(entry.url);
+    if (url_and_timestamps != native_timestamps_map.end()) {
+      for (int64_t val : url_and_timestamps->second) {
+        entry.all_timestamps[entry.url].insert(
+            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(val)));
+      }
+    }
   }
   items_to_remove_.push_back(entry);
 }

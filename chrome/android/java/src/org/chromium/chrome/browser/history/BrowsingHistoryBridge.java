@@ -100,7 +100,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         mNativeHistoryBridge,
                         item.getUrl(),
                         item.getAppId(),
-                        item.getNativeTimestamps());
+                        item.getAllTimestamps());
     }
 
     @Override
@@ -208,11 +208,20 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 @JniType("std::string") String hostName,
                 Callback<Long> callback);
 
+        /**
+         * Marks a history item for removal.
+         *
+         * @param url Primary URL of the history item entry.
+         * @param appId ID of the app that generated the item, if any.
+         * @param nativeTimestampsMap Map of URLs (primary and any grouped similar visit URLs) to
+         *     their native microsecond visit timestamps.
+         */
         void markItemForRemoval(
                 long nativeBrowsingHistoryBridge,
                 @JniType("GURL") GURL url,
                 @JniType("std::optional<std::string>") @Nullable String appId,
-                @JniType("std::vector<int64_t>") long[] nativeTimestamps);
+                @JniType("std::map<GURL, std::vector<int64_t>>")
+                        Map<GURL, long[]> nativeTimestampsMap);
 
         void removeItems(long nativeBrowsingHistoryBridge);
 

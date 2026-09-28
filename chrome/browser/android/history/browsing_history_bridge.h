@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_HISTORY_BROWSING_HISTORY_BRIDGE_H_
 
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -54,12 +55,14 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
       const std::string& host_name,
       const JavaRef<jobject>& jcallback_);
 
-  // Adds a HistoryEntry with the |url|, |app_id|, and |timestamps| to the list
-  // of items being removed. The removal will not be committed until
-  // ::removeItems() is called.
-  void MarkItemForRemoval(const GURL& url,
-                          const std::optional<std::string>& app_id,
-                          const std::vector<int64_t>& timestamps);
+  // Adds a HistoryEntry with the primary `url`, `app_id`, and
+  // `native_timestamps_map` (mapping URLs, including any grouped similar visit
+  // URLs, to their visit timestamps) to the list of items being removed. The
+  // removal will not be committed until `RemoveItems()` is called.
+  void MarkItemForRemoval(
+      const GURL& url,
+      const std::optional<std::string>& app_id,
+      const std::map<GURL, std::vector<int64_t>>& native_timestamps_map);
 
   // Removes all items that have been marked for removal through
   // ::markItemForRemoval().

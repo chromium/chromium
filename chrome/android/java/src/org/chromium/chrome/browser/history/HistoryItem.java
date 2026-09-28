@@ -48,7 +48,8 @@ public class HistoryItem extends TimedItem {
      * @param appId ID of the app that this item was generated for. {@code null} if this is
      *     generated for BrApp, or the app can't be identified.
      * @param mostRecentJavaTimestamp Most recent Java compatible navigation time.
-     * @param allTimestamps Map of URLs to microsecond resolution navigation times.
+     * @param allTimestamps Map of URLs to microsecond resolution navigation times. A single history
+     *     item may contain multiple URLs if similar visits are grouped together under this item.
      * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
      * @param isActorVisit Whether the visit is actor initiated.
      */
@@ -159,7 +160,8 @@ public class HistoryItem extends TimedItem {
     }
 
     /**
-     * @return The full map of URLs to timestamp arrays.
+     * @return The full map of URLs to timestamp arrays. A single history item may contain multiple
+     *     URLs if similar visits are grouped together under this item.
      */
     public Map<GURL, long[]> getAllTimestamps() {
         return mAllTimestamps;
