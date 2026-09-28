@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/gfx/ca_layer_result.h"
 
@@ -14,9 +15,12 @@ namespace gfx {
 
 // Contains per frame data, and is passed along with SwapBuffer, PostSubbuffer,
 // CommitOverlayPlanes type methods.
-struct FrameData {
-  explicit FrameData(int64_t seq = -1) : seq(seq) {}
-  ~FrameData() = default;
+struct COMPONENT_EXPORT(GFX) FrameData {
+  explicit FrameData(int64_t seq = -1);
+  ~FrameData();
+
+  FrameData(FrameData&&);
+  FrameData& operator=(FrameData&&);
 
   // Sequence number for this frame. The reserved value of -1 means that there
   // is no sequence number specified (that is, corresponds to no sequence

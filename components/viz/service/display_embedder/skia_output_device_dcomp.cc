@@ -217,11 +217,11 @@ void SkiaOutputDeviceDComp::Present(const std::optional<gfx::Rect>& update_rect,
 
   // The |update_rect| is ignored because the SharedImage backing already
   // knows the area to be swapped.
-  const gfx::FrameData frame_data = frame.data;
+  gfx::FrameData frame_data = std::move(frame.data);
   presenter_->Present(
       base::BindOnce(&SkiaOutputDeviceDComp::OnPresentFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(frame), size_),
-      std::move(feedback), frame_data);
+      std::move(feedback), std::move(frame_data));
 }
 
 void SkiaOutputDeviceDComp::OnPresentFinished(

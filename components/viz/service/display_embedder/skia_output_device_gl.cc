@@ -260,7 +260,7 @@ void SkiaOutputDeviceGL::Present(const std::optional<gfx::Rect>& update_rect,
   gfx::Size surface_size =
       gfx::Size(sk_surface_->width(), sk_surface_->height());
 
-  auto data = frame.data;
+  auto data = std::move(frame.data);
   if (supports_async_swap_) {
     auto callback = base::BindOnce(
         &SkiaOutputDeviceGL::DoFinishSwapBuffersAsync,

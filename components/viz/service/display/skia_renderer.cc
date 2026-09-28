@@ -1201,7 +1201,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.latency_info = std::move(swap_frame_data.latency_info);
   output_frame.choreographer_vsync_id = swap_frame_data.choreographer_vsync_id;
   output_frame.size = viewport_size_for_swap_buffers();
-  output_frame.data = swap_frame_data.frame_data;
+  output_frame.data = std::move(swap_frame_data.frame_data);
   if (use_partial_swap_) {
     swap_buffer_rect_.Intersect(gfx::Rect(surface_size_for_swap_buffers()));
     output_frame.sub_buffer_rect = swap_buffer_rect_;

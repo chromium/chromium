@@ -89,7 +89,7 @@ void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,
                                 BufferPresentedCallback presentation_callback,
                                 gfx::FrameData data) {
   presenter_->Present(std::move(completion_callback),
-                      std::move(presentation_callback), data);
+                      std::move(presentation_callback), std::move(data));
 }
 
 void OutputPresenterGL::ScheduleOverlayPlane(

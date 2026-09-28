@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/gpu/gl_surface_egl_readback_wayland.h"
 
+#include <utility>
+
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
@@ -118,10 +120,10 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
   const auto bounds = gfx::Rect(GetSize());
   constexpr bool enable_blend_for_shadow = true;
   buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_,
-                                /*frame_id*/ next_buffer->buffer_id_, data,
-                                bounds, enable_blend_for_shadow,
-                                gfx::RoundedCornersF(), surface_scale_factor_,
-                                bounds);
+                                /*frame_id*/ next_buffer->buffer_id_,
+                                std::move(data), bounds,
+                                enable_blend_for_shadow, gfx::RoundedCornersF(),
+                                surface_scale_factor_, bounds);
 }
 
 gfx::SurfaceOrigin GLSurfaceEglReadbackWayland::GetOrigin() const {

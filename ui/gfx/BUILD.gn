@@ -99,6 +99,7 @@ component("gfx") {
     "font_render_params.h",
     "font_util.cc",
     "font_util.h",
+    "frame_data.cc",
     "frame_data.h",
     "gpu_extra_info.cc",
     "gpu_extra_info.h",

@@ -332,8 +332,8 @@ class WaylandBufferManagerTest : public WaylandTest {
                     float surface_scale_factor,
                     const gfx::Rect& damage_region) {
     buffer_manager_gpu_->CommitBuffer(
-        widget, frame_id, buffer_id, data, bounds_rect, /*enable_blend=*/false,
-        corners, surface_scale_factor, damage_region);
+        widget, frame_id, buffer_id, std::move(data), bounds_rect,
+        /*enable_blend=*/false, corners, surface_scale_factor, damage_region);
     // Let the mojo message to be processed.
     base::RunLoop().RunUntilIdle();
   }

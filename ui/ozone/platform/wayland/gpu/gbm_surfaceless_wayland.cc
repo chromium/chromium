@@ -193,7 +193,7 @@ void GbmSurfacelessWayland::Present(SwapCompletionCallback completion_callback,
   PendingFrame* frame = unsubmitted_frames_.back().get();
   frame->completion_callback = std::move(completion_callback);
   frame->presentation_callback = std::move(presentation_callback);
-  frame->data = data;
+  frame->data = std::move(data);
 
   unsubmitted_frames_.push_back(
       std::make_unique<PendingFrame>(next_frame_id()));
@@ -285,7 +285,7 @@ void GbmSurfacelessWayland::MaybeSubmitFrames() {
     }
 
     buffer_manager_->CommitOverlays(widget_, submitted_frame->frame_id,
-                                    submitted_frame->data,
+                                    std::move(submitted_frame->data),
                                     std::move(submitted_frame->configs));
     submitted_frames_.push_back(std::move(submitted_frame));
   }

@@ -94,6 +94,15 @@ class ImageTransportSurfaceOverlayMacTest : public testing::Test {
  protected:
   static constexpr int kMaxPendingSwaps = 2;
 
+  void PresentFrame(bool is_handling_interaction) {
+    gfx::FrameData data;
+#if BUILDFLAG(IS_MAC)
+    data.is_handling_interaction = is_handling_interaction;
+#endif
+    surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(),
+                                  std::move(data));
+  }
+
   raw_ptr<MockCALayerTreeCoordinator> mock_ca_layer_tree_coordinator_;
   scoped_refptr<ImageTransportSurfaceOverlayMacEGL> surface_overlay_mac_;
 };
@@ -104,16 +113,11 @@ TEST_F(ImageTransportSurfaceOverlayMacTest,
   // On Mac, it will commit immediately when it's not handling interaction.
 
   // The first frame is committed immediately.
-  gfx::FrameData data;
-#if BUILDFLAG(IS_MAC)
-  data.is_handling_interaction = false;
-#endif
-
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .WillOnce([this]() {
         mock_ca_layer_tree_coordinator_->DecreasePendingSwaps();
       });
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/false);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 
   // The second frame is committed immediately.
@@ -121,21 +125,18 @@ TEST_F(ImageTransportSurfaceOverlayMacTest,
       .WillOnce([this]() {
         mock_ca_layer_tree_coordinator_->DecreasePendingSwaps();
       });
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/false);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 }
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(ImageTransportSurfaceOverlayMacTest,
        PresentDelaysCommitWhenHandlingInteraction) {
-  gfx::FrameData data;
-  data.is_handling_interaction = true;
-
   // The first two frames will be pending.
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .Times(0);
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/true);
+  PresentFrame(/*is_handling_interaction=*/true);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 
   // At the first VSync callback, the first frame is committed.
@@ -162,17 +163,14 @@ TEST_F(ImageTransportSurfaceOverlayMacTest,
   // The first frame is pending.
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .Times(0);
-  gfx::FrameData data;
-  data.is_handling_interaction = true;
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/true);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 
   // With a previous pending frame, it can't commit the second frame
   // immediately even if it's not handling interaction.
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .Times(0);
-  data.is_handling_interaction = false;
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/false);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 }
 
@@ -182,16 +180,14 @@ TEST_F(ImageTransportSurfaceOverlayMacTest,
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .Times(0);
 
-  gfx::FrameData data;
-  data.is_handling_interaction = true;  // Even if interacting.
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/true);
+  PresentFrame(/*is_handling_interaction=*/true);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 
   // Even if interacting.
   EXPECT_CALL(*mock_ca_layer_tree_coordinator_, CommitPresentedFrameToCA(_, _))
       .Times(1);
-  surface_overlay_mac_->Present(base::DoNothing(), base::DoNothing(), data);
+  PresentFrame(/*is_handling_interaction=*/true);
   testing::Mock::VerifyAndClearExpectations(mock_ca_layer_tree_coordinator_);
 }
 #endif

@@ -5,6 +5,7 @@
 #include "ui/gl/gl_surface_egl_x11.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
@@ -52,7 +53,8 @@ void NativeViewGLSurfaceEGLX11::Destroy() {
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
     PresentationCallback callback,
     gfx::FrameData data) {
-  auto result = NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), data);
+  auto result =
+      NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), std::move(data));
   if (result == gfx::SwapResult::SWAP_FAILED)
     return result;
 
