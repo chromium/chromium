@@ -17,7 +17,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -57,48 +56,6 @@ int IsEnhancedProtectionMessageVisibleOnInterstitial(
                      "protection message.";
   }
   return content::EvalJs(tab->GetPrimaryMainFrame(), command).ExtractInt();
-}
-
-// Test extended reporting is managed by policy.
-IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
-                       SafeBrowsingExtendedReportingPolicyManaged) {
-  // Set the extended reporting pref to True and ensure the enterprise policy
-  // can overwrite it.
-  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
-  prefs->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled, true);
-
-  // Set the enterprise policy to disable extended reporting.
-  EXPECT_TRUE(
-      prefs->GetBoolean(prefs::kSafeBrowsingExtendedReportingOptInAllowed));
-  PolicyMap policies;
-  policies.Set(key::kSafeBrowsingExtendedReportingEnabled,
-               POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               base::Value(false), nullptr);
-  UpdateProviderPolicy(policies);
-  // Policy should have overwritten the pref, and it should be managed.
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingScoutReportingEnabled));
-  EXPECT_TRUE(
-      prefs->IsManagedPreference(prefs::kSafeBrowsingScoutReportingEnabled));
-
-  // Also make sure the SafeBrowsing prefs helper functions agree with the
-  // policy.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kExtendedReportingRemovePrefDependency)) {
-    EXPECT_FALSE(safe_browsing::IsExtendedReportingPolicyManaged(*prefs));
-  } else {
-    EXPECT_TRUE(safe_browsing::IsExtendedReportingPolicyManaged(*prefs));
-  }
-
-  // Note that making SBER policy managed does NOT affect the SBEROptInAllowed
-  // setting, which is intentionally kept distinct for now. When the latter is
-  // deprecated, then SBER's policy management will imply whether the checkbox
-  // is visible.
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kExtendedReportingRemovePrefDependency)) {
-    EXPECT_FALSE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
-  } else {
-    EXPECT_TRUE(safe_browsing::IsExtendedReportingOptInAllowed(*prefs));
-  }
 }
 
 // Test that when safe browsing allowlist domains are set by policy, safe

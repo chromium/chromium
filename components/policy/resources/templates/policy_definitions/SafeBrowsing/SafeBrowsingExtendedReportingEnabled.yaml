@@ -1,20 +1,19 @@
 arc_support: This policy is not supported within Arc.
 caption: Enable Safe Browsing Extended Reporting
 default: null
+deprecated: true
 desc: |-
-  Setting the policy to Enabled turns on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s Safe Browsing Extended Reporting, which sends some system information and page content to Google servers to help detect dangerous apps and sites.
+  This policy is deprecated and has no effect starting with M145. Safe Browsing Extended Reporting was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, so <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> no longer sends these reports regardless of how this policy is set, and the corresponding setting is no longer shown to users.
 
-        Setting the policy to Disabled means reports are never sent.
+        To have <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> send additional information to help improve Safe Browsing, turn on Enhanced Protection with the <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME">SafeBrowsingProtectionLevel</ph> policy instead.
 
-        If you set this policy, users can't change it. If not set, users can decide whether to send reports or not.
+        Before M145, setting the policy to Enabled turned on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s Safe Browsing Extended Reporting, which sent some system information and page content to Google servers to help detect dangerous apps and sites. Setting the policy to Disabled meant reports were never sent. If the policy was set, users couldn't change it; if it was not set, users could decide whether to send reports or not.
 
         See more about Safe Browsing ( https://developers.google.com/safe-browsing ).
 example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Enable reporting of system information and page content to help improve
     Safe Browsing
@@ -30,9 +29,9 @@ owners:
 schema:
   type: boolean
 supported_on:
-- chrome.*:66-
-- chrome_os:66-
-- android:87-
+- chrome.*:66-144
+- chrome_os:66-144
+- android:87-144
 tags:
 - google-sharing
 type: main
