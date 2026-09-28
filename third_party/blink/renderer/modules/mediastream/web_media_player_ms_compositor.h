@@ -261,12 +261,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void StartRenderingInternal();
   void StopRenderingInternal();
 
-  void RecordFrameDisplayedStats(base::TimeTicks frame_displayed_time);
-  void RecordFrameDecodedStats(
-      std::optional<base::TimeTicks> frame_received_time,
-      std::optional<base::TimeDelta> frame_processing_time,
-      std::optional<uint32_t> frame_rtp_timestamp);
-
   void SetMetadata();
 
   void OnHasSeenScreencastContentType();
@@ -365,16 +359,6 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   bool stopped_;
   bool render_started_;
-
-  std::optional<base::TimeTicks> last_enqueued_frame_receive_time_;
-  std::optional<base::TimeTicks> last_enqueued_frame_decoded_time_;
-  std::optional<base::TimeTicks> last_presented_frame_display_time_;
-  std::optional<uint32_t> last_enqueued_frame_rtp_timestamp_;
-  std::optional<base::TimeTicks> current_frame_receive_time_;
-  std::optional<uint32_t> last_presented_frame_rtp_timestamp_;
-  std::optional<uint32_t> current_frame_rtp_timestamp_;
-  std::optional<base::TimeTicks> last_presented_frame_capture_time_;
-  int frame_enqueued_since_last_vsync_ GUARDED_BY(current_frame_lock_) = 0;
 
   // Called when a new frame is enqueued, either in RenderWithoutAlgorithm() or
   // in RenderUsingAlgorithm(). Used to fulfill video.requestAnimationFrame()

@@ -14,7 +14,6 @@
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
@@ -376,41 +375,6 @@ void WebMediaPlayerMSCompositor::SetVideoFrameProviderClient(
     video_frame_provider_client_->StartRendering();
 }
 
-void WebMediaPlayerMSCompositor::RecordFrameDecodedStats(
-    std::optional<base::TimeTicks> frame_received_time,
-    std::optional<base::TimeDelta> frame_processing_time,
-    std::optional<uint32_t> frame_rtp_timestamp) {
-  DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  if (frame_received_time && last_enqueued_frame_receive_time_) {
-    base::TimeDelta frame_receive_time_delta =
-        *frame_received_time - *last_enqueued_frame_receive_time_;
-    LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".FrameReceivedTimeDelta",
-                          frame_receive_time_delta);
-  }
-  last_enqueued_frame_receive_time_ = frame_received_time;
-
-  auto now = base::TimeTicks::Now();
-  if (last_enqueued_frame_decoded_time_) {
-    base::TimeDelta frame_decoded_time_delta =
-        now - *last_enqueued_frame_decoded_time_;
-    LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".FrameDecodedTimeDelta",
-                          frame_decoded_time_delta);
-  }
-  last_enqueued_frame_decoded_time_ = now;
-
-  if (frame_processing_time) {
-    LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".DecodeDuration",
-                          frame_processing_time.value());
-  }
-
-  if (frame_rtp_timestamp && last_enqueued_frame_rtp_timestamp_) {
-    LOCAL_HISTOGRAM_COUNTS_10000(
-        UmaPrefix() + ".FrameDecodedRtpTimestampDelta",
-        *frame_rtp_timestamp - *last_enqueued_frame_rtp_timestamp_);
-  }
-  last_enqueued_frame_rtp_timestamp_ = frame_rtp_timestamp;
-}
-
 void WebMediaPlayerMSCompositor::SetMetadata() {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
@@ -428,15 +392,6 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::EnqueueFrame",
                       "Timestamp", frame->timestamp().InMicroseconds());
   ++total_frame_count_;
-  ++frame_enqueued_since_last_vsync_;
-  std::optional<uint32_t> enqueue_frame_rtp_timestamp;
-  if (frame->metadata().rtp_timestamp) {
-    enqueue_frame_rtp_timestamp =
-        static_cast<uint32_t>(frame->metadata().rtp_timestamp.value());
-  }
-  RecordFrameDecodedStats(frame->metadata().receive_time,
-                          frame->metadata().processing_time,
-                          enqueue_frame_rtp_timestamp);
 
   // With algorithm off, just let |current_frame_| hold the incoming |frame|.
   if (!rendering_frame_buffer_) {
@@ -600,39 +555,11 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerMSCompositor::GetCurrentFrame() {
   return current_frame_;
 }
 
-void WebMediaPlayerMSCompositor::RecordFrameDisplayedStats(
-    base::TimeTicks frame_displayed_time) {
-  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
-  if (last_presented_frame_display_time_) {
-    base::TimeDelta presentation_timestamp_delta =
-        frame_displayed_time - *last_presented_frame_display_time_;
-    LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".FramePresentationDelta",
-                          presentation_timestamp_delta);
-  }
-  last_presented_frame_display_time_ = frame_displayed_time;
-
-  if (current_frame_rtp_timestamp_ && last_presented_frame_rtp_timestamp_) {
-    int32_t rtp_timestamp_delta =
-        *current_frame_rtp_timestamp_ - *last_presented_frame_rtp_timestamp_;
-    LOCAL_HISTOGRAM_COUNTS_10000(UmaPrefix() + ".MediaTimelineDelta",
-                                 rtp_timestamp_delta);
-  }
-  last_presented_frame_rtp_timestamp_ = current_frame_rtp_timestamp_;
-
-  if (current_frame_receive_time_) {
-    base::TimeDelta frame_receive_to_display =
-        frame_displayed_time - *current_frame_receive_time_;
-    LOCAL_HISTOGRAM_TIMES(UmaPrefix() + ".FrameReceivedToDisplayedTime",
-                          frame_receive_to_display);
-  }
-}
-
 void WebMediaPlayerMSCompositor::PutCurrentFrame() {
   DVLOG(3) << __func__;
   TRACE_EVENT("media", "PutCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_rendered_ = true;
-  RecordFrameDisplayedStats(base::TimeTicks::Now());
 }
 
 base::TimeDelta WebMediaPlayerMSCompositor::GetPreferredRenderInterval() {
@@ -1027,13 +954,6 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
   current_frame_ = std::move(frame);
   current_frame_is_copy_ = is_copy;
   SetMetadata();
-
-  current_frame_receive_time_ = current_frame_->metadata().receive_time;
-  current_frame_rtp_timestamp_ = static_cast<uint32_t>(
-      current_frame_->metadata().rtp_timestamp.value_or(0));
-  LOCAL_HISTOGRAM_COUNTS_100(UmaPrefix() + ".DecoderThroughput",
-                             frame_enqueued_since_last_vsync_);
-  frame_enqueued_since_last_vsync_ = 0;
 
   // TODO(https://crbug.com/1050755): Improve the accuracy of these fields when
   // we only use RenderWithoutAlgorithm.
