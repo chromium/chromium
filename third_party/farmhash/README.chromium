@@ -1,15 +1,15 @@
 Name: FarmHash
 Short Name: farmhash
 URL: https://github.com/google/farmhash
-Version: 1.1
-Date: 2017-09-13
-Revision: 816a4ae622e964763ca0862d9dbd19324a1eaf45
-Update Mechanism: Manual
+Version: N/A
+Date: 2026-06-05
+Revision: 9d99331eb762e9ee22fd97d15a594525ad98310a
+Update Mechanism: Autoroll
 License: MIT
 License File: LICENSE
-Security Critical: Yes
+Security Critical: yes
 Shipped: yes
-License Android Compatible: Yes
+License Android Compatible: yes
 
 Description:
 FarmHash, a family of hash functions.
