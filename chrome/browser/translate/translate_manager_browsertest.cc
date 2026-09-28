@@ -1606,8 +1606,17 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       RevertTranslationClosesSidePanelViaTranslateManager) {
+// TODO(https://crbug.com/467160838): Fix test failure on ChromeOS ASan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RevertTranslationClosesSidePanelViaTranslateManager \
+  DISABLED_RevertTranslationClosesSidePanelViaTranslateManager
+#else
+#define MAYBE_RevertTranslationClosesSidePanelViaTranslateManager \
+  RevertTranslationClosesSidePanelViaTranslateManager
+#endif
+IN_PROC_BROWSER_TEST_F(
+    TranslateManagerBrowserTest,
+    MAYBE_RevertTranslationClosesSidePanelViaTranslateManager) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
