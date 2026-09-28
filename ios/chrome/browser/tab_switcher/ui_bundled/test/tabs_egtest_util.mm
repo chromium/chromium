@@ -28,6 +28,7 @@ void CreateRegularTab(net::test_server::EmbeddedTestServer* test_server,
                       NSString* title) {
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(test_server, title)];
+  [ChromeEarlGrey waitForCurrentTabTitle:title];
 }
 
 // Create `tabs_count` of regular tabs.

@@ -702,6 +702,18 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface currentTabTitle];
 }
 
+- (void)waitForCurrentTabTitle:(NSString*)tabTitle {
+  ConditionBlock condition = ^{
+    return [[self currentTabTitle] isEqualToString:tabTitle];
+  };
+  bool success =
+      WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, condition);
+  NSString* errorString = [NSString
+      stringWithFormat:@"Timed out waiting for current tab title to become %@",
+                       tabTitle];
+  EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
+}
+
 - (NSString*)nextTabTitle {
   return [ChromeEarlGreyAppInterface nextTabTitle];
 }

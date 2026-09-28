@@ -547,6 +547,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the tab title of the current tab.
 - (NSString*)currentTabTitle;
 
+// Waits for the tab title of the current tab to match `tabTitle`.
+- (void)waitForCurrentTabTitle:(NSString*)tabTitle;
+
 // Returns the tab title of the next tab. Assumes that next tab exists.
 - (NSString*)nextTabTitle;
 
