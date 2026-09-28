@@ -404,6 +404,8 @@ chromium-metrics-reviews@google.com.
   <int value="67108866" label="Home page | Auto bookmark"/>
   <int value="134217728" label="From API"/>
   <int value="134217729" label="From API | Typed"/>
+  <int value="134217734" label="From API | Auto toplevel"/>
+  <int value="1073741824" label="Client redirect"/>
 </enum>
 
 <!-- LINT.IfChange(NavigationRequestSchemeType) -->
