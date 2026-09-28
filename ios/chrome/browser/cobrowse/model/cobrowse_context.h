@@ -34,6 +34,10 @@ class GURL;
 // purposes.
 + (instancetype)defaultContext;
 
+// Returns a context initialized with `searchQuery`, using the default base
+// search URL.
++ (instancetype)cobrowseContextWithSearchQuery:(NSString*)searchQuery;
+
 // Initializes the context with `url`, adding cobrowse query parameters.
 // Note: `url` may be ignored if the "CobrowseGwsURL" experimental setting is
 // set.

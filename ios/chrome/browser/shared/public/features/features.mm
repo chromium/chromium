@@ -1148,3 +1148,10 @@ bool IsTTCEnabled() {
 }
 
 BASE_FEATURE(kImportExportFlags, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAimCobrowseWebSelectionSearch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAimCobrowseWebSelectionSearchEnabled() {
+  return IsAimCobrowseEnabled() &&
+         base::FeatureList::IsEnabled(kAimCobrowseWebSelectionSearch);
+}

@@ -18,6 +18,8 @@ source_set("ui_bundled") {
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/fullscreen/ui_bundled",

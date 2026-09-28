@@ -964,4 +964,10 @@ bool IsTTCEnabled();
 // Feature to enable importing and exporting flags in chrome://flags.
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
+// Enables the AimCobrowseWebSelectionSearch feature.
+BASE_DECLARE_FEATURE(kAimCobrowseWebSelectionSearch);
+
+// Returns true if the AimCobrowseWebSelectionSearch feature is enabled.
+bool IsAimCobrowseWebSelectionSearchEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

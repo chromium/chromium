@@ -8,11 +8,13 @@
 
 #import "base/check.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_mediator.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller_delegate.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_handler.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -124,9 +126,15 @@
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  _searchWithMediator =
-      [[SearchWithMediator alloc] initWithTemplateURLService:templateURLService
-                                                   incognito:incognito];
+  AimEligibilityService* aimEligibilityService =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
+  CobrowseBrowserAgent* cobrowseBrowserAgent =
+      CobrowseBrowserAgent::FromBrowser(browser);
+  _searchWithMediator = [[SearchWithMediator alloc]
+      initWithTemplateURLService:templateURLService
+           aimEligibilityService:aimEligibilityService
+            cobrowseBrowserAgent:cobrowseBrowserAgent
+                       incognito:incognito];
 
   id<SceneCommands> sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);

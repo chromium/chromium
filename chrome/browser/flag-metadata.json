@@ -153,6 +153,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "aim-cobrowse-web-selection-search",
+    "owners": [ "alionadangla@google.com", "bling-search@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "aim-eligibility-component-extension",
     "owners": [
       "mahmadi@chromium.org",

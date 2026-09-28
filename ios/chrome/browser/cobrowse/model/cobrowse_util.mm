@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 
-bool IsAimCobrowseEligible(ProfileIOS* profile) {
+bool IsAimCobrowseEligible(AimEligibilityService* aim_eligibility_service) {
   if (!IsAimCobrowseEnabled() || !IsAssistantContainerEnabled()) {
     return false;
   }
@@ -20,12 +20,6 @@ bool IsAimCobrowseEligible(ProfileIOS* profile) {
     return false;
   }
 
-  if (!profile || profile->IsOffTheRecord()) {
-    return false;
-  }
-
-  AimEligibilityService* aim_eligibility_service =
-      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
   if (!aim_eligibility_service ||
       !aim_eligibility_service->IsFuseboxEligible() ||
       !aim_eligibility_service->IsCobrowseEligible()) {
@@ -33,4 +27,24 @@ bool IsAimCobrowseEligible(ProfileIOS* profile) {
   }
 
   return true;
+}
+
+bool IsAimCobrowseEligible(ProfileIOS* profile) {
+  if (!profile || profile->IsOffTheRecord()) {
+    return false;
+  }
+
+  return IsAimCobrowseEligible(
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile));
+}
+
+bool IsAimCobrowseWebSelectionSearchEligible(
+    AimEligibilityService* aim_eligibility_service) {
+  return IsAimCobrowseEligible(aim_eligibility_service) &&
+         IsAimCobrowseWebSelectionSearchEnabled();
+}
+
+bool IsAimCobrowseWebSelectionSearchEligible(ProfileIOS* profile) {
+  return IsAimCobrowseEligible(profile) &&
+         IsAimCobrowseWebSelectionSearchEnabled();
 }

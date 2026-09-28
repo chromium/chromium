@@ -2811,6 +2811,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"import-export-flags", flag_descriptions::kImportExportFlagsName,
      flag_descriptions::kImportExportFlagsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kImportExportFlags)},
+    {"aim-cobrowse-web-selection-search",
+     flag_descriptions::kAimCobrowseWebSelectionSearchName,
+     flag_descriptions::kAimCobrowseWebSelectionSearchDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAimCobrowseWebSelectionSearch)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

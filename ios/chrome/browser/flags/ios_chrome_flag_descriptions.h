@@ -61,6 +61,12 @@ inline constexpr char kAimCobrowseName[] = "AimCobrowse";
 inline constexpr char kAimCobrowseDescription[] =
     "Enables the AimCobrowse feature.";
 
+inline constexpr char kAimCobrowseWebSelectionSearchName[] =
+    "AIM Cobrowse Web Selection Search";
+inline constexpr char kAimCobrowseWebSelectionSearchDescription[] =
+    "When enabled, 'Search with Google' in the web selection menu opens "
+    "Cobrowse with the selected text.";
+
 inline constexpr char kAimHistoryThreadsManagementName[] =
     "AimHistoryThreadsManagement";
 inline constexpr char kAimHistoryThreadsManagementDescription[] =

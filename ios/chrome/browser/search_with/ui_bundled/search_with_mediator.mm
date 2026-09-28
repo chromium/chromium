@@ -12,9 +12,13 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/data_controls/core/browser/features.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -75,20 +79,39 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 @implementation SearchWithMediator {
   // The service to retrieve default search engine URL.
   raw_ptr<TemplateURLService, DanglingUntriaged> _templateURLService;
+  // The service to determine AIM eligibility.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // The browser agent for cobrowse.
+  raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
+}
+
+- (instancetype)
+    initWithTemplateURLService:(TemplateURLService*)templateURLService
+         aimEligibilityService:(AimEligibilityService*)aimEligibilityService
+          cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
+                     incognito:(BOOL)incognito {
+  if ((self = [super init])) {
+    _incognito = incognito;
+    _templateURLService = templateURLService;
+    _aimEligibilityService = aimEligibilityService;
+    _cobrowseBrowserAgent = cobrowseBrowserAgent;
+  }
+  return self;
 }
 
 - (instancetype)initWithTemplateURLService:
                     (TemplateURLService*)templateURLService
                                  incognito:(BOOL)incognito {
-  if ((self = [super init])) {
-    _incognito = incognito;
-    _templateURLService = templateURLService;
-  }
-  return self;
+  return [self initWithTemplateURLService:templateURLService
+                    aimEligibilityService:nullptr
+                     cobrowseBrowserAgent:nullptr
+                                incognito:incognito];
 }
 
 - (void)shutdown {
   _templateURLService = nullptr;
+  _aimEligibilityService = nullptr;
+  _cobrowseBrowserAgent = nullptr;
 }
 
 #pragma mark - Private
@@ -259,6 +282,17 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   BOOL incognito = self.incognito;
   LogTrigger(incognito, isDefaultSearchEngineGoogle);
   LogSelectedNumberChar([text length]);
+
+  if (isDefaultSearchEngineGoogle && !incognito && _cobrowseBrowserAgent &&
+      IsAimCobrowseWebSelectionSearchEligible(_aimEligibilityService)) {
+    CobrowseContext* context =
+        [CobrowseContext cobrowseContextWithSearchQuery:text];
+    _cobrowseBrowserAgent->SetCobrowseContext(context);
+    _cobrowseBrowserAgent->SetSessionActive(true);
+    [self.sceneHandler showAssistant];
+    return;
+  }
+
   OpenNewTabCommand* command =
       [[OpenNewTabCommand alloc] initWithURL:searchURL
                                     referrer:web::Referrer()

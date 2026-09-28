@@ -1,5 +1,7 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h",
+  "+ios/chrome/browser/cobrowse/model",
   "+ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h",
   "+ios/chrome/browser/enterprise/data_protection/public/features.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",

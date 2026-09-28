@@ -102,6 +102,14 @@ const char kGoogleSearchAppStateValue[] = "4";
   return [[self alloc] initWithURL:GURL(kBaseSearchURL)];
 }
 
++ (instancetype)cobrowseContextWithSearchQuery:(NSString*)searchQuery {
+  CobrowseContext* defaultContext = [CobrowseContext defaultContext];
+  GURL URL =
+      net::AppendOrReplaceQueryParameter(defaultContext.url, kSearchQueryKey,
+                                         base::SysNSStringToUTF8(searchQuery));
+  return [[self alloc] initWithURL:URL];
+}
+
 - (BOOL)isEqual:(id)other {
   if (other == self) {
     return YES;
