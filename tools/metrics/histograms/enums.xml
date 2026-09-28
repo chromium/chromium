@@ -8524,6 +8524,7 @@ from previous Chrome versions.
   <int value="-1943817505" label="SingleClickAutofill:enabled"/>
   <int value="-1943507605" label="enable-new-video-renderer"/>
   <int value="-1943313820" label="SystemKeyboardLock:disabled"/>
+  <int value="-1942767909" label="SettingsInTabDesktop:disabled"/>
   <int value="-1942730618" label="WebAuthenticationTouchId:disabled"/>
   <int value="-1942518189" label="HeavyAdIntervention:disabled"/>
   <int value="-1942470865" label="EnableWindowsGameInputDataFetcher:enabled"/>
@@ -12520,6 +12521,7 @@ from previous Chrome versions.
       label="NtpMostRelevantTabResumptionModuleLocal:enabled"/>
   <int value="-730658379" label="DevToolsProtocolMonitor:enabled"/>
   <int value="-730596576" label="ReaderModeDevEntryPoint:disabled"/>
+  <int value="-730492546" label="SettingsInTabDesktop:enabled"/>
   <int value="-730110983"
       label="GlicExperimentalTriggeringScriptTools:enabled"/>
   <int value="-729456213" label="BluetoothBtsnoopInternals:enabled"/>

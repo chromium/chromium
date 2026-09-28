@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_features.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -7827,7 +7828,11 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"settings-in-tab", flag_descriptions::kSettingsInTabName,
      flag_descriptions::kSettingsInTabDescription, kOsAndroid,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+     FEATURE_VALUE_TYPE(chrome::android::kSettingsInTabDesktop)},
+#else
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTab)},
+#endif
 
     {kSettingsInTabUrlNavInternalName,
      flag_descriptions::kSettingsInTabUrlNavName,
