@@ -59,7 +59,7 @@ bool IsAccessibilityTextFormattingEnabled() {
 }
 
 BASE_FEATURE(kAccessibilityHandleOccludingViews,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityHandleOccludingViewsEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityHandleOccludingViews);
