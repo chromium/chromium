@@ -14,13 +14,13 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/gcm/instance_id",
   "+chrome/browser/profiles",
 ]
 
 specific_include_rules = {
   # Allow ProfileKeyedService to depend on browser_process for now.
   "client_app_metadata_provider_service_factory\\.cc": [
+    "+chrome/browser/gcm/instance_id",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
   ],

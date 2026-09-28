@@ -13,13 +13,16 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash",
   "+chrome/browser/apps",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/test/base",
   "+chrome/test/views",
 ]
 
 specific_include_rules = {
+  # The keyed service factory is the //chrome seam here.
+  "app_controls_service_factory\\.cc": [
+    "+chrome/browser/policy",
+  ],
   "app_activity_watcher_unittest\\.cc": [
     "+chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h",
   ],

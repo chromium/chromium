@@ -11,13 +11,16 @@ include_rules = [
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/media/router",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/global_media_controls",
   "+chrome/browser/ui/views/global_media_controls",
 ]
 
 specific_include_rules = {
+  # Only these files need this dependency.
+  "(cast_media_notification_producer_keyed_service_factory\\.cc|media_notification_provider_impl\\.cc|media_notification_provider_impl_unittest\\.cc)": [
+    "+chrome/browser/media/router",
+  ],
   "media_notification_provider_impl\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
