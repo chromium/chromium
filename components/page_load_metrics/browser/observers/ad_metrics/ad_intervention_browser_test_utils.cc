@@ -10,7 +10,6 @@
 #include "components/page_load_metrics/browser/observers/ad_metrics/ads_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,14 +18,6 @@
 namespace page_load_metrics {
 
 namespace {
-
-// Scales the rect by the web content's render widget host's device scale
-// factor.
-gfx::Rect ScaleRectByDeviceScaleFactor(const gfx::Rect& rect,
-                                       content::WebContents* web_contents) {
-  return gfx::ScaleToRoundedRect(
-      rect, web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
-}
 
 // Navigates to |url| in |web_contents| and waits for |event|.
 void NavigateAndWaitForTimingEvent(
@@ -88,10 +79,7 @@ void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,
 
   waiter->Wait();
 
-  // The intersections returned by the renderer are scaled to the device's
-  // scale factor.
-  gfx::Rect scaled_rect = ScaleRectByDeviceScaleFactor(rect, web_contents);
-  waiter->AddMainFrameRectExpectation(scaled_rect);
+  EXPECT_TRUE(waiter->DidObserveMainFrameAdRect(rect));
 }
 
 // Navigate to |url| in |web_contents| and wait until we see the first

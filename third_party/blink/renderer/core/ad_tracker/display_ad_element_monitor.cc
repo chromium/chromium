@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
 
@@ -207,12 +209,21 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
 
   gfx::Rect rect_to_report;
   if (LayoutObject* r = element_->GetLayoutObject()) {
-    // Get the element's bounding box relative to the main frame's viewport.
-    gfx::Rect rect_in_viewport = r->AbsoluteBoundingBoxRect(
+    // Get the element's floating-point bounding box relative to the main
+    // frame's viewport. Preserving floating-point coordinates prior to
+    // unscaling avoids `ToEnclosingRect` and scroll-offset snapping errors that
+    // would otherwise cause unscaled size or document-relative position to
+    // fluctuate by 1px during scrolling under fractional zoom factors.
+    gfx::RectF rect_f_in_viewport = r->AbsoluteBoundingBoxRectF(
         {MapCoordinatesMode::kTraverseDocumentBoundaries});
 
+    const float inverse_zoom = 1.0f / local_root_main_frame.LayoutZoomFactor();
+    gfx::Size unscaled_size = gfx::ToRoundedSize(
+        gfx::ScaleSize(rect_f_in_viewport.size(), inverse_zoom));
+
     // Exclude ads that are invisible or too small (e.g. tracking pixels).
-    if (rect_in_viewport.width() > 1 && rect_in_viewport.height() > 1) {
+    if (unscaled_size.width() > 1 && unscaled_size.height() > 1) {
+      gfx::Rect rect_in_viewport = gfx::ToEnclosingRect(rect_f_in_viewport);
       OverlayVisibility overlay_visibility =
           CheckOverlayVisibility(local_root_main_frame, rect_in_viewport);
 
@@ -237,10 +248,19 @@ void DisplayAdElementMonitor::DidFinishLifecycleUpdate(
 
       if (overlay_visibility_ == OverlayVisibility::kVisible) {
         // Maps the rectangle from its coordinates within the viewport's
-        // coordinate system to the document's coordinate system.
-        rect_to_report = rect_in_viewport + local_root_main_frame.View()
-                                                ->LayoutViewport()
-                                                ->PixelSnappedScrollOffset();
+        // coordinate system to the document's coordinate system before
+        // unscaling by the layout zoom factor to report in CSS pixels. Adding
+        // `OffsetForFixedPosition()` (`ScrolledContentOffset()`) matches the
+        // `LayoutUnit`-floored offset subtracted during
+        // `AbsoluteBoundingBoxRectF`, ensuring the viewport scroll translation
+        // cancels out for non-fixed elements.
+        gfx::PointF origin_in_document =
+            rect_f_in_viewport.origin() +
+            gfx::Vector2dF(local_root_main_frame.ContentLayoutObject()
+                               ->OffsetForFixedPosition());
+        rect_to_report = gfx::Rect(gfx::ToRoundedPoint(gfx::ScalePoint(
+                                       origin_in_document, inverse_zoom)),
+                                   unscaled_size);
       }
     }
   }

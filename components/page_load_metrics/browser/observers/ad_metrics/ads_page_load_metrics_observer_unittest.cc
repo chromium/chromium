@@ -1858,8 +1858,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments) {
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
 
   page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.main_frame_rect = gfx::Rect(0, 0, 1, 100);
-  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
+  metadata.main_frame_rect = gfx::Rect(0, 0, 100, 1000);
+  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 100, 1000);
   tester_->SimulateMetadataUpdate(metadata, main_frame);
 
   const int id1 = 1;
@@ -1867,8 +1867,8 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments) {
 
   // Simulate 2 ads being in the viewport for 1 millisecond.
   page_load_metrics::mojom::FrameMetadata metadata2;
-  metadata2.main_frame_ad_rects = {{id1, gfx::Rect(0, 0, 1, 10)},
-                                   {id2, gfx::Rect(0, 20, 1, 10)}};
+  metadata2.main_frame_ad_rects = {{id1, gfx::Rect(0, 0, 100, 100)},
+                                   {id2, gfx::Rect(0, 200, 100, 100)}};
 
   tester_->SimulateMetadataUpdate(metadata2, main_frame);
   AdvancePageDuration(base::Milliseconds(1));

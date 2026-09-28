@@ -564,8 +564,8 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_SingleAd) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
-  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
-  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 50, 50)}});
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 200, 200));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 100, 100)}});
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
@@ -578,9 +578,9 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_MultipleAds) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
-  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
-  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 20, 20)},
-                                  {kRectId2, gfx::Rect(50, 50, 20, 20)}});
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 300, 300));
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(10, 10, 100, 100)},
+                                  {kRectId2, gfx::Rect(150, 150, 100, 100)}});
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
@@ -594,7 +594,7 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_AdOutOfViewport) {
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
-  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 100, 50, 50)}});
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 100, 100, 100)}});
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
@@ -611,7 +611,7 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_PartialViewportOverlap) {
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
 
   // Ad intersects the bottom right corner of the viewport.
-  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(80, 80, 50, 50)}});
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(80, 80, 100, 100)}});
 
   task_environment.FastForwardBy(base::Seconds(1));
   tracker.Finalize();
@@ -625,10 +625,10 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_OverlappingAds) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
-  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 200, 200));
   tracker.UpdateMainFrameAdRects({
-      {kRectId1, gfx::Rect(10, 10, 50, 50)},
-      {kRectId2, gfx::Rect(20, 20, 50, 50)}  // Overlaps kRectId1
+      {kRectId1, gfx::Rect(10, 10, 100, 100)},
+      {kRectId2, gfx::Rect(20, 20, 100, 100)}  // Overlaps kRectId1
   });
 
   task_environment.FastForwardBy(base::Seconds(1));
@@ -645,7 +645,7 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_TimeWeightedAverage) {
   PageAdDensityTracker tracker(/*is_in_foreground=*/true);
 
   tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 100, 100));
-  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 50, 50)}});
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 100, 100)}});
 
   task_environment.FastForwardBy(base::Seconds(1));
 
@@ -658,6 +658,43 @@ TEST(PageAdDensityTrackerTest, ViewportAdCount_TimeWeightedAverage) {
 
   // 1 ad for 1 second, 0 ads for 1 second. Average = 0.5.
   EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats()->mean, 0.5);
+}
+
+TEST(PageAdDensityTrackerTest,
+     ViewportAdCount_SmallAdExcludedFromCountButIncludedInDensity) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PageAdDensityTracker tracker(/*is_in_foreground=*/true);
+
+  tracker.UpdateMainFrameRect(gfx::Rect(0, 0, 300, 100));
+  tracker.UpdateMainFrameViewportRect(gfx::Rect(0, 0, 300, 100));
+
+  // A 60x60 ad (area 3,600 < 10,000 minimum threshold) is excluded from ad
+  // count, but still contributes to page and viewport ad density (12% by area,
+  // 60% by height).
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 60, 60)}});
+  EXPECT_EQ(tracker.GetLiveStats().viewport_ad_count, 0);
+  EXPECT_EQ(tracker.GetLiveStats().viewport_ad_density_by_area, 12);
+  EXPECT_EQ(tracker.MaxPageAdDensityByArea(), 12);
+  EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), 60);
+
+  task_environment.FastForwardBy(base::Seconds(1));
+
+  // A thin 300x30 control bar (area 9,000 < 10,000) is also excluded from ad
+  // count, whereas a standard 300x50 mobile banner (area 15,000 >= 10,000) is
+  // counted.
+  tracker.UpdateMainFrameAdRects({{kRectId1, gfx::Rect(0, 0, 300, 30)},
+                                  {kRectId2, gfx::Rect(0, 30, 300, 50)}});
+  EXPECT_EQ(tracker.GetLiveStats().viewport_ad_count, 1);
+  EXPECT_EQ(tracker.GetLiveStats().viewport_ad_density_by_area, 80);
+
+  task_environment.FastForwardBy(base::Seconds(1));
+  tracker.Finalize();
+
+  // 0 countable ads for 1s, 1 countable ad for 1s -> average = 0.5.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdCountStats()->mean, 0.5);
+  // 12% density for 1s, 80% density for 1s -> average = 46.0.
+  EXPECT_DOUBLE_EQ(tracker.GetViewportAdDensityByAreaStats()->mean, 46.0);
 }
 
 }  // namespace page_load_metrics

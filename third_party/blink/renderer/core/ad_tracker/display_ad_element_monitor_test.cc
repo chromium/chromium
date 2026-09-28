@@ -21,11 +21,29 @@ namespace {
 
 class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override {
+    last_main_frame_rect_ = main_frame_rect;
+  }
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect) override {
+    last_main_frame_viewport_rect_ = main_frame_viewport_rect;
+  }
   MOCK_METHOD(void,
               OnMainFrameAdRectangleChanged,
               (int element_dom_node_id, const gfx::Rect& content_rect),
               (override));
   MOCK_METHOD(void, OnLargeStickyAdDetected, (), (override));
+
+  const gfx::Rect& last_main_frame_rect() const {
+    return last_main_frame_rect_;
+  }
+  const gfx::Rect& last_main_frame_viewport_rect() const {
+    return last_main_frame_viewport_rect_;
+  }
+
+ private:
+  gfx::Rect last_main_frame_rect_;
+  gfx::Rect last_main_frame_viewport_rect_;
 };
 
 }  // namespace
@@ -1019,6 +1037,151 @@ TEST_F(DisplayAdElementMonitorTest, HighlightAdsRequiresFirstContentfulPaint) {
   UpdateLifecycle();
 
   EXPECT_TRUE(ad->ShouldHighlightAd());
+}
+
+TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <body style="margin: 0">
+      <div style="height: 1000px"></div>
+      <img id="ad" style="position:fixed; left:10px; top:10px; width:60px; height:60px;">
+      <img id="in_flow_ad" style="position:absolute; left:100px; top:11px; width:60px; height:60px;">
+      <img id="pixel" style="position:fixed; left:200px; top:100px; width:1px; height:1px;">
+    </body>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  GetDocument().GetFrame()->SetLayoutZoomFactor(2.0f);
+  UpdateLifecycle();
+
+  auto* ad_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("ad")));
+  auto* in_flow_ad_element = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("in_flow_ad")));
+  auto* pixel_element =
+      To<HTMLImageElement>(GetDocument().getElementById(AtomicString("pixel")));
+
+  // At 2x zoom, the 800x2000 physical main frame document and 800x600 physical
+  // viewport must be unscaled to (0, 0, 400, 1000) and (0, 0, 400, 300) CSS
+  // pixels, respectively. The physical bounding box of `ad` is (20, 20, 120,
+  // 120), which must be unscaled to CSS pixels (10, 10, 60, 60) when reported,
+  // and `in_flow_ad` at physical (200, 22, 120, 120) unscales to (100, 11, 60,
+  // 60). Meanwhile, `pixel` has a physical bounding box of (400, 200, 2, 2),
+  // which unscales to 1x1 CSS pixels and must be excluded as a tracking pixel.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(10, 10, 60, 60)));
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 11, 60, 60)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                pixel_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  ad_element->SetIsAdRelated(NoProvenance{});
+  in_flow_ad_element->SetIsAdRelated(NoProvenance{});
+  pixel_element->SetIsAdRelated(NoProvenance{});
+  UpdateLifecycle();
+  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
+  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+            gfx::Rect(0, 0, 400, 300));
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Scroll down by 100 physical pixels (50 CSS pixels at 2x zoom). Both the
+  // viewport scroll offset and the fixed-position ad's document-relative Y
+  // coordinate must be unscaled by the 2x zoom factor, while `in_flow_ad`'s
+  // document-relative geometry remains unchanged and must not be re-reported.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(10, 60, 60, 60)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                in_flow_ad_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                pixel_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  UpdateLifecycle();
+  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
+  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+            gfx::Rect(0, 50, 400, 300));
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // At 1.5x fractional zoom with a 2px physical scroll offset, `pixel`'s
+  // document-relative physical Y range is [152, 153.5]. Unscaling size
+  // independently of origin ensures its unscaled size remains 1x1 CSS pixels
+  // and continues to be excluded. Meanwhile, `in_flow_ad` (whose physical Y
+  // range in the document is [16.5, 106.5]) must retain its exact unscaled
+  // bounds (100, 11, 60, 60) without sending spurious updates across fractional
+  // zoom or fractional scroll offsets (e.g. 1.5px physical = 1 CSS px).
+  GetDocument().GetFrame()->SetLayoutZoomFactor(1.5f);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 2), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(10, 11, 60, 60)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                in_flow_ad_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                pixel_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  UpdateLifecycle();
+  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
+  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+            gfx::Rect(0, 1, 533, 400));
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // Scroll to a fractional physical offset (1.5 physical pixels = 1 CSS pixel
+  // at 1.5x zoom). Neither `ad` (still at CSS Y=11) nor `in_flow_ad` (still at
+  // CSS (100, 11, 60, 60)) should emit a redundant rectangle update.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 1.5f), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(testing::_, testing::_))
+      .Times(0);
+  UpdateLifecycle();
+  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
+  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+            gfx::Rect(0, 1, 533, 400));
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  // At 1.1x zoom with a half-pixel CSS offset (`top: 10.5px`), `in_flow_ad`'s
+  // physical Y in `LayoutView` is `LayoutUnit(10.5 * 1.1) = 739 / 64 =
+  // 11.546875`, which unscales to `10.497159` and rounds to Y=10 at scroll=0.
+  // Scrolling by 1 CSS pixel (`1.1f` physical pixels, which is not a multiple
+  // of 1/64) must cancel out the `LayoutUnit`-floored `ScrolledContentOffset()`
+  // identically so `in_flow_ad` stays at Y=10 instead of flipping to Y=11.
+  in_flow_ad_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("position:absolute; left:100px; top:10.5px; width:60px; "
+                   "height:60px;"));
+  GetDocument().GetFrame()->SetLayoutZoomFactor(1.1f);
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(10, 10, 60, 60)));
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(in_flow_ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 10, 60, 60)));
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 1.1f), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(10, 11, 60, 60)));
+  EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
+                                in_flow_ad_element->GetDomNodeId(), testing::_))
+      .Times(0);
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
 
 }  // namespace blink

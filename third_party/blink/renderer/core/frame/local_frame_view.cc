@@ -1160,14 +1160,18 @@ void LocalFrameView::RunIntersectionObserverSteps() {
   if (frame_->IsOutermostMainFrame()) {
     EnsureOverlayInterstitialAdDetector().MaybeFireDetection(frame_.Get());
 
-    // Report the main frame's document intersection with itself.
-    LayoutObject* layout_object = GetLayoutView();
-    gfx::Rect main_frame_dimensions(ToRoundedSize(
-        To<LayoutBox>(layout_object)->ScrollableOverflowRect().size));
-    GetFrame().Client()->OnMainFrameRectangleChanged(main_frame_dimensions);
-    GetFrame().Client()->OnMainFrameViewportRectangleChanged(
-        gfx::Rect(frame_->GetOutermostMainFrameScrollPosition(),
-                  frame_->GetOutermostMainFrameSize()));
+    const float inverse_zoom = 1.0f / frame_->LayoutZoomFactor();
+
+    // Report the main frame's document and viewport rectangles in CSS pixels.
+    gfx::Rect main_frame_rect(gfx::ToRoundedSize(gfx::ScaleSize(
+        gfx::SizeF(GetLayoutView()->ScrollableOverflowRect().size),
+        inverse_zoom)));
+    frame_->Client()->OnMainFrameRectangleChanged(main_frame_rect);
+    frame_->Client()->OnMainFrameViewportRectangleChanged(
+        gfx::Rect(gfx::ToRoundedPoint(gfx::ScalePoint(
+                      LayoutViewport()->ScrollPosition(), inverse_zoom)),
+                  gfx::ScaleToRoundedSize(frame_->GetOutermostMainFrameSize(),
+                                          inverse_zoom)));
   }
 
   TRACE_EVENT0("blink,benchmark",
