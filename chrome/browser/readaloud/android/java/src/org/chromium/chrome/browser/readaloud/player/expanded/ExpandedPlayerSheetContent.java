@@ -37,6 +37,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackModeSelectionE
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.Toast;
 
@@ -45,6 +46,13 @@ import java.util.List;
 
 @NullMarked
 public class ExpandedPlayerSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder()
+                    .setUserInitiated(true)
+                    .setModal(false)
+                    .setPersistent(true)
+                    .build();
+
     private static final String TAG = "RAPlayerSheet";
     // Note: if these times need to change, the "back 10" and "forward 10" icons
     // should also be changed.
@@ -557,6 +565,11 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     @ContentPriority
