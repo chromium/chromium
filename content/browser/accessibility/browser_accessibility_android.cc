@@ -607,6 +607,14 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // already skips over things like iframes and child frames that are
   // technically focusable but shouldn't be exposed as focusable on Android.
   if (IsFocusable()) {
+    // Focusable generic containers with `NameFrom::kNone` and no text of their
+    // own are not interesting when they are not leaves, as their descendants
+    // will be navigated directly.
+    if (GetRole() == ax::mojom::Role::kGenericContainer &&
+        GetNameFrom() == ax::mojom::NameFrom::kNone && !HasTextContent() &&
+        !IsLeaf()) {
+      return false;
+    }
     return true;
   }
 

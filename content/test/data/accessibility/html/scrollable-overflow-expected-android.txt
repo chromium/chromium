@@ -6,20 +6,20 @@ android.webkit.WebView focusable focused
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView interesting name='x=hidden'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='x=hidden'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='x=auto'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='x=scroll'
 ++++android.widget.TextView interesting name='x=visible'
 ++android.view.View
 ++++android.view.View
 ++++++android.widget.TextView interesting name='y=hidden'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='y=hidden'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='y=auto'
-++++android.view.View focusable interesting
+++++android.view.View focusable
 ++++++android.widget.TextView interesting name='y=scroll'
 ++++android.widget.TextView interesting name='y=visible'

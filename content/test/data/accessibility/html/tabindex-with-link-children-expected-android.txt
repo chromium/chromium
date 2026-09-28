@@ -1,5 +1,5 @@
 android.webkit.WebView focusable focused
-++android.view.View focusable interesting
+++android.view.View focusable
 ++++android.widget.TextView interesting name='All of the following '
 ++++android.view.View role_description='link' clickable focusable link interesting name='links'
 ++++++android.widget.TextView name='links'

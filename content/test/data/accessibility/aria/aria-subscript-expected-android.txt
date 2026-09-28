@@ -8,7 +8,7 @@ android.webkit.WebView focusable focused
 ++++android.view.View
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='deletion'
-++++++++android.view.View focusable interesting
+++++++++android.view.View focusable
 ++++++++++android.widget.TextView interesting name='3' tooltip_text='oops'
 ++++++android.widget.TextView name=' '
 ++++++android.view.View role_description='insertion'
