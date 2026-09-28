@@ -155,13 +155,11 @@
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_tab_helper.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/facilitated_payments/core/features/features.h"
-#include "components/page_load_metrics/browser/features.h"
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
 #include "components/sensitive_content/features.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
@@ -570,12 +568,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
                           *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
-
-  if (base::FeatureList::IsEnabled(
-          page_load_metrics::features::kBeaconLeakageLogging)) {
-    FromGWSNavigationAndKeepAliveRequestTabHelper::CreateForWebContents(
-        web_contents);
-  }
 
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(
       web_contents,

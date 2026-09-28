@@ -5,7 +5,6 @@
 source_set("loader") {
   sources = [
     "from_gws_navigation_and_keep_alive_request_observer.h",
-    "from_gws_navigation_and_keep_alive_request_tab_helper.h",
     "from_gws_navigation_and_keep_alive_request_tracker.h",
     "from_gws_navigation_and_keep_alive_request_tracker_factory.h",
     "keep_alive_request_tracker.h",
@@ -32,7 +31,6 @@ source_set("loader") {
 source_set("impl") {
   sources = [
     "from_gws_navigation_and_keep_alive_request_observer.cc",
-    "from_gws_navigation_and_keep_alive_request_tab_helper.cc",
     "from_gws_navigation_and_keep_alive_request_tracker.cc",
     "from_gws_navigation_and_keep_alive_request_tracker_factory.cc",
     "keep_alive_request_tracker.cc",
