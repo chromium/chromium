@@ -37,7 +37,6 @@ class GnConfigsImpl:
         # Note: For other CQ bots simply replace "linux-rel" with the name.
         self.linux_configs["linux-rel"] = [
             'dcheck_always_on=true',
-            'devtools_skip_typecheck=false',
             'ffmpeg_branding="Chrome"',
             'is_component_build=false',
             'is_debug=false',

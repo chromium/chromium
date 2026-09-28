@@ -131,7 +131,7 @@
     },
 
     'client.devtools-frontend.integration': {
-      'DevTools Linux': 'release_trybot_blink_do_typecheck_siso',
+      'DevTools Linux': 'release_trybot_blink_siso',
     },
 
     'client.openscreen.chromium': {
@@ -240,8 +240,8 @@
 
     'tryserver.devtools-frontend': {
       # Align devtools blink builders with chromium linux-rel
-      'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_do_typecheck_siso',
-      'devtools_frontend_linux_blink_rel': 'release_trybot_blink_do_typecheck_siso',
+      'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink_siso',
+      'devtools_frontend_linux_blink_rel': 'release_trybot_blink_siso',
     },
 
     'tryserver.internal.chrome.fyi': {
@@ -657,10 +657,6 @@
       'release_bot_remoteexec', 'use_siso',
     ],
 
-    'release_trybot_blink_do_typecheck_siso': [
-      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso',
-    ],
-
     'release_trybot_blink_siso': [
       'release_trybot_blink', 'use_siso',
     ],
@@ -847,10 +843,6 @@
       'mixins': ['debug', 'shared', 'remoteexec', 'minimal_symbols'],
     },
 
-    # Representative GN args for developer builds.
-    'devtools_do_typecheck': {
-      'gn_args': 'devtools_skip_typecheck=false',
-    },
 
     'devtools_instrumentation_dumping': {
       'gn_args': 'devtools_instrumentation_dumping=true',

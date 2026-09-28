@@ -3,7 +3,6 @@
     "builtin": {
       "gn_args": {
         "dcheck_always_on": false,
-        "devtools_skip_typecheck": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
@@ -18,7 +17,6 @@
     "no_clang_modules": {
       "gn_args": {
         "dcheck_always_on": false,
-        "devtools_skip_typecheck": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,

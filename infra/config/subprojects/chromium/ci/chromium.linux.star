@@ -362,7 +362,6 @@ ci.builder(
             "gpu_tests",
             "release_builder",
             "remoteexec",
-            "devtools_do_typecheck",
             "linux",
             "x64",
         ],

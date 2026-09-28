@@ -44,7 +44,6 @@ try_.builder(
             "release_try_builder",
             "remoteexec",
             "no_symbols",
-            "devtools_do_typecheck",
             "chrome_for_testing",
             "chrome_with_codecs",
             "linux",

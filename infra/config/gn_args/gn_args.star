@@ -554,13 +554,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "devtools_do_typecheck",
-    args = {
-        "devtools_skip_typecheck": False,
-    },
-)
-
-gn_args.config(
     name = "disable_seed_corpus",
     args = {
         "archive_seed_corpus": False,
