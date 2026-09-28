@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 chromium::import! {
+  "//base:scoped_refptr";
   "//base:sequenced_task_runner";
   "//mojo/public/rust/system";
 }
 
+use scoped_refptr::{CxxRefCounted, CxxRefCountedThreadSafe};
+
 use super::cpp_router_handle::{run_rust_disconnect_handler, run_rust_incoming_handler};
+use super::cxx_shim::{allocate_interface_id, register_interface_id};
+use crate::multiplex_router::multiplex_router::MultiplexRouter;
 use crate::multiplex_router::EndpointInfo;
 
 #[cxx::bridge(namespace = "mojo::rust::bindings")]
@@ -33,6 +38,22 @@ pub mod ffi {
 
     extern "Rust" {
         type EndpointInfo;
+        type MultiplexRouter;
+
+        /// Notifies the Rust MultiplexRouter that an endpoint has been dropped.
+        fn notify_dropped(self: &MultiplexRouter, interface_id: u32);
+
+        /// Notifies the Rust MultiplexRouter that the peer of an endpoint was
+        /// closed.
+        fn notify_peer_closed(self: &MultiplexRouter, interface_id: u32);
+
+        /// Allocates a new interface ID on the Rust router.
+        fn allocate_interface_id(router: &MultiplexRouter) -> u32;
+
+        /// Registers a received interface ID on the Rust router before it is
+        /// bound. Returns true on success, or false if the ID was already
+        /// registered.
+        fn register_interface_id(router: &MultiplexRouter, interface_id: u32) -> bool;
 
         /// Called by C++ when an incoming message arrives for a Rust-bound
         /// associated endpoint. Returns true if the message was successfully
@@ -56,7 +77,29 @@ pub mod ffi {
 
     unsafe extern "C++" {
         include!("mojo/public/rust/bindings/multiplex_router/cpp_interop/associated_endpoint_rust_adapter.h");
+        include!("mojo/public/rust/bindings/multiplex_router/cpp_interop/rust_associated_group_controller.h");
         type AssociatedEndpointRustAdapter;
+        type RustAssociatedGroupController;
+
+        /// Creates the C++ group controller for a Rust router, which will be
+        /// destroyed on `runner`'s sequence. The returned pointer owns one
+        /// ref-count.
+        fn CreateGroupControllerForRustRouter(
+            router: Box<MultiplexRouter>,
+            runner: Pin<&mut SequencedTaskRunner>,
+        ) -> *mut RustAssociatedGroupController;
+
+        /// Increments the group controller's ref-count.
+        fn AddRef(self: &RustAssociatedGroupController);
+
+        // TODO(crbug.com/472552387): Tweak `cxx` to make this `allow` obsolete.
+        #[allow(clippy::missing_safety_doc)]
+        /// Decrements the group controller's ref-count, possibly destroying it.
+        ///
+        /// # Safety
+        /// The caller must own a ref-count of this controller, and must not
+        /// dereference it afterwards unless it owns another one.
+        unsafe fn Release(self: &RustAssociatedGroupController);
 
         /// Constructs a fresh C++ `mojo::Message` with the given payload,
         /// and attaches the handles to it.
@@ -91,7 +134,7 @@ pub mod ffi {
         /// messages to Rust.
         fn Bind(
             self: Pin<&mut AssociatedEndpointRustAdapter>,
-            runner: &SequencedTaskRunner,
+            runner: Pin<&mut SequencedTaskRunner>,
             info: Box<EndpointInfo>,
         );
 
@@ -142,3 +185,27 @@ unsafe impl Sync for ffi::AssociatedEndpointRustAdapter {}
 // SAFETY: `MojoResponderWrapper` wraps a C++ `base::SequenceBound`, so
 // it can be safely transferred across threads.
 unsafe impl Send for ffi::MojoResponderWrapper {}
+
+// SAFETY: `RustAssociatedGroupController` is an `AssociatedGroupController`,
+// so ref-counting is the only mechanism managing its lifetime.
+unsafe impl CxxRefCounted for ffi::RustAssociatedGroupController {
+    fn add_ref(&self) {
+        self.AddRef();
+    }
+
+    // SAFETY: The trait imposes the same requirements as `Release`.
+    unsafe fn release(&self) {
+        // SAFETY: Same requirements as the function.
+        unsafe { self.Release() };
+    }
+}
+
+// SAFETY: `AssociatedGroupController` uses an atomic ref-count, and its
+// `Release` always posts to the sequence it's bound to.
+unsafe impl CxxRefCountedThreadSafe for ffi::RustAssociatedGroupController {}
+// SAFETY: The controller's only field is a `Box<MultiplexRouter>`, which is
+// thread-safe, and the `AssociatedGroupController` methods it inherits only
+// touch the ref-count.
+unsafe impl Send for ffi::RustAssociatedGroupController {}
+// SAFETY: As above.
+unsafe impl Sync for ffi::RustAssociatedGroupController {}

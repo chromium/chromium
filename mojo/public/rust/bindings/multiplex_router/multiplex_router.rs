@@ -72,7 +72,7 @@ enum Task {
 /// `MultiplexRouterHandle`, which is analogous to an Arc, but with extra
 /// functionality, including a drop handler and tracking the interface ID.
 #[derive(Clone)]
-pub(super) struct MultiplexRouter {
+pub struct MultiplexRouter {
     // This will usually be a weak reference, except for the primary endpoint.
     endpoint_watcher: ArcOrWeak<MessagePipeWatcher>,
     shared_state: Arc<Mutex<MultiplexRouterSharedState>>,

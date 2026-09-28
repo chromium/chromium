@@ -90,7 +90,7 @@ impl CppRouterHandle {
     pub(crate) fn bind(&mut self, endpoint_info: EndpointInfo) {
         let task_runner = endpoint_info.runner.clone();
         let info = Box::new(endpoint_info);
-        let runner = task_runner.as_scoped_refptr();
+        let runner = task_runner.as_scoped_refptr().as_pin();
         self.adapter.pin_mut().Bind(runner, info);
     }
 }

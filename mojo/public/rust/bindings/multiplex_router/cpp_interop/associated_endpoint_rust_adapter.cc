@@ -113,14 +113,11 @@ AssociatedEndpointRustAdapter::PassHandle() {
 // an InterfaceEndpointClientAdapter. Incoming messages and disconnect events
 // will be routed to the provided Rust callbacks. Fills the role of
 // MultiplexRouterHandle::bind().
-void AssociatedEndpointRustAdapter::Bind(
-    const base::SequencedTaskRunner& runner,
-    ::rust::Box<EndpointInfo> info) {
+void AssociatedEndpointRustAdapter::Bind(base::SequencedTaskRunner& runner,
+                                         ::rust::Box<EndpointInfo> info) {
   CHECK(!client_adapter_);
   client_adapter_ = base::MakeRefCounted<InterfaceEndpointClientAdapter>(
-      std::move(handle_), std::move(info),
-      scoped_refptr<base::SequencedTaskRunner>(
-          const_cast<base::SequencedTaskRunner*>(&runner)));
+      std::move(handle_), std::move(info), base::WrapRefCounted(&runner));
 }
 
 // Returns the interface ID assigned to this endpoint on the routing group.

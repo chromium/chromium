@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! This module contains shim functions that convert between Rust and C++
-//! message types across the FFI bridge.
+//! This module contains shim functions that operate on a `MultiplexRouter`.
+//!
+//! As with most shims, they exist to let C++ call the relevant functions on
+//! the router without having to deal with the full complexities of the Rust
+//! code. That is, it provides functions with arguments types that are easier
+//! for C++ to provide.
 
 chromium::import! {
   "//mojo/public/rust/system";
@@ -17,6 +21,8 @@ use system::scoped_handle_interop::ScopedMessageHandleWrapper;
 use super::cxx::ffi;
 use crate::message::MojomMessage;
 use crate::message_header::MessageHeader;
+use crate::multiplex_router::endpoint_registry::INVALID_INTERFACE_ID;
+use crate::multiplex_router::multiplex_router::MultiplexRouter;
 
 // Packages a Rust MojomMessage into a C++ `mojo::Message` for transmission or
 // dispatch through C++ bindings.
@@ -86,4 +92,17 @@ pub fn create_incoming_message_rust(
         handles,
         raw_message_handle: Some(message_handle),
     })
+}
+
+/// Allocates a new associated interface ID on the Rust router for a C++
+/// endpoint. Returns `kInvalidInterfaceId` on failure.
+pub fn allocate_interface_id(router: &MultiplexRouter) -> u32 {
+    router.add_associated_interface(None, None).unwrap_or(INVALID_INTERFACE_ID)
+}
+
+/// Registers a received interface ID on the Rust router before it is bound.
+/// Returns true on success, or false if the interface ID was invalid or already
+/// registered.
+pub fn register_interface_id(router: &MultiplexRouter, interface_id: u32) -> bool {
+    router.add_associated_interface(Some(interface_id), None).is_some()
 }

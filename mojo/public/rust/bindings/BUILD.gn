@@ -38,6 +38,7 @@ rust_static_library("bindings") {
     "../mojom_value_parser",
     "../system",
     "//base",
+    "//base:scoped_refptr",
     "//base:sequenced_task_runner",
     "//third_party/rust/anyhow/v1:lib",
     "//third_party/rust/bitflags/v2:lib",
@@ -52,6 +53,8 @@ source_set("cpp_router_handle_cc") {
     "multiplex_router/cpp_interop/interface_endpoint_client_adapter.h",
     "multiplex_router/cpp_interop/mojo_responder_wrapper.cc",
     "multiplex_router/cpp_interop/mojo_responder_wrapper.h",
+    "multiplex_router/cpp_interop/rust_associated_group_controller.cc",
+    "multiplex_router/cpp_interop/rust_associated_group_controller.h",
   ]
   deps = [
     ":bindings_cxx_generated_gen",
