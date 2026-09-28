@@ -224,6 +224,27 @@ ExperimentalTriggeringResponse CreateScreenshotResultResponse(
   return response;
 }
 
+// Builds a confirmation result with the specified status.
+ConfirmationResult CreateConfirmationResult(ConfirmationResult::Status status,
+                                            std::string error_message = {}) {
+  ConfirmationResult result;
+  result.status = status;
+  result.error_message = std::move(error_message);
+  return result;
+}
+
+// Builds a confirmation result response for synchronous request replies.
+ExperimentalTriggeringResponse CreateConfirmationResultResponse(
+    const std::string& context_id,
+    ConfirmationResult confirmation_result,
+    const TaskMetadata* request_task_metadata,
+    int64_t sender_sequence_number) {
+  ExperimentalTriggeringResponse response = CreateBaseResponseMessage(
+      context_id, request_task_metadata, sender_sequence_number);
+  response.confirmation_result = std::move(confirmation_result);
+  return response;
+}
+
 // Builds base response metadata for asynchronous Mojo updates and callbacks
 // (using instance state or stored request metadata).
 ExperimentalTriggeringResponse CreateBaseResponse(
@@ -409,6 +430,12 @@ class ExperimentalTriggeringUpdatesHandler
               return ProcessExecuteActionsRequest(
                   payload, &*request.task_metadata, std::move(cleanup_runner),
                   std::move(result_logger));
+            },
+            [&](const SubmitConfirmation& payload)
+                -> std::optional<ExperimentalTriggeringResponse> {
+              return ProcessSubmitConfirmation(payload, &*request.task_metadata,
+                                               std::move(cleanup_runner),
+                                               std::move(result_logger));
             },
             [&](const RequestPayloadNotSet&)
                 -> std::optional<ExperimentalTriggeringResponse> {
@@ -936,6 +963,101 @@ class ExperimentalTriggeringUpdatesHandler
     return response;
   }
 
+  std::optional<ExperimentalTriggeringResponse> ProcessSubmitConfirmation(
+      const SubmitConfirmation& confirmation_req,
+      const TaskMetadata* task_metadata,
+      base::ScopedClosureRunner cleanup_runner,
+      ScopedIncomingMessageResultLogger result_logger) {
+    // Keep the handler alive if an actuation session or action execution is
+    // already running on this context so that neither early validation failures
+    // nor the async confirmation response tear down the in-flight task.
+    if (instance_ || actions_runner_) {
+      std::ignore = cleanup_runner.Release();
+    }
+
+    // Unlike the other request types, delivery failures are reported as a
+    // `ConfirmationResult` rather than a failed `TaskUpdate`. A confirmation
+    // that could not be delivered says nothing about the health of the
+    // actuation task, so surfacing it as a task failure would be misleading.
+    auto fail = [&](ConfirmationResult::Status status,
+                    const std::string& error_message) {
+      DLOG(WARNING) << error_message;
+      return CreateConfirmationResultResponse(
+          context_id_, CreateConfirmationResult(status, error_message),
+          task_metadata, sequence_generator_.GetNext());
+    };
+
+    if (confirmation_req.confirmation_response.empty()) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kUnexpectedRequestPayload);
+      return fail(ConfirmationResult::Status::kErrorInvalidRequest,
+                  "Received a confirmation with an empty response payload.");
+    }
+
+    if (!coordinator_) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kCoordinatorUnavailable);
+      return fail(ConfirmationResult::Status::kErrorUnavailable,
+                  "Message handler is no longer available.");
+    }
+
+    GlicKeyedService* glic_service =
+        GlicKeyedServiceFactory::GetGlicKeyedService(coordinator_->profile_,
+                                                     /*create=*/false);
+    if (!glic_service) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kGlicServiceUnavailable);
+      return fail(ConfirmationResult::Status::kErrorUnavailable,
+                  "GlicKeyedService is not available.");
+    }
+
+    if (HandleUnavailableExperimentalTriggering(glic_service)) {
+      result_logger.set_result(
+          GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn);
+      return fail(ConfirmationResult::Status::kErrorUnavailable,
+                  "User is not opted in to experimental triggering.");
+    }
+
+    GlicInstance* instance = instance_.get();
+    if (!instance) {
+      result_logger.set_result(
+          GlicExperimentalTriggeringIncomingMessageResult::kNoInstance);
+      return fail(
+          ConfirmationResult::Status::kErrorUnavailable,
+          "No active Glic instance available to receive the confirmation.");
+    }
+
+    GlicExperimentalTriggeringManager* triggering_manager =
+        instance->GetExperimentalTriggeringManager();
+    if (!triggering_manager) {
+      result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                   kTriggeringManagerUnavailable);
+      return fail(ConfirmationResult::Status::kErrorUnavailable,
+                  "GlicExperimentalTriggeringManager is not available.");
+    }
+
+    triggering_manager->SubmitConfirmationResponse(
+        confirmation_req.confirmation_response,
+        base::BindOnce(
+            [](base::WeakPtr<ExperimentalTriggeringUpdatesHandler> handler,
+               bool accepted) {
+              if (!handler) {
+                return;
+              }
+              handler->SendConfirmationResult(
+                  accepted ? ConfirmationResult::Status::kApplied
+                           : ConfirmationResult::Status::kNotApplied);
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+
+    result_logger.set_result(
+        GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+    // No synchronous reply: the `ConfirmationResult` above is the only
+    // meaningful response, and emitting a task update here would imply a task
+    // state transition that did not happen.
+    return std::nullopt;
+  }
+
   std::optional<ExperimentalTriggeringResponse> ProcessTaskMetadataUpdated(
       const ExperimentalTriggeringRequest& request,
       base::ScopedClosureRunner cleanup_runner,
@@ -1343,6 +1465,17 @@ class ExperimentalTriggeringUpdatesHandler
     }
   }
 
+  void SendConfirmationResult(ConfirmationResult::Status status,
+                              std::string error_message = {}) {
+    if (update_callback_) {
+      ExperimentalTriggeringResponse response =
+          CreateBaseResponse(context_id_, sequence_generator_.GetNext(),
+                             last_seen_sequence_number_, instance_.get());
+      response.confirmation_result =
+          CreateConfirmationResult(status, std::move(error_message));
+      update_callback_.Run(std::move(response));
+    }
+  }
   std::string context_id_;
   InvokeWithAutoSubmitPasskey passkey_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;

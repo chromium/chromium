@@ -178,6 +178,18 @@ ExperimentalTriggeringRequest ProtoToRequest(
         break;
       }
       case components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringRequest::kSubmitConfirmation: {
+        SubmitConfirmation confirmation;
+        const auto& confirmation_proto = req_proto.submit_confirmation();
+        if (confirmation_proto.has_confirmation_response()) {
+          confirmation.confirmation_response = {
+              confirmation_proto.confirmation_response().begin(),
+              confirmation_proto.confirmation_response().end()};
+        }
+        request.payload = std::move(confirmation);
+        break;
+      }
+      case components_sharing_message::GlicExperimentalTriggering::
           ExperimentalTriggeringRequest::PAYLOAD_NOT_SET:
         request.payload = RequestPayloadNotSet();
         break;
@@ -305,6 +317,37 @@ ResponseToTriggeringProto(const ExperimentalTriggeringResponse& response) {
         triggering.mutable_response()->mutable_execute_actions_response();
     *proto_execute_actions_response->mutable_actions_result() =
         response.execute_actions_response->actions_result;
+  }
+
+  if (response.confirmation_result.has_value()) {
+    auto* proto_confirmation =
+        triggering.mutable_response()->mutable_confirmation_result();
+    switch (response.confirmation_result->status) {
+      case ConfirmationResult::Status::kUnspecified:
+        proto_confirmation->set_status(
+            ProtoResponse::ConfirmationResult::UNSPECIFIED);
+        break;
+      case ConfirmationResult::Status::kApplied:
+        proto_confirmation->set_status(
+            ProtoResponse::ConfirmationResult::APPLIED);
+        break;
+      case ConfirmationResult::Status::kNotApplied:
+        proto_confirmation->set_status(
+            ProtoResponse::ConfirmationResult::NOT_APPLIED);
+        break;
+      case ConfirmationResult::Status::kErrorInvalidRequest:
+        proto_confirmation->set_status(
+            ProtoResponse::ConfirmationResult::ERROR_INVALID_REQUEST);
+        break;
+      case ConfirmationResult::Status::kErrorUnavailable:
+        proto_confirmation->set_status(
+            ProtoResponse::ConfirmationResult::ERROR_UNAVAILABLE);
+        break;
+    }
+    if (!response.confirmation_result->error_message.empty()) {
+      proto_confirmation->set_error_message(
+          response.confirmation_result->error_message);
+    }
   }
 
   return triggering;

@@ -84,6 +84,8 @@ std::string_view ExperimentalTriggeringRequestPayloadCaseToString(
       return "ContinueActuationRequest";
     case Request::kExecuteActionsRequest:
       return "ExecuteActionsRequest";
+    case Request::kSubmitConfirmation:
+      return "SubmitConfirmation";
     case Request::PAYLOAD_NOT_SET:
       return "PAYLOAD_NOT_SET";
   }
@@ -143,6 +145,11 @@ void LogGlicExperimentalTriggeringProto(
                     exec_resp.actions_result().action_result());
         builder.Add("script_tools_results_count",
                     exec_resp.actions_result().script_tool_results_size());
+      }
+    } else if (proto.response().has_confirmation_result()) {
+      const auto& conf_resp = proto.response().confirmation_result();
+      if (conf_resp.has_status()) {
+        builder.Add("confirmation_status", conf_resp.status());
       }
     }
   }

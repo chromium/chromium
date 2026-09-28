@@ -94,6 +94,16 @@ message GlicExperimentalTriggering {
       optional optimization_guide.proto.Actions actions = 1;
     }
 
+    // Delivers a confirmation decision made by the user on a remote surface,
+    // so that the client can resolve the corresponding pending confirmation
+    // dialog.
+    message SubmitConfirmation {
+      // The serialized confirmation response. This is opaque to Chrome, which
+      // forwards it verbatim to the client. The client is responsible for
+      // decoding it and matching it against a pending confirmation dialog.
+      optional bytes confirmation_response = 1;
+    }
+
     oneof payload {
       TriggerActuationRequest trigger_actuation_request = 1;
       StopActuationRequest stop_actuation_request = 2;
@@ -101,6 +111,7 @@ message GlicExperimentalTriggering {
       GetScreenshotRequest get_screenshot_request = 4;
       ContinueActuationRequest continue_actuation_request = 5;
       ExecuteActionsRequest execute_actions_request = 6;
+      SubmitConfirmation submit_confirmation = 7;
     }
   }
 
@@ -180,11 +191,37 @@ message GlicExperimentalTriggering {
       optional optimization_guide.proto.ActionsResult actions_result = 1;
     }
 
+    // Reports whether a confirmation decision delivered via
+    // `SubmitConfirmation` was applied by the client.
+    message ConfirmationResult {
+      enum Status {
+        // Default value.
+        UNSPECIFIED = 0;
+        // The client matched the response to a pending confirmation dialog and
+        // applied it.
+        APPLIED = 1;
+        // The client received the response but did not apply it. For example,
+        // there was no pending dialog, the payload could not be decoded, the
+        // decision was no longer relevant, or the client did not reply in time.
+        NOT_APPLIED = 2;
+        // Malformed or invalid request parameters.
+        ERROR_INVALID_REQUEST = 3;
+        // The browser could not deliver the response to the client.
+        ERROR_UNAVAILABLE = 4;
+      }
+
+      // The status of the confirmation response delivery.
+      optional Status status = 1;
+      // Detailed error message.
+      optional string error_message = 2;
+    }
+
     oneof payload {
       TaskUpdate task_update = 3;
       DeviceOptInResult device_opt_in_result = 4;
       ScreenshotResult screenshot_result = 5;
       ExecuteActionsResponse execute_actions_response = 6;
+      ConfirmationResult confirmation_result = 7;
     }
   }
 
