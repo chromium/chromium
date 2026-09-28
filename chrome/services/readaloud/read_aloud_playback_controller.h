@@ -44,9 +44,13 @@ class ReadAloudPlaybackController
     : public read_aloud::mojom::ReadAloudPlaybackControllerFactory,
       public read_aloud::mojom::ReadAloudPlaybackController {
  public:
+  using AudioRendererFactory =
+      base::RepeatingCallback<std::unique_ptr<ReadAloudAudioRenderer>()>;
+
   explicit ReadAloudPlaybackController(
       mojo::PendingReceiver<
-          read_aloud::mojom::ReadAloudPlaybackControllerFactory> receiver);
+          read_aloud::mojom::ReadAloudPlaybackControllerFactory> receiver,
+      AudioRendererFactory audio_renderer_factory = {});
 
   ReadAloudPlaybackController(const ReadAloudPlaybackController&) = delete;
   ReadAloudPlaybackController& operator=(const ReadAloudPlaybackController&) =
@@ -171,6 +175,7 @@ class ReadAloudPlaybackController
     std::unique_ptr<media::AudioDeviceThread> audio_thread;
   };
   std::optional<AudioResources> audio_resources_;
+  AudioRendererFactory audio_renderer_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<ReadAloudPlaybackController> session_weak_factory_{this};

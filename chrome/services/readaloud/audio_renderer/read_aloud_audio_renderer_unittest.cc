@@ -315,4 +315,35 @@ TEST_F(ReadAloudAudioRendererTest, RenderTimeStretchingSlower) {
   EXPECT_TRUE(dest_fail->AreFramesZero());
 }
 
+TEST_F(ReadAloudAudioRendererTest, FlushClearsInternalAlgorithmBuffers) {
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(), 48000,
+                                480);
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+
+  // Push audio segment and render to populate algorithm queue.
+  auto segment = GenerateSegment(params, /*frames=*/2880);
+  ASSERT_TRUE(queue_->Push(segment));
+
+  auto dest = media::AudioBus::Create(params);
+  int frames_rendered = renderer_->Render(
+      /*delay=*/base::TimeDelta(),
+      /*delay_timestamp=*/base::TimeTicks::Now(),
+      /*glitch_info=*/media::AudioGlitchInfo(), dest.get());
+  EXPECT_EQ(frames_rendered, 480);
+
+  // Calling Flush should empty the algorithm's internal queue.
+  renderer_->Flush();
+
+  // Subsequent render call should return 0 frames rendered and zero out buffer.
+  auto dest_after_flush = media::AudioBus::Create(params);
+  int frames_after_flush = renderer_->Render(
+      /*delay=*/base::TimeDelta(),
+      /*delay_timestamp=*/base::TimeTicks::Now(),
+      /*glitch_info=*/media::AudioGlitchInfo(), dest_after_flush.get());
+
+  EXPECT_EQ(frames_after_flush, 0);
+  EXPECT_TRUE(dest_after_flush->AreFramesZero());
+}
+
 }  // namespace readaloud

@@ -30,6 +30,7 @@ bool ReadAloudAudioRenderer::Initialize(const media::AudioParameters& params,
   }
   params_ = params;
   queue_ = queue;
+  base::AutoLock auto_lock(lock_);
   algorithm_.Initialize(params, /*is_encrypted=*/false);
   algorithm_.SetPreservesPitch(true);
   initialized_ = true;
@@ -48,6 +49,8 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
     dest->Zero();
     return 0;
   }
+
+  base::AutoLock auto_lock(lock_);
 
   // 1. Refill the algorithm's queue from the segment queue if it's not full.
   while (!algorithm_.IsQueueFull()) {
@@ -75,6 +78,12 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
 void ReadAloudAudioRenderer::SetPlaybackRate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   playback_rate_.store(rate, std::memory_order_relaxed);
+}
+
+void ReadAloudAudioRenderer::Flush() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock auto_lock(lock_);
+  algorithm_.FlushBuffers();
 }
 
 void ReadAloudAudioRenderer::OnRenderError() {

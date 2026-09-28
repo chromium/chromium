@@ -9,7 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
@@ -28,8 +29,7 @@ class AudioSegmentQueue;
 // Handles rendering of decoded audio segments for ReadAloud playback.
 // Implements the RenderCallback interface, which is driven by the real-time
 // audio thread.
-class ReadAloudAudioRenderer final
-    : public media::AudioRendererSink::RenderCallback {
+class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
  public:
   ReadAloudAudioRenderer();
 
@@ -58,6 +58,10 @@ class ReadAloudAudioRenderer final
   // Must be called on the owning sequence.
   void SetPlaybackRate(double rate);
 
+  // Flushes internal time-stretching algorithm buffer.
+  // Must be called on the owning sequence.
+  virtual void Flush();
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -75,7 +79,11 @@ class ReadAloudAudioRenderer final
   std::atomic<double> playback_rate_ = 1.0;
 
   media::NullMediaLog media_log_;
-  media::AudioRendererAlgorithm algorithm_;
+
+  // Protects algorithm_ against concurrent accesses on the real-time audio
+  // thread (Render()) and main sequence thread (Flush()).
+  mutable base::Lock lock_;
+  media::AudioRendererAlgorithm algorithm_ GUARDED_BY(lock_);
 };
 
 }  // namespace readaloud
