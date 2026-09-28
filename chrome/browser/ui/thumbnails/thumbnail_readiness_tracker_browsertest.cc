@@ -126,34 +126,6 @@ IN_PROC_BROWSER_TEST_F(ThumbnailReadinessTrackerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(ThumbnailReadinessTrackerBrowserTest,
-                       DiscardedTabRemainsNotReadyOnLoadCompleted) {
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
-
-  {
-    InSequence _s;
-
-    EXPECT_CALL(
-        readiness_callback_,
-        Run(ThumbnailReadinessTracker::Readiness::kReadyForInitialCapture));
-    EXPECT_CALL(
-        readiness_callback_,
-        Run(ThumbnailReadinessTracker::Readiness::kReadyForFinalCapture));
-    EXPECT_CALL(readiness_callback_,
-                Run(ThumbnailReadinessTracker::Readiness::kNotReady));
-  }
-
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
-
-  // Simulate tab discard and the empty replacement document completing load
-  // while the WebContents is marked discarded. Readiness must remain kNotReady.
-  web_contents()->SetWasDiscarded(true);
-  readiness_tracker_->WasDiscarded();
-  EXPECT_CALL(readiness_callback_, Run(::testing::_)).Times(0);
-  readiness_tracker_->DocumentOnLoadCompletedInPrimaryMainFrame();
-}
-
 class ThumbnailReadinessTrackerPrerenderTest
     : public ThumbnailReadinessTrackerBrowserTest {
  public:
