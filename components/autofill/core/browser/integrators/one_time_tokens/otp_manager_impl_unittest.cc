@@ -14,6 +14,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -41,8 +42,10 @@
 using ::autofill::test::FormDescription;
 using ::autofill::test::GetServerTypes;
 using ::base::test::RunOnceCallback;
+using ::base::test::RunOnceCallbackRepeatedly;
 using ::one_time_tokens::OneTimeTokenServiceImpl;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Test;
@@ -81,6 +84,20 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
               (override));
 };
 
+class MockAutofillDriver : public TestAutofillDriver {
+ public:
+  explicit MockAutofillDriver(TestAutofillClient* client)
+      : TestAutofillDriver(client) {}
+  MockAutofillDriver(const MockAutofillDriver&) = delete;
+  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
+  ~MockAutofillDriver() override = default;
+
+  MOCK_METHOD(void,
+              RendererShouldTriggerSuggestions,
+              (const FieldGlobalId&, AutofillSuggestionTriggerSource),
+              (override));
+};
+
 void SetUpTickleSubscription(
     one_time_tokens::MockOneTimeTokenService& mock_ott_service,
     one_time_tokens::ExpiringSubscriptionManager<
@@ -98,8 +115,10 @@ void SetUpTickleSubscription(
 
 }  // namespace
 
-class OtpManagerImplTest : public Test,
-                           public WithTestAutofillClientDriverManager<> {
+class OtpManagerImplTest
+    : public Test,
+      public WithTestAutofillClientDriverManager<TestAutofillClient,
+                                                 MockAutofillDriver> {
  public:
   OtpManagerImplTest() : one_time_token_service_(&sms_otp_backend_, nullptr) {}
   ~OtpManagerImplTest() override = default;
@@ -1290,7 +1309,7 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_ReturnsMockOtpWhenSwitchIsSet) {
   otp_manager.GetOtpSuggestions(*form, test_field_, future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());
-  EXPECT_THAT(future.Get(), testing::ElementsAre("987654"));
+  EXPECT_THAT(future.Get(), ElementsAre("987654"));
 }
 
 // Tests that `GetOtpSuggestions` returns empty suggestions when the form is not
@@ -1400,7 +1419,7 @@ TEST_F(OtpManagerImplTest,
           OtpManagerImplTestApi::kGmailOtpTickleSubscriptionDuration);
 }
 
-// Tests that receiving a push notification tickle triggers OnTickleReceived
+// Tests that receiving a push notification tickle triggers `OnTickleReceived`
 // without crashing when subscribed.
 TEST_F(OtpManagerImplTest, TickleReceivedTriggersOnTickleReceived) {
   NiceMock<one_time_tokens::MockOneTimeTokenService> mock_ott_service;
@@ -1412,7 +1431,7 @@ TEST_F(OtpManagerImplTest, TickleReceivedTriggersOnTickleReceived) {
   OtpManagerImpl otp_manager(autofill_manager(), &mock_ott_service);
   ASSERT_TRUE(test_api(otp_manager).gmail_otp_tickle_subscription().IsAlive());
 
-  // Notify tickle to trigger OnTickleReceived.
+  // Notify tickle to trigger `OnTickleReceived`.
   sub_manager.Notify(one_time_tokens::OneTimeTokenSource::kGmail);
 }
 
@@ -1721,6 +1740,212 @@ TEST_F(OtpManagerImplTest,
   ASSERT_TRUE(form);
 
   EXPECT_EQ(test_api(otp_manager).GetFocusedOtpField(), nullptr);
+}
+
+class OtpManagerImplDeliveryTest : public OtpManagerImplTest {
+ public:
+  void SetUp() override {
+    OtpManagerImplTest::SetUp();
+    otp_manager_.emplace(autofill_manager(), &one_time_token_service_);
+    form_ = AddFormWithOtpField();
+    ASSERT_TRUE(form_);
+  }
+
+  void TearDown() override {
+    form_ = nullptr;
+    otp_manager_.reset();
+    OtpManagerImplTest::TearDown();
+  }
+
+  OtpManagerImpl& otp_manager() { return *otp_manager_; }
+  const FormStructure& form() { return *form_; }
+
+  void RequestOtpSuggestions(
+      base::test::TestFuture<std::vector<std::string>>& future) {
+    otp_manager().GetOtpSuggestions(form(), test_field_, future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+  }
+
+ private:
+  std::optional<OtpManagerImpl> otp_manager_;
+  raw_ptr<const FormStructure> form_ = nullptr;
+};
+
+// Tests that SMS OTP suggestion delivery works and delivers the suggestion to
+// the pending callback when PhishGuard approves.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForSms_DeliversSuggestionsWhenNotPhishing) {
+  base::test::TestFuture<std::vector<std::string>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  one_time_tokens::OneTimeToken token(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
+      base::TimeTicks::Now());
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
+                              std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), ElementsAre(kDefaultOtpValue));
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kNotPhishing,
+      1);
+  histogram_tester_.ExpectTotalCount(kPhishGuardLatencyHistogram, 1);
+}
+
+// Tests that SMS OTP suggestion delivery is suppressed when PhishGuard reports
+// phishing.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForSms_SuppressedWhenPhishing) {
+  base::test::TestFuture<std::vector<std::string>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+
+  one_time_tokens::OneTimeToken token(
+      one_time_tokens::OneTimeTokenType::kSmsOtp, kDefaultOtpValue,
+      base::TimeTicks::Now());
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kOnDeviceSms,
+                              std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kPhishing,
+      1);
+}
+
+// Tests that Gmail OTP suggestion delivery works and delivers the suggestion to
+// the pending callback when PhishGuard approves.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForGmail_DeliversSuggestionsWhenNotPhishing) {
+  base::test::TestFuture<std::vector<std::string>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
+                                      kDefaultOtpValue, base::TimeTicks::Now(),
+                                      "sender@example.com");
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
+                              std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), ElementsAre(kDefaultOtpValue));
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kNotPhishing,
+      1);
+  histogram_tester_.ExpectTotalCount(kPhishGuardLatencyHistogram, 1);
+}
+
+// Tests that Gmail OTP suggestion delivery is suppressed when PhishGuard
+// reports phishing.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForGmail_SuppressedWhenPhishing) {
+  base::test::TestFuture<std::vector<std::string>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/true));
+
+  one_time_tokens::OneTimeToken token(one_time_tokens::OneTimeTokenType::kGmail,
+                                      kDefaultOtpValue, base::TimeTicks::Now(),
+                                      "sender@example.com");
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
+                              std::move(token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+  histogram_tester_.ExpectUniqueSample(
+      kPhishGuardVerdictHistogram, OneTimeTokensPhishGuardVerdict::kPhishing,
+      1);
+}
+
+// Tests that Gmail OTP suggestion delivery invokes the callback with empty
+// suggestions if the token value is empty.
+TEST_F(OtpManagerImplDeliveryTest,
+       MaybeShowOtpSuggestionsForGmail_EmptyTokenInvokesCallbackWithEmpty) {
+  base::test::TestFuture<std::vector<std::string>> future;
+  RequestOtpSuggestions(future);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+
+  one_time_tokens::OneTimeToken empty_token(
+      one_time_tokens::OneTimeTokenType::kGmail, "", base::TimeTicks::Now(),
+      "sender@example.com");
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
+                              std::move(empty_token));
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that PhishGuard check latency is measured per-request correctly when
+// multiple checks overlap.
+TEST_F(OtpManagerImplDeliveryTest, PhishGuardLatency_PerRequestMeasurement) {
+  base::OnceCallback<void(bool is_phishing)> phish_guard_callback_1;
+  base::OnceCallback<void(bool is_phishing)> phish_guard_callback_2;
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(autofill_driver().GetFrameToken(), _))
+      .WillOnce([&](LocalFrameToken frame,
+                    base::OnceCallback<void(bool is_phishing)> callback) {
+        phish_guard_callback_1 = std::move(callback);
+      })
+      .WillOnce([&](LocalFrameToken frame,
+                    base::OnceCallback<void(bool is_phishing)> callback) {
+        phish_guard_callback_2 = std::move(callback);
+      });
+
+  base::test::TestFuture<std::vector<std::string>> future1;
+  RequestOtpSuggestions(future1);
+
+  // Check 1 starts at t=0.
+  one_time_tokens::OneTimeToken token1(
+      one_time_tokens::OneTimeTokenType::kGmail, "111111",
+      base::TimeTicks::Now(), "sender1@example.com");
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
+                              std::move(token1));
+
+  base::test::TestFuture<std::vector<std::string>> future2;
+  RequestOtpSuggestions(future2);
+
+  // Check 2 starts at t=20ms.
+  task_environment_.AdvanceClock(base::Milliseconds(20));
+  one_time_tokens::OneTimeToken token2(
+      one_time_tokens::OneTimeTokenType::kGmail, "222222",
+      base::TimeTicks::Now(), "sender2@example.com");
+  test_api(otp_manager())
+      .OnOneTimeTokenReceived(one_time_tokens::OneTimeTokenSource::kGmail,
+                              std::move(token2));
+
+  // Check 1 completes at t=50ms (total latency 50ms).
+  task_environment_.AdvanceClock(base::Milliseconds(30));
+  std::move(phish_guard_callback_1).Run(/*is_phishing=*/false);
+
+  // Check 2 completes at t=80ms (total latency 60ms since t=20ms).
+  task_environment_.AdvanceClock(base::Milliseconds(30));
+  std::move(phish_guard_callback_2).Run(/*is_phishing=*/false);
+
+  histogram_tester_.ExpectBucketCount(kPhishGuardLatencyHistogram, 50, 1);
+  histogram_tester_.ExpectBucketCount(kPhishGuardLatencyHistogram, 60, 1);
+  histogram_tester_.ExpectTotalCount(kPhishGuardLatencyHistogram, 2);
 }
 
 }  // namespace autofill

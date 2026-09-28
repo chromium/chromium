@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 
@@ -58,6 +59,18 @@ class OtpManagerImplTestApi {
 
   const AutofillField* GetFocusedOtpField() const {
     return manager_->GetFocusedOtpField();
+  }
+
+  void OnOneTimeTokenReceived(
+      one_time_tokens::OneTimeTokenSource source,
+      base::expected<one_time_tokens::OneTimeToken,
+                     one_time_tokens::OneTimeTokenRetrievalError>
+          token_or_error) {
+    manager_->OnOneTimeTokenReceived(source, std::move(token_or_error));
+  }
+
+  void OnTickleReceived(one_time_tokens::OneTimeTokenSource source) {
+    manager_->OnTickleReceived(source);
   }
 
  private:

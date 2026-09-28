@@ -117,9 +117,13 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
                      one_time_tokens::OneTimeTokenRetrievalError>
           token_or_error);
 
-  // Callback for `OtpPhishGuardDelegate::StartOtpPhishGuardCheck`.
-  void MaybeShowOtpSuggestions(one_time_tokens::OneTimeToken token,
-                               OneTimeTokensPhishGuardVerdict verdict);
+  // Evaluates the PhishGuard `verdict` (or `kUnknown` if no check was
+  // performed) and delivers or triggers OTP suggestions for SMS and Gmail
+  // respectively.
+  void MaybeShowOtpSuggestionsForSms(one_time_tokens::OneTimeToken token,
+                                     OneTimeTokensPhishGuardVerdict verdict);
+  void MaybeShowOtpSuggestionsForGmail(one_time_tokens::OneTimeToken token,
+                                       OneTimeTokensPhishGuardVerdict verdict);
 
   // Returns the currently focused field if it exists and has `ONE_TIME_CODE`
   // type, or nullptr otherwise.
@@ -159,9 +163,6 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // call to `GetOtpSuggestions()` invalidates the previous call.
   GetOtpSuggestionsCallback last_pending_get_suggestions_callback_;
   LocalFrameToken last_pending_frame_token_;
-
-  // The time when the phish guard check was started.
-  base::TimeTicks phish_guard_check_start_time_;
 
   // Tracks the currently focused form and field, if any.
   std::optional<FormGlobalId> currently_focused_form_id_;
