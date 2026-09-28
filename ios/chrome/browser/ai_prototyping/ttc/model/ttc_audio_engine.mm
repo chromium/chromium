@@ -6,10 +6,15 @@
 
 #import <AVFAudio/AVFAudio.h>
 
+#import <algorithm>
 #import <cmath>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
+#import "base/compiler_specific.h"
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
+#import "base/sequence_checker.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
@@ -36,6 +41,32 @@ NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";
 constexpr NSInteger kErrorCodeInputNodeUnavailable = -1;
 constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
+// Configures the AVAudioSession for simultaneous recording and playback,
+// defaulting to speaker and enabling Bluetooth routes. Must run off the UI
+// thread to prevent UI hitches.
+NSError* ConfigureAudioSessionHardware() {
+  NSError* error = nil;
+  AVAudioSession* session = [AVAudioSession sharedInstance];
+  AVAudioSessionCategoryOptions options =
+      AVAudioSessionCategoryOptionDefaultToSpeaker |
+      AVAudioSessionCategoryOptionAllowBluetoothHFP |
+      AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+
+  if (session.category != AVAudioSessionCategoryPlayAndRecord ||
+      session.categoryOptions != options) {
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord
+                    mode:AVAudioSessionModeDefault
+                 options:options
+                   error:&error];
+  }
+
+  if (!error) {
+    [session setActive:YES error:&error];
+  }
+
+  return error;
+}
+
 }  // namespace
 
 @interface TTCAudioEngine () <TTCAudioRecorderDelegate, TTCAudioPlayerDelegate>
@@ -57,7 +88,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   TTCAudioPlayer* _player;
 
   // Flag indicating whether microphone capture is active.
-  BOOL _isRecording;
+  BOOL _isCapturing;
 
   // Flag tracking whether asynchronous audio session configuration and
   // engine startup are currently pending on base::ThreadPool.
@@ -74,16 +105,30 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   // Allows unit tests running in headless or mock environments without physical
   // audio hardware to simulate that the audio engine is running.
   BOOL _isAudioEngineRunningForTesting;
+
+  SEQUENCE_CHECKER(_sequenceChecker);
 }
 
-@synthesize loopbackEnabled = _loopbackEnabled;
+@synthesize delegate = _delegate;
 
-- (BOOL)isRecording {
-  return _isRecording;
+- (BOOL)isCapturing {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _isCapturing;
 }
 
 - (BOOL)isPlaying {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return _player.isPlaying;
+}
+
+- (BOOL)loopbackEnabled {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return _loopbackEnabled;
+}
+
+- (void)setLoopbackEnabled:(BOOL)loopbackEnabled {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _loopbackEnabled = loopbackEnabled;
 }
 
 - (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
@@ -96,7 +141,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
     _player = player;
     _player.delegate = self;
     [_player attachToAudioEngine:_audioEngine error:nil];
-    _isRecording = NO;
+    _isCapturing = NO;
     _isStarting = NO;
     _loopbackEnabled = NO;
     _isStreamingPlaybackActive = NO;
@@ -121,6 +166,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
 - (void)requestMicrophonePermissionWithCompletion:
     (void (^)(BOOL granted))completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AVAudioApplication* app = [AVAudioApplication sharedInstance];
   if (app.recordPermission == AVAudioApplicationRecordPermissionGranted) {
     if (completion) {
@@ -140,11 +186,26 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
       }];
 }
 
-- (void)startRecordingWithCompletion:(void (^)(BOOL success,
-                                               NSError* error))completion {
-  if (_isRecording || _isStarting) {
+- (void)startCaptureWithCompletion:(void (^)(BOOL success,
+                                             NSError* error))completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isCapturing) {
     if (completion) {
-      completion(_isRecording, nil);
+      completion(YES, nil);
+    }
+    return;
+  }
+
+  if (_isStarting) {
+    if (completion) {
+      NSError* inFlightError =
+          [NSError errorWithDomain:kTTCAudioEngineErrorDomain
+                              code:kErrorCodeStartupCancelled
+                          userInfo:@{
+                            NSLocalizedDescriptionKey :
+                                @"Audio capture startup is already in flight."
+                          }];
+      completion(NO, inFlightError);
     }
     return;
   }
@@ -159,35 +220,23 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   __weak TTCAudioEngine* weakSelf = self;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(^{
-        TTCAudioEngine* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return [NSError errorWithDomain:kTTCAudioEngineErrorDomain
-                                     code:kErrorCodeStartupCancelled
-                                 userInfo:nil];
-        }
-        return [strongSelf configureAudioSession];
-      }),
+      base::BindOnce(&ConfigureAudioSessionHardware),
       base::BindOnce(^(NSError* sessionError) {
-        TTCAudioEngine* strongSelf = weakSelf;
-        if (strongSelf) {
-          [strongSelf didFinishAudioSessionConfigurationWithError:sessionError
-                                                       completion:completion];
-        } else if (completion) {
-          completion(NO, sessionError);
-        }
+        [weakSelf didFinishAudioSessionConfigurationWithError:sessionError
+                                                   completion:completion];
       }));
 }
 
-- (void)stopRecording {
-  if (!_isRecording && !_isStarting) {
+- (void)stopCapture {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_isCapturing && !_isStarting) {
     return;
   }
 
   // Cancel any pending startup sequence.
   _isStarting = NO;
 
-  if (!_isRecording) {
+  if (!_isCapturing) {
     return;
   }
 
@@ -200,19 +249,31 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
     [_recorder removeTapFromInputNode:inputNode];
   }
 
-  _isRecording = NO;
+  _isCapturing = NO;
 
   if (!_player.isPlaying && _audioEngine.isRunning) {
     [_audioEngine stop];
   }
 
   if ([self.delegate
-          respondsToSelector:@selector(audioEngineDidStopRecording:)]) {
-    [self.delegate audioEngineDidStopRecording:self];
+          respondsToSelector:@selector(audioControllerDidStopCapture:)]) {
+    [self.delegate audioControllerDidStopCapture:self];
   }
 }
 
+- (BOOL)isOutputRoutedToSpeaker {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  for (AVAudioSessionPortDescription* output in [AVAudioSession sharedInstance]
+           .currentRoute.outputs) {
+    if ([output.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 - (void)playStreamingAudioChunk:(NSData*)pcm24kData {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (pcm24kData.length == 0) {
     return;
   }
@@ -220,8 +281,8 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   NSError* engineError = nil;
   if (![self ensureEngineRunningWithError:&engineError]) {
     if ([self.delegate
-            respondsToSelector:@selector(audioEngine:didEncounterError:)]) {
-      [self.delegate audioEngine:self didEncounterError:engineError];
+            respondsToSelector:@selector(audioController:didEncounterError:)]) {
+      [self.delegate audioController:self didEncounterError:engineError];
     }
     return;
   }
@@ -237,14 +298,26 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 }
 
 - (void)stopPlaybackImmediately {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isStreamingPlaybackActive = NO;
   [_player stopPlaybackImmediately];
-  if (!_isRecording && !_isStarting && _audioEngine.isRunning) {
+  if (!_isCapturing && !_isStarting && _audioEngine.isRunning) {
     [_audioEngine stop];
   }
 }
 
+- (void)clearPlaybackQueue {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self stopPlaybackImmediately];
+}
+
+- (void)stopPlayback {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self stopPlaybackImmediately];
+}
+
 - (void)playTestTone {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   for (size_t chunkIndex = 0; chunkIndex < kTestToneTotalChunks; ++chunkIndex) {
     std::vector<int16_t> samples(kTestToneChunkSampleCount);
     for (size_t i = 0; i < kTestToneChunkSampleCount; ++i) {
@@ -260,21 +333,25 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 }
 
 - (void)stopTestTone {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self stopPlaybackImmediately];
 }
 
-- (void)setIsRecordingForTesting:(BOOL)isRecording {
-  _isRecording = isRecording;
+- (void)setIsCapturingForTesting:(BOOL)isCapturing {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _isCapturing = isCapturing;
 }
 
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isAudioEngineRunningForTesting = isRunning;
 }
 
 - (void)disconnect {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isStarting = NO;
   _isStreamingPlaybackActive = NO;
-  [self stopRecording];
+  [self stopCapture];
   [self stopPlaybackImmediately];
   if (_audioEngine.isRunning) {
     [_audioEngine stop];
@@ -284,6 +361,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   _player.delegate = nil;
   [_player detachFromAudioEngine:_audioEngine];
   [_player reset];
+  self.delegate = nil;
   [self restoreAudioSessionCategory];
 }
 
@@ -291,44 +369,81 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
 - (void)audioRecorder:(TTCAudioRecorder*)recorder
     didUpdateInputEnergy:(float)energy {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_isCapturing) {
+    return;
+  }
   if ([self.delegate
-          respondsToSelector:@selector(audioEngine:didUpdateInputEnergy:)]) {
-    [self.delegate audioEngine:self didUpdateInputEnergy:energy];
+          respondsToSelector:@selector(
+                                 audioController:didUpdateInputEnergy:)]) {
+    [self.delegate audioController:self didUpdateInputEnergy:energy];
   }
 }
 
 - (void)audioRecorder:(TTCAudioRecorder*)recorder
      didCaptureBuffer:(AVAudioPCMBuffer*)buffer {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_isCapturing) {
+    return;
+  }
   if (_loopbackEnabled && !_isStreamingPlaybackActive &&
       buffer.frameLength > 0) {
     [_player playPCMBuffer:buffer];
+  }
+
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 audioController:didCaptureAudioChunk:)]) {
+    float* const* channelData = buffer.floatChannelData;
+    if (channelData && buffer.format.channelCount > 0 && channelData[0] &&
+        buffer.frameLength > 0) {
+      AVAudioFrameCount frameCount = buffer.frameLength;
+      // SAFETY: `channelData[0]` has length `frameCount` guaranteed by
+      // `buffer.frameLength` from AVFoundation.
+      auto samples = UNSAFE_BUFFERS(base::span(channelData[0], frameCount));
+      std::vector<int16_t> pcmBuffer(frameCount);
+      for (size_t i = 0; i < frameCount; ++i) {
+        float rawSample = samples[i];
+        float sample = std::isfinite(rawSample)
+                           ? std::clamp(rawSample, -1.0f, 1.0f)
+                           : 0.0f;
+        pcmBuffer[i] = static_cast<int16_t>(std::lroundf(sample * 32767.0f));
+      }
+      NSData* pcmData =
+          [NSData dataWithBytes:pcmBuffer.data()
+                         length:pcmBuffer.size() * sizeof(int16_t)];
+      [self.delegate audioController:self didCaptureAudioChunk:pcmData];
+    }
   }
 }
 
 #pragma mark - TTCAudioPlayerDelegate
 
 - (void)audioPlayerDidStartPlayback:(TTCAudioPlayer*)player {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ([self.delegate
-          respondsToSelector:@selector(audioEngineDidStartPlayback:)]) {
-    [self.delegate audioEngineDidStartPlayback:self];
+          respondsToSelector:@selector(audioControllerDidStartPlayback:)]) {
+    [self.delegate audioControllerDidStartPlayback:self];
   }
 }
 
 - (void)audioPlayerDidStopPlayback:(TTCAudioPlayer*)player {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   _isStreamingPlaybackActive = NO;
-  if (!_isRecording && !_isStarting && _audioEngine.isRunning) {
+  if (!_isCapturing && !_isStarting && _audioEngine.isRunning) {
     [_audioEngine stop];
   }
   if ([self.delegate
-          respondsToSelector:@selector(audioEngineDidStopPlayback:)]) {
-    [self.delegate audioEngineDidStopPlayback:self];
+          respondsToSelector:@selector(audioControllerDidStopPlayback:)]) {
+    [self.delegate audioControllerDidStopPlayback:self];
   }
 }
 
 - (void)audioPlayer:(TTCAudioPlayer*)player didEncounterError:(NSError*)error {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if ([self.delegate
-          respondsToSelector:@selector(audioEngine:didEncounterError:)]) {
-    [self.delegate audioEngine:self didEncounterError:error];
+          respondsToSelector:@selector(audioController:didEncounterError:)]) {
+    [self.delegate audioController:self didEncounterError:error];
   }
 }
 
@@ -341,32 +456,14 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 // speaker, acoustic coupling between speaker and microphone can cause feedback.
 // Headphones or AirPods are strongly recommended for local loopback testing.
 - (NSError*)configureAudioSession {
-  NSError* error = nil;
-  AVAudioSession* session = [AVAudioSession sharedInstance];
-
-  AVAudioSessionCategoryOptions options =
-      AVAudioSessionCategoryOptionDefaultToSpeaker |
-      AVAudioSessionCategoryOptionAllowBluetoothHFP |
-      AVAudioSessionCategoryOptionAllowBluetoothA2DP;
-
-  if (session.category != AVAudioSessionCategoryPlayAndRecord ||
-      session.categoryOptions != options) {
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord
-                    mode:AVAudioSessionModeDefault
-                 options:options
-                   error:&error];
-  }
-
-  if (!error) {
-    [session setActive:YES error:&error];
-  }
-
-  return error;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  return ConfigureAudioSessionHardware();
 }
 
 // Ensures the audio session is configured and the AVAudioEngine graph is
 // running before scheduling playback buffers.
 - (BOOL)ensureEngineRunningWithError:(NSError**)error {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_audioEngine.isRunning || _isAudioEngineRunningForTesting) {
     return YES;
   }
@@ -392,6 +489,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 - (void)didFinishAudioSessionConfigurationWithError:(NSError*)error
                                          completion:(void (^)(BOOL, NSError*))
                                                         completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // If startup was cancelled while the background task was in flight, abort
   // and restore the audio session category.
   if (!_isStarting) {
@@ -402,7 +500,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
                               code:kErrorCodeStartupCancelled
                           userInfo:@{
                             NSLocalizedDescriptionKey :
-                                @"Audio recording startup was cancelled."
+                                @"Audio capture startup was cancelled."
                           }];
       completion(NO, cancelledError);
     }
@@ -423,8 +521,9 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
   if (!startSuccess) {
     [self restoreAudioSessionCategory];
   } else if ([self.delegate
-                 respondsToSelector:@selector(audioEngineDidStartRecording:)]) {
-    [self.delegate audioEngineDidStartRecording:self];
+                 respondsToSelector:@selector(
+                                        audioControllerDidStartCapture:)]) {
+    [self.delegate audioControllerDidStartCapture:self];
   }
   if (completion) {
     completion(startSuccess, startError);
@@ -434,6 +533,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 // Restores the previous AVAudioSession category on a background thread via
 // base::ThreadPool when the audio engine disconnects.
 - (void)restoreAudioSessionCategory {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AVAudioSessionCategory previousCategory = _previousCategory;
   _previousCategory = nil;
   if (!previousCategory) {
@@ -461,6 +561,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
 // Verifies the hardware input node is accessible, installs the audio recorder
 // tap, and starts the AVAudioEngine audio processing graph.
 - (BOOL)startEngineAndInstallTapWithError:(NSError**)error {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   AVAudioInputNode* inputNode = nil;
   @try {
     inputNode = _audioEngine.inputNode;
@@ -503,7 +604,7 @@ constexpr NSInteger kErrorCodeStartupCancelled = -2;
     }
   }
 
-  _isRecording = YES;
+  _isCapturing = YES;
   return YES;
 }
 

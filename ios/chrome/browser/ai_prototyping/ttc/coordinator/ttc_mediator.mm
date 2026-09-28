@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 
@@ -12,11 +13,11 @@ namespace {
 // Error messages displayed when microphone permissions or recording fails.
 NSString* const kMicrophonePermissionDeniedError =
     @"Microphone permission denied";
-NSString* const kFailedToStartRecordingError = @"Failed to start recording";
+NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
 
 }  // namespace
 
-@interface TTCMediator () <TTCAudioEngineDelegate>
+@interface TTCMediator () <TTCAudioControllerDelegate>
 @end
 
 @implementation TTCMediator {
@@ -67,7 +68,7 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
 }
 
 - (void)stopSession {
-  [_audioEngine stopRecording];
+  [_audioEngine stopCapture];
   _currentState = TTCSessionState::kIdle;
   [self.consumer setSessionState:TTCSessionState::kIdle];
   [self.consumer setMicEnergyLevel:0.0f];
@@ -94,33 +95,35 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   [self hydrateConsumer];
 }
 
-#pragma mark - TTCAudioEngineDelegate
+#pragma mark - TTCAudioControllerDelegate
 
-- (void)audioEngine:(TTCAudioEngine*)engine didUpdateInputEnergy:(float)rms {
+- (void)audioController:(id<TTCAudioController>)controller
+    didUpdateInputEnergy:(float)rms {
   if (_currentState != TTCSessionState::kListening) {
     return;
   }
   [_consumer setMicEnergyLevel:rms];
 }
 
-- (void)audioEngineDidStartPlayback:(TTCAudioEngine*)engine {
+- (void)audioControllerDidStartPlayback:(id<TTCAudioController>)controller {
   if (_isTestAudioActive) {
     [self.consumer setTestAudioPlaying:YES];
   }
 }
 
-- (void)audioEngineDidStopPlayback:(TTCAudioEngine*)engine {
+- (void)audioControllerDidStopPlayback:(id<TTCAudioController>)controller {
   if (_isTestAudioActive) {
     _isTestAudioActive = NO;
     [self.consumer setTestAudioPlaying:NO];
   }
 }
 
-- (void)audioEngine:(TTCAudioEngine*)engine didEncounterError:(NSError*)error {
+- (void)audioController:(id<TTCAudioController>)controller
+      didEncounterError:(NSError*)error {
   _currentState = TTCSessionState::kError;
   [_consumer setSessionState:_currentState];
   [_consumer didEncounterError:error.localizedDescription
-                                   ?: kFailedToStartRecordingError];
+                                   ?: kFailedToStartCaptureError];
 }
 
 #pragma mark - Public
@@ -153,19 +156,19 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
   }
 
   __weak TTCMediator* weakSelf = self;
-  [_audioEngine startRecordingWithCompletion:^(BOOL success, NSError* error) {
-    [weakSelf didStartRecordingWithSuccess:success error:error];
+  [_audioEngine startCaptureWithCompletion:^(BOOL success, NSError* error) {
+    [weakSelf didStartCaptureWithSuccess:success error:error];
   }];
 }
 
-// Handles the result of starting audio recording. If successful, transitions
+// Handles the result of starting audio capture. If successful, transitions
 // the session to listening state; otherwise transitions to error state.
-- (void)didStartRecordingWithSuccess:(BOOL)success error:(NSError*)error {
+- (void)didStartCaptureWithSuccess:(BOOL)success error:(NSError*)error {
   // Discard callback if the session was stopped or disconnected while startup
   // was pending.
   if (_currentState != TTCSessionState::kConnecting) {
     if (success) {
-      [_audioEngine stopRecording];
+      [_audioEngine stopCapture];
     }
     return;
   }
@@ -177,7 +180,7 @@ NSString* const kFailedToStartRecordingError = @"Failed to start recording";
     _currentState = TTCSessionState::kError;
     [self.consumer setSessionState:_currentState];
     [self.consumer didEncounterError:error.localizedDescription
-                                         ?: kFailedToStartRecordingError];
+                                         ?: kFailedToStartCaptureError];
   }
 }
 

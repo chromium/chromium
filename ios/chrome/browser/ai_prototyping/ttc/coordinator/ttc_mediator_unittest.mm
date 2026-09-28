@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/coordinator/ttc_mediator.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/ui/ttc_consumer.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -13,8 +14,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// Expose TTCAudioEngineDelegate conformance for unit testing.
-@interface TTCMediator (Testing) <TTCAudioEngineDelegate>
+// Expose TTCAudioControllerDelegate conformance for unit testing.
+@interface TTCMediator (Testing) <TTCAudioControllerDelegate>
 @end
 
 namespace {
@@ -46,7 +47,7 @@ class TTCMediatorTest : public PlatformTest {
 // Tests that attaching a consumer pushes initial session state, 0.0 RMS energy,
 // and initial loopback/playback states.
 TEST_F(TTCMediatorTest, TestSetConsumerPushesInitialState) {
-  OCMStub([mock_audio_engine_ loopbackEnabled]).andReturn(NO);
+  OCMStub([mock_audio_engine_ isLoopbackEnabled]).andReturn(NO);
   OCMStub([mock_audio_engine_ isPlaying]).andReturn(NO);
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kIdle]);
@@ -69,9 +70,9 @@ TEST_F(TTCMediatorTest, TestStartSessionSuccessUpdatesState) {
                                                     invokeBlockWithArgs:@YES,
                                                                         nil])]);
   OCMStub([mock_audio_engine_
-      startRecordingWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
-                                                                [NSNull null],
-                                                                nil])]);
+      startCaptureWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
+                                                              [NSNull null],
+                                                              nil])]);
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kConnecting]);
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kListening]);
@@ -115,8 +116,8 @@ TEST_F(TTCMediatorTest, TestStartSessionRecordingFails) {
                                                     invokeBlockWithArgs:@YES,
                                                                         nil])]);
   OCMStub([mock_audio_engine_
-      startRecordingWithCompletion:([OCMArg
-                                       invokeBlockWithArgs:@NO, error, nil])]);
+      startCaptureWithCompletion:([OCMArg
+                                     invokeBlockWithArgs:@NO, error, nil])]);
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kConnecting]);
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kError]);
@@ -131,7 +132,7 @@ TEST_F(TTCMediatorTest, TestStartSessionRecordingFails) {
 TEST_F(TTCMediatorTest, TestStopSessionUpdatesState) {
   mediator_.consumer = mock_consumer_;
 
-  OCMExpect([mock_audio_engine_ stopRecording]);
+  OCMExpect([mock_audio_engine_ stopCapture]);
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kIdle]);
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.0f]);
 
@@ -189,7 +190,7 @@ TEST_F(TTCMediatorTest,
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
   OCMExpect([mock_consumer_ setTestAudioPlaying:NO]);
-  [mediator_ audioEngineDidStopPlayback:mock_audio_engine_];
+  [mediator_ audioControllerDidStopPlayback:mock_audio_engine_];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
@@ -201,8 +202,8 @@ TEST_F(TTCMediatorTest, TestAudioEnginePlaybackIgnoredWhenTestAudioInactive) {
   [[mock_consumer_ reject] setTestAudioPlaying:YES];
   [[mock_consumer_ reject] setTestAudioPlaying:NO];
 
-  [mediator_ audioEngineDidStartPlayback:mock_audio_engine_];
-  [mediator_ audioEngineDidStopPlayback:mock_audio_engine_];
+  [mediator_ audioControllerDidStartPlayback:mock_audio_engine_];
+  [mediator_ audioControllerDidStopPlayback:mock_audio_engine_];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
@@ -217,14 +218,14 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateUpdatesEnergy) {
                                                     invokeBlockWithArgs:@YES,
                                                                         nil])]);
   OCMStub([mock_audio_engine_
-      startRecordingWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
-                                                                [NSNull null],
-                                                                nil])]);
+      startCaptureWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
+                                                              [NSNull null],
+                                                              nil])]);
   [mediator_ startSession];
 
   OCMExpect([mock_consumer_ setMicEnergyLevel:0.85f]);
 
-  [mediator_ audioEngine:mock_audio_engine_ didUpdateInputEnergy:0.85f];
+  [mediator_ audioController:mock_audio_engine_ didUpdateInputEnergy:0.85f];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
@@ -237,7 +238,7 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateIgnoresEnergyWhenIdle) {
   // Mediator is in kIdle state; verify no energy updates are forwarded.
   [[mock_consumer_ reject] setMicEnergyLevel:0.85f];
 
-  [mediator_ audioEngine:mock_audio_engine_ didUpdateInputEnergy:0.85f];
+  [mediator_ audioController:mock_audio_engine_ didUpdateInputEnergy:0.85f];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
@@ -281,14 +282,14 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateEncounterError) {
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kError]);
   OCMExpect([mock_consumer_ didEncounterError:@"Audio engine crashed"]);
 
-  [mediator_ audioEngine:mock_audio_engine_ didEncounterError:error];
+  [mediator_ audioController:mock_audio_engine_ didEncounterError:error];
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Tests that calling viewWillAppear triggers complete hydration of consumer.
 TEST_F(TTCMediatorTest, TestViewWillAppearHydratesConsumer) {
-  OCMStub([mock_audio_engine_ loopbackEnabled]).andReturn(YES);
+  OCMStub([mock_audio_engine_ isLoopbackEnabled]).andReturn(YES);
   OCMStub([mock_audio_engine_ isPlaying]).andReturn(NO);
 
   mediator_.consumer = mock_consumer_;

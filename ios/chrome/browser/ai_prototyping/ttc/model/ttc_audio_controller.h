@@ -24,6 +24,12 @@
 - (void)audioController:(id<TTCAudioController>)controller
     didUpdateInputEnergy:(float)energy;
 
+// Called on the main thread when audio capture starts.
+- (void)audioControllerDidStartCapture:(id<TTCAudioController>)controller;
+
+// Called on the main thread when audio capture stops.
+- (void)audioControllerDidStopCapture:(id<TTCAudioController>)controller;
+
 // Called on the main thread when audio response playback starts.
 - (void)audioControllerDidStartPlayback:(id<TTCAudioController>)controller;
 
