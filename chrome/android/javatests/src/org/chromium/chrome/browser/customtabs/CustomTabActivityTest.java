@@ -558,11 +558,18 @@ public class CustomTabActivityTest {
     public void testOptionalButton_SupportedTypes() {
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        var supportedTypes =
+        var uiCoordinator =
                 mCustomTabActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
-                        .getAdaptiveToolbarUiCoordinatorForTesting()
+                        .getAdaptiveToolbarUiCoordinatorForTesting();
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                uiCoordinator.getAdaptiveToolbarButtonControllerForTesting(),
+                                Matchers.notNullValue()));
+        var supportedTypes =
+                uiCoordinator
                         .getAdaptiveToolbarButtonControllerForTesting()
                         .getAllSupportedTypesForTesting();
         var expectedTypes =
@@ -580,6 +587,38 @@ public class CustomTabActivityTest {
                         + " AdaptiveToolbarUiCoordinator#initialize.",
                 expectedTypes,
                 supportedTypes);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @CommandLineFlags.Add({"--reader-mode-heuristics=alwaystrue"})
+    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS})
+    public void testOptionalButton_ReaderModeContextualPageActionShown() {
+        String readerModeUrl =
+                mTestServer.getURL("/chrome/test/data/dom_distiller/simple_article.html");
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), readerModeUrl);
+        var shownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "CustomTabs.AdaptiveToolbarButton.Shown",
+                                AdaptiveToolbarButtonVariant.READER_MODE)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        CustomTabToolbar toolbar =
+                mCustomTabActivityTestRule.getActivity().findViewById(R.id.toolbar);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View optionalButton = toolbar.findViewById(R.id.optional_button);
+                    Criteria.checkThat(optionalButton, Matchers.notNullValue());
+                    Criteria.checkThat(optionalButton.getVisibility(), is(View.VISIBLE));
+                });
+        shownHistogram.pollInstrumentationThreadUntilSatisfied();
     }
 
     /**
