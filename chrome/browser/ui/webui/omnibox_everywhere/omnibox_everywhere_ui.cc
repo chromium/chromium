@@ -585,8 +585,15 @@ void OmniboxEverywhereUI::ShowRegionSelectOverlay(
 }
 
 bool OmniboxEverywhereUI::CancelChromeDefaultPicker() {
-  if (auto* handler = GetContextualSearchboxHandler()) {
-    return handler->CancelChromeDefaultPicker();
+  // Screensharing can be initiated from either the Omnibox searchbox or
+  // Composebox. Because pre-warming switches `is_composebox_mode_` immediately,
+  // check both handlers rather than relying on
+  // `GetContextualSearchboxHandler()`.
+  if (omnibox_handler_ && omnibox_handler_->CancelChromeDefaultPicker()) {
+    return true;
+  }
+  if (composebox_handler_ && composebox_handler_->CancelChromeDefaultPicker()) {
+    return true;
   }
   return false;
 }

@@ -1093,9 +1093,10 @@ bool OmniboxEverywhereUIManager::CancelChromeDefaultPicker(
     return true;
   }
 
-  // Fallback for test harnesses (e.g. TestWebUIContentsWrapper) where WebUI is
-  // mocked and OnScreensharePickerOpened() was called directly.
-  if (is_screenshare_picker_open_) {
+  // Fallback only for test harnesses (e.g. TestWebUIContentsWrapper) where
+  // WebUI is mocked. In production, a failed cancellation (e.g. native OS
+  // picker) must return false so the invocation is ignored.
+  if (!ui && is_screenshare_picker_open_) {
     OnScreensharePickerClosed();
     return true;
   }
