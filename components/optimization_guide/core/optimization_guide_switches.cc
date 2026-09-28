@@ -11,8 +11,6 @@
 namespace optimization_guide {
 namespace switches {
 
-const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
-
 // Overrides the on-device model file paths for on-device model execution.
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";

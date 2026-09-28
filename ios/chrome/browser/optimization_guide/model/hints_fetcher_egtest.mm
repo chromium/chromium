@@ -7,8 +7,8 @@
 #import "components/optimization_guide/core/hints/fake_hints_fetcher.h"
 #import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/core/optimization_guide_enums.h"
+#import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -125,7 +125,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
   AppendSwitch(&config.additional_args,
                optimization_guide::kFetchHintsOverrideTimerSwitch);
   AppendSwitch(&config.additional_args,
-               optimization_guide::switches::kDebugLoggingEnabled);
+               optimization_guide::kDebugLoggingEnabledSwitch);
   config.additional_args.push_back("--force-variation-ids=4");
   return config;
 }

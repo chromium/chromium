@@ -7,7 +7,7 @@
 #import "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/webui/chrome_urls/pref_names.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
@@ -24,7 +24,7 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.additional_args.push_back(
-      std::string("--") + optimization_guide::switches::kDebugLoggingEnabled);
+      std::string("--") + optimization_guide::kDebugLoggingEnabledSwitch);
   return config;
 }
 

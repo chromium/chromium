@@ -11,7 +11,7 @@
 #import "components/optimization_guide/core/hints/hints_manager.h"
 #import "components/optimization_guide/core/hints/test_hints_config.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
+#import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/proto/string_value.pb.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -36,7 +36,7 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::kPurgeHintsStoreSwitch);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        optimization_guide::switches::kDebugLoggingEnabled);
+        optimization_guide::kDebugLoggingEnabledSwitch);
   }
 
   void SetUpMetadataFetchValidation(const std::string& metadata) {

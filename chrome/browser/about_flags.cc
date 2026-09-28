@@ -148,7 +148,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
 #include "components/page_info/core/features.h"
@@ -7141,7 +7141,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,
-     SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
+     SINGLE_VALUE_TYPE(optimization_guide::kDebugLoggingEnabledSwitch)},
 
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,

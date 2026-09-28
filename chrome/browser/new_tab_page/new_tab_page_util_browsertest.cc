@@ -28,7 +28,6 @@
 #include "components/ntp_tiles/pref_names.h"
 #include "components/ntp_tiles/tile_type.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -95,7 +94,7 @@ class NewTabPageUtilBrowserTest : public SigninBrowserTestBase,
     // Disable the field trial testing config as the tests in this file care
     // about whether features are overridden or not.
     cmd->AppendSwitch(variations::switches::kDisableFieldTrialTestingConfig);
-    cmd->AppendSwitch(optimization_guide::switches::kDebugLoggingEnabled);
+    cmd->AppendSwitch(optimization_guide::kDebugLoggingEnabledSwitch);
   }
 
   OptimizationGuideKeyedService* GetOptimizationGuideKeyedService() {

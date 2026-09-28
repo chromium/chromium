@@ -14,7 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/variations/variations_switches.h"
@@ -148,7 +148,7 @@ class ModelExecutionValidationBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* cmd) override {
     ModelExecutionValidationBrowserTestBase::SetUpCommandLine(cmd);
-    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
+    cmd->AppendSwitch(kDebugLoggingEnabledSwitch);
     cmd->AppendSwitchASCII(kModelExecutionValidateSwitch, "test_request");
   }
 };

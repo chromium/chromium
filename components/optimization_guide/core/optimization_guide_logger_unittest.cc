@@ -11,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +44,7 @@ class LoggerTestObserver : public OptimizationGuideLogger::Observer {
 TEST(OptimizationGuideLoggerTest, BufferOverflowGeneratesWarningOnObserverAdd) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kDebugLoggingEnabled);
+      kDebugLoggingEnabledSwitch);
 
   OptimizationGuideLogger logger;
   EXPECT_TRUE(logger.ShouldEnableDebugLogs());

@@ -38,7 +38,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -618,7 +617,7 @@ class ModelExecutionInternalsPageBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* cmd) override {
     ModelExecutionEnabledBrowserTest::SetUpCommandLine(cmd);
-    cmd->AppendSwitch(switches::kDebugLoggingEnabled);
+    cmd->AppendSwitch(kDebugLoggingEnabledSwitch);
   }
   void CheckInternalsLog(std::string_view message) {
     auto* logger =
