@@ -19,11 +19,11 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
-export async function setupPaymentsPrefs(
+export function getPaymentsPrefs(
     prefValues:
         Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {}):
-    Promise<TestPrefsBrowserProxy> {
-  const prefs: chrome.settingsPrivate.PrefObject[] = [
+    chrome.settingsPrivate.PrefObject[] {
+  return [
     {
       key: 'autofill.credit_card_enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -72,7 +72,14 @@ export async function setupPaymentsPrefs(
       value: true,
     },
   ];
-  const prefsBrowserProxy = new TestPrefsBrowserProxy(prefs);
+}
+
+export async function setupPaymentsPrefs(
+    prefValues:
+        Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {}):
+    Promise<TestPrefsBrowserProxy> {
+  const prefsBrowserProxy =
+      new TestPrefsBrowserProxy(getPaymentsPrefs(prefValues));
   PrefsBrowserProxy.setInstance(prefsBrowserProxy);
   PrefService.resetInstanceForTesting();
   await PrefService.getInstance().whenInitialized();

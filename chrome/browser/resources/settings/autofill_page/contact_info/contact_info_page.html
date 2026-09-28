@@ -91,15 +91,15 @@
           no-set-pref>
       </settings-toggle-button>
       <template is="dom-if"
-          if="[[prefs.autofill.profile_enabled.extensionId]]">
+          if="[[profileEnabledSyntheticPref_.extensionId]]">
         <div class="cr-row continuation">
           <extension-controlled-indicator class="flex"
               id="autofillExtensionIndicator"
-              extension-id="[[prefs.autofill.profile_enabled.extensionId]]"
+              extension-id="[[profileEnabledSyntheticPref_.extensionId]]"
               extension-name=
-                  "[[prefs.autofill.profile_enabled.controlledByName]]"
+                  "[[profileEnabledSyntheticPref_.controlledByName]]"
               extension-can-be-disabled="[[
-                  prefs.autofill.profile_enabled.extensionCanBeDisabled]]">
+                  profileEnabledSyntheticPref_.extensionCanBeDisabled]]">
           </extension-controlled-indicator>
         </div>
       </template>
@@ -210,14 +210,13 @@
       <template is="dom-if" if="[[isEmailVerificationProtocolEnabled_]]">
         <settings-toggle-button id="autofillEmailVerificationToggle"
             no-extension-indicator label="$i18n{emailVerificationLabel}"
-            pref="{{prefs.autofill.email_verification_enabled}}">
+            pref-key="autofill.email_verification_enabled">
         </settings-toggle-button>
         <div class="vertical-list">
           <template is="dom-repeat" items="[[emailVerificationAddresses_]]">
             <div class="list-item">
               <site-favicon
-                  url="[[getIssuerSite_(
-                      item, prefs.autofill.email_verification_state.value)]]">
+                  url="[[getIssuerSite_(item, emailVerificationStatePref_)]]">
               </site-favicon>
               <div class="start">[[item]]</div>
               <cr-icon-button class="icon-more-vert email-menu"

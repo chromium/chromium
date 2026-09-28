@@ -8,12 +8,70 @@ import 'chrome://settings/settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsAddressEditDialogElement, SettingsAddressRemoveConfirmationDialogElement, SettingsContactInfoPageElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl} from 'chrome://settings/lazy_load.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {createAddressEntry, TestAutofillManager} from './autofill_fake_data.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
+
+export function getContactInfoPrefs(
+    prefValues:
+        Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {}):
+    chrome.settingsPrivate.PrefObject[] {
+  return [
+    {
+      key: 'autofill.profile_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['profile_enabled'],
+    },
+    {
+      key: 'autofill.email_verification_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      ...prefValues['email_verification_enabled'],
+    },
+    {
+      key: 'autofill.email_verification_state',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+      ...prefValues['email_verification_state'],
+    },
+    {
+      key: 'autofill.types_blocked',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [],
+      ...prefValues['types_blocked'],
+    },
+    {
+      key: 'autofill.gmail_otp_filling.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      ...prefValues['gmail_otp_filling.enabled'],
+    },
+  ];
+}
+
+let currentPrefsBrowserProxy: TestPrefsBrowserProxy|null = null;
+
+export async function setupContactInfoPrefs(
+    prefValues: Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {},
+    resetInstance: boolean = true): Promise<TestPrefsBrowserProxy> {
+  const prefs = getContactInfoPrefs(prefValues);
+  if (!resetInstance && currentPrefsBrowserProxy) {
+    currentPrefsBrowserProxy.fakeApi.sendPrefChanges(prefs);
+    return currentPrefsBrowserProxy;
+  }
+  currentPrefsBrowserProxy = new TestPrefsBrowserProxy(prefs);
+  currentPrefsBrowserProxy.fakeApi.sendPrefChanges(prefs);
+  PrefsBrowserProxy.setInstance(currentPrefsBrowserProxy);
+  PrefService.resetInstanceForTesting();
+  await PrefService.getInstance().whenInitialized();
+  return currentPrefsBrowserProxy;
+}
 
 /**
  * Resolves the promise after the element fires the expected event. |causeEvent|
@@ -36,7 +94,7 @@ export function expectEvent(
  */
 export async function createContactInfoPage(
     addresses: chrome.autofillPrivate.AddressEntry[],
-    prefValues: Record<string, unknown>,
+    prefValues: Record<string, Partial<chrome.settingsPrivate.PrefObject>> = {},
     accountInfo?: chrome.autofillPrivate.AccountInfo|null,
     autofillManager?: TestAutofillManager):
     Promise<SettingsContactInfoPageElement> {
@@ -48,32 +106,12 @@ export async function createContactInfoPage(
   }
   AutofillManagerImpl.setInstance(manager);
 
+  await setupContactInfoPrefs(prefValues, /*resetInstance=*/ false);
+
   const page = document.createElement('settings-contact-info-page');
-  page.prefs = {
-    autofill: {
-      profile_enabled: {
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: true,
-      },
-      email_verification_state: {
-        type: chrome.settingsPrivate.PrefType.DICTIONARY,
-        value: {},
-      },
-      types_blocked: {
-        type: chrome.settingsPrivate.PrefType.LIST,
-        value: [],
-      },
-      gmail_otp_filling: {
-        enabled: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-      },
-      ...prefValues,
-    },
-  };
   document.body.appendChild(page);
   await manager.whenCalled('getAddressList');
+  await flushTasks();
 
   return page;
 }
@@ -215,6 +253,8 @@ export async function createRemoveAddressDialog(
   // Override the AutofillManagerImpl for testing.
   autofillManager.data.addresses = [address];
   AutofillManagerImpl.setInstance(autofillManager);
+
+  await setupContactInfoPrefs();
 
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   const page = document.createElement('settings-contact-info-page');

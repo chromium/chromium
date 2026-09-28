@@ -16,7 +16,6 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/prefs/prefs.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
@@ -29,7 +28,8 @@ import '../autofill_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
@@ -97,7 +97,7 @@ export interface SettingsContactInfoPageElement {
 }
 
 const SettingsContactInfoPageElementBase =
-    PrefsMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
+    PrefServiceObserverMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
 export class SettingsContactInfoPageElement extends
     SettingsContactInfoPageElementBase {
@@ -111,19 +111,14 @@ export class SettingsContactInfoPageElement extends
 
   static get observers() {
     return [
-      `updateProfileEnabledSyntheticPref_(
-          prefs.autofill.profile_enabled.*,
-          prefs.autofill.types_blocked.*)`,
       `onGmailOtpFillingPrefOrAccountChange_(
           showGmailOtpFillingToggle_,
           accountInfo_,
-          prefs.autofill.gmail_otp_filling.enabled.*)`,
+          gmailOtpFillingEnabledPref_)`,
     ];
   }
   static get properties() {
     return {
-      prefs: Object,
-
       accountInfo_: {
         type: Object,
         value: null,
@@ -152,10 +147,12 @@ export class SettingsContactInfoPageElement extends
             loadTimeData.getBoolean('emailVerificationProtocolEnabled'),
       },
 
+      emailVerificationStatePref_: Object,
+
       emailVerificationAddresses_: {
         type: Array,
-        computed: 'computeEmailVerificationAddresses_(' +
-            'prefs.autofill.email_verification_state.value)',
+        computed:
+            'computeEmailVerificationAddresses_(emailVerificationStatePref_)',
       },
 
       /**
@@ -167,8 +164,15 @@ export class SettingsContactInfoPageElement extends
         computed: 'computeShowGmailOtpFillingToggle_(accountInfo_)',
       },
 
+      gmailOtpFillingEnabledPref_: Object,
+
       profileEnabledSyntheticPref_: {
         type: Object,
+        value: () => ({
+          key: 'autofill.profile_enabled',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        }),
       },
 
       isOtpConsentLoading_: {
@@ -191,7 +195,6 @@ export class SettingsContactInfoPageElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare addresses: chrome.autofillPrivate.AddressEntry[];
   declare activeAddress: chrome.autofillPrivate.AddressEntry|null;
   declare private accountInfo_: chrome.autofillPrivate.AccountInfo|null;
@@ -202,8 +205,13 @@ export class SettingsContactInfoPageElement extends
   declare private activeEmailIssuer_: string;
   declare private isGoogleProfileAddress: boolean;
   declare private isEmailVerificationProtocolEnabled_: boolean;
+  declare private emailVerificationStatePref_:
+      chrome.settingsPrivate.PrefObject<Record<string, {issuer_site?: string}>>|
+      undefined;
   declare private emailVerificationAddresses_: string[];
   declare private showGmailOtpFillingToggle_: boolean;
+  declare private gmailOtpFillingEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private profileEnabledSyntheticPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
   declare private isOtpConsentLoading_: boolean;
@@ -220,8 +228,9 @@ export class SettingsContactInfoPageElement extends
    */
   private updateProfileEnabledSyntheticPref_() {
     this.profileEnabledSyntheticPref_ = computeEffectiveAutofillPref(
-        this.getPref<boolean>('autofill.profile_enabled'),
-        this.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
+        PrefService.getInstance().getPref<boolean>('autofill.profile_enabled'),
+        PrefService.getInstance().getPref<TypesBlockedEntry[]>(
+            'autofill.types_blocked'),
         AutofillPolicyDataCategory.CONTACT_INFO);
   }
 
@@ -239,7 +248,8 @@ export class SettingsContactInfoPageElement extends
       return;
     }
     const toggle = event.target as SettingsToggleButtonElement;
-    this.setPrefValue('autofill.profile_enabled', toggle.checked);
+    PrefService.getInstance().setPrefValue(
+        'autofill.profile_enabled', toggle.checked);
 
     const value = toggle.checked ? AutofillAddressOptInChange.OPT_IN :
                                    AutofillAddressOptInChange.OPT_OUT;
@@ -259,6 +269,17 @@ export class SettingsContactInfoPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.addPrefObserver(
+        'autofill.profile_enabled',
+        () => this.updateProfileEnabledSyntheticPref_());
+    this.addPrefObserver(
+        'autofill.types_blocked',
+        () => this.updateProfileEnabledSyntheticPref_());
+    this.mirrorPrefs({
+      'autofill.email_verification_state': 'emailVerificationStatePref_',
+      [AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF]: 'gmailOtpFillingEnabledPref_',
+    });
 
     // Create listener functions.
     const setAddressesListener =
@@ -450,9 +471,8 @@ export class SettingsContactInfoPageElement extends
         this.isAccountNameEmailAddress_(address);
   }
 
-  private computeEmailVerificationAddresses_(state?: Record<string, unknown>):
-      string[] {
-    return state ? Object.keys(state) : [];
+  private computeEmailVerificationAddresses_(): string[] {
+    return Object.keys(this.emailVerificationStatePref_?.value || {});
   }
 
   private onAccountHomeAddressClick_() {
@@ -479,13 +499,12 @@ export class SettingsContactInfoPageElement extends
   private onMenuRemoveEmailClick_() {
     this.$.emailSharedMenu.close();
     const email = this.emailSharedMenuModel_;
-    const currentPrefs = this.getPref<Record<string, unknown>>(
-                                 'autofill.email_verification_state')
-                             .value;
-    assert(currentPrefs);
-    const emailData = currentPrefs[email] as Record<string, string>| undefined;
+    const pref = PrefService.getInstance()
+                     .getPref<Record<string, {issuer_site?: string}>>(
+                         'autofill.email_verification_state');
+    const emailData = pref.value[email];
     assert(emailData);
-    const issuerSite = emailData['issuer_site'];
+    const issuerSite = emailData.issuer_site;
     assert(issuerSite);
     const hostname = new URL(issuerSite).hostname;
     this.activeEmailIssuer_ = hostname;
@@ -499,7 +518,8 @@ export class SettingsContactInfoPageElement extends
     const wasDeletionConfirmed = confirmationDialog.wasConfirmed();
     if (wasDeletionConfirmed) {
       const email = this.emailSharedMenuModel_;
-      this.deletePrefDictEntry('autofill.email_verification_state', email);
+      PrefService.getInstance().deletePrefDictEntry(
+          'autofill.email_verification_state', email);
     }
     this.showEmailRemoveConfirmationDialog_ = false;
   }
@@ -509,7 +529,8 @@ export class SettingsContactInfoPageElement extends
   }
 
   private getIssuerSite_(email: string): string {
-    const state = this.getPref<Record<string, {issuer_site?: string}>>(
+    const state = PrefService.getInstance()
+                      .getPref<Record<string, {issuer_site?: string}>>(
                           'autofill.email_verification_state')
                       .value;
     return state[email]?.issuer_site || '';
@@ -703,7 +724,8 @@ export class SettingsContactInfoPageElement extends
       this.lastCheckedAccountEmail_ = email;
     }
     this.setOtpFillingToggleChecked_(true);
-    this.setPrefValue(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, true);
+    PrefService.getInstance().setPrefValue(
+        AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, true);
     chrome.metricsPrivate.recordBoolean(
         AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true);
   }
@@ -733,12 +755,11 @@ export class SettingsContactInfoPageElement extends
       return;
     }
 
-    if (!this.get(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, this.prefs)) {
+    if (!this.gmailOtpFillingEnabledPref_) {
       return;
     }
 
-    const pref = this.getPref<boolean>(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF);
-    if (!pref.value) {
+    if (!this.gmailOtpFillingEnabledPref_.value) {
       this.resetOtpFillingState_();
       return;
     }
@@ -747,7 +768,7 @@ export class SettingsContactInfoPageElement extends
     // unexpected spinner on subsequent pref changes or user interactions during
     // the session if the account has not changed.
     if (currentEmail === this.lastCheckedAccountEmail_) {
-      this.setOtpFillingToggleChecked_(pref.value);
+      this.setOtpFillingToggleChecked_(this.gmailOtpFillingEnabledPref_.value);
       return;
     }
 
@@ -822,7 +843,8 @@ export class SettingsContactInfoPageElement extends
     const toggle = event.target as SettingsToggleButtonElement;
     if (!toggle.checked) {
       this.resetOtpFillingState_();
-      this.setPrefValue(AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, false);
+      PrefService.getInstance().setPrefValue(
+          AUTOFILL_GMAIL_OTP_FILLING_ENABLED_PREF, false);
       chrome.metricsPrivate.recordBoolean(
           AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false);
       return;
