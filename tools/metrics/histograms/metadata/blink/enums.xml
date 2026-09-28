@@ -7216,18 +7216,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/metrics.h:IdpSigninMatchStatus) -->
 
-<!-- LINT.IfChange(FedCmJavaObjectCreationOutcome) -->
-
-<enum name="FedCmJavaObjectCreationOutcome">
-  <int value="0" label="New Java object created"/>
-  <int value="1" label="Existing Java object reused"/>
-  <int value="2" label="New Java object creation failed"/>
-  <int value="3" label="No native view"/>
-  <int value="4" label="No window"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/ui/android/webid/account_selection_view_android.cc:FedCmJavaObjectCreationOutcome) -->
-
 <!-- LINT.IfChange(FedCmLifecycleStateFailureReason) -->
 
 <enum name="FedCmLifecycleStateFailureReason">

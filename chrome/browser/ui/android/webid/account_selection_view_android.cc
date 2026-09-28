@@ -9,8 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/containers/flat_map.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
@@ -216,36 +214,6 @@ ScopedJavaLocalRef<jobjectArray> ConvertToJavaIdentityProvidersList(
     env->SetObjectArrayElement(array.obj(), i++, iter.second.obj());
   }
   return array;
-}
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(FedCmJavaObjectCreationOutcome)
-
-enum class FedCmJavaObjectCreationOutcome {
-  kNewObjectCreated = 0,
-  kObjectReused = 1,
-  kObjectCreationFailed = 2,
-  kNoNativeView = 3,
-  kNoWindow = 4,
-  kMaxValue = kNoWindow
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmJavaObjectCreationOutcome)
-
-void RecordJavaObjectCreationOutcome(
-    std::optional<blink::mojom::RpMode> rp_mode,
-    FedCmJavaObjectCreationOutcome outcome) {
-  // Rp mode may be unavailable in cases that the request is invoked from CCT.
-  // There's no need to record metrics in such case.
-  if (!rp_mode) {
-    return;
-  }
-  const char* mode =
-      *rp_mode == blink::mojom::RpMode::kPassive ? "Passive" : "Active";
-  base::UmaHistogramEnumeration(
-      base::StringPrintf("Blink.FedCm.JavaObjectCreationOutcome.%s", mode),
-      outcome);
 }
 
 }  // namespace
@@ -544,18 +512,12 @@ void AccountSelectionViewAndroid::OnNativeAppLoginFinished(JNIEnv* env) {
 bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
     std::optional<blink::mojom::RpMode> rp_mode) {
   if (!delegate_->GetNativeView()) {
-    RecordJavaObjectCreationOutcome(
-        rp_mode, FedCmJavaObjectCreationOutcome::kNoNativeView);
     return false;
   }
   if (!delegate_->GetNativeView()->GetWindowAndroid()) {
-    RecordJavaObjectCreationOutcome(rp_mode,
-                                    FedCmJavaObjectCreationOutcome::kNoWindow);
     return false;  // No window attached (yet or anymore).
   }
   if (java_object_internal_) {
-    RecordJavaObjectCreationOutcome(
-        rp_mode, FedCmJavaObjectCreationOutcome::kObjectReused);
     return true;
   }
   JNIEnv* env = AttachCurrentThread();
@@ -566,13 +528,6 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       static_cast<int32_t>(rp_mode.value_or(blink::mojom::RpMode::kPassive)),
       can_show_ui_);
 
-  if (!!java_object_internal_) {
-    RecordJavaObjectCreationOutcome(
-        rp_mode, FedCmJavaObjectCreationOutcome::kNewObjectCreated);
-  } else {
-    RecordJavaObjectCreationOutcome(
-        rp_mode, FedCmJavaObjectCreationOutcome::kObjectCreationFailed);
-  }
   return !!java_object_internal_;
 }
 
