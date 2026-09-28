@@ -726,6 +726,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   _modalHost = nil;
 
   [self.dispatcher stopDispatchingToTarget:self];
+  _dispatcher = nil;
   _webUsageEnablerObserver.reset();
   _activityOverlayCallback.RunAndReset();
 }
@@ -1243,7 +1244,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   self.snackbarCoordinator = nil;
 
   _keyCommandsProvider = nil;
-  _dispatcher = nil;
   _layoutGuideCenter = nil;
   _webNavigationBrowserAgent = nil;
   _urlLoadingBrowserAgent = nil;
