@@ -244,10 +244,10 @@ class BookmarkUIOperationsHelperMergedSurfaces
         const BookmarkParentFolder* parent);
 
     TargetParent(BookmarkMergedSurfaceService* merged_surface_service,
-                 BookmarkParentFolder parent);
+                 const BookmarkParentFolder& parent);
     ~TargetParent() override;
 
-    const BookmarkParentFolder& parent_folder() const;
+    std::optional<BookmarkParentFolder> parent_folder() const;
 
     // internal::BookmarkUIOperationsHelper::TargetParent
     bool IsManaged() const override;
@@ -259,10 +259,10 @@ class BookmarkUIOperationsHelperMergedSurfaces
 
    private:
     const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
-    const BookmarkParentFolder parent_;
+    const bookmarks::BookmarkNodeId parent_id_;
   };
 
-  const BookmarkParentFolder& parent_folder() const;
+  std::optional<BookmarkParentFolder> parent_folder() const;
 
   const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
   const std::unique_ptr<TargetParent> target_parent_;

@@ -9,10 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
 
-namespace bookmarks {
-class BookmarkNode;
-}
-
 class BookmarkBarUIControllerInjector;
 
 class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
@@ -40,12 +36,11 @@ class BookmarkBarUIControllerImpl : public BookmarkBarUIController {
   void OnAppsPageShortcutVisibilityPrefChanged();
   void OnTabGroupsVisibilityPrefChanged();
   void OnShowManagedBookmarksPrefChanged();
-  void OnPasteCheckComplete(
-      std::vector<const bookmarks::BookmarkNode*> selection,
-      const gfx::Point& point,
-      ui::mojom::MenuSourceType source_type,
-      base::OnceClosure on_close,
-      bool can_paste);
+  void OnPasteCheckComplete(bookmarks::BookmarkNodeId target,
+                            const gfx::Point& point,
+                            ui::mojom::MenuSourceType source_type,
+                            base::OnceClosure on_close,
+                            bool can_paste);
 
   std::unique_ptr<BookmarkBarUIControllerInjector> injector_;
   raw_ptr<BookmarkBarUIClient> client_ = nullptr;

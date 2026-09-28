@@ -225,14 +225,17 @@ source_set("browser_tests") {
     "//chrome/browser/ui/commerce:test_support",
     "//chrome/browser/ui/views/commerce",
     "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/undo",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/user_education",
     "//components/bookmarks/managed",
     "//components/commerce/core:shopping_service_test_support",
     "//components/saved_tab_groups/test_support",
+    "//components/undo",
     "//components/user_education/views",
     "//ui/base/clipboard:clipboard_test_support",
+    "//ui/base/data_transfer_policy",
     "//ui/events:test_support",
   ]
 }

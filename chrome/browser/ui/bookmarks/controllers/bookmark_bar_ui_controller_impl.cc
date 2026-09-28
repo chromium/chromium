@@ -159,16 +159,22 @@ void BookmarkBarUIControllerImpl::ShowContextMenu(
   model_adapter->CanPasteFromClipboard(
       &parent_folder,
       base::BindOnce(&BookmarkBarUIControllerImpl::OnPasteCheckComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(nodes), point,
-                     source_type, auto_close.Release()));
+                     weak_ptr_factory_.GetWeakPtr(), target, point, source_type,
+                     auto_close.Release()));
 }
 
 void BookmarkBarUIControllerImpl::OnPasteCheckComplete(
-    std::vector<const bookmarks::BookmarkNode*> selection,
+    bookmarks::BookmarkNodeId target,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type,
     base::OnceClosure on_close,
     bool can_paste) {
+  base::ScopedClosureRunner auto_close(std::move(on_close));
+  std::vector<const bookmarks::BookmarkNode*> selection =
+      ResolveTargetNodes(injector_->GetModelAdapter(), target);
+  if (selection.empty()) {
+    return;
+  }
   injector_->GetActionAdapter()->ShowContextMenu(
-      selection, point, source_type, can_paste, std::move(on_close));
+      selection, point, source_type, can_paste, auto_close.Release());
 }

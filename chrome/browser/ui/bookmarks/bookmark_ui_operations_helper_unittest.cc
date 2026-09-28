@@ -103,9 +103,10 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
           model_.get(), parent);
     } else if (std::is_same<T,
                             BookmarkUIOperationsHelperMergedSurfaces>::value) {
-      parent_folder_ = BookmarkParentFolder::FromFolderNode(parent);
+      BookmarkParentFolder parent_folder =
+          BookmarkParentFolder::FromFolderNode(parent);
       helper_ = std::make_unique<BookmarkUIOperationsHelperMergedSurfaces>(
-          bookmark_merged_surface_service_.get(), &parent_folder_.value());
+          bookmark_merged_surface_service_.get(), &parent_folder);
     }
     return helper_.get();
   }
@@ -124,7 +125,6 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
   raw_ptr<BookmarkMergedSurfaceService> bookmark_merged_surface_service_ =
       nullptr;
-  std::optional<BookmarkParentFolder> parent_folder_;
   std::unique_ptr<internal::BookmarkUIOperationsHelper> helper_;
 };
 
@@ -628,6 +628,35 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
   }
   ASSERT_EQ(1u, bar_folder->children().size());
   EXPECT_EQ(url, bar_folder->children()[0]->url().spec());
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest,
+           PasteFromClipboardAfterParentFolderRemoved) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
+  model->AddURL(folder, 0, u"existing", GURL("https://existing.example/"));
+
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"https://www.google.com/");
+  }
+
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(folder);
+  EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
+
+  // Remove the target folder before PasteFromClipboard completes.
+  model->Remove(folder, bookmarks::metrics::BookmarkEditSource::kOther,
+                FROM_HERE);
+
+  EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
+
+  {
+    base::test::TestFuture<void> future;
+    helper->PasteFromClipboard(1, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
+  EXPECT_TRUE(model->bookmark_bar_node()->children().empty());
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

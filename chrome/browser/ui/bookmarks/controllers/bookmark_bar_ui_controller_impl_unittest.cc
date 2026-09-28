@@ -270,7 +270,8 @@ TEST_F(BookmarkBarUIControllerImplTest, ShowContextMenuDelegates) {
   ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kMouse;
 
   EXPECT_CALL(mock_model_adapter_, GetNodeById(node->id()))
-      .WillOnce(testing::Return(node));
+      .Times(2)
+      .WillRepeatedly(testing::Return(node));
   EXPECT_CALL(mock_model_adapter_,
               CanPasteFromClipboard(testing::_, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(true));
