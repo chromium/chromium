@@ -34,6 +34,10 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     private @Nullable String mLastUploadImageFilePath;
     private @Nullable Bitmap mBitmap;
     private boolean mIsBitmapSaved;
+    // The primary seed color of this background. Excluded from NtpBackgroundDataImageBase#equals
+    // so that theme collection entries with the same image share the same identity when color is
+    // lazily computed or updated from sync; use #hasSameThemeAndColor when comparing whether the
+    // visual color has changed.
     private @Nullable @ColorInt Integer mPrimaryColor;
 
     /**
@@ -189,19 +193,6 @@ public abstract class NtpBackgroundDataImageBase extends NtpBackgroundDataBase {
     /** Reads the isBitmapSaved value from the given JSON and sets it on this object. */
     public void setIsBitmapSavedFromJson(JSONObject json) {
         setIsBitmapSaved(json.optBoolean(IS_BITMAP_SAVED_KEY, false));
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        if (obj instanceof NtpBackgroundDataImageBase other) {
-            return super.equals(obj) && Objects.equals(mPrimaryColor, other.mPrimaryColor);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), mPrimaryColor);
     }
 
     @Override

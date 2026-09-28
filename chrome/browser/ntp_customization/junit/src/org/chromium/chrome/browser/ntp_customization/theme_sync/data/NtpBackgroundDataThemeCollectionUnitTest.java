@@ -38,6 +38,7 @@ import java.util.List;
 public class NtpBackgroundDataThemeCollectionUnitTest {
     private static final String TEST_COLLECTION_ID = "id";
     private static final String TEST_ATTRIBUTION = "attribution";
+    private static final String TEST_FILE_ID_HASH = "file_id_hash";
 
     @Test
     public void testEquals() {
@@ -93,10 +94,29 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         Color.RED,
                         /* fileIdHash= */ null);
 
+        NtpBackgroundDataThemeCollection dataNullColor =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info1,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        /* fileIdHash= */ null);
+
+        // equals() and hashCode() compare theme identity and ignore primaryColor.
         assertEquals(data1, data2);
-        assertNotEquals(data1, data3);
+        assertEquals(data1, data3);
+        assertEquals(data1, dataNullColor);
         assertNotEquals(data1, data4);
         assertEquals(data1.hashCode(), data2.hashCode());
+        assertEquals(data1.hashCode(), data3.hashCode());
+        assertEquals(data1.hashCode(), dataNullColor.hashCode());
+
+        // hasSameThemeAndColor() additionally requires primaryColor to match.
+        assertTrue(data1.hasSameThemeAndColor(data2));
+        assertFalse(data1.hasSameThemeAndColor(data3));
+        assertFalse(data1.hasSameThemeAndColor(dataNullColor));
+        assertFalse(data1.hasSameThemeAndColor(data4));
 
         // isBitmapSaved should not affect equality.
         data1.setIsBitmapSaved(/* isBitmapSaved= */ true);

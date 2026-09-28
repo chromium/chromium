@@ -406,19 +406,16 @@ void NtpAndroidCustomBackgroundService::NotifySyncBridge() {
       *specifics.mutable_ntp_background() =
           themes::GetProtoFromBackgroundDict(pref->GetDict());
 
-      if (std::optional<int> main_color =
-              pref->GetDict().FindInt(kNtpCustomBackgroundMainColor)) {
-        // TODO(crbug.com/488439751): 0 is the sentinel written by
-        // NtpSyncedThemeBridge when primary_color is null (e.g. for wallpapers
-        // synced from other platforms where main_color is unpopulated). Remove
-        // this guard once primary color is preserved across all theme sources.
-        if (*main_color != 0) {
-          sync_pb::UserColorTheme* user_color_theme =
-              specifics.mutable_user_color_theme();
-          user_color_theme->set_color(static_cast<uint32_t>(*main_color));
-          user_color_theme->set_browser_color_variant(
-              sync_pb::UserColorTheme::TONAL_SPOT);
-        }
+      std::optional<int> main_color =
+          pref->GetDict().FindInt(kNtpCustomBackgroundMainColor);
+      if (main_color.value_or(0) == 0) {
+        specifics.mutable_ntp_background()->clear_main_color();
+      } else {
+        sync_pb::UserColorTheme* user_color_theme =
+            specifics.mutable_user_color_theme();
+        user_color_theme->set_color(static_cast<uint32_t>(*main_color));
+        user_color_theme->set_browser_color_variant(
+            sync_pb::UserColorTheme::TONAL_SPOT);
       }
     }
   }

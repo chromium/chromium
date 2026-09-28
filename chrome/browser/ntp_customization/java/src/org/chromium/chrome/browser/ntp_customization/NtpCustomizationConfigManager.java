@@ -414,6 +414,8 @@ public class NtpCustomizationConfigManager {
             boolean shouldNotifyThemeSyncObserver) {
         if (!Objects.equals(mSyncedNtpBackgroundData, backgroundData)) {
             clearSyncedNtpBackgroundData(context);
+        } else {
+            mSyncedNtpBackgroundData = null;
         }
 
         if (backgroundData == null
@@ -471,13 +473,8 @@ public class NtpCustomizationConfigManager {
         // bitmap have been saved to disk before. Thus, we don't need to pick the primary color or
         // save the bitmap again, but only update the current primary color to the Shared
         // Preference.
-        @ColorInt
-        Integer primaryColor =
-                NtpCustomizationUtils.saveBackgroundInfo(
-                        uploadImageData, fromHistoryData ? null : bitmap, backgroundImageInfo);
-        if (!fromHistoryData) {
-            uploadImageData.setPrimaryColor(primaryColor);
-        }
+        NtpCustomizationUtils.saveBackgroundInfo(
+                uploadImageData, fromHistoryData ? null : bitmap, backgroundImageInfo);
 
         onBackgroundImageChanged(bitmap, backgroundImageInfo, oldType);
     }
@@ -511,10 +508,6 @@ public class NtpCustomizationConfigManager {
         // Saves the background info, matrices, and primary color to SharedPreferences, and saves
         // the bitmap to disk if not already saved on this device (e.g. when newly selected or from
         // remote history).
-        // TODO(crbug.com/488439751): Capture the primary color returned by saveBackgroundInfo() and
-        // set it on themeCollectionData, as onUploadedImageSelected() does. Cross-device entries
-        // arrive with no primary color, and discarding it here is what forces the null-to-zero
-        // coercion in NtpSyncedThemeBridge#updateCustomBackgroundPrefsWithColor.
         NtpCustomizationUtils.saveBackgroundInfo(
                 themeCollectionData,
                 themeCollectionData.isBitmapSaved() ? null : themeCollectionData.getBitmap(),
@@ -941,7 +934,8 @@ public class NtpCustomizationConfigManager {
         // Check to ensure memory reflects disk state for synced backgrounds
         boolean isThemeMismatch =
                 (mSyncedNtpBackgroundData != null
-                                && !Objects.equals(mNtpBackgroundData, mSyncedNtpBackgroundData))
+                                && !mSyncedNtpBackgroundData.hasSameThemeAndColor(
+                                        mNtpBackgroundData))
                         || (mBackgroundType != NtpBackgroundType.DEFAULT
                                 && NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference()
                                         == NtpBackgroundType.DEFAULT);

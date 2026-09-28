@@ -709,20 +709,28 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
   service->SetCustomBackgroundInfo(GURL(kTestValidUrl), GURL(), "", "", GURL(),
                                    kTestCollectionId);
+  // Set up the test so that the theme collection has no primary color. When the
+  // Java primary color is null, NtpSyncedThemeBridge passes 0 across JNI, so
+  // this is what the service receives.
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId, /*attribution=*/std::string(),
       /*color=*/0, /*is_daily_refresh=*/false);
 
+  // The 0 is stored in the local pref as is.
   const base::DictValue& dict =
       profile_->GetPrefs()->GetDict(prefs::kNtpAndroidCustomBackgroundDict);
   EXPECT_EQ(dict.FindInt(kNtpCustomBackgroundMainColor), 0);
 
+  // But the outgoing sync data treats 0 as "no color": both color fields are
+  // left unset (as iOS does), so other devices don't use 0 as a real seed
+  // color.
   std::map<std::string, sync_pb::ThemeAndroidSpecifics> specifics_map =
       ReadAllSyncData();
   ASSERT_EQ(1u, specifics_map.size());
   const sync_pb::ThemeAndroidSpecifics& specifics =
       specifics_map[kAndroidThemeStorageKey];
-  EXPECT_TRUE(specifics.has_ntp_background());
+  ASSERT_TRUE(specifics.has_ntp_background());
+  EXPECT_FALSE(specifics.ntp_background().has_main_color());
   EXPECT_FALSE(specifics.has_user_color_theme());
 }
 

@@ -132,6 +132,16 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                                     if (bitmap != null) {
                                         NtpCustomizationUtils.saveBackgroundImageFile(
                                                 themeData, bitmap);
+                                        // Mirrors NtpCustomizationUtils#saveBackgroundInfo, which
+                                        // also fills in the primary color on this object in place.
+                                        // Without this the object would never diverge from its
+                                        // persisted copy, and tests could not observe the
+                                        // equals()-based lookup failing.
+                                        if (themeData.getPrimaryColor() == null) {
+                                            themeData.setPrimaryColor(
+                                                    NtpCustomizationUtils.pickAndSavePrimaryColor(
+                                                            bitmap));
+                                        }
                                     }
                                 }
                             }
@@ -1088,6 +1098,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 (NtpBackgroundDataThemeCollection) dataList.get(position);
         assertNotNull(inMemoryTheme.getBitmap());
         assertFalse(inMemoryTheme.isBitmapSaved());
+        assertNull(inMemoryTheme.getPrimaryColor());
 
         clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate, mMockImageFetcher);
 
@@ -1096,6 +1107,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         verify(mMockImageFetcher, never()).fetchImage(any(), any());
         assertTrue(inMemoryTheme.isBitmapSaved());
+        assertNotNull(inMemoryTheme.getPrimaryColor());
         assertBackgroundDataChangedImpl(inMemoryTheme, /* expectedRecreate= */ true);
 
         NtpBackgroundDataGroup remoteGroup =
@@ -1105,6 +1117,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         NtpBackgroundDataThemeCollection savedTheme =
                 (NtpBackgroundDataThemeCollection) remoteGroup.get(0);
         assertTrue(savedTheme.isBitmapSaved());
+        // Because equals() ignores primaryColor for theme collections, mutating the in-memory
+        // object with the extracted primary color still matches the stored entry and persists it.
+        assertEquals(inMemoryTheme.getPrimaryColor(), savedTheme.getPrimaryColor());
     }
 
     @Test

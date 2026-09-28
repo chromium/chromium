@@ -116,9 +116,11 @@ public class NtpSyncedThemeManager
      * Called when the synced theme collection has been updated.
      *
      * @param info The {@link CustomBackgroundInfo} containing custom background info.
+     * @param primaryColor The synced primary color, or {@code null} if none was provided.
      */
     @Override
-    public void onThemeCollectionSynced(@Nullable CustomBackgroundInfo info) {
+    public void onThemeCollectionSynced(
+            @Nullable CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
         if (info == null
                 || !info.backgroundUrl.isValid()
                 || info.backgroundUrl.isEmpty()
@@ -131,7 +133,7 @@ public class NtpSyncedThemeManager
         NtpCustomizationUtils.fetchThemeCollectionImage(
                 mImageFetcher,
                 info.backgroundUrl,
-                (bitmap) -> handleFetchedThemeCollectionImage(info, bitmap));
+                (bitmap) -> handleFetchedThemeCollectionImage(info, bitmap, primaryColor));
     }
 
     /**
@@ -222,9 +224,12 @@ public class NtpSyncedThemeManager
      *
      * @param info The {@link CustomBackgroundInfo} containing theme collection metadata.
      * @param bitmap The fetched background image bitmap, or {@code null} if downloading failed.
+     * @param syncedPrimaryColor The primary color provided by sync, or {@code null} if not present.
      */
     private void handleFetchedThemeCollectionImage(
-            CustomBackgroundInfo info, @Nullable Bitmap bitmap) {
+            CustomBackgroundInfo info,
+            @Nullable Bitmap bitmap,
+            @Nullable @ColorInt Integer syncedPrimaryColor) {
         mIsImageDownloading = false;
         boolean isSyncUpdate = isProcessingSyncUpdate();
         if (bitmap == null) {
@@ -257,7 +262,11 @@ public class NtpSyncedThemeManager
         } else {
             // Case 2: Synced static theme collection image from another device.
             String fileId = NtpCustomizationUtils.getFileName(info.backgroundUrl.getPath());
-            @ColorInt Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
+            @ColorInt
+            Integer primaryColor =
+                    syncedPrimaryColor != null
+                            ? syncedPrimaryColor
+                            : NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
             themeCollectionData =
                     new NtpBackgroundDataThemeCollection(
                             PlatformType.ANDROID,

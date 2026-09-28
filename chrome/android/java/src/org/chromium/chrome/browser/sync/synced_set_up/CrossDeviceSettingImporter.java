@@ -1390,9 +1390,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         if (!isThemeFeatureEnabled() || candidateTheme == null) {
             return false;
         }
-        // Synced Set Up runs at startup when `currentTheme` is expected to be the Android default
-        // (`null`), so `Objects.equals` is sufficient without cross-platform theme comparison.
-        return !Objects.equals(candidateTheme, currentTheme);
+        return !candidateTheme.hasSameThemeAndColor(currentTheme);
     }
 
     /**

@@ -60,7 +60,11 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataImageBase {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataUploadImage other) {
+            // Unlike theme collections, uploaded images are never synced: their primary color is
+            // extracted from the local bitmap when the image is first applied and is never updated
+            // from sync. So comparing it in equals() is intentional.
             return super.equals(obj)
+                    && Objects.equals(getPrimaryColor(), other.getPrimaryColor())
                     && Objects.equals(getFileIdHash(), other.getFileIdHash())
                     && Objects.equals(getBackgroundImageInfo(), other.getBackgroundImageInfo());
         }
@@ -69,7 +73,8 @@ public class NtpBackgroundDataUploadImage extends NtpBackgroundDataImageBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getFileIdHash(), getBackgroundImageInfo());
+        return Objects.hash(
+                super.hashCode(), getPrimaryColor(), getFileIdHash(), getBackgroundImageInfo());
     }
 
     /** Returns the NtpBackgroundDataUploadImage object from the given JSON. */

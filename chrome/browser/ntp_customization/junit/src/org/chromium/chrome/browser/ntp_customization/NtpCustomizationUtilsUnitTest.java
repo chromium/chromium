@@ -127,6 +127,10 @@ public class NtpCustomizationUtilsUnitTest {
     private static final String NULL_FILE_NAME = "null_file.png";
     private static final String FILE_ID_HASH_SUFFIX = "_-1";
     private static final String STREAM_ERROR_MESSAGE = "Stream error";
+    // Material falls back to this when no candidate color survives quantization, e.g. for a fully
+    // transparent or otherwise chroma-less bitmap. See the vendored
+    // third_party/material_color_utilities/src/java/score/Score.java (Score#score fallback).
+    private static final int MATERIAL_SCORE_FALLBACK_COLOR = 0xFF4285F4;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1420,13 +1424,10 @@ public class NtpCustomizationUtilsUnitTest {
             assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
         }
 
-        if (ntpBackgroundImageData.getPrimaryColor() != null) {
-            assertEquals(
-                    ntpBackgroundImageData.getPrimaryColor(),
-                    NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-        } else {
-            assertNotNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
-        }
+        assertNotNull(ntpBackgroundImageData.getPrimaryColor());
+        assertEquals(
+                ntpBackgroundImageData.getPrimaryColor(),
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
 
         BackgroundImageInfo restoredMatrices = NtpCustomizationUtils.readNtpBackgroundImageInfo();
         assertNotNull(restoredMatrices);
@@ -1439,6 +1440,40 @@ public class NtpCustomizationUtilsUnitTest {
         } else {
             NtpCustomizationUtils.maybeDeleteFile(expectedSavedFile);
         }
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    public void testSaveBackgroundInfo_noColorAndNoBitmap_clearsStalePrimaryColor() {
+        // The color of the background that is being replaced.
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
+
+        // A theme collection whose bitmap has already been saved on this device is passed a null
+        // bitmap, so there is nothing to extract a color from.
+        String themeHash = "themeHash";
+        NtpBackgroundDataThemeCollection themeCollectionData =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        /* customBackgroundInfo= */ null,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        /* primaryColor= */ null,
+                        themeHash);
+
+        NtpCustomizationUtils.saveBackgroundInfo(
+                themeCollectionData,
+                /* bitmap= */ null,
+                new BackgroundImageInfo(
+                        new Matrix(),
+                        new Matrix(),
+                        /* portraitWindowSize= */ null,
+                        /* landscapeWindowSize= */ null));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // The replaced background's color must not be left behind for this one.
+        assertNull(NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+        assertNull(themeCollectionData.getPrimaryColor());
+
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
@@ -1756,8 +1791,14 @@ public class NtpCustomizationUtilsUnitTest {
         // Test with a small bitmap.
         Bitmap smallBitmap =
                 Bitmap.createBitmap(/* width= */ 50, /* height= */ 50, Bitmap.Config.ARGB_8888);
-        // Robolectric's shadow Bitmap defaults to transparency, so the extracted color will be null
-        // because there's no vibrant color.
+        // A bitmap with no vibrant color (Robolectric's shadow Bitmap defaults to transparent)
+        // does not yield null: every low-chroma candidate is filtered out and Material falls back
+        // to a fixed color.
+        assertEquals(
+                Integer.valueOf(MATERIAL_SCORE_FALLBACK_COLOR),
+                NtpCustomizationUtils.getContentBasedSeedColor(smallBitmap));
+
+        // Erase to a real color so the rest asserts a true extraction rather than that fallback.
         smallBitmap.eraseColor(Color.RED);
         assertEquals(
                 Integer.valueOf(Color.RED),

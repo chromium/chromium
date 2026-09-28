@@ -26,14 +26,32 @@ import org.chromium.url.GURL;
 public class NtpSyncedThemeBridge {
     /** Observer interface for synced theme updates. */
     public interface Observer {
-        /** Dispatched when a theme collection background arrives from sync or daily refresh. */
-        void onThemeCollectionSynced(@Nullable CustomBackgroundInfo info);
+        /**
+         * Dispatched when a theme collection background arrives from sync or daily refresh.
+         *
+         * @param info The {@link CustomBackgroundInfo} of the synced background.
+         * @param primaryColor The synced primary color, or null if none was provided.
+         */
+        void onThemeCollectionSynced(
+                @Nullable CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor);
 
         /** Dispatched when a Chrome color arrives from sync. */
         void onChromeColorSynced(int colorId);
 
         /** Dispatched when the theme is reset to default from sync. */
         void onDefaultThemeSynced();
+    }
+
+    /** Holds a {@link CustomBackgroundInfo} along with its optional synced primary color. */
+    @VisibleForTesting
+    static class SyncedBackgroundInfo {
+        public final CustomBackgroundInfo info;
+        public final @Nullable @ColorInt Integer primaryColor;
+
+        SyncedBackgroundInfo(CustomBackgroundInfo info, @Nullable @ColorInt Integer primaryColor) {
+            this.info = info;
+            this.primaryColor = primaryColor;
+        }
     }
 
     private final Observer mObserver;
@@ -139,9 +157,11 @@ public class NtpSyncedThemeBridge {
             return;
         }
 
-        CustomBackgroundInfo info =
+        SyncedBackgroundInfo syncedBackgroundInfo =
                 NtpSyncedThemeBridgeJni.get().getCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
-        mObserver.onThemeCollectionSynced(info);
+        mObserver.onThemeCollectionSynced(
+                syncedBackgroundInfo != null ? syncedBackgroundInfo.info : null,
+                syncedBackgroundInfo != null ? syncedBackgroundInfo.primaryColor : null);
     }
 
     /**
@@ -167,7 +187,7 @@ public class NtpSyncedThemeBridge {
     }
 
     /**
-     * Factory method called by native code to construct a {@link CustomBackgroundInfo} object.
+     * Factory method called by native code to construct a {@link SyncedBackgroundInfo} object.
      *
      * @param backgroundUrl The URL of the currently set background image.
      * @param collectionId The identifier for the theme collection, if the image is from one.
@@ -175,17 +195,28 @@ public class NtpSyncedThemeBridge {
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
      * @param attribution The attribution string of the background image.
+     * @param mainColor The main color stored with the background in prefs (for a sync update,
+     *     copied from {@code NtpCustomBackground.main_color}). It becomes the primary (seed) color
+     *     of the theme. It is 0 only in the edge case where no color is set, e.g. the sending
+     *     device couldn't extract one; 0 is converted to null.
      */
     @CalledByNative
     @VisibleForTesting
-    static CustomBackgroundInfo createCustomBackgroundInfo(
+    static SyncedBackgroundInfo createCustomBackgroundInfo(
             @JniType("GURL") GURL backgroundUrl,
             @JniType("std::string") String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @JniType("std::string") String attribution) {
-        return new CustomBackgroundInfo(
-                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
+            @JniType("std::string") String attribution,
+            @ColorInt int mainColor) {
+        CustomBackgroundInfo info =
+                new CustomBackgroundInfo(
+                        backgroundUrl,
+                        collectionId,
+                        isUploadedImage,
+                        isDailyRefreshEnabled,
+                        attribution);
+        return new SyncedBackgroundInfo(info, mainColor != 0 ? mainColor : null);
     }
 
     @NativeMethods
@@ -196,7 +227,7 @@ public class NtpSyncedThemeBridge {
 
         void fetchNextThemeCollectionImage(long nativeNtpSyncedThemeBridge);
 
-        @Nullable CustomBackgroundInfo getCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
+        @Nullable SyncedBackgroundInfo getCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
 
         boolean isProcessingSyncUpdate(long nativeNtpSyncedThemeBridge);
 

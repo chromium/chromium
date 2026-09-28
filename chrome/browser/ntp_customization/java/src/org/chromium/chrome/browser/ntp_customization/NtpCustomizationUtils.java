@@ -1541,7 +1541,7 @@ public class NtpCustomizationUtils {
      * @param backgroundImageInfo The {@link BackgroundImageInfo} containing the portrait and
      *     landscape transformation matrices of the image.
      */
-    public static @Nullable @ColorInt Integer saveBackgroundInfo(
+    public static void saveBackgroundInfo(
             NtpBackgroundDataImageBase imageData,
             @Nullable Bitmap bitmap,
             BackgroundImageInfo backgroundImageInfo) {
@@ -1557,17 +1557,19 @@ public class NtpCustomizationUtils {
         }
 
         @ColorInt Integer primaryColor = imageData.getPrimaryColor();
-        @ColorInt Integer primaryColorPicked = null;
-        if (primaryColor == null) {
-            if (bitmap != null) {
-                primaryColorPicked = pickAndSavePrimaryColor(bitmap);
-            }
-        } else {
+        if (primaryColor != null) {
             setCustomizedPrimaryColorToSharedPreference(primaryColor);
+        } else if (bitmap != null) {
+            // Keeps the extracted color on the data object: the outbound sync payload is built
+            // from it, so discarding it here would re-sync this background without a color.
+            imageData.setPrimaryColor(pickAndSavePrimaryColor(bitmap));
+        } else {
+            // There is no color and no bitmap to extract one from, so the preference must stop
+            // describing the previous background.
+            removeCustomizedPrimaryColorFromSharedPreference();
         }
 
         updateBackgroundImageInfo(backgroundImageInfo);
-        return primaryColorPicked;
     }
 
     /**

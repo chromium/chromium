@@ -45,6 +45,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeBridge.SyncedBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.CrossDeviceThemeTracker;
@@ -166,7 +167,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
-        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(nextInfo);
+        when(mNatives.getCustomBackgroundInfo(anyLong()))
+                .thenReturn(new SyncedBackgroundInfo(nextInfo, /* primaryColor= */ null));
         bridge.onCustomBackgroundImageUpdated();
 
         // 5. Verify image is fetched.
@@ -196,15 +198,43 @@ public class NtpSyncedThemeManagerUnitTest {
 
     @Test
     public void testOnCustomBackgroundImageUpdated_syncedStaticThemeCollection() {
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeCollectionData =
+                applySyncedStaticThemeCollection(/* syncedColor= */ null, bitmap);
+
+        // Without a synced color, the color is extracted from the bitmap.
+        assertNotNull(themeCollectionData.getPrimaryColor());
+        assertEquals(
+                NtpCustomizationUtils.getContentBasedSeedColor(bitmap),
+                themeCollectionData.getPrimaryColor());
+
+        assertEquals(
+                THEME_COLLECTION, NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
+        assertNotNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+    }
+
+    @Test
+    public void testOnCustomBackgroundImageUpdated_syncedStaticThemeCollectionWithMainColor() {
+        int syncedColor = 0xFF112233;
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        NtpBackgroundDataThemeCollection themeCollectionData =
+                applySyncedStaticThemeCollection(syncedColor, bitmap);
+
+        // The synced color is used instead of extracting one from the bitmap.
+        assertEquals(Integer.valueOf(syncedColor), themeCollectionData.getPrimaryColor());
+    }
+
+    /**
+     * Delivers a synced static theme collection image with {@code syncedColor}, completes the image
+     * fetch with {@code bitmap}, and returns the data passed to {@link
+     * NtpCustomizationConfigManager#onSyncedThemeCollectionImageChanged}.
+     */
+    private NtpBackgroundDataThemeCollection applySyncedStaticThemeCollection(
+            @Nullable Integer syncedColor, Bitmap bitmap) {
         NtpCustomizationConfigManager configManagerSpy =
                 Mockito.spy(NtpCustomizationConfigManager.getInstance());
         NtpCustomizationConfigManager.setInstanceForTesting(configManagerSpy);
-
-        mNtpSyncedThemeManager = new NtpSyncedThemeManager(mContext, mProfile);
-        mNtpSyncedThemeManager.fetchNextThemeCollectionImageAfterDailyRefreshApplied();
-
-        verify(mNatives).init(eq(mProfile), mBridgeCaptor.capture());
-        NtpSyncedThemeBridge bridge = mBridgeCaptor.getValue();
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
 
         CustomBackgroundInfo syncedInfo =
                 new CustomBackgroundInfo(
@@ -212,15 +242,14 @@ public class NtpSyncedThemeManagerUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
-        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(syncedInfo);
+        when(mNatives.getCustomBackgroundInfo(anyLong()))
+                .thenReturn(new SyncedBackgroundInfo(syncedInfo, syncedColor));
         when(mNatives.isProcessingSyncUpdate(anyLong())).thenReturn(true);
 
         bridge.onCustomBackgroundImageUpdated();
 
         verify(mImageFetcher).fetchImage(any(), mBitmapCallbackCaptor.capture());
-        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mBitmapCallbackCaptor.getValue().onResult(bitmap);
-
         RobolectricUtil.runAllBackgroundAndUi();
 
         ArgumentCaptor<NtpBackgroundDataThemeCollection> themeCollectionCaptor =
@@ -229,14 +258,7 @@ public class NtpSyncedThemeManagerUnitTest {
                 .onSyncedThemeCollectionImageChanged(eq(mContext), themeCollectionCaptor.capture());
         NtpBackgroundDataThemeCollection themeCollectionData = themeCollectionCaptor.getValue();
         assertNotNull(themeCollectionData);
-        assertEquals(
-                NtpCustomizationUtils.getContentBasedSeedColor(bitmap),
-                themeCollectionData.getPrimaryColor());
-        assertNotNull(themeCollectionData.getPrimaryColor());
-
-        assertEquals(
-                THEME_COLLECTION, NtpCustomizationUtils.getNtpBackgroundTypeFromSharedPreference());
-        assertNotNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
+        return themeCollectionData;
     }
 
     private NtpSyncedThemeBridge initSyncedThemeManagerAndGetBridge() {
@@ -360,7 +382,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
-        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(dailyInfo);
+        when(mNatives.getCustomBackgroundInfo(anyLong()))
+                .thenReturn(new SyncedBackgroundInfo(dailyInfo, /* primaryColor= */ null));
         when(mNatives.isProcessingSyncUpdate(anyLong())).thenReturn(false);
 
         bridge.onCustomBackgroundImageUpdated();
@@ -379,7 +402,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
-        when(mNatives.getCustomBackgroundInfo(anyLong())).thenReturn(syncedInfo);
+        when(mNatives.getCustomBackgroundInfo(anyLong()))
+                .thenReturn(new SyncedBackgroundInfo(syncedInfo, /* primaryColor= */ null));
         when(mNatives.isProcessingSyncUpdate(anyLong())).thenReturn(true);
 
         bridge.onCustomBackgroundImageUpdated();

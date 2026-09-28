@@ -45,7 +45,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /** Coordinator for the NTP theme sync history. */
@@ -499,7 +498,7 @@ public class NtpThemeSyncHistoryCoordinator {
      * @return True if the activity should be recreated, false otherwise.
      */
     private boolean shouldRecreateActivity(NtpBackgroundDataBase backgroundData) {
-        return !Objects.equals(mInitiallySelectedNtpBackgroundData, backgroundData);
+        return !backgroundData.hasSameThemeAndColor(mInitiallySelectedNtpBackgroundData);
     }
 
     /** Cleans up resources and references when the coordinator is destroyed. */

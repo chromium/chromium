@@ -75,7 +75,9 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
   return Java_NtpSyncedThemeBridge_createCustomBackgroundInfo(
       env, background->custom_background_url, background->collection_id,
       background->is_uploaded_image, background->daily_refresh_enabled,
-      ntp_customization::GetCustomBackgroundAttribution(*background));
+      ntp_customization::GetCustomBackgroundAttribution(*background),
+      static_cast<int32_t>(
+          background->custom_background_main_color.value_or(0)));
 }
 
 bool NtpSyncedThemeBridge::IsProcessingSyncUpdate(JNIEnv* env) {

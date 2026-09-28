@@ -99,6 +99,19 @@ public class NtpBackgroundDataBase {
         return false;
     }
 
+    /**
+     * Returns whether this background data has the same theme identity and primary color as {@code
+     * obj}.
+     *
+     * <p>Unlike {@link #equals}, which compares theme identity (ignoring primary color for theme
+     * collections so that color updates merge into the existing history entry), this method also
+     * checks whether the primary color matches. Callers that decide whether to re-apply a theme or
+     * recreate the activity should use this method so that color-only updates are applied.
+     */
+    public boolean hasSameThemeAndColor(@Nullable Object obj) {
+        return equals(obj);
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(mPlatformType, getBackgroundType());
