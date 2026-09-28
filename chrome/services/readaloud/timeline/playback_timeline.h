@@ -15,6 +15,7 @@
 #include "chrome/common/readaloud/read_aloud.mojom-forward.h"
 #include "chrome/services/readaloud/chunking/text_chunker.h"
 #include "chrome/services/readaloud/timeline/timeline_position.h"
+#include "chrome/services/readaloud/word_timing.h"
 
 namespace readaloud {
 
@@ -53,22 +54,35 @@ class PlaybackTimeline {
       uint32_t segment_index,
       uint32_t character_offset) const;
 
-  // Updates the actual 1.0x duration for a specific chunk index in O(1) time
-  // by recording its deviation from the initial character-based duration
-  // estimate.
+  // Resolves a normalized 1.0x media timestamp into a TimelinePosition.
+  // Snaps intra-sentence character offsets to the beginning of the spoken word
+  // covering the target timestamp.
+  // Returns std::nullopt if the timeline is empty or `target_time_1_0x` is
+  // negative or TimeDelta::Max().
+  std::optional<TimelinePosition> ResolveTimeOffset(
+      base::TimeDelta target_time_1_0x) const;
+
+  // Updates the actual 1.0x duration (and optional word timings) for a specific
+  // chunk index in O(1) time by recording its deviation from the initial
+  // character-based duration estimate.
   // TODO(b/565884306): Unify 'sentence'/'segment' naming to 'chunk' in a
   // follow-up cleanup CL.
   void UpdateSentenceDuration(uint32_t sentence_index,
-                              base::TimeDelta actual_duration);
+                              base::TimeDelta actual_duration,
+                              std::vector<WordTiming> word_timings = {});
 
  private:
   base::TimeDelta GetChunkDuration(size_t chunk_index) const;
+  uint32_t ResolveCharOffsetInChunk(size_t chunk_index,
+                                    base::TimeDelta offset_in_chunk,
+                                    base::TimeDelta chunk_duration) const;
 
   bool is_initialized_ = false;
   std::u16string document_text_;
   std::vector<TextChunk> chunks_;
   std::vector<base::TimeDelta> static_est_start_times_1_0x_;
   std::vector<base::TimeDelta> deviations_1_0x_;
+  std::vector<std::vector<WordTiming>> sentence_word_timings_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

@@ -303,4 +303,223 @@ TEST_F(PlaybackTimelineTest, UpdateSentenceDurationOverwritesPreviousDeviation) 
   EXPECT_EQ(pos1->time.start_time, base::Milliseconds(1000));
 }
 
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetSnapsMidWordToWordStart) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  // Chunk 0: "First sentence." (15 chars)
+  // Word 0: "First" [0, 5), Word 1: "sentence" [6, 14)
+  seg0->text = u"First sentence. Second sentence.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  // 3 * kEstimatedDurationPerChar corresponds to raw char index 3 ('s' inside
+  // "First"). Word-boundary snapping snaps back to char offset 0 ("First").
+  const base::TimeDelta kMidFirstWordTime =
+      3 * PlaybackTimeline::kEstimatedDurationPerChar;
+  std::optional<TimelinePosition> pos_word0 =
+      timeline_.ResolveTimeOffset(kMidFirstWordTime);
+  ASSERT_TRUE(pos_word0.has_value());
+  EXPECT_EQ(pos_word0->chunk.index, 0u);
+  EXPECT_EQ(pos_word0->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos_word0->global_char.start_offset, 0u);
+  EXPECT_EQ(pos_word0->time.start_time, kMidFirstWordTime);
+  EXPECT_EQ(pos_word0->time.end_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+
+  // 9 * kEstimatedDurationPerChar corresponds to raw char index 9 ('t' inside
+  // "sentence"). Word-boundary snapping snaps back to char offset 6
+  // ("sentence").
+  const base::TimeDelta kMidSecondWordTime =
+      9 * PlaybackTimeline::kEstimatedDurationPerChar;
+  std::optional<TimelinePosition> pos_word1 =
+      timeline_.ResolveTimeOffset(kMidSecondWordTime);
+  ASSERT_TRUE(pos_word1.has_value());
+  EXPECT_EQ(pos_word1->chunk.index, 0u);
+  EXPECT_EQ(pos_word1->chunk.start_char_offset, 6u);
+  EXPECT_EQ(pos_word1->global_char.start_offset, 6u);
+  EXPECT_EQ(pos_word1->time.start_time, kMidSecondWordTime);
+  EXPECT_EQ(pos_word1->time.end_time,
+            15 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetUsesSynthesizedWordTimings) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"Hello world.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  std::vector<WordTiming> timings = {
+      {.start_time = base::Milliseconds(0),
+       .end_time = base::Milliseconds(700),
+       .start_character_offset = 0u,
+       .end_character_offset = 5u},
+      {.start_time = base::Milliseconds(700),
+       .end_time = base::Milliseconds(1100),
+       .start_character_offset = 6u,
+       .end_character_offset = 11u},
+  };
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/0,
+                                   base::Milliseconds(1100), timings);
+
+  // At 600ms, linear interpolation would have landed in "world" (600/1100*12=6),
+  // but actual WordTimings state "Hello" is spoken from [0ms, 700ms).
+  std::optional<TimelinePosition> pos_hello =
+      timeline_.ResolveTimeOffset(base::Milliseconds(600));
+  ASSERT_TRUE(pos_hello.has_value());
+  EXPECT_EQ(pos_hello->chunk.index, 0u);
+  EXPECT_EQ(pos_hello->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos_hello->global_char.start_offset, 0u);
+
+  // At 800ms, WordTimings state "world" [6, 11) is spoken from [700ms, 1100ms).
+  std::optional<TimelinePosition> pos_world =
+      timeline_.ResolveTimeOffset(base::Milliseconds(800));
+  ASSERT_TRUE(pos_world.has_value());
+  EXPECT_EQ(pos_world->chunk.index, 0u);
+  EXPECT_EQ(pos_world->chunk.start_char_offset, 6u);
+  EXPECT_EQ(pos_world->global_char.start_offset, 6u);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetNegativeOrMaxReturnsNullopt) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"Sentence.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+
+  EXPECT_FALSE(timeline_.ResolveTimeOffset(base::Seconds(-1)).has_value());
+  EXPECT_FALSE(timeline_.ResolveTimeOffset(base::TimeDelta::Max()).has_value());
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetMidDocument) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = 0;
+    seg->text = u"Sentence one. ";
+    segments.push_back(std::move(seg));
+  }
+  {
+    auto seg = read_aloud::mojom::TextSegment::New();
+    seg->segment_index = 1;
+    seg->text = u"Sentence two is longer.";
+    segments.push_back(std::move(seg));
+  }
+
+  timeline_.SetTextContent(segments);
+
+  // Chunk 0 ("Sentence one.") has 13 chars.
+  // Seeking 11 chars into Chunk 1 ("Sentence two is longer.", global start 14)
+  // lands on raw char 11 ('o' in "two"), which snaps to the start of word "two"
+  // at chunk offset 9 (global offset 14 + 9 = 23).
+  const base::TimeDelta kTargetTime =
+      (13 + 11) * PlaybackTimeline::kEstimatedDurationPerChar;
+  std::optional<TimelinePosition> pos =
+      timeline_.ResolveTimeOffset(kTargetTime);
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->chunk.index, 1u);
+  EXPECT_EQ(pos->chunk.start_char_offset, 9u);
+  EXPECT_EQ(pos->global_char.start_offset, 23u);
+  EXPECT_EQ(pos->time.start_time, kTargetTime);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetExactBoundarySnapping) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Chunk zero. Chunk one.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  // Chunk 0 ("Chunk zero.", 11 chars) ends at 11 * kEstimatedDurationPerChar.
+  std::optional<TimelinePosition> pos = timeline_.ResolveTimeOffset(
+      11 * PlaybackTimeline::kEstimatedDurationPerChar);
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->chunk.index, 1u);
+  EXPECT_EQ(pos->chunk.start_char_offset, 0u);
+  EXPECT_EQ(pos->global_char.start_offset, 12u);
+  EXPECT_EQ(pos->time.start_time,
+            11 * PlaybackTimeline::kEstimatedDurationPerChar);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetAtExactDocumentEndBoundary) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Only sentence.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  // "Only sentence." has 14 chars.
+  std::optional<TimelinePosition> pos_end = timeline_.ResolveTimeOffset(
+      14 * PlaybackTimeline::kEstimatedDurationPerChar);
+  ASSERT_TRUE(pos_end.has_value());
+  EXPECT_EQ(pos_end->chunk.index, 0u);
+  EXPECT_EQ(pos_end->chunk.start_char_offset, 14u);
+  EXPECT_EQ(pos_end->global_char.start_offset, 14u);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetBeyondDocumentEndClampsToEnd) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Only sentence.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  std::optional<TimelinePosition> pos_beyond = timeline_.ResolveTimeOffset(
+      (14 + 10) * PlaybackTimeline::kEstimatedDurationPerChar);
+  ASSERT_TRUE(pos_beyond.has_value());
+  EXPECT_EQ(pos_beyond->chunk.index, 0u);
+  EXPECT_EQ(pos_beyond->chunk.start_char_offset, 14u);
+  EXPECT_EQ(pos_beyond->global_char.start_offset, 14u);
+}
+
+TEST_F(PlaybackTimelineTest, ResolveTimeOffsetWithDeviations) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg = read_aloud::mojom::TextSegment::New();
+  seg->segment_index = 0;
+  seg->text = u"Sentence one. Sentence two.";
+  segments.push_back(std::move(seg));
+
+  timeline_.SetTextContent(segments);
+
+  // Baseline for Chunk 0 ("Sentence one.", 13 chars) is
+  // 13 * kEstimatedDurationPerChar. Without any duration deviation,
+  // 16 * kEstimatedDurationPerChar would land inside Chunk 1
+  // ([13 * kEstimatedDurationPerChar, 26 * kEstimatedDurationPerChar)).
+  // Updating Chunk 0's duration to 20 * kEstimatedDurationPerChar (+7 chars of
+  // deviation) extends Chunk 0 to [0, 20 * kEstimatedDurationPerChar) and
+  // shifts Chunk 1 to [20 * kEstimatedDurationPerChar,
+  // 33 * kEstimatedDurationPerChar), causing 16 * kEstimatedDurationPerChar to
+  // resolve within Chunk 0 instead.
+  timeline_.UpdateSentenceDuration(
+      /*sentence_index=*/0, 20 * PlaybackTimeline::kEstimatedDurationPerChar);
+
+  const base::TimeDelta kTimeInExtendedChunk0 =
+      16 * PlaybackTimeline::kEstimatedDurationPerChar;
+  std::optional<TimelinePosition> pos0 =
+      timeline_.ResolveTimeOffset(kTimeInExtendedChunk0);
+  ASSERT_TRUE(pos0.has_value());
+  EXPECT_EQ(pos0->chunk.index, 0u);
+  EXPECT_EQ(pos0->time.start_time, kTimeInExtendedChunk0);
+
+  const base::TimeDelta kTimeInShiftedChunk1 =
+      22 * PlaybackTimeline::kEstimatedDurationPerChar;
+  std::optional<TimelinePosition> pos1 =
+      timeline_.ResolveTimeOffset(kTimeInShiftedChunk1);
+  ASSERT_TRUE(pos1.has_value());
+  EXPECT_EQ(pos1->chunk.index, 1u);
+  EXPECT_EQ(pos1->time.start_time, kTimeInShiftedChunk1);
+}
+
 }  // namespace readaloud
