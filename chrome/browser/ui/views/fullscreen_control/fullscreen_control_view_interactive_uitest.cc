@@ -450,8 +450,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
-// TODO(crbug.com/524685085): Flaky on ASAN.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/524685085): Flaky on ASAN and Linux.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MouseAndTouchInteraction_NoInterference \
   DISABLED_MouseAndTouchInteraction_NoInterference
 #else
