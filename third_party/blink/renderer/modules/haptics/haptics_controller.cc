@@ -29,6 +29,10 @@ mojom::blink::HapticEffect ToMojoEffect(const V8HapticEffect& effect) {
       return mojom::blink::HapticEffect::kTick;
     case V8HapticEffect::Enum::kAlign:
       return mojom::blink::HapticEffect::kAlign;
+    case V8HapticEffect::Enum::kSuccess:
+      return mojom::blink::HapticEffect::kSuccess;
+    case V8HapticEffect::Enum::kError:
+      return mojom::blink::HapticEffect::kError;
   }
   NOTREACHED();
 }

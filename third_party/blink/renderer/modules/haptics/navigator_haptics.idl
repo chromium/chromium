@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // The predefined, semantic haptic effect names.
-enum HapticEffect { "hint", "edge", "tick", "align" };
+enum HapticEffect { "hint", "edge", "tick", "align", "success", "error" };
 
 [
     ImplementedAs=HapticsController,

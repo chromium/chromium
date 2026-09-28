@@ -11,6 +11,8 @@ enum HapticEffect {
   kEdge,
   kTick,
   kAlign,
+  kSuccess,
+  kError,
 };
 
 // Renderer-facing interface for the Web Haptics API. Implemented by

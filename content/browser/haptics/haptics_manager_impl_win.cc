@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/notreached.h"
 #include "base/win/core_winrt_util.h"
 #include "content/browser/haptics/haptics_waveforms_statics3_win.h"
 #include "content/public/browser/browser_thread.h"
@@ -192,40 +191,38 @@ std::optional<uint16_t> HapticsManagerImplWin::ComputeWaveformForEffect(
     blink::mojom::HapticEffect effect) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // The four semantic effects map to these Windows waveforms:
-  //   hint -> Hover (Statics2), edge -> Collide, tick -> Step, align -> Align
-  //   (Collide/Step/Align on Statics3).
   UINT16 value = 0;
   HRESULT hr = E_FAIL;
 
-  if (effect == blink::mojom::HapticEffect::kHint) {
-    if (!known_waveforms2_) {
-      return std::nullopt;
-    }
-    hr = known_waveforms2_->get_Hover(&value);
-    return SUCCEEDED(hr) ? std::optional<uint16_t>(value) : std::nullopt;
-  }
-
-  // Collide/Step/Align live on Statics3; QI it from the same factory (24H2+).
   if (!known_waveforms2_) {
     return std::nullopt;
   }
-  ComPtr<IKnownSimpleHapticsControllerWaveformsStatics3> waveforms3;
-  if (FAILED(known_waveforms2_.As(&waveforms3)) || !waveforms3) {
-    return std::nullopt;
-  }
   switch (effect) {
-    case blink::mojom::HapticEffect::kEdge:
-      hr = waveforms3->get_Collide(&value);
-      break;
-    case blink::mojom::HapticEffect::kTick:
-      hr = waveforms3->get_Step(&value);
-      break;
-    case blink::mojom::HapticEffect::kAlign:
-      hr = waveforms3->get_Align(&value);
-      break;
     case blink::mojom::HapticEffect::kHint:
-      NOTREACHED();
+      hr = known_waveforms2_->get_Hover(&value);
+      break;
+    case blink::mojom::HapticEffect::kSuccess:
+      hr = known_waveforms2_->get_Success(&value);
+      break;
+    case blink::mojom::HapticEffect::kError:
+      hr = known_waveforms2_->get_Error(&value);
+      break;
+    case blink::mojom::HapticEffect::kEdge:
+    case blink::mojom::HapticEffect::kTick:
+    case blink::mojom::HapticEffect::kAlign: {
+      ComPtr<IKnownSimpleHapticsControllerWaveformsStatics3> waveforms3;
+      if (FAILED(known_waveforms2_.As(&waveforms3)) || !waveforms3) {
+        return std::nullopt;
+      }
+      if (effect == blink::mojom::HapticEffect::kEdge) {
+        hr = waveforms3->get_Collide(&value);
+      } else if (effect == blink::mojom::HapticEffect::kTick) {
+        hr = waveforms3->get_Step(&value);
+      } else {
+        hr = waveforms3->get_Align(&value);
+      }
+      break;
+    }
   }
   if (FAILED(hr)) {
     return std::nullopt;
