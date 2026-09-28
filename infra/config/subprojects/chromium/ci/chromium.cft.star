@@ -357,6 +357,7 @@ ci.builder(
         },
     ),
     os = os.LINUX_DEFAULT,
+    ssd = None,
     # TODO(crbug.com/536942511): Enable gardening when stable.
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
