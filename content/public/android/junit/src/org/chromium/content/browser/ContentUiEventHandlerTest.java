@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +51,7 @@ public class ContentUiEventHandlerTest {
     @Mock private EventForwarder mEventForwarder;
     @Captor private ArgumentCaptor<MotionEvent> mMotionEventCaptor;
 
+    private WebContentsImpl mWebContentsImpl;
     private ContentUiEventHandler mContentUiEventHandler;
 
     @Before
@@ -57,15 +59,15 @@ public class ContentUiEventHandlerTest {
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         ContentUiEventHandlerJni.setInstanceForTesting(mContentUiEventHandlerJniMock);
 
-        WebContentsImpl webContentsImpl =
+        mWebContentsImpl =
                 spy(WebContentsImpl.create(NATIVE_WEB_CONTENTS_ANDROID, mNavigationController));
-        webContentsImpl.initializeForTesting();
+        mWebContentsImpl.initializeForTesting();
 
         when(mGamepad.onGenericMotionEvent(any())).thenReturn(false);
-        webContentsImpl.setUserDataForTesting(Gamepad.class, mGamepad);
+        mWebContentsImpl.setUserDataForTesting(Gamepad.class, mGamepad);
 
         when(mJoystickHandler.onGenericMotionEvent(any())).thenReturn(false);
-        webContentsImpl.setUserDataForTesting(JoystickHandler.class, mJoystickHandler);
+        mWebContentsImpl.setUserDataForTesting(JoystickHandler.class, mJoystickHandler);
 
         when(mEventForwarder.isTrackpadToMouseEventConversionEnabled()).thenReturn(true);
         when(mEventForwarder.createOffsetMotionEventIfNeeded(any()))
@@ -75,11 +77,16 @@ public class ContentUiEventHandlerTest {
                                     Object[] args = invocation.getArguments();
                                     return (MotionEvent) args[0];
                                 });
-        doReturn(mEventForwarder).when(webContentsImpl).getEventForwarder();
+        doReturn(mEventForwarder).when(mWebContentsImpl).getEventForwarder();
 
         mContentUiEventHandler =
                 ContentUiEventHandler.createForTesting(
-                        webContentsImpl, NATIVE_CONTENT_UI_EVENT_HANDLER);
+                        mWebContentsImpl, NATIVE_CONTENT_UI_EVENT_HANDLER);
+    }
+
+    @After
+    public void tearDown() {
+        mWebContentsImpl.destroy();
     }
 
     @Test
