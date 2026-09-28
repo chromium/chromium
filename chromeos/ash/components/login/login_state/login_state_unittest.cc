@@ -7,13 +7,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/scoped_observation.h"
-#include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
-#include "components/user_manager/user_manager.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

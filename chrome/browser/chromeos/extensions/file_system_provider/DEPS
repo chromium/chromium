@@ -13,7 +13,6 @@ include_rules = [
   # this list.
   "+chrome/browser/ash/file_system_provider",
   "+chrome/browser/ash/guest_os",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/profiles",

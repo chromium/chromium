@@ -19,11 +19,9 @@
 #include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
-#include "google_apis/gaia/gaia_id.h"
 #include "ui/message_center/message_center.h"
 
 namespace extensions {
@@ -135,16 +133,6 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   FileSystemProviderApiTest(const FileSystemProviderApiTest&) = delete;
   FileSystemProviderApiTest& operator=(const FileSystemProviderApiTest&) =
       delete;
-
-  void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
-
-    user_manager_.AddUser(
-        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345")));
-  }
-
- private:
-  ash::FakeChromeUserManager user_manager_;
 };
 
 using FileSystemProviderServiceWorkerApiTest = FileSystemProviderApiTest;

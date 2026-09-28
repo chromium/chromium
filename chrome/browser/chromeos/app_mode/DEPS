@@ -70,7 +70,6 @@ specific_include_rules = {
     "+ash/session/session_controller_impl.h",
     "+ash/shell.h",
     "+ash/wm/overview/overview_controller.h",
-    "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h",
     "+chrome/browser/ui/ash/system_web_apps",

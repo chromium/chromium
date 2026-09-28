@@ -38,10 +38,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":login_state",
-    "//ash/constants",
     "//base",
-    "//components/prefs:test_support",
-    "//components/user_manager:test_support",
     "//testing/gtest",
   ]
   sources = [ "login_state_unittest.cc" ]
