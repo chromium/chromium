@@ -7324,6 +7324,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-enable-instant-api-android",
+    "owners": [ "giannich@google.com", "yvonneshi@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-feature-optimization-module-removal",
     "owners": [ "hannahrogers@chromium.org", "tiborg@chromium.org" ],
     "expiry_milestone": 150

@@ -8276,6 +8276,7 @@ from previous Chrome versions.
   <int value="-2020193528" label="NtpSimplification:enabled"/>
   <int value="-2020024440" label="scroll-end-effect"/>
   <int value="-2019736994" label="SyncAccountSettings:enabled"/>
+  <int value="-2019143550" label="NtpEnableInstantApiAndroid:enabled"/>
   <int value="-2019050827" label="AIPromptAPIMultimodalInput:enabled"/>
   <int value="-2018579114" label="ImprovedKeyboardShortcuts:enabled"/>
   <int value="-2018182952" label="ContextMenuEmptySpace:disabled"/>
@@ -13096,6 +13097,7 @@ from previous Chrome versions.
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-554140610" label="NtpRealboxCr23All:disabled"/>
   <int value="-553732400" label="ShoppingPageTypes:enabled"/>
+  <int value="-553395048" label="NtpEnableInstantApiAndroid:disabled"/>
   <int value="-553134643"
       label="NtpMostRelevantTabResumptionModuleLocal:disabled"/>
   <int value="-552937174"

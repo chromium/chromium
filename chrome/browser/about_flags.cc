@@ -7475,6 +7475,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpNextVariations,
                                     "NtpNextFeatures")},
 
+    {"ntp-enable-instant-api-android",
+     flag_descriptions::kNtpEnableInstantApiAndroidName,
+     flag_descriptions::kNtpEnableInstantApiAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpEnableInstantApiAndroid)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"chrome-dark-neutrals-26", flag_descriptions::kChromeDarkNeutrals26Name,
      flag_descriptions::kChromeDarkNeutrals26Description, kOsDesktop,
