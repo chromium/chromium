@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_tab_helper.h"
@@ -399,6 +400,14 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  // If `source` is a DevTools frontend (`AsDevToolsWindow` is non-null),
+  // let `DevToolsWindow` handle external navigations so they open in the
+  // inspected tab rather than navigating the DevTools frontend itself.
+  if (DevToolsWindow* window = DevToolsWindow::AsDevToolsWindow(source)) {
+    return window->OpenURLFromTab(source, params,
+                                  std::move(navigation_handle_callback));
+  }
+
   WindowOpenDisposition disposition = params.disposition;
   if (!source || (disposition != WindowOpenDisposition::CURRENT_TAB &&
                   disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
