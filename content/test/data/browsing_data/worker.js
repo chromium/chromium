@@ -72,3 +72,26 @@ self.addEventListener('fetch', function(event) {
     { 'headers': { 'Content-Type': 'text/html' } }
   ));
 });
+
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.action === 'fetch') {
+    event.waitUntil((async () => {
+      try {
+        const res = await fetch(
+            event.data.url,
+            {credentials: 'include', mode: event.data.mode || 'cors'});
+        if (event.ports && event.ports[0]) {
+          event.ports[0].postMessage({status: res.status});
+        } else if (event.source) {
+          event.source.postMessage({status: res.status});
+        }
+      } catch (e) {
+        if (event.ports && event.ports[0]) {
+          event.ports[0].postMessage({error: e.toString()});
+        } else if (event.source) {
+          event.source.postMessage({error: e.toString()});
+        }
+      }
+    })());
+  }
+});

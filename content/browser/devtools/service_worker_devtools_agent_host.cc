@@ -473,7 +473,7 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
       /*dip_reporter=*/mojo::NullRemote(),
       static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
           ->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
-              ToOriginatingProcessId(rph->GetID()), origin),
+              ToOriginatingProcessId(rph->GetID()), origin, version->key()),
       NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
       /*client_security_state=*/nullptr,
       /*network_restrictions_id=*/std::nullopt,

@@ -679,6 +679,103 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, ServiceWorker) {
   delegate()->VerifyAndClearExpectations();
 }
 
+// Verifies that when a same-origin subresource fetch initiated by a service
+// worker receives a `Clear-Site-Data` header, the deletion filter is scoped to
+// the worker's `blink::StorageKey` (using the worker's top-level site).
+//
+// The test uses `"cache"` because `"storage"` deletion unregisters and
+// terminates the active service worker instance, preventing it from completing
+// the fetch and reporting the result back to the page. Using `"cache"` covers
+// the same `blink::StorageKey` derivation path as `"storage"` because
+// `StoragePartitionImpl::CalculateStorageKey()` resolves the key independently
+// of the cleared data types. Comparing this test with the cross-origin test
+// below verifies that same-origin requests retain a same-site ancestor chain
+// bit while cross-origin requests are scoped as cross-site under the worker's
+// top-level site.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ServiceWorkerSameOriginFetchUsesWorkerStorageKey) {
+  GURL origin1 = https_server()->GetURL("origin1.com", "/");
+
+  GURL url = origin1;
+  AddQuery(&url, "file", "worker_setup.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForTitle(shell(), "service worker is ready");
+
+  const char kFetchScript[] =
+      "(async () => {"
+      "  const reg = await navigator.serviceWorker.ready;"
+      "  return new Promise(resolve => {"
+      "    const channel = new MessageChannel();"
+      "    channel.port1.onmessage = e => {"
+      "      resolve(e.data.status === 200 || e.data.status === 0);"
+      "    };"
+      "    reg.active.postMessage({action: 'fetch', url: $1, mode: 'no-cors'},"
+      "                           [channel.port2]);"
+      "  });"
+      "})();";
+
+  GURL same_origin_url = https_server()->GetURL("origin1.com", "/resource");
+  AddQuery(&same_origin_url, "header", "\"cache\"");
+
+  // Expect a deletion call for `origin1.com` matching the `"cache"` directive
+  // in the `Clear-Site-Data` response header. The deletion filter's top-level
+  // site partition must match the worker's top-level site (`origin1.com`).
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(origin1),
+      net::SchemefulSite(origin1),
+      /*cookies=*/false, /*storage=*/false, /*cache=*/true);
+
+  EXPECT_TRUE(
+      EvalJs(shell()->web_contents(), JsReplace(kFetchScript, same_origin_url))
+          .ExtractBool());
+  delegate()->VerifyAndClearExpectations();
+}
+
+// Verifies that when a cross-origin subresource fetch initiated by a service
+// worker receives a `Clear-Site-Data` header, the deletion filter is scoped to
+// the target origin while preserving the worker's top-level site partition.
+IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
+                       ServiceWorkerCrossOriginFetchUsesWorkerStorageKey) {
+  GURL origin1 = https_server()->GetURL("origin1.com", "/");
+  GURL origin2 = https_server()->GetURL("origin2.com", "/");
+
+  GURL url = origin1;
+  AddQuery(&url, "file", "worker_setup.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForTitle(shell(), "service worker is ready");
+
+  const char kFetchScript[] =
+      "(async () => {"
+      "  const reg = await navigator.serviceWorker.ready;"
+      "  return new Promise(resolve => {"
+      "    const channel = new MessageChannel();"
+      "    channel.port1.onmessage = e => {"
+      "      resolve(e.data.status === 200 || e.data.status === 0);"
+      "    };"
+      "    reg.active.postMessage({action: 'fetch', url: $1, mode: 'no-cors'},"
+      "                           [channel.port2]);"
+      "  });"
+      "})();";
+
+  GURL cross_origin_url = https_server()->GetURL("origin2.com", "/resource");
+  AddQuery(&cross_origin_url, "header", "\"storage\"");
+
+  // Expect a deletion call for target origin `origin2.com` matching the
+  // `"storage"` directive in the `Clear-Site-Data` response header. Although
+  // the fetch target is cross-origin, the deletion filter's top-level site
+  // partition must remain `origin1.com` (the hosting worker's site) to preserve
+  // third-party partition isolation.
+  delegate()->ExpectClearSiteDataCall(
+      storage_partition_config(), url::Origin::Create(cross_origin_url),
+      net::SchemefulSite(origin1),
+      /*cookies=*/false, /*storage=*/true, /*cache=*/false);
+
+  EXPECT_TRUE(
+      EvalJs(shell()->web_contents(), JsReplace(kFetchScript, cross_origin_url))
+          .ExtractBool());
+  delegate()->VerifyAndClearExpectations();
+}
+
 // Tests that Clear-Site-Data is only executed on a resource fetch
 // if credentials are allowed in that fetch.
 
