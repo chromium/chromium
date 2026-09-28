@@ -27,9 +27,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <variant>
 
-#include "base/compiler_specific.h"
+#include "base/check.h"
 #include "base/containers/span.h"
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -53,161 +56,181 @@ size_t CalculateIDBKeyArraySize(const IDBKey::KeyArray& keys) {
 
 // static
 std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
-  if (!rkey)
-    return IDBKey::CreateNone();
-
-  switch (rkey->GetType()) {
-    case mojom::IDBKeyType::Invalid:
-      return IDBKey::CreateInvalid();
-    case mojom::IDBKeyType::None:
-      return IDBKey::CreateNone();
-    case mojom::IDBKeyType::Array: {
-      IDBKey::KeyArray lkey_array;
-      const auto& rkey_array = rkey->Array();
-      for (const auto& rkey_item : rkey_array)
-        lkey_array.push_back(IDBKey::Clone(rkey_item));
-      return IDBKey::CreateArray(std::move(lkey_array));
-    }
-    case mojom::IDBKeyType::Binary:
-      return IDBKey::CreateBinary(rkey->Binary());
-    case mojom::IDBKeyType::String:
-      return IDBKey::CreateString(rkey->GetString());
-    case mojom::IDBKeyType::Date:
-      return IDBKey::CreateDate(rkey->Date());
-    case mojom::IDBKeyType::Number:
-      return IDBKey::CreateNumber(rkey->Number());
-
-    case mojom::IDBKeyType::Min:
-      break;  // Not used, NOTREACHED.
+  if (!rkey) {
+    return CreateNone();
   }
-  NOTREACHED();
+
+  return std::visit(
+      absl::Overload{
+          [](const InvalidKey&) { return CreateInvalid(); },
+          [](const NoneKey&) { return CreateNone(); },
+          [](double number) { return CreateNumber(number); },
+          [](const DateKey& date) { return CreateDate(date.value); },
+          [](const String& string) { return CreateString(string); },
+          [](const BinaryKey& binary) { return CreateBinary(binary); },
+          [](const KeyArray& array) {
+            KeyArray key_array;
+            key_array.ReserveInitialCapacity(array.size());
+            for (const auto& item : array) {
+              key_array.push_back(Clone(item));
+            }
+            return CreateArray(std::move(key_array));
+          },
+      },
+      rkey->value_);
 }
 
-IDBKey::IDBKey() : type_(mojom::IDBKeyType::Invalid) {}
+IDBKey::IDBKey() = default;
 
-// Must be Invalid or None.
-IDBKey::IDBKey(mojom::IDBKeyType type) : type_(type) {
-  DCHECK(type_ == mojom::IDBKeyType::Invalid ||
-         type_ == mojom::IDBKeyType::None);
-}
+IDBKey::IDBKey(NoneKey) : value_(NoneKey{}) {}
 
-// Must be Number or Date.
-IDBKey::IDBKey(mojom::IDBKeyType type, double number)
-    : type_(type), number_(number) {
-  DCHECK(type_ == mojom::IDBKeyType::Number ||
-         type_ == mojom::IDBKeyType::Date);
-}
+IDBKey::IDBKey(double number) : value_(number) {}
 
-IDBKey::IDBKey(const String& value)
-    : type_(mojom::IDBKeyType::String), string_(value) {}
+IDBKey::IDBKey(DateKey date) : value_(date) {}
 
-IDBKey::IDBKey(scoped_refptr<base::RefCountedData<Vector<char>>> value)
-    : type_(mojom::IDBKeyType::Binary), binary_(std::move(value)) {}
+IDBKey::IDBKey(const String& value) : value_(value) {}
 
-IDBKey::IDBKey(KeyArray key_array)
-    : type_(mojom::IDBKeyType::Array), array_(std::move(key_array)) {}
+IDBKey::IDBKey(BinaryKey value) : value_(std::move(value)) {}
+
+IDBKey::IDBKey(KeyArray key_array) : value_(std::move(key_array)) {}
 
 IDBKey::~IDBKey() = default;
 
+mojom::IDBKeyType IDBKey::GetType() const {
+  return std::visit(
+      absl::Overload{
+          [](const InvalidKey&) { return mojom::IDBKeyType::Invalid; },
+          [](const NoneKey&) { return mojom::IDBKeyType::None; },
+          [](double) { return mojom::IDBKeyType::Number; },
+          [](const DateKey&) { return mojom::IDBKeyType::Date; },
+          [](const String&) { return mojom::IDBKeyType::String; },
+          [](const BinaryKey&) { return mojom::IDBKeyType::Binary; },
+          [](const KeyArray&) { return mojom::IDBKeyType::Array; },
+      },
+      value_);
+}
+
+const IDBKey::KeyArray& IDBKey::Array() const {
+  return std::get<KeyArray>(value_);
+}
+
+scoped_refptr<base::RefCountedData<Vector<char>>> IDBKey::Binary() const {
+  return std::get<BinaryKey>(value_);
+}
+
+const String& IDBKey::GetString() const {
+  return std::get<String>(value_);
+}
+
+double IDBKey::Date() const {
+  return std::get<DateKey>(value_).value;
+}
+
+double IDBKey::Number() const {
+  return std::get<double>(value_);
+}
+
 bool IDBKey::IsValid() const {
-  if (type_ == mojom::IDBKeyType::Invalid)
-    return false;
-
-  if (type_ == mojom::IDBKeyType::Array) {
-    for (const auto& element : array_) {
-      if (!element->IsValid())
-        return false;
-    }
-  }
-
-  return true;
+  return std::visit(absl::Overload{
+                        [](const InvalidKey&) { return false; },
+                        [](const KeyArray& array) {
+                          return std::ranges::all_of(array, &IDBKey::IsValid);
+                        },
+                        [](const auto&) { return true; },
+                    },
+                    value_);
 }
 
-// Safely compare numbers (signed/unsigned ints/floats/doubles).
+namespace {
+
 template <typename T>
-static int CompareNumbers(const T& a, const T& b) {
-  if (a < b)
-    return -1;
-  if (b < a)
-    return 1;
-  return 0;
+int GenericCompare(const T& a, const T& b) {
+  auto cmp = a <=> b;
+  return cmp < 0 ? -1 : (cmp > 0 ? 1 : 0);
 }
+
+}  // namespace
 
 int IDBKey::Compare(const IDBKey* other) const {
   DCHECK(other);
-  if (type_ != other->type_)
-    return type_ > other->type_ ? -1 : 1;
-
-  switch (type_) {
-    case mojom::IDBKeyType::Array:
-      for (wtf_size_t i = 0; i < array_.size() && i < other->array_.size();
-           ++i) {
-        if (int result = array_[i]->Compare(other->array_[i].get()))
-          return result;
-      }
-      return CompareNumbers(array_.size(), other->array_.size());
-    case mojom::IDBKeyType::Binary:
-      if (int result = UNSAFE_TODO(memcmp(
-              binary_->data.data(), other->binary_->data.data(),
-              std::min(binary_->data.size(), other->binary_->data.size())))) {
-        return result < 0 ? -1 : 1;
-      }
-      return CompareNumbers(binary_->data.size(), other->binary_->data.size());
-    case mojom::IDBKeyType::String:
-      return CodeUnitCompare(string_, other->string_);
-    case mojom::IDBKeyType::Date:
-    case mojom::IDBKeyType::Number:
-      return CompareNumbers(number_, other->number_);
-
-    // These values cannot be compared to each other.
-    case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::None:
-    case mojom::IDBKeyType::Min:
-      NOTREACHED();
+  if (auto type = GetType(), other_type = other->GetType();
+      type != other_type) {
+    return type > other_type ? -1 : 1;
   }
 
-  NOTREACHED();
+  return std::visit(
+      absl::Overload{
+          [&](double number) {
+            return GenericCompare(number, other->Number());
+          },
+          [&](const DateKey& date) {
+            return GenericCompare(date.value, other->Date());
+          },
+          [&](const String& string) {
+            return CodeUnitCompare(string, other->GetString());
+          },
+          [&](const BinaryKey& binary) {
+            return GenericCompare(base::as_byte_span(binary->data),
+                                  base::as_byte_span(other->Binary()->data));
+          },
+          [&](const KeyArray& array) {
+            const auto& other_array = other->Array();
+            for (wtf_size_t i = 0; i < array.size() && i < other_array.size();
+                 ++i) {
+              if (int result = array[i]->Compare(other_array[i].get())) {
+                return result;
+              }
+            }
+            return GenericCompare(array.size(), other_array.size());
+          },
+          [](const auto&) -> int { NOTREACHED(); },
+      },
+      value_);
 }
 
 v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
   v8::Local<v8::Context> context = script_state->GetContext();
   v8::Isolate* isolate = script_state->GetIsolate();
-  switch (type_) {
-    case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::Min:
-      NOTREACHED();
-    case mojom::IDBKeyType::None:
-      return v8::Null(isolate);
-    case mojom::IDBKeyType::Number:
-      return v8::Number::New(isolate, Number());
-    case mojom::IDBKeyType::String:
-      return V8String(isolate, GetString());
-    case mojom::IDBKeyType::Binary:
-      // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
-      return ToV8Traits<DOMArrayBuffer>::ToV8(
-          script_state,
-          DOMArrayBuffer::Create(base::as_byte_span(Binary()->data)));
-    case mojom::IDBKeyType::Date:
-      return v8::Date::New(context, Date()).ToLocalChecked();
-    case mojom::IDBKeyType::Array: {
-      v8::Local<v8::Array> array = v8::Array::New(isolate, Array().size());
-      for (wtf_size_t i = 0; i < Array().size(); ++i) {
-        v8::Local<v8::Value> value = Array()[i]->ToV8(script_state);
-        if (value.IsEmpty()) {
-          value = v8::Undefined(isolate);
-        }
-        bool created_property;
-        if (!array->CreateDataProperty(context, i, value)
-                 .To(&created_property) ||
-            !created_property) {
-          return v8::Local<v8::Value>();
-        }
-      }
-      return array;
-    }
-  }
-
-  NOTREACHED();
+  return std::visit(
+      absl::Overload{
+          [](const InvalidKey&) -> v8::Local<v8::Value> { NOTREACHED(); },
+          [&](const NoneKey&) -> v8::Local<v8::Value> {
+            return v8::Null(isolate);
+          },
+          [&](double number) -> v8::Local<v8::Value> {
+            return v8::Number::New(isolate, number);
+          },
+          [&](const DateKey& date) -> v8::Local<v8::Value> {
+            return v8::Date::New(context, date.value).ToLocalChecked();
+          },
+          [&](const String& string) -> v8::Local<v8::Value> {
+            return V8String(isolate, string);
+          },
+          [&](const BinaryKey& binary) -> v8::Local<v8::Value> {
+            // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
+            return ToV8Traits<DOMArrayBuffer>::ToV8(
+                script_state,
+                DOMArrayBuffer::Create(base::as_byte_span(binary->data)));
+          },
+          [&](const KeyArray& key_array) -> v8::Local<v8::Value> {
+            v8::Local<v8::Array> array =
+                v8::Array::New(isolate, key_array.size());
+            for (wtf_size_t i = 0; i < key_array.size(); ++i) {
+              v8::Local<v8::Value> value = key_array[i]->ToV8(script_state);
+              if (value.IsEmpty()) {
+                value = v8::Undefined(isolate);
+              }
+              bool created_property;
+              if (!array->CreateDataProperty(context, i, value)
+                       .To(&created_property) ||
+                  !created_property) {
+                return v8::Local<v8::Value>();
+              }
+            }
+            return array;
+          },
+      },
+      value_);
 }
 
 bool IDBKey::IsLessThan(const IDBKey* other) const {
@@ -223,32 +246,31 @@ bool IDBKey::IsEqual(const IDBKey* other) const {
 }
 
 size_t IDBKey::SizeEstimate() const {
-  switch (type_) {
-    case mojom::IDBKeyType::Array:
-      return kIDBKeyOverheadSize + CalculateIDBKeyArraySize(array_);
-    case mojom::IDBKeyType::Binary:
-      return kIDBKeyOverheadSize + binary_->data.size();
-    case mojom::IDBKeyType::String:
-      return kIDBKeyOverheadSize + (string_.length() * sizeof(UChar));
-    case mojom::IDBKeyType::Date:
-    case mojom::IDBKeyType::Number:
-      return kIDBKeyOverheadSize + sizeof(number_);
-    case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::None:
-      return kIDBKeyOverheadSize;
-    case mojom::IDBKeyType::Min:
-      break;
-  }
-  NOTREACHED();
+  return kIDBKeyOverheadSize +
+         std::visit(absl::Overload{
+                        [](const KeyArray& array) -> size_t {
+                          return CalculateIDBKeyArraySize(array);
+                        },
+                        [](const BinaryKey& binary) -> size_t {
+                          return binary->data.size();
+                        },
+                        [](const String& string) -> size_t {
+                          return string.length() * sizeof(UChar);
+                        },
+                        [](double) -> size_t { return sizeof(double); },
+                        [](const DateKey&) -> size_t { return sizeof(double); },
+                        [](const auto&) -> size_t { return 0; },
+                    },
+                    value_);
 }
 
 // static
 Vector<std::unique_ptr<IDBKey>> IDBKey::ToMultiEntryArray(
     std::unique_ptr<IDBKey> array_key) {
-  DCHECK_EQ(array_key->type_, mojom::IDBKeyType::Array);
+  auto& array = std::get<KeyArray>(array_key->value_);
   Vector<std::unique_ptr<IDBKey>> result;
-  result.ReserveInitialCapacity(array_key->array_.size());
-  for (std::unique_ptr<IDBKey>& key : array_key->array_) {
+  result.ReserveInitialCapacity(array.size());
+  for (std::unique_ptr<IDBKey>& key : array) {
     if (key->IsValid())
       result.emplace_back(std::move(key));
   }

@@ -28,8 +28,8 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
-#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
@@ -61,11 +61,11 @@ class MODULES_EXPORT IDBKey {
   }
 
   static std::unique_ptr<IDBKey> CreateNone() {
-    return base::WrapUnique(new IDBKey(mojom::IDBKeyType::None));
+    return base::WrapUnique(new IDBKey(NoneKey{}));
   }
 
   static std::unique_ptr<IDBKey> CreateNumber(double number) {
-    return base::WrapUnique(new IDBKey(mojom::IDBKeyType::Number, number));
+    return base::WrapUnique(new IDBKey(number));
   }
 
   static std::unique_ptr<IDBKey> CreateBinary(
@@ -78,7 +78,7 @@ class MODULES_EXPORT IDBKey {
   }
 
   static std::unique_ptr<IDBKey> CreateDate(double date) {
-    return base::WrapUnique(new IDBKey(mojom::IDBKeyType::Date, date));
+    return base::WrapUnique(new IDBKey(DateKey{date}));
   }
 
   static std::unique_ptr<IDBKey> CreateArray(KeyArray array) {
@@ -97,33 +97,14 @@ class MODULES_EXPORT IDBKey {
 
   ~IDBKey();
 
-  mojom::IDBKeyType GetType() const { return type_; }
+  mojom::IDBKeyType GetType() const;
   bool IsValid() const;
 
-  const KeyArray& Array() const {
-    DCHECK_EQ(type_, mojom::IDBKeyType::Array);
-    return array_;
-  }
-
-  scoped_refptr<base::RefCountedData<Vector<char>>> Binary() const {
-    DCHECK_EQ(type_, mojom::IDBKeyType::Binary);
-    return binary_;
-  }
-
-  const String& GetString() const {
-    DCHECK_EQ(type_, mojom::IDBKeyType::String);
-    return string_;
-  }
-
-  double Date() const {
-    DCHECK_EQ(type_, mojom::IDBKeyType::Date);
-    return number_;
-  }
-
-  double Number() const {
-    DCHECK_EQ(type_, mojom::IDBKeyType::Number);
-    return number_;
-  }
+  const KeyArray& Array() const;
+  scoped_refptr<base::RefCountedData<Vector<char>>> Binary() const;
+  const String& GetString() const;
+  double Date() const;
+  double Number() const;
 
   int Compare(const IDBKey* other) const;
   bool IsLessThan(const IDBKey* other) const;
@@ -145,18 +126,29 @@ class MODULES_EXPORT IDBKey {
       std::unique_ptr<IDBKey> array_key);
 
  private:
+  struct InvalidKey {};
+  struct NoneKey {};
+  struct DateKey {
+    double value;
+  };
+  using BinaryKey = scoped_refptr<base::RefCountedData<Vector<char>>>;
+  using Value = std::variant<InvalidKey,
+                             NoneKey,
+                             double,
+                             DateKey,
+                             String,
+                             BinaryKey,
+                             KeyArray>;
+
   IDBKey();
-  explicit IDBKey(mojom::IDBKeyType type);
-  IDBKey(mojom::IDBKeyType type, double number);
+  explicit IDBKey(NoneKey);
+  explicit IDBKey(double number);
+  explicit IDBKey(DateKey date);
   explicit IDBKey(const String& value);
-  explicit IDBKey(scoped_refptr<base::RefCountedData<Vector<char>>> value);
+  explicit IDBKey(BinaryKey value);
   explicit IDBKey(KeyArray key_array);
 
-  mojom::IDBKeyType type_;
-  KeyArray array_;
-  scoped_refptr<base::RefCountedData<Vector<char>>> binary_;
-  const String string_;
-  const double number_ = 0;
+  Value value_;
 };
 
 // An index id, and corresponding set of keys to insert.
