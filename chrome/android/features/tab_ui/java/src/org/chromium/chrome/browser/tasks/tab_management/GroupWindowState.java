@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
  *
  * <p>Emitted to UMA histograms, make sure to update when adding new values.
  */
+// LINT.IfChange(GroupWindowState)
 @IntDef({
     GroupWindowState.IN_CURRENT,
     GroupWindowState.IN_CURRENT_CLOSING,
     GroupWindowState.IN_ANOTHER,
     GroupWindowState.HIDDEN,
-    GroupWindowState.COUNT,
 })
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.TYPE_USE})
@@ -40,3 +40,4 @@ public @interface GroupWindowState {
     int HIDDEN = 3;
     int COUNT = 4;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:GroupWindowState)

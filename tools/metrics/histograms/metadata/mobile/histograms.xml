@@ -1276,13 +1276,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.RestoreActivityState"
-    enum="ActivityRestoreState" expires_after="2026-11-06">
+    enum="ActivityRestoreState" expires_after="2027-11-01">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <owner>mklw@google.com</owner>
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
-  <owner>twellington@chromium.com</owner>
+  <owner>twellington@chromium.org</owner>
   <summary>
     Records the saved or persistent instance state status of
     ChromeTabbedActivity during startup. Recorded as 'No Saved Or Persistent
@@ -1293,13 +1293,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileStartup.RestoreActivityState.Incognito"
-    enum="ActivityRestoreState" expires_after="2026-11-06">
+    enum="ActivityRestoreState" expires_after="2027-11-01">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clhager@google.com</owner>
   <owner>mklw@google.com</owner>
   <owner>shuyng@google.com</owner>
   <owner>skavuluru@google.com</owner>
-  <owner>twellington@chromium.com</owner>
+  <owner>twellington@chromium.org</owner>
   <summary>
     Records the saved or persistent instance state status of an Incognito-only
     ChromeTabbedActivity during startup. This does not necessarily mean that

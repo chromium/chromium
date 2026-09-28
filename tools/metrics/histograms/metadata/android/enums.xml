@@ -1373,6 +1373,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
+<!-- LINT.IfChange(GroupWindowState) -->
+
+<enum name="GroupWindowState">
+  <int value="0" label="In Current"/>
+  <int value="1" label="In Current Closing"/>
+  <int value="2" label="In Another"/>
+  <int value="3" label="Hidden"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupWindowState.java:GroupWindowState) -->
+
 <enum name="HasSeenNonZeroNavBarState">
   <int value="0" label="GestureNav First NavBar Missing"/>
   <int value="1" label="GestureNav Corrected"/>
