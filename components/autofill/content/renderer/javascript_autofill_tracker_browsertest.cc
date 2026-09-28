@@ -181,7 +181,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
             mojom::JavaScriptModificationType::kReassignment);
 
   // Clear logs by waiting for timer.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   ASSERT_TRUE(logs.empty());
 
   // 3. JS change with user activation but NO focused element -> should not log.
@@ -208,7 +208,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
             mojom::JavaScriptModificationType::kTrivial);
 
   // 6. JS change to a prefix completion -> should log kPrefixCompletion.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_prefix",
                              {{"text_1", "js_val_3_more"}});
   SelectDropdownOption("text_1", "opt_prefix");
@@ -217,7 +217,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
             mojom::JavaScriptModificationType::kPrefixCompletion);
 
   // 7. JS change from non-empty to empty -> should log kClearing.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_clear", {{"text_1", ""}});
   SelectDropdownOption("text_1", "opt_clear");
   ASSERT_EQ(logs.size(), 1u);
@@ -225,7 +225,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
             mojom::JavaScriptModificationType::kClearing);
 
   // 8. JS change from empty to non-empty -> should log kEmptyToNonEmpty.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   AttachCustomDropdownOption("text_1", "opt_new", {{"text_1", "new_val"}});
   SelectDropdownOption("text_1", "opt_new");
   ASSERT_EQ(logs.size(), 1u);
@@ -272,7 +272,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
   // form_1 while the modified fields belong to form_2,
   // DidDetectJavaScriptAutofill() should not be called and logs should be
   // cleared.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(logs.empty());
   testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 
@@ -284,52 +284,8 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
 
   ASSERT_EQ(logs.size(), 3u);
 
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(logs.empty());
-}
-
-// Test that if fewer than 3 fields are modified by JavaScript, detection is
-// still triggered if at least one field underwent prefix completion
-// (kPrefixCompletion).
-TEST_F(JavaScriptAutofillTrackerTest,
-       DetectFewerThanMinFieldsWithPrefixCompletion) {
-  LoadHTML(R"(
-      <form id="form_id">
-        <input id="text_1" value="app">
-        <input id="text_2">
-      </form>)");
-
-  AttachCustomDropdownOption("text_1", "option_1", {{"text_1", "apple"}});
-
-  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(1);
-
-  SelectDropdownOption("text_1", "option_1");
-
-  // Even though only 1 field changed (< 3), kPrefixCompletion triggers
-  // detection.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
-}
-
-// Test that if fewer than 3 fields are modified by JavaScript and NONE of them
-// underwent prefix completion, detection is NOT triggered.
-TEST_F(JavaScriptAutofillTrackerTest,
-       IgnoreFewerThanMinFieldsWithoutPrefixCompletion) {
-  LoadHTML(R"(
-      <form id="form_id">
-        <input id="text_1">
-        <input id="text_2">
-      </form>)");
-
-  AttachCustomDropdownOption("text_1", "option_1",
-                             {{"text_1", "apple"}, {"text_2", "banana"}});
-
-  EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(0);
-
-  SelectDropdownOption("text_1", "option_1");
-
-  // 2 fields changed (< 3), but neither is kPrefixCompletion -> should NOT
-  // trigger detection.
-  task_environment_.FastForwardBy(base::Milliseconds(200));
 }
 
 // Test that if JS copies values to hidden fields (e.g. billing section hidden
@@ -365,7 +321,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreHiddenFieldsInSameAsShippingForm) {
   EXPECT_EQ(logs[3]->field_id,
             form_util::GetFieldRendererId(GetWebElementById("shipping_zip")));
 
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
   EXPECT_TRUE(logs.empty());
 }
 
@@ -385,7 +341,7 @@ TEST_F(JavaScriptAutofillTrackerTest,
 
   // 2. Fill the shipping form using the dropdown.
   SelectDropdownOption("shipping_street", "shipping_option");
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
 
   // 3. Untick the checkbox to reveal the billing section and empty it.
   SimulateElementClickAndWait("same_as_shipping");
@@ -401,7 +357,7 @@ TEST_F(JavaScriptAutofillTrackerTest,
   // it is obviously not a use case of selecting a dropdown item.
   SimulateElementClickAndWait("same_as_shipping");
 
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
 // Test that clicking a reset/clear button that empties form fields via JS does
@@ -431,7 +387,7 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreResetButtonClearingFields) {
   // Click the reset button to clear all 3 fields.
   SimulateElementClickAndWait("reset_btn");
 
-  task_environment_.FastForwardBy(base::Milliseconds(200));
+  task_environment_.FastForwardBy(base::Milliseconds(1000));
 }
 
 }  // namespace

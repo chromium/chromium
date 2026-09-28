@@ -22,18 +22,13 @@ namespace autofill {
 
 namespace {
 
-// The minimum number of fields that must be modified by JS during the tracking
-// window to detect it as a custom JS autofill without enforcing additional
-// conditions.
-constexpr size_t kJsAutofillMinFieldsChanged = 3;
-
 // The number of fields modified by JS during the tracking window after which it
 // stops being detected as a custom JS autofill.
-constexpr size_t kJsAutofillMaxFieldsChanged = 10;
+constexpr size_t kJsAutofillMaxFieldsChanged = 20;
 
 // The maximum time gap between JS modifications to be considered part of the
 // same JS autofill event.
-constexpr base::TimeDelta kJsAutofillMaxTimeGap = base::Milliseconds(200);
+constexpr base::TimeDelta kJsAutofillMaxTimeGap = base::Milliseconds(1000);
 
 // Returns true if `element` can act as the anchor for a custom JS-autofill
 // popup. Custom autofill dropdowns are typically attached to text-like input
@@ -250,17 +245,6 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
 
   if (field_modifications.empty() ||
       field_modifications.size() >= kJsAutofillMaxFieldsChanged) {
-    return;
-  }
-
-  // If too few fields were modified by JavaScript, then an extra condition is
-  // enforced, which is that at least one field should be prefix-completed, in
-  // order to reduce IPC noise and false positives.
-  if (field_modifications.size() < kJsAutofillMinFieldsChanged &&
-      !std::ranges::contains(
-          field_modifications,
-          mojom::JavaScriptModificationType::kPrefixCompletion,
-          &mojom::JavaScriptFieldModification::modification_type)) {
     return;
   }
 
