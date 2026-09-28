@@ -651,12 +651,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
         // Handle showing the next content if it exists.
         if (mBottomSheet.getSheetState() == SheetState.HIDDEN) {
-            // If the sheet is already hidden, destroy it and simply show the next content.
-            // TODO(mdjones): Add tests to make sure the content is being destroyed as expected.
-            if (mBottomSheet.getCurrentSheetContent() != null) {
-                mBottomSheet.getCurrentSheetContent().destroy();
-            }
+            BottomSheetContent contentToDestroy = mBottomSheet.getCurrentSheetContent();
             showNextContent(animate);
+            if (contentToDestroy != null) {
+                contentToDestroy.destroy();
+            }
         } else {
             mIsProcessingHideRequest = true;
             mBottomSheet.setSheetState(SheetState.HIDDEN, animate, hideReason);

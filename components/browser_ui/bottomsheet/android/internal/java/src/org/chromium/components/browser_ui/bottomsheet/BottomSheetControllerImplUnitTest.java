@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -30,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -525,6 +527,47 @@ public class BottomSheetControllerImplUnitTest {
 
         // 5. Verify COBROWSE content returns.
         verify(mBottomSheet, times(2)).showContent(cobrowseContent);
+    }
+
+    @Test
+    public void testHideContent_hiddenDestroyUnsuppresses_showsNextContentBeforeDestroy() {
+        mController.runSheetInitializerForTesting();
+
+        BottomSheetContent currentContent = mock(BottomSheetContent.class);
+        BottomSheetContent nextContent = mock(BottomSheetContent.class);
+        when(currentContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(nextContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        doAnswer(
+                        invocation -> {
+                            doReturn(invocation.getArgument(0))
+                                    .when(mBottomSheet)
+                                    .getCurrentSheetContent();
+                            return null;
+                        })
+                .when(mBottomSheet)
+                .showContent(any());
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(currentContent);
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+
+        int suppressionToken = mController.suppressSheet(StateChangeReason.NONE);
+        mController.requestShowContent(nextContent, /* animate= */ true);
+        doAnswer(
+                        invocation -> {
+                            mController.unsuppressSheet(suppressionToken);
+                            return null;
+                        })
+                .when(currentContent)
+                .destroy();
+
+        mController.hideContent(currentContent, /* animate= */ true);
+
+        InOrder inOrder = inOrder(mBottomSheet, currentContent);
+        inOrder.verify(mBottomSheet).showContent(nextContent);
+        inOrder.verify(currentContent).destroy();
+        verify(currentContent, never()).shouldRestoreStateOnUnsuppress();
     }
 
     @Test
