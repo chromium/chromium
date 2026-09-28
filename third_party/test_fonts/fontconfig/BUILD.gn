@@ -33,7 +33,10 @@ if (is_linux || is_chromeos) {
     executable("generate_fontconfig_caches") {
       testonly = true
       sources = [ "generate_fontconfig_caches.cc" ]
-      deps = [ ":fontconfig_util_linux" ]
+      deps = [
+        ":fontconfig_util_linux",
+        "//third_party/fontconfig",
+      ]
     }
 
     compiled_action("do_generate_fontconfig_caches") {
@@ -49,7 +52,7 @@ if (is_linux || is_chromeos) {
       args = []
       inputs = [ "$root_out_dir/etc/fonts/fonts.conf" ]
       outputs = [
-        "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-11",
+        "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-12",
         "$root_out_dir/fontconfig_caches/CACHEDIR.TAG",
       ]
     }
