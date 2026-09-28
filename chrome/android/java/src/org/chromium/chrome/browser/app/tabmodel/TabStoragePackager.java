@@ -208,7 +208,7 @@ public class TabStoragePackager {
     @Nullable
     private TabModelInfo getArchivedModelInfo(Profile profile, TabStripCollection collection) {
         ArchivedTabModelOrchestrator orchestrator =
-                ArchivedTabModelOrchestrator.getForProfile(profile);
+                ArchivedTabModelOrchestrator.getIfInstantiatedForProfile(profile);
         if (orchestrator == null) return null;
 
         TabModel tabModel = orchestrator.getTabModel();

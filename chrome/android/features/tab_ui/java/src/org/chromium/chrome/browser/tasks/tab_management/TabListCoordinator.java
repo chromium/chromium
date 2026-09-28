@@ -758,7 +758,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         }
     }
 
-    private void destroyEmptyView() {
+    void destroyEmptyView() {
         if (mTabListEmptyCoordinator != null) {
             mTabListEmptyCoordinator.destroyEmptyView();
             mIsEmptyViewInitialized = false;

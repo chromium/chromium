@@ -131,7 +131,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         when(mTabModelSelector.getCurrentTabModelSupplier())
                 .thenReturn(ObservableSuppliers.createMonotonic(mTabModel));
         when(mTabModelSelector.getProfile(anyBoolean())).thenReturn(mProfile);
-        when(mArchivedTabModelOrchestrator.acquireLeaseInternal(any())).thenReturn(mDeclutterLease);
+        when(mArchivedTabModelOrchestrator.acquireLease(anyInt())).thenReturn(mDeclutterLease);
         mCipherFactory = new CipherFactory();
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
@@ -367,8 +367,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
         assertNotNull(orchestrator.getDeclutterLeaseForTesting());
         verify(mArchivedTabModelOrchestrator)
-                .acquireLeaseInternal(
-                        ArchivedTabModelOrchestrator.LeaseReason.RECURRING_DECLUTTER_PASS);
+                .acquireLease(ArchivedTabModelOrchestrator.LeaseReason.RECURRING_DECLUTTER_PASS);
         verify(mArchivedTabModelOrchestrator).doDeclutterPass(orchestrator);
 
         orchestrator.onDeclutterPassCompleted();
@@ -418,8 +417,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
         assertNotNull(orchestrator.getDeclutterLeaseForTesting());
         verify(mArchivedTabModelOrchestrator)
-                .acquireLeaseInternal(
-                        ArchivedTabModelOrchestrator.LeaseReason.RECURRING_DECLUTTER_PASS);
+                .acquireLease(ArchivedTabModelOrchestrator.LeaseReason.RECURRING_DECLUTTER_PASS);
         verify(mArchivedTabModelOrchestrator).doDeclutterPass(orchestrator);
     }
 

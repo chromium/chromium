@@ -570,6 +570,7 @@ public class PersistentStoreCleanerTest {
                 () -> {
                     ArchivedTabModelOrchestrator.destroyProfileKeyedMap();
                     TabArchiveSettings.getInstance().resetSettingsForTesting();
+                    TabArchiveSettings.getInstance().setArchivedTabCount(0);
                 });
         CriteriaHelper.pollUiThread(
                 () -> !ArchivedTabModelOrchestrator.isInstantiatedForProfile(mProfile));

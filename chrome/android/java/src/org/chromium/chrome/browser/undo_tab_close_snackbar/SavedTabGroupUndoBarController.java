@@ -11,15 +11,19 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,24 +37,30 @@ import java.util.List;
 @NullMarked
 public class SavedTabGroupUndoBarController extends UndoBarController
         implements UndoBarExplicitTrigger {
+    private final ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
+    private final List<Destroyable> mOrchestratorLeases = new ArrayList<>();
 
     /**
      * Creates an instance of a {@link SavedTabGroupUndoBarController}.
      *
      * @param context The {@link Context} in which snackbar is shown.
-     * @param selector The {@link TabModelSelector} that will be used to commit and undo tab
-     *     closures.
+     * @param archivedTabModelOrchestrator The {@link ArchivedTabModelOrchestrator} that will be
+     *     used to commit and undo tab closures and hold a lease while undo is pending.
      * @param snackbarManageable The holder class to get the manager that helps to show up snackbar.
      * @param tabGroupSyncService The {@link TabGroupSyncService} to handle synced tab group
      *     actions.
      */
     public SavedTabGroupUndoBarController(
             Context context,
-            TabModelSelector selector,
+            ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             SnackbarManageable snackbarManageable,
             @Nullable TabGroupSyncService tabGroupSyncService) {
-        super(context, selector, snackbarManageable);
+        super(
+                context,
+                assumeNonNull(archivedTabModelOrchestrator.getTabModelSelector()),
+                snackbarManageable);
+        mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mTabGroupSyncService = tabGroupSyncService;
     }
 
@@ -58,11 +68,29 @@ public class SavedTabGroupUndoBarController extends UndoBarController
      * Explicitly queues an undo snackbar to show based on a triggered action.
      *
      * @param tabs The list of closed tabs to be shown by the snackbar.
-     * @param savedtabGroupSyncIds The list of closed {@link SavedTabGroup} syncIds shown by the
+     * @param savedTabGroupSyncIds The list of closed {@link SavedTabGroup} syncIds shown by the
      *     snackbar.
      */
     public void queueUndoBar(List<Tab> tabs, List<String> savedTabGroupSyncIds) {
+        if (tabs.isEmpty() && savedTabGroupSyncIds.isEmpty()) return;
+        if (!mSnackbarManageable.getSnackbarManager().canShowSnackbar()) {
+            for (Tab tab : tabs) {
+                TabModel model = mTabModelSelector.getModelForTabId(tab.getId());
+                if (model != null) model.commitTabClosure(tab.getId());
+            }
+            return;
+        }
+        mOrchestratorLeases.add(
+                mArchivedTabModelOrchestrator.acquireLease(LeaseReason.ARCHIVED_TABS_DIALOG));
         queueUndoBar(new TabClosureEvent(tabs, savedTabGroupSyncIds, /* isAllTabs= */ false));
+    }
+
+    /** Releases any remaining leases held for pending undo snackbars. */
+    public void destroy() {
+        for (Destroyable lease : mOrchestratorLeases) {
+            lease.destroy();
+        }
+        mOrchestratorLeases.clear();
     }
 
     @Override
@@ -138,13 +166,32 @@ public class SavedTabGroupUndoBarController extends UndoBarController
     @SuppressWarnings("unchecked")
     @Override
     public void onAction(@Nullable Object actionData) {
-        super.onAction(actionData);
-        UndoActionData undoActionData = assumeNonNull((UndoActionData) actionData);
-        List<String> closedSavedTabGroupSyncIds = undoActionData.closedSavedTabGroupSyncIds;
-        if (!closedSavedTabGroupSyncIds.isEmpty()) {
-            for (String syncId : closedSavedTabGroupSyncIds) {
-                cancelSavedTabGroupClosure(syncId);
+        try {
+            super.onAction(actionData);
+            UndoActionData undoActionData = assumeNonNull((UndoActionData) actionData);
+            List<String> closedSavedTabGroupSyncIds = undoActionData.closedSavedTabGroupSyncIds;
+            if (!closedSavedTabGroupSyncIds.isEmpty()) {
+                for (String syncId : closedSavedTabGroupSyncIds) {
+                    cancelSavedTabGroupClosure(syncId);
+                }
             }
+        } finally {
+            releaseNextLease();
+        }
+    }
+
+    @Override
+    public void onDismissNoAction(@Nullable Object actionData) {
+        try {
+            super.onDismissNoAction(actionData);
+        } finally {
+            releaseNextLease();
+        }
+    }
+
+    private void releaseNextLease() {
+        if (!mOrchestratorLeases.isEmpty()) {
+            mOrchestratorLeases.remove(0).destroy();
         }
     }
 

@@ -436,6 +436,11 @@ public class SelectableListLayout<E> extends FrameLayout
         mIgnoredTypesForEmptyState.add(type);
     }
 
+    /** Shows the loading UI. */
+    public void showLoadingUi() {
+        mLoadingView.showLoadingUi();
+    }
+
     /** Hides the loading UI. */
     public void hideLoadingUi() {
         mLoadingView.hideLoadingUi();

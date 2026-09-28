@@ -28,21 +28,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.hub.PaneManager;
@@ -55,7 +57,6 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsIphMessageCardViewModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties;
@@ -113,7 +114,6 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,6 +123,7 @@ import java.util.function.Supplier;
 public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarManageable {
 
     private static final int ANIM_DURATION_MS = 250;
+    private static final int SCROLL_DIRECTION_DOWN = 1;
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
@@ -224,6 +225,30 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     } else {
                         moveToState(TabActionState.CLOSABLE);
                     }
+                }
+            };
+
+    private final BackPressHandler mBackPressHandler =
+            new BackPressHandler() {
+                private final NonNullObservableSupplier<Boolean> mSupplier =
+                        ObservableSuppliers.createNonNull(/* initialValue= */ true);
+
+                @Override
+                public @BackPressResult int handleBackPress() {
+                    if (mTabListEditorCoordinator != null
+                            && mTabListEditorCoordinator.getController().handleBackPress()
+                                    == BackPressResult.SUCCESS) {
+                        return BackPressResult.SUCCESS;
+                    }
+                    hide(
+                            ANIM_DURATION_MS,
+                            /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
+                    return BackPressResult.SUCCESS;
+                }
+
+                @Override
+                public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+                    return mSupplier;
                 }
             };
 
@@ -387,17 +412,21 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             new TabListEditorCoordinator.LifecycleObserver() {
                 @Override
                 public void willHide() {
-                    mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+                    if (mDialogRecyclerView != null) {
+                        mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+                    }
                     if (mHasSnackbarOverride) {
                         mSnackbarManager.popParentViewOverride(
                                 ParentOverrideSlot.ARCHIVED_TABS_DIALOG);
                         mHasSnackbarOverride = false;
                     }
-                    // In case we were hidden by TabListEditor in some other case, force the
-                    // animation to finish.
-                    animateOut(
-                            /* duration= */ 0,
-                            /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
+                    if (!mIsHiding) {
+                        // In case we were hidden by TabListEditor in some other case, force the
+                        // animation to finish.
+                        animateOut(
+                                /* duration= */ 0,
+                                /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
+                    }
                 }
 
                 @Override
@@ -414,7 +443,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                     mShadowView.setVisibility(
-                            recyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
+                            recyclerView.canScrollVertically(SCROLL_DIRECTION_DOWN)
+                                    ? View.VISIBLE
+                                    : View.GONE);
                 }
             };
 
@@ -431,6 +462,20 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     private final SettableNonNullObservableSupplier<Integer> mSnackbarMarginSupplier =
             ObservableSuppliers.createNonNull(0);
+
+    private final Callback<Boolean> mTabStateInitializedObserver =
+            new Callback<>() {
+                @Override
+                public void onResult(Boolean initialized) {
+                    if (!initialized) return;
+                    mArchivedTabModelOrchestrator
+                            .getTabStateInitializedSupplier()
+                            .removeObserver(this);
+                    if (isShowing() && mTabListEditorCoordinator != null) {
+                        finishShowing();
+                    }
+                }
+            };
 
     private final Activity mActivity;
     private final ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
@@ -454,18 +499,23 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
-    private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
-    private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
-    private TabListRecyclerView mDialogRecyclerView;
-    private WeakReference<TabListRecyclerView> mTabSwitcherRecyclerView;
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private @Nullable TabListRecyclerView mDialogRecyclerView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
     private @Nullable TabListEditorCoordinator mTabListEditorCoordinator;
     private @Nullable OnTabSelectingListener mOnTabSelectingListener;
     private @Nullable PropertyModel mIphMessagePropertyModel;
+    private @Nullable Destroyable mOrchestratorLease;
+    private @Nullable Runnable mAnimateInRunnable;
+    private @Nullable AnimatorSet mCurrentAnimatorSet;
     private boolean mHasSnackbarOverride;
     private boolean mIsOpeningLastItem;
     private boolean mIsShowing;
+    private boolean mIsHiding;
+    private boolean mIsBackPressHandlerRegistered;
+    private boolean mIsLifecycleObserverRegistered;
+    private boolean mIsTabGroupSyncObserverRegistered;
 
     /**
      * @param activity The android activity.
@@ -515,13 +565,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mDesktopWindowStateManager = desktopWindowStateManager;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
-        TabModelSelectorBase tabModelSelector = mArchivedTabModelOrchestrator.getTabModelSelector();
-        assumeNonNull(tabModelSelector);
-        mArchivedTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        mArchivedTabModel =
+                assumeNonNull(mArchivedTabModelOrchestrator.getTabModelSelector())
+                        .getModel(/* incognito= */ false);
         mUndoBarController =
                 new SavedTabGroupUndoBarController(
                         mActivity,
-                        tabModelSelector,
+                        mArchivedTabModelOrchestrator,
                         /* snackbarManageable= */ this,
                         tabGroupSyncService);
         mTabSwitcherView = tabSwitcherView;
@@ -553,10 +603,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mCurrentTabModelSupplier = currentTabModelSupplier;
 
-        if (mTabGroupSyncService != null) {
-            mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
-        }
-
         int closeAllTabsContainerHeight =
                 mActivity
                         .getResources()
@@ -565,44 +611,41 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mSnackbarMarginSupplier.set(closeAllTabsContainerHeight);
     }
 
-    /** Hides the dialog. */
-    @SuppressWarnings("NullAway")
+    /** Destroys the coordinator and cleans up resources. */
     public void destroy() {
-        mDestroyChecker.checkNotDestroyed();
-        mDestroyChecker.destroy();
-
+        ThreadUtils.assertOnUiThread();
         if (mTabListEditorCoordinator != null) {
-            mRootView.removeView(mDialogView);
             mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
                     mTabListItemSizeChangedObserver);
+            detachLifecycleObserver();
             mTabListEditorCoordinator.getController().hide();
             tearDownTabListEditorCoordinator();
         }
+        mSnackbarManager.dismissSnackbars(mUndoBarController);
+        mUndoBarController.destroy();
+        hideInternal();
 
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+        mOnTabSelectingListener = null;
+    }
 
-        if (mDialogRecyclerView != null) {
-            mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+    private void detachLifecycleObserver() {
+        if (mTabListEditorCoordinator != null && mIsLifecycleObserverRegistered) {
+            mTabListEditorCoordinator
+                    .getController()
+                    .setLifecycleObserver(/* lifecycleObserver= */ null);
+            mIsLifecycleObserverRegistered = false;
         }
-
-        if (mOnTabSelectingListener != null) {
-            mOnTabSelectingListener = null;
-        }
-
-        if (mTabGroupSyncService != null) {
-            mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
-        }
-
-        mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
     }
 
     private void tearDownTabListEditorCoordinator() {
         assumeNonNull(mTabListEditorCoordinator);
         mTabListEditorCoordinator.destroy();
         mTabListEditorCoordinator = null;
+        mIphMessagePropertyModel = null;
     }
 
     /**
@@ -611,48 +654,96 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param onTabSelectingListener Allows a tab to be selected in the main tab switcher.
      */
     public void show(OnTabSelectingListener onTabSelectingListener) {
-        if (mIsShowing) return;
-        showInternal(onTabSelectingListener);
-    }
+        ThreadUtils.assertOnUiThread();
+        if (mIsShowing || mIsHiding) {
+            return;
+        }
 
-    @Initializer
-    private void showInternal(OnTabSelectingListener onTabSelectingListener) {
         mIsShowing = true;
-        TabListRecyclerView tabListRecyclerView =
-                mTabSwitcherView.findViewById(R.id.tab_list_recycler_view);
-        assumeNonNull(tabListRecyclerView);
-        mTabSwitcherRecyclerView = new WeakReference<>(tabListRecyclerView);
-        tabListRecyclerView.setBlockTouchInput(true);
+        mIsHiding = false;
+        mIsOpeningLastItem = false;
 
-        boolean tabListFirstShown = false;
+        if (mOrchestratorLease == null) {
+            mOrchestratorLease =
+                    mArchivedTabModelOrchestrator.acquireLease(LeaseReason.ARCHIVED_TABS_DIALOG);
+        }
+
+        if (!mIsBackPressHandlerRegistered) {
+            mBackPressManager.addHandler(
+                    mBackPressHandler, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
+            mIsBackPressHandlerRegistered = true;
+        }
+
         if (mTabListEditorCoordinator == null) {
-            tabListFirstShown = true;
             createTabListEditorCoordinator();
         }
 
         mOnTabSelectingListener = onTabSelectingListener;
+
+        TabListEditorController controller = mTabListEditorCoordinator.getController();
+        controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
+        mIsLifecycleObserverRegistered = true;
+        controller.setNavigationProvider(mNavigationProvider);
+
+        if (mArchivedTabModelOrchestrator.isTabStateInitialized()) {
+            finishShowing();
+        } else {
+            controller.show(
+                    Collections.emptyList(),
+                    Collections.emptyList(),
+                    /* recyclerViewPosition= */ null);
+            mTabListEditorCoordinator.overrideContentDescriptions(
+                    R.string.accessibility_archived_tabs_dialog,
+                    R.string.accessibility_archived_tabs_dialog_back_button);
+            updateTitle();
+            getCloseAllTabsButtonContainer().setVisibility(View.GONE);
+            mTabListEditorCoordinator.showLoadingUi();
+            animateIn(ANIM_DURATION_MS);
+            mArchivedTabModelOrchestrator
+                    .getTabStateInitializedSupplier()
+                    .addSyncObserver(mTabStateInitializedObserver);
+        }
+    }
+
+    private void finishShowing() {
+        assumeNonNull(mTabListEditorCoordinator);
+        boolean tabListFirstShown = mIphMessagePropertyModel == null;
+
+        if (mTabGroupSyncService != null && !mIsTabGroupSyncObserverRegistered) {
+            mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
+            mIsTabGroupSyncObserverRegistered = true;
+        }
+
         mArchivedTabModelOrchestrator
                 .getTabCountSupplier()
                 .addSyncObserverAndPostIfNonNull(mTabCountObserver);
 
+        List<Tab> archivedTabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
+        List<String> archivedTabGroupSyncIds = getArchivedTabGroupSyncIds();
         TabListEditorController controller = mTabListEditorCoordinator.getController();
-        controller.setLifecycleObserver(mTabListEditorLifecycleObserver);
-        controller.show(
-                TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
-                getArchivedTabGroupSyncIds(),
-                /* recyclerViewPosition= */ null);
-        controller.setNavigationProvider(mNavigationProvider);
-        mTabListEditorCoordinator.overrideContentDescriptions(
-                R.string.accessibility_archived_tabs_dialog,
-                R.string.accessibility_archived_tabs_dialog_back_button);
+        if (controller.isVisible()) {
+            mTabListEditorCoordinator.resetWithListOfTabs(
+                    archivedTabs, archivedTabGroupSyncIds, /* quickMode= */ false);
+            mTabListEditorCoordinator.hideLoadingUi();
+        } else {
+            controller.show(
+                    archivedTabs, archivedTabGroupSyncIds, /* recyclerViewPosition= */ null);
+            mTabListEditorCoordinator.overrideContentDescriptions(
+                    R.string.accessibility_archived_tabs_dialog,
+                    R.string.accessibility_archived_tabs_dialog_back_button);
+        }
 
         mDialogRecyclerView = mDialogView.findViewById(R.id.tab_list_recycler_view);
-        mDialogRecyclerView.addOnScrollListener(mRecyclerScrollListener);
-        mShadowView.setVisibility(
-                mDialogRecyclerView.canScrollVertically(1) ? View.VISIBLE : View.GONE);
+        if (mDialogRecyclerView != null) {
+            mDialogRecyclerView.setBlockTouchInput(/* blockTouchInput= */ false);
+            mDialogRecyclerView.addOnScrollListener(mRecyclerScrollListener);
+            mShadowView.setVisibility(
+                    mDialogRecyclerView.canScrollVertically(SCROLL_DIRECTION_DOWN)
+                            ? View.VISIBLE
+                            : View.GONE);
+        }
 
-        // Register the dialog to handle back press events.
-        mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
+        getCloseAllTabsButtonContainer().setVisibility(View.VISIBLE);
 
         FrameLayout snackbarContainer = mDialogView.findViewById(R.id.snackbar_container);
         mHasSnackbarOverride = true;
@@ -661,7 +752,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 snackbarContainer,
                 mSnackbarMarginSupplier);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
-        mDialogView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
+        getCloseAllTabsButtonContainer().bringToFront();
         snackbarContainer.bringToFront();
 
         // Add the IPH to the TabListEditor.
@@ -685,15 +776,23 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
 
         moveToState(TabActionState.CLOSABLE);
-        animateIn(ANIM_DURATION_MS);
+        if (mDialogView.getParent() == null) {
+            animateIn(ANIM_DURATION_MS);
+        }
     }
 
     private void animateIn(int duration) {
         mDialogView.setVisibility(View.INVISIBLE);
-        mRootView.addView(mDialogView);
+        if (mDialogView.getParent() == null) {
+            mRootView.addView(mDialogView);
+        }
 
-        mDialogView.post(
+        mAnimateInRunnable =
                 () -> {
+                    mAnimateInRunnable = null;
+                    if (!isShowing() || mDialogView.getParent() == null) {
+                        return;
+                    }
                     int dialogViewWidth = mDialogView.getWidth();
                     int translationFactor =
                             LocalizationUtils.isLayoutRtl() ? -dialogViewWidth : dialogViewWidth;
@@ -703,10 +802,22 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     AnimatorSet animatorSet = new AnimatorSet();
                     animatorSet.setDuration(duration);
                     animatorSet.playTogether(getAnimateInAnimators());
+                    animatorSet.addListener(
+                            new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    if (mCurrentAnimatorSet == animation) {
+                                        mCurrentAnimatorSet = null;
+                                    }
+                                    animation.removeAllListeners();
+                                }
+                            });
+                    mCurrentAnimatorSet = animatorSet;
                     animatorSet.start();
 
                     RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
-                });
+                };
+        mDialogView.post(mAnimateInRunnable);
     }
 
     private List<Animator> getAnimateInAnimators() {
@@ -726,7 +837,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private void animateOut(int duration, Runnable animationFinishCallback) {
-        mDialogRecyclerView.setBlockTouchInput(true);
+        if (mDialogRecyclerView != null) {
+            mDialogRecyclerView.setBlockTouchInput(/* blockTouchInput= */ true);
+        }
 
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.setDuration(duration);
@@ -735,12 +848,18 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        if (mCurrentAnimatorSet == animation) {
+                            mCurrentAnimatorSet = null;
+                        }
                         mRootView.removeView(mDialogView);
                         animationFinishCallback.run();
-                        mDialogRecyclerView.setBlockTouchInput(false);
+                        if (mDialogRecyclerView != null) {
+                            mDialogRecyclerView.setBlockTouchInput(/* blockTouchInput= */ false);
+                        }
                         animation.removeAllListeners();
                     }
                 });
+        mCurrentAnimatorSet = animatorSet;
         animatorSet.start();
     }
 
@@ -762,6 +881,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     /** Hides the dialog. */
     public void hide(int animationDuration, Runnable animationFinishCallback) {
+        ThreadUtils.assertOnUiThread();
+        if (!mIsShowing || mIsHiding) {
+            animationFinishCallback.run();
+            return;
+        }
+        mIsHiding = true;
+        cancelPendingOperations();
         animateOut(
                 animationDuration,
                 () -> {
@@ -770,28 +896,80 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     if (mTabListEditorCoordinator != null) {
                         mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
                                 mTabListItemSizeChangedObserver);
+                        detachLifecycleObserver();
                         TabListEditorController controller =
                                 mTabListEditorCoordinator.getController();
                         controller.hide();
                     }
+                    hideInternal();
                     animationFinishCallback.run();
                 });
     }
 
+    /** Returns whether the dialog is currently showing. */
+    public boolean isShowing() {
+        return mIsShowing && !mIsHiding;
+    }
+
     void hideInternal() {
-        assumeNonNull(mTabListEditorCoordinator);
-        TabListEditorController controller = mTabListEditorCoordinator.getController();
-        controller.setLifecycleObserver(null);
-        mBackPressManager.removeHandler(mTabListEditorCoordinator.getController());
+        mIsShowing = false;
+        mIsHiding = false;
+        mIsOpeningLastItem = false;
+        cancelPendingOperations();
+        if (mOrchestratorLease != null) {
+            mOrchestratorLease.destroy();
+            mOrchestratorLease = null;
+        }
+        if (mDialogView.getParent() != null) {
+            mRootView.removeView(mDialogView);
+        }
+        mDialogView.setTranslationX(0f);
+        mTabSwitcherView.setTranslationX(0f);
+        if (mIsBackPressHandlerRegistered) {
+            mBackPressManager.removeHandler(mBackPressHandler);
+            mIsBackPressHandlerRegistered = false;
+        }
+        if (mTabListEditorCoordinator != null) {
+            mTabListEditorCoordinator.removeTabListItemSizeChangedObserver(
+                    mTabListItemSizeChangedObserver);
+        }
+        detachLifecycleObserver();
+        if (mTabListEditorCoordinator != null) {
+            tearDownTabListEditorCoordinator();
+        }
+        if (mTabGroupSyncService != null && mIsTabGroupSyncObserverRegistered) {
+            mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
+            mIsTabGroupSyncObserverRegistered = false;
+        }
         mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         mArchivedTabModelOrchestrator.getTabCountSupplier().removeObserver(mTabCountObserver);
-        mHasSnackbarOverride = false;
-        mIsShowing = false;
-        TabListRecyclerView recyclerView = mTabSwitcherRecyclerView.get();
-        if (recyclerView != null) {
-            recyclerView.setBlockTouchInput(false);
+        if (mHasSnackbarOverride) {
+            mSnackbarManager.popParentViewOverride(ParentOverrideSlot.ARCHIVED_TABS_DIALOG);
+            mHasSnackbarOverride = false;
         }
-        mTabSwitcherRecyclerView.clear();
+        if (mDialogRecyclerView != null) {
+            mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+            mDialogRecyclerView.setBlockTouchInput(/* blockTouchInput= */ false);
+        }
+    }
+
+    private void cancelPendingOperations() {
+        if (mAnimateInRunnable != null) {
+            mDialogView.removeCallbacks(mAnimateInRunnable);
+            mAnimateInRunnable = null;
+        }
+        if (mCurrentAnimatorSet != null) {
+            AnimatorSet animatorSet = mCurrentAnimatorSet;
+            mCurrentAnimatorSet = null;
+            animatorSet.removeAllListeners();
+            animatorSet.cancel();
+        }
+        mArchivedTabModelOrchestrator
+                .getTabStateInitializedSupplier()
+                .removeObserver(mTabStateInitializedObserver);
+        if (mTabListEditorCoordinator != null) {
+            mTabListEditorCoordinator.hideLoadingUi();
+        }
     }
 
     void moveToState(@TabActionState int tabActionState) {
@@ -968,7 +1146,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     }
 
     private void refreshArchivedTabList() {
-        if (mTabListEditorCoordinator == null) return;
+        if (!mIsShowing || mTabListEditorCoordinator == null) return;
         mTabListEditorCoordinator.resetWithListOfTabs(
                 TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel),
                 getArchivedTabGroupSyncIds(),
@@ -1103,5 +1281,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     @VisibleForTesting
     FrameLayout getCloseAllTabsButtonContainer() {
         return mDialogView.findViewById(R.id.close_all_tabs_button_container);
+    }
+
+    @Nullable Destroyable getOrchestratorLeaseForTesting() {
+        return mOrchestratorLease;
+    }
+
+    BackPressHandler getBackPressHandlerForTesting() {
+        return mBackPressHandler;
     }
 }

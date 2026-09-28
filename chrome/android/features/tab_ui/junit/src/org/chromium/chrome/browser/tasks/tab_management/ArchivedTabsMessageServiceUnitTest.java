@@ -12,7 +12,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,6 +30,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +42,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -47,9 +52,11 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabArchiver;
@@ -88,6 +95,7 @@ public class ArchivedTabsMessageServiceUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private Profile mProfile;
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private TabArchiver mTabArchiver;
     @Mock private TabModel mTabModel;
@@ -141,7 +149,26 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         mCurrentTabModelSupplier.set(mTabModel);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mProfile.isNativeInitialized()).thenReturn(true);
+        when(mProfile.shutdownStarted()).thenReturn(false);
+        when(mArchivedTabModelOrchestrator.getProfile()).thenReturn(mProfile);
         when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
+        when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
+        when(mArchivedTabModelOrchestrator.acquireLease(anyInt()))
+                .thenReturn(mock(Destroyable.class));
+        doAnswer(
+                        invocation -> {
+                            invocation.<Runnable>getArgument(0).run();
+                            return null;
+                        })
+                .when(mArchivedTabModelOrchestrator)
+                .runOnTabStateInitialized(any());
+    }
+
+    @After
+    public void tearDown() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
     }
 
     private void createArchivedTabsMessageService() {
@@ -167,7 +194,7 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mTabGroupUiActionHandlerSupplier,
                         mCurrentTabModelSupplier,
                         mLayoutStateProviderSupplier);
-        mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
+        mArchivedTabsMessageService.setArchivedTabsDialogCoordinatorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.initialize(mServiceDismissActionProvider);
         mArchivedTabsMessageService.setOnTabSelectingListener(mOnTabSelectingListener);
@@ -325,5 +352,62 @@ public class ArchivedTabsMessageServiceUnitTest {
         // The bit should be reset.
         assertFalse(TabArchiveSettings.getIphShownThisSession());
         verify(mTabListCoordinator).setRecyclerViewPosition(any());
+    }
+
+    @Test
+    public void testOpenArchivedTabsDialog_orchestratorDestroyed_resurrects() {
+        createArchivedTabsMessageService();
+        Profile profile = mock(Profile.class);
+        when(profile.isNativeInitialized()).thenReturn(true);
+        when(profile.shutdownStarted()).thenReturn(false);
+        when(mArchivedTabModelOrchestrator.getProfile()).thenReturn(profile);
+        when(mArchivedTabModelOrchestrator.isDestroyed()).thenReturn(true);
+
+        ArchivedTabModelOrchestrator newOrchestrator = mock(ArchivedTabModelOrchestrator.class);
+        when(newOrchestrator.isTabModelInitialized()).thenReturn(false);
+        ArchivedTabsDialogCoordinator newDialogCoordinator =
+                mock(ArchivedTabsDialogCoordinator.class);
+        doAnswer(
+                        inv -> {
+                            assertNull(
+                                    mArchivedTabsMessageService
+                                            .getArchivedTabsDialogCoordinatorForTesting());
+                            mArchivedTabsMessageService.setArchivedTabsDialogCoordinatorForTesting(
+                                    newDialogCoordinator);
+                            return null;
+                        })
+                .when(newOrchestrator)
+                .maybeCreateAndInitTabModels(eq(mTabContentManager), any(CipherFactory.class));
+        ArchivedTabModelOrchestrator.setInstanceForTesting(newOrchestrator);
+
+        try {
+            PropertyModel model = mArchivedTabsMessageService.getCustomCardModelForTesting();
+            model.get(CLICK_HANDLER).run();
+
+            verify(newOrchestrator)
+                    .maybeCreateAndInitTabModels(eq(mTabContentManager), any(CipherFactory.class));
+            verify(mArchivedTabsDialogCoordinator).destroy();
+            verify(newDialogCoordinator).show(mOnTabSelectingListener);
+        } finally {
+            ArchivedTabModelOrchestrator.setInstanceForTesting(null);
+        }
+    }
+
+    @Test
+    public void testOpenArchivedTabsDialog_invalidProfile_doesNotOpen() {
+        createArchivedTabsMessageService();
+        Profile profile = mock(Profile.class);
+        when(mArchivedTabModelOrchestrator.getProfile()).thenReturn(profile);
+        when(profile.isNativeInitialized()).thenReturn(true);
+        when(profile.shutdownStarted()).thenReturn(true);
+
+        PropertyModel model = mArchivedTabsMessageService.getCustomCardModelForTesting();
+        model.get(CLICK_HANDLER).run();
+        verify(mArchivedTabsDialogCoordinator, never()).show(any());
+
+        when(profile.isNativeInitialized()).thenReturn(false);
+        when(profile.shutdownStarted()).thenReturn(false);
+        model.get(CLICK_HANDLER).run();
+        verify(mArchivedTabsDialogCoordinator, never()).show(any());
     }
 }

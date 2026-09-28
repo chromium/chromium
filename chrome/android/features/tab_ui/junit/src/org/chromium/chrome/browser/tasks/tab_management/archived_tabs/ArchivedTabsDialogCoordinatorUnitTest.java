@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.tasks.tab_management.archived_tabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +30,7 @@ import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +41,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -44,8 +51,10 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,12 +68,14 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.LifecycleObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -116,9 +127,12 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mCurrentTabModel;
+    @Mock private Destroyable mOrchestratorLease;
 
     private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
+    private final SettableNonNullObservableSupplier<Boolean> mTabStateInitializedSupplier =
+            ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<Integer> mTabCountSupplier =
             ObservableSuppliers.createNonNull(1);
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
@@ -129,11 +143,17 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
+    private @Nullable LifecycleObserver mTabListEditorLifecycleObserver;
 
     @Before
     public void setUp() {
         setUpMocks();
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    @After
+    public void tearDown() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(null);
     }
 
     private void onActivity(Activity activity) {
@@ -184,20 +204,40 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
     private void setUpMocks() {
         when(mArchivedTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
+        when(mArchivedTabModelOrchestrator.isTabStateInitialized())
+                .thenAnswer(inv -> mTabStateInitializedSupplier.get());
+        when(mArchivedTabModelOrchestrator.getTabStateInitializedSupplier())
+                .thenReturn(mTabStateInitializedSupplier);
+        when(mArchivedTabModelOrchestrator.acquireLease(anyInt())).thenReturn(mOrchestratorLease);
+
         when(mArchivedTabModelOrchestrator.getTabModelSelector())
                 .thenReturn(mArchivedTabModelSelector);
-        when(mArchivedTabModelSelector.getModel(false)).thenReturn(mArchivedTabModel);
+        when(mArchivedTabModelSelector.getModel(/* incognito= */ false))
+                .thenReturn(mArchivedTabModel);
+        when(mArchivedTabModelSelector.getCurrentTabModelSupplier())
+                .thenReturn(mCurrentTabModelSupplier);
         when(mArchivedTabModelOrchestrator.getTabCountSupplier()).thenReturn(mTabCountSupplier);
 
         when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
         doAnswer(
                         invocationOnMock -> {
-                            mCoordinator.getTabListEditorLifecycleObserver().willHide();
-                            mCoordinator.getTabListEditorLifecycleObserver().didHide();
+                            mTabListEditorLifecycleObserver = invocationOnMock.getArgument(0);
+                            return null;
+                        })
+                .when(mTabListEditorController)
+                .setLifecycleObserver(any());
+        doAnswer(
+                        invocationOnMock -> {
+                            if (mTabListEditorLifecycleObserver != null) {
+                                mTabListEditorLifecycleObserver.willHide();
+                                mTabListEditorLifecycleObserver.didHide();
+                            }
                             return null;
                         })
                 .when(mTabListEditorController)
                 .hide();
+        when(mTabListEditorController.handleBackPress())
+                .thenReturn(BackPressHandler.BackPressResult.FAILURE);
     }
 
     @Test
@@ -382,5 +422,84 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         // Verify ChromeClickableSpan
         ChromeClickableSpan[] clickableSpans = ss.getSpans(start, end, ChromeClickableSpan.class);
         assertEquals(1, clickableSpans.length);
+    }
+
+    @Test
+    public void testLazyLeaseAcquisitionAndReleaseOnHide() {
+        assertNull(mCoordinator.getOrchestratorLeaseForTesting());
+        mCoordinator.show(mOnTabSelectingListener);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mArchivedTabModelOrchestrator).acquireLease(eq(LeaseReason.ARCHIVED_TABS_DIALOG));
+        assertEquals(mOrchestratorLease, mCoordinator.getOrchestratorLeaseForTesting());
+
+        mCoordinator.hide(/* animationDuration= */ 250, CallbackUtils.emptyRunnable());
+        verify(mOrchestratorLease, never()).destroy();
+        assertNotNull(mCoordinator.getOrchestratorLeaseForTesting());
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mOrchestratorLease).destroy();
+        verify(mTabListEditorCoordinator).destroy();
+        assertNull(mCoordinator.getOrchestratorLeaseForTesting());
+    }
+
+    @Test
+    public void testShow_tabStateNotInitialized_showsLoadingUiUntilInitialized() {
+        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
+        mTabStateInitializedSupplier.set(false);
+        mCoordinator.show(mOnTabSelectingListener);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(View.GONE, buttonContainer.getVisibility());
+        verify(mTabListEditorController).setNavigationProvider(any());
+        verify(mTabListEditorController)
+                .show(eq(Collections.emptyList()), eq(Collections.emptyList()), eq(null));
+        verify(mTabListEditorController).setToolbarTitle("1 inactive item");
+        verify(mTabListEditorCoordinator).showLoadingUi();
+
+        when(mTabListEditorController.isVisible()).thenReturn(true);
+        mTabStateInitializedSupplier.set(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(View.VISIBLE, buttonContainer.getVisibility());
+        verify(mTabListEditorCoordinator)
+                .resetWithListOfTabs(any(), eq(Collections.emptyList()), eq(false));
+        verify(mTabListEditorCoordinator).hideLoadingUi();
+        verify(mTabListEditorController, times(1)).show(any(), any(), any());
+    }
+
+    @Test
+    public void testBackPress_duringLoading_cancelsShowAndReleasesLease() {
+        mTabStateInitializedSupplier.set(false);
+        mCoordinator.show(mOnTabSelectingListener);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mTabListEditorController, times(1)).show(any(), any(), any());
+
+        BackPressHandler backPressHandler = mCoordinator.getBackPressHandlerForTesting();
+        assertEquals(BackPressHandler.BackPressResult.SUCCESS, backPressHandler.handleBackPress());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(mCoordinator.isShowing());
+        verify(mOrchestratorLease).destroy();
+        verify(mTabListEditorCoordinator, atLeastOnce()).hideLoadingUi();
+        verify(mBackPressManager).removeHandler(eq(backPressHandler));
+
+        mTabStateInitializedSupplier.set(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mTabListEditorController, times(1)).show(any(), any(), any());
+    }
+
+    @Test
+    public void testDestroy_cleansUpTranslationLeaseAndSnackbarOverride() {
+        mCoordinator.show(mOnTabSelectingListener);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mTabSwitcherView.setTranslationX(-100f);
+
+        mCoordinator.destroy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(0f, mTabSwitcherView.getTranslationX(), 0.01f);
+        verify(mOrchestratorLease).destroy();
+        verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.ARCHIVED_TABS_DIALOG));
     }
 }

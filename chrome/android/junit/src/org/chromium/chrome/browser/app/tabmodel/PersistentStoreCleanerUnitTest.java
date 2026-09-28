@@ -102,7 +102,7 @@ public class PersistentStoreCleanerUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
 
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
-        when(mArchivedTabModelOrchestrator.acquireLeaseInternal(any())).thenReturn(mLease);
+        when(mArchivedTabModelOrchestrator.acquireLease(anyInt())).thenReturn(mLease);
         when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
 
         mCleaner = new PersistentStoreCleaner(mProfile, mTabStateStoreCleaner, mLegacyStoreCleaner);
@@ -173,7 +173,7 @@ public class PersistentStoreCleanerUnitTest {
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
         assertNull(mCleaner.getArchivedTabsLeaseForTesting());
-        verify(mArchivedTabModelOrchestrator, never()).acquireLeaseInternal(any());
+        verify(mArchivedTabModelOrchestrator, never()).acquireLease(anyInt());
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -186,7 +186,7 @@ public class PersistentStoreCleanerUnitTest {
 
         assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
         verify(mArchivedTabModelOrchestrator)
-                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
+                .acquireLease(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -366,7 +366,7 @@ public class PersistentStoreCleanerUnitTest {
     @Test
     public void testScheduleCleanUnusedData_ZeroArchivedTabs_NotInstantiated() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(/* instance= */ null);
-        TabArchiveSettings.getInstance().resetSettingsForTesting();
+        TabArchiveSettings.getInstance().setArchivedTabCount(/* count= */ 0);
         when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
@@ -387,6 +387,27 @@ public class PersistentStoreCleanerUnitTest {
     }
 
     @Test
+    public void
+            testScheduleCleanUnusedData_UnsetArchivedTabCount_ArchivedSelectorNull_SkipsThumbnailCleanup() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(/* instance= */ null);
+        TabArchiveSettings.getInstance().resetSettingsForTesting();
+        when(mTabWindowManager.isAllTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.getArchivedTabModelSelector()).thenReturn(null);
+
+        mCleaner.scheduleCleanUnusedData(mTabContentManager);
+        assertNull(mCleaner.getArchivedTabsLeaseForTesting());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mTabContentManager, never()).removeAllTabThumbnailsExceptForIds(any());
+        verify(mTabStateStorageService).clearAllWindowsExcept(mWindowTagsCaptor.capture());
+        List<String> windowTags = mWindowTagsCaptor.getValue();
+        assertArrayEquals(
+                new String[] {TabWindowManager.ARCHIVED_WINDOW_TAG, "1", "2"},
+                windowTags.toArray());
+    }
+
+    @Test
     public void testScheduleCleanUnusedData_HasArchivedTabs_AcquiresAndReleasesLease() {
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
         TabArchiveSettings.getInstance().setArchivedTabCount(/* count= */ 3);
@@ -394,7 +415,7 @@ public class PersistentStoreCleanerUnitTest {
 
         mCleaner.scheduleCleanUnusedData(mTabContentManager);
         verify(mArchivedTabModelOrchestrator)
-                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
+                .acquireLease(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
         assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -419,7 +440,7 @@ public class PersistentStoreCleanerUnitTest {
 
         assertNotNull(mCleaner.getArchivedTabsLeaseForTesting());
         verify(mArchivedTabModelOrchestrator)
-                .acquireLeaseInternal(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
+                .acquireLease(eq(LeaseReason.PERSISTENT_STORE_CLEANER));
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
