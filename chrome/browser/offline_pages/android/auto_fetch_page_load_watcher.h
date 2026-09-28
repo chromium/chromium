@@ -15,6 +15,7 @@
 #include "components/offline_pages/core/auto_fetch.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
 #include "components/offline_pages/core/client_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -23,8 +24,27 @@ class NavigationHandle;
 }  // namespace content
 
 namespace offline_pages {
+class AutoFetchPageLoadWatcher;
 class SavePageRequest;
 class RequestCoordinator;
+
+// Observes a WebContents to relay navigation events to
+// AutoFetchPageLoadWatcher.
+class AutoFetchNavigationObserver : public content::WebContentsObserver {
+ public:
+  explicit AutoFetchNavigationObserver(content::WebContents* web_contents);
+  AutoFetchNavigationObserver(const AutoFetchNavigationObserver&) = delete;
+  AutoFetchNavigationObserver& operator=(const AutoFetchNavigationObserver&) =
+      delete;
+  ~AutoFetchNavigationObserver() override;
+
+  // content::WebContentsObserver implementation.
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  raw_ptr<AutoFetchPageLoadWatcher> page_load_watcher_;
+};
 
 // Manages showing the in-progress notification.
 class AutoFetchNotifier {
@@ -157,7 +177,8 @@ class AutoFetchPageLoadWatcher
  public:
   using AndroidTabFinder = auto_fetch_internal::AndroidTabFinder;
 
-  static void CreateForWebContents(content::WebContents* web_contents);
+  static std::unique_ptr<AutoFetchNavigationObserver>
+  MaybeCreateNavigationObserver(content::WebContents* web_contents);
 
   AutoFetchPageLoadWatcher(AutoFetchNotifier* notifier,
                            RequestCoordinator* request_coordinator,
@@ -177,7 +198,6 @@ class AutoFetchPageLoadWatcher
   }
 
  private:
-  class NavigationObserver;
   class TabWatcher;
   base::WeakPtr<AutoFetchPageLoadWatcher> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

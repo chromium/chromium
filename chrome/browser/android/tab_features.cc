@@ -35,6 +35,7 @@
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
+#include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/payments/web_payments_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
@@ -76,6 +77,7 @@
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -327,6 +329,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(web_contents);
+
+  auto_fetch_navigation_observer_ =
+      offline_pages::AutoFetchPageLoadWatcher::MaybeCreateNavigationObserver(
+          web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

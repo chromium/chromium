@@ -67,6 +67,10 @@ class GlicMarketingPageTabHelper;
 class GlicSidePanelCoordinator;
 }  // namespace glic
 
+namespace offline_pages {
+class AutoFetchNavigationObserver;
+}  // namespace offline_pages
+
 namespace sync_sessions {
 class SyncSessionsRouterTabHelper;
 }  // namespace sync_sessions
@@ -228,6 +232,8 @@ class TabFeatures {
   std::unique_ptr<finds::FindsTabHelper> finds_tab_helper_;
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;
+  std::unique_ptr<offline_pages::AutoFetchNavigationObserver>
+      auto_fetch_navigation_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

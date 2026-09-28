@@ -110,6 +110,7 @@ source_set("tabs_impl") {
     "//chrome/browser/loader",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/net",
+    "//chrome/browser/offline_pages",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/payments",
     "//chrome/browser/preloading/new_tab_page_preload",
