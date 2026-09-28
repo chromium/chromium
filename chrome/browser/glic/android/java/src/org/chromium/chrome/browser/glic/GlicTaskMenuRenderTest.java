@@ -36,6 +36,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ActorTask;
@@ -150,6 +151,7 @@ public class GlicTaskMenuRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/566426376")
     public void testRender_TabStripMenu() throws Exception {
         ActorTask standardTask = mock(ActorTask.class);
         doReturn(STANDARD_TASK_TITLE).when(standardTask).getTitle();
