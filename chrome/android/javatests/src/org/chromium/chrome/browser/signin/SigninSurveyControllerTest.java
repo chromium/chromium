@@ -196,6 +196,6 @@ public class SigninSurveyControllerTest {
         List<MessageStateHandler> messages =
                 MessagesTestHelper.getEnqueuedMessages(
                         mMessageDispatcher, MessageIdentifier.SIGNIN_SURVEY);
-        return messages.size() == 0 ? null : MessagesTestHelper.getCurrentMessage(messages.get(0));
+        return messages.isEmpty() ? null : MessagesTestHelper.getCurrentMessage(messages.get(0));
     }
 }

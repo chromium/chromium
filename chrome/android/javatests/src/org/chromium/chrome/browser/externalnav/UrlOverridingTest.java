@@ -810,7 +810,7 @@ public class UrlOverridingTest {
     private String getNonBrowserPackageName() {
         List<PackageInfo> packages =
                 ContextUtils.getApplicationContext().getPackageManager().getInstalledPackages(0);
-        if (packages == null || packages.size() == 0) {
+        if (packages == null || packages.isEmpty()) {
             return "";
         }
 

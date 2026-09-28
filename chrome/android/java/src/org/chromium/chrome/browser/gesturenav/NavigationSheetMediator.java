@@ -158,7 +158,7 @@ class NavigationSheetMediator {
     private void onFaviconAvailable(GURL pageUrl, Bitmap favicon) {
         // This callback can come after the sheet is hidden (which clears modelList).
         // Do nothing if that happens.
-        if (mModelList.size() == 0) return;
+        if (mModelList.isEmpty()) return;
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             if (pageUrl.equals(mHistory.getEntryAtIndex(i).getUrl())) {
                 Drawable drawable;

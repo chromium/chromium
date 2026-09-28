@@ -248,7 +248,7 @@ public class RelatedSearchesControl {
 
     /** Returns whether we have Related Searches to show or not. */
     boolean hasReleatedSearchesToShow() {
-        return mRelatedSearchesSuggestions != null && mRelatedSearchesSuggestions.size() > 0;
+        return mRelatedSearchesSuggestions != null && !mRelatedSearchesSuggestions.isEmpty();
     }
 
     @VisibleForTesting
@@ -478,7 +478,7 @@ public class RelatedSearchesControl {
     public void updateChips() {
         Callback<PropertyModel> selectedCallback = (model) -> handleChipTapped(model);
 
-        if (mChips.size() == 0
+        if (mChips.isEmpty()
                 && hasReleatedSearchesToShow()
                 && mRelatedSearchesSuggestions != null) {
             for (String suggestion : mRelatedSearchesSuggestions) {

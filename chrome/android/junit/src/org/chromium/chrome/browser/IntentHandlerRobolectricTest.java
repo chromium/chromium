@@ -229,7 +229,7 @@ public class IntentHandlerRobolectricTest {
         for (String[] urlAndType : urlsAndTypes) {
             Uri url = Uri.parse(urlAndType[0]);
             String type = urlAndType[1];
-            if (type.equals("")) {
+            if (type.isEmpty()) {
                 mIntent.setData(url);
             } else {
                 mIntent.setDataAndType(url, type);
