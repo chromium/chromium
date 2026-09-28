@@ -11,6 +11,13 @@ function clip(lo, v, hi) {
   return Math.max(lo, Math.min(v, hi));
 }
 
+/**
+ * Formats a number like toFixed(), but strips trailing zeros and period.
+ */
+function capFixed(v, prec) {
+  return v.toFixed(prec).replace(/(?:\.0+|(\.\d*[1-9])0+)$/, '$1');
+}
+
 /******** Point2D ********/
 /**
  * Represents a 2D vector or point using an Array backend for performance.

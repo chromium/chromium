@@ -130,6 +130,30 @@ button {
   }
 }
 
+#div-screenshot-info {
+  background-color: #f8f9fa;
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  font-family: monospace;
+  height: 40px;
+  justify-content: center;
+  padding: 10px;
+  user-select: none;
+  white-space: nowrap;
+
+  .div-size-info {
+    align-items: center;
+    display: none;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  &[data-show="size"] .div-size-info {
+    display: flex;
+  }
+}
+
 #div-main-splitter {
   background-color: transparent;
   flex-basis: var(--splitter-size);

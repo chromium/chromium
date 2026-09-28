@@ -19,6 +19,7 @@ class MainElements {
     this.divOverlay = getById('div-overlay');
     this.divPaneScreenshot = getById('div-pane-screenshot');
     this.divScreenshot = getById('div-screenshot');
+    this.divScreenshotInfo = getById('div-screenshot-info');
     this.divViewTree = getById('div-view-tree');
   }
 }
@@ -33,14 +34,8 @@ class MainVis {
     this.el = el;
     this.model = model;
 
-    this.screenshotVis =
-        new ScreenshotVis(this.el.divScreenshot, this.model.visOpts);
     this.infoBarVis = new InfoBarVis(this.el.divInfoBar);
     this.overlayVis = new OverlayVis(this.el.divOverlay);
-  }
-
-  clearUI() {
-    this.screenshotVis.clear();
   }
 }
 
@@ -61,11 +56,14 @@ class MainController {
         this.model, this.el.divMain, this.el.divPaneScreenshot,
         this.el.divMainSplitter, this.hintCtrl);
 
+    this.screenshotCtrl = new ScreenshotController(
+        this.model, this.el.divScreenshot, this.el.divScreenshotInfo);
+
     this.treeCtrl = new TreeController(this.model, this.el.divViewTree);
   }
 
   clearUI() {
-    this.vis.clearUI();
+    this.screenshotCtrl.clear();
     this.treeCtrl.clear();
   }
 
@@ -78,7 +76,7 @@ class MainController {
     try {
       await this.model.load();  // Also updates `visOpts`.
 
-      this.vis.screenshotVis.init(this.model.imgScreenshot, this.model.visOpts);
+      this.screenshotCtrl.initScreenshot();
 
       const {wDims} = this.model.visOpts;
       this.layoutCtrl.setLayoutMode(LayoutMode.fromVector(-wDims.h, -wDims.w));

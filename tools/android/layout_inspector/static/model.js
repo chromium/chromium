@@ -56,6 +56,7 @@ class LayoutMode {
  */
 class VisOptions {
   constructor() {
+    this.densityFactor = 1.0;
     this.layoutMode = LayoutMode.LEFT;
 
     /** @type {!Dims2D} World device dimensions. */
@@ -64,6 +65,14 @@ class VisOptions {
 
   setWorldSize(ww, wh) {
     this.wDims.assign(ww, wh);
+  }
+
+  setDensityFactor(factor) {
+    this.densityFactor = factor > 0 ? factor : 1.0;
+  }
+
+  pxToDp(px) {
+    return px / this.densityFactor;
   }
 }
 
@@ -94,6 +103,7 @@ class ViewNode {
 class MainModel {
   constructor() {
     this.visOpts = new VisOptions();
+    this.isLoaded = false;
     this.imgScreenshot = null;
     this.views = [];
   }
@@ -136,8 +146,11 @@ class MainModel {
 
   /** Fetches the latest device data from the ADB server. */
   async _fetchData() {
-    const [screenshotResponse, uiDumpResponse] = await Promise.all(
-        [fetch('/api/screenshot.png'), fetch('/api/ui-dump.xml')]);
+    const [screenshotResponse, uiDumpResponse, densityResponse] =
+        await Promise.all([
+          fetch('/api/screenshot.png'), fetch('/api/ui-dump.xml'),
+          fetch('/api/density.json')
+        ]);
 
     if (!screenshotResponse.ok) throw new Error('Screenshot fetch failed');
     if (!uiDumpResponse.ok) throw new Error('UI dump fetch failed');
@@ -147,11 +160,24 @@ class MainModel {
     const uiDumpData = await uiDumpResponse.json();
     if (!uiDumpData.success) throw new Error(uiDumpData.error);
 
-    return {screenshotBlob, uiDumpData};
+    // Make density data optional, and fall back to 1.0.
+    let densityData = null;
+    try {
+      if (!densityResponse.ok) throw new Error('Density fetch failed');
+
+      densityData = await densityResponse.json();
+      if (!densityData.success) throw new Error(densityData.error);
+    } catch (e) {
+      console.error(e);
+      console.error('Fall back to density factor of 1.0');
+      densityData = {density_factor: 1.0};
+    }
+
+    return {screenshotBlob, uiDumpData, densityData};
   }
 
   async load() {
-    const {screenshotBlob, uiDumpData} = await this._fetchData();
+    const {screenshotBlob, uiDumpData, densityData} = await this._fetchData();
 
     this.imgScreenshot =
         await convertImageBlobToImage(screenshotBlob).catch((e) => {
@@ -160,11 +186,17 @@ class MainModel {
     const {width, height} = this.imgScreenshot;
     this.visOpts.setWorldSize(width, height);
 
+    this.visOpts.setDensityFactor(densityData.density_factor);
+
     const xmlDoc = new DOMParser().parseFromString(uiDumpData.xml, 'text/xml');
     this._populateViews(xmlDoc);
+
+    this.isLoaded = true;
   }
 
   async unload() {
+    this.isLoaded = false;
+
     this.views.length = 0;
     this.imgScreenshot = null;
   }
