@@ -61,6 +61,8 @@ source_set("coordinator") {
     "gemini_container_coordinator.mm",
     "gemini_entry_flow_coordinator.h",
     "gemini_entry_flow_coordinator.mm",
+    "gemini_web_modal_coordinator.h",
+    "gemini_web_modal_coordinator.mm",
   ]
   deps = [
     ":container_mediator",
@@ -109,8 +111,12 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/tabs/model",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//ios/web/public/ui",
+    "//url",
   ]
 }
 
@@ -120,11 +126,13 @@ source_set("unit_tests") {
     "gemini_container_mediator_unittest.mm",
     "gemini_container_ui_state_manager_unittest.mm",
     "gemini_entry_flow_coordinator_unittest.mm",
+    "gemini_web_modal_coordinator_unittest.mm",
   ]
 
   deps = [
     ":container_mediator",
     ":coordinator",
+    "//base",
     "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/feature_engagement/public",
@@ -177,7 +185,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//ios/web/public",
     "//ios/web/public/test",
     "//third_party/ocmock",
+    "//url",
   ]
 }
