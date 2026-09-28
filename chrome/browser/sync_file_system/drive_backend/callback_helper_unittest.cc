@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -57,7 +59,7 @@ TEST(DriveBackendCallbackHelperTest, BasicTest) {
   called = false;
   RelayCallbackToCurrentThread(FROM_HERE,
                                base::BindOnce(&CallbackWithPassed, &called))
-      .Run(std::unique_ptr<int>(new int));
+      .Run(std::make_unique<int>());
   EXPECT_FALSE(called);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(called);

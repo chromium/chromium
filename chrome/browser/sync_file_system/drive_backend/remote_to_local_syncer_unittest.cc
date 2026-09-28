@@ -212,8 +212,7 @@ class RemoteToLocalSyncerTest : public testing::Test {
   SyncStatusCode ListChanges() {
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
     sync_task_manager_->ScheduleSyncTask(
-        FROM_HERE,
-        std::unique_ptr<SyncTask>(new ListChangesTask(context_.get())),
+        FROM_HERE, std::make_unique<ListChangesTask>(context_.get()),
         SyncTaskManager::PRIORITY_MED, CreateResultReceiver(&status));
     base::RunLoop().RunUntilIdle();
     return status;

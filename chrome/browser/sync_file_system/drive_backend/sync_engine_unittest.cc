@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <memory>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
@@ -61,10 +62,9 @@ class SyncEngineTest : public testing::Test {
         nullptr,    // drive_service_factory
         nullptr));  // in_memory_env
 
-    sync_engine_->InitializeForTesting(
-        std::move(fake_drive_service),
-        nullptr,  // drive_uploader
-        std::unique_ptr<SyncWorkerInterface>(new FakeSyncWorker));
+    sync_engine_->InitializeForTesting(std::move(fake_drive_service),
+                                       nullptr,  // drive_uploader
+                                       std::make_unique<FakeSyncWorker>());
     sync_engine_->SetSyncEnabled(true);
     sync_engine_->OnReadyToSendRequests();
 

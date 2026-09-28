@@ -495,8 +495,7 @@ void SyncWorker::DidApplyLocalChange(LocalToRemoteSyncer* syncer,
   if (syncer->needs_remote_change_listing() &&
       !listing_remote_changes_) {
     task_manager_->ScheduleSyncTask(
-        FROM_HERE,
-        std::unique_ptr<SyncTask>(new ListChangesTask(context_.get())),
+        FROM_HERE, std::make_unique<ListChangesTask>(context_.get()),
         SyncTaskManager::PRIORITY_HIGH,
         base::BindOnce(&SyncWorker::DidFetchChanges,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -530,8 +529,7 @@ bool SyncWorker::MaybeStartFetchChanges() {
         should_check_conflict_) {
       should_check_conflict_ = false;
       return task_manager_->ScheduleSyncTaskIfIdle(
-          FROM_HERE,
-          std::unique_ptr<SyncTask>(new ConflictResolver(context_.get())),
+          FROM_HERE, std::make_unique<ConflictResolver>(context_.get()),
           base::BindOnce(&SyncWorker::DidResolveConflict,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -539,8 +537,7 @@ bool SyncWorker::MaybeStartFetchChanges() {
   }
 
   if (task_manager_->ScheduleSyncTaskIfIdle(
-          FROM_HERE,
-          std::unique_ptr<SyncTask>(new ListChangesTask(context_.get())),
+          FROM_HERE, std::make_unique<ListChangesTask>(context_.get()),
           base::BindOnce(&SyncWorker::DidFetchChanges,
                          weak_ptr_factory_.GetWeakPtr()))) {
     should_check_remote_change_ = false;

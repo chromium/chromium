@@ -324,13 +324,13 @@ TEST_F(SyncWorkerTest, UpdateServiceState) {
                      SYNC_DATABASE_ERROR_FAILED, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleSyncTask(
-      FROM_HERE, std::unique_ptr<SyncTask>(new MockSyncTask(false)),
+      FROM_HERE, std::make_unique<MockSyncTask>(false),
       SyncTaskManager::PRIORITY_MED,
       base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
                      SYNC_STATUS_OK, REMOTE_SERVICE_DISABLED));
 
   GetSyncTaskManager()->ScheduleSyncTask(
-      FROM_HERE, std::unique_ptr<SyncTask>(new MockSyncTask(true)),
+      FROM_HERE, std::make_unique<MockSyncTask>(true),
       SyncTaskManager::PRIORITY_MED,
       base::BindOnce(&SyncWorkerTest::CheckServiceState, AsWeakPtr(),
                      SYNC_STATUS_OK, REMOTE_SERVICE_OK));
