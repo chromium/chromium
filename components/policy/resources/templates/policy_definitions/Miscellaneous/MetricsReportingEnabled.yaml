@@ -23,6 +23,7 @@ items:
 - caption: Allow users to choose
   value: null
 owners:
+- chrome-metrics-team@google.com
 - file://components/policy/OWNERS
 - zmin@chromium.org
 schema:
