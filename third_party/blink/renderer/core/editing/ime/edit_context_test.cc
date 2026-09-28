@@ -17,10 +17,17 @@ class EditContextTest : public EditingTestBase {
   EditContext* CreateEditContext(ScriptState* script_state,
                                  const String& text,
                                  uint32_t caret_pos) {
+    return CreateEditContext(script_state, text, caret_pos, caret_pos);
+  }
+
+  EditContext* CreateEditContext(ScriptState* script_state,
+                                 const String& text,
+                                 uint32_t selection_start,
+                                 uint32_t selection_end) {
     EditContextInit* init = EditContextInit::Create();
     init->setText(text);
-    init->setSelectionStart(caret_pos);
-    init->setSelectionEnd(caret_pos);
+    init->setSelectionStart(selection_start);
+    init->setSelectionEnd(selection_end);
     return EditContext::Create(script_state, init);
   }
 };
@@ -34,6 +41,18 @@ TEST_F(EditContextTest, DeleteSurroundingTextNormal) {
 
   EXPECT_EQ(edit_context->text(), "adef");
   EXPECT_EQ(edit_context->selectionStart(), 1u);
+  EXPECT_EQ(edit_context->selectionEnd(), 1u);
+}
+
+TEST_F(EditContextTest, DeleteSurroundingTextWithBackwardSelection) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope script_scope(script_state);
+  auto* edit_context = CreateEditContext(script_state, "abcdef", 4, 2);
+
+  edit_context->DeleteSurroundingText(1, 1);
+
+  EXPECT_EQ(edit_context->text(), "acdf");
+  EXPECT_EQ(edit_context->selectionStart(), 3u);
   EXPECT_EQ(edit_context->selectionEnd(), 1u);
 }
 
