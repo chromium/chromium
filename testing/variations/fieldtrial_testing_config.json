@@ -4780,7 +4780,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ClientSideDetectionEnabledIos"
+                        "ClientSideDetectionEnabledIos",
+                        "ClientSideDetectionImageEmbeddingMatch"
                     ]
                 }
             ]

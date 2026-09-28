@@ -2083,6 +2083,51 @@ TEST_F(ClientSideDetectionHostIOSTest,
       safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 }
 
+// Tests that `OnSnapshotReceived` does not convert `TRIGGER_MODELS` to
+// `IMAGE_EMBEDDING_MATCH` when `kClientSideDetectionImageEmbeddingMatch` is
+// disabled, even though the user has enhanced protection enabled. This pins the
+// feature-disabled behavior independently of the enhanced protection check, so
+// that coverage of this path survives a change to the feature's default value.
+TEST_F(ClientSideDetectionHostIOSTest,
+       OnSnapshotReceivedRemainsTriggerModelsWhenImageEmbeddingMatchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {safe_browsing::kClientSideDetectionOnlyESBClassification},
+      {safe_browsing::kClientSideDetectionImageEmbeddingMatch});
+
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  mock_service_.SetScorerForTesting(std::make_unique<safe_browsing::Scorer>());
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  set_last_request_type(host.get(),
+                        safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  base::test::TestFuture<safe_browsing::ClientSideDetectionType> future;
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([&](safe_browsing::ClientPhishingRequest* verdict) {
+        ASSERT_TRUE(verdict);
+        verdict->set_is_phishing(false);
+        future.SetValue(verdict->client_side_detection_type());
+      });
+
+  UIImage* test_image = CreateTestImage();
+
+  OnSnapshotReceived(host.get(), GURL(kExampleUrl), test_image);
+
+  ExpectClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageClassificationBegin,
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(future.Get(),
+            safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  ExpectClientSideDetectionEvent(
+      ClientSideDetectionEvent::kImageClassificationComplete,
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+}
+
 // Tests that cache hit is restricted to TRIGGER_MODELS and does not suppress
 // other request types such as CREDIT_CARD_FORM.
 TEST_F(ClientSideDetectionHostIOSTest,
