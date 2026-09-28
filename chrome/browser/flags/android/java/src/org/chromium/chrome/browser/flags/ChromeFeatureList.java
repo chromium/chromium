@@ -1846,7 +1846,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sSendTabToSelfSupportAutoOpenInTabGrid =
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID, false);
     public static final MutableFlagWithSafeDefault sSendTabToSelfSwitchToParentOnBack =
-            newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK, false);
+            newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK, true);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =
             newMutableFlagWithSafeDefault(SHOW_TAB_LIST_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSidePanelTopHairlineRefactorAndroid =
