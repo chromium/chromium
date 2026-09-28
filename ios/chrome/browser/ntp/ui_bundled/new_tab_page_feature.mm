@@ -104,6 +104,12 @@ BASE_FEATURE_PARAM(std::string,
                    "seed-color",
                    "");
 
+BASE_FEATURE_PARAM(int,
+                   kNewTabPageEphemeralThemeVersionParam,
+                   &kNewTabPageEphemeralTheme,
+                   "version",
+                   0);
+
 #pragma mark - Helpers
 
 bool IsMVTInBottomSheetEnabled() {

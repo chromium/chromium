@@ -973,10 +973,16 @@ void HomeBackgroundCustomizationService::MaybeFetchEphemeralThemeData() {
   }
 
   // Ephemeral theme data is only written to prefs once all assets have been
-  // downloaded and saved to disk. If the pref is non-empty, skip
-  // re-downloading.
-  if (!pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty()) {
-    return;
+  // downloaded and saved to disk. If the pref is non-empty and the configured
+  // version is not newer than the cached version, skip re-downloading.
+  const base::DictValue& cached_theme_data =
+      pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
+  if (!cached_theme_data.empty()) {
+    int cached_version =
+        cached_theme_data.FindInt(kEphemeralThemeVersionKey).value_or(0);
+    if (kNewTabPageEphemeralThemeVersionParam.Get() <= cached_version) {
+      return;
+    }
   }
 
   std::vector<EphemeralThemeAsset> assets = {
@@ -1022,8 +1028,16 @@ void HomeBackgroundCustomizationService::FetchNextEphemeralThemeAsset(
             kNewTabPageEphemeralThemeAnimationPromoColorMappingParam.Get()));
     theme_dict.Set(kEphemeralThemeSeedColorKey,
                    kNewTabPageEphemeralThemeSeedColorParam.Get());
-    theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey,
-                   static_cast<int>(GetCurrentBackgroundStyle()));
+    theme_dict.Set(kEphemeralThemeVersionKey,
+                   kNewTabPageEphemeralThemeVersionParam.Get());
+    int pre_ephemeral_style =
+        IsCurrentEphemeralTheme()
+            ? pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
+                  .FindInt(kPreEphemeralThemeBackgroundStyleKey)
+                  .value_or(static_cast<int>(
+                      HomeCustomizationBackgroundStyle::kDefault))
+            : static_cast<int>(GetCurrentBackgroundStyle());
+    theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey, pre_ephemeral_style);
 
     pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
                            std::move(theme_dict));

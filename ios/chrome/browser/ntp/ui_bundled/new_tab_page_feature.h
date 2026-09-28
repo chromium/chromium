@@ -123,6 +123,9 @@ BASE_DECLARE_FEATURE_PARAM(std::string,
 BASE_DECLARE_FEATURE_PARAM(std::string,
                            kNewTabPageEphemeralThemeSeedColorParam);
 
+// Version parameter for the ephemeral theme configuration.
+BASE_DECLARE_FEATURE_PARAM(int, kNewTabPageEphemeralThemeVersionParam);
+
 #pragma mark - Helpers
 
 // Whether the sync promo should be shown on top of the feed.

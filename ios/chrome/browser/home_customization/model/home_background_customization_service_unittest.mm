@@ -1434,7 +1434,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
          {"animation-promo-colormapping", kPromoColorMappingJson},
          {"google-logo-light-url", kGoogleLogoLightUrl},
          {"google-logo-dark-url", kGoogleLogoDarkUrl},
-         {"seed-color", kSeedColor}}},
+         {"seed-color", kSeedColor},
+         {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
       {});
 
@@ -1574,6 +1575,11 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   ASSERT_TRUE(saved_seed_color);
   EXPECT_EQ(kSeedColor, *saved_seed_color);
 
+  std::optional<int> saved_version =
+      saved_theme_data.FindInt(kEphemeralThemeVersionKey);
+  ASSERT_TRUE(saved_version.has_value());
+  EXPECT_EQ(1, saved_version.value());
+
   std::optional<int> saved_background_style =
       saved_theme_data.FindInt(kPreEphemeralThemeBackgroundStyleKey);
   ASSERT_TRUE(saved_background_style.has_value());
@@ -1582,7 +1588,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 }
 
 // Test that the service skips re-downloading the animation JSONs and Google
-// logo images when all four paths are already cached in prefs.
+// logo images when all four paths are already cached in prefs and the version
+// parameter is not greater than the cached version.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        SkipsDownloadWhenEphemeralThemeDataAlreadyCached) {
   base::ScopedTempDir temp_dir;
@@ -1602,7 +1609,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
         {{"animation-url", kAnimationUrl},
          {"animation-promo-url", kPromoUrl},
          {"google-logo-light-url", kGoogleLogoLightUrl},
-         {"google-logo-dark-url", kGoogleLogoDarkUrl}}},
+         {"google-logo-dark-url", kGoogleLogoDarkUrl},
+         {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
       {});
 
@@ -1615,6 +1623,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
                   "/tmp/ephemeral_google_logo_light.png");
   cached_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
                   "/tmp/ephemeral_google_logo_dark.png");
+  cached_dict.Set(kEphemeralThemeVersionKey, 1);
   pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
                          std::move(cached_dict));
 
@@ -1628,6 +1637,88 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       temp_dir.GetPath(), &mock_promos_manager);
 
   EXPECT_EQ(0, test_url_loader_factory_.NumPending());
+}
+
+// Test that the service re-downloads the ephemeral theme assets and updates the
+// cached prefs when the configured `version` parameter is greater than the
+// version stored in `kIosNtpEphemeralThemeData`.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       RedownloadsEphemeralThemeDataWhenVersionIsNewer) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  static constexpr char kAnimationUrl[] =
+      "https://www.gstatic.com/theme_animation_v2.json";
+  static constexpr char kPromoUrl[] =
+      "https://www.gstatic.com/promo_animation_v2.json";
+  static constexpr char kGoogleLogoLightUrl[] =
+      "https://www.gstatic.com/logo_light_v2.png";
+  static constexpr char kGoogleLogoDarkUrl[] =
+      "https://www.gstatic.com/logo_dark_v2.png";
+  static constexpr char kSeedColor[] = "#EA4335";
+
+  feature_list_.InitWithFeaturesAndParameters(
+      {{kNewTabPageEphemeralTheme,
+        {{"animation-url", kAnimationUrl},
+         {"animation-promo-url", kPromoUrl},
+         {"google-logo-light-url", kGoogleLogoLightUrl},
+         {"google-logo-dark-url", kGoogleLogoDarkUrl},
+         {"seed-color", kSeedColor},
+         {"version", "2"}}},
+       {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
+      {});
+
+  base::DictValue cached_dict;
+  cached_dict.Set(kEphemeralThemeAnimationPathKey,
+                  "/tmp/old_ephemeral_animation.json");
+  cached_dict.Set(kEphemeralThemeAnimationPromoPathKey,
+                  "/tmp/old_ephemeral_promo.json");
+  cached_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
+                  "/tmp/old_logo_light.png");
+  cached_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
+                  "/tmp/old_logo_dark.png");
+  cached_dict.Set(kEphemeralThemeSeedColorKey, "#1A73E8");
+  cached_dict.Set(kEphemeralThemeVersionKey, 1);
+  pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
+                         std::move(cached_dict));
+
+  MockPromosManager mock_promos_manager;
+  EXPECT_CALL(mock_promos_manager, RegisterPromoForSingleDisplay(
+                                       promos_manager::Promo::EphemeralTheme))
+      .Times(1);
+
+  service_ = std::make_unique<HomeBackgroundCustomizationService>(
+      pref_service_.get(), user_image_manager_.get(),
+      background_image_service_.get(), test_shared_loader_factory_,
+      temp_dir.GetPath(), &mock_promos_manager);
+
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kAnimationUrl, R"({"v":"5.7.4","name":"theme_v2","layers":[]})");
+
+  test_url_loader_factory_.WaitForRequest(GURL(kPromoUrl));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kPromoUrl, R"({"v":"5.7.4","name":"promo_v2","layers":[]})");
+
+  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoLightUrl));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kGoogleLogoLightUrl, "new_light_logo_png");
+
+  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoDarkUrl));
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kGoogleLogoDarkUrl, "new_dark_logo_png");
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
+               .FindInt(kEphemeralThemeVersionKey) == 2;
+  }));
+
+  const base::DictValue& updated_theme_data =
+      pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* updated_seed_color =
+      updated_theme_data.FindString(kEphemeralThemeSeedColorKey);
+  ASSERT_TRUE(updated_seed_color);
+  EXPECT_EQ(kSeedColor, *updated_seed_color);
 }
 
 // Test that the service does not download promo data or register the promo

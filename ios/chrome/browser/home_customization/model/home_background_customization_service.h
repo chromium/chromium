@@ -155,6 +155,7 @@ inline constexpr std::string_view kEphemeralThemeGoogleLogoLightPathKey =
 inline constexpr std::string_view kEphemeralThemeGoogleLogoDarkPathKey =
     "google_logo_dark_path";
 inline constexpr std::string_view kEphemeralThemeSeedColorKey = "seed_color";
+inline constexpr std::string_view kEphemeralThemeVersionKey = "version";
 inline constexpr std::string_view kPreEphemeralThemeBackgroundStyleKey =
     "pre_ephemeral_background_style";
 
