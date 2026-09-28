@@ -280,6 +280,8 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSendGPUChannelEarly);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSendGPUChannelEarlyTopChromeOnly;
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kVulkanImaginationMSAA);
+
 }  // namespace features
 
 #endif  // GPU_CONFIG_GPU_FINCH_FEATURES_H_

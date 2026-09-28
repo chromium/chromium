@@ -524,6 +524,8 @@ bool SharedContextState::InitializeGanesh(
   if(workarounds.msaa_is_slow && !workarounds.msaa_is_slow_2)
     options.fInternalMultisampleCount = 4;
   options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
+  options.fAllowMSAAOnImagination =
+      base::FeatureList::IsEnabled(features::kVulkanImaginationMSAA);
   if (persistent_cache_) {
     options.fPersistentCache = persistent_cache_.get();
   } else {

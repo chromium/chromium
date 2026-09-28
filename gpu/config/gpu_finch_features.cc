@@ -910,4 +910,7 @@ BASE_FEATURE(kSendGPUChannelEarly, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kSendGPUChannelEarlyTopChromeOnly{
     &kSendGPUChannelEarly, "for_topchrome_webui_only", false};
 
+// Enables Ganesh/Vulkan MSAA support on Imagination (PowerVR) GPUs.
+BASE_FEATURE(kVulkanImaginationMSAA, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
