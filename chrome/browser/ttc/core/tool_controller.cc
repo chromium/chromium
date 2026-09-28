@@ -94,6 +94,12 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   std::vector<ToolDefinition> tools;
 
+  // Every tool below is executed as an actor tool within an actor task, so
+  // return an empty list if the actor service isn't available.
+  if (!actor::ActorKeyedService::Get(GetProfile())) {
+    return tools;
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   ToolDefinition open_url;
   open_url.name = "open_url";

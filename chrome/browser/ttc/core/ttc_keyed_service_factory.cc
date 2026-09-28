@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
 
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/features.h"
@@ -31,6 +32,7 @@ TtcKeyedServiceFactory::TtcKeyedServiceFactory(
     : ProfileKeyedServiceFactory("TtcKeyedService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
+  DependsOn(actor::ActorKeyedServiceFactory::GetInstance());
 }
 
 TtcKeyedServiceFactory::~TtcKeyedServiceFactory() = default;

@@ -415,6 +415,29 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   EXPECT_TRUE(reload_page.parameters_json_schema.empty());
 }
 
+class ToolControllerActorDisabledBrowserTest
+    : public ToolControllerBrowserTest {
+ public:
+  ToolControllerActorDisabledBrowserTest() {
+    actor_feature_list_.InitAndDisableFeature(features::kGlicActor);
+  }
+  ~ToolControllerActorDisabledBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList actor_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToolControllerActorDisabledBrowserTest,
+                       GetToolDefinitionsIsEmpty) {
+  ASSERT_FALSE(actor::ActorKeyedService::Get(profile()));
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  EXPECT_TRUE(session_controller->GetToolDefinitions().empty());
+}
+
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than
 // the profile-wide one, so none of the tab-scoped actor UI the latter drives
 // (the actor overlay, the handoff button, the tab indicator, the border glow)
