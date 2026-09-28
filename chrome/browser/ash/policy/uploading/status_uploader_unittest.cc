@@ -12,8 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
-#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
@@ -341,8 +341,8 @@ TEST_F(StatusUploaderTest, NoUploadAfterVideoCapture) {
       0, 0, 0, GURL("http://www.google.com"),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       content::MEDIA_REQUEST_STATE_OPENING);
-  ASSERT_TRUE(
-      base::test::RunUntil([&] { return !uploader->IsScreenshotAllowed(); }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(uploader->IsScreenshotAllowed());
 }
 
 TEST_F(StatusUploaderTest, ScheduleImmediateStatusUpload) {
