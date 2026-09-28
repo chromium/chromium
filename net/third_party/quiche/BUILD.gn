@@ -484,6 +484,7 @@ source_set("quiche_tests") {
     "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/blind_sign_auth/blind_sign_auth_test.cc",
     "src/quiche/blind_sign_auth/cached_blind_sign_auth_test.cc",
+    "src/quiche/common/abiding_object_pool_test.cc",
     "src/quiche/common/btree_scheduler_test.cc",
     "src/quiche/common/bug_utils_test.cc",
     "src/quiche/common/capsule_test.cc",
