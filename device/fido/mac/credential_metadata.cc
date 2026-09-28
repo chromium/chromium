@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -209,16 +210,13 @@ std::vector<uint8_t> SealCredentialMetadata(
   // CBOR-encode the CredentialMetadata. Then AES-GCM encrypt, and authenticate
   // with the RP ID.
   cbor::Value::ArrayValue cbor_metadata;
-  cbor_metadata.emplace_back(cbor::Value(metadata.user_id));
-  cbor_metadata.emplace_back(
-      cbor::Value(MaybeTruncateWithTrailingEllipsis(metadata.user_name),
-                  cbor::Value::Type::BYTE_STRING));
-  cbor_metadata.emplace_back(
-      cbor::Value(MaybeTruncateWithTrailingEllipsis(metadata.user_display_name),
-                  cbor::Value::Type::BYTE_STRING));
-  cbor_metadata.emplace_back(cbor::Value(metadata.is_resident));
-  cbor_metadata.emplace_back(
-      cbor::Value(static_cast<uint8_t>(metadata.sign_counter_type)));
+  cbor_metadata.emplace_back(metadata.user_id);
+  cbor_metadata.emplace_back(base::as_byte_span(
+      MaybeTruncateWithTrailingEllipsis(metadata.user_name)));
+  cbor_metadata.emplace_back(base::as_byte_span(
+      MaybeTruncateWithTrailingEllipsis(metadata.user_display_name)));
+  cbor_metadata.emplace_back(metadata.is_resident);
+  cbor_metadata.emplace_back(static_cast<uint8_t>(metadata.sign_counter_type));
   std::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
   DCHECK(pt);
@@ -461,14 +459,12 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
   // Only V1 includes the `is_resident` bit. `sign_counter_type=kTimestamp` was
   // implicit before V3 and thus not encoded.
   cbor::Value::ArrayValue cbor_metadata;
-  cbor_metadata.emplace_back(cbor::Value(user_id));
-  cbor_metadata.emplace_back(
-      cbor::Value(user_name, cbor::Value::Type::BYTE_STRING));
-  cbor_metadata.emplace_back(
-      cbor::Value(user_display_name, cbor::Value::Type::BYTE_STRING));
+  cbor_metadata.emplace_back(user_id);
+  cbor_metadata.emplace_back(base::as_byte_span(user_name));
+  cbor_metadata.emplace_back(base::as_byte_span(user_display_name));
   DCHECK(version > CredentialMetadata::Version::kV0 || !is_resident);
   if (version > CredentialMetadata::Version::kV0) {
-    cbor_metadata.emplace_back(cbor::Value(is_resident));
+    cbor_metadata.emplace_back(is_resident);
   }
   std::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
