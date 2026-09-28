@@ -90,8 +90,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         if (sameModelType(currentModel, newTab)) {
             Tab currentTab = TabModelUtils.getCurrentTab(currentModel);
             if (currentTab == null) {
-                assert (currentModel.getCount() == 0);
-                return 0;
+                return currentModel.getCount();
             }
             int currentId = currentTab.getId();
             int currentIndex = currentModel.indexOf(currentTab);

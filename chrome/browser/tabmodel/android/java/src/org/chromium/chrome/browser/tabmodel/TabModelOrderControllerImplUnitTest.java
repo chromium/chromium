@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -185,6 +186,24 @@ public class TabModelOrderControllerImplUnitTest {
                 mOrderController.determineInsertionIndex(
                         TabLaunchType.FROM_LINK, TabList.INVALID_TAB_INDEX, newTab);
         assertEquals("Opening tab in empty model should return 0", 0, position);
+    }
+
+    @Test
+    public void testDetermineInsertionIndex_NoCurrentTabWithNonEmptyModel() {
+        addTab(mTabModel, 1, /* isPinned= */ false);
+        addTab(mTabModel, 2, /* isPinned= */ false);
+        assertNull(TabModelUtils.getCurrentTab(mTabModel));
+        assertEquals(2, mTabModel.getCount());
+
+        MockTab newTab = new MockTab(3, mProfile);
+        int position =
+                mOrderController.determineInsertionIndex(
+                        TabLaunchType.FROM_LINK, TabList.INVALID_TAB_INDEX, newTab);
+        assertEquals(
+                "Opening tab when no current tab is selected in non-empty model should return"
+                        + " count",
+                2,
+                position);
     }
 
     @Test
