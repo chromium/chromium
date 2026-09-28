@@ -1111,7 +1111,9 @@ TEST_F(MediaStreamVideoSourceTest, GetCaptureVersionDefaultImplementation) {
 }
 
 TEST_F(MediaStreamVideoSourceTest, GetNextCaptureVersionDefaultImplementation) {
-  EXPECT_EQ(source()->GetNextCaptureVersion(), std::nullopt);
+  EXPECT_EQ(source()->GetNextCaptureVersion(
+                media::mojom::SubCaptureTargetType::kCropTarget),
+            std::nullopt);
 }
 
 // Pausing a source must push a black frame all the way through to the sink, so

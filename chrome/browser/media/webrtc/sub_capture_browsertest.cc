@@ -777,78 +777,102 @@ IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
   EXPECT_TRUE(CloneTrack());
 }
 
-// Restrictions on cloned tracks 1/3.
+// Sub-capture on cloned tracks 1/3.
 IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotApplySubCaptureOnClones) {
+                       CanApplySubCaptureOnClones) {
   ManualSetUp(type_);
 
   ASSERT_TRUE(CloneTrack());
 
-  EXPECT_FALSE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
-                                     Track::kClone));
+  // Region Capture (cropTo) supports cloned tracks.
+  // Element Capture (restrictTo) disallows changing targets when clones exist.
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
+                                  Track::kClone),
+            type_ == SubCaptureTargetType::kCropTarget);
 }
 
-// Restrictions on cloned tracks 2/3.
+// Sub-capture on cloned tracks 2/3.
 IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotReapplySubCaptureOnClones) {
+                       CanReapplySubCaptureOnClones) {
   ManualSetUp(type_);
 
   ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
                                     Track::kOriginal));
   ASSERT_TRUE(CloneTrack());
 
-  EXPECT_FALSE(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
-                                     Track::kClone));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
+                                  Track::kClone),
+            type_ == SubCaptureTargetType::kCropTarget);
 }
 
-// Restrictions on cloned tracks 3/3.
-IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotUndoSubCaptureOnClones) {
+// Sub-capture on cloned tracks 3/3.
+IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest, CanUndoSubCaptureOnClones) {
   ManualSetUp(type_);
 
   ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
                                     Track::kOriginal));
   ASSERT_TRUE(CloneTrack());
 
-  EXPECT_FALSE(ApplySubCaptureTarget(type_, "undefined",
-                                     Frame::kTopLevelDocument, Track::kClone));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, "undefined", Frame::kTopLevelDocument,
+                                  Track::kClone),
+            type_ == SubCaptureTargetType::kCropTarget);
 }
 
-// Restrictions on original track that has a clone 1/3.
+// Sub-capture on original track that has a clone 1/3.
 IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotApplySubCaptureOnTracksThatHaveClones) {
+                       CanApplySubCaptureOnTracksThatHaveClones) {
   ManualSetUp(type_);
 
   ASSERT_TRUE(CloneTrack());
 
-  EXPECT_FALSE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
-                                     Track::kOriginal));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
 }
 
-// Restrictions on original track that has a clone 2/3.
+// Sub-capture on original track that has a clone 2/3.
 IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotReapplySubCaptureOnTracksThatHaveClones) {
-  ManualSetUp(type_);
-
-  ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
-                                    Track::kOriginal));
-  ASSERT_TRUE(CloneTrack());
-
-  EXPECT_FALSE(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
-                                     Track::kOriginal));
-}
-
-// Restrictions on original track that has a clone 3/3.
-IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
-                       CannotUndoSubCaptureOnTracksThatHaveClones) {
+                       CanReapplySubCaptureOnTracksThatHaveClones) {
   ManualSetUp(type_);
 
   ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
                                     Track::kOriginal));
   ASSERT_TRUE(CloneTrack());
 
-  EXPECT_FALSE(ApplySubCaptureTarget(
-      type_, "undefined", Frame::kTopLevelDocument, Track::kOriginal));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
+}
+
+// Sub-capture on original track that has a clone 3/3.
+IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
+                       CanUndoSubCaptureOnTracksThatHaveClones) {
+  ManualSetUp(type_);
+
+  ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
+                                    Track::kOriginal));
+  ASSERT_TRUE(CloneTrack());
+
+  EXPECT_EQ(ApplySubCaptureTarget(type_, "undefined", Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
+}
+
+IN_PROC_BROWSER_TEST_P(SubCaptureClonesBrowserTest,
+                       CanApplyDifferentSubCaptureTargetsOnOriginalAndClone) {
+  ManualSetUp(type_);
+
+  ASSERT_TRUE(CloneTrack());
+
+  if (type_ == SubCaptureTargetType::kCropTarget) {
+    EXPECT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
+                                      Track::kOriginal));
+    EXPECT_TRUE(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
+                                      Track::kClone));
+  } else {
+    EXPECT_FALSE(ApplySubCaptureTarget(
+        type_, kTarget0, Frame::kTopLevelDocument, Track::kOriginal));
+  }
 }
 
 // Original track becomes unblocked for sub-capture after clone is GCed 1/3.
@@ -863,8 +887,9 @@ IN_PROC_BROWSER_TEST_P(
   ManualSetUp(type_);
 
   ASSERT_TRUE(CloneTrack());
-  ASSERT_FALSE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
-                                     Track::kOriginal));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
   ASSERT_TRUE(Deallocate(Track::kClone));
 
   EXPECT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
@@ -882,8 +907,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
                                     Track::kOriginal));
   ASSERT_TRUE(CloneTrack());
-  ASSERT_FALSE(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
-                                     Track::kOriginal));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
   ASSERT_TRUE(Deallocate(Track::kClone));
 
   EXPECT_TRUE(ApplySubCaptureTarget(type_, kTarget1, Frame::kTopLevelDocument,
@@ -901,8 +927,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(ApplySubCaptureTarget(type_, kTarget0, Frame::kTopLevelDocument,
                                     Track::kOriginal));
   ASSERT_TRUE(CloneTrack());
-  ASSERT_FALSE(ApplySubCaptureTarget(
-      type_, "undefined", Frame::kTopLevelDocument, Track::kOriginal));
+  EXPECT_EQ(ApplySubCaptureTarget(type_, "undefined", Frame::kTopLevelDocument,
+                                  Track::kOriginal),
+            type_ == SubCaptureTargetType::kCropTarget);
   ASSERT_TRUE(Deallocate(Track::kClone));
 
   EXPECT_TRUE(ApplySubCaptureTarget(

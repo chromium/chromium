@@ -33,17 +33,19 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
   MOCK_METHOD1(OnSourceCanDiscardAlpha, void(bool can_discard_alpha));
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
-  MOCK_METHOD4(
+  MOCK_METHOD(
+      void,
       ApplySubCaptureTarget,
-      void(
-          SubCaptureTarget::Type,
-          const base::Token&,
-          uint32_t,
-          base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
+      (MediaStreamVideoTrack*,
+       media::mojom::SubCaptureTargetType,
+       const base::Token&,
+       uint32_t,
+       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>),
+      (override));
   MOCK_METHOD(media::CaptureVersion, GetCaptureVersion, (), (const, override));
   MOCK_METHOD(std::optional<media::CaptureVersion>,
               GetNextCaptureVersion,
-              (),
+              (media::mojom::SubCaptureTargetType),
               (override));
 
   // Simulate that the underlying source start successfully.

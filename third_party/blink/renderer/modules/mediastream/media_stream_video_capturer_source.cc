@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
 #include "build/build_config.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
+#include "third_party/blink/renderer/modules/mediastream/video_track_adapter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -211,6 +213,12 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
 
   capture_params_.capture_version_source += 1;
   sub_capture_version_ = 0;
+  track_targets_.clear();
+  gpu_target_ = base::Token();
+  active_gpu_target_type_ = media::mojom::SubCaptureTargetType::kCropTarget;
+  for (auto* track : Tracks()) {
+    SetTrackSubCaptureTarget(track, base::Token());
+  }
 
   VideoCaptureCallbacks video_capture_callbacks;
   video_capture_callbacks.deliver_frame_cb = frame_callback_;
@@ -222,13 +230,61 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
                            weak_factory_.GetWeakPtr(), capture_params_));
 }
 
+bool MediaStreamVideoCapturerSource::HasActiveRestrictionTarget() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto& entry : track_targets_) {
+    if (entry.value.type ==
+            media::mojom::SubCaptureTargetType::kRestrictionTarget &&
+        !entry.value.target.is_zero()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool MediaStreamVideoCapturerSource::CanApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Element Capture (restrictTo) requires single-track physical restriction
+  // on GPU and cannot support clones or multi-track mode.
+  if (type == media::mojom::SubCaptureTargetType::kRestrictionTarget) {
+    return NumTracks() == 1;
+  }
+  return NumTracks() <= 1 || !HasActiveRestrictionTarget();
+}
+
+base::Token MediaStreamVideoCapturerSource::ComputeSharedGpuCropTarget() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::Token shared_target;
+  for (auto* t : Tracks()) {
+    auto it = track_targets_.find(t);
+    if (it == track_targets_.end() ||
+        it->value.type != media::mojom::SubCaptureTargetType::kCropTarget ||
+        it->value.target.is_zero()) {
+      return base::Token();
+    }
+    const base::Token& target = it->value.target;
+    if (shared_target.is_zero()) {
+      shared_target = target;
+    } else if (shared_target != target) {
+      return base::Token();
+    }
+  }
+  return shared_target;
+}
+
 void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
-    media::mojom::blink::SubCaptureTargetType type,
+    MediaStreamVideoTrack* track,
+    media::mojom::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
     uint32_t sub_capture_version,
     base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
         callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Per-track bookkeeping below is what ComputeSharedGpuCropTarget() reads to
+  // decide between single-target GPU cropping and full-frame capture, so a
+  // target cannot be applied without knowing which track it belongs to.
+  CHECK(track);
   const std::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
@@ -236,9 +292,86 @@ void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
         media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
-  GetMediaStreamDispatcherHost()->ApplySubCaptureTarget(
-      session_id.value(), type, sub_capture_target, sub_capture_version,
-      std::move(callback));
+
+  auto* host = GetMediaStreamDispatcherHost();
+  if (!host) {
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
+    return;
+  }
+
+  if (!CanApplySubCaptureTarget(type)) {
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kInvalidTarget);
+    return;
+  }
+
+  track_targets_.Set(track, SubCaptureTargetInfo{type, sub_capture_target});
+  const base::Token track_adapter_target =
+      (type == media::mojom::SubCaptureTargetType::kCropTarget)
+          ? sub_capture_target
+          : base::Token();
+  SetTrackSubCaptureTarget(track, track_adapter_target);
+
+  const base::Token desired_gpu_target =
+      (type == media::mojom::SubCaptureTargetType::kCropTarget)
+          ? ComputeSharedGpuCropTarget()
+          : sub_capture_target;
+  gpu_target_ = desired_gpu_target;
+  active_gpu_target_type_ = type;
+
+  // Always send the IPC even if |desired_gpu_target == gpu_target_| so that Viz
+  // increments its sub-capture version counter and stamps subsequent frames
+  // with |sub_capture_version|, which resolves the JS cropTo()/restrictTo()
+  // Promise.
+  host->ApplySubCaptureTarget(session_id.value(), type, desired_gpu_target,
+                              sub_capture_version, std::move(callback));
+}
+
+void MediaStreamVideoCapturerSource::OnTrackCloned(
+    const MediaStreamVideoTrack* original_track,
+    MediaStreamVideoTrack* cloned_track) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto it = track_targets_.find(original_track);
+  if (it != track_targets_.end()) {
+    const SubCaptureTargetInfo inherited_target = it->value;
+    track_targets_.Set(cloned_track, inherited_target);
+
+    if (inherited_target.type ==
+        media::mojom::SubCaptureTargetType::kCropTarget) {
+      SetTrackSubCaptureTarget(cloned_track, inherited_target.target);
+    }
+  }
+
+  ReevaluateCaptureMode();
+}
+
+void MediaStreamVideoCapturerSource::OnTrackRemoved(
+    MediaStreamVideoTrack* track) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  track_targets_.erase(track);
+  ReevaluateCaptureMode();
+}
+
+void MediaStreamVideoCapturerSource::ReevaluateCaptureMode() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  const std::optional<base::UnguessableToken>& session_id =
+      device().serializable_session_id();
+  if (!session_id.has_value() || HasActiveRestrictionTarget()) {
+    return;
+  }
+
+  base::Token desired_gpu_target = ComputeSharedGpuCropTarget();
+  if (desired_gpu_target != gpu_target_) {
+    active_gpu_target_type_ = media::mojom::SubCaptureTargetType::kCropTarget;
+    gpu_target_ = desired_gpu_target;
+    ++sub_capture_version_;
+    if (auto* host = GetMediaStreamDispatcherHost()) {
+      host->ApplySubCaptureTarget(session_id.value(), active_gpu_target_type_,
+                                  desired_gpu_target, sub_capture_version_,
+                                  base::DoNothing());
+    }
+  }
 }
 
 media::CaptureVersion MediaStreamVideoCapturerSource::GetCaptureVersion()
@@ -248,8 +381,10 @@ media::CaptureVersion MediaStreamVideoCapturerSource::GetCaptureVersion()
 }
 
 std::optional<media::CaptureVersion>
-MediaStreamVideoCapturerSource::GetNextCaptureVersion() {
-  if (NumTracks() != 1) {
+MediaStreamVideoCapturerSource::GetNextCaptureVersion(
+    media::mojom::SubCaptureTargetType type) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!CanApplySubCaptureTarget(type)) {
     return std::nullopt;
   }
 
@@ -358,17 +493,23 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
 
 mojom::blink::MediaStreamDispatcherHost*
 MediaStreamVideoCapturerSource::GetMediaStreamDispatcherHost() {
-  DCHECK(frame_);
-  if (!host_) {
-    frame_->GetBrowserInterfaceBroker().GetInterface(
-        host_.BindNewPipeAndPassReceiver());
+  if (host_) {
+    return host_.get();
   }
+  if (!frame_) {
+    return nullptr;
+  }
+  frame_->GetBrowserInterfaceBroker().GetInterface(
+      host_.BindNewPipeAndPassReceiver());
   return host_.get();
 }
 
 void MediaStreamVideoCapturerSource::SetMediaStreamDispatcherHostForTesting(
     mojo::PendingRemote<mojom::blink::MediaStreamDispatcherHost> host) {
-  host_.Bind(std::move(host));
+  host_.reset();
+  if (host.is_valid()) {
+    host_.Bind(std::move(host));
+  }
 }
 
 VideoCapturerSource* MediaStreamVideoCapturerSource::GetSourceForTesting() {

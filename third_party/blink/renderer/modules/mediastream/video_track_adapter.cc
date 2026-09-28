@@ -189,14 +189,14 @@ bool RequiresEvenAlignment(media::VideoPixelFormat format) {
 scoped_refptr<media::VideoFrame> MaybeCropFrameForTrack(
     scoped_refptr<media::VideoFrame> frame,
     const base::Token& sub_capture_target) {
+  const bool is_gpu_cropped = frame->metadata().region_capture_rect.has_value();
+
   if (sub_capture_target.is_zero()) {
-    // Uncropped track: deliver the frame as-is.
-    //
-    // TODO(crbug.com/555826257): Tracks sharing a source all carry the same
-    // target today, so a frame reaching here is never GPU-cropped. Once the
-    // source can apply a different target per track, a frame GPU-cropped to
-    // another track's target must be dropped here instead.
-    return frame;
+    // Uncropped track: deliver the frame as-is only if it is an uncropped
+    // full frame. Never deliver a GPU-cropped frame to an uncropped track.
+    // Restricted (Element Capture) tracks also take this path; their frames
+    // never carry `region_capture_rect`, which Viz only sets for crop targets.
+    return is_gpu_cropped ? nullptr : frame;
   }
 
   const auto& bounds_map = frame->metadata().region_capture_bounds;

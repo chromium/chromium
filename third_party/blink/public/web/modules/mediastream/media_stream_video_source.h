@@ -112,6 +112,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
                 MediaStreamVideoSourceCallbacks video_stream_callbacks,
                 ConstraintsOnceCallback callback);
   void RemoveTrack(MediaStreamVideoTrack* track, base::OnceClosure callback);
+  virtual void OnTrackCloned(const MediaStreamVideoTrack* original_track,
+                             MediaStreamVideoTrack* cloned_track) {}
 
   // Reconfigures this MediaStreamVideoSource to use |adapter_settings| on
   // |track|, as long as |track| is connected to this source.
@@ -191,6 +193,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   // Start/stop cropping or restricting the video track.
   //
+  // |track| identifies the track the target applies to, and must not be null.
+  //
   // Non-empty |sub_capture_target_id| sets (or changes) the target.
   // Empty |sub_capture_target_id| reverts the capture to its original state.
   //
@@ -207,6 +211,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   //
   // The callback reports success/failure.
   virtual void ApplySubCaptureTarget(
+      MediaStreamVideoTrack* track,
       media::mojom::SubCaptureTargetType type,
       const base::Token& sub_capture_target,
       uint32_t sub_capture_target_version,
@@ -225,7 +230,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   //
   // TODO(crbug.com/40227755): Make the capture-version an implementation detail
   // that is not exposed to the entity calling ApplySubCaptureTarget().
-  virtual std::optional<media::CaptureVersion> GetNextCaptureVersion();
+  virtual std::optional<media::CaptureVersion> GetNextCaptureVersion(
+      media::mojom::SubCaptureTargetType type);
 
   // Returns true if thread type for threads processing frames from this source
   // should be raised. This is intended to be used for frames coming from
@@ -372,6 +378,14 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // Optionally overridden by subclasses to be notified whether all attached
   // tracks allow alpha to be dropped.
   virtual void OnSourceCanDiscardAlpha(bool can_discard_alpha) {}
+
+  virtual void OnTrackRemoved(MediaStreamVideoTrack* track) {}
+  const Vector<MediaStreamVideoTrack*>& Tracks() const { return tracks_; }
+
+  // Sets the target that |track|'s frames are cropped to on the video task
+  // runner. A zero |sub_capture_target| delivers only uncropped frames.
+  void SetTrackSubCaptureTarget(const MediaStreamVideoTrack* track,
+                                const base::Token& sub_capture_target);
 
   enum State {
     NEW,

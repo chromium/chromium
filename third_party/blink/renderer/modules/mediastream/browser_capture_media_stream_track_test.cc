@@ -144,9 +144,9 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
           /*source=*/0, /*sub_capture=*/1)));
 
   EXPECT_CALL(*media_stream_video_source,
-              ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
+              ApplySubCaptureTarget(_, type_, GUIDToToken(valid_id), _, _))
       .Times(1)
-      .WillOnce(::testing::WithArg<3>(
+      .WillOnce(::testing::WithArg<4>(
           [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                  cb) {
             std::move(cb).Run(
@@ -185,9 +185,9 @@ TEST_P(BrowserCaptureMediaStreamTrackTest,
           /*source=*/0, /*sub_capture=*/1)));
 
   EXPECT_CALL(*media_stream_video_source,
-              ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
+              ApplySubCaptureTarget(_, type_, GUIDToToken(valid_id), _, _))
       .Times(1)
-      .WillOnce(::testing::WithArg<3>(
+      .WillOnce(::testing::WithArg<4>(
           [](base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
                  cb) {
             std::move(cb).Run(
@@ -227,7 +227,7 @@ TEST_P(
       .WillOnce(Return(std::nullopt));
 
   EXPECT_CALL(*media_stream_video_source,
-              ApplySubCaptureTarget(type_, GUIDToToken(valid_id), _, _))
+              ApplySubCaptureTarget(_, type_, GUIDToToken(valid_id), _, _))
       .Times(0);
 
   BrowserCaptureMediaStreamTrack* const track =
@@ -250,7 +250,8 @@ TEST_P(BrowserCaptureMediaStreamTrackTest, CloningPreservesConstraints) {
   std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
       MakeMockMediaStreamVideoSource();
 
-  EXPECT_CALL(*media_stream_video_source, ApplySubCaptureTarget(type_, _, _, _))
+  EXPECT_CALL(*media_stream_video_source,
+              ApplySubCaptureTarget(_, type_, _, _, _))
       .Times(0);
 
   BrowserCaptureMediaStreamTrack* const track =
@@ -266,6 +267,96 @@ TEST_P(BrowserCaptureMediaStreamTrackTest, CloningPreservesConstraints) {
   MediaTrackConstraints* clone_constraints = clone->getConstraints();
   EXPECT_TRUE(clone_constraints->hasWidth());
   EXPECT_EQ(clone_constraints->width()->GetAsConstrainLongRange()->max(), 240);
+}
+
+TEST_P(BrowserCaptureMediaStreamTrackTest,
+       CloneAllowsIndependentSubCaptureTargets) {
+  V8TestingScope v8_scope;
+
+  const base::Uuid valid_id1 = base::Uuid::GenerateRandomV4();
+  const base::Uuid valid_id2 = base::Uuid::GenerateRandomV4();
+
+  std::unique_ptr<MockMediaStreamVideoSource> media_stream_video_source =
+      MakeMockMediaStreamVideoSource();
+
+  if (type_ == SubCaptureTarget::Type::kCropTarget) {
+    EXPECT_CALL(*media_stream_video_source, GetNextCaptureVersion)
+        .Times(2)
+        .WillOnce(Return(std::make_optional<media::CaptureVersion>(
+            /*source=*/0, /*sub_capture=*/1)))
+        .WillOnce(Return(std::make_optional<media::CaptureVersion>(
+            /*source=*/0, /*sub_capture=*/2)));
+
+    MockMediaStreamVideoSource* mock_source = media_stream_video_source.get();
+    BrowserCaptureMediaStreamTrack* const track1 =
+        MakeTrack(v8_scope, std::move(media_stream_video_source));
+    BrowserCaptureMediaStreamTrack* const track2 =
+        static_cast<BrowserCaptureMediaStreamTrack*>(
+            track1->clone(v8_scope.GetExecutionContext()));
+
+    MediaStreamVideoTrack* const native_track1 =
+        MediaStreamVideoTrack::From(track1->Component());
+    MediaStreamVideoTrack* const native_track2 =
+        MediaStreamVideoTrack::From(track2->Component());
+
+    EXPECT_CALL(*mock_source,
+                ApplySubCaptureTarget(native_track1, type_,
+                                      GUIDToToken(valid_id1), 1, _))
+        .Times(1)
+        .WillOnce(::testing::WithArg<4>(
+            [](base::OnceCallback<void(
+                   media::mojom::ApplySubCaptureTargetResult)> cb) {
+              std::move(cb).Run(
+                  media::mojom::ApplySubCaptureTargetResult::kSuccess);
+            }));
+
+    EXPECT_CALL(*mock_source,
+                ApplySubCaptureTarget(native_track2, type_,
+                                      GUIDToToken(valid_id2), 2, _))
+        .Times(1)
+        .WillOnce(::testing::WithArg<4>(
+            [](base::OnceCallback<void(
+                   media::mojom::ApplySubCaptureTargetResult)> cb) {
+              std::move(cb).Run(
+                  media::mojom::ApplySubCaptureTargetResult::kSuccess);
+            }));
+
+    const auto promise1 = ApplySubCaptureTarget(
+        v8_scope, *track1, String(valid_id1.AsLowercaseString()));
+    const auto promise2 = ApplySubCaptureTarget(
+        v8_scope, *track2, String(valid_id2.AsLowercaseString()));
+
+    track1->OnCaptureVersionObservedForTesting(
+        media::CaptureVersion(/*source=*/0, /*sub_capture=*/1));
+    track2->OnCaptureVersionObservedForTesting(
+        media::CaptureVersion(/*source=*/0, /*sub_capture=*/2));
+
+    ScriptPromiseTester tester1(v8_scope.GetScriptState(), promise1);
+    tester1.WaitUntilSettled();
+    EXPECT_TRUE(tester1.IsFulfilled());
+
+    ScriptPromiseTester tester2(v8_scope.GetScriptState(), promise2);
+    tester2.WaitUntilSettled();
+    EXPECT_TRUE(tester2.IsFulfilled());
+  } else {
+    // For Element Capture (restrictTo), clones cannot change targets.
+    EXPECT_CALL(*media_stream_video_source, GetNextCaptureVersion)
+        .Times(1)
+        .WillOnce(Return(std::nullopt));
+
+    BrowserCaptureMediaStreamTrack* const track1 =
+        MakeTrack(v8_scope, std::move(media_stream_video_source));
+    BrowserCaptureMediaStreamTrack* const track2 =
+        static_cast<BrowserCaptureMediaStreamTrack*>(
+            track1->clone(v8_scope.GetExecutionContext()));
+
+    const auto promise = ApplySubCaptureTarget(
+        v8_scope, *track2, String(valid_id1.AsLowercaseString()));
+
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+  }
 }
 
 }  // namespace blink

@@ -1538,8 +1538,8 @@ TEST_F(VideoTrackAdapterEncodedTest,
   EXPECT_EQ(track2_deliveries, 1);
 
   // Deliver a frame WITH region_capture_rect cropped to a DIFFERENT target
-  // (token2). track1 (cropped to token1) must NOT receive it. track2 is
-  // uncropped, so it still receives whatever the capturer produced.
+  // (token2). Neither track1 (cropped to token1) nor track2 (uncropped) may
+  // receive it.
   const base::Token token2(0x33333333, 0x44444444);
   {
     scoped_refptr<media::VideoFrame> frame =
@@ -1553,11 +1553,11 @@ TEST_F(VideoTrackAdapterEncodedTest,
   }
 
   EXPECT_EQ(track1_deliveries, 0);
-  EXPECT_EQ(track2_deliveries, 2);
+  EXPECT_EQ(track2_deliveries, 1);
 
   // Deliver a frame WITH region_capture_rect cropped to token1 (simulating GPU
   // single-target crop to token1). track1 (cropped to token1) MUST receive it;
-  // track2 is uncropped and still receives it too.
+  // track2 (uncropped) must NOT receive it.
   {
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::CreateZeroInitializedFrame(
@@ -1570,7 +1570,7 @@ TEST_F(VideoTrackAdapterEncodedTest,
   }
 
   EXPECT_EQ(track1_deliveries, 1);
-  EXPECT_EQ(track2_deliveries, 3);
+  EXPECT_EQ(track2_deliveries, 1);
 
   RunSyncOnRenderThread([&] {
     adapter_->RemoveTrack(track1.get());

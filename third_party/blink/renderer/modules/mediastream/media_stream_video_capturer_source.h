@@ -23,6 +23,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -90,15 +91,31 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   std::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
   void ApplySubCaptureTarget(
-      media::mojom::blink::SubCaptureTargetType type,
+      MediaStreamVideoTrack* track,
+      media::mojom::SubCaptureTargetType type,
       const base::Token& sub_capture_target,
       uint32_t sub_capture_version,
       base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
           callback) override;
   media::CaptureVersion GetCaptureVersion() const override;
-  std::optional<media::CaptureVersion> GetNextCaptureVersion() override;
+  std::optional<media::CaptureVersion> GetNextCaptureVersion(
+      media::mojom::SubCaptureTargetType type) override;
+  void OnTrackCloned(const MediaStreamVideoTrack* original_track,
+                     MediaStreamVideoTrack* cloned_track) override;
+  void OnTrackRemoved(MediaStreamVideoTrack* track) override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
   bool AllowsVideoThreadTypeOverride() const override;
+
+  bool HasActiveRestrictionTarget() const;
+  bool CanApplySubCaptureTarget(media::mojom::SubCaptureTargetType type) const;
+
+  // Returns the crop target to apply on the GPU. This is non-zero only when
+  // every track is cropped to the same crop target, in which case the GPU crop
+  // serves all tracks at once. Otherwise returns a zero token, so that full
+  // frames are captured and each track is cropped individually in
+  // VideoTrackAdapter.
+  base::Token ComputeSharedGpuCropTarget() const;
+  void ReevaluateCaptureMode();
 
   // Method to bind as VideoCaptureRunningCallbackCB in
   // VideoCapturerSource::StartCapture().
@@ -130,6 +147,18 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   VideoCaptureVersionCB capture_version_callback_;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
   DeviceCapturerFactoryCallback device_capturer_factory_callback_;
+
+  struct SubCaptureTargetInfo {
+    media::mojom::SubCaptureTargetType type =
+        media::mojom::SubCaptureTargetType::kCropTarget;
+    base::Token target;
+  };
+
+  // Per-track target tokens and types.
+  HashMap<const MediaStreamVideoTrack*, SubCaptureTargetInfo> track_targets_;
+  base::Token gpu_target_;
+  media::mojom::SubCaptureTargetType active_gpu_target_type_ =
+      media::mojom::SubCaptureTargetType::kCropTarget;
 
   // Each time Crop() is called, the source sub-capture version increments.
   // Associate each Promise with its sub-capture version, so that Viz can

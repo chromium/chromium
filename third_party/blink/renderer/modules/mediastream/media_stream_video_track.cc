@@ -938,7 +938,7 @@ MediaStreamVideoTrack::CreateFromComponent(
   MediaStreamVideoTrack* original_track =
       MediaStreamVideoTrack::From(component);
   DCHECK(original_track);
-  return std::make_unique<MediaStreamVideoTrack>(
+  auto cloned_track = std::make_unique<MediaStreamVideoTrack>(
       native_source, original_track->adapter_settings(),
       original_track->noise_reduction(), original_track->is_screencast(),
       original_track->min_frame_rate(),
@@ -947,6 +947,8 @@ MediaStreamVideoTrack::CreateFromComponent(
           : nullptr,
       original_track->pan_tilt_zoom_allowed(),
       MediaStreamVideoSource::ConstraintsOnceCallback(), component->Enabled());
+  native_source->OnTrackCloned(original_track, cloned_track.get());
+  return cloned_track;
 }
 
 static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,

@@ -135,6 +135,7 @@ void MediaStreamVideoSource::RemoveTrack(MediaStreamVideoTrack* video_track,
     DCHECK_NE(it, kNotFound);
     tracks_.EraseAt(it);
   }
+  OnTrackRemoved(video_track);
   secure_tracker_.Remove(video_track);
 
   {
@@ -547,6 +548,7 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
 }
 
 void MediaStreamVideoSource::ApplySubCaptureTarget(
+    MediaStreamVideoTrack* track,
     media::mojom::blink::SubCaptureTargetType type,
     const base::Token& sub_capture_target,
     uint32_t sub_capture_version,
@@ -561,7 +563,8 @@ media::CaptureVersion MediaStreamVideoSource::GetCaptureVersion() const {
 }
 
 std::optional<media::CaptureVersion>
-MediaStreamVideoSource::GetNextCaptureVersion() {
+MediaStreamVideoSource::GetNextCaptureVersion(
+    media::mojom::SubCaptureTargetType type) {
   return std::nullopt;
 }
 
@@ -587,6 +590,12 @@ scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {
         video_task_runner(), IsVideoDesktopCaptureMediaType(device().type));
   }
   return track_adapter_;
+}
+
+void MediaStreamVideoSource::SetTrackSubCaptureTarget(
+    const MediaStreamVideoTrack* track,
+    const base::Token& sub_capture_target) {
+  GetTrackAdapter()->SetTrackSubCaptureTarget(track, sub_capture_target);
 }
 
 void MediaStreamVideoSource::UpdateCanDiscardAlpha() {
