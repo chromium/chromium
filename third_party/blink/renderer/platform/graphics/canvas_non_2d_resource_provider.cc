@@ -853,8 +853,10 @@ void CanvasNon2DResourceProvider::FlushRecording(
     is_cleared_ = true;
     auto* image_provider = GetOrCreateImageProvider();
 
-    auto access = resource_->BeginAccess(/*readonly=*/false);
     gpu::raster::RasterInterface* ri = RasterInterface();
+    auto client_si = resource()->GetSharedImage();
+    auto access = client_si->BeginRasterAccess(
+        ri, resource()->acquire_sync_token(), /*readonly=*/false);
     SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
                                      ? SkColors::kBlack
                                      : SkColors::kTransparent;
@@ -882,8 +884,7 @@ void CanvasNon2DResourceProvider::FlushRecording(
                             use_msaa ? gpu::raster::MsaaMode::kDMSAA
                                      : gpu::raster::MsaaMode::kNoMSAA,
                             can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-                            /*hdr_headroom=*/0.f,
-                            resource()->GetSharedImage()->mailbox().name);
+                            /*hdr_headroom=*/0.f, client_si->mailbox().name);
 
     ri->RasterCHROMIUM(
         list.get(), image_provider, size, full_raster_rect, playback_rect,
@@ -892,7 +893,9 @@ void CanvasNon2DResourceProvider::FlushRecording(
         base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
 
     ri->EndRasterCHROMIUM();
-    resource()->EndAccess(std::move(access));
+    auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+    resource()->SetReleaseSyncToken(sync_token);
+    client_si->UpdateDestructionSyncToken(sync_token);
   }
 
   // Images are locked for the duration of the rasterization, in case they get
