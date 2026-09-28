@@ -317,34 +317,45 @@ FindRequestManager::FindRequestManager(WebContentsImpl* web_contents)
 
 FindRequestManager::~FindRequestManager() = default;
 
-void FindRequestManager::Find(int request_id,
-                              const std::u16string& search_text,
-                              blink::mojom::FindOptionsPtr options,
-                              bool skip_delay) {
+void FindRequestManager::Find(
+    const std::u16string& search_text,
+    blink::mojom::FindOptionsPtr options,
+    bool skip_delay,
+    base::FunctionRef<void(int request_id)> on_request_id) {
+  if (!skip_delay && !options->new_session &&
+      !delayed_find_task_.IsCancelled()) {
+    // If the user presses enter while we are waiting for a delayed find, then
+    // run the find now to improve responsiveness. This reuses the delayed
+    // request's own ID rather than allocating a new one for this call.
+    DCHECK_NE(delayed_request_id_, kInvalidId);
+    on_request_id(delayed_request_id_);
+    delayed_find_task_.callback().Run();
+    delayed_request_id_ = kInvalidId;
+    return;
+  }
+
   // Every find request must have a unique ID, and these IDs must strictly
   // increase so that newer requests always have greater IDs than older
   // requests.
+  const int request_id = ++last_request_id_;
   DCHECK_GT(request_id, current_request_.id);
   DCHECK_GT(request_id, current_session_id_);
+  on_request_id(request_id);
 
   if (skip_delay) {
     delayed_find_task_.Cancel();
+    delayed_request_id_ = kInvalidId;
     EmitFindRequest(request_id, search_text, std::move(options));
     return;
   }
 
   if (!options->new_session) {
-    // If the user presses enter while we are waiting for a delayed find, then
-    // run the find now to improve responsiveness.
-    if (!delayed_find_task_.IsCancelled()) {
-      delayed_find_task_.callback().Run();
-    } else {
-      EmitFindRequest(request_id, search_text, std::move(options));
-    }
+    EmitFindRequest(request_id, search_text, std::move(options));
     return;
   }
 
   if (search_text.length() < kMinKeystrokesWithoutDelay) {
+    delayed_request_id_ = request_id;
     delayed_find_task_.Reset(base::BindOnce(
         &FindRequestManager::EmitFindRequest, weak_factory_.GetWeakPtr(),
         request_id, search_text, std::move(options)));
@@ -355,6 +366,7 @@ void FindRequestManager::Find(int request_id,
 
   // If we aren't going to delay, then clear any previous attempts to delay.
   delayed_find_task_.Cancel();
+  delayed_request_id_ = kInvalidId;
 
   EmitFindRequest(request_id, search_text, std::move(options));
 }
@@ -676,13 +688,10 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   DCHECK_GT(request.id, current_request_.id);
   DCHECK_GT(request.id, current_session_id_);
 
-  if (!request.options->new_session) {
-    // This is a find next operation.
-
-    // This implies that there is an ongoing find session with the same search
-    // text.
-    DCHECK_GE(current_session_id_, 0);
-    DCHECK_EQ(request.search_text, current_request_.search_text);
+  if (!request.options->new_session && current_session_id_ != kInvalidId &&
+      request.search_text == current_request_.search_text) {
+    // This is a find next operation continuing the session we are currently
+    // tracking (same search text as the request that started it).
 
     // The find next request will be directed at the focused frame if there is
     // one, or the first frame with matches otherwise.
@@ -695,7 +704,11 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
 
     // Verify that we have a valid frame before sending the request.
     if (!target_rfh || !CheckFrame(target_rfh)) {
-      // No valid frame to send the find request to. Advance the queue.
+      // No valid frame to send the find request to. Report this request as
+      // complete (with the current, unchanged results) so that callers of
+      // Find() are guaranteed a final reply for every request they issue,
+      // then advance the queue.
+      NotifyFindReply(request.id, /*final_update=*/true);
       AdvanceQueue(request.id);
       return;
     }
@@ -706,7 +719,12 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
     return;
   }
 
-  // This is an initial find operation.
+  // This is either an explicit new session, or a "find next" whose search
+  // text doesn't actually match the session we are currently tracking --
+  // e.g. another caller (DevTools, an extension, etc.) started a different
+  // find session on this WebContents in the meantime, and this caller's
+  // local notion of "same search as before" is stale. Treat it as a fresh
+  // session rather than assuming a guarantee the caller can no longer make.
   Reset(request);
 
   // Add and observe eligible RFHs in the WebContents. And, use
@@ -724,6 +742,15 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
           return;
         AddFrame(rfh, false /* force */);
       });
+
+  // If no frame was actually eligible to be searched (e.g. none had a live
+  // renderer), no reply will ever come in from a renderer to complete this
+  // request. Report it as complete (with zero matches, per Reset() above)
+  // right away, so that callers of Find() are still guaranteed a final
+  // reply for every request they issue.
+  if (pending_initial_replies_.empty()) {
+    NotifyFindReply(request.id, /*final_update=*/true);
+  }
 }
 
 void FindRequestManager::AdvanceQueue(int request_id) {

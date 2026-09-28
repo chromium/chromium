@@ -66,9 +66,11 @@ class PdfFindRequestManagerTest : public InProcessBrowserTest {
 
   void Find(const std::string& search_text,
             blink::mojom::FindOptionsPtr options) {
-    delegate()->UpdateLastRequest(++last_request_id_);
-    contents()->Find(last_request_id_, base::UTF8ToUTF16(search_text),
-                     std::move(options), /*skip_delay=*/false);
+    contents()->Find(base::UTF8ToUTF16(search_text), std::move(options),
+                     /*skip_delay=*/false, [this](int request_id) {
+                       last_request_id_ = request_id;
+                       delegate()->UpdateLastRequest(request_id);
+                     });
   }
 
   WebContents* contents() const {

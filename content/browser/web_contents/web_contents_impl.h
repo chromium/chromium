@@ -627,10 +627,10 @@ class CONTENT_EXPORT WebContentsImpl
       uint32_t max_bitmap_size,
       bool bypass_cache,
       WebContents::ImageDownloadCallback callback) override;
-  void Find(int request_id,
-            const std::u16string& search_text,
+  void Find(const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options,
-            bool skip_delay) override;
+            bool skip_delay,
+            base::FunctionRef<void(int request_id)> on_request_id) override;
   void StopFinding(StopFindAction action) override;
   bool WasEverAudible() override;
   bool IsFullscreen() override;

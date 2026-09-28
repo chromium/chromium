@@ -1,0 +1,4 @@
+Tests that FindInPage.stop ends the session so a subsequent findNext fails.
+stop succeeded: true
+findNext after stop failed: true
+

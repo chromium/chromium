@@ -1,0 +1,5 @@
+Tests that FindInPage.findNext/findPrev move between matches.
+findFirst scrolled to the first match: true
+findNext scrolled further down to the second match: true
+findPrev scrolled back up towards the first match: true
+

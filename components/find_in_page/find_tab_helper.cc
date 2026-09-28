@@ -21,13 +21,8 @@ using content::WebContents;
 
 namespace find_in_page {
 
-// static
-int FindTabHelper::find_request_id_counter_ = -1;
-
 FindTabHelper::FindTabHelper(WebContents* web_contents)
-    : content::WebContentsUserData<FindTabHelper>(*web_contents),
-      current_find_request_id_(find_request_id_counter_++),
-      current_find_session_id_(current_find_request_id_) {}
+    : content::WebContentsUserData<FindTabHelper>(*web_contents) {}
 
 FindTabHelper::~FindTabHelper() {
   for (auto& observer : observers_)
@@ -72,10 +67,6 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   if (!new_session && !find_match)
     return;
 
-  current_find_request_id_ = find_request_id_counter_++;
-  if (new_session)
-    current_find_session_id_ = current_find_request_id_;
-
   previous_find_text_ = find_text_;
   find_text_ = search_string;
   last_search_case_sensitive_ = case_sensitive;
@@ -88,8 +79,13 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   options->new_session = new_session;
   options->find_match = find_match;
   options->run_synchronously_for_testing = run_synchronously_for_testing;
-  GetWebContents().Find(current_find_request_id_, find_text_,
-                        std::move(options), /*skip_delay=*/false);
+  GetWebContents().Find(find_text_, std::move(options), /*skip_delay=*/false,
+                        [this, new_session](int request_id) {
+                          current_find_request_id_ = request_id;
+                          if (new_session) {
+                            current_find_session_id_ = request_id;
+                          }
+                        });
 }
 
 void FindTabHelper::StopFinding(SelectionAction selection_action) {

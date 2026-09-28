@@ -31,8 +31,7 @@ const char kFindCanceled[] = "canceled";
 namespace extensions {
 
 WebViewFindHelper::WebViewFindHelper(WebViewGuest* webview_guest)
-    : webview_guest_(webview_guest), current_find_request_id_(0) {
-}
+    : webview_guest_(webview_guest) {}
 
 WebViewFindHelper::~WebViewFindHelper() {
 }
@@ -104,9 +103,6 @@ void WebViewFindHelper::Find(content::WebContents* guest_web_contents,
                              const std::u16string& search_text,
                              blink::mojom::FindOptionsPtr options,
                              ForwardResponseCallback callback) {
-  // Need a new request_id for each new find request.
-  ++current_find_request_id_;
-
   if (current_find_session_) {
     const std::u16string& current_search_text =
         current_find_session_->search_text();
@@ -117,38 +113,55 @@ void WebViewFindHelper::Find(content::WebContents* guest_web_contents,
   } else {
     options->new_session = true;
   }
+  const bool new_session = options->new_session;
 
-  // Stores the find request information by request_id so that its callback
-  // function can be called when the find results are available.
-  std::pair<FindInfoMap::iterator, bool> insert_result =
-      find_info_map_.insert(std::make_pair(
-          current_find_request_id_, base::MakeRefCounted<FindInfo>(
-                                        current_find_request_id_, search_text,
-                                        options.Clone(), std::move(callback))));
-  // No duplicate insertions.
-  CHECK(insert_result.second);
-
-  // Link find requests that are a part of the same find session.
-  if (!options->new_session && current_find_session_) {
-    CHECK(current_find_request_id_ != current_find_session_->request_id());
-    current_find_session_->AddFindNextRequest(
-        insert_result.first->second->AsWeakPtr());
-  }
-
-  // Update the current find session, if necessary.
-  if (options->new_session) {
-    current_find_session_ = insert_result.first->second;
-  }
-
-  // Handle the empty |search_text| case internally.
+  // Handle the empty |search_text| case internally: no find request is ever
+  // made, so there is no real request ID to correlate with; use a value that
+  // can never collide with one (real IDs are never negative).
   if (search_text.empty()) {
+    constexpr int kEmptySearchRequestId = -1;
+    auto insert_result = find_info_map_.insert(std::make_pair(
+        kEmptySearchRequestId, base::MakeRefCounted<FindInfo>(
+                                   kEmptySearchRequestId, search_text,
+                                   std::move(options), std::move(callback))));
+    if (new_session) {
+      current_find_session_ = insert_result.first->second;
+    }
     guest_web_contents->StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
-    FindReply(current_find_request_id_, 0, gfx::Rect(), 0, true);
+    FindReply(kEmptySearchRequestId, 0, gfx::Rect(), 0, true);
     return;
   }
 
-  guest_web_contents->Find(current_find_request_id_, search_text,
-                           std::move(options), /*skip_delay=*/true);
+  blink::mojom::FindOptionsPtr find_info_options = options.Clone();
+  guest_web_contents->Find(
+      search_text, std::move(options), /*skip_delay=*/true,
+      [&](int request_id) {
+        // Stores the find request information by request_id so that its
+        // callback function can be called when the find results are
+        // available. This must happen before Find() returns, since a reply
+        // for this request can arrive on the same call stack (e.g. when
+        // there is no eligible frame left to search).
+        std::pair<FindInfoMap::iterator, bool> insert_result =
+            find_info_map_.insert(std::make_pair(
+                request_id,
+                base::MakeRefCounted<FindInfo>(request_id, search_text,
+                                               std::move(find_info_options),
+                                               std::move(callback))));
+        // No duplicate insertions.
+        CHECK(insert_result.second);
+
+        // Link find requests that are a part of the same find session.
+        if (!new_session && current_find_session_) {
+          CHECK(request_id != current_find_session_->request_id());
+          current_find_session_->AddFindNextRequest(
+              insert_result.first->second->AsWeakPtr());
+        }
+
+        // Update the current find session, if necessary.
+        if (new_session) {
+          current_find_session_ = insert_result.first->second;
+        }
+      });
 }
 
 void WebViewFindHelper::FindReply(int request_id,

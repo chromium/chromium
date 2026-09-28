@@ -39,8 +39,11 @@ void FindHelper::FindAllAsync(const std::u16string& search_string) {
   options->match_case = false;
   options->new_session = true;
 
-  GetWebContents().Find(current_request_id_, search_string, std::move(options),
-                        /*skip_delay=*/false);
+  GetWebContents().Find(search_string, std::move(options), /*skip_delay=*/false,
+                        [this](int request_id) {
+                          current_request_id_ = request_id;
+                          current_session_id_ = request_id;
+                        });
 }
 
 void FindHelper::HandleFindReply(int request_id,
@@ -57,8 +60,6 @@ void FindHelper::FindNext(bool forward) {
   if (!async_find_started_)
     return;
 
-  current_request_id_ = find_request_id_counter_++;
-
   if (MaybeHandleEmptySearch(last_search_string_))
     return;
 
@@ -67,8 +68,9 @@ void FindHelper::FindNext(bool forward) {
   options->match_case = false;
   options->new_session = false;
 
-  GetWebContents().Find(current_request_id_, last_search_string_,
-                        std::move(options), /*skip_delay=*/false);
+  GetWebContents().Find(
+      last_search_string_, std::move(options), /*skip_delay=*/false,
+      [this](int request_id) { current_request_id_ = request_id; });
 }
 
 void FindHelper::ClearMatches() {
@@ -90,8 +92,6 @@ bool FindHelper::MaybeHandleEmptySearch(const std::u16string& search_string) {
 }
 
 void FindHelper::StartNewSession(const std::u16string& search_string) {
-  current_request_id_ = find_request_id_counter_++;
-  current_session_id_ = current_request_id_;
   last_search_string_ = search_string;
   last_match_count_ = -1;
   last_active_ordinal_ = -1;

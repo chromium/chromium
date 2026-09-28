@@ -139,12 +139,6 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   explicit FindTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FindTabHelper>;
 
-  // Each time a search request comes in we assign it an id before passing it
-  // over the IPC so that when the results come in we can evaluate whether we
-  // still care about the results of the search (in some cases we don't because
-  // the user has issued a new search).
-  static int find_request_id_counter_;
-
   // True if the Find UI is active for this Tab.
   bool find_ui_active_ = false;
 
@@ -158,12 +152,14 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   // inactive matches can be repainted.
   bool find_op_aborted_ = false;
 
-  // This variable keeps track of what the most recent request ID is.
-  int current_find_request_id_;
+  // This variable keeps track of what the most recent request ID is. -1
+  // (never a real request ID) means no find request has been made yet.
+  int current_find_request_id_ = -1;
 
   // This variable keeps track of the ID of the first find request in the
-  // current session, which also uniquely identifies the session.
-  int current_find_session_id_;
+  // current session, which also uniquely identifies the session. -1 (never a
+  // real request ID) means no session has started yet.
+  int current_find_session_id_ = -1;
 
   // The current string we are/just finished searching for. This is used to
   // figure out if this is a Find or a FindNext operation (FindNext should not

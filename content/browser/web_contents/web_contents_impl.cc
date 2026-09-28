@@ -7855,18 +7855,19 @@ int WebContentsImpl::DownloadImageInFrame(
   return download_id;
 }
 
-void WebContentsImpl::Find(int request_id,
-                           const std::u16string& search_text,
-                           blink::mojom::FindOptionsPtr options,
-                           bool skip_delay) {
+void WebContentsImpl::Find(
+    const std::u16string& search_text,
+    blink::mojom::FindOptionsPtr options,
+    bool skip_delay,
+    base::FunctionRef<void(int request_id)> on_request_id) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Find");
   // Cowardly refuse to search for no text.
   if (search_text.empty()) {
     NOTREACHED();
   }
 
-  GetOrCreateFindRequestManager()->Find(request_id, search_text,
-                                        std::move(options), skip_delay);
+  GetOrCreateFindRequestManager()->Find(search_text, std::move(options),
+                                        skip_delay, on_request_id);
 }
 
 void WebContentsImpl::StopFinding(StopFindAction action) {
@@ -12011,8 +12012,16 @@ void WebContentsImpl::NotifyFindReply(int request_id,
                                       int active_match_ordinal,
                                       bool final_update) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyFindReply");
-  if (delegate_ && !IsBeingDestroyed() &&
-      !GetPrimaryMainFrame()->GetProcess()->FastShutdownStarted()) {
+  if (IsBeingDestroyed() ||
+      GetPrimaryMainFrame()->GetProcess()->FastShutdownStarted()) {
+    return;
+  }
+
+  observers_.NotifyObservers(&WebContentsObserver::DidReceiveFindReply,
+                             request_id, number_of_matches,
+                             active_match_ordinal, final_update);
+
+  if (delegate_) {
     delegate_->FindReply(this, request_id, number_of_matches, selection_rect,
                          active_match_ordinal, final_update);
   }

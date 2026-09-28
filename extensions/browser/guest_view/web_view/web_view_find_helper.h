@@ -177,10 +177,6 @@ class WebViewFindHelper {
   // Pointer to the webview that is being helped.
   const raw_ptr<WebViewGuest> webview_guest_;
 
-  // A counter to generate a unique request id for a find request.
-  // We only need the ids to be unique for a given WebViewGuest.
-  int current_find_request_id_;
-
   // Stores aggregated find results and other info for the `findupdate` event.
   std::unique_ptr<FindUpdateEvent> find_update_event_;
 

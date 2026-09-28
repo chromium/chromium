@@ -31,6 +31,7 @@ domains = [
   "domains/FedCm.pdl",
   "domains/Fetch.pdl",
   "domains/FileSystem.pdl",
+  "domains/FindInPage.pdl",
   "domains/HeadlessExperimental.pdl",
   "domains/IO.pdl",
   "domains/IndexedDB.pdl",

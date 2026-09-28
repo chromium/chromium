@@ -1,0 +1,4 @@
+Tests that FindInPage.findNext fails without an active find session.
+Command failed: true
+Error code: -32000
+

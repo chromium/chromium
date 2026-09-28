@@ -46,11 +46,14 @@ class FindRequestManager {
   ~FindRequestManager();
 
   // Initiates a find operation for |search_text| with the options specified in
-  // |options|. |request_id| uniquely identifies the find request.
-  void Find(int request_id,
-            const std::u16string& search_text,
+  // |options|. Allocates the request ID for this request and invokes
+  // |on_request_id| with that ID before doing anything that could synchronously
+  // reenter the caller. Callers that need to correlate a later reply with this
+  // specific request must record the ID from within |on_request_id|.
+  void Find(const std::u16string& search_text,
             blink::mojom::FindOptionsPtr options,
-            bool skip_delay = false);
+            bool skip_delay,
+            base::FunctionRef<void(int request_id)> on_request_id);
 
   // Stops the active find session and clears the general highlighting of the
   // matches. |action| determines whether the last active match (if any) will be
@@ -308,6 +311,9 @@ class FindRequestManager {
   // WebContentses within it will be searched.
   const raw_ptr<WebContentsImpl> contents_;
 
+  // Identifies the current find session.
+  int last_request_id_ = kInvalidId;
+
   // The request ID of the initial find request in the current find-in-page
   // session, which uniquely identifies this session. Request IDs are included
   // in all find-related IPCs, which allows reply IPCs containing results from
@@ -371,6 +377,9 @@ class FindRequestManager {
   std::vector<std::unique_ptr<FrameObserver>> frame_observers_;
 
   base::CancelableOnceClosure delayed_find_task_;
+
+  // The request ID bound into |delayed_find_task_|, if it is not cancelled.
+  int delayed_request_id_ = kInvalidId;
 
   CreateFindInPageClientFunction create_find_in_page_client_for_testing_ =
       nullptr;

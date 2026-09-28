@@ -423,6 +423,29 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // (nothing loaded) to 1.0 (page fully loaded).
   virtual void LoadProgressChanged(double progress) {}
 
+  // Called for every find-in-page request issued earlier via
+  // WebContents::Find().
+  // `request_id` matches the id passed to `Find()`; check it to find the reply
+  // for a specific request.
+  // `final_update` is true when this is the last reply for `request_id`
+  // No more than one call with `final_update` true is made for every request
+  // issued through `Find()`, even if the search text was not found or there was
+  // no frame available to search. See also a note in documentation for Find()
+  // about concurrent calls.
+  //
+  // TODO(crbug.com/492228028): Fix this to guarantee that this is called once
+  // with `final_update` set to true, even when the find session is dropped
+  // because another client started a new one.
+  //
+  // Mirrors WebContentsDelegate::FindReply(), which only the single
+  // WebContentsDelegate (typically the find-in-page UI) receives. Use this
+  // instead when a caller other than the find-in-page UI needs to know when
+  // its own request completes, without displacing the real delegate.
+  virtual void DidReceiveFindReply(int request_id,
+                                   int number_of_matches,
+                                   int active_match_ordinal,
+                                   bool final_update) {}
+
   // This method is invoked once the window.document element of the primary main
   // frame's current document (i.e., |render_frame_host|) is ready. This happens
   // when the document's main HTML resource has finished parsing. Here

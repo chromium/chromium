@@ -33,6 +33,7 @@ include domains/Extensions.pdl
 include domains/FedCm.pdl
 include domains/Fetch.pdl
 include domains/FileSystem.pdl
+include domains/FindInPage.pdl
 include domains/HeadlessExperimental.pdl
 include domains/IO.pdl
 include domains/IndexedDB.pdl

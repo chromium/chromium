@@ -128,6 +128,8 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/fed_cm.h",
     "protocol/fetch.cc",
     "protocol/fetch.h",
+    "protocol/find_in_page.cc",
+    "protocol/find_in_page.h",
     "protocol/forward.h",
     "protocol/input.cc",
     "protocol/input.h",

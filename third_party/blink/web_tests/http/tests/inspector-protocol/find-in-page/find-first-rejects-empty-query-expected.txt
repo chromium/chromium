@@ -1,0 +1,4 @@
+Tests that FindInPage.findFirst rejects an empty query.
+Command failed: true
+Error code: -32602
+

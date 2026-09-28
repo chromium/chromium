@@ -119,9 +119,11 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
 
   void Find(const std::string& search_text,
             blink::mojom::FindOptionsPtr options) {
-    delegate()->UpdateLastRequest(++last_request_id_);
-    contents()->Find(last_request_id_, base::UTF8ToUTF16(search_text),
-                     std::move(options), /*skip_delay=*/false);
+    contents()->Find(base::UTF8ToUTF16(search_text), std::move(options),
+                     /*skip_delay=*/false, [this](int request_id) {
+                       last_request_id_ = request_id;
+                       delegate()->UpdateLastRequest(request_id);
+                     });
   }
 
   WebContentsImpl* contents() const {
@@ -254,6 +256,50 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPage_Issue615291) {
   results = delegate()->GetFindResults();
   EXPECT_EQ(5, results.number_of_matches);
   EXPECT_EQ(0, results.active_match_ordinal);
+}
+
+// Regression test: a "find next" request (new_session = false) assumed that
+// it was continuing the session that FindRequestManager was currently tracking.
+// If another caller started another find session with different text, and then
+// the first caller tried to "find next", that resulted in FindInternal()
+// hitting a DCHECK_EQ that validates the session ID. In such case the session
+// should be restarted.
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
+                       MAYBE(FindNextWithMismatchedSessionDoesNotCrash)) {
+  LoadAndWait("/find_in_simple_page.html");
+
+  auto options = blink::mojom::FindOptions::New();
+  options->run_synchronously_for_testing = true;
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  FindResults results = delegate()->GetFindResults();
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+
+  // A second, independent caller starts its own unrelated session with
+  // different search text (e.g. DevTools' FindInPage.findFirst, while the
+  // find-in-page UI's session for "result" above is still considered
+  // active by its own caller).
+  Find("simple", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(1, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+
+  // The first caller now issues a "find next" for its own search text,
+  // unaware that FindRequestManager's tracked session has since moved on to
+  // a different search. This must not crash, and should be treated as a
+  // fresh session for "result" rather than a continuation of either
+  // session.
+  options->new_session = false;
+  Find("result", options->Clone());
+  delegate()->WaitForFinalReply();
+
+  results = delegate()->GetFindResults();
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
 }
 
 bool ExecuteScriptAndExtractRect(FrameTreeNode* frame,

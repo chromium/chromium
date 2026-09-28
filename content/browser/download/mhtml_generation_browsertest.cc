@@ -189,8 +189,8 @@ class FindTrackingDelegate : public WebContentsDelegate {
     options->run_synchronously_for_testing = true;
     options->match_case = false;
 
-    web_contents->Find(global_request_id++, base::UTF8ToUTF16(search_),
-                       std::move(options), /*skip_delay=*/false);
+    web_contents->Find(base::UTF8ToUTF16(search_), std::move(options),
+                       /*skip_delay=*/false, [](int request_id) {});
     run_loop_.Run();
 
     web_contents->SetDelegate(old_delegate);
@@ -210,16 +210,11 @@ class FindTrackingDelegate : public WebContentsDelegate {
     }
   }
 
-  static int global_request_id;
-
  private:
   std::string search_;
   int matches_ = -1;
   base::RunLoop run_loop_;
 };
-
-// static
-int FindTrackingDelegate::global_request_id = 0;
 
 const std::string_view kTestData =
     "Sample Text to write on a generated MHTML "

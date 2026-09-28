@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This domain provides commands to trigger the "Find in page" feature.
+experimental domain FindInPage
+  # Forwards `query` to the find-in-page facility, starting a new find session.
+  # Where exactly the search starts from is implementation-specific.
+  command findFirst
+    parameters
+      string query
+
+  # Moves to the next match for the query passed to the most recent
+  # findFirst() call.
+  command findNext
+
+  # Moves to the previous match for the query passed to the most recent
+  # findFirst() call.
+  command findPrev
+
+  # Ends the current find session, if any, and clears its highlighting.
+  command stop

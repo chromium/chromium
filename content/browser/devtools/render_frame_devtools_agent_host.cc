@@ -35,6 +35,7 @@
 #include "content/browser/devtools/protocol/emulation_handler.h"
 #include "content/browser/devtools/protocol/fedcm_handler.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
+#include "content/browser/devtools/protocol/find_in_page_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/input_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
@@ -472,6 +473,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
     CHECK(root_session);
     session->CreateAndAddHandler<protocol::TracingHandler>(
         this, GetIOContext(), root_session, session->GetClient()->IsTrusted());
+    session->CreateAndAddHandler<protocol::FindInPageHandler>();
   }
   session->CreateAndAddHandler<protocol::WebMCPHandler>();
   session->CreateAndAddHandler<protocol::LogHandler>();

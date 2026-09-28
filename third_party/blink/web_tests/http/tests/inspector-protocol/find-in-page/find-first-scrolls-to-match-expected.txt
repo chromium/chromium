@@ -1,0 +1,5 @@
+Tests that FindInPage.findFirst scrolls the match into view.
+Initial scrollY is zero: true
+findFirst succeeded: true
+Page scrolled down to reveal the match: true
+

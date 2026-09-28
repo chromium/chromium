@@ -66,9 +66,9 @@ class FindHelper : public content::WebContentsUserData<FindHelper> {
   // Used to check the validity of FindNext operations.
   bool async_find_started_ = false;
 
-  // Used to provide different IDs to each request and for result
-  // verification in asynchronous calls.
-  int find_request_id_counter_ = 0;
+  // Used for result verification in asynchronous calls. IDs themselves come
+  // from WebContents::Find(), shared with every other caller of Find() on
+  // this WebContents.
   int current_request_id_ = 0;
 
   // Used to mark the beginning of the current find session. This is the ID of

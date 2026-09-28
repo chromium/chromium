@@ -1,0 +1,6 @@
+Tests that FindInPage.findFirst restarts the search session with a new query, even while a previous find* session is still active.
+findNext moved to the second alpha match: true
+findFirst with a new query succeeded: true
+findFirst found 'beta' forward from the alpha session's position, not the first 'beta': true
+findNext wrapped around to the first 'beta': true
+
