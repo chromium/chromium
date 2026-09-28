@@ -188,6 +188,65 @@ TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, JavascriptUrl) {
   ExpectSingleError(IDS_POLICY_URL_NOT_HTTPS_ERROR);
 }
 
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, AllowedSubdomainHost) {
+  base::DictValue policy_dict;
+  policy_dict.Set("url",
+                  "https://vertexaisearch.cloud.google.com/home/cid/12345678");
+  SetPolicy(policy_dict);
+
+  EXPECT_TRUE(handler_.CheckPolicySettings(policies_, &errors_));
+  EXPECT_TRUE(errors_.empty());
+
+  ExpectAppliedPref(policy_dict);
+}
+
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, DisallowedHost) {
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://example.com/home/cid/12345678");
+  SetPolicy(policy_dict);
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
+}
+
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, LookalikeHosts) {
+  for (const char* url :
+       {"https://business.gemini.google.example.com/",
+        "https://examplecloud.google.com/", "https://cloud.google.com.evil/",
+        "https://sub.business.gemini.google/"}) {
+    SCOPED_TRACE(url);
+    PolicyErrorMap errors;
+    base::DictValue policy_dict;
+    policy_dict.Set("url", url);
+    SetPolicy(policy_dict);
+
+    EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors));
+    EXPECT_FALSE(errors.empty());
+  }
+}
+
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest, LocalhostNotAllowed) {
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://localhost:8443/side-panel");
+  SetPolicy(policy_dict);
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
+}
+
+TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,
+       DisallowedHostDiscardsLegacyParameters) {
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://example.com/");
+  policy_dict.Set("project_id", "my-project");
+  policy_dict.Set("app_id", "my-app");
+  policy_dict.Set("location", "global");
+  SetPolicy(policy_dict);
+
+  EXPECT_FALSE(handler_.CheckPolicySettings(policies_, &errors_));
+  ExpectSingleError(IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR);
+}
+
 // A rejected `url` discards the whole policy, including otherwise valid legacy
 // parameters, because the handler list skips ApplyPolicySettings entirely.
 TEST_F(GeminiEnterpriseSettingsPolicyHandlerTest,

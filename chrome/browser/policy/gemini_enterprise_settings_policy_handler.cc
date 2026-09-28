@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_url_allowlist.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -37,6 +38,12 @@ bool CheckUrl(const std::string& policy_name,
   }
   if (!gurl.SchemeIs(url::kHttpsScheme)) {
     errors->AddError(policy_name, IDS_POLICY_URL_NOT_HTTPS_ERROR,
+                     PolicyErrorPath{kUrlField});
+    return false;
+  }
+  if (!geic::IsAllowedGeminiEnterpriseHost(gurl)) {
+    errors->AddError(policy_name,
+                     IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR,
                      PolicyErrorPath{kUrlField});
     return false;
   }

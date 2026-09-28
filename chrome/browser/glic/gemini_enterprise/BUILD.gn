@@ -15,6 +15,7 @@ source_set("geic_enabling") {
   ]
 
   deps = [
+    ":url_allowlist",
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/public:features",
@@ -24,6 +25,17 @@ source_set("geic_enabling") {
     "//net",
     "//url",
   ]
+}
+
+# Gemini Enterprise host allowlist, shared by GEiC guest URL resolution and the
+# GeminiEnterpriseSettings policy handler.
+source_set("url_allowlist") {
+  sources = [
+    "geic_url_allowlist.cc",
+    "geic_url_allowlist.h",
+  ]
+
+  deps = [ "//url" ]
 }
 
 source_set("gemini_enterprise") {

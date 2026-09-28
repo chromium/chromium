@@ -261,6 +261,9 @@
   <message name="IDS_POLICY_URL_NOT_HTTPS_ERROR" desc="The text displayed in the status column when the URL given isn't using the https scheme, but needs to be.">
     URL must be https.
   </message>
+  <message name="IDS_POLICY_GEMINI_ENTERPRISE_URL_HOST_NOT_ALLOWED_ERROR" desc="The text displayed in the status column of the GeminiEnterpriseSettings policy when the configured URL doesn't point to a Gemini Enterprise domain.">
+    URL must point to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise<ex>Gemini Enterprise</ex></ph> domain.
+  </message>
   <message name="IDS_POLICY_INVALID_SEARCH_URL_ERROR" desc="The text displayed in the status column when a the URL given for DefaultSearchProviderSearchURL is invalid.">
     Invalid search URL.
   </message>
