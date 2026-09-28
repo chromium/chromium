@@ -926,6 +926,7 @@ ci.builder(
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,
+    ssd = None,
     free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "debug|win (32)",
