@@ -37,8 +37,7 @@
 class CobrowseTabHelperTest : public PlatformTest {
  public:
   CobrowseTabHelperTest() {
-    feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer},
-                                   {kPreventCobrowseOnAimSrpTap});
+    feature_list_.InitWithFeatures({kAimCobrowse, kAssistantContainer}, {});
 
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -178,8 +177,11 @@ class CobrowseTabHelperTest : public PlatformTest {
 };
 
 // Tests that showAssistant is called when navigating in a new tab if the opener
-// was an AIM URL.
+// was an AIM URL and the enable flag is enabled.
 TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableCobrowseOnAimSrpTap);
+
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
 
@@ -199,11 +201,8 @@ TEST_F(CobrowseTabHelperTest, TriggerAssistantFromOpener) {
 }
 
 // Tests that showAssistant is NOT called when navigating in a new tab if the
-// opener was an AIM URL but the prevent flag is enabled.
-TEST_F(CobrowseTabHelperTest, NoTriggerFromOpenerWhenPreventFlagEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kPreventCobrowseOnAimSrpTap);
-
+// opener was an AIM URL but the flag is disabled by default.
+TEST_F(CobrowseTabHelperTest, NoTriggerFromOpenerWhenFlagDisabled) {
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL next_url("https://www.example.com");
 
@@ -395,6 +394,9 @@ TEST_F(CobrowseTabHelperTest, HideAssistantOnAimZeroStateSearchNavigation) {
 // Tests that hideAssistant is called when navigating to the NTP, and
 // showAssistant is restored when navigating to a normal web page.
 TEST_F(CobrowseTabHelperTest, HideOnNtpAndRestoreOnNormalNavigation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableCobrowseOnAimSrpTap);
+
   GURL aim_url("https://www.google.com/search?q=test&udm=50");
   GURL ntp_url("chrome://newtab");
   GURL normal_url("https://www.example.com");

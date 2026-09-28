@@ -899,7 +899,7 @@ bool IsAimCobrowseEnabled() {
   return base::FeatureList::IsEnabled(kAimCobrowse);
 }
 
-BASE_FEATURE(kPreventCobrowseOnAimSrpTap, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableCobrowseOnAimSrpTap, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability,
              base::FEATURE_ENABLED_BY_DEFAULT);

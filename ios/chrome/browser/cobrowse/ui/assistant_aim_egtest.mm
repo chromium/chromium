@@ -298,7 +298,13 @@ void RemoveSharedTab(NSString* title) {
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   config.features_disabled.push_back(kAssistantAimMinimizedState);
   config.features_disabled.push_back(kComposeboxServerSideState);
-  config.features_disabled.push_back(kPreventCobrowseOnAimSrpTap);
+
+  if ([self
+          isRunningTest:@selector(
+                            testNavigateInMainBrowserUpdatesCobrowseContext)] ||
+      [self isRunningTest:@selector(testAssistantPersistsOnColdStart)]) {
+    config.features_enabled.push_back(kEnableCobrowseOnAimSrpTap);
+  }
 
   // Enable omnibox debugging flags.
   config.additional_args.push_back("-EnableOmniboxDebugging");
@@ -1455,21 +1461,13 @@ void RemoveSharedTab(NSString* title) {
 }
 
 // Tests that when a new tab is opened from an eligible AIM page while no
-// session is active, and the prevent flag is enabled, the assistant is NOT
-// shown.
-- (void)testNewTabFromAimSRPDoesNotTriggerCobrowseWhenFlagEnabled {
+// session is active, and the enable flag is disabled (default), the assistant
+// is NOT shown.
+- (void)testNewTabFromAimSRPDoesNotTriggerCobrowseWhenFlagDisabled {
   if ([ComposeboxAppInterface isServerSideStateEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"Skipped when kComposeboxServerSideState is enabled.");
   }
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  // Remove from disabled list to allow enabling it.
-  std::erase(config.features_disabled, kPreventCobrowseOnAimSrpTap);
-  config.features_enabled.push_back(kPreventCobrowseOnAimSrpTap);
-  // Use CleanShutdown so that the preference cleared in setUp is
-  // synchronously flushed to disk before the app relaunches.
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Navigate the main browser to a simulated AIM URL.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(

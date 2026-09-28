@@ -713,6 +713,12 @@ inline constexpr char kEnableBulkDataEntryConnectorIOSDescription[] =
     "When enabled, the enterprise pasted content DLP feature is available on "
     "iOS.";
 
+inline constexpr char kEnableCobrowseOnAimSrpTapName[] =
+    "Enable Cobrowse on AIM SRP Tap";
+inline constexpr char kEnableCobrowseOnAimSrpTapDescription[] =
+    "Enables Cobrowse to automatically open when a user taps a link on an AIM "
+    "SRP page.";
+
 inline constexpr char kEnableCompromisedPasswordsMutingName[] =
     "Enable the muting of compromised passwords in the Password Manager";
 inline constexpr char kEnableCompromisedPasswordsMutingDescription[] =
@@ -1666,12 +1672,6 @@ inline constexpr char kPrepopulatedEnginesShadowVariantsName[] =
 inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
     "Enables shadow variants for prepopulated engines resolution, allowing "
     "alternative engines to be resolved in specific regions.";
-
-inline constexpr char kPreventCobrowseOnAimSrpTapName[] =
-    "Prevent Cobrowse on AIM SRP Tap";
-inline constexpr char kPreventCobrowseOnAimSrpTapDescription[] =
-    "Prevents Cobrowse from automatically opening when a user taps a link on "
-    "an AIM SRP page.";
 
 inline constexpr char kPriceTrackingPromoName[] =
     "Enables price tracking notification promo card";

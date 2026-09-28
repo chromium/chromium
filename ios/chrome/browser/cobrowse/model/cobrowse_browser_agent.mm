@@ -227,7 +227,7 @@ bool CobrowseBrowserAgent::CanShowAssistantForWebState(
     return true;
   }
 
-  if (base::FeatureList::IsEnabled(kPreventCobrowseOnAimSrpTap)) {
+  if (!base::FeatureList::IsEnabled(kEnableCobrowseOnAimSrpTap)) {
     return false;
   }
 

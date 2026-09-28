@@ -731,9 +731,8 @@ BASE_DECLARE_FEATURE(kAimCobrowse);
 // Returns true if the AimCobrowse feature is enabled.
 bool IsAimCobrowseEnabled();
 
-// Prevents Cobrowse from automatically opening when the user taps on an AIM SRP
-// link.
-BASE_DECLARE_FEATURE(kPreventCobrowseOnAimSrpTap);
+// Enables Cobrowse automatically opening when the user taps on an AIM SRP link.
+BASE_DECLARE_FEATURE(kEnableCobrowseOnAimSrpTap);
 
 // Removes or disables feedback entry points from Chrome UI for signed in users
 // who do not have the `can_submit_feedback` Account Capability.
