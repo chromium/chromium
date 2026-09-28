@@ -23,6 +23,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -307,26 +308,51 @@ public class ArchivedTabsMessageService
         return true;
     }
 
+    @Contract("null -> false")
+    private static boolean isTabEligibleForArchive(@Nullable Tab tab) {
+        return tab != null
+                && !tab.isClosing()
+                && !tab.isDestroyed()
+                && !tab.isOffTheRecord()
+                && !tab.getIsPinned();
+    }
+
     private void onDropOnArchivalMessageCard(int tabId) {
         TabModel tabModel = mCurrentTabModelSupplier.get();
-        if (tabModel == null) return;
+        if (tabModel == null || tabModel.isIncognito()) return;
         Tab tab = tabModel.getTabById(tabId);
-        if (tab == null || !ensureOrchestratorInitialized()) return;
-        Destroyable lease =
-                mArchivedTabModelOrchestrator.acquireLease(LeaseReason.ARCHIVED_TABS_DIALOG);
-        mArchivedTabModelOrchestrator.runOnTabStateInitialized(
-                () -> {
-                    try {
-                        if (!mArchivedTabModelOrchestrator.isDestroyed()
-                                && mArchivedTabModelOrchestrator.getTabArchiver() != null) {
-                            mArchivedTabModelOrchestrator
-                                    .getTabArchiver()
-                                    .archiveAndRemoveTabs(tabModel, List.of(tab));
-                        }
-                    } finally {
-                        lease.destroy();
-                    }
-                });
+        if (!isTabEligibleForArchive(tab)) {
+            return;
+        }
+        if (!ensureOrchestratorInitialized()) {
+            return;
+        }
+        final ArchivedTabModelOrchestrator orchestrator = mArchivedTabModelOrchestrator;
+        Destroyable lease = orchestrator.acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        orchestrator.runOnTabStateInitialized(
+                () -> archiveDroppedTabWhenInitialized(orchestrator, tabModel, tabId, lease));
+    }
+
+    private static void archiveDroppedTabWhenInitialized(
+            ArchivedTabModelOrchestrator orchestrator,
+            TabModel tabModel,
+            int tabId,
+            Destroyable lease) {
+        try {
+            Profile currentProfile = orchestrator.getProfile();
+            if (orchestrator.isDestroyed()
+                    || !currentProfile.isNativeInitialized()
+                    || currentProfile.shutdownStarted()) {
+                return;
+            }
+            Tab currentTab = tabModel.getTabById(tabId);
+            if (!isTabEligibleForArchive(currentTab)) {
+                return;
+            }
+            orchestrator.getTabArchiver().archiveAndRemoveTabs(tabModel, List.of(currentTab));
+        } finally {
+            lease.destroy();
+        }
     }
 
     private void openArchivedTabsDialog() {

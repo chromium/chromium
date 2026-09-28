@@ -100,6 +100,7 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         LeaseReason.RESCUE_ARCHIVED_TABS,
         LeaseReason.PERSISTENT_STORE_CLEANER,
         LeaseReason.ARCHIVED_TABS_DIALOG,
+        LeaseReason.DRAG_TO_ARCHIVE,
         LeaseReason.FOR_TESTING
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -109,7 +110,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         int RESCUE_ARCHIVED_TABS = 2;
         int PERSISTENT_STORE_CLEANER = 3;
         int ARCHIVED_TABS_DIALOG = 4;
-        int FOR_TESTING = 5;
+        int DRAG_TO_ARCHIVE = 5;
+        int FOR_TESTING = 6;
     }
 
     private static final int GRACE_PERIOD_DELAY_MS = 5000;

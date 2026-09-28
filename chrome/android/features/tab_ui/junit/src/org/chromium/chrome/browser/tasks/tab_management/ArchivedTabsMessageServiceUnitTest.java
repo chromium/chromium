@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,6 +51,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -100,6 +102,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private TabArchiver mTabArchiver;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
+    @Mock private Destroyable mLease;
     @Mock private ServiceDismissActionProvider<@MessageType Integer> mServiceDismissActionProvider;
     @Mock private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -118,6 +121,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Captor private ArgumentCaptor<TabArchiveSettings.Observer> mTabArchiveSettingsObserverCaptor;
     @Captor private ArgumentCaptor<OnDropOnArchivalMessageCardEventListener> mOnDropObserverCaptor;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
 
     @Captor
     private ArgumentCaptor<LayoutStateProvider.LayoutStateObserver> mLayoutStateObserverCaptor;
@@ -148,6 +152,7 @@ public class ArchivedTabsMessageServiceUnitTest {
         mTabListCoordinatorSupplier.set(mTabListCoordinator);
 
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
         mCurrentTabModelSupplier.set(mTabModel);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mProfile.isNativeInitialized()).thenReturn(true);
@@ -155,8 +160,6 @@ public class ArchivedTabsMessageServiceUnitTest {
         when(mArchivedTabModelOrchestrator.getProfile()).thenReturn(mProfile);
         when(mArchivedTabModelOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
         when(mArchivedTabModelOrchestrator.isTabModelInitialized()).thenReturn(true);
-        when(mArchivedTabModelOrchestrator.acquireLease(anyInt()))
-                .thenReturn(mock(Destroyable.class));
         doAnswer(
                         invocation -> {
                             invocation.<Runnable>getArgument(0).run();
@@ -164,6 +167,9 @@ public class ArchivedTabsMessageServiceUnitTest {
                         })
                 .when(mArchivedTabModelOrchestrator)
                 .runOnTabStateInitialized(any());
+        when(mArchivedTabModelOrchestrator.acquireLease(LeaseReason.DRAG_TO_ARCHIVE))
+                .thenReturn(mLease);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
     }
 
     @After
@@ -201,6 +207,18 @@ public class ArchivedTabsMessageServiceUnitTest {
 
         verify(mTabArchiveSettings).addObserver(mTabArchiveSettingsObserverCaptor.capture());
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
+    }
+
+    private OnDropOnArchivalMessageCardEventListener createServiceAndCaptureOnDropListener() {
+        createArchivedTabsMessageService();
+        mTabListCoordinatorSupplier.set(null);
+
+        reset(mTabListCoordinator);
+        mTabListCoordinatorSupplier.set(mTabListCoordinator);
+
+        verify(mTabListCoordinator)
+                .setOnDropOnArchivalMessageCardEventListener(mOnDropObserverCaptor.capture());
+        return mOnDropObserverCaptor.getValue();
     }
 
     @Test
@@ -280,30 +298,129 @@ public class ArchivedTabsMessageServiceUnitTest {
 
     @Test
     public void testObserverInitialized() {
-        createArchivedTabsMessageService();
-        mTabListCoordinatorSupplier.set(null);
-
-        reset(mTabListCoordinator);
-        mTabListCoordinatorSupplier.set(mTabListCoordinator);
-        verify(mTabListCoordinator).setOnDropOnArchivalMessageCardEventListener(any());
+        createServiceAndCaptureOnDropListener();
     }
 
     @Test
     public void testOnDropListener() {
-        createArchivedTabsMessageService();
-        mTabListCoordinatorSupplier.set(null);
-
-        reset(mTabListCoordinator);
-        mTabListCoordinatorSupplier.set(mTabListCoordinator);
-
-        verify(mTabListCoordinator)
-                .setOnDropOnArchivalMessageCardEventListener(mOnDropObserverCaptor.capture());
-
-        OnDropOnArchivalMessageCardEventListener onDropObserver = mOnDropObserverCaptor.getValue();
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
         onDropObserver.onDropTab(TAB_ID);
 
-        verify(mTabModel).getTabById(TAB_ID);
+        verify(mArchivedTabModelOrchestrator).acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        verify(mTabModel, times(2)).getTabById(TAB_ID);
         verify(mTabArchiver).archiveAndRemoveTabs(any(), eq(List.of(mTab)));
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void testOnDropListener_asyncTabStateInitialization() {
+        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
+
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mArchivedTabModelOrchestrator).acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        verify(mArchivedTabModelOrchestrator).runOnTabStateInitialized(mRunnableCaptor.capture());
+        verify(mTabArchiver, never()).archiveAndRemoveTabs(any(), any());
+        verify(mLease, never()).destroy();
+
+        mRunnableCaptor.getValue().run();
+        verify(mTabArchiver).archiveAndRemoveTabs(any(), eq(List.of(mTab)));
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void testOnDropListener_asyncTabStateInitialization_tabDestroyedBeforeInitCompletes() {
+        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
+
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mArchivedTabModelOrchestrator).acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        verify(mArchivedTabModelOrchestrator).runOnTabStateInitialized(mRunnableCaptor.capture());
+
+        when(mTab.isDestroyed()).thenReturn(true);
+        mRunnableCaptor.getValue().run();
+
+        verify(mTabArchiver, never()).archiveAndRemoveTabs(any(), any());
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void
+            testOnDropListener_asyncTabStateInitialization_orchestratorDestroyedBeforeInitCompletes() {
+        doNothing().when(mArchivedTabModelOrchestrator).runOnTabStateInitialized(any());
+
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mArchivedTabModelOrchestrator).acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        verify(mArchivedTabModelOrchestrator).runOnTabStateInitialized(mRunnableCaptor.capture());
+
+        when(mArchivedTabModelOrchestrator.isDestroyed()).thenReturn(true);
+        mRunnableCaptor.getValue().run();
+
+        verify(mTabArchiver, never()).archiveAndRemoveTabs(any(), any());
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void testOnDropListener_nullTab_safeNoOp() {
+        when(mTabModel.getTabById(TAB_ID)).thenReturn(null);
+
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mArchivedTabModelOrchestrator, never()).acquireLease(anyInt());
+        verify(mTabArchiver, never()).archiveAndRemoveTabs(any(), any());
+    }
+
+    @Test
+    public void testOnDropListener_orchestratorDestroyed_resurrects() {
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+
+        when(mArchivedTabModelOrchestrator.isDestroyed()).thenReturn(true);
+
+        ArchivedTabModelOrchestrator newOrchestrator = mock(ArchivedTabModelOrchestrator.class);
+        when(newOrchestrator.getProfile()).thenReturn(mProfile);
+        when(newOrchestrator.isTabModelInitialized()).thenReturn(false);
+        doAnswer(
+                        invocation -> {
+                            invocation.<Runnable>getArgument(0).run();
+                            return null;
+                        })
+                .when(newOrchestrator)
+                .runOnTabStateInitialized(any());
+        when(newOrchestrator.acquireLease(LeaseReason.DRAG_TO_ARCHIVE)).thenReturn(mLease);
+        when(newOrchestrator.getTabArchiver()).thenReturn(mTabArchiver);
+        ArchivedTabModelOrchestrator.setInstanceForTesting(newOrchestrator);
+
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(newOrchestrator)
+                .maybeCreateAndInitTabModels(eq(mTabContentManager), any(CipherFactory.class));
+        verify(newOrchestrator).acquireLease(LeaseReason.DRAG_TO_ARCHIVE);
+        verify(mTabArchiver).archiveAndRemoveTabs(any(), eq(List.of(mTab)));
+        verify(mLease).destroy();
+    }
+
+    @Test
+    public void testOnDropListener_profileShutdown_doesNotArchive() {
+        OnDropOnArchivalMessageCardEventListener onDropObserver =
+                createServiceAndCaptureOnDropListener();
+
+        when(mProfile.shutdownStarted()).thenReturn(true);
+
+        onDropObserver.onDropTab(TAB_ID);
+
+        verify(mArchivedTabModelOrchestrator, never()).acquireLease(anyInt());
+        verify(mTabArchiver, never()).archiveAndRemoveTabs(any(), any());
     }
 
     @Test
