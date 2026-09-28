@@ -321,7 +321,6 @@ WebRtcMedium::WebRtcMedium(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : chrome_network_thread_(/*name=*/"WebRtc Network Thread"),
       chrome_signaling_thread_(/*name=*/"WebRtc Signaling Thread"),
-      chrome_worker_thread_(/*name=*/"WebRtc Worker Thread"),
       p2p_socket_manager_(socket_manager),
       mdns_responder_factory_(mdns_responder_factory),
       ice_config_fetcher_(ice_config_fetcher),
@@ -361,7 +360,6 @@ WebRtcMedium::~WebRtcMedium() {
   // Stop is called in thread destructor, but we want to ensure all threads are
   // down before the destructor is complete and we release the lock.
   chrome_signaling_thread_.Stop();
-  chrome_worker_thread_.Stop();
   VLOG(1) << "WebRtcMedium destructor is done shutting down threads.";
 }
 
@@ -401,31 +399,24 @@ void WebRtcMedium::InitWebRTCThread(webrtc::Thread** thread_to_set) {
 void WebRtcMedium::InitPeerConnectionFactory() {
   DCHECK(!chrome_network_thread_.IsRunning());
   DCHECK(!chrome_signaling_thread_.IsRunning());
-  DCHECK(!chrome_worker_thread_.IsRunning());
   DCHECK(!rtc_network_thread_);
   DCHECK(!rtc_signaling_thread_);
-  DCHECK(!rtc_worker_thread_);
 
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   webrtc::ThreadWrapper::current()->set_send_allowed(true);
 
-  // We need to create three dedicated threads for WebRTC. We post tasks to the
-  // threads and to ensure the message loop and jingle wrapper is setup for each
-  // thread. Unretained(this) is used because we will wait on this thread for
-  // the tasks to complete before exiting.
+  // We need to create dedicated network and signaling threads for WebRTC. We
+  // post tasks to the threads to ensure the message loop and jingle wrapper
+  // are setup for each thread. Unretained(this) is used because we will wait
+  // on this thread for the tasks to complete before exiting.
 
-  CountDownLatch latch(3);
+  CountDownLatch latch(2);
   auto decrement_latch = base::BindRepeating(
       [](CountDownLatch* latch) { latch->CountDown(); }, &latch);
 
   chrome_network_thread_.Start();
   chrome_network_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&WebRtcMedium::InitNetworkThread,
-                                base::Unretained(this), decrement_latch));
-
-  chrome_worker_thread_.Start();
-  chrome_worker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&WebRtcMedium::InitWorkerThread,
                                 base::Unretained(this), decrement_latch));
 
   chrome_signaling_thread_.Start();
@@ -438,12 +429,10 @@ void WebRtcMedium::InitPeerConnectionFactory() {
 
   DCHECK(rtc_network_thread_);
   DCHECK(rtc_signaling_thread_);
-  DCHECK(rtc_worker_thread_);
 
   webrtc::PeerConnectionFactoryDependencies factory_dependencies;
   factory_dependencies.env = WebRtcEnvironment();
   factory_dependencies.network_thread = rtc_network_thread_;
-  factory_dependencies.worker_thread = rtc_worker_thread_;
   factory_dependencies.signaling_thread = rtc_signaling_thread_;
 
   peer_connection_factory_ = webrtc::CreateModularPeerConnectionFactory(
@@ -502,14 +491,6 @@ void WebRtcMedium::InitSignalingThread(base::OnceClosure complete_callback) {
   std::move(complete_callback).Run();
 }
 
-void WebRtcMedium::InitWorkerThread(base::OnceClosure complete_callback) {
-  DCHECK(chrome_worker_thread_.task_runner()->BelongsToCurrentThread());
-  DCHECK(!rtc_worker_thread_);
-
-  InitWebRTCThread(&rtc_worker_thread_);
-
-  std::move(complete_callback).Run();
-}
 
 void WebRtcMedium::OnIceServersFetched(
     webrtc::PeerConnectionObserver* observer,

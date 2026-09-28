@@ -71,14 +71,12 @@ class WebRtcMedium : public api::WebRtcMedium {
       EXCLUSIVE_LOCKS_REQUIRED(peer_connection_factory_lock_);
   void InitNetworkThread(base::OnceClosure complete_callback);
   void InitSignalingThread(base::OnceClosure complete_callback);
-  void InitWorkerThread(base::OnceClosure complete_callback);
   void ShutdownNetworkManager();
 
   // base::Thread is required here because we need to be able to Start/Stop the
   // threads explicitly with along with the peer connection factory instance.
   base::Thread chrome_network_thread_;
   base::Thread chrome_signaling_thread_;
-  base::Thread chrome_worker_thread_;
 
   // These webrtc::Thread* are jingle thread wrappers around the corresponding
   // base::Thread. They get cleaned up on thread shutdown so we don't need to
@@ -86,7 +84,6 @@ class WebRtcMedium : public api::WebRtcMedium {
   // RAW_PTR_EXCLUSION: Performance.
   RAW_PTR_EXCLUSION webrtc::Thread* rtc_network_thread_ = nullptr;
   RAW_PTR_EXCLUSION webrtc::Thread* rtc_signaling_thread_ = nullptr;
-  RAW_PTR_EXCLUSION webrtc::Thread* rtc_worker_thread_ = nullptr;
 
   // Used to guard access to peer_connection_factory_.
   base::Lock peer_connection_factory_lock_;
