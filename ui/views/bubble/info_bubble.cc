@@ -43,9 +43,9 @@ InfoBubble::InfoBubble(View* anchor,
       [](const InfoBubble* bubble, const gfx::Rect& rect) {
         // Anchor widget can be null during destruction or if the anchor is
         // cleared.
-        return bubble->anchor_widget()
-                   ? bubble->anchor_widget()->GetWindowBoundsInScreen()
-                   : gfx::Rect();
+        const Widget* widget = bubble->anchor_widget() ? bubble->anchor_widget()
+                                                       : bubble->GetWidget();
+        return widget ? widget->GetWorkAreaBoundsInScreen() : gfx::Rect();
       },
       base::Unretained(this)));
 

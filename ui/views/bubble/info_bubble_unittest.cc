@@ -8,11 +8,18 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace views::test {
 
@@ -143,6 +150,74 @@ TEST_F(InfoBubbleTest, MetadataTest) {
   info_bubble->Show();
 
   test::TestViewMetadata(info_bubble);
+  info_bubble->Hide();
+  RunPendingMessages();
+}
+
+TEST_F(InfoBubbleTest, AvailableScreenBoundsUsesWorkArea) {
+#if BUILDFLAG(IS_OZONE)
+  // On Ozone platforms that do not support global screen coordinates (e.g.
+  // Wayland), `BubbleDialogDelegate::GetBubbleBounds()` disables offscreen
+  // bubble adjustment (`adjust_to_fix_available_bounds = false`) and delegates
+  // positioning to the compositor instead.
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    GTEST_SKIP() << "Global screen coordinates unavailable";
+  }
+#endif
+  const gfx::Rect work_area =
+      display::Screen::Get()
+          ->GetDisplayNearestWindow(anchor_widget()->GetNativeWindow())
+          .work_area();
+
+  // Place `anchor_widget` near the right edge of the display's work area so
+  // that it is completely within `work_area`, and place `anchor_view` near the
+  // left side of `anchor_widget`. A wide bubble with TOP_LEFT arrow overflows
+  // `anchor_widget` on the right less than a mirrored TOP_RIGHT bubble
+  // overflows `anchor_widget` on the left, but TOP_LEFT overflows `work_area`
+  // whereas TOP_RIGHT fits completely within `work_area`.
+  anchor_widget()->SetBounds(
+      {work_area.right() - 150, work_area.y() + 100, 140, 200});
+  View* anchor_view = anchor_widget()->GetContentsView()->AddChildView(
+      std::make_unique<View>());
+  anchor_view->SetBoundsRect({10, 10, 20, 20});
+
+  InfoBubble* info_bubble =
+      new InfoBubble(anchor_view, BubbleBorder::Arrow::TOP_LEFT, u"");
+  info_bubble->set_preferred_width(200);
+  info_bubble->Show();
+  // Offscreen adjustment is disabled by default on Linux
+  // (`PlatformStyle::kAdjustBubbleIfOffscreen`), and `CreateBubble()` resets
+  // it to that default. Enable it explicitly so that the bubble is positioned
+  // using the available screen bounds.
+  info_bubble->set_adjust_if_offscreen(true);
+  info_bubble->SizeToContents();
+
+  EXPECT_EQ(
+      work_area,
+      info_bubble->GetBubbleFrameView()->available_screen_bounds_callback().Run(
+          info_bubble->GetAnchorRect()));
+  EXPECT_EQ(BubbleBorder::Arrow::TOP_RIGHT,
+            info_bubble->GetBubbleFrameView()->GetArrow());
+  EXPECT_TRUE(
+      work_area.Contains(info_bubble->GetWidget()->GetWindowBoundsInScreen()));
+
+  // When `anchor_widget()` is null, the bubble's widget should be used to find
+  // the available work area bounds and position the bubble within `work_area`.
+  info_bubble->SetAnchorView(nullptr);
+  ASSERT_EQ(nullptr, info_bubble->anchor_widget());
+  info_bubble->SetAnchorRect(
+      {work_area.right() - 100, work_area.y() + 50, 20, 20});
+  EXPECT_EQ(
+      work_area,
+      info_bubble->GetBubbleFrameView()->available_screen_bounds_callback().Run(
+          info_bubble->GetAnchorRect()));
+  EXPECT_EQ(BubbleBorder::Arrow::TOP_RIGHT,
+            info_bubble->GetBubbleFrameView()->GetArrow());
+  EXPECT_TRUE(
+      work_area.Contains(info_bubble->GetWidget()->GetWindowBoundsInScreen()));
+
   info_bubble->Hide();
   RunPendingMessages();
 }
