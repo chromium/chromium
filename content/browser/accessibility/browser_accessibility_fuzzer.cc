@@ -265,7 +265,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (ui::IsRoleFinal(parent_node->GetRole())) {
     update.nodes[0].role = parent_node->GetRole();
   } else {
-    update.nodes[0].role = ax::mojom::Role::kNone;
+    update.nodes[0].role = ax::mojom::Role::kUnknown;
   }
   update.nodes[1].id = node_id;
   update.nodes[1].role = GetInterestingRole(fdp);
