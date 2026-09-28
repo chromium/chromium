@@ -25,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Coordinator class of the filter bottom sheet UI for history page. */
 @NullMarked
@@ -69,15 +70,12 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) return true;
-            return (o instanceof FilterItem filterItem)
-                    ? TextUtils.equals(id, filterItem.id)
-                    : false;
+            return o instanceof FilterItem other && TextUtils.equals(id, other.id);
         }
 
         @Override
         public int hashCode() {
-            return java.util.Objects.hashCode(id);
+            return Objects.hashCode(id);
         }
     }
 

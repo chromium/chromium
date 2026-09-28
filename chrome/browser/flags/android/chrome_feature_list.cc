@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kWideScreenFeedForFoldables,
     &feed::kXsurfaceMetricsReporting,
     &finds::features::kChromeFinds,
+    &history::kBrowsingHistoryFilterByDomain,
     &history::kOrganicRepeatableQueries,
     &kAccountForSuppressedKeyboardInsets,
     &kAccountPickerDialog,

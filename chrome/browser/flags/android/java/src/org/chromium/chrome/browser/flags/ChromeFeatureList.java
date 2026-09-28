@@ -434,6 +434,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION =
             "BrowserControlsScrollSnapAnimation";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
+    public static final String BROWSING_HISTORY_FILTER_BY_DOMAIN = "BrowsingHistoryFilterByDomain";
     public static final String CACHE_IS_GOOGLE_SIGNED = "CacheIsGoogleSigned";
     public static final String CACHE_IS_MULTI_INSTANCE_API_31_ENABLED =
             "CacheIsMultiInstanceApi31Enabled";
@@ -1787,6 +1788,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsScrollSnapAnimation =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_SCROLL_SNAP_ANIMATION, false);
+    public static final MutableFlagWithSafeDefault sBrowsingHistoryFilterByDomain =
+            newMutableFlagWithSafeDefault(BROWSING_HISTORY_FILTER_BY_DOMAIN, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     public static final MutableFlagWithSafeDefault sCrossWindowTabGroupOperations =

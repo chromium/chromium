@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Build.VERSION_CODES;
+import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,10 +25,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProviderJni;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -181,5 +188,38 @@ public class HistoryContentManagerUnitTest {
                 /* createNewTab= */ true,
                 /* runCallback= */ false);
         verify(mIncognitoAsyncTabLauncher).launchNewTab(any(), anyInt(), any());
+    }
+
+    @Test
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Features.EnableFeatures({
+        ChromeFeatureList.APP_SPECIFIC_HISTORY,
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
+    })
+    public void testCreateForPageInfo_FilterChipsDisabled() {
+        HistoryContentManager pageInfoContentManager =
+                HistoryContentManager.createForPageInfo(
+                        mActivity,
+                        mObserver,
+                        mProfile,
+                        "www.example.com",
+                        mTabSupplier,
+                        mUmaRecorder,
+                        mHistoryProvider,
+                        mRegularAsyncTabLauncher,
+                        mIncognitoAsyncTabLauncher);
+        pageInfoContentManager.startLoadingItems();
+
+        assertFalse(pageInfoContentManager.showAppFilter());
+        assertFalse(pageInfoContentManager.showHostFilter());
+        assertFalse(pageInfoContentManager.showFilterChips());
+        assertEquals("www.example.com", pageInfoContentManager.getAdapter().getHostNameForTest());
+        assertFalse(pageInfoContentManager.getAdapter().hasListHeader());
+        assertEquals(
+                View.GONE,
+                pageInfoContentManager.getAdapter().getAppFilterButtonForTest().getVisibility());
+        assertEquals(
+                View.GONE,
+                pageInfoContentManager.getAdapter().getHostFilterButtonForTest().getVisibility());
     }
 }

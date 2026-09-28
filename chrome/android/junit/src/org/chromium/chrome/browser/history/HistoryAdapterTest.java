@@ -129,15 +129,15 @@ public class HistoryAdapterTest {
         mAdapter.onSearchStart();
         Assert.assertTrue("Source app should remain on when entering search", showSourceApp());
 
-        mAdapter.updateHistory(new FilterItem("org.great.app", null, "Great App"));
+        mAdapter.updateAppFilter(new FilterItem("org.great.app", null, "Great App"));
         Assert.assertFalse("No source app when app filter is on", showSourceApp());
         Assert.assertEquals("App id should switch to greatapp", "org.great.app", getAppId());
 
-        mAdapter.updateHistory(null);
+        mAdapter.updateAppFilter(null);
         Assert.assertTrue("Source app when app filter is reset", showSourceApp());
         Assert.assertEquals("App id should switch to null", null, getAppId());
 
-        mAdapter.updateHistory(new FilterItem("org.awesome.app", null, "Awesome App"));
+        mAdapter.updateAppFilter(new FilterItem("org.awesome.app", null, "Awesome App"));
         Assert.assertFalse("No source app when app filter is on again", showSourceApp());
         Assert.assertEquals("App id should switch to awesomeapp", "org.awesome.app", getAppId());
 

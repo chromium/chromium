@@ -15,14 +15,21 @@ found in the LICENSE file.
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:paddingStart="16dp"
-      android:paddingEnd="16dp"
+      android:paddingEnd="8dp"
       android:paddingTop="8dp"
       android:paddingBottom="8dp">
 
     <org.chromium.components.browser_ui.widget.chips.ChipView
         android:id="@+id/app_history_filter_chip"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="8dp" />
+
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/host_history_filter_chip"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginEnd="8dp" />
 
   </LinearLayout>
 

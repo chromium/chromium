@@ -428,7 +428,7 @@ public class HistoryManager
         assumeNonNull(mToolbar);
         assumeNonNull(mSelectableListLayout);
 
-        mContentManager.maybeResetAppFilterChip();
+        mContentManager.maybeResetFilterChips();
         mContentManager.getAdapter().onSearchStart();
         mToolbar.showSearchView(showKeyboard);
         String searchEmptyString = getSearchEmptyString();
