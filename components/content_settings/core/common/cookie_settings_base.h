@@ -209,6 +209,33 @@ class CookieSettingsBase {
       base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
       CookieSettingWithMetadata* cookie_settings = nullptr) const;
 
+  // Returns true if the context identified by (`url`, `site_for_cookies`,
+  // `top_frame_origin`, `cookie_partition_key`) is allowed to access any level
+  // of storage (unpartitioned, partitioned, or nonced/ephemeral) for APIs such
+  // as WebStorage, IndexedDB, CacheStorage, Service Worker, and Shared Worker.
+  //
+  // While most contexts have access to at least partitioned or ephemeral
+  // storage by default, storage access is completely denied (returning false)
+  // when cookies/site data are blocked by user content settings (e.g. site-
+  // specific block rules or global block-all-cookies), or when third-party
+  // cookies are blocked and storage partitioning is disabled.
+  //
+  // Unlike `IsFullCookieAccessAllowed()`:
+  // - Nonced contexts (e.g. Fenced Frames, credentialless iframes) are allowed
+  //   to access ephemeral nonced storage unless blocked by site settings.
+  // - Cross-site contexts are allowed to access partitioned storage by default
+  //   when third-party cookies are blocked (provided storage partitioning is
+  //   enabled), unless blocked by a site-specific content setting.
+  //
+  // This may be called on any thread.
+  bool IsAnyStorageAccessAllowed(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
+      CookieSettingWithMetadata* cookie_settings = nullptr) const;
+
   // Returns true if the cookie set by a page identified by |url| should be
   // session only. Querying this only makes sense if |IsFullCookieAccessAllowed|
   // has returned true.

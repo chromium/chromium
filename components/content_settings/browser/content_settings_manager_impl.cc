@@ -19,10 +19,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -159,8 +157,6 @@ bool ContentSettingsManagerImpl::EvaluateStorageAccessPermission(
   // TODO(crbug.com/40247160): Consider whether the following check should
   // get CookieSettingOverrides from the frame rather than default to none.
 
-  CookieSettingsBase::CookieSettingWithMetadata cookie_settings;
-
   net::SchemefulSite top_frame_site(top_frame_origin);
   std::optional<net::CookiePartitionKey> cookie_partition_key =
       net::CookiePartitionKey::FromStorageKeyComponents(
@@ -169,31 +165,9 @@ bool ContentSettingsManagerImpl::EvaluateStorageAccessPermission(
               !site_for_cookies.IsFirstParty(origin.GetURL())),
           /*nonce=*/std::nullopt);
 
-  bool allowed = cookie_settings_->IsFullCookieAccessAllowed(
+  return cookie_settings_->IsAnyStorageAccessAllowed(
       url, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
-      cookie_partition_key, &cookie_settings);
-
-  // If storage partitioning is active, third-party partitioned storage is
-  // allowed by default, and access is only blocked due to general third-party
-  // cookie blocking (and not due to a user specified pattern) then we'll allow
-  // storage access.
-  if (base::FeatureList::IsEnabled(
-          net::features::kThirdPartyStoragePartitioning) &&
-      base::FeatureList::IsEnabled(
-          net::features::kThirdPartyPartitionedStorageAllowedByDefault) &&
-      !allowed && cookie_settings.BlockedByThirdPartyCookieBlocking()) {
-    allowed = true;
-  }
-
-  // Allow storage when --test-third-party-cookie-phaseout is used, but ensure
-  // that only partitioned storage is available. This developer flag is meant to
-  // simulate Chrome's behavior when 3P cookies are turned down to help
-  // developers test their site.
-  if (!allowed && net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    allowed = true;
-  }
-
-  return allowed;
+      cookie_partition_key);
 }
 
 void ContentSettingsManagerImpl::IsStorageAccessAllowed(

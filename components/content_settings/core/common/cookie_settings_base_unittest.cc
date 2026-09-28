@@ -246,6 +246,22 @@ TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithNoncePartitionKey) {
       cookie_partition_key));
 }
 
+TEST_F(CookieSettingsBaseTest, StorageAccessAllowedWithNoncePartitionKey) {
+  CallbackCookieSettings settings_allow(CONTENT_SETTING_ALLOW);
+  CallbackCookieSettings settings_block(CONTENT_SETTING_BLOCK);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          url_, net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create());
+
+  EXPECT_TRUE(settings_allow.IsAnyStorageAccessAllowed(
+      url_, net::SiteForCookies(), origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
+  EXPECT_FALSE(settings_block.IsAnyStorageAccessAllowed(
+      url_, net::SiteForCookies(), origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
+}
+
 TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
   const GURL kThirdPartyURL = GURL("https://3p.com");
 
@@ -261,6 +277,32 @@ TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
       /*cookie_partition_key=*/std::nullopt));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
       kThirdPartyURL, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
+}
+
+TEST_F(CookieSettingsBaseTest,
+       StorageAccessThirdPartyCookieBlockingWithPartitionedStorage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {net::features::kThirdPartyStoragePartitioning,
+       net::features::kThirdPartyPartitionedStorageAllowedByDefault},
+      {});
+
+  const GURL kThirdPartyUrl("https://3p.com");
+  const net::CookieSettingOverrides overrides(
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies});
+
+  CallbackCookieSettings settings_allow(CONTENT_SETTING_ALLOW);
+  EXPECT_FALSE(settings_allow.IsFullCookieAccessAllowed(
+      kThirdPartyUrl, net::SiteForCookies(), origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_TRUE(settings_allow.IsAnyStorageAccessAllowed(
+      kThirdPartyUrl, net::SiteForCookies(), origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+
+  CallbackCookieSettings settings_block(CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(settings_block.IsAnyStorageAccessAllowed(
+      kThirdPartyUrl, net::SiteForCookies(), origin_, overrides,
       /*cookie_partition_key=*/std::nullopt));
 }
 

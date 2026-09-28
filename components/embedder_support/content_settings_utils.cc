@@ -4,17 +4,14 @@
 
 #include "components/embedder_support/content_settings_utils.h"
 
-#include "base/feature_list.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -26,20 +23,6 @@ using StorageType =
 
 namespace {
 
-//  If storage partitioning is active, third-party partitioned storage is
-//  allowed by default, and access is only blocked due to general third-party
-//  cookie blocking (and not due to a user specified pattern) then storage
-//  access can be allowed.
-bool PartitionedStorageByDefaultAllowed(
-    const content_settings::CookieSettingsBase::CookieSettingWithMetadata&
-        cookie_settings) {
-  return base::FeatureList::IsEnabled(
-             net::features::kThirdPartyStoragePartitioning) &&
-         base::FeatureList::IsEnabled(
-             net::features::kThirdPartyPartitionedStorageAllowedByDefault) &&
-         cookie_settings.BlockedByThirdPartyCookieBlocking();
-}
-
 bool AllowWorkerStorageAccess(
     StorageType storage_type,
     const GURL& url,
@@ -48,54 +31,14 @@ bool AllowWorkerStorageAccess(
     const blink::StorageKey& storage_key) {
   // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.
-  // TODO(crbug.com/555286418): Deduplicate this storage access evaluation logic
-  // with ContentSettingsManagerImpl::EvaluateStorageAccessPermission,
-  // AllowServiceWorker, and AllowSharedWorker.
-  content_settings::CookieSettingsBase::CookieSettingWithMetadata
-      cookie_settings_metadata;
-
   std::optional<url::Origin> top_frame_origin =
       storage_key.IsFirstPartyContext()
           ? storage_key.origin()
           : url::Origin::Create(storage_key.top_level_site().GetURL());
 
-  // Storage access permissions are evaluated by reusing
-  // `IsFullCookieAccessAllowed()`. As a side effect of reusing this cookie
-  // helper, passing a nonced partition key causes `IsFullCookieAccessAllowed()`
-  // to immediately reject access because nonced contexts (e.g. FencedFrames or
-  // Credentialless iframes) cannot access unpartitioned cookies. However, such
-  // contexts are permitted to access partitioned storage (e.g. CacheStorage,
-  // IndexedDB) unless cookies/storage are explicitly blocked for the site. See:
-  // - https://wicg.github.io/anonymous-iframe/#proposal-credentials
-  // -
-  // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frame.md#storage-and-communication
-  // We therefore intentionally omit the nonce when constructing the
-  // `cookie_partition_key` so that `IsFullCookieAccessAllowed()` evaluates the
-  // site-level permission and populates the metadata properly without
-  // triggering the nonced-cookie rejection.
-  std::optional<const net::CookiePartitionKey> cookie_partition_key =
-      net::CookiePartitionKey::FromStorageKeyComponents(
-          storage_key.top_level_site(),
-          net::CookiePartitionKey::BoolToAncestorChainBit(
-              storage_key.IsThirdPartyContext()),
-          /*nonce=*/std::nullopt);
-
-  bool allow = cookie_settings->IsFullCookieAccessAllowed(
+  bool allow = cookie_settings->IsAnyStorageAccessAllowed(
       url, storage_key.ToNetSiteForCookies(), top_frame_origin,
-      net::CookieSettingOverrides(), cookie_partition_key,
-      &cookie_settings_metadata);
-
-  if (!allow && PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
-    allow = true;
-  }
-
-  // Allow storage when --test-third-party-cookie-phaseout is used, but ensure
-  // that only partitioned storage is available. This developer flag is meant to
-  // simulate Chrome's behavior when 3P cookies are turned down to help
-  // developers test their site.
-  if (!allow && net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    allow = true;
-  }
+      net::CookieSettingOverrides(), storage_key.ToCookiePartitionKey());
 
   for (const auto& it : render_frames) {
     auto* rfh = content::RenderFrameHost::FromID(it);
@@ -128,46 +71,12 @@ content::AllowServiceWorkerResult AllowServiceWorker(
       first_party_url, first_party_url, ContentSettingsType::JAVASCRIPT, &info);
   bool allow_javascript = setting == CONTENT_SETTING_ALLOW;
 
-  // We need to manually create a cookie_partition_key without a nonce since
-  // nonced contexts (e.g. FencedFrames or Credentialless iFrames) do not have
-  // unpartitioned cookie access, BUT may allow Service Workers. This nonceless
-  // cookie_partition_key allows this function to return the correct result for
-  // such contexts.
-  std::optional<const net::CookiePartitionKey> cookie_partition_key =
-      net::CookiePartitionKey::FromStorageKeyComponents(
-          storage_key.top_level_site(),
-          net::CookiePartitionKey::BoolToAncestorChainBit(
-              storage_key.IsThirdPartyContext()),
-          /*nonce=*/std::nullopt);
-
-  // Check if cookies are allowed. Storage Access API grants and Top-Level
-  // Storage Access API grants may only be considered if storage is partitioned
-  // (or if Storage Access API is intended to grant access to storage - which is
-  // a deviation from the spec, but at least one embedder wants that ability).
+  // Check if cookies/storage are allowed.
   // TODO(crbug.com/40247160): Consider whether the following check should
   // also consider the third-party cookie user bypass override.
-  content_settings::CookieSettingsBase::CookieSettingWithMetadata
-      cookie_settings_metadata;
-
-  bool allow_cookies = cookie_settings->IsFullCookieAccessAllowed(
+  bool allow_cookies = cookie_settings->IsAnyStorageAccessAllowed(
       scope, site_for_cookies, top_frame_origin, net::CookieSettingOverrides(),
-      cookie_partition_key,
-
-      &cookie_settings_metadata);
-
-  if (!allow_cookies &&
-      PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
-    allow_cookies = true;
-  }
-
-  // Allow storage when --test-third-party-cookie-phaseout is used, but ensure
-  // that only partitioned storage is available. This developer flag is meant to
-  // simulate Chrome's behavior when 3P cookies are turned down to help
-  // developers test their site.
-  if (!allow_cookies &&
-      net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    allow_cookies = true;
-  }
+      storage_key.ToCookiePartitionKey());
 
   return content::AllowServiceWorkerResult::FromPolicy(!allow_javascript,
                                                        !allow_cookies);
@@ -183,37 +92,9 @@ bool AllowSharedWorker(
     int render_process_id,
     int render_frame_id,
     const content_settings::CookieSettings* cookie_settings) {
-  content_settings::CookieSettingsBase::CookieSettingWithMetadata
-      cookie_settings_metadata;
-
-  // We need to manually create a cookie_partition_key without a nonce since
-  // nonced contexts (e.g. FencedFrames or Credentialless iFrames) do not have
-  // unpartitioned cookie access, BUT may allow Shared Workers. This nonceless
-  // cookie_partition_key allows this function to return the correct result for
-  // such contexts.
-  std::optional<const net::CookiePartitionKey> cookie_partition_key =
-      net::CookiePartitionKey::FromStorageKeyComponents(
-          storage_key.top_level_site(),
-          net::CookiePartitionKey::BoolToAncestorChainBit(
-              storage_key.IsThirdPartyContext()),
-          /*nonce=*/std::nullopt);
-
-  bool allow = cookie_settings->IsFullCookieAccessAllowed(
+  bool allow = cookie_settings->IsAnyStorageAccessAllowed(
       worker_url, site_for_cookies, top_frame_origin,
-      net::CookieSettingOverrides(), cookie_partition_key,
-      &cookie_settings_metadata);
-
-  if (!allow && PartitionedStorageByDefaultAllowed(cookie_settings_metadata)) {
-    allow = true;
-  }
-
-  // Allow storage when --test-third-party-cookie-phaseout is used, but ensure
-  // that only partitioned storage is available. This developer flag is meant to
-  // simulate Chrome's behavior when 3P cookies are turned down to help
-  // developers test their site.
-  if (!allow && net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
-    allow = true;
-  }
+      net::CookieSettingOverrides(), storage_key.ToCookiePartitionKey());
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, storage_key,
