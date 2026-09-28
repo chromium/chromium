@@ -73,18 +73,6 @@ source_set("tab_modal_confirm_dialog") {
     ":tab_modal_confirm_dialog_delegate",
     "//content/public/browser",
   ]
-  if (toolkit_views) {
-    public += [ "views/tab_modal_confirm_dialog_views.h" ]
-    sources = [ "views/tab_modal_confirm_dialog_views.cc" ]
-    deps = [
-      "//base",
-      "//chrome/browser/ui/views:layout_provider",
-      "//chrome/common:constants",
-      "//components/constrained_window",
-      "//ui/base",
-      "//ui/views",
-    ]
-  }
 }
 
 source_set("browser_live_tab_context") {
@@ -899,19 +887,6 @@ source_set("crypto_module_password_dialog") {
       "//crypto",
       "//net",
     ]
-
-    if (use_aura) {
-      public += [ "views/crypto_module_password_dialog_view.h" ]
-      sources += [ "views/crypto_module_password_dialog_view.cc" ]
-
-      deps += [
-        "//chrome/app:generated_resources",
-        "//chrome/browser/ui/views:layout_provider",
-        "//components/strings:components_strings",
-        "//ui/base",
-        "//ui/views",
-      ]
-    }
   }
 }
 
@@ -2119,6 +2094,7 @@ static_library("ui") {
       "//chrome/browser/ui/toolbar/pinned_toolbar:impl",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/user_education:impl",
+      "//chrome/browser/ui/views:tab_modal_confirm_dialog_views",
       "//chrome/browser/ui/views/app_menu",
       "//chrome/browser/ui/views/app_menu:impl",
       "//chrome/browser/ui/views/contextual_tasks",
@@ -4147,6 +4123,10 @@ static_library("ui") {
       "//chrome/browser/ui/views/renderer_context_menu",
       "//chrome/browser/ui/views/renderer_context_menu:impl",
     ]
+
+    if (use_nss_certs) {
+      deps += [ "//chrome/browser/ui/views:crypto_module_password_dialog_view" ]
+    }
 
     if (!is_chromeos) {
       deps += [

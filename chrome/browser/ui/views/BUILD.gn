@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//ui/views/features.gni")
@@ -1733,6 +1734,48 @@ source_set("browser_tests") {
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc:notification_test_support",
       "//ui/events:test_support",
+    ]
+  }
+}
+
+source_set("tab_modal_confirm_dialog_views") {
+  public = [ "tab_modal_confirm_dialog_views.h" ]
+  sources = [ "tab_modal_confirm_dialog_views.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui:tab_modal_confirm_dialog",
+    "//ui/views",
+  ]
+  deps = [
+    ":layout_provider",
+    "//chrome/browser/ui:tab_dialogs",
+    "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",
+    "//chrome/common:constants",
+    "//components/constrained_window",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/gfx",
+  ]
+}
+
+if (use_nss_certs && use_aura) {
+  source_set("crypto_module_password_dialog_view") {
+    public = [ "crypto_module_password_dialog_view.h" ]
+    sources = [ "crypto_module_password_dialog_view.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui:crypto_module_password_dialog",
+      "//ui/base",
+      "//ui/views",
+    ]
+    deps = [
+      ":layout_provider",
+      "//chrome/app:generated_resources",
+      "//components/strings:components_strings",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/events",
+      "//ui/gfx",
     ]
   }
 }

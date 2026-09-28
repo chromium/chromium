@@ -3375,6 +3375,8 @@ if (!is_android) {
 
       if (use_nss_certs) {
         sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
+        deps +=
+            [ "//chrome/browser/ui/views:crypto_module_password_dialog_view" ]
       }
     }
     if (use_aura || toolkit_views) {
@@ -7575,6 +7577,8 @@ test("unit_tests") {
         sources += [
           "../browser/ui/views/crypto_module_password_dialog_view_unittest.cc",
         ]
+        deps +=
+            [ "//chrome/browser/ui/views:crypto_module_password_dialog_view" ]
       }
     }
   }
@@ -8722,6 +8726,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/views:session_crashed_bubble_view",
         "//chrome/browser/ui/views:ssl_client_certificate_selector",
         "//chrome/browser/ui/views:tab_icon_view",
+        "//chrome/browser/ui/views:tab_modal_confirm_dialog_views",
         "//chrome/browser/ui/views/autofill/payments:filled_card_information_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views",

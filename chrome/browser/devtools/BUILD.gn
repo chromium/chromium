@@ -301,6 +301,7 @@ static_library("devtools") {
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views:layout_provider",
+      "//chrome/browser/ui/views:tab_modal_confirm_dialog_views",
       "//chrome/browser/ui/views/frame:contents_container_view",
       "//chrome/browser/ui/views/frame:contents_web_view",
       "//chrome/browser/ui/views/frame:scrim_view",
