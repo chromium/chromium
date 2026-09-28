@@ -4,17 +4,27 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
 
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -22,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
@@ -44,9 +55,14 @@ public class HistoryAdapterTest {
     @Mock private ChipView mAppFilterChip;
     @Mock private TextView mTextView;
     @Mock private SigninPromoCoordinator mHistorySyncPromoCoordinator;
+    @Mock private RecyclerView mRecyclerView;
+    @Mock private ViewTreeObserver mViewTreeObserver;
+    @Captor private ArgumentCaptor<OnPreDrawListener> mOnPreDrawListenerCaptor;
 
     @Before
     public void setUp() {
+        lenient().doReturn(new HistoryUmaRecorder()).when(mContentManager).getUmaRecorder();
+        lenient().doReturn(mViewTreeObserver).when(mRecyclerView).getViewTreeObserver();
         mHistoryProvider = new StubbedHistoryProvider();
         mAdapter =
                 new HistoryAdapter(
@@ -649,5 +665,213 @@ public class HistoryAdapterTest {
         // available), more items can be loaded.
         mAdapter.onQueryHistoryComplete(new ArrayList<>(), true);
         Assert.assertTrue(mAdapter.canLoadMoreItems());
+    }
+
+    @Test
+    public void testQueryDurationHistogram() {
+        HistogramWatcher initialWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.HistoryPage.QueryDuration");
+        mAdapter.startLoadingItems();
+        initialWatcher.assertExpected();
+
+        // Continuation query should also record QueryDuration.
+        mHistoryProvider.setPaging(2);
+        for (int i = 0; i < 5; ++i) {
+            mHistoryProvider.addItem(
+                    StubbedHistoryProvider.createHistoryItem(i, new Date().getTime()));
+        }
+        mAdapter.startLoadingItems();
+
+        HistogramWatcher continuationWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.HistoryPage.QueryDuration");
+        mAdapter.loadMoreItems();
+        continuationWatcher.assertExpected();
+
+        // Search query should also record QueryDuration.
+        HistogramWatcher searchWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.HistoryPage.QueryDuration");
+        mAdapter.search("query");
+        searchWatcher.assertExpected();
+    }
+
+    @Test
+    public void testTimeToFirstVisibleContentHistogram() {
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+
+        Date today = new Date();
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, today.getTime());
+        mHistoryProvider.addItem(item);
+
+        HistogramWatcher durationWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.HistoryPage.QueryDuration");
+        HistogramWatcher fcpWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.HistoryPage.TimeToFirstVisibleContent");
+
+        mAdapter.startLoadingItems();
+
+        durationWatcher.assertExpected();
+
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerCaptor.capture());
+        mOnPreDrawListenerCaptor.getValue().onPreDraw();
+
+        fcpWatcher.assertExpected();
+        verify(mViewTreeObserver).removeOnPreDrawListener(mOnPreDrawListenerCaptor.getValue());
+    }
+
+    @Test
+    public void testTimeToFirstVisibleContent_EmptyListDoesNotRecordAndResetsTimestamp() {
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+
+        // Initial load with empty history.
+        HistogramWatcher emptyWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+
+        mAdapter.startLoadingItems();
+
+        emptyWatcher.assertExpected();
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any(OnPreDrawListener.class));
+
+        // Subsequent query after adding items must NOT fire initial TimeToFirstVisibleContent.
+        Date today = new Date();
+        mHistoryProvider.addItem(StubbedHistoryProvider.createHistoryItem(0, today.getTime()));
+
+        HistogramWatcher searchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+
+        mAdapter.search("test");
+
+        searchWatcher.assertExpected();
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any(OnPreDrawListener.class));
+    }
+
+    @Test
+    public void testTimeToFirstVisibleContent_DestroyedDoesNotRecord() {
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+
+        Date today = new Date();
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, today.getTime());
+        mHistoryProvider.addItem(item);
+
+        mAdapter.startLoadingItems();
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerCaptor.capture());
+
+        // Destroy the adapter before the pre-draw callback fires.
+        mAdapter.onDestroyed();
+
+        HistogramWatcher fcpWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+
+        Assert.assertTrue(mOnPreDrawListenerCaptor.getValue().onPreDraw());
+        fcpWatcher.assertExpected();
+        verify(mViewTreeObserver).removeOnPreDrawListener(mOnPreDrawListenerCaptor.getValue());
+    }
+
+    @Test
+    public void testTimeToFirstVisibleContent_OnlyRecordedOnInitialLoad() {
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+
+        Date today = new Date();
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, today.getTime());
+        mHistoryProvider.addItem(item);
+
+        mAdapter.startLoadingItems();
+        verify(mViewTreeObserver).addOnPreDrawListener(mOnPreDrawListenerCaptor.capture());
+        mOnPreDrawListenerCaptor.getValue().onPreDraw();
+
+        // Subsequent reloads via startLoadingItems(), onEndSearch(), and onHistoryDeleted()
+        // should record QueryDuration but not TimeToFirstVisibleContent.
+        HistogramWatcher reloadWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+        mAdapter.startLoadingItems();
+        reloadWatcher.assertExpected();
+
+        HistogramWatcher endSearchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+        mAdapter.onEndSearch();
+        endSearchWatcher.assertExpected();
+
+        HistogramWatcher historyDeletedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+        mAdapter.onHistoryDeleted();
+        historyDeletedWatcher.assertExpected();
+        verify(mViewTreeObserver).addOnPreDrawListener(any(OnPreDrawListener.class));
+    }
+
+    @Test
+    public void testTimeToFirstVisibleContent_SupersededBySearchDoesNotRecord() {
+        HistoryProvider mockProvider = Mockito.mock(HistoryProvider.class);
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager,
+                        mockProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
+        mAdapter.generateHeaderItemsForTest();
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+
+        // Start initial load (remains in flight).
+        mAdapter.startLoadingItems();
+
+        // Supersede the in-flight initial load with a search query.
+        mAdapter.search("query");
+
+        Date today = new Date();
+        ArrayList<HistoryItem> items = new ArrayList<>();
+        items.add(StubbedHistoryProvider.createHistoryItem(0, today.getTime()));
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+
+        mAdapter.onQueryHistoryComplete(items, /* hasMorePotentialMatches= */ false);
+
+        watcher.assertExpected();
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any(OnPreDrawListener.class));
+    }
+
+    @Test
+    public void testHostNameFilterDoesNotRecordHistograms() {
+        mAdapter.onAttachedToRecyclerView(mRecyclerView);
+        mAdapter.setHostName("www.example.com");
+
+        mHistoryProvider.setPaging(2);
+        for (int i = 0; i < 5; ++i) {
+            mHistoryProvider.addItem(
+                    StubbedHistoryProvider.createHistoryItem(i, new Date().getTime()));
+        }
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.HistoryPage.QueryDuration")
+                        .expectNoRecords("Android.HistoryPage.TimeToFirstVisibleContent")
+                        .build();
+
+        mAdapter.startLoadingItems();
+        mAdapter.loadMoreItems();
+
+        watcher.assertExpected();
+        verify(mViewTreeObserver, never()).addOnPreDrawListener(any(OnPreDrawListener.class));
     }
 }

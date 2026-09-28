@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.history;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -111,6 +113,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // Monotonically increasing ID for clustering.
     private long mNextClusterId = 1;
 
+    private boolean mInitialLoadStarted;
+    private long mInitialLoadStartTimeMs;
+    private long mQueryStartTimeMs;
+
     /**
      * Creates a new instance of {@link HistoryAdapter}.
      *
@@ -146,6 +152,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     @SuppressWarnings("NullAway")
     public void onDestroyed() {
         mIsDestroyed = true;
+        mInitialLoadStartTimeMs = 0;
+        mQueryStartTimeMs = 0;
 
         mHistoryProvider.destroy();
         mHistoryProvider = null;
@@ -164,6 +172,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
+        if (mHostName == null) {
+            mQueryStartTimeMs = SystemClock.elapsedRealtime();
+            if (!mInitialLoadStarted) {
+                mInitialLoadStarted = true;
+                mInitialLoadStartTimeMs = mQueryStartTimeMs;
+            }
+        }
         executeQuery();
     }
 
@@ -198,6 +213,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             return;
         }
         mIsLoadingItems = true;
+        if (mHostName == null) {
+            mQueryStartTimeMs = SystemClock.elapsedRealtime();
+        }
         updateFooter();
         notifyDataSetChanged();
         mHistoryProvider.queryHistoryContinuation();
@@ -220,6 +238,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         onSearchStart();
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
+        mInitialLoadStartTimeMs = 0;
+        if (mHostName == null) {
+            mQueryStartTimeMs = SystemClock.elapsedRealtime();
+        }
         executeQuery();
     }
 
@@ -362,6 +384,39 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         if (mHasMorePotentialItems) updateFooter();
+
+        if (mQueryStartTimeMs > 0) {
+            long durationMs = SystemClock.elapsedRealtime() - mQueryStartTimeMs;
+            mQueryStartTimeMs = 0;
+            mManager.getUmaRecorder().recordQueryDuration(durationMs);
+        }
+
+        if (mInitialLoadStartTimeMs > 0) {
+            final long initialLoadStartMs = mInitialLoadStartTimeMs;
+            mInitialLoadStartTimeMs = 0;
+            if (!items.isEmpty() && mRecyclerView != null) {
+                RecyclerView recyclerView = mRecyclerView;
+                recyclerView
+                        .getViewTreeObserver()
+                        .addOnPreDrawListener(
+                                new OnPreDrawListener() {
+                                    @Override
+                                    public boolean onPreDraw() {
+                                        recyclerView
+                                                .getViewTreeObserver()
+                                                .removeOnPreDrawListener(this);
+                                        if (mIsDestroyed || mRecyclerView == null) {
+                                            return true;
+                                        }
+                                        long durationMs =
+                                                SystemClock.elapsedRealtime() - initialLoadStartMs;
+                                        mManager.getUmaRecorder()
+                                                .recordTimeToFirstVisibleContent(durationMs);
+                                        return true;
+                                    }
+                                });
+            }
+        }
     }
 
     @Override

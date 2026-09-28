@@ -9965,6 +9965,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.{HistoryType}.QueryDuration" units="ms"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the roundtrip duration (in milliseconds) from initiating a history
+    query on the Android UI thread (via HistoryAdapter) to receiving and
+    processing the results in onQueryHistoryComplete. Recorded on initial load,
+    search, and when scrolling to load more items.
+  </summary>
+  <token key="HistoryType">
+    <variant name="AppHistoryPage" summary="In-app history"/>
+    <variant name="HistoryPage" summary="Standard browser history"/>
+  </token>
+</histogram>
+
+<histogram name="Android.{HistoryType}.TimeToFirstVisibleContent" units="ms"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the time (in milliseconds) from when the Android browsing history UI
+    initiates loading items to when the RecyclerView first performs pre-draw
+    with non-empty history content. Serves as the native Android UI equivalent
+    of Time to First Contentful Paint.
+  </summary>
+  <token key="HistoryType">
+    <variant name="AppHistoryPage" summary="In-app history"/>
+    <variant name="HistoryPage" summary="Standard browser history"/>
+  </token>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2023-12-29">
   <owner>lizeb@chromium.org</owner>

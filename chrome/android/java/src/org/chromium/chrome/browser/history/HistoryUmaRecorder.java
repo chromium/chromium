@@ -128,4 +128,22 @@ public class HistoryUmaRecorder {
     public void recordAppFilterSheetOpened() {
         recordUserAction("OpenAppFilterSheet");
     }
+
+    /**
+     * Record the duration in milliseconds to query browsing history entries.
+     *
+     * @param durationMs The query duration in milliseconds.
+     */
+    public void recordQueryDuration(long durationMs) {
+        RecordHistogram.recordTimesHistogram(getPrefix() + "QueryDuration", durationMs);
+    }
+
+    /**
+     * Record the time to first visible content for browsing history in milliseconds.
+     *
+     * @param durationMs The time to first visible content in milliseconds.
+     */
+    public void recordTimeToFirstVisibleContent(long durationMs) {
+        RecordHistogram.recordTimesHistogram(getPrefix() + "TimeToFirstVisibleContent", durationMs);
+    }
 }

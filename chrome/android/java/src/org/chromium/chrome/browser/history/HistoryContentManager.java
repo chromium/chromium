@@ -581,6 +581,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         return mActivity;
     }
 
+    /** Returns the HistoryUmaRecorder for recording metrics. */
+    HistoryUmaRecorder getUmaRecorder() {
+        return mUmaRecorder;
+    }
+
     /** Called when the activity/native page is destroyed. */
     @SuppressWarnings("NullAway")
     public void onDestroyed() {

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.mockito.Mockito.lenient;
+
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
 
 import org.junit.Assert;
@@ -42,6 +44,7 @@ public class HistoryAdapterAccessibilityTest {
 
     @Before
     public void setUp() {
+        lenient().doReturn(new HistoryUmaRecorder()).when(mContentManager).getUmaRecorder();
         mHistoryProvider = new StubbedHistoryProvider();
         mHistoryProvider.setPaging(PAGING);
 
