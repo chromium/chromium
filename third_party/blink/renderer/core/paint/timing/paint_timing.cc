@@ -260,9 +260,12 @@ void PaintTiming::MarkPaintTiming() {
   // 2. Let paintTimingInfo be a new paint timing info, whose rendering update
   // end time is the current high resolution time given document’s relevant
   // global object.
+  //
+  // The spec algorithm continues in MarkPaintTimingInternal(), once we've
+  // received the paint callbacks.
   last_rendering_update_end_time_ = base::TimeTicks::Now();
-  // This continues in MarkPaintTimingInternal(), once we've received the paint
-  // callbacks.
+
+  paint_timing_detector_->NotifyWillPaint();
 }
 
 void PaintTiming::MarkPaintTimingInternal() {

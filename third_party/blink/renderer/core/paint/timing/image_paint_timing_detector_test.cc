@@ -1401,6 +1401,34 @@ TEST_P(ImagePaintTimingDetectorTest, FirstVideoFrameRacesWithPosterImage) {
   EXPECT_EQ(LargestPaintedImage(), record2);
 }
 
+TEST_P(ImagePaintTimingDetectorTest, LargestIgnoredImageRemovedBeforePaint) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <img id="target"></img>
+  )HTML");
+  SetImageContent("target", 5, 5);
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(CountImageRecords(), 0u);
+  EXPECT_TRUE(HasLargestIgnoredImage());
+
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(HasLargestIgnoredImage());
+
+  GetElementById("target")->remove();
+  EXPECT_FALSE(HasLargestIgnoredImage());
+
+  SimulateRenderingAndPresentationTime();
+  EXPECT_EQ(CountImageRecords(), 0u);
+  EXPECT_EQ(LargestPaintedImage(), nullptr);
+}
+
 class ImagePaintTimingDetectorTransparentPlaceholderImageTest
     : public ImagePaintTimingDetectorTest {
  public:

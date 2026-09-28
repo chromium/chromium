@@ -847,6 +847,31 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {
   EXPECT_FALSE(TextRecordOfLargestTextPaint());
 }
 
+TEST_F(TextPaintTimingDetectorTest, LargestIgnoredTextRemovedBeforePaint) {
+  SetMainFrameBodyContent(R"HTML(
+    <style>
+      :root {
+        opacity: 0;
+        will-change: opacity;
+      }
+    </style>
+    <div id="target">Text</div>
+  )HTML");
+  CheckSizeOfTextQueuedForPaintTimeAfterBeginMainFrame(0u);
+  EXPECT_TRUE(HasLargestIgnoredText());
+
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("opacity: 1"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(HasLargestIgnoredText());
+
+  GetElementById("target")->remove();
+  EXPECT_FALSE(HasLargestIgnoredText());
+
+  SimulateRenderingAndPresentationTime();
+  EXPECT_FALSE(TextRecordOfLargestTextPaint());
+}
+
 TEST_F(TextPaintTimingDetectorTest,
        QueuedRecordsWaitForCorrectPresentationFeedback) {
   SetMainFrameBodyContent(R"HTML(

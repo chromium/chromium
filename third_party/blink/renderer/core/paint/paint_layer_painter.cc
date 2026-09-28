@@ -30,11 +30,12 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
-#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_effectively_invisible.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -337,15 +338,8 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   }
   // Explicitly compute opacity of documentElement, as it is special-cased in
   // Largest Contentful Paint.
-  bool is_document_element_invisible = false;
-  if (const auto* document_element = object.GetDocument().documentElement()) {
-    if (document_element->GetLayoutObject() &&
-        document_element->GetLayoutObject()->StyleRef().Opacity() == 0.0f) {
-      is_document_element_invisible = true;
-    }
-  }
   IgnorePaintTimingScope::SetIsDocumentElementInvisible(
-      is_document_element_invisible);
+      paint_timing::IsDocumentElementInvisible(object.GetDocument()));
 
   // Canvas children need to ensure that a composited cc::Layer exists for
   // canvas draw element, even if no other content is painted.

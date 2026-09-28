@@ -52,6 +52,10 @@ CORE_EXPORT bool ShouldIgnoreImageContentForPaintTiming(
 CORE_EXPORT void NotifyLoaderPerformanceTimingChanged(LocalDOMWindow*);
 CORE_EXPORT void NotifyLoaderPerformanceTimingChanged(Document*);
 
+// Returns true if `document`'s document element exists, has a `LayoutObject`,
+// and has `opacity: 0`.
+CORE_EXPORT bool IsDocumentElementInvisible(const Document& document);
+
 }  // namespace blink::paint_timing
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_PAINT_TIMING_UTILS_H_

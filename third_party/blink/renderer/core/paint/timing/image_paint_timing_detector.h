@@ -101,9 +101,11 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // current frame. Called by `PaintTiming` at the current frame's paint stage.
   HeapVector<Member<ImageRecord>> TakeAnimatedImageRecordsOnPaintFinished();
 
-  // Called when documentElement changes from zero to nonzero opacity. Makes the
-  // largest image that was hidden due to this a Largest Contentful Paint
-  // candidate.
+  // Called at the start of paint when the documentElement is not invisible
+  // (i.e. has nonzero opacity) and there might be ignored content. Makes the
+  // largest image that was previously painted while the documentElement was
+  // invisible eligible for paint timing. Does nothing if no ignored content was
+  // previously painted.
   void ReportLargestIgnoredImage();
 
   // Called when the "src" attribute changes on a <video> element and the change

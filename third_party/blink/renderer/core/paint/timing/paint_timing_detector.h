@@ -96,6 +96,7 @@ class CORE_EXPORT PaintTimingDetector
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
   void NotifyBackgroundImageFinished(const StyleFetchedImage*);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
+  void NotifyWillPaint();
   void NotifyPaintFinished();
 
   void DidChangePerformanceTiming();
@@ -118,15 +119,15 @@ class CORE_EXPORT PaintTimingDetector
   }
   PaintTiming& GetPaintTiming() { return *paint_timing_; }
 
-  // Reports the largest image and text candidates painted under non-nested 0
-  // opacity layer.
-  void ReportIgnoredContent();
-
   PaintTimingVisualizer* Visualizer() { return visualizer_.get(); }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ImagePaintTimingDetectorTest,
                            LargestImagePaint_Detached_Frame);
+
+  // Reports the largest image and text candidates painted under non-nested 0
+  // opacity layer.
+  void ReportIgnoredContent();
 
   // Returns the `LocalDOMWindow` associated with the relevant document, or
   // nullptr if the associated frame is detached.

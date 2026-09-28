@@ -326,13 +326,9 @@ void ImagePaintTimingDetector::NotifyBackgroundImageFinished(
 }
 
 void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
-  // TODO(crbug.com/454082773): This is called on style change, so there's a
-  // window between style and paint where the image can be removed. We should
-  // defer this until paint time.
   auto* lcp_manager = GetLargestContentfulPaintManager();
-  if (!lcp_manager) {
-    return;
-  }
+  CHECK(lcp_manager);
+
   ImageRecord* record = lcp_manager->TakeLargestIgnoredImage();
   if (!record) {
     return;

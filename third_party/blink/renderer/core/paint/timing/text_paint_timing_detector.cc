@@ -137,9 +137,8 @@ void TextPaintTimingDetector::RecordAggregatedText(
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {
   auto* lcp_manager = GetLargestContentfulPaintManager();
-  if (!lcp_manager) {
-    return;
-  }
+  CHECK(lcp_manager);
+
   TextRecord* record = lcp_manager->TakeLargestIgnoredText();
   if (!record) {
     return;

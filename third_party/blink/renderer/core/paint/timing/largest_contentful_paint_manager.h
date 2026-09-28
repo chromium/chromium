@@ -75,6 +75,10 @@ class CORE_EXPORT LargestContentfulPaintManager
     return largest_contentful_paint_calculator_;
   }
 
+  bool MaybeHasIgnoredContent() const {
+    return largest_ignored_image_ || largest_ignored_text_.value;
+  }
+
   bool HasLargestIgnoredTextForTest() {
     return !!GetLargestIgnoredTextIfNotRemoved();
   }

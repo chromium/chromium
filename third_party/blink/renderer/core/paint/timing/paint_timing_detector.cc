@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
@@ -25,7 +26,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
-#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
@@ -314,7 +315,18 @@ gfx::RectF PaintTimingDetector::CalculateVisualRect(
   return BlinkSpaceToDIPs(gfx::RectF(layout_visual_rect));
 }
 
+void PaintTimingDetector::NotifyWillPaint() {
+  ReportIgnoredContent();
+}
+
 void PaintTimingDetector::ReportIgnoredContent() {
+  auto* manager = paint_timing_->GetLargestContentfulPaintManager();
+  if (!manager || !manager->MaybeHasIgnoredContent()) {
+    return;
+  }
+  if (paint_timing::IsDocumentElementInvisible(*paint_timing_->GetDocument())) {
+    return;
+  }
   text_paint_timing_detector_->ReportLargestIgnoredText();
   image_paint_timing_detector_->ReportLargestIgnoredImage();
 }

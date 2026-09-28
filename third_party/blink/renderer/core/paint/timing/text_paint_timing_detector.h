@@ -61,7 +61,13 @@ class CORE_EXPORT TextPaintTimingDetector final
   // timing entries to be emitted.
   void ResetPaintTrackingOnInteraction(const LayoutObject&);
 
+  // Called at the start of paint when the documentElement is not invisible
+  // (i.e. has nonzero opacity) and there might be ignored content. Makes the
+  // largest text that was previously painted while the documentElement was
+  // invisible eligible for paint timing. Does nothing if no ignored content was
+  // previously painted.
   void ReportLargestIgnoredText();
+
   void Trace(Visitor*) const;
 
  private:
