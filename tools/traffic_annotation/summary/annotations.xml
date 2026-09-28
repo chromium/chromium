@@ -540,4 +540,13 @@ Refer to README.md for content description and update process.
  <item id="ash_boca_receiver_start_kiosk_receiver_request" added_in_milestone="142" content_hash_code="01f8fd92" os_list="chromeos" file_path="chromeos/ash/components/boca/receiver/start_kiosk_receiver_request.cc" />
  <item id="ash_boca_receiver_update_kiosk_receiver_state_request" added_in_milestone="142" content_hash_code="0224f962" os_list="chromeos" file_path="chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.cc" />
  <item id="boca_server_integration" added_in_milestone="133" content_hash_code="016cf4cc" os_list="chromeos" file_path="chromeos/ash/components/boca/session_api/constants.cc" />
+ <item id="data_sharing_avatar_image_fetcher" added_in_milestone="133" content_hash_code="06c12fe6" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/avatar_fetcher.cc" />
+ <item id="data_sharing_service_create_group" added_in_milestone="127" content_hash_code="07a7f9c5" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_read_groups" added_in_milestone="127" content_hash_code="011504ee" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_delete_groups" added_in_milestone="127" content_hash_code="02c3b72f" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_update_group" added_in_milestone="127" content_hash_code="05e726de" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_lookup" added_in_milestone="133" content_hash_code="06482b18" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_block_person" added_in_milestone="133" content_hash_code="06956fce" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_leave_group" added_in_milestone="133" content_hash_code="044d5af8" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
+ <item id="data_sharing_service_join_group" added_in_milestone="133" content_hash_code="0609a53c" os_list="linux,windows,android,chromeos" file_path="components/data_sharing/internal/data_sharing_network_loader_impl.cc" />
 </annotations>

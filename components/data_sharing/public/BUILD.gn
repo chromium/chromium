@@ -15,7 +15,6 @@ source_set("public") {
     "client_version_info.h",
     "data_sharing_network_loader.cc",
     "data_sharing_network_loader.h",
-    "data_sharing_network_utils.h",
     "data_sharing_sdk_delegate.h",
     "data_sharing_service.h",
     "data_sharing_ui_delegate.h",

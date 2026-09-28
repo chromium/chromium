@@ -5,12 +5,15 @@
 #include "components/data_sharing/internal/data_sharing_network_loader_impl.h"
 
 #include <memory>
+#include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -107,5 +110,90 @@ TEST_F(DataSharingNetworkLoaderImplTest, CallbackRunOnUrlResponse) {
           &run_loop));
   run_loop.Run();
 }
+
+namespace {
+
+using DataSharingRequestType = DataSharingNetworkLoader::DataSharingRequestType;
+
+struct TrafficAnnotationTestCase {
+  template <size_t N>
+  consteval TrafficAnnotationTestCase(DataSharingRequestType request_type,
+                                      const char (&annotation_unique_id)[N],
+                                      const char* test_name)
+      : request_type(request_type),
+        expected_annotation_hash(
+            net::internal::ComputeAnnotationHash(annotation_unique_id)),
+        test_name(test_name) {}
+
+  DataSharingRequestType request_type;
+  int32_t expected_annotation_hash;
+  const char* test_name;
+};
+
+}  // namespace
+
+class DataSharingNetworkLoaderImplTrafficAnnotationTest
+    : public DataSharingNetworkLoaderImplTest,
+      public testing::WithParamInterface<TrafficAnnotationTestCase> {};
+
+TEST_P(DataSharingNetworkLoaderImplTrafficAnnotationTest,
+       RequestTypeMapsToTrafficAnnotation) {
+  fetcher_->SetFetchResponse(kExpectedResponse);
+  int32_t annotation_hash = net::internal::TRAFFIC_ANNOTATION_UNINITIALIZED;
+  ON_CALL(*data_sharing_network_loader_, CreateEndpointFetcher)
+      .WillByDefault(
+          [this, &annotation_hash](
+              const GURL&, const std::string&,
+              const net::NetworkTrafficAnnotationTag& annotation_tag) {
+            annotation_hash = annotation_tag.unique_id_hash_code;
+            return std::move(fetcher_);
+          });
+
+  data_sharing_network_loader_->LoadUrl(GURL("http://foo.com"), std::string(),
+                                        GetParam().request_type,
+                                        base::DoNothing());
+
+  EXPECT_EQ(annotation_hash, GetParam().expected_annotation_hash);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DataSharingNetworkLoaderImplTrafficAnnotationTest,
+    testing::Values(
+        TrafficAnnotationTestCase(DataSharingRequestType::kCreateGroup,
+                                  "data_sharing_service_create_group",
+                                  "CreateGroup"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kReadGroups,
+                                  "data_sharing_service_read_groups",
+                                  "ReadGroups"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kReadAllGroups,
+                                  "data_sharing_service_read_groups",
+                                  "ReadAllGroups"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kDeleteGroups,
+                                  "data_sharing_service_delete_groups",
+                                  "DeleteGroups"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kUpdateGroup,
+                                  "data_sharing_service_update_group",
+                                  "UpdateGroup"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kLookup,
+                                  "data_sharing_service_lookup",
+                                  "Lookup"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kLeaveGroup,
+                                  "data_sharing_service_leave_group",
+                                  "LeaveGroup"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kBlockPerson,
+                                  "data_sharing_service_block_person",
+                                  "BlockPerson"),
+        TrafficAnnotationTestCase(DataSharingRequestType::kJoinGroup,
+                                  "data_sharing_service_join_group",
+                                  "JoinGroup"),
+        // Request types without a dedicated annotation fall back to the read
+        // groups annotation. See crbug.com/375594409.
+        TrafficAnnotationTestCase(DataSharingRequestType::kWarmup,
+                                  "data_sharing_service_read_groups",
+                                  "Warmup")),
+    [](const testing::TestParamInfo<TrafficAnnotationTestCase>& info) {
+      return std::string(info.param.test_name);
+    });
 
 }  // namespace data_sharing

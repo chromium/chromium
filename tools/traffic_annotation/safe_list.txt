@@ -347,4 +347,3 @@ missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cook
 # Header files with traffic annotations that existed before the new check was introduced.
 all,chrome/browser/ash/app_list/search/omnibox/omnibox_util.h
 all,chrome/browser/predictors/predictors_traffic_annotations.h
-all,components/data_sharing/public/data_sharing_network_utils.h

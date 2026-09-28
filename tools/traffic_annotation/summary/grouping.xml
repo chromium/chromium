@@ -422,6 +422,15 @@ after discussions on the right group.
       <annotation id="ash_boca_receiver_start_kiosk_receiver_request"/>
       <annotation id="ash_boca_receiver_update_kiosk_receiver_state_request"/>
       <annotation id="boca_server_integration"/>
+      <annotation id="data_sharing_avatar_image_fetcher"/>
+      <annotation id="data_sharing_service_create_group"/>
+      <annotation id="data_sharing_service_read_groups"/>
+      <annotation id="data_sharing_service_delete_groups"/>
+      <annotation id="data_sharing_service_update_group"/>
+      <annotation id="data_sharing_service_lookup"/>
+      <annotation id="data_sharing_service_block_person"/>
+      <annotation id="data_sharing_service_leave_group"/>
+      <annotation id="data_sharing_service_join_group"/>
     </sender>
   </group>
   <group name="Admin Features">

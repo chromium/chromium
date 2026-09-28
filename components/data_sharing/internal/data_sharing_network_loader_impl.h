@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"
-#include "components/data_sharing/public/data_sharing_network_utils.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
