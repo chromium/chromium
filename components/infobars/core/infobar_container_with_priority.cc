@@ -27,6 +27,9 @@ std::string GetPrioritySuffix(InfoBarDelegate::InfobarPriority priority) {
   NOTREACHED();
 }
 
+bool IsCloseable(const InfoBar* infobar) {
+  return !infobar->delegate() || infobar->delegate()->IsCloseable();
+}
 }  // namespace
 
 InfoBarContainerWithPriority::InfoBarContainerWithPriority(Delegate* delegate)
@@ -184,6 +187,10 @@ void InfoBarContainerWithPriority::AdmitOrQueue(
     return;
   }
 
+  if (!IsCloseable(infobar)) {
+    AddInfoBarAndTrack(infobar, infobars().size(), animate, priority);
+    return;
+  }
   // 1) Handle CRITICAL priority.
   if (priority == InfoBarDelegate::InfobarPriority::kCriticalSecurity) {
     if (CountVisible(priority) < GetInfoBarPriorityCapFor(priority)) {
@@ -316,7 +323,9 @@ bool InfoBarContainerWithPriority::IsDuplicateOfPending(
 void InfoBarContainerWithPriority::MarkVisible(
     InfoBar* infobar,
     InfoBarDelegate::InfobarPriority priority) {
-  visible_.push_back({.infobar = infobar, .priority = priority});
+  visible_.push_back({.infobar = infobar,
+                      .priority = priority,
+                      .closeable = IsCloseable(infobar)});
 }
 
 size_t InfoBarContainerWithPriority::ClearVisible(InfoBar* infobar) {
@@ -327,7 +336,9 @@ size_t InfoBarContainerWithPriority::ClearVisible(InfoBar* infobar) {
 
 size_t InfoBarContainerWithPriority::CountVisible(
     InfoBarDelegate::InfobarPriority priority) const {
-  return std::ranges::count(visible_, priority, &VisibleEntry::priority);
+  return std::ranges::count_if(visible_, [priority](const VisibleEntry& entry) {
+    return entry.closeable && entry.priority == priority;
+  });
 }
 
 bool InfoBarContainerWithPriority::HasPendingOfPriority(

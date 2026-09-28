@@ -30,6 +30,9 @@ namespace infobars {
 // infobars are removed. This ensures the most important notifications are
 // always given precedence. The class also handles the prevention of duplicate
 // infobars in the pending queue.
+//
+// Infobars the user cannot close bypass the queue and do not count toward any
+// cap; otherwise they would block everything queued behind them indefinitely.
 class InfoBarContainerWithPriority : public InfoBarContainer {
  public:
   explicit InfoBarContainerWithPriority(Delegate* delegate);
@@ -71,6 +74,7 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   struct VisibleEntry {
     raw_ptr<InfoBar> infobar;
     InfoBarDelegate::InfobarPriority priority;
+    bool closeable = true;
   };
 
   // Decides whether the infobar can be shown right now
@@ -113,7 +117,7 @@ class InfoBarContainerWithPriority : public InfoBarContainer {
   // Returns the number of elements removed.
   size_t ClearVisible(InfoBar* infobar);
 
-  // Return the number of infobar currently visible for the given priority.
+  // Returns the number of closeable infobars visible for the given priority.
   size_t CountVisible(InfoBarDelegate::InfobarPriority priority) const;
 
   // Returns true if the `pending` queue already contains at least one infobar

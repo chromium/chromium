@@ -27,8 +27,9 @@ class PriorityDelegate : public InfoBarDelegate {
  public:
   explicit PriorityDelegate(
       InfobarPriority priority,
-      InfoBarIdentifier id = ALTERNATE_NAV_INFOBAR_DELEGATE)
-      : priority_(priority), id_(id) {}
+      InfoBarIdentifier id = ALTERNATE_NAV_INFOBAR_DELEGATE,
+      bool closeable = true)
+      : priority_(priority), id_(id), closeable_(closeable) {}
   ~PriorityDelegate() override = default;
 
   bool EqualsDelegate(InfoBarDelegate* /*delegate*/) const override {
@@ -38,10 +39,12 @@ class PriorityDelegate : public InfoBarDelegate {
   InfoBarIdentifier GetIdentifier() const override { return id_; }
   bool ShouldExpire(const NavigationDetails&) const override { return false; }
   InfobarPriority GetPriority() const override { return priority_; }
+  bool IsCloseable() const override { return closeable_; }
 
  private:
   InfobarPriority priority_;
   InfoBarIdentifier id_;
+  bool closeable_;
 };
 
 class TestInfoBar : public InfoBar {
@@ -148,6 +151,14 @@ static TestInfoBar* AddInfoBar(TestManager* test_manager,
           std::make_unique<PriorityDelegate>(priority))));
 }
 
+static TestInfoBar* AddNonCloseableInfoBar(
+    TestManager* test_manager,
+    InfoBarDelegate::InfobarPriority priority) {
+  return static_cast<TestInfoBar*>(test_manager->AddInfoBar(
+      std::make_unique<TestInfoBar>(std::make_unique<PriorityDelegate>(
+          priority, InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR,
+          /*closeable=*/false))));
+}
 
 class InfoBarContainerWithPriorityTest : public testing::Test {
  protected:
@@ -540,5 +551,105 @@ TEST_F(InfoBarContainerWithPriorityTest, NoAnimationOnManagerChange) {
   container.ChangeInfoBarManager(nullptr);
 }
 
+TEST_F(InfoBarContainerWithPriorityTest, NonCloseableLowDoesNotBlockDefault) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+  container.ChangeInfoBarManager(&manager);
+  auto* persistent_infobar =
+      AddNonCloseableInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+  auto* default_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+
+  EXPECT_EQ(2u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar));
+  EXPECT_FALSE(container.HasPendingInfoBars());
+
+  manager.RemoveInfoBar(default_infobar);
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+
+  manager.RemoveInfoBar(persistent_infobar);
+  EXPECT_EQ(0u, container.visible_count());
+}
+TEST_F(InfoBarContainerWithPriorityTest,
+       NonCloseableDoesNotConsumePriorityCap) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  container.ChangeInfoBarManager(&manager);
+  auto* persistent_infobar = AddNonCloseableInfoBar(
+      &manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* default_infobar_1 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* default_infobar_2 =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_1));
+  EXPECT_FALSE(container.IsCurrentlyVisible(default_infobar_2));
+
+  manager.RemoveInfoBar(default_infobar_1);
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_2));
+
+  manager.RemoveInfoBar(default_infobar_2);
+  manager.RemoveInfoBar(persistent_infobar);
+}
+TEST_F(InfoBarContainerWithPriorityTest, NonCloseableIsNeverQueued) {
+  TestPriorityContainer container(&delegate_);
+  TestManager manager;
+
+  container.ChangeInfoBarManager(&manager);
+  auto* critical_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kCriticalSecurity);
+  auto* default_infobar =
+      AddInfoBar(&manager, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* persistent_infobar =
+      AddNonCloseableInfoBar(&manager, InfoBarDelegate::InfobarPriority::kLow);
+
+  EXPECT_TRUE(container.IsCurrentlyVisible(critical_infobar));
+  EXPECT_FALSE(container.IsCurrentlyVisible(default_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+
+  manager.RemoveInfoBar(critical_infobar);
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar));
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar));
+
+  manager.RemoveInfoBar(default_infobar);
+  manager.RemoveInfoBar(persistent_infobar);
+}
+// Admission must not depend on the order infobars are re-added on tab switch.
+TEST_F(InfoBarContainerWithPriorityTest,
+       NonCloseableAndDefaultBothVisibleAfterManagerChange) {
+  TestPriorityContainer container(&delegate_);
+  TestManager persistent_first;
+
+  auto* persistent_infobar_1 = AddNonCloseableInfoBar(
+      &persistent_first, InfoBarDelegate::InfobarPriority::kLow);
+  auto* default_infobar_1 =
+      AddInfoBar(&persistent_first, InfoBarDelegate::InfobarPriority::kDefault);
+
+  TestManager default_first;
+  auto* default_infobar_2 =
+      AddInfoBar(&default_first, InfoBarDelegate::InfobarPriority::kDefault);
+  auto* persistent_infobar_2 = AddNonCloseableInfoBar(
+      &default_first, InfoBarDelegate::InfobarPriority::kLow);
+
+  container.ChangeInfoBarManager(&persistent_first);
+  EXPECT_EQ(2u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar_1));
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_1));
+
+  container.ChangeInfoBarManager(&default_first);
+  EXPECT_EQ(2u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(default_infobar_2));
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar_2));
+
+  default_first.RemoveInfoBar(default_infobar_2);
+  EXPECT_EQ(1u, container.visible_count());
+  EXPECT_TRUE(container.IsCurrentlyVisible(persistent_infobar_2));
+  container.ChangeInfoBarManager(nullptr);
+}
 }  // namespace
 }  // namespace infobars
