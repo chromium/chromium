@@ -107,6 +107,7 @@ if (!is_android) {
     deps = [
       ":request_header_integrity",
       "//base",
+      "//base/test:test_support",
       "//build:branding_buildflags",
       "//chrome/test:test_support_ui",
       "//components/network_session_configurator/common",

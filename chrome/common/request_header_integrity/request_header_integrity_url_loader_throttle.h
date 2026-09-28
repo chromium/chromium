@@ -25,6 +25,18 @@ class ChromeCompaneroLoader;
 class RequestHeaderIntegrityURLLoaderThrottle
     : public blink::URLLoaderThrottle {
  public:
+  // The kind of request that the integrity headers are attached to. Selects
+  // which RequestHeaderIntegrity.DynamicHeaderPresent.{ResourceType} histogram
+  // is recorded.
+  enum class ResourceType {
+    // Top-level frame / window navigation.
+    kMainResource,
+    // Any other request, including iframe navigations.
+    kSubresource,
+    // Navigational prefetch, including its redirects.
+    kPrefetch,
+  };
+
   RequestHeaderIntegrityURLLoaderThrottle();
   RequestHeaderIntegrityURLLoaderThrottle(
       const RequestHeaderIntegrityURLLoaderThrottle&) = delete;
@@ -46,10 +58,12 @@ class RequestHeaderIntegrityURLLoaderThrottle
   static void UpdateCorsExemptHeaders(
       network::mojom::NetworkContextParams* params);
 
-  // Adds the integrity headers.
+  // Adds the integrity headers, and records whether the dynamic integrity
+  // header could be attached in the histogram for `resource_type`.
   static void AddRequestIntegrityHeaders(
       net::HttpRequestHeaders* headers,
-      ChromeCompaneroLoader& companero_loader);
+      ChromeCompaneroLoader& companero_loader,
+      ResourceType resource_type);
 
   // Called both for initial requests and upon redirects during prefetching.
   // - Adds the integrity header names to `removed_headers` in the case where
@@ -71,6 +85,11 @@ class RequestHeaderIntegrityURLLoaderThrottle
 
  private:
   const raw_ref<ChromeCompaneroLoader> companero_loader_;
+
+  // Type of the request this throttle is attached to (throttles are
+  // per-request). Set in WillStartRequest() so that redirects are recorded in
+  // the same histogram as the request being redirected.
+  ResourceType resource_type_ = ResourceType::kSubresource;
 };
 
 }  // namespace request_header_integrity

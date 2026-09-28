@@ -33,7 +33,9 @@ if (enable_request_header_integrity) {
     deps = [
       ":request_header_integrity",
       "//base/test:test_support",
+      "//chrome/common/request_header_integrity",
       "//services/network/public/mojom",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 

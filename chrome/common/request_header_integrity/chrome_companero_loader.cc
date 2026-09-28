@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
 #include "content/public/common/content_switches.h"
@@ -20,15 +21,9 @@ ChromeCompaneroLoader& ChromeCompaneroLoader::GetInstance() {
   return *instance;
 }
 
-namespace {
-
-constexpr base::TimeDelta kRefreshInterval = base::Minutes(1);
-
-}  // namespace
-
 ChromeCompaneroLoader::ChromeCompaneroLoader()
     : refresh_timer_(FROM_HERE,
-                     kRefreshInterval,
+                     kTokenRefreshInterval,
                      base::BindRepeating(&ChromeCompaneroLoader::RefreshValue,
                                          base::Unretained(this))) {}
 
@@ -43,6 +38,13 @@ void ChromeCompaneroLoader::SetMojoRemote(
       switches::kProcessType));
   companero_remote_.Bind(std::move(pending_remote));
   RefreshValue();
+}
+
+void ChromeCompaneroLoader::BrowserProcessUpdateCachedToken(std::string name,
+                                                            std::string value) {
+  CHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kProcessType));
+  SetCachedToken(std::move(name), std::move(value));
 }
 
 void ChromeCompaneroLoader::RefreshValue() {
@@ -64,17 +66,22 @@ void ChromeCompaneroLoader::OnValueReceived(
   if (!result) {
     return;
   }
-  CHECK(net::HttpUtil::IsValidHeaderName(result->key));
-  CHECK(net::HttpUtil::IsValidHeaderValue(result->value));
-  base::AutoLock lock(cache_lock_);
-  if (cached_header_name_.empty()) {
-    cached_header_name_ = std::move(result->key);
-  } else {
-    CHECK_EQ(result->key, cached_header_name_);
-  }
-  cached_value_ = std::move(result->value);
   // Note: Recording Now() upon IPC receipt may extend a cached token's
   // effective TTL in child processes.
+  SetCachedToken(std::move(result->key), std::move(result->value));
+}
+
+void ChromeCompaneroLoader::SetCachedToken(std::string name,
+                                           std::string value) {
+  CHECK(net::HttpUtil::IsValidHeaderName(name));
+  CHECK(net::HttpUtil::IsValidHeaderValue(value));
+  base::AutoLock lock(cache_lock_);
+  if (cached_header_name_.empty()) {
+    cached_header_name_ = std::move(name);
+  } else {
+    CHECK_EQ(name, cached_header_name_);
+  }
+  cached_value_ = std::move(value);
   cached_value_time_ = base::TimeTicks::Now();
 }
 

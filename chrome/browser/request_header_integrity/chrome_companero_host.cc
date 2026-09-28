@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/task/task_traits.h"
@@ -22,6 +23,7 @@
 #include "base/threading/scoped_thread_priority.h"
 #include "build/build_config.h"
 #include "chrome/common/request_header_integrity/chrome_companero.mojom.h"
+#include "chrome/common/request_header_integrity/chrome_companero_loader.h"
 #include "chrome/common/request_header_integrity/internal/integrity_seed_internal.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "google_apis/google_api_keys.h"
@@ -209,17 +211,29 @@ class ChromeCompaneroHost::Backend : public mojom::ChromeCompanero {
   GetHeaderNameFunc get_header_name_fn_ = nullptr;
 };
 
-ChromeCompaneroHost::ChromeCompaneroHost() {
+ChromeCompaneroHost::ChromeCompaneroHost()
+    : ChromeCompaneroHost(ChromeCompaneroLoader::GetInstance()) {}
+
+ChromeCompaneroHost::ChromeCompaneroHost(ChromeCompaneroLoader& loader)
+    : loader_(loader) {
   if (base::ThreadPoolInstance::Get()) {
     backend_.emplace(base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), kTokenTaskPriority.Get()}));
+    RefreshBrowserToken();
+    browser_token_refresh_timer_.Start(
+        FROM_HERE, kTokenRefreshInterval,
+        base::BindRepeating(&ChromeCompaneroHost::RefreshBrowserToken,
+                            base::Unretained(this)));
   }
 }
 
-ChromeCompaneroHost::~ChromeCompaneroHost() = default;
+ChromeCompaneroHost::~ChromeCompaneroHost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
 void ChromeCompaneroHost::BindReceiver(
     mojo::PendingReceiver<mojom::ChromeCompanero> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
     backend_.AsyncCall(&Backend::BindReceiver).WithArgs(std::move(receiver));
   }
@@ -227,11 +241,35 @@ void ChromeCompaneroHost::BindReceiver(
 
 void ChromeCompaneroHost::GetHeaderNameAndValue(
     GetHeaderNameAndValueCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
     backend_.AsyncCall(&Backend::GetHeaderNameAndValueSync)
         .Then(std::move(callback));
   } else {
     std::move(callback).Run(nullptr);
+  }
+}
+
+void ChromeCompaneroHost::RefreshBrowserToken() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetHeaderNameAndValue(
+      base::BindOnce(&ChromeCompaneroHost::OnBrowserTokenReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeCompaneroHost::OnBrowserTokenReceived(
+    network::mojom::HttpRequestHeaderKeyValuePairPtr result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result) {
+    return;
+  }
+  loader_->BrowserProcessUpdateCachedToken(std::move(result->key),
+                                           std::move(result->value));
+  if (first_token_time_.is_null()) {
+    first_token_time_ = base::TimeTicks::Now();
+    base::UmaHistogramMediumTimes(
+        "Security.RequestHeaderIntegrity.TokenAvailableDelay",
+        first_token_time_ - creation_time_);
   }
 }
 

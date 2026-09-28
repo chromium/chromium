@@ -15,8 +15,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/thread_annotations.h"
 #include "build/branding_buildflags.h"
+#include "chrome/common/request_header_integrity/chrome_companero_loader.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -359,6 +362,29 @@ IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
   WaitForRequest(dynamic_script_url);
   EXPECT_TRUE(
       HasReceivedHeader(dynamic_script_url, INTEGRITY_DYNAMIC_HEADER_1));
+}
+
+// End-to-end coverage of the dynamic integrity header on top-level main frame
+// navigation: the browser-process throttle attaches the dynamic header by
+// reading the cached token fed directly from ChromeCompaneroHost without Mojo
+// IPC.
+IN_PROC_BROWSER_TEST_F(RequestHeaderIntegrityURLLoaderThrottleBrowserTest,
+                       DynamicHeaderAddedForMainResourceNavigation) {
+  // ChromeCompaneroHost primes the cache asynchronously on a ThreadPool
+  // sequence that has to load libchromecompaneros first, so wait for the token
+  // before navigating. Otherwise the throttle has nothing to attach and this
+  // races browser startup.
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    return request_header_integrity::ChromeCompaneroLoader::GetInstance()
+        .GetHeaderNameAndValue()
+        .has_value();
+  }));
+
+  GURL google_url = GetGoogleUrl();
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), google_url));
+  WaitForRequest(google_url);
+  EXPECT_TRUE(HasReceivedHeader(google_url, INTEGRITY_DYNAMIC_HEADER_1));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
