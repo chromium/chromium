@@ -4,11 +4,15 @@
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
+#include <optional>
 #include <tuple>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
@@ -116,7 +120,11 @@ class TestFileSystemAccessPermissionContext
       content::GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) override {
     confirm_sensitive_entry_access_ = true;
-    if (auto_abort_on_confirm_sensitive_entry_access_) {
+    last_sensitive_entry_path_info_ = path_info;
+    last_sensitive_entry_handle_type_ = handle_type;
+    last_sensitive_entry_access_trigger_ = access_trigger;
+    if (auto_abort_on_confirm_sensitive_entry_access_ ||
+        (auto_abort_on_save_ && access_trigger == AccessTrigger::kSave)) {
       std::move(callback).Run(SensitiveEntryResult::kAbort);
       return;
     }
@@ -133,15 +141,42 @@ class TestFileSystemAccessPermissionContext
     auto_abort_on_confirm_sensitive_entry_access_ = true;
   }
 
+  // Aborts `ConfirmSensitiveEntryAccess()` for AccessTrigger::kSave only.
+  // Because for a blocked path, `DidCheckPathAgainstBlocklist()` posts a
+  // tab-modal dialog when the action is `kSave`, which a browser test has no
+  // way to dismiss. Checks made with `kProgrammaticRead` /
+  // `kProgrammaticWrite` resolve synchronously without any UI, so those are
+  // deliberately left to run against the real blocklist.
+  void set_auto_abort_on_save() { auto_abort_on_save_ = true; }
+
+  // Arguments of the most recent ConfirmSensitiveEntryAccess() call.
+  const std::optional<content::PathInfo>& last_sensitive_entry_path_info()
+      const {
+    return last_sensitive_entry_path_info_;
+  }
+
+  HandleType last_sensitive_entry_handle_type() const {
+    return last_sensitive_entry_handle_type_;
+  }
+
+  AccessTrigger last_sensitive_entry_access_trigger() const {
+    return last_sensitive_entry_access_trigger_;
+  }
+
   void reset() {
     performed_after_write_checks_ = false;
     confirm_sensitive_entry_access_ = false;
+    last_sensitive_entry_path_info_.reset();
   }
 
  private:
   bool performed_after_write_checks_ = false;
   bool confirm_sensitive_entry_access_ = false;
   bool auto_abort_on_confirm_sensitive_entry_access_ = false;
+  bool auto_abort_on_save_ = false;
+  std::optional<content::PathInfo> last_sensitive_entry_path_info_;
+  HandleType last_sensitive_entry_handle_type_ = HandleType::kFile;
+  AccessTrigger last_sensitive_entry_access_trigger_ = AccessTrigger::kOpen;
   base::OnceClosure quit_callback_;
 };
 
@@ -169,6 +204,7 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
   }
 
   void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
     content::SetFileSystemAccessPermissionContext(
         browser()->GetProfile(),
         /*permission_context=*/nullptr);
@@ -299,6 +335,48 @@ class ChromeFileSystemAccessPermissionContextBrowserTest
                                                              handle_name)));
   }
 
+  // Evaluates `script_body` in the page with `hooks` bound to the directory
+  // handle for `<git_dir_name>/hooks` inside the picked directory, and
+  // `dirHandle` bound to the picked directory itself.
+  // The `hooks` handle is resolved with {create: false}, which the blocklist
+  // always permits -- `.git/hooks` is BlockType::kBlockWrite, so reads are
+  // unaffected. This keeps the helper itself from failing, so a rejection
+  // always originates from `script_body`.
+  // Returns "ALLOWED" if `script_body` resolved, or "BLOCKED: <DOMException
+  // name>" if it rejected.
+  std::string RunInGitHooks(std::string_view git_dir_name,
+                            std::string_view script_body) {
+    const std::string script = base::StrCat({content::JsReplace(
+                                                 R"((async () => {
+                  try {
+                    const dirHandle = self.dirHandle;
+                    const hooks = await (await dirHandle
+                        .getDirectoryHandle($1)).getDirectoryHandle('hooks');
+                  )",
+                                                 git_dir_name),
+                                             script_body,
+                                             R"(
+                    return 'ALLOWED';
+                  } catch (e) {
+                    return 'BLOCKED: ' + e.name;
+                  }
+                })())"});
+    return content::EvalJs(GetWebContents(), script).ExtractString();
+  }
+
+  // Picks `dir` with the fake file picker and exposes it to the page as
+  // `self.dirHandle` with readwrite permission.
+  void PickDirectoryAsDirHandle(const base::FilePath& dir) {
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{dir}));
+    FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+        ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+    ASSERT_TRUE(content::ExecJs(GetWebContents(), R"((async () => {
+          self.dirHandle = await self.showDirectoryPicker({mode: 'readwrite'});
+        })())"));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -339,6 +417,175 @@ IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
   // Not verifying any permissions, but the test should end without crashing.
 
   ui::SelectFileDialog::SetFactory(nullptr);
+}
+
+// Verifies that every way of writing into `.git/hooks` (and case variations
+// of it) is rejected, while reads and writes elsewhere are unaffected. See
+// crbug.com/545006893.
+//
+// This test deliberately runs against the real
+// ChromeFileSystemAccessPermissionContext installed by SetUpOnMainThread(),
+// i.e. against the real blocklist. Every check it exercises is made with
+// AccessTrigger::kProgrammaticRead or kProgrammaticWrite, for which
+// DidCheckPathAgainstBlocklist() resolves synchronously without showing any
+// dialog, so no test double is required.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       GitHooksWriteBlocked) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Set up a repo directory containing `.git/hooks` and the case variant
+  // `.Git/hooks`, each with a pre-existing hook file, plus a `src` directory
+  // that is not on the blocklist to act as a negative control.
+  constexpr char kHookContents[] = "#!/bin/sh\nexit 0\n";
+  const base::FilePath test_dir = temp_dir().GetPath().AppendASCII("test");
+  for (const char* git_dir : {".git", ".Git"}) {
+    const base::FilePath hooks =
+        test_dir.AppendASCII(git_dir).AppendASCII("hooks");
+    ASSERT_TRUE(base::CreateDirectory(hooks));
+    ASSERT_TRUE(
+        base::WriteFile(hooks.AppendASCII("pre-commit"), kHookContents));
+  }
+  ASSERT_TRUE(base::CreateDirectory(test_dir.AppendASCII("src")));
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  base::ScopedClosureRunner reset_dialog_factory(
+      base::BindOnce([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+  ASSERT_NO_FATAL_FAILURE(PickDirectoryAsDirHandle(test_dir));
+
+  for (const char* git_dir : {".git", ".Git"}) {
+    SCOPED_TRACE(git_dir);
+    const base::FilePath hooks =
+        test_dir.AppendASCII(git_dir).AppendASCII("hooks");
+
+    // Reading an existing hook is still allowed: `.git/hooks` is blocked for
+    // write only. This also establishes that the rejections below come from
+    // the write operation rather than from resolving the handle.
+    EXPECT_EQ(
+        RunInGitHooks(git_dir, "await hooks.getFileHandle('pre-commit');"),
+        "ALLOWED");
+
+    // FileSystemAccessDirectoryHandleImpl::GetFileResolved(): creating a new
+    // hook file is blocked.
+    EXPECT_EQ(RunInGitHooks(
+                  git_dir,
+                  "await hooks.getFileHandle('post-commit', {create: true});"),
+              "BLOCKED: SecurityError");
+    EXPECT_FALSE(base::PathExists(hooks.AppendASCII("post-commit")));
+
+    // FileSystemAccessFileHandleImpl::CreateFileWriterImpl(): overwriting an
+    // existing hook file is blocked. The handle is obtained with
+    // {create: false} so that the rejection can only come from
+    // createWritable().
+    EXPECT_EQ(RunInGitHooks(git_dir,
+                            "const h = await hooks.getFileHandle('pre-commit');"
+                            "await h.createWritable();"),
+              "BLOCKED: SecurityError");
+    std::string contents;
+    EXPECT_TRUE(
+        base::ReadFileToString(hooks.AppendASCII("pre-commit"), &contents));
+    EXPECT_EQ(contents, kHookContents);
+
+    // FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(): creating a
+    // subdirectory under the hooks directory is blocked.
+    EXPECT_EQ(
+        RunInGitHooks(git_dir,
+                      "await hooks.getDirectoryHandle('sub', {create: true});"),
+        "BLOCKED: SecurityError");
+    EXPECT_FALSE(base::PathExists(hooks.AppendASCII("sub")));
+  }
+
+  // Negative control: the same operations succeed in a sibling directory that
+  // is not on the blocklist, so the rejections above are specific to
+  // `.git/hooks` rather than a blanket denial. `abort()` is used instead of
+  // `close()` to keep after-write (Safe Browsing) checks out of this test.
+  EXPECT_EQ(content::EvalJs(GetWebContents(), R"((async () => {
+        try {
+          const src = await self.dirHandle.getDirectoryHandle('src');
+          const f = await src.getFileHandle('post-commit', {create: true});
+          await (await f.createWritable()).abort();
+          await src.getDirectoryHandle('sub', {create: true});
+          return 'ALLOWED';
+        } catch (e) {
+          return 'BLOCKED: ' + e.name;
+        }
+      })())")
+                .ExtractString(),
+            "ALLOWED");
+  EXPECT_TRUE(
+      base::PathExists(test_dir.AppendASCII("src").AppendASCII("post-commit")));
+  EXPECT_TRUE(
+      base::DirectoryExists(test_dir.AppendASCII("src").AppendASCII("sub")));
+}
+
+// Verifies that moving a file into `.git/hooks` consults
+// ConfirmSensitiveEntryAccess() for the resolved destination path, and that
+// aborting that check rejects the move.
+//
+// Unlike GitHooksWriteBlocked above, the move path checks its destination with
+// AccessTrigger::kSave, for which a blocked path posts a tab-modal dialog that
+// a browser test cannot dismiss. The verdict is therefore stubbed out, and the
+// test asserts on the arguments the destination check was made with.
+IN_PROC_BROWSER_TEST_F(ChromeFileSystemAccessPermissionContextBrowserTest,
+                       GitHooksMoveBlocked) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // The probe file is created on disk rather than through the API: writing it
+  // via the API would have to go through close(), and
+  // TestFileSystemAccessPermissionContext blocks all after-write checks.
+  const base::FilePath test_dir = temp_dir().GetPath().AppendASCII("test");
+  const base::FilePath git_hooks_dir =
+      test_dir.AppendASCII(".git").AppendASCII("hooks");
+  ASSERT_TRUE(base::CreateDirectory(git_hooks_dir));
+  ASSERT_TRUE(base::WriteFile(test_dir.AppendASCII("probe.txt"), "probe"));
+
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  Profile* const profile = browser()->GetProfile();
+  TestFileSystemAccessPermissionContext permission_context(profile);
+  content::SetFileSystemAccessPermissionContext(profile, &permission_context);
+  // Restore unconditionally: leaving the profile pointing at this stack object
+  // would dangle if an assertion below returns early.
+  base::ScopedClosureRunner restore_permission_context(base::BindOnce(
+      [](Profile* profile,
+         content::FileSystemAccessPermissionContext* context) {
+        content::SetFileSystemAccessPermissionContext(profile, context);
+      },
+      profile, this->permission_context()));
+  base::ScopedClosureRunner reset_dialog_factory(
+      base::BindOnce([]() { ui::SelectFileDialog::SetFactory(nullptr); }));
+
+  ASSERT_NO_FATAL_FAILURE(PickDirectoryAsDirHandle(test_dir));
+
+  // Only stub out kSave, which is what move() uses for its destination check.
+  // The kProgrammaticRead check that getFileHandle() performs must still run
+  // against the real blocklist so that resolving `probe.txt` succeeds.
+  permission_context.reset();
+  permission_context.set_auto_abort_on_save();
+
+  // Note: move() returns kInvalidArgument (TypeError) when its destination
+  // sensitive entry check is aborted, following existing
+  // FileSystemHandle::move() conventions, whereas CreateFileWriter and
+  // GetFile/GetDirectory return kSecurityError (SecurityError).
+  EXPECT_EQ(RunInGitHooks(".git",
+                          "const probe = await dirHandle"
+                          ".getFileHandle('probe.txt');"
+                          "await probe.move(hooks, 'post-commit');"),
+            "BLOCKED: TypeError");
+
+  // The destination check must have been made against the resolved path inside
+  // the hooks directory, not against the source path.
+  ASSERT_TRUE(permission_context.last_sensitive_entry_path_info().has_value());
+  EXPECT_EQ(permission_context.last_sensitive_entry_path_info()->path,
+            git_hooks_dir.AppendASCII("post-commit"));
+  EXPECT_EQ(permission_context.last_sensitive_entry_access_trigger(),
+            ChromeFileSystemAccessPermissionContext::AccessTrigger::kSave);
+  EXPECT_EQ(permission_context.last_sensitive_entry_handle_type(),
+            ChromeFileSystemAccessPermissionContext::HandleType::kFile);
+  EXPECT_FALSE(base::PathExists(git_hooks_dir.AppendASCII("post-commit")));
+  EXPECT_TRUE(base::PathExists(test_dir.AppendASCII("probe.txt")));
 }
 
 // Tests that renaming a file to a destination with a pre-existing permission

@@ -106,6 +106,11 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       bool auto_close,
       blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
       CreateFileWriterCallback callback);
+  void DidVerifySensitiveEntryAccess(
+      bool keep_existing_data,
+      bool auto_close,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
+      CreateFileWriterCallback callback);
   void DidVerifyHasWritePermissions(
       bool keep_existing_data,
       bool auto_close,

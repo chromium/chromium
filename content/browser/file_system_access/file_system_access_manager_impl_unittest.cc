@@ -1432,24 +1432,41 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
 }
 
-TEST_F(FileSystemAccessManagerImplTest,
+class FileSystemAccessManagerImplSerializeHandleInsideDirectoryTest
+    : public FileSystemAccessManagerImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  FileSystemAccessManagerImplSerializeHandleInsideDirectoryTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kFileSystemAccessWriteBlocklistCheck,
+        IsWriteBlocklistCheckEnabled());
+  }
+
+  bool IsWriteBlocklistCheckEnabled() const { return GetParam(); }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(FileSystemAccessManagerImplSerializeHandleInsideDirectoryTest,
        SerializeHandle_Native_FileInsideDirectory) {
   const PathInfo kDirectoryPathInfo(dir_.GetPath().AppendASCII("foo"));
   const std::string kTestName = "test file name";
   base::CreateDirectory(kDirectoryPathInfo.path);
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
-    EXPECT_CALL(
-        permission_context_,
-        ConfirmSensitiveEntryAccess_(
-            kTestStorageKey.origin(),
-            PathInfo(kDirectoryPathInfo.path.AppendASCII(kTestName)),
-            FileSystemAccessPermissionContext::HandleType::kFile,
-            FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticRead,
-            frame_id_, testing::_))
-        .WillOnce(RunOnceCallback<5>(
-            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
-  }
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          kTestStorageKey.origin(),
+          PathInfo(kDirectoryPathInfo.path.AppendASCII(kTestName)),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          IsWriteBlocklistCheckEnabled() ? FileSystemAccessPermissionContext::
+                                               AccessTrigger::kProgrammaticWrite
+                                         : FileSystemAccessPermissionContext::
+                                               AccessTrigger::kProgrammaticRead,
+          frame_id_, testing::_))
+      .WillOnce(RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> directory_handle =
       GetHandleForDirectory(kDirectoryPathInfo);
@@ -1499,11 +1516,24 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
 }
 
-TEST_F(FileSystemAccessManagerImplTest,
+TEST_P(FileSystemAccessManagerImplSerializeHandleInsideDirectoryTest,
        SerializeHandle_Native_DirectoryInsideDirectory) {
   const PathInfo kDirectoryPathInfo(dir_.GetPath().AppendASCII("foo"));
   const std::string kTestName = "test dir name";
   base::CreateDirectory(kDirectoryPathInfo.path);
+
+  if (IsWriteBlocklistCheckEnabled()) {
+    EXPECT_CALL(permission_context_,
+                ConfirmSensitiveEntryAccess_(
+                    kTestStorageKey.origin(),
+                    PathInfo(kDirectoryPathInfo.path.AppendASCII(kTestName)),
+                    FileSystemAccessPermissionContext::HandleType::kDirectory,
+                    FileSystemAccessPermissionContext::AccessTrigger::
+                        kProgrammaticWrite,
+                    frame_id_, testing::_))
+        .WillOnce(RunOnceCallback<5>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+  }
 
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> directory_handle =
       GetHandleForDirectory(kDirectoryPathInfo);
@@ -1551,6 +1581,15 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
   EXPECT_EQ(ask_grant2_, token->GetWriteGrant());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessManagerImplSerializeHandleInsideDirectoryTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "WriteBlocklistCheckEnabled"
+                        : "WriteBlocklistCheckDisabled";
+    });
 
 TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_ExternalFile) {
   const PathInfo kTestPathInfo(

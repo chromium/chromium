@@ -82,4 +82,9 @@ BASE_FEATURE_PARAM(bool,
                    kOnlyInHomedir,
                    &kFileSystemAccessRenameRequiresParentWritePermission,
                    false);
+
+// When enabled, CreateFileWriter() and GetFile()/GetDirectory() with
+// create=true perform sensitive entry access checks for write operations.
+BASE_FEATURE(kFileSystemAccessWriteBlocklistCheck,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace content::features

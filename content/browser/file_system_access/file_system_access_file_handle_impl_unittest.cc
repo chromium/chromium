@@ -117,8 +117,8 @@ MATCHER_P(IsOkAndPermissionStatus, status, "") {
 
 // A matcher to check the result of a `CreateFileWriter()` call.
 MATCHER_P(FileWriterCreationIs, expected_status, "") {
-  const auto& result = arg.first;
-  const auto& writer = arg.second;
+  const auto& result = std::get<0>(arg);
+  const auto& writer = std::get<1>(arg);
 
   if (result->status != expected_status) {
     *result_listener << "FileSystemAccessStatus is " << result->status
@@ -375,6 +375,24 @@ class FileSystemAccessAccessHandleTest
   }
 };
 
+// Verifies that creating a file writer on a temporary (sandboxed) file system
+// skips the sensitive entry access check.
+TEST_F(FileSystemAccessAccessHandleTest,
+       CreateFileWriterSkipsSensitiveEntryAccess) {
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive,
+      future.GetCallback());
+  EXPECT_THAT(future.Take(), FileWriterCreationIs(FileSystemAccessStatus::kOk));
+}
+
 class FileSystemAccessAccessHandleIncognitoTest
     : public FileSystemAccessAccessHandleTest {
   void SetUp() override {
@@ -594,6 +612,104 @@ TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
       writer_pair_no_keep = future_no_keep.Take();
   EXPECT_THAT(writer_pair_no_keep,
               FileWriterCreationIs(FileSystemAccessStatus::kOk));
+}
+
+// Verifies that creating a file writer fails with a security error when the
+// path is blocked by the sensitive entry access check.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       SensitiveEntryAccessBlocked) {
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          test_src_storage_key_.origin(),
+          PathInfo(PathType::kExternal, test_file_url_.path(), "test"),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  EXPECT_THAT(
+      CreateFileWriter(
+          /*keep_existing_data=*/false, /*auto_close=*/false,
+          blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive),
+      FileWriterCreationIs(FileSystemAccessStatus::kSecurityError));
+}
+
+// Verifies that creating a file writer succeeds when the sensitive entry access
+// check allows access to the path.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       SensitiveEntryAccessAllowed) {
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          test_src_storage_key_.origin(),
+          PathInfo(PathType::kExternal, test_file_url_.path(), "test"),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+
+  EXPECT_THAT(
+      CreateFileWriter(
+          /*keep_existing_data=*/false, /*auto_close=*/false,
+          blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive),
+      FileWriterCreationIs(FileSystemAccessStatus::kOk));
+}
+
+// Verifies that creating a file writer on a local file system path fails with a
+// security error when blocked by the sensitive entry access check, even if
+// permissions were already granted.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       SensitiveEntryAccessBlockedLocalPath) {
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+
+  auto handle = GetHandleWithPermissions(file, allow_grant_, allow_grant_);
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          test_src_storage_key_.origin(),
+          PathInfo(PathType::kLocal, file, file.BaseName().AsUTF8Unsafe()),
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          FileSystemAccessPermissionContext::AccessTrigger::kProgrammaticWrite,
+          web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
+      .WillOnce(base::test::RunOnceCallback<5>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive,
+      future.GetCallback());
+  EXPECT_THAT(future.Take(),
+              FileWriterCreationIs(FileSystemAccessStatus::kSecurityError));
+}
+
+// Verifies that creating a file writer skips the sensitive entry access check
+// when the feature is disabled.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       SensitiveEntryAccessFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFileSystemAccessWriteBlocklistCheck);
+
+  manager_->SetPermissionContextForTesting(&permission_context_);
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  EXPECT_THAT(
+      CreateFileWriter(
+          /*keep_existing_data=*/false, /*auto_close=*/false,
+          blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive),
+      FileWriterCreationIs(FileSystemAccessStatus::kOk));
 }
 
 // TODO(crbug.com/40276567): Add test to cover that swap file is truncated when

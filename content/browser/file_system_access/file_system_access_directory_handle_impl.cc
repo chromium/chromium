@@ -208,19 +208,23 @@ void FileSystemAccessDirectoryHandleImpl::GetFileResolved(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+  const bool should_check_write =
+      create && base::FeatureList::IsEnabled(
+                    features::kFileSystemAccessWriteBlocklistCheck);
+  const bool should_check_sensitive_entry =
+      should_check_write ||
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck);
+
+  if (should_check_sensitive_entry) {
     // While this directory handle already has obtained the permission and
     // checked for the blocklist, a child symlink file may have been created
     // since then, pointing to a blocklisted file or directory. Check for
     // sensitive entry access, which is run on the resolved path.
-    // TODO(crbug.com/545006893): Update to pass
-    // `AccessTrigger::kProgrammaticWrite` when `create` is true. This CL is a
-    // pure refactoring so we avoid making behavioral changes here; this will
-    // be addressed in a follow-up CL.
     RunWithSensitiveEntryAccess(
         child_url, basename, HandleType::kFile,
-        AccessTrigger::kProgrammaticRead,
+        should_check_write ? AccessTrigger::kProgrammaticWrite
+                           : AccessTrigger::kProgrammaticRead,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetFile,
                        weak_factory_.GetWeakPtr(), basename, create, child_url),
         base::BindOnce([](GetFileCallback callback) {
@@ -343,6 +347,31 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryResolved(
     std::move(callback).Run(std::move(read_access.error()), mojo::NullRemote());
     return;
   }
+
+  if (create && base::FeatureList::IsEnabled(
+                    features::kFileSystemAccessWriteBlocklistCheck)) {
+    RunWithSensitiveEntryAccess(
+        child_url, basename, HandleType::kDirectory,
+        AccessTrigger::kProgrammaticWrite,
+        base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetDirectory,
+                       weak_factory_.GetWeakPtr(), create, child_url),
+        base::BindOnce([](GetDirectoryCallback callback) {
+          std::move(callback).Run(file_system_access_error::FromStatus(
+                                      FileSystemAccessStatus::kSecurityError),
+                                  mojo::NullRemote());
+        }),
+        std::move(callback));
+    return;
+  }
+
+  DoGetDirectory(create, child_url, std::move(callback));
+}
+
+void FileSystemAccessDirectoryHandleImpl::DoGetDirectory(
+    bool create,
+    storage::FileSystemURL child_url,
+    GetDirectoryCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (create) {
     // If `create` is true, write permission is required unconditionally, i.e.

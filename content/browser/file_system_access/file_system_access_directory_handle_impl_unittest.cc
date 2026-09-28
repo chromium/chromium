@@ -369,6 +369,144 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest,
             blink::mojom::FileSystemAccessStatus::kSecurityError);
 }
 
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_SensitiveEntryAccessCheck_Create_Blocked) {
+  PathInfo child_path(dir_.GetPath().AppendASCII("blocked_path"));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, child_path, HandleType::kFile,
+                                           AccessTrigger::kProgrammaticWrite,
+                                           kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle_->GetFile("blocked_path", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_FALSE(base::PathExists(child_path.path));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_SensitiveEntryAccessCheck_Create_Allowed) {
+  PathInfo child_path(dir_.GetPath().AppendASCII("allowed_path"));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, child_path, HandleType::kFile,
+                                           AccessTrigger::kProgrammaticWrite,
+                                           kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle_->GetFile("allowed_path", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::PathExists(child_path.path));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetDirectory_SensitiveEntryAccessCheck_Create_Blocked) {
+  PathInfo child_path(dir_.GetPath().AppendASCII("blocked_dir"));
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_(
+                                       _, child_path, HandleType::kDirectory,
+                                       AccessTrigger::kProgrammaticWrite,
+                                       kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAbort));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  handle_->GetDirectory("blocked_dir", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_FALSE(base::PathExists(child_path.path));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetDirectory_SensitiveEntryAccessCheck_Create_Allowed) {
+  PathInfo child_path(dir_.GetPath().AppendASCII("allowed_dir"));
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_(
+                                       _, child_path, HandleType::kDirectory,
+                                       AccessTrigger::kProgrammaticWrite,
+                                       kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  handle_->GetDirectory("allowed_dir", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::DirectoryExists(child_path.path));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_SensitiveEntryAccessCheck_Create_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          features::kFileSystemAccessWriteBlocklistCheck,
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck});
+
+  PathInfo child_path(dir_.GetPath().AppendASCII("allowed_path"));
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle_->GetFile("allowed_path", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::PathExists(child_path.path));
+}
+
+TEST_F(
+    FileSystemAccessDirectoryHandleImplTest,
+    GetFile_SensitiveEntryAccessCheck_Create_WriteCheckDisabledReadOnlyCheckEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kFileSystemAccessDirectoryIterationBlocklistCheck},
+      /*disabled_features=*/{features::kFileSystemAccessWriteBlocklistCheck});
+
+  PathInfo child_path(dir_.GetPath().AppendASCII("allowed_path"));
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(_, child_path, HandleType::kFile,
+                                           AccessTrigger::kProgrammaticRead,
+                                           kBindingContext.frame_id, _))
+      .WillOnce(base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle_->GetFile("allowed_path", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::PathExists(child_path.path));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetDirectory_SensitiveEntryAccessCheck_Create_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFileSystemAccessWriteBlocklistCheck);
+
+  PathInfo child_path(dir_.GetPath().AppendASCII("allowed_dir"));
+  EXPECT_CALL(permission_context_, ConfirmSensitiveEntryAccess_).Times(0);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  handle_->GetDirectory("allowed_dir", /*create=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_TRUE(base::DirectoryExists(child_path.path));
+}
+
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
 

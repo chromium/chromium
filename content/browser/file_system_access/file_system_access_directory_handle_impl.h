@@ -127,6 +127,9 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
       GetDirectoryCallback callback,
       blink::mojom::FileSystemAccessErrorPtr get_child_url_result,
       storage::FileSystemURL child_url);
+  void DoGetDirectory(bool create,
+                      storage::FileSystemURL child_url,
+                      GetDirectoryCallback callback);
   // This method creates the directory if it does not currently exists. I.e. it
   // is the implementation for passing create=true to GetDirectory.
   void GetDirectoryWithWritePermission(const storage::FileSystemURL& child_url,

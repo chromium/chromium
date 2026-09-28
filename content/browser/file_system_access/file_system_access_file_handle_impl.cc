@@ -577,6 +577,34 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
                               : GetEffectiveWritePermissionStatus(),
            blink::mojom::PermissionStatus::GRANTED, base::NotFatalUntil::M159);
 
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessWriteBlocklistCheck)) {
+    RunWithSensitiveEntryAccess(
+        url(), display_name(), HandleType::kFile,
+        AccessTrigger::kProgrammaticWrite,
+        base::BindOnce(
+            &FileSystemAccessFileHandleImpl::DidVerifySensitiveEntryAccess,
+            weak_factory_.GetWeakPtr(), keep_existing_data, auto_close, mode),
+        base::BindOnce([](CreateFileWriterCallback callback) {
+          std::move(callback).Run(file_system_access_error::FromStatus(
+                                      FileSystemAccessStatus::kSecurityError),
+                                  mojo::NullRemote());
+        }),
+        std::move(callback));
+    return;
+  }
+
+  DidVerifySensitiveEntryAccess(keep_existing_data, auto_close, mode,
+                                std::move(callback));
+}
+
+void FileSystemAccessFileHandleImpl::DidVerifySensitiveEntryAccess(
+    bool keep_existing_data,
+    bool auto_close,
+    blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
+    CreateFileWriterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // TODO(crbug.com/40194651): Expand this check to all backends.
   if (url().type() == storage::kFileSystemTypeLocal) {
     auto checks = base::BindOnce(&HasWritePermission, url().path());
