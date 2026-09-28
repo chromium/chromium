@@ -408,6 +408,7 @@ void DeferredTaskHandler::ClearHandlersToBeDeleted() {
   }
 
   tail_processing_handlers_.clear();
+  finished_tail_processing_handlers_.clear();
   rendering_orphan_handlers_.clear();
   deletable_orphan_handlers_.clear();
   automatic_pull_handlers_.clear();
