@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -49,11 +50,15 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   using SkImageReadPixelsCallback = base::OnceCallback<
       void(void* ctx, std::unique_ptr<const SkSurface::AsyncReadResult>)>;
 
+  // insertRecording() forces a submit once |max_pending_recordings| recordings
+  // are pending, or once |max_time_between_submits| has passed since the last
+  // submit.
   GraphiteSharedContext(
       std::unique_ptr<skgpu::graphite::Context> graphite_context,
       GpuProcessShmCount* use_shader_cache_shm_count,
       bool is_thread_safe,
       size_t max_pending_recordings,
+      base::TimeDelta max_time_between_submits,
       Delegate* delegate = nullptr);
 
   GraphiteSharedContext(const GraphiteSharedContext&) = delete;
@@ -256,6 +261,9 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
 
   const size_t max_pending_recordings_;
   size_t num_pending_recordings_ = 0;
+
+  const base::TimeDelta max_time_between_submits_;
+  base::TimeTicks last_submit_time_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 

@@ -4,8 +4,10 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "skia/buildflags.h"
@@ -27,6 +29,7 @@ namespace {
 using testing::NiceMock;
 
 constexpr size_t kMaxPendingRecordings = 100;
+constexpr base::TimeDelta kMaxTimeBetweenSubmits = base::Milliseconds(500);
 
 class MockGpuProcessShmCount : public GpuProcessShmCount {
  public:
@@ -110,9 +113,19 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
         skgpu::graphite::ContextFactory::MakeDawn(backend_context,
                                                   context_options),
         &use_shader_cache_shm_count_, is_thread_safe(), kMaxPendingRecordings,
-        &delegate_);
+        kMaxTimeBetweenSubmits, &delegate_);
   }
 
+  void InsertEmptyRecording(skgpu::graphite::Recorder* recorder) {
+    auto recording = recorder->snap();
+    ASSERT_TRUE(recording);
+    skgpu::graphite::InsertRecordingInfo info = {};
+    info.fRecording = recording.get();
+    EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockGpuProcessShmCount use_shader_cache_shm_count_;
   NiceMock<MockDelegate> delegate_;
   std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
@@ -286,6 +299,40 @@ TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
 
     EXPECT_TRUE(graphite_shared_context_->insertRecording(info));
   }
+}
+
+// Inserting a recording once the max time between submits has passed forces a
+// submit.
+TEST_P(GraphiteSharedContextTest, TimeBasedSubmit) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  // Start the time since the last submit.
+  graphite_shared_context_->submit();
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
+
+  task_environment_.AdvanceClock(kMaxTimeBetweenSubmits);
+  // The recording arrives once the max time has passed, so it forces a submit.
+  InsertEmptyRecording(recorder.get());
+}
+
+// Inserting a recording before the max time between submits has passed doesn't
+// force a submit.
+TEST_P(GraphiteSharedContextTest, NoTimeBasedSubmitBeforeMaxTime) {
+  auto recorder = graphite_shared_context_->makeRecorder();
+  ASSERT_TRUE(recorder);
+
+  // Start the time since the last submit.
+  graphite_shared_context_->submit();
+
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
+
+  task_environment_.AdvanceClock(kMaxTimeBetweenSubmits -
+                                 base::Milliseconds(1));
+  // The recording arrives just before the max time, so it doesn't force a
+  // submit.
+  InsertEmptyRecording(recorder.get());
 }
 
 // Test that async read pixels callbacks are skipped when the context is lost.

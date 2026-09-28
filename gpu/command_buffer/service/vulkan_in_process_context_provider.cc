@@ -227,7 +227,8 @@ bool VulkanInProcessContextProvider::InitializeGraphiteContext(
 
   graphite_context_ = std::make_unique<gpu::GraphiteSharedContext>(
       std::move(graphite_context), nullptr, /*is_thread_safe=*/false,
-      features::SkiaGraphiteMaxPendingRecordings(), this);
+      features::SkiaGraphiteMaxPendingRecordings(),
+      features::SkiaGraphiteMaxTimeBetweenSubmits(), this);
 
   return true;
 #else

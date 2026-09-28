@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_config_export.h"
 
@@ -92,6 +93,10 @@ struct GPU_CONFIG_EXPORT SkiaGraphiteFeatureParams {
   // Maximum number of pending recordings before submitting to the GPU.
   int max_pending_recordings = 100;
 
+  // Maximum time since the last submit before a newly inserted recording
+  // forces a submit to the GPU.
+  base::TimeDelta max_time_between_submits = base::Milliseconds(500);
+
   // Whether to enable deferred submissions optimization (if possible). If it's
   // false, every SI's access will require a Graphite's Context::submit() call
   // before EndAccess().
@@ -148,6 +153,9 @@ inline bool SkiaGraphiteDawnEnableAutoMap() {
 }
 inline int SkiaGraphiteMaxPendingRecordings() {
   return GetSkiaGraphiteFeatureParams().max_pending_recordings;
+}
+inline base::TimeDelta SkiaGraphiteMaxTimeBetweenSubmits() {
+  return GetSkiaGraphiteFeatureParams().max_time_between_submits;
 }
 inline bool SkiaGraphiteEnableDeferredSubmit() {
   return GetSkiaGraphiteFeatureParams().enable_deferred_submit;
