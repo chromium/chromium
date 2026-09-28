@@ -334,13 +334,11 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
   *frame_url_chain.Add() = "https://frame1.com/";
   *frame_url_chain.Add() = "https://frame2.com/";
 
-  ContentAnalysisResponse response;
-  response.set_request_token("123");
-  auto* result = response.add_results();
-  result->set_tag("dlp");
-  result->set_status(
+  ContentAnalysisResponse::Result result;
+  result.set_tag("dlp");
+  result.set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  auto* rule = result->add_triggered_rules();
+  auto* rule = result.add_triggered_rules();
   rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
   rule->set_rule_name("fake rule");
   rule->set_rule_id("12345");
@@ -360,7 +358,7 @@ TEST(ReportingUtilsTest, GetDlpSensitiveDataEvent) {
       /*profile_username=*/"profile_username",
       /*user_justification*/ u"justification",
       /*content_size=*/-1,
-      /*result=*/*result,
+      /*result=*/result,
       /*referrer_chain=*/referrer_chain,
       /*frame_url_chain=*/frame_url_chain,
       /*event_result=*/EventResult::BLOCKED);
