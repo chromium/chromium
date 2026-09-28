@@ -183,6 +183,10 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
   ASSERT_TRUE(zoom_item);
 
+  views::MenuItemView* more_tools_item =
+      root->GetMenuItemByID(kActionDeveloperSubmenu);
+  ASSERT_TRUE(more_tools_item);
+
   // Check if the styling is applied to the menu items.
 #if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(profile_item->GetMenuItemBackground().has_value());
@@ -232,10 +236,14 @@ TEST_F(ActionAppMenuTest, PopulatesSectionCardsWithStyling) {
   EXPECT_EQ(profile_item->GetTopMargin(), 12);
 #endif
   // Standard items (32dp row height): (32 - 16) / 2 = 8dp.
-  EXPECT_EQ(password_item->GetTopMargin(), 8);
-  EXPECT_EQ(print_item->GetTopMargin(), 8);
+  // The first and last standard rows of each section card get an extra 6dp
+  // of container padding on their outer edge (8 + 6 = 14dp).
+  EXPECT_EQ(password_item->GetTopMargin(), 14);
+  EXPECT_EQ(print_item->GetTopMargin(), 14);
   EXPECT_EQ(downloads_item->GetTopMargin(), 8);
   EXPECT_EQ(clear_browsing_item->GetTopMargin(), 8);
+  EXPECT_EQ(clear_browsing_item->GetBottomMargin(), 14);
+  EXPECT_EQ(more_tools_item->GetBottomMargin(), 14);
 
   // Expanded items (Zoom item, 48dp row height): (48 - 16) / 2 = 16dp.
   EXPECT_EQ(zoom_item->GetTopMargin(), 16);
@@ -2020,6 +2028,8 @@ TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
            DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT) -
        provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
       2;
+  const int expected_container_vertical_padding = provider->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
 
   views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
   ASSERT_TRUE(zoom_item);
@@ -2028,7 +2038,10 @@ TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
 
   views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
   ASSERT_TRUE(print_item);
-  EXPECT_EQ(print_item->GetTopMargin(), expected_normal_margin);
+  // Print is the first standard row of the Tools card, so it also gets the
+  // container vertical padding on top.
+  EXPECT_EQ(print_item->GetTopMargin(),
+            expected_normal_margin + expected_container_vertical_padding);
   EXPECT_EQ(print_item->GetBottomMargin(), expected_normal_margin);
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

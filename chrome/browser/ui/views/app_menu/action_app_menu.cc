@@ -478,6 +478,23 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   // Get the styling from the ActionItem and apply it to its menu item.
   if (container_color != ui::kColorMenuBackground) {
+    // Add extra top and bottom vertical padding to the first and last items of
+    // multi-row section containers (e.g., "Your Chrome" and "Tools and
+    // actions"). `kActionPasswordsAndAutofillSubmenu` is explicitly included as
+    // the first row below the expanded Profile row.
+    if (item_height == AppMenuActionItem::ItemHeight::kDefault) {
+      const int container_vertical_padding = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING);
+      if ((round_top_corners && !round_bottom_corners) ||
+          action_item->GetActionId() == kActionPasswordsAndAutofillSubmenu) {
+        menu_item->set_top_margin(vertical_padding +
+                                  container_vertical_padding);
+      } else if (round_bottom_corners && !round_top_corners) {
+        menu_item->set_bottom_margin(vertical_padding +
+                                     container_vertical_padding);
+      }
+    }
+
     const int top_radius =
         round_top_corners
             ? provider->GetDistanceMetric(
