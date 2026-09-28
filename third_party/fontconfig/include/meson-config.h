@@ -126,8 +126,6 @@
 
 #define HAVE_STRUCT_STATFS_F_FLAGS 1
 
-#define HAVE_SYMLINK 1
-
 #define HAVE_SYS_MOUNT_H 1
 
 #define HAVE_SYS_PARAM_H 1
