@@ -5,6 +5,8 @@
 #ifndef SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 #define SKIA_PUBLIC_MOJOM_HDR_METADATA_MOJOM_TRAITS_H_
 
+#include <cmath>
+
 #include "skia/public/mojom/hdr_metadata.mojom-shared.h"
 #include "skia/public/mojom/skcolorspace_primaries_mojom_traits.h"
 #include "third_party/skia/include/private/SkHdrMetadata.h"
@@ -234,6 +236,9 @@ struct StructTraits<skia::mojom::SkHdrAdaptiveGlobalToneMapDataView,
                    skhdr::AdaptiveGlobalToneMap* out) {
     out->fHdrReferenceWhite = data.hdr_reference_white();
     if (!data.ReadHeadroomAdaptiveToneMap(&out->fHeadroomAdaptiveToneMap)) {
+      return false;
+    }
+    if (!out->isValid()) {
       return false;
     }
     return true;

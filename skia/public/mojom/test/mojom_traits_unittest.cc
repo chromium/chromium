@@ -604,8 +604,8 @@ TEST(StructTraitsTest, SkHdrAdaptiveGlobalToneMap) {
                           .fGreen = 0.2f,
                           .fBlue = 0.3f,
                           .fMax = 0.4f,
-                          .fMin = 0.5f,
-                          .fComponent = 0.6f,
+                          .fMin = 0.0f,
+                          .fComponent = 0.0f,
                       },
                   .fGainCurve =
                       {
