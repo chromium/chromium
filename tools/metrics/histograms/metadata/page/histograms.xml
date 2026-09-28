@@ -5283,6 +5283,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Experimental.SoftNavigations.Count"
     units="Soft navigations" expires_after="2027-01-24">
   <owner>iclelland@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Records the number of soft navigations detected during a page load. Recorded
@@ -5495,6 +5496,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.InteractiveTiming.ProcessingTime" units="ms"
     expires_after="2027-01-24">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The duration between the start of event processing and the end of event
@@ -5508,6 +5510,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.InteractiveTiming.TimeToNextPaint" units="ms"
     expires_after="2027-07-31">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The duration between the end of event processing and the time when the first
@@ -5523,6 +5526,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType}"
     units="ms" expires_after="2027-07-31">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     The {NormalizedResponsivenessMetric} of a {PageLoadType} page load, in ms.
@@ -5582,6 +5586,7 @@ chromium-metrics-reviews@google.com.
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
     enum="LargestContentType" expires_after="2027-01-03">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures whether the largest contentful paint, whose timestamp is measured
@@ -5593,8 +5598,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType"
-    enum="LargestContentType" expires_after="2026-10-01">
+    enum="LargestContentType" expires_after="2027-09-01">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Measures whether the largest contentful paint in the main frame, whose
@@ -5711,6 +5717,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PageLoad.Internal.SoftNavigationOutcome"
     enum="SoftNavigationOutcome" expires_after="2027-01-24">
   <owner>iclelland@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Records the outcome of the soft navigation heuristics when the page's URL is
