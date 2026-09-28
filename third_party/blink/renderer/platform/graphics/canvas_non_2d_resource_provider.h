@@ -278,6 +278,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
   void FlushRecording(cc::PaintRecord last_recording);
 
+  void EnsureResourceReadyForDraw();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();
 
   const gfx::Size size_;

@@ -662,8 +662,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
   return Snapshot(orientation);
 }
 
-std::unique_ptr<gpu::RasterScopedAccess>
-CanvasNon2DResourceProvider::WillDrawInternal() {
+void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer valid.
@@ -688,7 +687,11 @@ CanvasNon2DResourceProvider::WillDrawInternal() {
     // resource was recycled as in that case there are no security implications).
     is_cleared_ = false;
   }
+}
 
+std::unique_ptr<gpu::RasterScopedAccess>
+CanvasNon2DResourceProvider::WillDrawInternal() {
+  EnsureResourceReadyForDraw();
   return resource_->BeginAccess(/*readonly=*/false);
 }
 
