@@ -457,7 +457,7 @@ class KeyboardAccessoryMediator
 
     private boolean maybeShowAutofillAiSuggestionDetails(
             AutofillDelegate delegate, int pos, AutofillSuggestion suggestion) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI)
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION)
                 && suggestion.getSuggestionType() == SuggestionType.FILL_AUTOFILL_AI) {
             delegate.showAutofillAiSuggestionDetails(pos);
             return true;

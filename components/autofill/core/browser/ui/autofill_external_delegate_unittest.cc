@@ -3611,7 +3611,6 @@ class AutofillExternalDelegateWithAmbientAutofillTest
             features::kAutofillAiReauthRequired,
             features::kAutofillAmbientAutofill,
             features::kAutofillAmbientAutofillSuppression,
-            features::kAutofillAmbientAutofillSuppressionUI,
             features::kAutofillAiWalletPrivatePasses,
 #if BUILDFLAG(IS_ANDROID)
             features::kAutofillAiShowPersonalContextFillingYourInfoDialog,
@@ -4232,10 +4231,9 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
 }
 
 // Tests that calling `RemoveSuggestion` for a `kFillAutofillAi` suggestion
-// calls `ShowAutofillAiSuggestionRemovedNotification` when the suppression UI
-// feature is enabled.
+// calls `ShowAutofillAiSuggestionRemovedNotification`.
 TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
-       RemoveSuggestion_FillAutofillAi_ShowsNotificationWhenUiEnabled) {
+       RemoveSuggestion_FillAutofillAi_ShowsNotification) {
   EntityInstance full_passport = GetPassportEntityInstanceWithRandomGuid(
       {.record_type = EntityInstance::RecordType::kPersonalContext});
   autofill_client().GetEntityDataManager()->OnPrefetchContextComplete(

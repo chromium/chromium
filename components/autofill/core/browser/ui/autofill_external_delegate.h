@@ -253,7 +253,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   virtual bool ShouldShowPayNowPayLaterTabs();
 
   // Suppresses the Autofill AI personal-context entity behind `suggestion` and
-  // offers to undo that. Does nothing if the suppression UI is disabled.
+  // offers to undo that. Does nothing if suppression is disabled.
   // - On Desktop, where this is triggered by the "Remove this info" entry or by
   //   Shift+Delete, the user is first asked to confirm in a dialog. The entity
   //   is only suppressed once they confirm; if they decline, nothing happens.

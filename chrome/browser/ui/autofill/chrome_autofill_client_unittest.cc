@@ -1277,7 +1277,7 @@ TEST_F(ChromeAutofillClientTest, GetAffiliationService) {
 TEST_F(ChromeAutofillClientTest,
        ShowAutofillAiSuggestionRemovedNotification_ActionCallbackTriggered) {
   base::test::ScopedFeatureList feature_list(
-      features::kAutofillAmbientAutofillSuppressionUI);
+      features::kAutofillAmbientAutofillSuppression);
 
   base::MockCallback<base::OnceClosure> on_undo_clicked;
   EXPECT_CALL(on_undo_clicked, Run);

@@ -619,7 +619,7 @@ TEST_F(
 TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_HideSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillAmbientAutofillSuppressionUI);
+      features::kAutofillAmbientAutofillSuppression);
 
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
@@ -852,7 +852,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
        GetFillingSuggestion_PersonalContext_DetailedSourceAndHideSuggestion) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::kAutofillAmbientAutofillSuppressionUI}, {});
+      {features::kAutofillAmbientAutofillSuppression}, {});
 
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(
@@ -901,7 +901,7 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {features::kAutofillAmbientAutofillSourceAttribution,
-           features::kAutofillAmbientAutofillSuppressionUI});
+           features::kAutofillAmbientAutofillSuppression});
 
   EntityInstance passport_personal_context =
       GetPassportEntityInstanceWithRandomGuid(

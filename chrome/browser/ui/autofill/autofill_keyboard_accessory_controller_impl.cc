@@ -909,7 +909,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 bool AutofillKeyboardAccessoryControllerImpl::ShowAutofillAiSuggestionDetails(
     size_t index) {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppressionUI)) {
+          features::kAutofillAmbientAutofillSuppression)) {
     return false;
   }
   if (index >= suggestions_.size()) {

@@ -718,7 +718,7 @@ void UndoInSessionSuppressedEntity(
     return NO;
   }
   return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAmbientAutofillSuppressionUI);
+      autofill::features::kAutofillAmbientAutofillSuppression);
 }
 
 - (BOOL)isPersonalContextSuggestion:(FormSuggestion*)suggestion {

@@ -1824,9 +1824,7 @@ bool AutofillExternalDelegate::ShouldShowPayNowPayLaterTabs() {
 bool AutofillExternalDelegate::SuppressAutofillAiEntity(
     const Suggestion& suggestion) {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppression) ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppressionUI)) {
+          features::kAutofillAmbientAutofillSuppression)) {
     return false;
   }
   if (!std::holds_alternative<Suggestion::AutofillAiPayload>(

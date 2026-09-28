@@ -164,7 +164,7 @@ class AutofillKeyboardAccessoryControllerImplTest
       std::make_unique<EntityTable>()};
   base::test::ScopedFeatureList feature_list_{
       {features::kAutofillAndroidKeyboardAccessoryHoverPreview,
-       features::kAutofillAmbientAutofillSuppressionUI}};
+       features::kAutofillAmbientAutofillSuppression}};
 };
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -690,7 +690,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        ShowAutofillAiSuggestionDetails_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillAmbientAutofillSuppressionUI);
+      features::kAutofillAmbientAutofillSuppression);
   EntityInstance passport = CreatePassport();
   SetEntitiesInClient({passport});
 

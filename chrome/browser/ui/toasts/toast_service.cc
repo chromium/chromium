@@ -463,7 +463,7 @@ void ToastService::RegisterToasts(
             .Build());
   }
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAmbientAutofillSuppressionUI)) {
+          autofill::features::kAutofillAmbientAutofillSuppression)) {
     toast_registry_->RegisterToast(
         ToastId::kAutofillAiSuggestionRemoved,
         ToastSpecification::Builder(

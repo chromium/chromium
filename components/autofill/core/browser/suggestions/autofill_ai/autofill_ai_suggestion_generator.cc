@@ -664,7 +664,7 @@ std::vector<Suggestion> CreateAmbientAutofillSubMenu(
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppressionUI)) {
+          features::kAutofillAmbientAutofillSuppression)) {
     Suggestion remove_info(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
         SuggestionType::kRemoveAutofillAi);

@@ -460,13 +460,8 @@ BASE_FEATURE(kAutofillAmbientAutofillSpiiCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether pContext suggestion suppression in Ambient Autofill is
-// enabled.
+// enabled, including the UI to suppress suggestions.
 BASE_FEATURE(kAutofillAmbientAutofillSuppression,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, Personal Context Autofill AI suggestions display UI to
-// suppress the suggestion.
-BASE_FEATURE(kAutofillAmbientAutofillSuppressionUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, on Android desktop, the Autofill keyboard accessory will have a

@@ -134,7 +134,7 @@ import java.util.List;
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_HOVER_PREVIEW,
 })
 @Features.DisableFeatures({
-    ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI,
+    ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION,
 })
 public class KeyboardAccessoryControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -664,9 +664,9 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION_UI})
+    @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION})
     public void
-            testLongPressOnPersonalContextSuggestionWithSuppressionUIShowsAutofillAiSuggestionDetails() {
+            testLongPressOnPersonalContextSuggestionWithSuppressionEnabledShowsAutofillAiSuggestionDetails() {
         AutofillSuggestion suggestion =
                 new AutofillSuggestion.Builder()
                         .setLabel("Personal Context Suggestion")

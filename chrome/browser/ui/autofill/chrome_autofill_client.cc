@@ -1694,7 +1694,7 @@ void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
     base::OnceClosure on_undo_clicked) {
   CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppressionUI)) {
+          features::kAutofillAmbientAutofillSuppression)) {
     return;
   }
 #if BUILDFLAG(IS_ANDROID)

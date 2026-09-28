@@ -60,7 +60,7 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {multistep_filter::kMultistepFilter, {}},
          {features::kIndigo, {}},
          {autofill::features::kAutofillAmbientAutofill, {}},
-         {autofill::features::kAutofillAmbientAutofillSuppressionUI, {}},
+         {autofill::features::kAutofillAmbientAutofillSuppression, {}},
          {autofill::features::kAutofillAtMemory, {}},
          {dictation::kDictation, {}}},
         /*disabled_features*/ {});
