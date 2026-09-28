@@ -136,6 +136,8 @@ using tab_groups::VersioningMessageController;
   [self.viewController disconnect];
   _fullscreenUIUpdater = nullptr;
   _fullscreenBrowserAgentObserverBridge = nullptr;
+  self.actionHandler.browserCoordinatorHandler = nil;
+  self.actionHandler = nil;
   _started = NO;
 }
 

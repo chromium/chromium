@@ -428,6 +428,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self.incognitoBadgeMediator = nil;
   self.incognitoBadgeViewController = nil;
 
+  self.viewController.dispatcher = nil;
   self.viewController.geminiHandler = nil;
   self.viewController = nil;
   [self.mediator disconnect];

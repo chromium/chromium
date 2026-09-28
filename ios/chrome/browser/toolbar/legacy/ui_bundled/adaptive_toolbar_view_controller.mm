@@ -149,6 +149,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     button.geminiHandler = nil;
     button.contextMenuInteractionEnabled = NO;
   }
+  self.browserCoordinatorHandler = nil;
+  self.popupMenuCommandsHandler = nil;
 }
 
 #pragma mark - UIViewController
@@ -512,7 +514,7 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   for (LegacyToolbarButton* button in self.view.allButtons) {
     if (button != self.view.toolsMenuButton &&
         button != self.view.openNewTabButton) {
-      [button addTarget:self.browserCoordinatorHandler
+      [button addTarget:self
                     action:@selector(hideComposebox)
           forControlEvents:UIControlEventTouchUpInside];
     }
@@ -520,6 +522,10 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
                   action:@selector(recordUserMetrics:)
         forControlEvents:UIControlEventTouchUpInside];
   }
+}
+
+- (void)hideComposebox {
+  [self.browserCoordinatorHandler hideComposebox];
 }
 
 // Records the use of a button.

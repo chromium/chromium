@@ -87,6 +87,9 @@
 // Used for any additional clean up on shutdown.
 - (void)disconnect;
 
+// Hides the composebox.
+- (void)hideComposebox;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_H_

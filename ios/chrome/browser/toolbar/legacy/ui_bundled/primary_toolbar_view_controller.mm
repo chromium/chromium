@@ -126,12 +126,16 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   if (progress == 0 && !self.view.fakeOmniboxTarget) {
     [self.view addFakeOmniboxTarget];
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-        initWithTarget:self.browserCoordinatorHandler
-                action:@selector(showComposebox)];
+        initWithTarget:self
+                action:@selector(fakeOmniboxTargetTapped)];
     [self.view.fakeOmniboxTarget addGestureRecognizer:tapRecognizer];
   } else if (progress > 0 && self.view.fakeOmniboxTarget) {
     [self.view removeFakeOmniboxTarget];
   }
+}
+
+- (void)fakeOmniboxTargetTapped {
+  [self.browserCoordinatorHandler showComposebox];
 }
 
 #pragma mark - UIViewController
