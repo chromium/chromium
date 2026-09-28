@@ -764,7 +764,7 @@ BASE_FEATURE(kAutofillEnableKeyboardAccessoryOnSearchFields,
 // When enabled, Autofill will help users fill in non-affiliated loyalty cards
 // on loyalty card only fields.
 BASE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will use heuristics to identify OTP fields.
 BASE_FEATURE(kAutofillEnableOneTimeCodeHeuristics,

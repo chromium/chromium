@@ -152,24 +152,6 @@ class ValuableSuggestionGeneratorTest : public testing::Test {
   std::unique_ptr<FormStructure> form_structure_;
 };
 
-TEST_F(ValuableSuggestionGeneratorTest, NoMatchingDomain) {
-  set_last_committed_primary_main_frame_url(
-      GURL("https://not-existing-domain.example/test"));
-  EXPECT_THAT(GetSuggestionsForLoyaltyCards(
-                  form().ToFormData(), &form(), field(), &field(),
-                  PasswordFormClassification(), client()),
-              testing::IsEmpty());
-}
-
-TEST_F(ValuableSuggestionGeneratorTest, NoMatchingDomainAndFieldAutofilled) {
-  set_last_committed_primary_main_frame_url(
-      GURL("https://not-existing-domain.example/test"));
-  field().AddFieldModifier(FieldModifier::kAutofill);
-  EXPECT_THAT(GetSuggestionsForLoyaltyCards(
-                  form().ToFormData(), &form(), field(), &field(),
-                  PasswordFormClassification(), client()),
-              testing::IsEmpty());
-}
 
 TEST_F(ValuableSuggestionGeneratorTest, WithMatchingDomain) {
   set_last_committed_primary_main_frame_url(

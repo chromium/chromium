@@ -2013,25 +2013,6 @@
             ]
         }
     ],
-    "AutofillEnableNonAffiliatedLoyaltyCardsFilling": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableNonAffiliatedLoyaltyCardsFilling"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableOmniboxAutofill": [
         {
             "platforms": [
