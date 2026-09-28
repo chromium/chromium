@@ -1118,7 +1118,7 @@ class UnitTest(unittest.TestCase):
     # pylint: disable=line-too-long
     self.assertEqual(
       mbw.files['/fake_src/out/Default/base_unittests.isolate'],
-      '{"variables": {"command": ["vpython3", "../../testing/test_env.py", "./base_unittests", "--test-launcher-bot-mode", "--asan=0", "--lsan=0", "--msan=0", "--tsan=0", "--cfi-diag=0"], "files": ["../../.vpython3", "../../testing/test_env.py"]}}\n',
+      '{"variables": {"command": ["vpython3", "../../testing/test_env.py", "./base_unittests", "--test-launcher-bot-mode", "--asan=0", "--lsan=0", "--msan=0", "--tsan=0", "--cfi-diag=0"], "files": ["../../testing/test_env.py", "../../vpython.toml", "../../vpython.toml.uv.lock"]}}\n',
     )
     # pylint: enable=line-too-long
 
@@ -1126,41 +1126,6 @@ class UnitTest(unittest.TestCase):
     # command line in the call to `isolate`.
     self.assertIn(
       'relative-cwd out/Default -- vpython3 ../../testing/test_env.py', mbw.err
-    )
-
-  def test_run_vpython_toml(self):
-    files = {
-      '/fake_src/vpython.toml': '',
-      '/fake_src/vpython.toml.uv.lock': '',
-      '/fake_src/testing/buildbot/gn_isolate_map.pyl': (
-        "{'base_unittests': {"
-        "  'label': '//base:base_unittests',"
-        "  'type': 'console_test_launcher',"
-        "}}\n"
-      ),
-      '/fake_src/out/Default/base_unittests.runtime_deps': ('base_unittests\n'),
-    }
-    mbw = self.check(
-      [
-        'run',
-        '-c',
-        'debug_remoteexec',
-        '//out/Default',
-        'base_unittests',
-        '--force',
-      ],
-      files=files,
-      ret=0,
-    )
-    self.assertEqual(
-      json.loads(mbw.files['/fake_src/out/Default/base_unittests.isolate'])[
-        'variables'
-      ]['files'],
-      [
-        '../../testing/test_env.py',
-        '../../vpython.toml',
-        '../../vpython.toml.uv.lock',
-      ],
     )
 
   def test_run_swarmed(self):

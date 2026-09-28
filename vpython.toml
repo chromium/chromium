@@ -1,11 +1,4 @@
-# uv-backed vpython spec for the chromium repository, the modern replacement
-# for //.vpython3.
-#
-# This spec takes precedence wherever both files are present, so full checkouts
-# -- developer workstations and builders -- resolve it. Isolate-based swarming
-# tasks are not affected yet: test isolates, generate_wrapper scripts and MB
-# extra files still bundle only //.vpython3. Keep the two in sync when adding
-# or updating a wheel. See https://crbug.com/40942322.
+# uv-backed vpython spec for the chromium repository.
 #
 # The companion //vpython.toml.uv.lock is generated, not hand-edited. After
 # changing a dependency here, run 'vpython3' (or 'vpython3 -vpython-tool

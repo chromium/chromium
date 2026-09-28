@@ -17,7 +17,7 @@ import sys
 import tempfile
 
 # The following non-std imports are fetched via vpython. See the list at
-# //.vpython3
+# //vpython.toml
 import dateutil.parser  # pylint: disable=import-error
 import jsonlines  # pylint: disable=import-error
 import psutil  # pylint: disable=import-error
@@ -583,7 +583,7 @@ class GTestTest(RemoteTest):
           'installed.'
         )
       vpython_spec_path = os.path.relpath(
-        os.path.join(CHROMIUM_SRC_PATH, '.vpython3'), self._path_to_outdir
+        os.path.join(CHROMIUM_SRC_PATH, 'vpython.toml'), self._path_to_outdir
       )
       # Initialize the vpython cache. This can take 10-20s, and some tests
       # can't afford to wait that long on the first invocation.

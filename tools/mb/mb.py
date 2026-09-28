@@ -1952,23 +1952,11 @@ class MetaBuildWrapper:
     )
 
     vpython_exe = 'vpython3'
-    extra_files = []
-    has_new_vpython3_spec = self.Exists(
-      self.PathJoin(self.chromium_src_dir, 'vpython.toml')
-    )
-    has_legacy_vpython3_spec = self.Exists(
-      self.PathJoin(self.chromium_src_dir, '.vpython3')
-    )
-    if has_legacy_vpython3_spec or not has_new_vpython3_spec:
-      extra_files.append('../../.vpython3')
-    extra_files.append('../../testing/test_env.py')
-    if has_new_vpython3_spec:
-      extra_files.extend(
-        [
-          '../../vpython.toml',
-          '../../vpython.toml.uv.lock',
-        ]
-      )
+    extra_files = [
+      '../../testing/test_env.py',
+      '../../vpython.toml',
+      '../../vpython.toml.uv.lock',
+    ]
 
     if is_android and test_type != 'script':
       if asan:
