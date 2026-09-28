@@ -255,9 +255,6 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN,
   // Maximum width for the Block-style Action App Menu.
   DISTANCE_ACTION_APP_MENU_MAX_WIDTH,
-  // Additional top and bottom vertical padding for Block-style Action App Menu
-  // section container cards.
-  DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

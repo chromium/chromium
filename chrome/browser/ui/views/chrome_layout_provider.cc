@@ -297,8 +297,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS:
       return 12;
-    case DISTANCE_ACTION_APP_MENU_CONTAINER_VERTICAL_PADDING:
-      return 6;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
