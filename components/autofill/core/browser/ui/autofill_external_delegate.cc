@@ -916,9 +916,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
   CHECK(suggestion.IsAcceptable());
-  // TODO(crbug.com/552871965): Extract the logging here to a separate function.
-  base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
-                                suggestion.type);
 
   const FormGlobalId& effective_form_id =
       base::FeatureList::IsEnabled(features::kAutofillUsePassedFormAndFieldIds)
@@ -931,16 +928,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
 
   const auto [form_structure, autofill_field] =
       manager_->FindFormAndField(effective_form_id, effective_field_id);
-  if (form_structure && autofill_field) {
-    manager_->client().GetFormInteractionsUkmLogger().LogSuggestionAccepted(
-        manager_->driver().GetPageUkmSourceId(), CHECK_DEREF(form_structure),
-        CHECK_DEREF(autofill_field), suggestion.type, metadata.row());
-  }
-  if (autofill_field &&
-      autofill_field->Type().GetAddressType() == EMAIL_ADDRESS) {
-    autofill_metrics::LogMergedEmailAcceptedSuggestionType(
-        suggestion.type, shown_suggestion_types_);
-  }
+  LogSuggestionAcceptedMetrics(suggestion, metadata, form_structure,
+                               autofill_field);
 
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
@@ -1800,6 +1789,25 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         suggestion.type == SuggestionType::kScanCreditCard
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
+  }
+}
+
+void AutofillExternalDelegate::LogSuggestionAcceptedMetrics(
+    const Suggestion& suggestion,
+    const SuggestionMetadata& metadata,
+    const FormStructure* form_structure,
+    const AutofillField* autofill_field) const {
+  base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
+                                suggestion.type);
+  if (form_structure && autofill_field) {
+    manager_->client().GetFormInteractionsUkmLogger().LogSuggestionAccepted(
+        manager_->driver().GetPageUkmSourceId(), CHECK_DEREF(form_structure),
+        CHECK_DEREF(autofill_field), suggestion.type, metadata.row());
+  }
+  if (autofill_field &&
+      autofill_field->Type().GetAddressType() == EMAIL_ADDRESS) {
+    autofill_metrics::LogMergedEmailAcceptedSuggestionType(
+        suggestion.type, shown_suggestion_types_);
   }
 }
 

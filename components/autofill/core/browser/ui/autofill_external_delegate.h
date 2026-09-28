@@ -44,7 +44,9 @@ namespace autofill {
 
 class AddressDataManager;
 class AutofillDriver;
+class AutofillField;
 class BrowserAutofillManager;
+class FormStructure;
 
 // Retrieves a copy of the profile that the `payload` refers to.
 std::optional<AutofillProfile> GetProfileFromPayload(
@@ -191,6 +193,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
                                    const SuggestionMetadata& metadata,
                                    const FormGlobalId& form_id,
                                    const FieldGlobalId& field_id);
+
+  // Logs metrics when a suggestion is accepted.
+  void LogSuggestionAcceptedMetrics(const Suggestion& suggestion,
+                                    const SuggestionMetadata& metadata,
+                                    const FormStructure* form_structure,
+                                    const AutofillField* autofill_field) const;
 
   AutofillTriggerSource GetTriggerSource() const;
 
