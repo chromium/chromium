@@ -324,55 +324,66 @@ public class SpannableAutocompleteEditTextModel
             return mDelegate.super_dispatchKeyEvent(dispatchedEvent);
         }
 
+        // Key events dispatched directly to the view (e.g. hardware keyboard or KeyUtils) are
+        // independent of any asynchronous IME batch edit (such as Gboard's multi-IPC
+        // IC_GET_SURROUNDING_TEXT on focus). Temporarily reset mBatchEditNestCount so that
+        // onEndImeCommand() synchronously notifies listeners of the text state change.
+        int savedBatchEditNestCount = mBatchEditNestCount;
+        mBatchEditNestCount = 0;
         boolean retVal;
-        mInputConnection.onBeginImeCommand();
-        if (hasAutocomplete() && dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN) {
-            if (dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
-                    || dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_DEL) {
-                // The editor doesn't see the selected text so won't handle forward delete. Normal
-                // delete doesn't always work on the last character on hard keyboards, so handle it
-                // similarly.
-                clearAutocompleteText();
-                mLastEditWasTyping = false;
+        try {
+            mInputConnection.onBeginImeCommand();
+            if (hasAutocomplete() && dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                if (dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
+                        || dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+                    // The editor doesn't see the selected text so won't handle forward delete.
+                    // Normal delete doesn't always work on the last character on hard keyboards,
+                    // so handle it similarly.
+                    clearAutocompleteText();
+                    mLastEditWasTyping = false;
 
-                retVal = true;
-            } else if (cursorMovementCommitsAutocomplete(dispatchedEvent)) {
-                // These commands treat the autocomplete suggestion as a selection and then apply
-                // the cursor movement.
-                int currentPos = mCurrentState.getSelection().from;
-                int totalLength = mCurrentState.getUserText().length();
-                String autocompleteText = mCurrentState.getAutocompleteText();
-                if (autocompleteText != null) {
-                    totalLength += autocompleteText.length();
+                    retVal = true;
+                } else if (cursorMovementCommitsAutocomplete(dispatchedEvent)) {
+                    // These commands treat the autocomplete suggestion as a selection and then
+                    // apply the cursor movement.
+                    int currentPos = mCurrentState.getSelection().from;
+                    int totalLength = mCurrentState.getUserText().length();
+                    String autocompleteText = mCurrentState.getAutocompleteText();
+                    if (autocompleteText != null) {
+                        totalLength += autocompleteText.length();
+                    }
+
+                    mInputConnection.commitAutocomplete();
+                    mDelegate.setSelection(currentPos, totalLength);
+                    retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
+                } else if (KeyNavigationUtil.isTabNavigation(dispatchedEvent)) {
+                    mInputConnection.commitAutocomplete();
+                    retVal = true;
+                } else {
+                    // It might make sense to commit the autocomplete text here but the
+                    // AutocompleteMediator queries us via getTextWithAutocomplete() so it's
+                    // included either way. Avoiding the extra commit eliminates a brief cursor
+                    // flash at the end of the autocomplete suggestion.
+                    retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
                 }
-
-                mInputConnection.commitAutocomplete();
-                mDelegate.setSelection(currentPos, totalLength);
-                retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
-            } else if (KeyNavigationUtil.isTabNavigation(dispatchedEvent)) {
-                mInputConnection.commitAutocomplete();
+            } else if (isDeleteByWord(dispatchedEvent)
+                    && deleteByWord(
+                            dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL)) {
                 retVal = true;
             } else {
-                // It might make sense to commit the autocomplete text here but the
-                // AutocompleteMediator queries us via getTextWithAutocomplete() so it's included
-                // either way. Avoiding the extra commit eliminates a brief cursor flash at the end
-                // of the autocomplete suggestion.
+                if (dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN
+                        && dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
+                    // Delete key when there's no autocomplete suggestion. Use the normal behavior
+                    // but inhibit suggestions.
+                    mLastEditWasTyping = false;
+                }
                 retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
             }
-        } else if (isDeleteByWord(dispatchedEvent)
-                && deleteByWord(dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL)) {
-            retVal = true;
-        } else {
-            if (dispatchedEvent.getAction() == KeyEvent.ACTION_DOWN
-                    && dispatchedEvent.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
-                // Delete key when there's no autocomplete suggestion. Use the normal behavior but
-                // inhibit suggestions.
-                mLastEditWasTyping = false;
-            }
-            retVal = mDelegate.super_dispatchKeyEvent(dispatchedEvent);
-        }
 
-        mInputConnection.onEndImeCommand();
+            mInputConnection.onEndImeCommand();
+        } finally {
+            mBatchEditNestCount = savedBatchEditNestCount;
+        }
         return retVal;
     }
 

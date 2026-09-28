@@ -1580,4 +1580,28 @@ public class AutocompleteEditTextUnitTest {
         assertTrue(mInputConnection.commitText("hello\nworld", 1));
         assertTrue(mIsMultilineEligible);
     }
+
+    @Test
+    public void testDispatchKeyEvent_duringImeBatchEdit_notifiesTextStateChanged() {
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(true);
+        mAutocomplete.setText("about:blank");
+        mAutocomplete.setSelection(0, 11);
+        mAutocomplete.setIgnoreTextChangesForAutocomplete(false);
+        clearInvocations(mVerifier);
+
+        // Simulate an asynchronous IME (e.g. Gboard's multi-IPC IC_GET_SURROUNDING_TEXT) holding
+        // beginBatchEdit() open across UI thread tasks while a key event is dispatched.
+        assertTrue(mInputConnection.beginBatchEdit());
+
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_F));
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_F));
+
+        assertTexts("f", "", "");
+        verify(mVerifier).onAutocompleteTextStateChanged(/* updateDisplay= */ false);
+
+        // Ending the outer IME batch edit balances the count cleanly and preserves the state.
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
+        assertTexts("f", "", "");
+        assertTrue(mAutocomplete.shouldAutocomplete());
+    }
 }

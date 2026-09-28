@@ -285,9 +285,10 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         if (DEBUG) Log.i(TAG, "onEndImeCommand: " + mInputDelegate.isInBatchEdit());
         AutocompleteState currentState = mInputDelegate.getCurrentState();
         String diff = currentState.getBackwardDeletedTextFrom(mPreBatchEditState);
+        boolean retVal;
         if (diff != null) {
             // Update selection first such that keyboard app gets what it expects.
-            boolean retVal = decrementBatchEditCount();
+            retVal = decrementBatchEditCount();
 
             // Ensure this deletion is for autocomplete and not a site search transition.
             // When site search is activated (e.g. hitting <space> on "yahoo[ suggestion]")
@@ -300,23 +301,25 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
             }
             mInputDelegate.setLastEditWasTyping(false);
             mInputDelegate.clearAutocompleteText();
-            mInputDelegate.notifyAutocompleteTextStateChanged();
-            return retVal;
-        }
-        if (!setAutocompleteSpan()) {
-            mInputDelegate.clearAutocompleteText();
-        }
-        boolean retVal = decrementBatchEditCount();
-        // Simply typed some characters or whole text selection has been overridden.
-        if (currentState.isForwardTypedFrom(mPreBatchEditState)
-                || currentState.isForwardReplacementFrom(mPreBatchEditState)
-                || (mPreBatchEditState.isWholeUserTextSelected()
-                        && currentState.getUserText().length() > 0
-                        && currentState.getSelection().isCollapsed()
-                        && currentState.isCursorAtEndOfUserText())) {
-            mInputDelegate.setLastEditWasTyping(true);
+        } else {
+            if (!setAutocompleteSpan()) {
+                mInputDelegate.clearAutocompleteText();
+            }
+            retVal = decrementBatchEditCount();
+            // Simply typed some characters or whole text selection has been overridden.
+            if (currentState.isForwardTypedFrom(mPreBatchEditState)
+                    || currentState.isForwardReplacementFrom(mPreBatchEditState)
+                    || (mPreBatchEditState.isWholeUserTextSelected()
+                            && currentState.getUserText().length() > 0
+                            && currentState.getSelection().isCollapsed()
+                            && currentState.isCursorAtEndOfUserText())) {
+                mInputDelegate.setLastEditWasTyping(true);
+            }
         }
         mInputDelegate.notifyAutocompleteTextStateChanged();
+        if (!mInputDelegate.isInBatchEdit()) {
+            mPreBatchEditState.copyFrom(currentState);
+        }
         return retVal;
     }
 
