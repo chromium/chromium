@@ -1201,8 +1201,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   output_frame.latency_info = std::move(swap_frame_data.latency_info);
   output_frame.choreographer_vsync_id = swap_frame_data.choreographer_vsync_id;
   output_frame.size = viewport_size_for_swap_buffers();
-  output_frame.data.seq = swap_frame_data.seq;
-  output_frame.data.swap_trace_id = swap_frame_data.swap_trace_id;
+  output_frame.data = swap_frame_data.frame_data;
   if (use_partial_swap_) {
     swap_buffer_rect_.Intersect(gfx::Rect(surface_size_for_swap_buffers()));
     output_frame.sub_buffer_rect = swap_buffer_rect_;
@@ -1211,17 +1210,6 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     output_frame.delegated_ink_metadata =
         delegated_ink_handler_->TakeMetadata();
   }
-  output_frame.data.display_hdr_headroom = swap_frame_data.display_hdr_headroom;
-#if BUILDFLAG(IS_APPLE)
-  output_frame.data.ca_layer_error_code = swap_frame_data.ca_layer_error_code;
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  output_frame.data.is_handling_interaction =
-      swap_frame_data.is_handling_interaction;
-  output_frame.data.is_handling_animation =
-      swap_frame_data.is_handling_animation;
-#endif
 
   if (root_buffer_queue_) {
     root_buffer_queue_->SwapBuffers();

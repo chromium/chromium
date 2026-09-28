@@ -28,6 +28,7 @@
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -105,25 +106,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     SwapFrameData(const SwapFrameData&) = delete;
     SwapFrameData& operator=(const SwapFrameData&) = delete;
 
+    gfx::FrameData frame_data;
+
     std::vector<ui::LatencyInfo> latency_info;
-    int64_t seq = -1;
-
-    // The HDR headroom of the display that this frame is being swapped to.
-    // Propagated to the gl::Presenter via gfx::FrameData.
-    float display_hdr_headroom = 1.f;
-
-#if BUILDFLAG(IS_APPLE)
-    // The result of CoreAnimation delegated compositing from the overlay
-    // processor. Propagated to the gl::Presenter via gfx::FrameData for
-    // integration testing.
-    gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
-#endif
-
-    bool is_handling_interaction = false;
-    bool is_handling_animation = false;
 
     std::optional<int64_t> choreographer_vsync_id;
-    int64_t swap_trace_id = -1;
   };
   virtual void SwapBuffers(SwapFrameData swap_frame_data) = 0;
   virtual void SwapBuffersSkipped() {}

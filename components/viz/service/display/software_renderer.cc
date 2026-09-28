@@ -149,7 +149,7 @@ void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   TRACE_EVENT0("viz", "SoftwareRenderer::SwapBuffers");
   OutputSurfaceFrame output_frame;
   output_frame.latency_info = std::move(swap_frame_data.latency_info);
-  output_frame.data.swap_trace_id = swap_frame_data.swap_trace_id;
+  output_frame.data = swap_frame_data.frame_data;
   output_surface_->SwapBuffers(std::move(output_frame));
 }
 

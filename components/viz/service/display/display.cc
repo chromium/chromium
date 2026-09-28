@@ -1069,18 +1069,18 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
     swap_frame_data.latency_info = std::move(frame.latency_info);
-    swap_frame_data.seq =
+    swap_frame_data.frame_data.seq =
         current_surface_id_.local_surface_id().parent_sequence_number();
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;
-    swap_frame_data.swap_trace_id = display_trace_id;
-    swap_frame_data.display_hdr_headroom =
+    swap_frame_data.frame_data.swap_trace_id = display_trace_id;
+    swap_frame_data.frame_data.display_hdr_headroom =
         display_color_spaces_.GetHDRMaxLuminanceRelative();
 
     TRACE_EVENT(
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-        perfetto::Flow::Global(swap_frame_data.swap_trace_id),
-        [swap_trace_id =
-             swap_frame_data.swap_trace_id](perfetto::EventContext ctx) {
+        perfetto::Flow::Global(swap_frame_data.frame_data.swap_trace_id),
+        [swap_trace_id = swap_frame_data.frame_data.swap_trace_id](
+            perfetto::EventContext ctx) {
           base::TaskAnnotator::EmitTaskTimingDetails(ctx);
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_chrome_graphics_pipeline();
@@ -1090,11 +1090,14 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         });
 
 #if BUILDFLAG(IS_APPLE)
-    swap_frame_data.ca_layer_error_code =
+    swap_frame_data.frame_data.ca_layer_error_code =
         overlay_processor_->GetCALayerErrorCode();
 #endif
-    swap_frame_data.is_handling_interaction = has_interactive_frame;
-    swap_frame_data.is_handling_animation = has_animated_frame;
+
+#if BUILDFLAG(IS_MAC)
+    swap_frame_data.frame_data.is_handling_interaction = has_interactive_frame;
+    swap_frame_data.frame_data.is_handling_animation = has_animated_frame;
+#endif
 
     // We must notify scheduler and increase |pending_swaps_| before calling
     // SwapBuffers() as it can call DidReceiveSwapBuffersAck synchronously.
