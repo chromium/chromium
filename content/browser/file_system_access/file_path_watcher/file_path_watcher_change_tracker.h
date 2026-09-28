@@ -5,12 +5,21 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_CHANGE_TRACKER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_PATH_WATCHER_FILE_PATH_WATCHER_CHANGE_TRACKER_H_
 
+#include <stddef.h>
+
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
+#include "base/win/windows_types.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
-class FilePathWatcherChangeTracker {
+class CONTENT_EXPORT FilePathWatcherChangeTracker {
  public:
   using ChangeInfo = FilePathWatcher::ChangeInfo;
   using ChangeType = FilePathWatcher::ChangeType;
@@ -49,6 +58,10 @@ class FilePathWatcherChangeTracker {
   }
 
  private:
+  using PathComponents = std::vector<base::FilePath::StringType>;
+
+  static constexpr size_t kMaxKnownFilePathTypes = 1024;
+
   enum class ExistenceStatus {
     // We know the file exists.
     kExists,
@@ -74,9 +87,25 @@ class FilePathWatcherChangeTracker {
 
   void HandleOtherChange(ChangeInfo change);
 
+  // Use knowledge from earlier notifications before consulting the current
+  // filesystem, which may already have changed again.
+  FilePathWatcher::FilePathType GetFilePathType(const base::FilePath& path);
+  FilePathWatcher::FilePathType GetKnownFilePathType(
+      const base::FilePath& path);
+  void RemoveKnownFilePathTypes(const base::FilePath& path);
+  void MoveKnownFilePathTypes(const base::FilePath& from,
+                              const base::FilePath& to);
+
   // The path that we're tracking changes for.
   base::FilePath target_path_;
   FilePathWatcher::Type type_;
+
+  // Types are best-effort hints. Bound memory use for large watched trees;
+  // evicted paths can be reported as unknown if they no longer exist.
+  // Component keys also let subtree invalidation compare prefixes without
+  // repeatedly splitting every cached path.
+  base::LRUCache<PathComponents, FilePathWatcher::FilePathType>
+      known_file_path_types_{kMaxKnownFilePathTypes};
 
   // Our current knowledge about the the existence of target based on what's
   // been passed to `AddChange` and calls to `GetFileInfo`.
