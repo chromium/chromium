@@ -14,11 +14,10 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
-#include "base/no_destructor.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/strings/whitespace_constants.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
@@ -103,13 +102,18 @@ bool SanitizedFieldIsEmpty(std::u16string_view value) {
   // Some sites enter values such as ____-____-____-____ or (___)-___-____ in
   // their fields. Check if the field value is empty after the removal of the
   // formatting characters.
-  static const base::NoDestructor<std::u16string> formatting(
-      base::StrCat({u"-_()/",
-                    {&base::i18n::kRightToLeftMark, 1},
-                    {&base::i18n::kLeftToRightMark, 1},
-                    base::kWhitespaceUTF16}));
+  static constexpr char16_t kFormatting[] = {u'-',
+                                             u'_',
+                                             u'(',
+                                             u')',
+                                             u'/',
+                                             base::i18n::kRightToLeftMark,
+                                             base::i18n::kLeftToRightMark,
+                                             WHITESPACE_UNICODE};
+  static constexpr std::u16string_view kFormattingView{std::begin(kFormatting),
+                                                       std::end(kFormatting)};
 
-  return base::ContainsOnlyChars(value, *formatting);
+  return base::ContainsOnlyChars(value, kFormattingView);
 }
 
 bool IsFillable(FocusedFieldType focused_field_type) {
