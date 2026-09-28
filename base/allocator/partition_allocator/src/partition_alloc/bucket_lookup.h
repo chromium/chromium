@@ -5,6 +5,7 @@
 #ifndef PARTITION_ALLOC_BUCKET_LOOKUP_H_
 #define PARTITION_ALLOC_BUCKET_LOOKUP_H_
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cstdint>

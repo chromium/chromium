@@ -8,6 +8,7 @@
 #include <math.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <limits>
@@ -223,7 +224,7 @@ class MovingWindowBase {
 
   void Reset() {
     cur_idx_ = 0;
-    std::fill(values_.begin(), values_.end(), T());
+    std::ranges::fill(values_, T());
   }
 
   T GetValue() const { return values_[cur_idx_]; }
