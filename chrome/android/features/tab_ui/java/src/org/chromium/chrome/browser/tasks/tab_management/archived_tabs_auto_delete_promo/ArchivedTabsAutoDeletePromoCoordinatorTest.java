@@ -128,9 +128,21 @@ public class ArchivedTabsAutoDeletePromoCoordinatorTest {
         verify(mMockBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mMockBottomSheetController, never()).addObserver(any(BottomSheetObserver.class));
+        verify(mMockBottomSheetController).hideContent(any(BottomSheetContent.class), eq(false));
         assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
         verify(mMockTabArchiveSettings, never()).setAutoDeleteEnabled(anyBoolean());
         verify(mMockTabArchiveSettings, never()).setAutoDeleteDecisionMade(anyBoolean());
+    }
+
+    @Test
+    public void testPreemption_CleansUpAndFinalizesSettingsAsYes() {
+        BottomSheetObserver coordinatorObserver = simulateShowSuccessAndGetObserver();
+        simulateSheetClose(coordinatorObserver, StateChangeReason.NONE);
+
+        verify(mMockBottomSheetController).hideContent(any(BottomSheetContent.class), eq(false));
+        assertFalse(mCoordinator.isSheetCurrentlyManagedForTesting());
+        verify(mMockTabArchiveSettings).setAutoDeleteEnabled(true);
+        verify(mMockTabArchiveSettings).setAutoDeleteDecisionMade(true);
     }
 
     @Test

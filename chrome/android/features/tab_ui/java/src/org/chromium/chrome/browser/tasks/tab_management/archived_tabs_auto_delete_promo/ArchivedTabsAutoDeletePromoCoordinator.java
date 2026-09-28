@@ -196,6 +196,9 @@ public class ArchivedTabsAutoDeletePromoCoordinator {
             mSheetObserver = null;
         }
         if (mSheetContent != null) {
+            if (mBottomSheetController != null) {
+                mBottomSheetController.hideContent(mSheetContent, false);
+            }
             mSheetContent.destroy();
             mSheetContent = null;
         }
