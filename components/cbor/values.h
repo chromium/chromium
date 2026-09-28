@@ -124,6 +124,10 @@ class CBOR_EXPORT Value {
     kMaxValue = UNDEFINED,
   };
 
+  struct Null final {};
+
+  struct Undefined final {};
+
   // Returns a Value with Type::INVALID_UTF8. This factory method lets tests
   // encode such a value as a CBOR string. It should never be used outside of
   // tests since encoding may yield invalid CBOR data.
@@ -132,23 +136,36 @@ class CBOR_EXPORT Value {
   // Use std::optional<Value> to represent an absent value.
   Value() = delete;
 
-  Value(Value&& that) noexcept;
+  explicit Value(bool boolean_value) noexcept;
+  explicit Value(Null) noexcept;
+  explicit Value(Undefined) noexcept;
 
+  // Deprecated: Use one of the constructors accepting `bool`, `Null`, or
+  // `Undefined`.
   explicit Value(SimpleValue in_simple);
-  explicit Value(bool boolean_value);
+
   explicit Value(float float_value) = delete;
   explicit Value(double float_value) = delete;
 
   explicit Value(int integer_value);
-  explicit Value(int64_t integer_value);
+  explicit Value(int64_t integer_value) noexcept;
   explicit Value(uint64_t integer_value) = delete;
 
+  // Constructors for `Type::BYTE_STRING`.
   explicit Value(base::span<const uint8_t> in_bytes);
   explicit Value(BinaryValue&& in_bytes) noexcept;
 
-  explicit Value(const char* in_string, Type type = Type::STRING);
-  explicit Value(std::string&& in_string, Type type = Type::STRING) noexcept;
-  explicit Value(std::string_view in_string, Type type = Type::STRING);
+  // Constructors for `Type::STRING`.
+  explicit Value(const char* in_string);
+  explicit Value(std::string&& in_string) noexcept;
+  explicit Value(std::string_view in_string);
+
+  // Deprecated: Use one of the constructors for `Type::BYTE_STRING` or
+  // `Type::STRING` above; consider using the former with `base::as_byte_span`
+  // or `base::byte_span_from_cstring`.
+  explicit Value(const char* in_string, Type type);
+  explicit Value(std::string&& in_string, Type type) noexcept;
+  explicit Value(std::string_view in_string, Type type);
 
   explicit Value(const ArrayValue& in_array);
   explicit Value(ArrayValue&& in_array) noexcept;
@@ -156,7 +173,12 @@ class CBOR_EXPORT Value {
   explicit Value(const MapValue& in_map);
   explicit Value(MapValue&& in_map) noexcept;
 
-  Value& operator=(Value&& that) noexcept;
+  // Prevent pointers from implicitly converting to `bool`.
+  template <typename T>
+  explicit Value(const T*) = delete;
+
+  Value(Value&&) noexcept;
+  Value& operator=(Value&&) noexcept;
 
   Value(const Value&) = delete;
   Value& operator=(const Value&) = delete;

@@ -174,7 +174,7 @@ Value Reader::ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
     case cbor::rust::MapKeyKind::Tag::Int:
       return Value(*rust_key.as_int());
     case cbor::rust::MapKeyKind::Tag::String:
-      return Value(rust_key.as_string()->to_string_view(), Value::Type::STRING);
+      return Value(rust_key.as_string()->to_string_view());
     case cbor::rust::MapKeyKind::Tag::Bytestring:
       return Value(rust_key.as_bytestring()->to_span());
     case cbor::rust::MapKeyKind::Tag::InvalidUtf8:
@@ -194,14 +194,13 @@ Value Reader::ConvertRustValueToCpp(const cbor::rust::Value& rust_val) {
     case cbor::rust::ValueKind::Tag::Boolean:
       return Value(*rust_val.as_bool());
     case cbor::rust::ValueKind::Tag::Null:
-      return Value(Value::SimpleValue::NULL_VALUE);
+      return Value(Value::Null());
     case cbor::rust::ValueKind::Tag::Undefined:
-      return Value(Value::SimpleValue::UNDEFINED);
+      return Value(Value::Undefined());
     case cbor::rust::ValueKind::Tag::Bytestring:
-      return Value(rust_val.as_bytestring()->to_span(),
-                   Value::Type::BYTE_STRING);
+      return Value(rust_val.as_bytestring()->to_span());
     case cbor::rust::ValueKind::Tag::String:
-      return Value(rust_val.as_string()->to_string_view(), Value::Type::STRING);
+      return Value(rust_val.as_string()->to_string_view());
     case cbor::rust::ValueKind::Tag::InvalidUtf8:
       return Value(rust_val.as_invalid_utf8()->to_span(),
                    Value::Type::INVALID_UTF8);
@@ -439,10 +438,13 @@ std::optional<Value> Reader::DecodeToSimpleValue(const DataItemHeader& header) {
       static_cast<Value::SimpleValue>(static_cast<int>(header.value));
   switch (possibly_unsupported_simple_value) {
     case Value::SimpleValue::FALSE_VALUE:
+      return Value(false);
     case Value::SimpleValue::TRUE_VALUE:
+      return Value(true);
     case Value::SimpleValue::NULL_VALUE:
+      return Value(Value::Null());
     case Value::SimpleValue::UNDEFINED:
-      return Value(possibly_unsupported_simple_value);
+      return Value(Value::Undefined());
   }
 
   error_code_ = DecoderError::UNSUPPORTED_SIMPLE_VALUE;

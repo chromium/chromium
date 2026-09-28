@@ -36,15 +36,21 @@ Value::Value(SimpleValue in_simple)
             std::to_underlying(SimpleValue::kMaxValue));
 }
 
-Value::Value(bool boolean_value)
+Value::Value(bool boolean_value) noexcept
     : type_(Type::SIMPLE_VALUE),
       simple_value_(boolean_value ? SimpleValue::TRUE_VALUE
                                   : SimpleValue::FALSE_VALUE) {}
 
+Value::Value(Null) noexcept
+    : type_(Type::SIMPLE_VALUE), simple_value_(SimpleValue::NULL_VALUE) {}
+
+Value::Value(Undefined) noexcept
+    : type_(Type::SIMPLE_VALUE), simple_value_(SimpleValue::UNDEFINED) {}
+
 Value::Value(int integer_value)
     : Value(base::checked_cast<int64_t>(integer_value)) {}
 
-Value::Value(int64_t integer_value)
+Value::Value(int64_t integer_value) noexcept
     : type_(integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE),
       integer_value_(integer_value) {}
 
@@ -94,6 +100,16 @@ Value::Value(std::string_view in_string, Type type) : type_(type) {
       NOTREACHED();
   }
 }
+
+Value::Value(const char* in_string) : Value(std::string_view(in_string)) {}
+
+Value::Value(std::string&& in_string) noexcept : type_(Type::STRING) {
+  DCHECK(base::IsStringUTF8AllowingNoncharacters(in_string));
+  new (&string_value_) std::string();
+  string_value_ = std::move(in_string);
+}
+
+Value::Value(std::string_view in_string) : Value(std::string(in_string)) {}
 
 Value::Value(const ArrayValue& in_array)
     : type_(Type::ARRAY),
