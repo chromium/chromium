@@ -259,9 +259,12 @@ enum class SuggestionType {
   // Suggestion to manage Wallet Direct Offers.
   kManageOffers = 102,
 
-  // Next ID: 103
+  // Suggestion to display the keyboard shortcut settings promo for AtMemory.
+  kAtMemoryShortcutSettingsPromo = 103,
 
-  kMaxValue = kManageOffers
+  // Next ID: 104
+
+  kMaxValue = kAtMemoryShortcutSettingsPromo
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

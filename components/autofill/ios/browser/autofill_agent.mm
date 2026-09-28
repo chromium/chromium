@@ -693,6 +693,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kAtMemoryOpenGemini:
       case SuggestionType::kAtMemorySearchAffordance:
       case SuggestionType::kAtMemorySearchResult:
+      case SuggestionType::kAtMemoryShortcutSettingsPromo:
       case SuggestionType::kAtMemorySourceAttribution:
       case SuggestionType::kAutocompleteAtMemoryButton:
       case SuggestionType::kAutofillAiOtherOrders:

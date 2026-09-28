@@ -169,6 +169,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kGmailOneTimePasswordEntry";
     case SuggestionType::kOpenGmailForOtps:
       return "kOpenGmailForOtps";
+    case SuggestionType::kAtMemoryShortcutSettingsPromo:
+      return "kAtMemoryShortcutSettingsPromo";
   }
   NOTREACHED();
 }
