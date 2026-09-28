@@ -1,6 +1,24 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
+++++++date inputType='date'
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++genericContainer
+++++++++++++++spinButton name='Month' placeholder='mm' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++++++staticText name='mm'
+++++++++++++++++++inlineTextBox name='mm'
+++++++++++++++staticText name='/'
+++++++++++++++++inlineTextBox name='/'
+++++++++++++++spinButton name='Day' placeholder='dd' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=31.00
+++++++++++++++++staticText name='dd'
+++++++++++++++++++inlineTextBox name='dd'
+++++++++++++++staticText name='/'
+++++++++++++++++inlineTextBox name='/'
+++++++++++++++spinButton name='Year' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
+++++++++++++++++staticText name='yyyy'
+++++++++++++++++++inlineTextBox name='yyyy'
+++++++++++popUpButton name='Show date picker' nameFrom=title
 ++++++date inputType='date' value='2008-09-01'
 ++++++++genericContainer ignored
 ++++++++++genericContainer

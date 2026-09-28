@@ -1,6 +1,24 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='Month' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='mm'
+++++++++++++++++++UNKNOWN label='mm'
+++++++++++++++STATIC_TEXT label='/'
+++++++++++++++++UNKNOWN label='/'
+++++++++++++++UNKNOWN label='Day' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='dd'
+++++++++++++++++++UNKNOWN label='dd'
+++++++++++++++STATIC_TEXT label='/'
+++++++++++++++++UNKNOWN label='/'
+++++++++++++++UNKNOWN label='Year' actions='{SET_VALUE}'
+++++++++++++++++STATIC_TEXT label='yyyy'
+++++++++++++++++++UNKNOWN label='yyyy'
+++++++++++UNKNOWN label='Show date picker' actions='{DEFAULT}'
 ++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}' value='2008-09-01'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN

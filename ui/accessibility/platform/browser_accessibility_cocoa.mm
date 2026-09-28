@@ -24,6 +24,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -497,6 +498,24 @@ void PerformShowMenuAction(ui::BrowserAccessibility& node) {
   } else {
     node.manager()->ShowContextMenu(node);
   }
+}
+
+// Returns true if `node` is a spin button that's part of a date or
+// date/time control, e.g. the month, day, or year field of an
+// <input type=date> or <input type=datetime-local>.
+bool IsDateOrDateTimeSpinButton(const ui::BrowserAccessibility& node) {
+  if (node.GetRole() != ax::mojom::Role::kSpinButton) {
+    return false;
+  }
+  for (ui::BrowserAccessibility* ancestor = node.PlatformGetParent(); ancestor;
+       ancestor = ancestor->PlatformGetParent()) {
+    if (ancestor->GetRole() == ax::mojom::Role::kDate ||
+        ancestor->GetRole() == ax::mojom::Role::kInputTime ||
+        ancestor->GetRole() == ax::mojom::Role::kDateTime) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace
@@ -1878,8 +1897,24 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // Blink places the value of aria-valuetext in
   // ax::mojom::StringAttribute::kAriaValueText for objects that support range
   // values, i.e., progress bars, sliders and steppers.
-  return base::SysUTF8ToNSString(
-      _owner->GetStringAttribute(ax::mojom::StringAttribute::kAriaValueText));
+  if (_owner->HasStringAttribute(ax::mojom::StringAttribute::kAriaValueText)) {
+    return base::SysUTF8ToNSString(
+        _owner->GetStringAttribute(ax::mojom::StringAttribute::kAriaValueText));
+  }
+
+  // Date and date/time spin buttons might not have aria-valuetext set. If
+  // AXValueDescription is not exposed, VoiceOver will try to communicate a
+  // percentage, and percentages do not make sense for date spinners. As a
+  // fallback, surface a AXValueDescription equal to the kValueForRange to
+  // prevent this.
+  float value_for_range;
+  if (IsDateOrDateTimeSpinButton(*_owner) &&
+      _owner->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
+                                &value_for_range)) {
+    return base::SysUTF8ToNSString(base::NumberToString(value_for_range));
+  }
+
+  return nil;
 }
 
 // LINT.IfChange

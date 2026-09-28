@@ -2,6 +2,7 @@
 @BLINK-ALLOW:inputType=*
 @BLINK-ALLOW:ariaValueText*
 @MAC-ALLOW:AXRoleDescription
+@MAC-ALLOW:AXValueDescription*
 @UIA-WIN-ALLOW:LocalizedControlType='date picker'
 @WIN-ALLOW:ia2_hypertext=*
 @WIN-ALLOW:localized_extended_role='date picker'
@@ -11,6 +12,7 @@
 <!DOCTYPE html>
 <html>
 <body>
+  <input type="date">
   <input type="date" value="2008-09-01">
   <input type="date" value="2008-09-01" aria-label="When">
 </body>
