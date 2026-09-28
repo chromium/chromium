@@ -87,4 +87,25 @@ void RecordPermissionElementInvalidStyleReason(const QualifiedName& tag_name,
       reason);
 }
 
+void RecordGeolocationRequestResult(CapabilityElementGeolocationResult result) {
+  base::UmaHistogramEnumeration(
+      "Blink.CapabilityElement.Geolocation.RequestResult", result);
+}
+
+void RecordGeolocationPositionErrorReason(
+    CapabilityElementGeolocationPositionErrorReason reason) {
+  base::UmaHistogramEnumeration(
+      "Blink.CapabilityElement.Geolocation.PositionError.Reason", reason);
+}
+
+void RecordGeolocationTimeToPosition(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "Blink.CapabilityElement.Geolocation.TimeToPosition", duration);
+}
+
+void RecordGeolocationTimeToError(base::TimeDelta duration) {
+  base::UmaHistogramMediumTimes(
+      "Blink.CapabilityElement.Geolocation.TimeToError", duration);
+}
+
 }  // namespace blink

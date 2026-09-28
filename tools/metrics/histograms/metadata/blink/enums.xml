@@ -129,6 +129,25 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Software Composited Direct 2D (deprecated)"/>
 </enum>
 
+<!-- LINT.IfChange(CapabilityElementGeolocationPositionErrorReason) -->
+
+<enum name="CapabilityElementGeolocationPositionErrorReason">
+  <int value="0" label="Permission Denied"/>
+  <int value="1" label="Position Unavailable"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationPositionErrorReason) -->
+
+<!-- LINT.IfChange(CapabilityElementGeolocationResult) -->
+
+<enum name="CapabilityElementGeolocationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationResult) -->
+
 <enum name="CompositorAnimationsFailureReason">
   <int value="0" label="No failure"/>
   <int value="1" label="Accelerated animations disabled"/>

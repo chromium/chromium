@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CAPABILITY_ELEMENT_METRICS_UTIL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CAPABILITY_ELEMENT_METRICS_UTIL_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 
@@ -59,6 +60,39 @@ void RecordPermissionElementUserInteractionDeniedReason(
 
 void RecordPermissionElementInvalidStyleReason(const QualifiedName& tag_name,
                                                InvalidStyleReason reason);
+
+// These values are used for histograms. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(CapabilityElementGeolocationResult)
+enum class CapabilityElementGeolocationResult {
+  kSuccess = 0,
+  kError = 1,
+  kMaxValue = kError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CapabilityElementGeolocationResult)
+
+// These values are used for histograms. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(CapabilityElementGeolocationPositionErrorReason)
+enum class CapabilityElementGeolocationPositionErrorReason {
+  kPermissionDenied = 0,
+  kPositionUnavailable = 1,
+  kTimeout = 2,
+  kMaxValue = kTimeout,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CapabilityElementGeolocationPositionErrorReason)
+
+void RecordGeolocationRequestResult(CapabilityElementGeolocationResult result);
+
+void RecordGeolocationPositionErrorReason(
+    CapabilityElementGeolocationPositionErrorReason reason);
+
+void RecordGeolocationTimeToPosition(base::TimeDelta duration);
+
+void RecordGeolocationTimeToError(base::TimeDelta duration);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_CAPABILITY_ELEMENT_METRICS_UTIL_H_

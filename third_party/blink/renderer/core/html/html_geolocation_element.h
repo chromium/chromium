@@ -65,6 +65,7 @@ class CORE_EXPORT HTMLGeolocationElement final
                            RequestLocationAfterClickAndPermissionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationRequestInProgress);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, MetricsResultAndLatency);
 
   // HTMLCapabilityElementBase:
   void UpdateAppearance() override;
@@ -103,6 +104,7 @@ class CORE_EXPORT HTMLGeolocationElement final
   bool did_autolocate_trigger_request = false;
   bool is_geolocation_request_in_progress_ = false;
   base::TimeTicks in_progress_appearance_started_time_;
+  std::optional<base::TimeTicks> location_request_start_time_;
 
   Member<Geoposition> position_;
   Member<GeolocationPositionError> error_;

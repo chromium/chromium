@@ -676,6 +676,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CapabilityElement.Geolocation.PositionError.Reason"
+    enum="CapabilityElementGeolocationPositionErrorReason"
+    expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the error reason when a geolocation element's location query fails.
+    Recorded once per failed geolocation request when the initial error callback
+    is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.Geolocation.RequestResult"
+    enum="CapabilityElementGeolocationResult" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether a geolocation query initiated by a geolocation element
+    succeeded or failed. Recorded once per geolocation request when the initial
+    position or error callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.Geolocation.TimeToError" units="ms"
+    expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed from when a geolocation element initiates a
+    location request to when the error callback is invoked. Recorded once per
+    failed geolocation request when the initial error callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.Geolocation.TimeToPosition" units="ms"
+    expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the time elapsed from when a geolocation element initiates a
+    location request to when the position callback is invoked with a successful
+    fix. Recorded once per successful geolocation request when the initial
+    position callback is invoked.
+  </summary>
+</histogram>
+
 <histogram
     name="Blink.CapabilityElement.{CapabilityType}.GumApi.OverconstrainedError"
     enum="Boolean" expires_after="2027-06-02">
