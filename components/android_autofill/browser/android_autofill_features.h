@@ -16,6 +16,8 @@ BASE_DECLARE_FEATURE(kAndroidAutofillImprovedVisibilityDetection);
 BASE_DECLARE_FEATURE(kAndroidAutofillUpdateContextForWebContents);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect);
+
+BASE_DECLARE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist);
 }  // namespace autofill::features
 
 #endif  // COMPONENTS_ANDROID_AUTOFILL_BROWSER_ANDROID_AUTOFILL_FEATURES_H_

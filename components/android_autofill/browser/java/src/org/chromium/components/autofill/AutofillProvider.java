@@ -667,12 +667,23 @@ public class AutofillProvider {
     }
 
     /**
-     * Display the simplest popup for the datalist. This is same as WebView's datalist popup in
+     * Displays the simplest popup for the datalist. This is same as WebView's datalist popup in
      * Android pre-o. No suggestion from the autofill service will be presented, No advance features
-     * of AutofillPopup are used.
+     * of AutofillPopup are used. Does nothing if {@code bounds} lie entirely outside the container
+     * view's visible area.
      */
     private void showDatalistPopup(
             String[] datalistValues, String[] datalistLabels, RectF bounds, boolean isRtl) {
+        // Suppress the popup if the field is entirely outside the visible bounds of the container
+        // view; renderer-supplied bounds could otherwise place the dropdown over browser or
+        // embedder UI (crbug.com/562236428). We clamp the anchor bounds themselves rather than
+        // FocusField.absBound.
+        @Nullable Rect clampedBounds = clampToVisibleBounds(transformToWindowBounds(bounds));
+        if (AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST.isEnabled()
+                && (clampedBounds == null || clampedBounds.isEmpty())) {
+            hideDatalistPopup();
+            return;
+        }
         mDatalistSuggestions = new AutofillDropdownItem[datalistValues.length];
         for (int i = 0; i < mDatalistSuggestions.length; i++) {
             mDatalistSuggestions[i] =
@@ -803,6 +814,10 @@ public class AutofillProvider {
 
     public AutofillPopup getDatalistPopupForTesting() {
         return mDatalistPopup;
+    }
+
+    void setDatalistPopupForTesting(AutofillPopup datalistPopup) {
+        mDatalistPopup = datalistPopup;
     }
 
     private int getToolbarOffset() {

@@ -25,6 +25,8 @@ public class AndroidAutofillFeatures extends Features {
             "AndroidAutofillImprovedVisibilityDetection";
     public static final String ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME =
             "AndroidAutofillFieldsUpdatedOnSelect";
+    public static final String ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME =
+            "AndroidAutofillSuppressOffscreenDatalist";
 
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER =
             new AndroidAutofillFeatures(0, ANDROID_AUTOFILL_LAZY_FRAMEWORK_WRAPPER_NAME);
@@ -32,6 +34,8 @@ public class AndroidAutofillFeatures extends Features {
             new AndroidAutofillFeatures(1, ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME);
     public static final AndroidAutofillFeatures ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT =
             new AndroidAutofillFeatures(2, ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME);
+    public static final AndroidAutofillFeatures ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST =
+            new AndroidAutofillFeatures(3, ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME);
 
     private final int mOrdinal;
 

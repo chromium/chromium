@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -48,6 +49,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -58,7 +60,8 @@ import java.util.Collections;
 /** The unit tests for AutofillProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures({
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME,
+    AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME,
 })
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
@@ -87,6 +90,8 @@ public class AutofillProviderTest {
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
+    @Mock private ViewAndroidDelegate mViewAndroidDelegate;
+    @Mock private View mAnchorView;
 
     /** AutofillManagerWrapper which keeps track of the virtual id of the field with focus. */
     private class TestAutofillManagerWrapper extends AutofillManagerWrapper {
@@ -123,6 +128,37 @@ public class AutofillProviderTest {
         }
     }
 
+    private void setContainerScreenGeometry(Rect visibleRect, int screenX, int screenY) {
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(visibleRect);
+                            return true;
+                        })
+                .when(mContainerView)
+                .getGlobalVisibleRect(any(Rect.class));
+
+        doAnswer(
+                        invocation -> {
+                            int[] location = invocation.getArgument(0);
+                            location[0] = screenX;
+                            location[1] = screenY;
+                            return null;
+                        })
+                .when(mContainerView)
+                .getLocationOnScreen(any());
+
+        doAnswer(
+                        invocation -> {
+                            int[] location = invocation.getArgument(0);
+                            location[0] = screenX;
+                            location[1] = screenY;
+                            return null;
+                        })
+                .when(mContainerView)
+                .getLocationInWindow(any());
+    }
+
     @Before
     public void setUp() {
         mContext = Mockito.mock(Context.class);
@@ -153,34 +189,10 @@ public class AutofillProviderTest {
         when(mDisplayAndroid.getDipScale()).thenReturn(EXPECTED_DIP_SCALE);
         when(mContainerView.getScrollX()).thenReturn(SCROLL_X);
         when(mContainerView.getScrollY()).thenReturn(SCROLL_Y);
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = LOCATION_X;
-                            location[1] = LOCATION_Y;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationOnScreen(any());
+        when(mWebContents.getViewAndroidDelegate()).thenReturn(mViewAndroidDelegate);
+        when(mViewAndroidDelegate.acquireView()).thenReturn(mAnchorView);
 
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, 2000, 2000);
-                            return true;
-                        })
-                .when(mContainerView)
-                .getGlobalVisibleRect(any(Rect.class));
-
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = LOCATION_X;
-                            location[1] = LOCATION_Y;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationInWindow(any());
+        setContainerScreenGeometry(new Rect(0, 0, 2000, 2000), LOCATION_X, LOCATION_Y);
 
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
@@ -457,35 +469,7 @@ public class AutofillProviderTest {
 
     @Test
     public void testSuppressNotificationOutsideBounds() {
-        // Mock container view to be at [0, 0, 100, 100] on screen
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, 100, 100);
-                            return true;
-                        })
-                .when(mContainerView)
-                .getGlobalVisibleRect(any(Rect.class));
-
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 0;
-                            location[1] = 0;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationOnScreen(any());
-
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 0;
-                            location[1] = 0;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationInWindow(any());
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
 
         // Reset mFocusVirtualId and mFocusBounds
         mFocusVirtualId = 0;
@@ -536,35 +520,7 @@ public class AutofillProviderTest {
 
     @Test
     public void testSuppressNotificationOutsideBoundsWithOffsetY() {
-        // Mock container view to be at [0, 0, 100, 100] on screen.
-        doAnswer(
-                        invocation -> {
-                            Rect rect = invocation.getArgument(0);
-                            rect.set(0, 0, 100, 100);
-                            return true;
-                        })
-                .when(mContainerView)
-                .getGlobalVisibleRect(any(Rect.class));
-
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 0;
-                            location[1] = 0;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationOnScreen(any());
-
-        doAnswer(
-                        invocation -> {
-                            int[] location = invocation.getArgument(0);
-                            location[0] = 0;
-                            location[1] = 0;
-                            return null;
-                        })
-                .when(mContainerView)
-                .getLocationInWindow(any());
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
 
         // Set offset Y to 40. Effective visible bounds top should be 40.
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(40);
@@ -626,6 +582,215 @@ public class AutofillProviderTest {
         // Bounds should be clamped.
         assertNotNull(mFocusBounds);
         assertEquals(new Rect(0, 40, 100, 60), mFocusBounds);
+    }
+
+    @Test
+    public void testShowDatalistPopup_suppressedWhenOutsideVisibleBounds() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+
+        Activity activity = Mockito.mock(Activity.class);
+        mAutofillProvider.switchToContext(new WeakReference<>(activity));
+
+        // Field is entirely outside the visible container bounds (e.g. top: -2000px).
+        // Datalist anchor uses field bounds: [0, -2000, 100, -1900] * dipScale 2 ->
+        // [0, -4000, 200, -3800], outside [0, 0, 100, 100].
+        RectF offscreenBounds = new RectF(0, -2000, 100, -1900);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = offscreenBounds;
+
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                offscreenBounds.left,
+                offscreenBounds.top,
+                offscreenBounds.width(),
+                offscreenBounds.height(),
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.showDatalistPopup(
+                new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        // When bounds are completely outside visible bounds, popup anchor must not be set
+        // and datalist popup must not be created.
+        verify(mViewAndroidDelegate, never()).acquireView();
+        verify(mNativeMock, never())
+                .setAnchorViewRect(
+                        anyLong(), any(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+        assertNull(mAutofillProvider.getDatalistPopupForTesting());
+    }
+
+    @Test
+    @Features.DisableFeatures({
+        AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME
+    })
+    public void testShowDatalistPopup_notSuppressedWhenFeatureDisabled() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+
+        Activity activity = Mockito.mock(Activity.class);
+        mAutofillProvider.switchToContext(new WeakReference<>(activity));
+
+        // Field is entirely outside the visible container bounds (e.g. top: -2000px).
+        RectF offscreenBounds = new RectF(0, -2000, 100, -1900);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = offscreenBounds;
+
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                offscreenBounds.left,
+                offscreenBounds.top,
+                offscreenBounds.width(),
+                offscreenBounds.height(),
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.showDatalistPopup(
+                new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        // When the feature is disabled, popup anchor must be set despite offscreen bounds.
+        verify(mViewAndroidDelegate).acquireView();
+        verify(mNativeMock)
+                .setAnchorViewRect(
+                        eq(mMockedNativeAndroidAutofillProvider),
+                        eq(mAnchorView),
+                        eq(offscreenBounds.left),
+                        eq(offscreenBounds.top),
+                        eq(offscreenBounds.width()),
+                        eq(offscreenBounds.height()));
+    }
+
+    @Test
+    public void testShowDatalistPopup_suppressedWhenBoundsAreEmpty() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+
+        Activity activity = Mockito.mock(Activity.class);
+        mAutofillProvider.switchToContext(new WeakReference<>(activity));
+
+        // Off-screen elements may be reported by Blink with empty bounds (0, 0, 0, 0).
+        RectF emptyBounds = new RectF(0, 0, 0, 0);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = emptyBounds;
+
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                emptyBounds.left,
+                emptyBounds.top,
+                emptyBounds.width(),
+                emptyBounds.height(),
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.showDatalistPopup(
+                new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        verify(mViewAndroidDelegate, never()).acquireView();
+        verify(mNativeMock, never())
+                .setAnchorViewRect(
+                        anyLong(), any(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+        assertNull(mAutofillProvider.getDatalistPopupForTesting());
+    }
+
+    @Test
+    public void testShowDatalistPopup_anchorsWhenInsideVisibleBounds() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+
+        Activity activity = Mockito.mock(Activity.class);
+        mAutofillProvider.switchToContext(new WeakReference<>(activity));
+
+        // Field is inside visible bounds: [0, 10, 50, 30] * dipScale 2 ->
+        // [0, 20, 100, 60], within [0, 0, 100, 100].
+        RectF visibleBounds = new RectF(0, 10, 50, 30);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = visibleBounds;
+
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 456,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                visibleBounds.left,
+                visibleBounds.top,
+                visibleBounds.width(),
+                visibleBounds.height(),
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.showDatalistPopup(
+                new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        // When bounds are visible, anchor must be acquired and positioned.
+        verify(mViewAndroidDelegate).acquireView();
+        verify(mNativeMock)
+                .setAnchorViewRect(
+                        eq(mMockedNativeAndroidAutofillProvider),
+                        eq(mAnchorView),
+                        eq(visibleBounds.left),
+                        eq(visibleBounds.top),
+                        eq(visibleBounds.width()),
+                        eq(visibleBounds.height()));
+    }
+
+    @Test
+    public void testShowDatalistPopup_dismissesStalePopupWhenMovedOutsideBounds() {
+        setContainerScreenGeometry(new Rect(0, 0, 100, 100), 0, 0);
+
+        Activity activity = Mockito.mock(Activity.class);
+        mAutofillProvider.switchToContext(new WeakReference<>(activity));
+
+        // A popup is currently showing, but the field moves outside visible bounds.
+        // The stale popup must be dismissed.
+        AutofillPopup mockPopup = Mockito.mock(AutofillPopup.class);
+        mAutofillProvider.setDatalistPopupForTesting(mockPopup);
+
+        RectF offscreenBounds = new RectF(0, -2000, 100, -1900);
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        fieldBuilder.mBounds = offscreenBounds;
+
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                offscreenBounds.left,
+                offscreenBounds.top,
+                offscreenBounds.width(),
+                offscreenBounds.height(),
+                /* hasServerPrediction= */ false);
+
+        mAutofillProvider.showDatalistPopup(
+                new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        verify(mockPopup).dismiss();
+        assertNull(mAutofillProvider.getDatalistPopupForTesting());
     }
 
     @Test

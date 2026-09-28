@@ -22,6 +22,7 @@ constexpr std::array kFeaturesExposedToJava = {
     &kAndroidAutofillLazyFrameworkWrapper,
     &kAndroidAutofillImprovedVisibilityDetection,
     &kAndroidAutofillFieldsUpdatedOnSelect,
+    &kAndroidAutofillSuppressOffscreenDatalist,
 };
 
 }  // namespace
@@ -47,6 +48,11 @@ BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
 // If enabled, fields are updated whenever a user interacts with a <select>.
 // TODO(crbug.com/502346855): Remove in M157 or later.
 BASE_FEATURE(kAndroidAutofillFieldsUpdatedOnSelect,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// If enabled, datalist popups are suppressed when the field is outside the
+// container view's visible bounds.
+BASE_FEATURE(kAndroidAutofillSuppressOffscreenDatalist,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 static int64_t JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env,

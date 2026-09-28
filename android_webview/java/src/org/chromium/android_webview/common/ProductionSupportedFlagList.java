@@ -64,9 +64,7 @@ public final class ProductionSupportedFlagList {
      * updating the "LoginCustomFlags" field in tools/metrics/histograms/enums.xml.
      */
     public static final Flag[] sFlagList = {
-        Flag.baseFeature(
-                "useicu4xnormalizer",
-                "Auto-generated flag for useicu4xnormalizer."),
+        Flag.baseFeature("useicu4xnormalizer", "Auto-generated flag for useicu4xnormalizer."),
         Flag.baseFeature("AwMetricsLogTrimming", "Auto-generated flag for AwMetricsLogTrimming."),
         Flag.commandLine(
                 AwSwitches.HIGHLIGHT_ALL_WEBVIEWS,
@@ -254,6 +252,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_FIELDS_UPDATED_ON_SELECT_NAME,
                 "Enable updating autofill field origin on select control change."),
+        Flag.baseFeature(
+                AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME,
+                "When enabled, datalist popups are suppressed when the field is outside the"
+                        + " container view's visible bounds."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_ACCEPT_DOM_MUTATION_AFTER_AUTOFILL_SUBMISSION,
                 "Accepts DOM_MUTATION_AFTER_AUTOFILL submissions detected on password forms."),
