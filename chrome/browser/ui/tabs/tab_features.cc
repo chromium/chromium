@@ -33,6 +33,8 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/indigo/indigo_cue_target.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -931,6 +933,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       tab, tab, tab.GetContents());
+
+  if (!profile->IsOffTheRecord() &&
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
+    history_embeddings_tab_helper_ =
+        std::make_unique<HistoryEmbeddingsTabHelper>(tab.GetContents());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1270,6 +1278,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   task_tab_helper_.reset();
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       *tab, *tab, new_contents);
+
+  if (history_embeddings_tab_helper_) {
+    history_embeddings_tab_helper_ =
+        std::make_unique<HistoryEmbeddingsTabHelper>(new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*

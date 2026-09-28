@@ -552,6 +552,7 @@ if (!is_android) {
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",
+      "//chrome/browser/history_embeddings",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/lifetime",

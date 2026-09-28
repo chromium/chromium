@@ -109,6 +109,7 @@ source_set("tabs_impl") {
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
     "//chrome/browser/glic",
+    "//chrome/browser/history_embeddings",
     "//chrome/browser/loader",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/net",

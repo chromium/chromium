@@ -18,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
-#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -130,10 +129,6 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
  protected:
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  HistoryEmbeddingsTabHelper* tab_helper() {
-    return HistoryEmbeddingsTabHelper::FromWebContents(GetActiveWebContents());
   }
 
   virtual void InitSignin() {

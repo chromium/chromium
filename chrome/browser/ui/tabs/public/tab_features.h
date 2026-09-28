@@ -57,6 +57,7 @@ class FramebustBlockTabHelper;
 class FormInteractionTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HatsHelper;
+class HistoryEmbeddingsTabHelper;
 class HttpAuthCacheStatus;
 class IntentPickerTabHelper;
 class IntentPickerViewPageActionController;
@@ -897,6 +898,8 @@ class TabFeatures {
   std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
 
   std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
+
+  std::unique_ptr<HistoryEmbeddingsTabHelper> history_embeddings_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

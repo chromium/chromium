@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
@@ -25,8 +26,16 @@
 
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {}
+    : content::WebContentsObserver(web_contents) {
+  if (auto* history_tab_helper =
+          HistoryTabHelper::FromWebContents(web_contents)) {
+    history_tab_helper_subscription_ =
+        history_tab_helper->RegisterOnUpdatedHistoryForNavigationCallback(
+            base::BindRepeating(
+                &HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() = default;
 
@@ -180,16 +189,6 @@ void HistoryEmbeddingsTabHelper::WebContentsDestroyed() {
   }
 }
 
-void HistoryEmbeddingsTabHelper::SetHistoryTabHelperSubscription(
-    base::CallbackListSubscription subscription) {
-  history_tab_helper_subscription_ = std::move(subscription);
-}
-
-base::WeakPtr<HistoryEmbeddingsTabHelper>
-HistoryEmbeddingsTabHelper::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(
     history::QueryURLAndVisitsResult result) {
   std::optional<base::Time> expected_visit_time = history_visit_time_;
@@ -272,5 +271,3 @@ history::HistoryService* HistoryEmbeddingsTabHelper::GetHistoryService() {
   return HistoryServiceFactory::GetForProfileIfExists(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryEmbeddingsTabHelper);

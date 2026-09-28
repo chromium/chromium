@@ -33,6 +33,8 @@
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/loader/from_gws_navigation_and_keep_alive_request_observer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_preconnect_client.h"
 #include "chrome/browser/net/http_auth_cache_status.h"
@@ -359,6 +361,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   task_tab_helper_ = GetUserDataFactory().CreateInstance<tasks::TaskTabHelper>(
       *tab, *tab, web_contents);
+
+  if (!profile->IsOffTheRecord() &&
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
+    history_embeddings_tab_helper_ =
+        std::make_unique<HistoryEmbeddingsTabHelper>(web_contents);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

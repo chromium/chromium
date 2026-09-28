@@ -109,6 +109,7 @@ class AboutThisSiteTabHelper;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
 class FromGWSNavigationAndKeepAliveRequestObserver;
+class HistoryEmbeddingsTabHelper;
 class HttpAuthCacheStatus;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
@@ -245,6 +246,7 @@ class TabFeatures {
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
   std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
   std::unique_ptr<tasks::TaskTabHelper> task_tab_helper_;
+  std::unique_ptr<HistoryEmbeddingsTabHelper> history_embeddings_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

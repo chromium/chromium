@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -28,10 +27,9 @@ namespace passage_embeddings {
 class PassageEmbedderModelObserver;
 }
 
-class HistoryEmbeddingsTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<HistoryEmbeddingsTabHelper> {
+class HistoryEmbeddingsTabHelper : public content::WebContentsObserver {
  public:
+  explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
   ~HistoryEmbeddingsTabHelper() override;
 
   HistoryEmbeddingsTabHelper(const HistoryEmbeddingsTabHelper&) = delete;
@@ -59,17 +57,7 @@ class HistoryEmbeddingsTabHelper
       base::TerminationStatus status) override;
   void WebContentsDestroyed() override;
 
-  void SetHistoryTabHelperSubscription(
-      base::CallbackListSubscription subscription);
-
-  base::WeakPtr<HistoryEmbeddingsTabHelper> GetWeakPtr();
-
- protected:
-  explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
-
  private:
-  friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
-
   // Callback for `ExtractPassages()`. It's in a member method to enable
   // cancellation via `weak_factory_`.
   void UpdateEmbeddingsServiceWithHistoryData(
@@ -105,8 +93,6 @@ class HistoryEmbeddingsTabHelper
 
   // A standard WeakPtrFactory with lifetime equal to the object itself.
   base::WeakPtrFactory<HistoryEmbeddingsTabHelper> weak_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_TAB_HELPER_H_
