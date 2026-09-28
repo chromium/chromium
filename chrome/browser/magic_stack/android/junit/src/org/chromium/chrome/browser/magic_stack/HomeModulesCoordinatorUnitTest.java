@@ -90,7 +90,6 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private LayoutParams mLayoutParams;
     @Mock private HomeModulesRecyclerView mRecyclerView;
     @Mock private UiConfig mUiConfig;
-    @Mock private Configuration mConfiguration;
     @Mock private ApplicationInfo mApplicationInfo;
     @Mock private DisplayMetrics mDisplayMetrics;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
@@ -114,6 +113,8 @@ public class HomeModulesCoordinatorUnitTest {
 
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
+    // Not a mock: from SDK 37, ViewConfiguration reads its windowConfiguration field.
+    private final Configuration mConfiguration = new Configuration();
     private HomeModulesCoordinator mCoordinator;
 
     @Before
