@@ -234,7 +234,7 @@ KURL SVGAElement::Url() const {
 DOMOrigin* SVGAElement::GetDOMOrigin(LocalDOMWindow*) const {
   // No access check is necessary, as anchor elements are not accessible
   // cross-origin.
-  if (href()->IsSpecified() || hasAttribute(xlink_names::kHrefAttr)) {
+  if (HrefIsSpecified()) {
     return DOMOrigin::Create(SecurityOrigin::Create(Url()));
   }
   return nullptr;

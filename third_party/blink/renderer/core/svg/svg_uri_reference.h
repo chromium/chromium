@@ -56,6 +56,7 @@ class CORE_EXPORT SVGURIReference : public GarbageCollectedMixin {
                                              const TreeScope&,
                                              AtomicString* = nullptr);
 
+  bool HrefIsSpecified() const;
   const String& HrefString() const;
 
   // Create an 'id' observer for the href associated with this SVGURIReference

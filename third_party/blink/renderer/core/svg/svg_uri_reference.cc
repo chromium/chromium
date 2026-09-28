@@ -53,6 +53,10 @@ SVGURIReference::SVGURIReference(SVGElement* element)
   DCHECK(element);
 }
 
+bool SVGURIReference::HrefIsSpecified() const {
+  return href_->IsSpecified();
+}
+
 const String& SVGURIReference::HrefString() const {
   return href_->CurrentValue()->Value();
 }
