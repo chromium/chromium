@@ -276,54 +276,6 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   }
 }
 
-void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
-  NOT_DESTROYED();
-
-  auto ProcessPositionedObjectRemoval = [&](LayoutObject* positioned_object) {
-    if (stay_within && (!positioned_object->IsDescendantOf(stay_within) ||
-                        stay_within == positioned_object)) {
-      return false;
-    }
-
-    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
-
-    // It is parent blocks job to add positioned child to positioned objects
-    // list of its containing block.
-    // Parent layout needs to be invalidated to ensure this happens.
-    positioned_object->MarkParentForSpannerOrOutOfFlowPositionedChange();
-    return true;
-  };
-
-  bool has_positioned_children_in_fragment_tree = false;
-
-  // PositionedObjects() is populated in legacy, and in NG when inside a
-  // fragmentation context root. But in other NG cases it's empty as an
-  // optimization, since we can just look at the children in the fragment tree.
-  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
-    if (!fragment.HasOutOfFlowFragmentChild()) {
-      continue;
-    }
-    for (const PhysicalFragmentLink& fragment_child : fragment.Children()) {
-      if (!fragment_child->IsOutOfFlowPositioned()) {
-        continue;
-      }
-      if (LayoutObject* child = fragment_child->GetMutableLayoutObject()) {
-        if (ProcessPositionedObjectRemoval(child)) {
-          has_positioned_children_in_fragment_tree = true;
-        }
-      }
-    }
-  }
-
-  // Invalidate the nearest OOF container to ensure it is marked for layout.
-  // Fixed containing blocks are always absolute containing blocks too,
-  // so we only need to look for absolute containing blocks.
-  if (has_positioned_children_in_fragment_tree) {
-    if (LayoutBlock* containing_block = ContainingBlockForAbsolutePosition())
-      containing_block->SetChildNeedsLayout(kMarkContainerChain);
-  }
-}
-
 void LayoutBlock::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
   DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());

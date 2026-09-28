@@ -486,7 +486,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   LayoutBox* ContainingNGBox() const;
 
   // Return the nearest fragmentation context root, if any.
-  LayoutBlock* ContainingFragmentationContextRoot() const;
+  LayoutBox* ContainingFragmentationContextRoot() const;
 
 #if DCHECK_IS_ON()
   void SetHasAXObject(bool flag) {
@@ -2303,7 +2303,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   //
   // See container() for the function that returns the containing block.
   // See layout_block.h for some extra explanations on containing blocks.
-  LayoutBlock* ContainingBlock(AncestorSkipInfo* = nullptr) const;
+  LayoutBox* ContainingBlock(AncestorSkipInfo* = nullptr) const;
 
   // Returns the containing block that owns the text-overflow style,
   // resolving anonymous blocks to their parent. Returns nullptr if the
@@ -2323,7 +2323,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;
 
-  LayoutBlock* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
+  LayoutBox* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
 
   // Returns the nearest ancestor scroll container in any axis.
   const LayoutBox* ContainingScrollContainer(
@@ -3669,12 +3669,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns ContainerForAbsolutePosition() if it's a LayoutBlock, or the
   // containing LayoutBlock of it.
-  LayoutBlock* ContainingBlockForAbsolutePosition(
+  LayoutBox* ContainingBlockForAbsolutePosition(
       AncestorSkipInfo* = nullptr) const;
   // Returns ContainerForFixedPosition() if it's a LayoutBlock, or the
   // containing LayoutBlock of it.
-  LayoutBlock* ContainingBlockForFixedPosition(
-      AncestorSkipInfo* = nullptr) const;
+  LayoutBox* ContainingBlockForFixedPosition(AncestorSkipInfo* = nullptr) const;
 
   // Returns the first line style declared in CSS. The style may be declared on
   // an ancestor block (see LayoutBlock::FirstLineStyleParentBlock) that applies

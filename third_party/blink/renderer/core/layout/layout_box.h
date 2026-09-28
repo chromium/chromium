@@ -665,6 +665,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // box now e.g. sets a transform.
   void MarkColumnSpannerCandidatesForLayoutIfNeeded();
 
+  void RemovePositionedObjects(LayoutObject* stay_within);
+
   bool MapToVisualRectInAncestorSpaceInternal(
       const LayoutBoxModelObject* ancestor,
       TransformState&,

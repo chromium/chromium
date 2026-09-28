@@ -126,7 +126,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       PhysicalAxes scroll_axes) const;
 
   PhysicalOffset StickyPositionOffset() const;
-  virtual LayoutBlock* StickyContainer() const;
+  virtual LayoutBox* StickyContainer() const;
 
   StickyPositionScrollingConstraints StickyConstraints() const {
     NOT_DESTROYED();

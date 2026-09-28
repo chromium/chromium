@@ -861,14 +861,15 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   const bool was_out_of_flow = old_style->HasOutOfFlowPosition();
   const bool is_out_of_flow = StyleRef().HasOutOfFlowPosition();
 
-  LayoutBlock* containing_block = ContainingBlock();
+  LayoutBox* containing_block = ContainingBlock();
   if ((containing_block && containing_block->IsLayoutGridOrGridLanes()) &&
       GridStyleChanged(old_style, StyleRef())) {
     // Out-of-flow items do not impact grid/grid-lanes placement.
     // TODO(kschmi): Scope this so that it only dirties the grid/grid-lanes when
     // track sizing depends on item sizes.
-    if (!was_out_of_flow || !is_out_of_flow)
+    if (!was_out_of_flow || !is_out_of_flow) {
       containing_block->SetGridPlacementDirty(true);
+    }
 
     // For out-of-flow elements with grid/grid-lanes container as containing
     // block, we need to run the entire algorithm to place and size them
@@ -2415,7 +2416,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
   if (HasOverrideContainingBlockContentLogicalWidth())
     return OverrideContainingBlockContentLogicalWidth();
 
-  LayoutBlock* cb = ContainingBlock();
+  const LayoutBox* cb = ContainingBlock();
   if (IsOutOfFlowPositioned()) {
     const PhysicalSize size = cb->PhysicalPaddingBoxRect().size;
     return cb->StyleRef().IsHorizontalWritingMode() ? size.width : size.height;
@@ -2911,6 +2912,52 @@ void LayoutBox::MarkColumnSpannerCandidatesForLayoutIfNeeded() {
       }
     }
     descendant = descendant->NextInPreOrder(this);
+  }
+}
+
+void LayoutBox::RemovePositionedObjects(LayoutObject* stay_within) {
+  NOT_DESTROYED();
+
+  auto ProcessPositionedObjectRemoval = [&](LayoutObject* positioned_object) {
+    if (stay_within && (!positioned_object->IsDescendantOf(stay_within) ||
+                        stay_within == positioned_object)) {
+      return false;
+    }
+
+    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
+
+    // It is parent blocks job to add positioned child to positioned objects
+    // list of its containing block.
+    // Parent layout needs to be invalidated to ensure this happens.
+    positioned_object->MarkParentForSpannerOrOutOfFlowPositionedChange();
+    return true;
+  };
+
+  bool has_positioned_children_in_fragment_tree = false;
+
+  for (const PhysicalBoxFragment& fragment : PhysicalFragments()) {
+    if (!fragment.HasOutOfFlowFragmentChild()) {
+      continue;
+    }
+    for (const PhysicalFragmentLink& fragment_child : fragment.Children()) {
+      if (!fragment_child->IsOutOfFlowPositioned()) {
+        continue;
+      }
+      if (LayoutObject* child = fragment_child->GetMutableLayoutObject()) {
+        if (ProcessPositionedObjectRemoval(child)) {
+          has_positioned_children_in_fragment_tree = true;
+        }
+      }
+    }
+  }
+
+  // Invalidate the nearest OOF container to ensure it is marked for layout.
+  // Fixed containing blocks are always absolute containing blocks too,
+  // so we only need to look for absolute containing blocks.
+  if (has_positioned_children_in_fragment_tree) {
+    if (LayoutBox* containing_block = ContainingBlockForAbsolutePosition()) {
+      containing_block->SetChildNeedsLayout(kMarkContainerChain);
+    }
   }
 }
 
@@ -3519,7 +3566,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
   }
 
   // When block-fragmented, stitch visual overflows from all fragments.
-  const LayoutBlock* cb = ContainingBlock();
+  const LayoutBox* cb = ContainingBlock();
   DCHECK(cb);
   const WritingMode writing_mode = cb->StyleRef().GetWritingMode();
   bool has_overflow = false;

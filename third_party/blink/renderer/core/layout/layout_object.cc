@@ -1405,12 +1405,12 @@ LayoutBox* LayoutObject::ContainingNGBox() const {
   return ContainingBlock();
 }
 
-LayoutBlock* LayoutObject::ContainingFragmentationContextRoot() const {
+LayoutBox* LayoutObject::ContainingFragmentationContextRoot() const {
   NOT_DESTROYED();
   if (!MightBeInsideFragmentationContext())
     return nullptr;
   bool found_column_spanner = IsColumnSpanAll();
-  for (LayoutBlock* ancestor = ContainingBlock(); ancestor;
+  for (LayoutBox* ancestor = ContainingBlock(); ancestor;
        ancestor = ancestor->ContainingBlock()) {
     if (ancestor->IsFragmentationContextRoot()) {
       // Column spanners do not participate in the fragmentation context
@@ -1772,7 +1772,7 @@ void LayoutObject::MarkParentForSpannerOrOutOfFlowPositionedChange() {
     object->SetNeedsCollectInlines();
   }
 
-  const LayoutBlock* containing_block = ContainingBlock();
+  const LayoutBox* containing_block = ContainingBlock();
   while (object != containing_block) {
     object->SetChildNeedsLayout(kMarkOnlyThis);
     object = object->Container();
@@ -1892,22 +1892,21 @@ LayoutObject* LayoutObject::ContainerForColumnSpanner(
   return FindColumnSpannerContainer(this, skip_info);
 }
 
-LayoutBlock* LayoutObject::ContainingBlockForAbsolutePosition(
+LayoutBox* LayoutObject::ContainingBlockForAbsolutePosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   auto* container = ContainerForAbsolutePosition(skip_info);
   return container ? container->InclusiveContainingBlock(skip_info) : nullptr;
 }
 
-LayoutBlock* LayoutObject::ContainingBlockForFixedPosition(
+LayoutBox* LayoutObject::ContainingBlockForFixedPosition(
     AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   auto* container = ContainerForFixedPosition(skip_info);
   return container ? container->InclusiveContainingBlock(skip_info) : nullptr;
 }
 
-LayoutBlock* LayoutObject::InclusiveContainingBlock(
-    AncestorSkipInfo* skip_info) {
+LayoutBox* LayoutObject::InclusiveContainingBlock(AncestorSkipInfo* skip_info) {
   NOT_DESTROYED();
   auto* layout_block = DynamicTo<LayoutBlock>(this);
   return layout_block ? layout_block : ContainingBlock(skip_info);
@@ -3175,8 +3174,9 @@ void LayoutObject::SetStyle(const ComputedStyle& new_style,
   // TODO(cbiesinger): Shouldn't this check container->NeedsLayout, since that's
   // the one we'll mark for NeedsOverflowRecalc()?
   if (diff.transform_changed && !NeedsLayout()) {
-    if (LayoutBlock* container = ContainingBlock())
+    if (LayoutBox* container = ContainingBlock()) {
       container->SetNeedsOverflowRecalc();
+    }
   }
 
   if (diff.needs_recompute_visual_overflow) {
@@ -5110,7 +5110,7 @@ bool LayoutObject::CanUpdateSelectionOnRootLineBoxes() const {
   if (NeedsLayout())
     return false;
 
-  const LayoutBlock* containing_block = ContainingBlock();
+  const LayoutBox* containing_block = ContainingBlock();
   return containing_block && !containing_block->NeedsLayout();
 }
 
@@ -5419,8 +5419,7 @@ void LayoutObject::InvalidateSelectionOnStyleChange() {
   // chain to tell if a block contains selected nodes or not. If this layout
   // object is not a block, we need to get the selection state from the
   // containing block to tell if we have any selected node children.
-  LayoutBlock* block =
-      IsLayoutBlock() ? To<LayoutBlock>(this) : ContainingBlock();
+  LayoutBox* block = InclusiveContainingBlock();
   if (!block)
     return;
   if (!block->IsSelected())

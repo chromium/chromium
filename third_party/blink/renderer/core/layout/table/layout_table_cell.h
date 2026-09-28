@@ -82,7 +82,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow {
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  LayoutBlock* StickyContainer() const override;
+  LayoutBox* StickyContainer() const override;
 
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 

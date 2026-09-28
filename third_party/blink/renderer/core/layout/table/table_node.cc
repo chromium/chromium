@@ -71,7 +71,7 @@ bool TableNode::AllowColumnPercentages(bool is_layout_pass) const {
   // In the future, we could have a bit on a LayoutObject which indicates if we
   // should allow column percentages, and maintain this when adding/removing
   // from the tree.
-  const LayoutBlock* block = box_->ContainingBlock();
+  const LayoutBox* block = box_->ContainingBlock();
   while (!block->IsLayoutView()) {
     if (block->IsTableCell() || block->IsFlexibleBox() ||
         block->IsLayoutGridOrGridLanes()) {

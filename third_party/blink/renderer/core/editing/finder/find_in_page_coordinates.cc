@@ -48,13 +48,13 @@
 
 namespace blink {
 
-static const LayoutBlock* EnclosingScrollableAncestor(
+static const LayoutBox* EnclosingScrollableAncestor(
     const LayoutObject* layout_object) {
   DCHECK(!IsA<LayoutView>(layout_object));
 
   // Trace up the containingBlocks until we reach either the layoutObject view
   // or a scrollable object.
-  const LayoutBlock* container = layout_object->ContainingBlock();
+  const LayoutBox* container = layout_object->ContainingBlock();
   while (!container->IsScrollContainer() && !IsA<LayoutView>(container))
     container = container->ContainingBlock();
   return container;
@@ -62,7 +62,7 @@ static const LayoutBlock* EnclosingScrollableAncestor(
 
 static gfx::RectF ToNormalizedRect(const gfx::RectF& absolute_rect,
                                    const LayoutObject* layout_object,
-                                   const LayoutBlock* container) {
+                                   const LayoutBox* container) {
   DCHECK(layout_object);
 
   DCHECK(container || IsA<LayoutView>(layout_object));
@@ -107,7 +107,7 @@ gfx::RectF FindInPageRectFromAbsoluteRect(
     return gfx::RectF();
 
   // Normalize the input rect to its container block.
-  const LayoutBlock* base_container =
+  const LayoutBox* base_container =
       EnclosingScrollableAncestor(base_layout_object);
   gfx::RectF normalized_rect =
       ToNormalizedRect(input_rect, base_layout_object, base_container);
@@ -117,7 +117,7 @@ gfx::RectF FindInPageRectFromAbsoluteRect(
     // Go up the layout tree until we reach the root of the current frame (the
     // LayoutView).
     while (!IsA<LayoutView>(layout_object)) {
-      const LayoutBlock* container = EnclosingScrollableAncestor(layout_object);
+      const LayoutBox* container = EnclosingScrollableAncestor(layout_object);
 
       // Compose the normalized rects.
       gfx::RectF normalized_box_rect =

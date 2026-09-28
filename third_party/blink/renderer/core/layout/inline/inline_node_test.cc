@@ -1322,7 +1322,7 @@ TEST_F(InlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   EXPECT_TRUE(after_layout);
 
   // Check it is the one owned by the new root inline formatting context.
-  LayoutBlock* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
+  LayoutBox* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
   LayoutObject* container = GetLayoutObjectByElementId("container");
   EXPECT_EQ(inner_span_cb, container);
   InlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));

@@ -1515,7 +1515,7 @@ namespace {
 
 gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
   if (box) {
-    if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+    if (const LayoutBox* containing_block = box->ContainingBlock()) {
       // In SVG contexts, all values behave as view-box.
       if (box->IsSVG()) {
         return gfx::RectF(SVGViewportResolver(*box).ResolveViewport());
@@ -1541,7 +1541,7 @@ gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
 
 gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
   if (box) {
-    if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+    if (const LayoutBox* containing_block = box->ContainingBlock()) {
       gfx::PointF offset =
           box->LocalToAncestorPoint(gfx::PointF(), containing_block,
                                     {MapCoordinatesMode::kIgnoreTransforms});

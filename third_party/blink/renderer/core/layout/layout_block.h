@@ -140,8 +140,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  void RemovePositionedObjects(LayoutObject*);
-
   void AddSvgTextDescendant(LayoutSVGText& svg_text);
   void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 

@@ -75,8 +75,9 @@ LayoutBlock* CaretLayoutBlock(const Node* node,
   // if caretNode is a block and caret is inside it then caret should be painted
   // by that block
   bool painted_by_block = caret_layout_object && CaretRendersInsideNode(node);
-  return painted_by_block ? const_cast<LayoutBlock*>(caret_layout_object)
-                          : layout_object->ContainingBlock();
+  return painted_by_block
+             ? const_cast<LayoutBlock*>(caret_layout_object)
+             : DynamicTo<LayoutBlock>(layout_object->ContainingBlock());
 }
 
 PhysicalRect MapCaretRectToCaretPainter(const LayoutBlock* caret_block,

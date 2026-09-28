@@ -4254,8 +4254,8 @@ float AXNodeObject::GetTextIndent() const {
   if (IsTextObject() || !GetLayoutObject())
     return 0.0f;
 
-  const blink::LayoutBlock* layout_block =
-      GetLayoutObject()->InclusiveContainingBlock();
+  const auto* layout_block =
+      DynamicTo<LayoutBlock>(GetLayoutObject()->InclusiveContainingBlock());
   if (!layout_block)
     return 0.0f;
   float text_indent = layout_block->TextIndentOffset().ToFloat();

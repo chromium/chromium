@@ -81,11 +81,12 @@ const LayoutBlockFlow& RootInlineContentsContainerOf(
     const LayoutBlockFlow& block_flow) {
   DCHECK(block_flow.ChildrenInline()) << block_flow;
   const LayoutBlockFlow* root_block_flow = &block_flow;
-  for (const LayoutBlock* runner = block_flow.ContainingBlock(); runner;
+  for (const LayoutBox* runner = block_flow.ContainingBlock(); runner;
        runner = runner->ContainingBlock()) {
     auto* containing_block_flow = DynamicTo<LayoutBlockFlow>(runner);
-    if (!containing_block_flow || !runner->ChildrenInline())
+    if (!containing_block_flow || !containing_block_flow->ChildrenInline()) {
       break;
+    }
     root_block_flow = containing_block_flow;
   }
   DCHECK(!root_block_flow->IsInline()) << block_flow << ' ' << root_block_flow;
@@ -153,7 +154,7 @@ const Node* FindLastNonPseudoNodeIn(const LayoutObject& container) {
 // |LayoutBlockFlow|.
 const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     const LayoutObject& layout_object) {
-  const auto* block = DynamicTo<LayoutBlock>(layout_object);
+  const LayoutObject* block = DynamicTo<LayoutBlock>(layout_object);
   if (!block)
     block = layout_object.ContainingBlock();
 

@@ -52,7 +52,7 @@ class CORE_EXPORT LayoutTableRow : public LayoutBlock {
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  LayoutBlock* StickyContainer() const override;
+  LayoutBox* StickyContainer() const override;
 
   // Whether a row has opaque background depends on many factors, e.g. border
   // spacing, border collapsing, missing cells, etc.

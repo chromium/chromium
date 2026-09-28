@@ -37,7 +37,7 @@ class OutOfFlowDescendant {
     // Need to locate the containing block manually here. OOF fragments in a
     // fragmentation context are direct children of the enclosing fragmentainer,
     // not the actual containing block.
-    const LayoutBlock* actual_containing_block = box_->ContainingBlock();
+    const LayoutBox* actual_containing_block = box_->ContainingBlock();
     const PhysicalBoxFragment& first_container_fragment =
         *actual_containing_block->GetPhysicalFragment(0);
     box_->SetLocation(

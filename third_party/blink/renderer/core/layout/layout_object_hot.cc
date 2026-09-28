@@ -198,7 +198,7 @@ void LayoutObject::UpdateImageObservers(const ComputedStyle* old_style,
   UpdateFirstLineImageObservers(new_style);
 }
 
-LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
+LayoutBox* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   if (!IsTextOrSVGChild()) {
     if (style_->GetPosition() == EPosition::kFixed)

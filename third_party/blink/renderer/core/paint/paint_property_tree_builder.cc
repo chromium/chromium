@@ -4106,7 +4106,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
               DynamicTo<ViewTransitionTransitionElement>(object_.GetNode())) {
         auto* scope = DynamicTo<LayoutBox>(
             transition_element->UltimateOriginatingElement().GetLayoutObject());
-        LayoutBlock* containing_block = object_.ContainingBlock();
+        LayoutBox* containing_block = object_.ContainingBlock();
         if (scope && containing_block == scope) {
           // Undo the scroll origin offset that was applied during
           // UpdateScrollAndScrollTranslation().

@@ -159,7 +159,7 @@ LayoutBox* LayoutTableRow::CreateAnonymousBoxWithSameTypeAs(
   return CreateAnonymousWithParent(*parent);
 }
 
-LayoutBlock* LayoutTableRow::StickyContainer() const {
+LayoutBox* LayoutTableRow::StickyContainer() const {
   NOT_DESTROYED();
   return Table();
 }

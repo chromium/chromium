@@ -366,7 +366,6 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   ComputedStyleBuilder new_style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           StyleRef(), EDisplay::kBlock);
-  const LayoutBlock* containing_block = ContainingBlock();
   // The anon block we create here doesn't exist in the CSS spec, so we need to
   // ensure that any blocks it contains inherit properly from its true
   // parent. This means they must use the direction set by the anon block's
@@ -376,7 +375,7 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   // children we will want to special-case them here too. Writing-mode would be
   // one if it didn't create a formatting context of its own, removing the need
   // for continuations.
-  new_style_builder.SetDirection(containing_block->StyleRef().Direction());
+  new_style_builder.SetDirection(ContainingBlock()->StyleRef().Direction());
 
   return LayoutBlockFlow::CreateAnonymous(GetDocument(),
                                           *new_style_builder.TakeStyle());

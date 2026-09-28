@@ -198,11 +198,10 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   base::AutoReset<bool> is_in_computing_shape(&is_computing_shape_, true);
 
   const ComputedStyle& style = layout_box_->StyleRef();
-  DCHECK(layout_box_->ContainingBlock());
-  const LayoutBlock& containing_block = *layout_box_->ContainingBlock();
-  const ComputedStyle& containing_block_style = containing_block.StyleRef();
+  const ComputedStyle& container_style =
+      layout_box_->ContainingBlock()->StyleRef();
 
-  WritingMode writing_mode = containing_block_style.GetWritingMode();
+  WritingMode writing_mode = container_style.GetWritingMode();
   float margin =
       FloatValueForLength(layout_box_->StyleRef().ShapeMargin(),
                           percentage_resolution_inline_size_.ToFloat());
