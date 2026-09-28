@@ -20747,6 +20747,21 @@
             ]
         }
     ],
+    "WebViewInitRendererDuringWebContentsCreation": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewInitRendererDuringWebContentsCreation"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMigrateVisitedLinks": [
         {
             "platforms": [

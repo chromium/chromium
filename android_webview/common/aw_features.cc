@@ -238,6 +238,10 @@ const base::FeatureParam<base::TimeDelta> kWebViewDuplicateNavThreshold{
 // rather than waiting for the framework to call init().
 BASE_FEATURE(kWebViewInitInConstructor, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables initialization of the renderer process during WebContents creation.
+BASE_FEATURE(kWebViewInitRendererDuringWebContentsCreation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
 // otherwise the zoom picker is persistently shown from scroll start to scroll
 // end plus the usual delay in hiding.

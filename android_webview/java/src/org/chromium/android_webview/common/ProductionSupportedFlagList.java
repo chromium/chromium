@@ -1098,6 +1098,9 @@ public final class ProductionSupportedFlagList {
                         + "After enabling this flag, applications must be started and then "
                         + "restarted for changes to apply."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_INIT_RENDERER_DURING_WEB_CONTENTS_CREATION,
+                "Initialize the renderer process during WebContents creation."),
+        Flag.baseFeature(
                 BaseFeatures.LIBRARY_PREFETCHER_MADVISE,
                 "Use madvise MADV_WILLNEED to prefetch the native library. This replaces the "
                         + "default mechanism of pre-reading the memory from a forked process."),

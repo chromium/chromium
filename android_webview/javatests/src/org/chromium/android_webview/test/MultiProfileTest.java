@@ -403,20 +403,21 @@ public class MultiProfileTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testSeparateProfilesHaveSeparateRenderProcesses() throws Throwable {
         mRule.startBrowserProcess();
-        final AwBrowserContext profile = mRule.getProfileSync("my-profile", true);
-        final AwContents firstAwContents = mRule.createAwContents();
-        final AwContents secondAwContents = mRule.createAwContents(profile);
 
         TestWebServer webServer = TestWebServer.start();
         String path = "/test.html";
         String responseStr = "<html><head><title>TEST!</title></head><body>HELLO!</body></html>";
         String url = webServer.setResponse(path, responseStr, new ArrayList<>());
 
+        final AwContents firstAwContents = mRule.createAwContents();
         mRule.loadUrlSync(firstAwContents, mContentsClient.getOnPageFinishedHelper(), url);
         assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
 
+        final AwBrowserContext profile = mRule.getProfileSync("my-profile", true);
+        final AwContents secondAwContents = mRule.createAwContents(profile);
         mRule.loadUrlSync(secondAwContents, mContentsClient.getOnPageFinishedHelper(), url);
         assertEquals(2, RenderProcessHostUtils.getCurrentRenderProcessCount());
+
         webServer.shutdown();
     }
 
