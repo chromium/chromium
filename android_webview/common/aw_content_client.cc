@@ -46,10 +46,13 @@ AwContentClient::~AwContentClient() = default;
 
 void AwContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(url::kContentScheme);
-  schemes->secure_schemes.push_back(
-      android_webview::kAndroidWebViewVideoPosterScheme);
-  schemes->csp_bypassing_schemes.push_back(
-      android_webview::kAndroidWebViewVideoPosterScheme);
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewIgnoreDefaultVideoPoster)) {
+    schemes->secure_schemes.push_back(
+        android_webview::kAndroidWebViewVideoPosterScheme);
+    schemes->csp_bypassing_schemes.push_back(
+        android_webview::kAndroidWebViewVideoPosterScheme);
+  }
   schemes->allow_non_standard_schemes_in_origins = true;
 }
 

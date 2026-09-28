@@ -227,6 +227,12 @@ const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit{
 // This enables WebView's hyperlink context menu.
 BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, <video> elements without an explicitly specified poster will
+// use Chromium's usual logic to pick a frame from the video, instead of calling
+// the app's WebChromeClient.getDefaultVideoPoster() implementation.
+BASE_FEATURE(kWebViewIgnoreDefaultVideoPoster,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether we ignore duplicate navigations or not, in favor of
 // preserving the already ongoing navigation.
 BASE_FEATURE(kWebViewIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);

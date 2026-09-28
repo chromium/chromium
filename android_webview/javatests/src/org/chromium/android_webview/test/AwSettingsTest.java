@@ -3322,6 +3322,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @DisableFeatures(AwFeatures.WEBVIEW_IGNORE_DEFAULT_VIDEO_POSTER)
     public void testDefaultVideoPosterUrl() throws Throwable {
         final CallbackHelper videoPosterAccessedCallbackHelper = new CallbackHelper();
         final String defaultVideoPosterUrl = "http://default_video_poster/";

@@ -19,9 +19,11 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.DefaultVideoPosterRequestHandler;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for AwContentClient.GetDefaultVideoPoster. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DisableFeatures(AwFeatures.WEBVIEW_IGNORE_DEFAULT_VIDEO_POSTER)
 public class AwContentsClientGetDefaultVideoPosterTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 

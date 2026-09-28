@@ -1523,6 +1523,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.LAZY_PARSE_INLINE_STYLE_SHEETS,
                 "Defers declaration block parsing in inline stylesheets until rules match or"
                         + " are queried."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_IGNORE_DEFAULT_VIDEO_POSTER,
+                "Use Chromium's usual video poster logic instead of"
+                        + " WebChromeClient.getDefaultVideoPoster()"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

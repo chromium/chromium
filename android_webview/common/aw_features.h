@@ -63,6 +63,7 @@ extern const base::FeatureParam<int> kWebViewHttpCacheQuotaApiMaximum;
 extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAffectsCodeCache;
 extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiForceBackendInit;
 BASE_DECLARE_FEATURE(kWebViewHyperlinkContextMenu);
+BASE_DECLARE_FEATURE(kWebViewIgnoreDefaultVideoPoster);
 BASE_DECLARE_FEATURE(kWebViewIgnoreDuplicateNavs);
 extern const base::FeatureParam<base::TimeDelta> kWebViewDuplicateNavThreshold;
 BASE_DECLARE_FEATURE(kWebViewInitInConstructor);
