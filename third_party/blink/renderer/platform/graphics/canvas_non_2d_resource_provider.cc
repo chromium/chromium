@@ -851,6 +851,7 @@ void CanvasNon2DResourceProvider::FlushRecording(
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
+    auto* image_provider = GetOrCreateImageProvider();
 
     auto access = resource_->BeginAccess(/*readonly=*/false);
     gpu::raster::RasterInterface* ri = RasterInterface();
@@ -884,7 +885,6 @@ void CanvasNon2DResourceProvider::FlushRecording(
                             /*hdr_headroom=*/0.f,
                             resource()->GetSharedImage()->mailbox().name);
 
-    auto* image_provider = GetOrCreateImageProvider();
     ri->RasterCHROMIUM(
         list.get(), image_provider, size, full_raster_rect, playback_rect,
         post_translate, post_scale, /*requires_clear=*/false,
