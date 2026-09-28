@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] scheduler: appending script element to script 
-  assert_array_equals: expected property 1 to be "inline script #3" but got "inline script #2" (expected array ["inline script #1", "inline script #3", "inline script #2", "end inline script #2", "end inline script #1"] got ["inline script #1", "inline script #2", "end inline script #2", "inline script #3", "end inline script #1"])
-Harness: the test ran to completion.
-
