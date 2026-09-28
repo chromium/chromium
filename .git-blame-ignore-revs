@@ -924,3 +924,6 @@ f526edd21b6d46ac591d58f766a5a4b54e9c8029
 
 # Run `gn format` on all BUILD.gn files.
 ad14f9bebfdee678ba25da9430c2d5c3b00d6a11
+
+# [crypto] Migrate SignatureAlgorithm to sign::SignatureKind
+8c07454d98be17b42e5c7b272163f4e9ff021d71
