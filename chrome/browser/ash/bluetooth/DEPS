@@ -16,11 +16,15 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/webui/bluetooth_internals",
 ]
 
 specific_include_rules = {
+  # The keyed service factory is the //chrome seam: it resolves the
+  # signin::IdentityManager that the ash class takes by constructor.
+  "debug_logs_manager_factory\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
   ".*test\\.cc": [
     "+chrome/browser/ui/chrome_pages.h",
     "+chrome/test/base",

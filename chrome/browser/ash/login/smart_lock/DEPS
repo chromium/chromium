@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/secure_channel",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/grit",
 ]
@@ -34,6 +33,7 @@ specific_include_rules = {
     "+ui/message_center/message_center.h",
   ],
   "smart_lock_service_unittest\\.cc": [
+    "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
     "+chrome/common/pref_names.h",
   ],
 }

@@ -14,10 +14,14 @@ include_rules = [
   "+chrome/browser/ash/api/tasks",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
 ]
 
 specific_include_rules = {
+  # The keyed service factory is the //chrome seam: it resolves the
+  # signin::IdentityManager that the ash class takes by constructor.
+  "glanceables_keyed_service_(factory|unittest)\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
   ".*unittest\\.cc": [
     "+chrome/browser/prefs",
   ],

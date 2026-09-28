@@ -17,12 +17,20 @@ include_rules = [
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/net",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/webui/ash/edu_coexistence",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  # Only tests need //chrome/browser/signin.
+  "account_manager_policy_controller_browsertest\\.cc": [
+    "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+  ],
+  # The keyed service factory is the //chrome seam: it resolves the
+  # signin::IdentityManager that the ash class takes by constructor.
+  "account_apps_availability_factory\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",

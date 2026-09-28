@@ -18,6 +18,13 @@ include_rules = [
   "+chrome/browser/local_discovery",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/services/sharing/nearby/test_support",
 ]
+
+specific_include_rules = {
+  # The keyed service factory is the //chrome seam: it resolves the
+  # signin::IdentityManager that the ash class takes by constructor.
+  "nearby_dependencies_provider_factory\\.cc": [
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ],
+}
