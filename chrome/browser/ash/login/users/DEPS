@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/policy/networking",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
@@ -31,6 +30,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need //chrome/browser/prefs here.
+  "multi_user_sign_in_policy_controller_unittest\\.cc": [
+    "+chrome/browser/prefs/browser_prefs.h",
+  ],
+  # PrefServiceSyncableFromProfile() narrows the profile PrefService to the
+  # syncable one; everything after that is //components API.
+  "user_image_sync_observer\\.cc": [
+    "+chrome/browser/prefs/pref_service_syncable_util.h",
+  ],
   "user_image_manager_browsertest\\.cc": [
     "+chrome/browser/signin",
   ],

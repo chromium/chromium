@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/chromeos/network",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
@@ -30,5 +29,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Reads the incognito availability preference.
+  "network_portal_signin_controller(_unittest)?\\.cc": [
+    "+chrome/browser/prefs/incognito_mode_prefs.h",
+  ],
   "tether_notification_presenter_unittest\\.cc": ["+chrome/common"],
 }

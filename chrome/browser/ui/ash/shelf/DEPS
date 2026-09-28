@@ -35,7 +35,6 @@ include_rules = [
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/extensions/menu_manager.h",
   "+chrome/browser/media/router",
-  "+chrome/browser/prefs",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/app_icon_color_cache",
@@ -61,7 +60,18 @@ specific_include_rules = {
   "chrome_shelf_prefs\\.cc": [
     "+chrome/browser/sync/sync_service_factory.h",
   ],
+  # Reads the incognito availability preference.
+  "extension_shelf_context_menu\\.cc": [
+    "+chrome/browser/prefs/incognito_mode_prefs.h",
+  ],
+  # PrefServiceSyncableFromProfile() narrows the profile PrefService to the
+  # syncable one; everything after that is //components API.
+  "(chrome_shelf_controller|chrome_shelf_prefs)\\.cc": [
+    "+chrome/browser/prefs/pref_service_syncable_util.h",
+  ],
   ".*_(browser|unit)test\\.cc": [
+    "+chrome/browser/prefs/browser_prefs.h",
+    "+chrome/browser/prefs/incognito_mode_prefs.h",
     "+chrome/browser/ash/login/test/guest_session_mixin.h",
     "+chrome/browser/ash/system_web_apps/test_support",
     "+chrome/browser/extensions/extension_apitest.h",
