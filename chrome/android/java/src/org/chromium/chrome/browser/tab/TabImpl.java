@@ -123,6 +123,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -440,13 +441,17 @@ class TabImpl implements Tab, TabInternal {
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {
-                        if (isNativePage() && assumeNonNull(getNativePage()).getView() == view) {
+                        NativePage nativePage = getNativePage();
+                        if (isNativePage()
+                                && nativePage != null
+                                && !nativePage.isFrozen()
+                                && nativePage.getView() == view) {
                             if (mNativePageSmoothTransitionDelegate != null) {
                                 mNativePageSmoothTransitionDelegate.cancel();
                                 mNativePageSmoothTransitionDelegate = null;
                             } else {
                                 // reset ntp view state.
-                                assumeNonNull(getView()).setAlpha(1f);
+                                view.setAlpha(1f);
                             }
                         }
                         mIsViewAttachedToWindow = false;
@@ -527,15 +532,13 @@ class TabImpl implements Tab, TabInternal {
             updateWindowAndroid(window);
 
             // Reload the NativePage (if any), since the old NativePage has a reference to the old
-            // activity. If hidden, freeze the native page to avoid eager instantiation of
-            // background native pages. If the native page was not frozen (e.g. because it is open
-            // and has a parent view, or because it wasn't hidden), reload it so that it binds to
+            // activity. If hidden, detach its view and freeze the native page to avoid eager
+            // instantiation of background native pages. If visible, reload it so that it binds to
             // the new Activity and destroys the old native page to fix the Activity leak.
             if (isNativePage()) {
                 if (isHidden()) {
-                    freezeNativePage();
-                }
-                if (mNativePage != null && !mNativePage.isFrozen()) {
+                    detachAndFreezeNativePage();
+                } else {
                     maybeShowNativePage(
                             getUrl().getSpec(),
                             /* forceReload= */ true,
@@ -544,6 +547,17 @@ class TabImpl implements Tab, TabInternal {
             }
         } else {
             updateIsDetachedFromActivity(window);
+            if (isNativePage() && !mNativePage.isFrozen()) {
+                // Since mIsDetachedFromActivity is now true, getView() returns null while
+                // isNativePage() remains true. Update interactability first so NativePage
+                // observers (e.g. NtpFeedSurfaceLifecycleManager) can save UI state while the
+                // view hierarchy is still attached to the window, then notify observers so
+                // CompositorViewHolder detaches the NativePage view and reclaims focus via
+                // updateContentOverlayVisibility(false) before freezing and destroying the page.
+                updateInteractableState();
+                notifyContentChanged();
+                detachAndFreezeNativePage();
+            }
 
             // Clear the current tab supplier during detachment/reparenting to indicate that the
             // tab is not held by another tab model. For unclear reasons, removeTab() doesn't
@@ -593,7 +607,11 @@ class TabImpl implements Tab, TabInternal {
     public @Nullable View getView() {
         if (mCustomView != null) return mCustomView;
 
-        if (mNativePage != null && !mNativePage.isFrozen()) return mNativePage.getView();
+        if (mNativePage != null) {
+            return (mNativePage.isFrozen() || mIsDetachedFromActivity)
+                    ? null
+                    : mNativePage.getView();
+        }
 
         return mContentView;
     }
@@ -691,13 +709,31 @@ class TabImpl implements Tab, TabInternal {
 
     @Override
     public void freezeNativePage() {
-        if (mNativePage == null
-                || mNativePage.isFrozen()
-                || assumeNonNull(mNativePage.getView()).getParent() != null) {
+        if (mNativePage == null || mNativePage.isFrozen()) {
             return;
+        }
+        View view = mNativePage.getView();
+        if (view == null || view.getParent() != null) {
+            return;
+        }
+        view.removeOnAttachStateChangeListener(mAttachStateChangeListener);
+        if (mNativePageSmoothTransitionDelegate != null) {
+            mNativePageSmoothTransitionDelegate.cancel();
+            mNativePageSmoothTransitionDelegate = null;
         }
         mNativePage = FrozenNativePage.freeze(mNativePage);
         updateInteractableState();
+    }
+
+    private void detachAndFreezeNativePage() {
+        if (mNativePage == null || mNativePage.isFrozen()) {
+            return;
+        }
+        View view = mNativePage.getView();
+        if (view != null) {
+            UiUtils.removeViewFromParent(view);
+        }
+        freezeNativePage();
     }
 
     @Override
@@ -3463,6 +3499,10 @@ class TabImpl implements Tab, TabInternal {
 
     boolean isContentViewDeferredForTesting() {
         return mIsContentViewDeferred;
+    }
+
+    OnAttachStateChangeListener getAttachStateChangeListenerForTesting() {
+        return mAttachStateChangeListener;
     }
 
     @NativeMethods

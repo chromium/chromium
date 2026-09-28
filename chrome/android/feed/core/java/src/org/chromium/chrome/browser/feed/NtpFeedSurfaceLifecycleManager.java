@@ -61,6 +61,8 @@ public class NtpFeedSurfaceLifecycleManager extends FeedSurfaceLifecycleManager 
                     public void onInteractabilityChanged(Tab tab, boolean isInteractable) {
                         if (isInteractable) {
                             show();
+                        } else if (tab.isDetachedFromActivity()) {
+                            hide();
                         }
                     }
 
