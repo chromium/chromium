@@ -6687,7 +6687,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
               return '';
             }
             return pinned.getActions().map(el => {
-              let name = el.isDivider() ? '<divider>' : el.getItemId();
+              let name = el.isDivider ? '<divider>' : el.getItemId();
               if (!el.checkVisibility()) {
                 name = '!' + name;
               }

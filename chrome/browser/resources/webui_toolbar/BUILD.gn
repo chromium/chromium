@@ -53,6 +53,7 @@ build_webui("build") {
     "media_button.ts",
     "metrics_recorder.ts",
     "overflowable_toolbar_action_container_mixin.ts",
+    "overflowable_toolbar_action_mixin.ts",
     "overflowable_button.ts",
     "overflow_button.ts",
     "overflow_button.html.ts",

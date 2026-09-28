@@ -11,7 +11,7 @@ import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.m
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
-import type {OverflowableToolbarAction} from './overflowable_toolbar_action_container_mixin.js';
+import type {OverflowableToolbarActionElement} from './overflowable_toolbar_action_mixin.js';
 import {getHtml} from './pinned_toolbar_actions.html.js';
 import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
@@ -61,9 +61,9 @@ export class PinnedToolbarActionsElement extends
         s => s.key === PinnedToolbarAction.kDivider.toString());
   }
 
-  override getActions(): Array<CrLitElement&OverflowableToolbarAction> {
+  override getActions(): OverflowableToolbarActionElement[] {
     return Array.from(this.shadowRoot.children) as
-        Array<CrLitElement&OverflowableToolbarAction>;
+        OverflowableToolbarActionElement[];
   }
 
   // ToolbarActionContainerMixin override

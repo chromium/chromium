@@ -93,7 +93,9 @@ import type {KeyedActionState, ToolbarActionContainerMixinInterface} from './too
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarActionMixinInterface} from './toolbar_action_mixin.js';
 import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
-import type {OverflowableToolbarAction, OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
+import type {OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
+import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
+import type {OverflowableToolbarActionElement, OverflowableToolbarActionMixinInterface} from './overflowable_toolbar_action_mixin.js';
 import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
@@ -149,6 +151,7 @@ export {
   ReadonlyOmniboxElement,
   resetInitialStateForTesting,
   OverflowableToolbarActionContainerMixin,
+  OverflowableToolbarActionMixin,
   SecurityChipRole,
   shouldSkipNextClick,
   ToolbarActionContainerMixin,
@@ -171,8 +174,9 @@ export type {
   NavigationControlsStateListener,
   NavigationControlsStateListenerHandle,
   OmniboxAction,
-  OverflowableToolbarAction,
   OverflowableToolbarActionContainer,
+  OverflowableToolbarActionElement,
+  OverflowableToolbarActionMixinInterface,
   PageActionState,
   PermissionChipState,
   PermissionDashboardElement,
