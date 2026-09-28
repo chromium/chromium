@@ -2649,8 +2649,12 @@ ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
 void ChromeContentBrowserClient::WillComputeSiteForNavigation(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  if (!site_isolation::SiteIsolationPolicy::
-          IsOriginIsolationForJsOptExceptionsEnabled(browser_context)) {
+  const bool isolate_js_opt = site_isolation::SiteIsolationPolicy::
+      IsOriginIsolationForJsOptExceptionsEnabled(browser_context);
+  const bool isolate_jitless = site_isolation::SiteIsolationPolicy::
+      IsOriginIsolationForJitlessExceptionsEnabled(browser_context);
+
+  if (!isolate_js_opt && !isolate_jitless) {
     return;
   }
 
@@ -2660,28 +2664,37 @@ void ChromeContentBrowserClient::WillComputeSiteForNavigation(
     return;
   }
 
-  // If the JS optimizer policy for this `url`'s origin differs from the default
-  // JS optimizer policy, then the url needs to be put into its own process
-  // (otherwise it will have the default JS setting applied). This lets JS
-  // optimizer policy rules be applied to URLs on clients that have partial site
-  // isolation (like Android). This also improves JS optimizer rules handling on
-  // clients where subdomains of a site are not isolated. For example, if a.com
-  // has site isolation, but sub.a.com needs a different rule (More information
-  // at: crbug.com/377733397). Note that this will cause explicit opt-outs using
-  // the Origin-Agent-Cluster header to be ignored. Note that it is safe to do
-  // this multiple times for the same origin because AddFutureIsolatedOrigins
-  // should drop requests to isolate an origin that is already isolated.
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
   if (!map) {
     return;
   }
 
-  if (map->GetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
-                                    nullptr) !=
-      map->GetContentSetting(url, url,
-                             ContentSettingsType::JAVASCRIPT_OPTIMIZER)) {
-    url::Origin origin(url::Origin::Create(url));
+  auto has_setting_exception = [map, &url](ContentSettingsType type) {
+    return map->GetDefaultContentSetting(type, nullptr) !=
+           map->GetContentSetting(url, url, type);
+  };
+
+  // If the JS optimizer or JIT policy for this `url`'s origin differs from the
+  // default policy, then the url needs to be put into its own process
+  // (otherwise it will have the default setting applied). This lets policy
+  // rules be applied to URLs on clients that have partial site isolation (like
+  // Android). This also improves policy rules handling on clients where
+  // subdomains of a site are not isolated. For example, if a.com has site
+  // isolation, but sub.a.com needs a different rule (More information at:
+  // crbug.com/377733397). Note that this will cause explicit opt-outs using the
+  // Origin-Agent-Cluster header to be ignored. Note that it is safe to do this
+  // multiple times for the same origin because AddFutureIsolatedOrigins should
+  // drop requests to isolate an origin that is already isolated. Also note
+  // that the isolation only takes effect in BrowsingInstances created after
+  // this call, so it does not apply to the navigation that triggers it, nor
+  // to any other existing BrowsingInstances; those keep sharing a process with
+  // the origin's site until a new BrowsingInstance is created.
+  if ((isolate_js_opt &&
+       has_setting_exception(ContentSettingsType::JAVASCRIPT_OPTIMIZER)) ||
+      (isolate_jitless &&
+       has_setting_exception(ContentSettingsType::JAVASCRIPT_JIT))) {
+    url::Origin origin = url::Origin::Create(url);
     content::ChildProcessSecurityPolicy* policy =
         content::ChildProcessSecurityPolicy::GetInstance();
     // The user added a content setting rule and then navigated, so specify the

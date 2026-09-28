@@ -193,6 +193,23 @@ bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
 }
 
 // static
+bool SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+    content::BrowserContext* browser_context) {
+  if (content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser_context)) {
+    // Origin isolation for Jitless exceptions isn't needed if
+    // origin isolation is enabled for everything, much like JS optimizer
+    // exceptions.
+    return false;
+  }
+  // Dynamic origin isolation is required for this to work.
+  return content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+         base::FeatureList::IsEnabled(
+             site_isolation::features::kOriginIsolationForJitlessExceptions);
+}
+
+// static
 bool SiteIsolationPolicy::IsOriginIsolationForJsOptExceptionsEnabled(
     content::BrowserContext* browser_context) {
   if (content::SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||

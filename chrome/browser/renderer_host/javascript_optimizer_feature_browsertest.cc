@@ -420,12 +420,28 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
 }
 
-// Test that if there's a rule for a.com that differs from the default, then the
-// user can't specify a rule for sub.a.com that contradicts that rule.
-// TODO(crbug.com/413695645): Make it possible for users to specify overrides so
-// that sub.a.com's behavior can differ from a.com's behavior.
+// Tests how non-default rules for a site (e.g., a.com) inherit to sub-sites
+// (e.g., sub.a.com) when the rules contradict each other. Which rule applies
+// depends on the process sub.a.com lands in:
+//
+// - Under full site isolation, or under partial site isolation once a.com has
+//   been dynamically isolated, sub.a.com shares a.com's site-keyed process and
+//   inherits a.com's rule.
+//   TODO(crbug.com/413695645): Make it possible for users to specify overrides
+//   so that sub.a.com's behavior can differ from a.com's even under site
+//   isolation.
+//
+// - Under origin-keyed processes by default, sub.a.com gets its own
+//   origin-keyed process and follows its own rule.
+//
+// - Under partial site isolation before a.com is dynamically isolated,
+//   sub.a.com would share a process with a.com, but that process hosts the
+//   BrowsingInstance's default SiteInstanceGroup rather than being locked to
+//   a.com. Since such a process may host any unisolated site, its policy scope
+//   URL is empty and the global default rule applies instead of either site's
+//   rule.
 IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
-                       ExceptionForSiteAppliesToSubSiteButCannotBeOverridden) {
+                       SubSiteRuleInheritanceBehavior) {
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
@@ -441,7 +457,9 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
       ContentSettingsType::JAVASCRIPT_OPTIMIZER,
       ContentSetting::CONTENT_SETTING_BLOCK);
 
-  // Since this exception matches the default, it will not be isolated.
+  // First navigation to sub.a.com. Its custom policy (ALLOW) matches the
+  // default, so it is not proactively isolated. Additionally, a.com has not
+  // been visited yet, so a.com is not dynamically isolated either.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("sub.a.com", "/simple.html")));
@@ -451,48 +469,50 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBrowserTest,
       content::ChildProcessSecurityPolicy::IsolatedOriginSource::
           USER_TRIGGERED));
 
-  if (content::AreStrictSiteInstancesEnabled() &&
+  if (content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
       !content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
           profile())) {
-    // if a.com is isolated already (as is the case with full site isolation)
-    // or if DefaultSiteInstanceGroups are enabled, and origin isolation is not
-    // used, the navigation to sub.a.com will be made in a SiteInstance with a
-    // "a.com" site URL, which will match a.com BLOCK rule.
+    // Full site isolation: sub.a.com is given a dedicated process for site
+    // https://a.com/. The policy scope URL is https://a.com/, which matches
+    // a.com's BLOCK rule.
     EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   } else {
-    // If nothing is isolated by default (like on Android), we'll navigate in a
-    // default SiteInstance which won't match that rule and will instead
-    // retrieve the default rule. TODO(crbug.com/413695645): make it possible
-    // for users to specify overrides so that sub.a.com's behavior can differ
-    // from a.com's behavior.
+    // Origin-keyed processes by default: sub.a.com gets an origin-keyed
+    // process, matching its own ALLOW rule.
+    //
+    // Partial site isolation: sub.a.com joins the default SiteInstanceGroup,
+    // which an unisolated a.com would share as well. Its scope URL evaluates
+    // to empty, matching the global ALLOW rule.
     EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
   }
 
+  // Unless origin-keyed processes are enabled by default, navigating to a.com
+  // dynamically isolates the origin https://a.com/ for the remainder of the
+  // session due to its non-default BLOCK rule.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("a.com", "/simple.html")));
 
   EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
 
-  // Navigate back to sub.a.com, and we would like for js-opt to be enabled, but
-  // they are disabled instead, because url provided to
-  // AreV8OptimizationsDisabledForSite is a.com, which matches the block rule.
-  // Ideally we'd be able to specify rules here, but to do that we need to pass
-  // in the origin instead of the site. Currently, the site is passed because
-  // sub.a.com is not origin isolated. TODO(crbug.com/413695645): Make it
-  // possible for users to specify overrides so that sub.a.com's behavior can
-  // differ from a.com's behavior.
+  // Second navigation to sub.a.com.
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_https_test_server().GetURL("sub.a.com", "/simple.html")));
+
   if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
           profile())) {
-    // Under origin isolation, the rule won't match sub.a.com, so optimizers
-    // remain enabled.
+    // Origin-keyed processes by default: sub.a.com remains in its own
+    // origin-keyed process, avoiding a.com's restriction and matching its
+    // ALLOW rule.
     EXPECT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
   } else {
-    // Under site isolation, sub.a.com will be evaluated as a.com so the rule
-    // will match.
+    // Full site isolation and partial site isolation: Because https://a.com/
+    // is now dynamically isolated, sub.a.com is forced into a dedicated process
+    // for https://a.com/. The policy scope URL evaluates to https://a.com/,
+    // overriding its own ALLOW rule.
+    // TODO(crbug.com/413695645): Make it possible to specify origin-based
+    // overrides so sub.a.com's behavior can differ from a.com's.
     EXPECT_TRUE(AreV8OptimizationsDisabledOnActiveWebContents());
   }
 }

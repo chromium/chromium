@@ -143,17 +143,31 @@ bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
 }
 
 // Computes whether to disable v8-optimization for the
-// (browsing_instance_id, process_lock_origin) pair.
+// (browsing_instance_id, process_lock_origin) pair, where process_lock_origin
+// is the default site URL's origin for documents that can share the default
+// SiteInstanceGroup, and `process_lock_url`'s origin otherwise.
 bool CheckShouldDisableV8Optimization(
     BrowserContext* browser_context,
     const BrowsingInstanceId& browsing_instance_id,
     const std::optional<base::SafeRef<ProcessSelectionUserData>>&
         process_selection_user_data,
     const GURL& process_lock_url) {
+  // `process_lock_url` is empty for documents that will share the default
+  // SiteInstanceGroup: they all use the BrowsingInstance's default policy
+  // rather than a site-specific exception, so they share one cache entry,
+  // keyed by the default site URL. Note we can't key off the document's own
+  // origin here: a same-origin document that *does* get a dedicated process
+  // (e.g. via DocumentIsolationPolicy) computes its value from a different
+  // policy scope and must not share this entry. We also can't key off the
+  // empty URL, since that produces an opaque origin that never matches.
+  const url::Origin cache_origin = url::Origin::Create(
+      process_lock_url.is_empty() ? SiteInstanceImpl::GetDefaultSiteURL()
+                                  : process_lock_url);
+
   std::optional<bool> are_v8_optimizations_disabled_result =
       ChildProcessSecurityPolicyImpl::GetInstance()
-          ->LookupAreV8OptimizationsDisabled(
-              browsing_instance_id, url::Origin::Create(process_lock_url));
+          ->LookupAreV8OptimizationsDisabled(browsing_instance_id,
+                                             cache_origin);
   if (are_v8_optimizations_disabled_result.has_value()) {
     return are_v8_optimizations_disabled_result.value();
   }
@@ -209,7 +223,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       browser_context, GURL());
   bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(), std::nullopt,
-      GURL());
+      /*process_lock_url=*/GURL());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
@@ -320,13 +334,19 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
               !RequiresDedicatedProcessInternal(
                   site_url, isolation_context, browser_context,
                   url_info.requests_coop_isolation(),
-                  !url_info.oac_header_request.has_value(),
-                  url_info.is_sandboxed, url_info.embedder_isolation_info,
+                  agent_cluster_key.IsOriginKeyed(), url_info.is_sandboxed,
+                  url_info.embedder_isolation_info,
                   url_info.cross_origin_isolation_key.has_value() &&
                       url_info.cross_origin_isolation_key
                           ->cross_origin_isolated_through_dip)
           ? GURL()
           : agent_cluster_key.GetURL();
+  // TODO(crbug.com/559676326): JIT policy does not currently have a
+  // per-BrowsingInstance state cache in ChildProcessSecurityPolicyImpl like V8
+  // optimization does. If dynamic user settings are ever added for JIT,
+  // same-origin window.open popups could mismatch the opener process if the
+  // policy changes mid-session. Consider unifying JIT and V8 optimization
+  // state caching.
   is_jitless =
       is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
                         browser_context, agent_cluster_url_or_default);

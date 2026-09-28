@@ -217,6 +217,79 @@ TEST_F(OriginIsolationForJsOptExceptionsLowMemoryTest,
 }
 #endif
 
+class OriginIsolationForJitlessExceptionsTest : public BaseSiteIsolationTest {};
+
+TEST_F(OriginIsolationForJitlessExceptionsTest,
+       ReturnsFalseWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      site_isolation::features::kOriginIsolationForJitlessExceptions);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+          nullptr));
+}
+
+TEST_F(OriginIsolationForJitlessExceptionsTest, ReturnsTrueWhenEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      site_isolation::features::kOriginIsolationForJitlessExceptions);
+  EXPECT_EQ(content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled(),
+            SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+                nullptr));
+}
+
+TEST_F(OriginIsolationForJitlessExceptionsTest,
+       ReturnsFalseWhenStrictOriginIsolationEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {site_isolation::features::kOriginIsolationForJitlessExceptions,
+       ::features::kStrictOriginIsolation},
+      {});
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+          nullptr));
+}
+
+TEST_F(OriginIsolationForJitlessExceptionsTest,
+       ReturnsFalseWhenOriginKeyedProcessesEnabledByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {site_isolation::features::kOriginIsolationForJitlessExceptions,
+       ::features::kOriginKeyedProcessesByDefault},
+      {::features::kStrictOriginIsolation});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kSitePerProcess);
+  SetEnableStrictSiteIsolation(true);
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+          nullptr));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+class OriginIsolationForJitlessExceptionsLowMemoryTest
+    : public OriginIsolationForJitlessExceptionsTest {
+ public:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableLowEndDeviceMode);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSitePerProcess);
+    OriginIsolationForJitlessExceptionsTest::SetUp();
+  }
+};
+
+TEST_F(OriginIsolationForJitlessExceptionsLowMemoryTest,
+       ReturnsFalseOnLowMemoryDevice) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {site_isolation::features::kOriginIsolationForJitlessExceptions},
+      {::features::kStrictOriginIsolation,
+       ::features::kOriginKeyedProcessesByDefault});
+  EXPECT_FALSE(
+      SiteIsolationPolicy::IsOriginIsolationForJitlessExceptionsEnabled(
+          nullptr));
+}
+#endif
 // Tests with OriginKeyedProcessesByDefault enabled.
 class OriginKeyedProcessesByDefaultSiteIsolationPolicyTest
     : public BaseSiteIsolationTest {

@@ -88,6 +88,16 @@ BASE_FEATURE(kIsolateOriginsShortlist,
              "IsolateOriginsShortlistPolicyUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// In order to have broader support for JITless policy exceptions, we'll apply
+// origin isolation on navigation for URLs that match rules in the
+// JAVASCRIPT_JIT content setting that don't match the default setting. This
+// mirrors kOriginIsolationForJsOptExceptions below, and ensures per-origin
+// JITless policies take effect even on platforms with partial site isolation.
+// Disabling this restores the previous behavior, where such origins could join
+// the default SiteInstanceGroup and fall back to the default JIT policy.
+BASE_FEATURE(kOriginIsolationForJitlessExceptions,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // In order to have broader support for JavaScript optimizer exceptions, we'll
 // apply origin isolation on navigation for URLs that match rules in the
 // JAVASCRIPT_OPTIMIZER content setting that don't match the default setting.

@@ -6,12 +6,14 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -159,14 +161,26 @@ IN_PROC_BROWSER_TEST_P(JITPolicyTest, JitDomainTest) {
       "foo.com", "bar.com",
       /*expect_jit_disabled=*/expected_result_for_default);
 
-  // Here there is an invalid policy as the JavaScript JIT policies only support
-  // eTLD+1 as origin.
+  // Navigating to foo.com evaluates to the default policy because foo.com
+  // does not match the rule scoped to subdomain.foo.com.
   ExpectThatPolicyDisablesJitOnUrl(
       "subdomain.foo.com", "foo.com",
       /*expect_jit_disabled=*/expected_result_for_default);
+  // On standard desktop, dynamic origin isolation isolates subdomain.foo.com,
+  // allowing the subdomain rule to match. However, when origin-keyed processes
+  // are enabled by default (e.g., on linux-oi-rel), dynamic origin isolation
+  // for JIT exceptions is disabled. Because embedded_test_server() runs over
+  // HTTP and OriginKeyedProcessesByDefault only isolates HTTPS origins,
+  // subdomain.foo.com is not origin-isolated and shares foo.com's site process,
+  // falling back to the default policy.
+  bool expected_result_for_subdomain =
+      content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
+          browser()->GetProfile())
+          ? expected_result_for_default
+          : true;
   ExpectThatPolicyDisablesJitOnUrl(
       "subdomain.foo.com", "subdomain.foo.com",
-      /*expect_jit_disabled=*/expected_result_for_default);
+      /*expect_jit_disabled=*/expected_result_for_subdomain);
 }
 
 INSTANTIATE_TEST_SUITE_P(DefaultDisabled,

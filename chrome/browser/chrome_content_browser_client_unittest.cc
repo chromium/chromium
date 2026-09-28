@@ -82,6 +82,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/site_isolation/features.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "components/webui/chrome_urls/pref_names.h"
@@ -2263,6 +2264,12 @@ TEST_F(WillComputeSiteForNavigationTest,
       {site_isolation::features::kOriginIsolationForJsOptExceptions},
       {features::kOriginKeyedProcessesByDefault});
 
+  if (!site_isolation::SiteIsolationPolicy::
+          IsOriginIsolationForJsOptExceptionsEnabled(&profile_)) {
+    GTEST_SKIP()
+        << "Skipping test since JS Opt origin isolation is not enabled.";
+  }
+
   const GURL url("http://allowed.test");
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
@@ -2271,6 +2278,32 @@ TEST_F(WillComputeSiteForNavigationTest,
   map->SetContentSettingDefaultScope(url, url,
                                      ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+  EXPECT_TRUE(IsOriginIsolatedByUser(url));
+}
+
+TEST_F(WillComputeSiteForNavigationTest,
+       IsolatesSitesThatHaveAJitlessException) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kOriginKeyedProcessesByDefault,
+           features::kStrictOriginIsolation});
+
+  if (!site_isolation::SiteIsolationPolicy::
+          IsOriginIsolationForJitlessExceptionsEnabled(&profile_)) {
+    GTEST_SKIP()
+        << "Skipping test since Jitless origin isolation is not enabled.";
+  }
+
+  const GURL url("http://blocked.test");
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_JIT,
+                                ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_JIT,
+                                     ContentSetting::CONTENT_SETTING_BLOCK);
 
   browser_client_.WillComputeSiteForNavigation(&profile_, url);
   EXPECT_TRUE(IsOriginIsolatedByUser(url));
@@ -2310,6 +2343,27 @@ TEST_F(WillComputeSiteForNavigationTest,
   EXPECT_FALSE(IsOriginIsolatedByUser(url));
 }
 
+// A site with an explicit JIT rule that agrees with the default is not
+// isolated: WillComputeSiteForNavigation() compares the effective setting
+// against the default, so such a rule is indistinguishable from no rule.
+// TODO(crbug.com/413695645): once the rules can be enumerated, origins named
+// explicitly may start being isolated.
+TEST_F(WillComputeSiteForNavigationTest,
+       IgnoresSitesWhoseJitRuleMatchesTheDefault) {
+  const GURL url("http://allowed.test");
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_JIT,
+                                ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_JIT,
+                                     ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+
+  EXPECT_FALSE(IsOriginIsolatedByUser(url));
+}
+
 TEST_F(WillComputeSiteForNavigationTest,
        WhenStrictOriginIsolationIsEnabledDoesNotIsolateUrl) {
   // WillComputeSiteForNavigation should not do any work if
@@ -2326,6 +2380,28 @@ TEST_F(WillComputeSiteForNavigationTest,
   map->SetContentSettingDefaultScope(url, url,
                                      ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  browser_client_.WillComputeSiteForNavigation(&profile_, url);
+  // Check that the URL is not isolated.
+  EXPECT_FALSE(IsOriginIsolatedByUser(url));
+}
+
+TEST_F(WillComputeSiteForNavigationTest,
+       WhenStrictOriginIsolationIsEnabledDoesNotIsolateUrlForJitless) {
+  // WillComputeSiteForNavigation should not do any work if
+  // StrictOriginIsolation is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kStrictOriginIsolation);
+
+  const GURL url("http://blocked-but-wont-be-isolated-by-feature.test");
+
+  // Create the exception.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile_);
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_JIT,
+                                ContentSetting::CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(url, url,
+                                     ContentSettingsType::JAVASCRIPT_JIT,
+                                     ContentSetting::CONTENT_SETTING_BLOCK);
 
   browser_client_.WillComputeSiteForNavigation(&profile_, url);
   // Check that the URL is not isolated.

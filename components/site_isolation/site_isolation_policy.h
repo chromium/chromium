@@ -42,6 +42,11 @@ class SiteIsolationPolicy {
   static bool IsIsolationForOAuthSitesEnabled();
 
   // Returns true if the isolation mode for isolating origins that match
+  // Jitless policy exceptions is enabled.
+  static bool IsOriginIsolationForJitlessExceptionsEnabled(
+      content::BrowserContext* browser_context);
+
+  // Returns true if the isolation mode for isolating origins that match
   // JavaScript optimizer exceptions is enabled. This is different than
   // IsOriginIsolationForJsOptExceptionsSupported() because
   // IsOriginIsolationForJsOptExceptionsEnabled() returns false if the
