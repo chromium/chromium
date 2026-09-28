@@ -16818,6 +16818,25 @@
             ]
         }
     ],
+    "ShareEventArgsOnDispatch": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShareEventArgsOnDispatch"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedHighlightingIphClank": [
         {
             "platforms": [
