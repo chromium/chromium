@@ -30,12 +30,10 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -170,30 +168,6 @@ class TestWebUIConfig
  public:
   TestWebUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme, kTestWebViewHost) {}
-};
-
-class UntrustedWebUIController : public TestWebUIControllerBase {
- public:
-  explicit UntrustedWebUIController(content::WebUI* web_ui)
-      : TestWebUIControllerBase(web_ui,
-                                chrome::kChromeUILensUntrustedSidePanelURL,
-                                "script-src chrome-untrusted://webui-test;") {
-    web_ui->SetBindings(content::BindingsPolicySet({}));
-  }
-
-  WEB_UI_CONTROLLER_TYPE_DECL();
-};
-
-WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedWebUIController)
-
-class UntrustedWebUIConfig
-    : public content::DefaultWebUIConfig<UntrustedWebUIController> {
- public:
-  UntrustedWebUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
-                           // Lens is currently the only chrome-untrusted://
-                           // page with webview permission.
-                           chrome::kChromeUILensSidePanelHost) {}
 };
 
 }  // namespace
@@ -531,68 +505,6 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ContextMenuInspectElement) {
       browser()->tab_strip_model()->GetActiveWebContents();
   TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(), params);
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
-}
-
-class UntrustedWebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
- public:
-  UntrustedWebUIWebViewBrowserTest() = default;
-
-  void SetUpOnMainThread() override {
-    base::FilePath test_data_dir;
-    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
-    embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    web_ui_config_registration_ =
-        std::make_unique<content::ScopedWebUIConfigRegistration>(
-            std::make_unique<UntrustedWebUIConfig>());
-    set_test_loader_scheme(content::kChromeUIUntrustedScheme);
-    set_test_loader_host(chrome::kChromeUILensSidePanelHost);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(chrome::kChromeUILensUntrustedSidePanelURL)));
-    WebUIMochaBrowserTest::SetUpOnMainThread();
-  }
-
-  GURL GetTestUrl(const std::string& path) const {
-    return embedded_test_server()->base_url().Resolve(path);
-  }
-
-  content::WebContents* GetWebContentsForTesting() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  std::unique_ptr<content::ScopedWebUIConfigRegistration>
-      web_ui_config_registration_;
-};
-
-IN_PROC_BROWSER_TEST_F(UntrustedWebUIWebViewBrowserTest, BannedApisThrow) {
-  ASSERT_TRUE(RunTestOnWebContents(GetWebContentsForTesting(),
-                                   "webview/webview_untrusted_test.js",
-                                   "runMochaTest('WebviewUntrustedBasicTest', "
-                                   "'BannedApisThrowInUntrusted')",
-                                   true));
-}
-
-IN_PROC_BROWSER_TEST_F(UntrustedWebUIWebViewBrowserTest,
-                       PermissionRequestAutoDeny) {
-  EXPECT_TRUE(RunTestOnWebContents(
-      GetWebContentsForTesting(), "webview/webview_untrusted_test.js",
-      base::StringPrintf("window.downloadUrl = '%s'; "
-                         "runMochaTest('WebviewUntrustedBasicTest', "
-                         "'PermissionRequestAutoDenyInUntrusted');",
-                         GetTestUrl("download-test3.gif").spec().c_str()),
-      true));
-
-  content::DownloadManager::DownloadVector downloads;
-  browser()->GetProfile()->GetDownloadManager()->GetAllDownloads(&downloads);
-  EXPECT_TRUE(downloads.empty());
-  // If the test fails and a download was started, cancel it so that an
-  // in-progress download prompt does not block browser shutdown during test
-  // teardown.
-  for (download::DownloadItem* download : downloads) {
-    download->Cancel(false);
-  }
 }
 
 #endif  // !BUILDFLAG(IS_MAC)

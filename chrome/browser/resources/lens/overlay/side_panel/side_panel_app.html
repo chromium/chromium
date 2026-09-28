@@ -658,17 +658,8 @@
   allow="cross-origin-isolated; display-capture; geolocation; microphone;
            clipboard-read; clipboard-write;"
   frameborder="0"
-  hidden$="[[enableWebviewResults]]"
 >
 </iframe>
-<webview
-  name="resultsWebview"
-  id="resultsWebview"
-  class="results results-pane"
-  partition="persist:lenspart"
-  hidden$="[[!enableWebviewResults]]"
->
-</webview>
 
 <feedback-toast id="feedbackToast"></feedback-toast>
 

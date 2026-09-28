@@ -149,10 +149,6 @@ BASE_DECLARE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayForceEmptyCsbQuery);
 
-// Enables using a webview for the results frame instead of an iframe.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
-
 // Enables AIM suggestions in the composebox.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensAimSuggestions);
@@ -1055,11 +1051,6 @@ extern bool IsLensOverlayTextSelectionContextMenuEntrypointContextualized();
 // internal debugging only.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayForceEmptyCsbQueryEnabled();
-
-// Whether to use a webview for the results frame instead of an iframe.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSidePanelWebviewResultsEnabled();
-
 
 // Whether the feature to enable the special handling for video citations is
 // enabled.

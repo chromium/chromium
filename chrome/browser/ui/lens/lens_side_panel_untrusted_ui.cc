@@ -92,9 +92,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableSummarizeSuggestionHint",
       lens::features::ShouldEnableSummarizeHintForContextualSuggest());
-  html_source->AddBoolean(
-      "enableWebviewResults",
-      lens::features::IsLensSidePanelWebviewResultsEnabled());
   html_source->AddBoolean("enableLensAimSuggestions",
                           lens::features::GetAimSuggestionsEnabled());
   html_source->AddBoolean(

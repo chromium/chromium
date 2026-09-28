@@ -107,9 +107,6 @@ BASE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint,
 
 BASE_FEATURE(kLensOverlayForceEmptyCsbQuery, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensSidePanelEnableWebviewResults,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensAimSuggestionsGradientBackground,
@@ -1259,11 +1256,6 @@ bool IsLensOverlayTextSelectionContextMenuEntrypointContextualized() {
 bool IsLensOverlayForceEmptyCsbQueryEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayForceEmptyCsbQuery);
 }
-
-bool IsLensSidePanelWebviewResultsEnabled() {
-  return base::FeatureList::IsEnabled(kLensSidePanelEnableWebviewResults);
-}
-
 
 bool IsLensVideoCitationsEnabled() {
   return base::FeatureList::IsEnabled(kLensVideoCitations);
