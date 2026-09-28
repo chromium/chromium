@@ -48,6 +48,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPrompt.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptController.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionContent.java",
+    "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionMediator.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionProperties.java",
     "java/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionView.java",
@@ -181,6 +182,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
@@ -342,6 +344,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/AutofillThirdPartyModeContentProviderTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionCoordinatorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSourceAttributionViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/autofill_ai/EntityDataManagerTest.java",
