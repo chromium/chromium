@@ -112,6 +112,7 @@ BASE_FEATURE(kLateFeature, FEATURE_DISABLED_BY_DEFAULT);
 
 // Features for testing runtime mutable features.
 BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutableFeature3Args,
+                             "RuntimeMutableFeature3ArgsCustomName",
                              FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutableFeature,
@@ -1381,7 +1382,8 @@ TEST_F(FeatureListTest, RuntimeMutableFeatureDefine) {
   EXPECT_TRUE(kRuntimeMutableFeature3Args.IsRuntimeMutable());
   EXPECT_FALSE(feature_list->IsRuntimeMutabilityEnabledForTesting(
       kRuntimeMutableFeature3Args));
-  EXPECT_STREQ("RuntimeMutableFeature3Args", kRuntimeMutableFeature3Args.name);
+  EXPECT_STREQ("RuntimeMutableFeature3ArgsCustomName",
+               kRuntimeMutableFeature3Args.name);
 }
 
 namespace {
