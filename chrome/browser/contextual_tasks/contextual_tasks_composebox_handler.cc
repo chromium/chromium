@@ -1267,9 +1267,12 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   if (was_delayed) {
-    OnContextUploadStatusChanged(
-        file_token, lens::MimeType::kUnknown,
-        contextual_search::ContextUploadStatus::kUploadExpired, std::nullopt);
+    // Delayed tabs are never uploaded, and this deletion was initiated by the
+    // WebUI, so there is no upload status to report back to the page. Doing so
+    // would surface a spurious upload error. Only refresh the input state.
+    if (input_state_model()) {
+      input_state_model()->OnContextChanged();
+    }
   }
 
   // Hide the underline for the tab if it was associated with the deleted
