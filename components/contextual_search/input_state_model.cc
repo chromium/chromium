@@ -358,6 +358,23 @@ void InputStateModel::PopulateConfig(const SearchboxConfig& config) {
   }
 }
 
+void InputStateModel::SetIdentityState(
+    bool is_signed_in,
+    bool browser_identity_matches_aim_identity) {
+  if (is_signed_in_ == is_signed_in &&
+      browser_identity_matches_aim_identity_ ==
+          browser_identity_matches_aim_identity) {
+    return;
+  }
+  is_signed_in_ = is_signed_in;
+  browser_identity_matches_aim_identity_ =
+      browser_identity_matches_aim_identity;
+
+  RebuildAllowedInputTypes();
+  updateDisabledState();
+  notifySubscribers();
+}
+
 bool InputStateModel::UpdateConfig(const SearchboxConfig& config) {
   if (!IsConfigPopulated(&config)) {
     return false;
@@ -622,15 +639,19 @@ void InputStateModel::SetPermanentlyDisabledInputTypes(
 
 void InputStateModel::TogglePermanentlyDisabledInputType(InputType input_type,
                                                          bool disabled) {
+  bool changed = false;
   if (disabled) {
     if (!std::ranges::contains(permanently_disabled_input_types_, input_type)) {
       permanently_disabled_input_types_.push_back(input_type);
+      changed = true;
     }
   } else {
-    std::erase(permanently_disabled_input_types_, input_type);
+    changed = std::erase(permanently_disabled_input_types_, input_type) > 0;
   }
-  updateDisabledState();
-  notifySubscribers();
+  if (changed) {
+    updateDisabledState();
+    notifySubscribers();
+  }
 }
 
 void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
