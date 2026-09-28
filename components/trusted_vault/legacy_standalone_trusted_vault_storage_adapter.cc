@@ -147,21 +147,38 @@ void LegacyStandaloneTrustedVaultStorageAdapter::
   storage_->SetLastRegistrationReturnedLocalDataObsolete(gaia_id, obsolete);
 }
 
-const LocalDeviceRegistrationInfo&
-LegacyStandaloneTrustedVaultStorageAdapter::GetLocalDeviceRegistrationInfo(
+PhysicalDeviceRecoveryFactorData
+LegacyStandaloneTrustedVaultStorageAdapter::GetPhysicalDeviceRecoveryFactorData(
     const GaiaId& gaia_id) const {
   const UserVault* user_vault = storage_->FindUserVault(gaia_id);
   if (!user_vault) {
-    return LocalDeviceRegistrationInfo::default_instance();
+    return PhysicalDeviceRecoveryFactorData();
   }
-  return user_vault->local_device_registration_info();
+  PhysicalDeviceRecoveryFactorData data;
+  if (user_vault->local_device_registration_info().has_private_key_material()) {
+    data.set_private_key_material(
+        user_vault->local_device_registration_info().private_key_material());
+  }
+  return data;
 }
 
 void LegacyStandaloneTrustedVaultStorageAdapter::
-    MutateLocalDeviceRegistrationInfo(
+    MutatePhysicalDeviceRecoveryFactorData(
         const GaiaId& gaia_id,
-        base::FunctionRef<void(LocalDeviceRegistrationInfo&)> mutator) {
-  storage_->MutateLocalDeviceRegistrationInfo(gaia_id, mutator);
+        base::FunctionRef<void(PhysicalDeviceRecoveryFactorData&)> mutator) {
+  storage_->MutateLocalDeviceRegistrationInfo(
+      gaia_id, [&](LocalDeviceRegistrationInfo& info) {
+        PhysicalDeviceRecoveryFactorData data;
+        if (info.has_private_key_material()) {
+          data.set_private_key_material(info.private_key_material());
+        }
+        mutator(data);
+        if (data.has_private_key_material()) {
+          info.set_private_key_material(data.private_key_material());
+        } else {
+          info.clear_private_key_material();
+        }
+      });
 }
 
 std::vector<std::vector<uint8_t>>

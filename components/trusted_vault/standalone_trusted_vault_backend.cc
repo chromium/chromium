@@ -557,10 +557,10 @@ StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
 }
 
-trusted_vault_pb::LocalDeviceRegistrationInfo
-StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting(
+bool StandaloneTrustedVaultBackend::IsDeviceRegisteredForTesting(
     const GaiaId& gaia_id) {
-  return storage_->GetLocalDeviceRegistrationInfo(gaia_id);
+  return storage_->IsRecoveryFactorRegistered(
+      gaia_id, security_domain_id_, LocalRecoveryFactorType::kPhysicalDevice);
 }
 
 std::vector<uint8_t>

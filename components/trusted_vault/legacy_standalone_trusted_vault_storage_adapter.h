@@ -54,11 +54,12 @@ class LegacyStandaloneTrustedVaultStorageAdapter
                                                     bool obsolete) override;
 
   // PhysicalDeviceStorage implementation:
-  const LocalDeviceRegistrationInfo& GetLocalDeviceRegistrationInfo(
+  PhysicalDeviceRecoveryFactorData GetPhysicalDeviceRecoveryFactorData(
       const GaiaId& gaia_id) const override;
-  void MutateLocalDeviceRegistrationInfo(
+  void MutatePhysicalDeviceRecoveryFactorData(
       const GaiaId& gaia_id,
-      base::FunctionRef<void(LocalDeviceRegistrationInfo&)> mutator) override;
+      base::FunctionRef<void(PhysicalDeviceRecoveryFactorData&)> mutator)
+      override;
 
   // KeyStorage implementation:
   std::vector<std::vector<uint8_t>> GetVaultKeys(

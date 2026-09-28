@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
+#include "components/trusted_vault/proto/local_domains_data.pb.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -20,8 +21,8 @@ namespace trusted_vault {
 enum class LocalRecoveryFactorType;
 enum class SecurityDomainId;
 
-using LocalDeviceRegistrationInfo =
-    trusted_vault_pb::LocalDeviceRegistrationInfo;
+using PhysicalDeviceRecoveryFactorData =
+    trusted_vault_pb::PhysicalDeviceRecoveryFactorData;
 
 // Storage interface for local recovery factor registration state.
 class RecoveryFactorRegistrationStorage {
@@ -65,18 +66,17 @@ class PhysicalDeviceStorage {
  public:
   virtual ~PhysicalDeviceStorage() = default;
 
-  // Finds and returns a reference to the local device registration info for
-  // `gaia_id`.
+  // Finds and returns the physical device recovery factor data for `gaia_id`.
   // Returns a default instance if the user vault does not exist.
-  virtual const LocalDeviceRegistrationInfo& GetLocalDeviceRegistrationInfo(
+  virtual PhysicalDeviceRecoveryFactorData GetPhysicalDeviceRecoveryFactorData(
       const GaiaId& gaia_id) const = 0;
 
-  // Mutates the local device registration info for `gaia_id` and commits the
-  // changes to disk.
+  // Mutates the physical device recovery factor data for `gaia_id` and commits
+  // the changes to disk.
   // Creates the user vault if it does not exist.
-  virtual void MutateLocalDeviceRegistrationInfo(
+  virtual void MutatePhysicalDeviceRecoveryFactorData(
       const GaiaId& gaia_id,
-      base::FunctionRef<void(LocalDeviceRegistrationInfo&)> mutator) = 0;
+      base::FunctionRef<void(PhysicalDeviceRecoveryFactorData&)> mutator) = 0;
 };
 
 // Storage interface for managing vault keys across security domains.

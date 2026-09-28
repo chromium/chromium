@@ -84,11 +84,11 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(AttemptRecoveryCallback cb) {
     return;
   }
 
-  const LocalDeviceRegistrationInfo& registration_info =
-      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
+  const PhysicalDeviceRecoveryFactorData physical_device_data =
+      storage_->GetPhysicalDeviceRecoveryFactorData(primary_account_.gaia);
   std::unique_ptr<SecureBoxKeyPair> key_pair =
       SecureBoxKeyPair::CreateByPrivateKeyImport(
-          ProtoStringToBytes(registration_info.private_key_material()));
+          ProtoStringToBytes(physical_device_data.private_key_material()));
   if (!key_pair) {
     // Corrupted state: device is registered, but `key_pair` can't be imported.
     // TODO(crbug.com/40699425): restore from this state (throw away the key
@@ -159,13 +159,13 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
         kThrottledClientSide;
   }
 
-  const LocalDeviceRegistrationInfo& registration_info =
-      storage_->GetLocalDeviceRegistrationInfo(primary_account_.gaia);
+  const PhysicalDeviceRecoveryFactorData physical_device_data =
+      storage_->GetPhysicalDeviceRecoveryFactorData(primary_account_.gaia);
   std::unique_ptr<SecureBoxKeyPair> key_pair;
-  if (!registration_info.private_key_material().empty()) {
+  if (!physical_device_data.private_key_material().empty()) {
     key_pair = SecureBoxKeyPair::CreateByPrivateKeyImport(
         /*private_key_bytes=*/ProtoStringToBytes(
-            registration_info.private_key_material()));
+            physical_device_data.private_key_material()));
   }
 
   const bool had_generated_key_pair = key_pair != nullptr;
@@ -177,10 +177,10 @@ PhysicalDeviceRecoveryFactor::MaybeRegister(RegisterCallback cb) {
     // client or registration callback is cancelled). To avoid duplicated
     // registrations device key is stored before sending the registration
     // request, so the same key will be used for future registration attempts.
-    storage_->MutateLocalDeviceRegistrationInfo(
-        primary_account_.gaia, [&](LocalDeviceRegistrationInfo& info) {
+    storage_->MutatePhysicalDeviceRecoveryFactorData(
+        primary_account_.gaia, [&](PhysicalDeviceRecoveryFactorData& data) {
           AssignBytesToProtoString(key_pair->private_key().ExportToBytes(),
-                                   info.mutable_private_key_material());
+                                   data.mutable_private_key_material());
         });
   }
 

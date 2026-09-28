@@ -39,14 +39,6 @@ constexpr base::TaskTraits kBackendTaskTraits = {
     base::MayBlock(), base::TaskPriority::USER_VISIBLE,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
-void ReplyToIsDeviceRegisteredForTesting(  // IN-TEST
-    base::OnceCallback<void(bool)> is_device_registered_callback,
-    const trusted_vault_pb::LocalDeviceRegistrationInfo&
-        device_registration_info) {
-  std::move(is_device_registered_callback)
-      .Run(device_registration_info.device_registered());
-}
-
 class IdentityManagerObserver : public signin::IdentityManager::Observer {
  public:
   IdentityManagerObserver(
@@ -423,10 +415,9 @@ void StandaloneTrustedVaultClient::FetchIsDeviceRegisteredForTesting(
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          &StandaloneTrustedVaultBackend::GetDeviceRegistrationInfoForTesting,
+          &StandaloneTrustedVaultBackend::IsDeviceRegisteredForTesting,
           backend_, gaia_id),
-      base::BindOnce(&ReplyToIsDeviceRegisteredForTesting,
-                     std::move(callback)));
+      std::move(callback));
 }
 
 void StandaloneTrustedVaultClient::

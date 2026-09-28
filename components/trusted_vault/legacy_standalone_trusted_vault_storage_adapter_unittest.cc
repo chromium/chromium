@@ -242,9 +242,14 @@ TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest,
 }
 
 TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest,
-       ShouldGetAndMutateLocalDeviceRegistrationInfo) {
+       ShouldGetAndMutatePhysicalDeviceRecoveryFactorData) {
   const GaiaId kGaiaId("user1");
   const std::string kKeyMaterial = "test_key_pair";
+
+  // Default instance for non-existent user.
+  EXPECT_FALSE(adapter()
+                   ->GetPhysicalDeviceRecoveryFactorData(kGaiaId)
+                   .has_private_key_material());
 
   // Read verification.
   trusted_vault_pb::LocalTrustedVault initial_data;
@@ -256,15 +261,16 @@ TEST_F(LegacyStandaloneTrustedVaultStorageAdapterTest,
   file_access()->SetStoredLocalTrustedVault(initial_data);
   adapter()->ReadDataFromDisk();
 
-  EXPECT_EQ(
-      adapter()->GetLocalDeviceRegistrationInfo(kGaiaId).private_key_material(),
-      kKeyMaterial);
+  EXPECT_EQ(adapter()
+                ->GetPhysicalDeviceRecoveryFactorData(kGaiaId)
+                .private_key_material(),
+            kKeyMaterial);
 
   // Write / Mutate verification.
   const std::string kNewKeyMaterial = "mutated_key_pair";
-  adapter()->MutateLocalDeviceRegistrationInfo(
-      kGaiaId, [&](LocalDeviceRegistrationInfo& info) {
-        info.set_private_key_material(kNewKeyMaterial);
+  adapter()->MutatePhysicalDeviceRecoveryFactorData(
+      kGaiaId, [&](PhysicalDeviceRecoveryFactorData& data) {
+        data.set_private_key_material(kNewKeyMaterial);
       });
 
   trusted_vault_pb::LocalTrustedVault stored_data =

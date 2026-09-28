@@ -150,8 +150,7 @@ class StandaloneTrustedVaultBackend
 
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
-  trusted_vault_pb::LocalDeviceRegistrationInfo
-  GetDeviceRegistrationInfoForTesting(const GaiaId& gaia_id);
+  bool IsDeviceRegisteredForTesting(const GaiaId& gaia_id);
 
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
   int GetLastKeyVersionForTesting(const GaiaId& gaia_id);

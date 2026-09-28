@@ -16,7 +16,7 @@ import "local_trusted_vault.proto";
 
 // Physical device key pair details shared across ALL security domains for a
 // user.
-message SharedRecoveryFactorData {
+message PhysicalDeviceRecoveryFactorData {
   // Physical device key pair for this Chrome client.
   // Note: SecureBox encodes the public key of the key pair in the byte
   // representation of the private key, so storing the private key is
@@ -72,8 +72,8 @@ message UserDomainData {
   // Gaia ID string identifying the user account.
   optional bytes gaia_id = 1;
 
-  // Shared recovery factor identity (physical device key pair).
-  optional SharedRecoveryFactorData shared_recovery_factor_data = 2;
+  // Physical device recovery factor data (physical device key pair).
+  optional PhysicalDeviceRecoveryFactorData physical_device_data = 2;
 
   // Per-domain vault keys, domain membership statuses, and domain factor
   // states.
