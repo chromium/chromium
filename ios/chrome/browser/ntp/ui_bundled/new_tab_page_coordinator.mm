@@ -2209,6 +2209,20 @@
   _aimBubblePresenter = presenter;
 }
 
+// Returns `YES` if conditions to focus on Composebox are met.
+- (BOOL)canFocusComposebox {
+  if (!_aimEligibilityService->IsFuseboxEligible()) {
+    return NO;
+  }
+
+  if (ntp_tiles::GetAimButtonRefactorArm() !=
+      ntp_tiles::AimButtonRefactorArm::kFocusComposeboxAimQuickAction) {
+    return NO;
+  }
+
+  return YES;
+}
+
 #pragma mark - HomeCustomizationDelegate
 
 - (void)dismissCustomizationMenu {
@@ -2256,8 +2270,8 @@
 - (void)openAIM {
   RecordHomeAction(IOSHomeActionType::kQuickActionAIM, [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMButtonTapped];
-  if (!IsDisableComposeboxFromAIMNTPEnabled() &&
-      _aimEligibilityService->IsFuseboxEligible() &&
+
+  if ([self canFocusComposebox] &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
