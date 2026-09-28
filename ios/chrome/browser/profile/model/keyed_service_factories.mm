@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
@@ -472,6 +473,9 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   TextToSpeechPlaybackControllerFactory::GetInstance();
   TipsManagerIOSFactory::GetInstance();
   LanguageDetectionModelServiceFactory::GetInstance();
+  if (IsTTCEnabled()) {
+    TTCKeyedServiceFactory::GetInstance();
+  }
   TrustedVaultClientBackendFactory::GetInstance();
   UnifiedConsentServiceFactory::GetInstance();
   UnitConversionServiceFactory::GetInstance();

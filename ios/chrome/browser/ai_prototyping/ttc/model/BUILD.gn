@@ -19,9 +19,18 @@ source_set("model") {
     "ttc_audio_session_manager.h",
     "ttc_audio_session_manager.mm",
     "ttc_audio_session_manager_delegate.h",
+    "ttc_keyed_service.h",
+    "ttc_keyed_service.mm",
+    "ttc_keyed_service_factory.h",
+    "ttc_keyed_service_factory.mm",
+    "ttc_states.h",
   ]
   deps = [
     "//base",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/thread",
   ]
   frameworks = [
@@ -39,11 +48,15 @@ source_set("unit_tests") {
     "ttc_audio_player_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
     "ttc_audio_session_manager_unittest.mm",
+    "ttc_keyed_service_unittest.mm",
   ]
   deps = [
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
   ]
