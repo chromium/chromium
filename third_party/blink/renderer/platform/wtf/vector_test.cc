@@ -29,6 +29,7 @@
 #include <optional>
 #include <ranges>
 
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -865,8 +866,8 @@ TEST(VectorTest, MutationDuringIteration) {
   auto it = vector.begin();
   EXPECT_EQ(*it, 1);
   vector.push_back(4);
-  EXPECT_DEATH_IF_SUPPORTED([[maybe_unused]] int val = *it,
-                            "Vector modified while being iterated.");
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "Vector modified while being iterated.");
 }
 
 TEST(VectorTest, NoMutationDuringIteration) {
@@ -891,8 +892,8 @@ TEST(VectorTest, EraseDuringIteration) {
   auto it = vector.begin();
   EXPECT_EQ(*it, 1);
   vector.EraseAt(1);
-  EXPECT_DEATH_IF_SUPPORTED([[maybe_unused]] int val = *it,
-                            "Vector modified while being iterated.");
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "Vector modified while being iterated.");
 }
 #endif
 
