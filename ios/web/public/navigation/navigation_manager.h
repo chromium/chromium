@@ -170,8 +170,8 @@ class NavigationManager {
   // TODO(crbug.com/40528091): combine both Reload() implementations.
   virtual void ReloadWithUserAgentType(UserAgentType user_agent_type) = 0;
 
-  // Returns a list of all non-redirected NavigationItems whose index precedes
-  // or follows the current index.
+  // Returns the NavigationItems whose index precedes or follows the current
+  // index, ordered nearest first. The returned pointers are never null.
   virtual std::vector<NavigationItem*> GetBackwardItems() const = 0;
   virtual std::vector<NavigationItem*> GetForwardItems() const = 0;
 

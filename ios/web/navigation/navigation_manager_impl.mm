@@ -1150,19 +1150,37 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
 
 std::vector<NavigationItem*> NavigationManagerImpl::GetBackwardItems() const {
   std::vector<NavigationItem*> items;
-  int current_back_forward_item_index = web_view_cache_.GetCurrentItemIndex();
-  for (int index = current_back_forward_item_index - 1; index >= 0; index--) {
-    items.push_back(GetItemAtIndex(index));
+  // Consistent with `CanGoToOffset()` for the empty window open item.
+  if (empty_window_open_item_) {
+    return items;
   }
 
+  for (int index = web_view_cache_.GetCurrentItemIndex() - 1; index >= 0;
+       index--) {
+    NavigationItem* item = GetItemAtIndex(index);
+    if (!item) {
+      break;
+    }
+    items.push_back(item);
+  }
   return items;
 }
 
 std::vector<NavigationItem*> NavigationManagerImpl::GetForwardItems() const {
   std::vector<NavigationItem*> items;
+  // Consistent with `CanGoToOffset()` for the empty window open item.
+  if (empty_window_open_item_) {
+    return items;
+  }
+
+  const int item_count = GetItemCount();
   for (int index = web_view_cache_.GetCurrentItemIndex() + 1;
-       index < GetItemCount(); index++) {
-    items.push_back(GetItemAtIndex(index));
+       index < item_count; index++) {
+    NavigationItem* item = GetItemAtIndex(index);
+    if (!item) {
+      break;
+    }
+    items.push_back(item);
   }
   return items;
 }
