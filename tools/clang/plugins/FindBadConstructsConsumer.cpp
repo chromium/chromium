@@ -299,7 +299,9 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
     layout_visitor_->VisitLayoutObjectMethods(context);
   }
 
-  {
+  // This check needs to look at template instantiations, which is a second,
+  // slower traversal of the AST. Only do it if it could find something.
+  if (MayCallStdRangesPipeOperator(context)) {
     llvm::TimeTraceScope TimeScope(
         "CheckStdRangesPipeOperator in FindBadConstructsConsumer::Traverse");
     StdRangesPipeOperatorVisitor visitor(*this);
@@ -1424,6 +1426,39 @@ void FindBadConstructsConsumer::CheckConstructingSpanFromStringLiteral(
     ReportIfSpellingLocNotIgnored(loc, diag_span_from_string_literal_);
     ReportIfSpellingLocNotIgnored(loc, diag_note_span_from_string_literal1_);
   }
+}
+
+bool FindBadConstructsConsumer::MayCallStdRangesPipeOperator(
+    ASTContext& context) {
+  // A call that CheckStdRangesPipeOperator() reports has a callee: an
+  // `operator|` in std::ranges (or in an inline namespace in it) that is
+  // referenced, or a specialization of an `operator|` template there. Most
+  // translation units don't have any, even if they include <ranges>.
+  NamespaceDecl* std_namespace = instance().getSema().getStdNamespace();
+  if (!std_namespace) {
+    return false;
+  }
+  DeclarationName pipe_name =
+      context.DeclarationNames.getCXXOperatorName(OO_Pipe);
+  // lookup() also finds declarations in inline namespaces, and friends.
+  for (NamedDecl* ranges_decl :
+       std_namespace->lookup(&context.Idents.get("ranges"))) {
+    auto* ranges_namespace = dyn_cast<NamespaceDecl>(ranges_decl);
+    if (!ranges_namespace) {
+      continue;
+    }
+    for (NamedDecl* decl : ranges_namespace->lookup(pipe_name)) {
+      decl = decl->getUnderlyingDecl();
+      if (auto* function_template = dyn_cast<FunctionTemplateDecl>(decl)) {
+        if (!function_template->specializations().empty()) {
+          return true;
+        }
+      } else if (decl->isReferenced()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 void FindBadConstructsConsumer::CheckStdRangesPipeOperator(

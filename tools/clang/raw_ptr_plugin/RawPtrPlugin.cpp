@@ -59,7 +59,13 @@ class PluginConsumer : public FilteredASTConsumer {
   PluginConsumer(CompilerInstance* instance,
                  const Options& options,
                  const RawPtrPluginConfig& config)
-      : options_(options), config_(config), instance_(*instance) {}
+      : options_(options), config_(config), instance_(*instance) {
+    // All checks except for the bad cast check ignore everything that is
+    // spelled in a system header.
+    if (!options_.check_bad_raw_ptr_cast) {
+      SkipSystemHeaders(instance->getPreprocessor());
+    }
+  }
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope("HandleTranslationUnit for raw-ptr plugin");

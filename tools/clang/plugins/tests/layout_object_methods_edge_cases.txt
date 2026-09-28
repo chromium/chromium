@@ -1,0 +1,19 @@
+layout_object_methods_edge_cases.cpp:30:3: warning: [layout] LayoutObject's method 'InClass' in 'LayoutObject' must call CheckIsNotDestroyed() at the beginning.
+  int InClass() {
+  ^~~~~~~~~~~~~~~
+layout_object_methods_edge_cases.cpp:48:3: warning: [layout] LayoutObject's method 'InClassTemplate' in 'LayoutTemplate' must call CheckIsNotDestroyed() at the beginning.
+  int InClassTemplate() {
+  ^~~~~~~~~~~~~~~~~~~~~~~
+layout_object_methods_edge_cases.cpp:48:3: warning: [layout] LayoutObject's method 'InClassTemplate' in 'LayoutTemplate<int>' must call CheckIsNotDestroyed() at the beginning.
+  int InClassTemplate() {
+  ^~~~~~~~~~~~~~~~~~~~~~~
+layout_object_methods_edge_cases.cpp:58:1: warning: [layout] LayoutObject's method 'OutOfLineInTemplate' in 'LayoutTemplate<int>' must call CheckIsNotDestroyed() at the beginning.
+int LayoutTemplate<T>::OutOfLineInTemplate() {
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+layout_object_methods_edge_cases.cpp:48:3: warning: [layout] LayoutObject's method 'InClassTemplate' in 'LayoutTemplate<char>' must call CheckIsNotDestroyed() at the beginning.
+  int InClassTemplate() {
+  ^~~~~~~~~~~~~~~~~~~~~~~
+layout_object_methods_edge_cases.cpp:74:5: warning: [layout] LayoutObject's method 'InLocalClass' in 'LocalLayoutObject' must call CheckIsNotDestroyed() at the beginning.
+    int InLocalClass() {
+    ^~~~~~~~~~~~~~~~~~~~
+6 warnings generated.

@@ -1,0 +1,4 @@
+range_adapter_pipe_unevaluated.cpp:14:25: warning: [chromium-style] Use of operator| with range adaptors is banned.
+using Type = decltype(1 | std::ranges::closure());
+                        ^
+1 warning generated.

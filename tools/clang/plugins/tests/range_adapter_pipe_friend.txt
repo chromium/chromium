@@ -1,0 +1,10 @@
+range_adapter_pipe_friend.cpp:35:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  1 | std::ranges::closure();
+    ^
+range_adapter_pipe_friend.cpp:37:5: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  1 | std::ranges::closure_template<int>();
+    ^
+range_adapter_pipe_friend.cpp:39:27: warning: [chromium-style] Use of operator| with range adaptors is banned.
+  using Type = decltype(1 | std::ranges::inline_closure());
+                          ^
+3 warnings generated.

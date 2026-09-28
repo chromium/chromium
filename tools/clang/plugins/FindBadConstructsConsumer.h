@@ -67,6 +67,9 @@ class FindBadConstructsConsumer
                         clang::CXXRecordDecl* record) override;
 
   void CheckStdRangesPipeOperator(clang::CallExpr* call_expr);
+  // Returns false if CheckStdRangesPipeOperator() can't report anything in
+  // this translation unit.
+  bool MayCallStdRangesPipeOperator(clang::ASTContext& context);
 
  private:
   // The type of problematic ref-counting pattern that was encountered.

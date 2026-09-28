@@ -63,6 +63,27 @@ class DiagnosticsReporter {
   unsigned diag_layout_object_method_without_is_not_destroyed_check_;
 };
 
+// Matches methods whose declaration is in the body of a class that matches
+// `InnerMatcher`, and that are not member function templates. For a method,
+// that is what `hasParent(cxxRecordDecl(InnerMatcher))` matches: the parent of
+// an out-of-line definition is a namespace, and the parent of a member function
+// template (and of its specializations) is the FunctionTemplateDecl.
+//
+// This doesn't use hasParent() because that makes clang build a map of the
+// parents of every node that the plugin traverses, which is slow.
+AST_MATCHER_P(clang::CXXMethodDecl,
+              isDefinedInClassBody,
+              clang::ast_matchers::internal::Matcher<clang::CXXRecordDecl>,
+              InnerMatcher) {
+  if (Node.getDescribedFunctionTemplate() ||
+      Node.isFunctionTemplateSpecialization()) {
+    return false;
+  }
+  const auto* record =
+      llvm::dyn_cast<clang::CXXRecordDecl>(Node.getLexicalDeclContext());
+  return record && InnerMatcher.matches(*record, Finder, Builder);
+}
+
 class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
  public:
   explicit LayoutObjectMethodMatcher(class DiagnosticsReporter& diagnostics)
@@ -71,7 +92,7 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
   void Register(MatchFinder& match_finder) {
     const DeclarationMatcher function_call =
         cxxMethodDecl(
-            hasParent(
+            isDefinedInClassBody(
                 cxxRecordDecl(isSameOrDerivedFrom("::blink::LayoutObject"))),
             has(compoundStmt()),
             // Avoid matching the following cases
@@ -80,7 +101,7 @@ class LayoutObjectMethodMatcher : public MatchFinder::MatchCallback {
                          isStaticStorageClass(),
                          // Do not trace lambdas (no name, possibly tracking
                          // more parameters than intended because of [&]).
-                         hasParent(cxxRecordDecl(isLambda())),
+                         ofClass(isLambda()),
                          // Do not include CheckIsDestroyed() itself.
                          hasName("CheckIsNotDestroyed"),
                          // Do not include tracing methods.

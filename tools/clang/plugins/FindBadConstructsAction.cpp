@@ -32,7 +32,10 @@ namespace {
 class PluginConsumer : public FilteredASTConsumer {
  public:
   PluginConsumer(CompilerInstance* instance, const Options& options)
-      : visitor_(*instance, options) {}
+      : visitor_(*instance, options) {
+    // All checks only report things that are spelled in non-system files.
+    SkipSystemHeaders(instance->getPreprocessor());
+  }
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope(
