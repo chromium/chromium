@@ -1116,6 +1116,7 @@ source_set("unit_tests") {
     "profile_manager_unittest.cc",
     "profile_metrics_unittest.cc",
     "profile_selections_unittest.cc",
+    "profile_unittest.cc",
     "profiles_state_unittest.cc",
   ]
   deps = [

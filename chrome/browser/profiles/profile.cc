@@ -566,8 +566,8 @@ bool Profile::AllowsBrowserWindows() const {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Do not allow Browsers on signin-derived profiles.
-  if (ash::IsSigninBrowserContext(GetOriginalProfile())) {
+  // Do not allow Browsers on non-user profiles.
+  if (!ash::IsUserBrowserContext(GetOriginalProfile())) {
     return false;
   }
 #endif

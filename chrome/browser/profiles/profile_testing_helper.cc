@@ -19,9 +19,7 @@
 ProfileTestingHelper::ProfileTestingHelper()
     : manager_(TestingBrowserProcess::GetGlobal()) {}
 
-ProfileTestingHelper::~ProfileTestingHelper() {
-  manager_.DeleteAllTestingProfiles();
-}
+ProfileTestingHelper::~ProfileTestingHelper() = default;
 
 void ProfileTestingHelper::SetUp() {
   scoped_feature_list_.InitAndEnableFeature(
@@ -99,5 +97,18 @@ void ProfileTestingHelper::SetUp() {
   ASSERT_FALSE(ash::IsUserBrowserContext(lockscreen_profile_otr_));
   ASSERT_TRUE(lockscreen_profile_otr_->IsOffTheRecord());
 
+  shimless_rma_app_profile_ =
+      manager_.CreateTestingProfile(ash::kShimlessRmaAppBrowserContextBaseName);
+  ASSERT_TRUE(shimless_rma_app_profile_);
+  ASSERT_TRUE(ash::IsShimlessRmaAppBrowserContext(shimless_rma_app_profile_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(shimless_rma_app_profile_));
+  ASSERT_FALSE(shimless_rma_app_profile_->IsOffTheRecord());
+  shimless_rma_app_profile_otr_ =
+      shimless_rma_app_profile_->GetPrimaryOTRProfile(true);
+  ASSERT_TRUE(shimless_rma_app_profile_otr_);
+  ASSERT_TRUE(
+      ash::IsShimlessRmaAppBrowserContext(shimless_rma_app_profile_otr_));
+  ASSERT_FALSE(ash::IsUserBrowserContext(shimless_rma_app_profile_otr_));
+  ASSERT_TRUE(shimless_rma_app_profile_otr_->IsOffTheRecord());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

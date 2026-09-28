@@ -28,6 +28,12 @@ AccountIdAnnotator::AccountIdAnnotator(ProfileManager* profile_manager,
 AccountIdAnnotator::~AccountIdAnnotator() = default;
 
 void AccountIdAnnotator::OnProfileCreationStarted(Profile* profile) {
+  // Verifies the added profile is one of known profile types.
+  CHECK(ash::IsUserBrowserContext(profile) ||
+        ash::IsSigninBrowserContext(profile) ||
+        ash::IsLockScreenBrowserContext(profile) ||
+        ash::IsShimlessRmaAppBrowserContext(profile));
+
   // Find a User instance from directory path, and annotate the AccountId.
   // Hereafter, we can use AnnotatedAccountId::Get() to find the User.
   if (ash::IsUserBrowserContext(profile)) {

@@ -270,7 +270,7 @@ class TestingProfile : public Profile {
     raw_ptr<Delegate> delegate_ = nullptr;
     CreateMode create_mode_ = CreateMode::kSynchronous;
     bool guest_session_ = false;
-    bool allows_browser_windows_ = true;
+    std::optional<bool> allows_browser_windows_;
     bool is_new_profile_ = false;
     bool is_supervised_profile_ = false;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -318,7 +318,7 @@ class TestingProfile : public Profile {
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingProfile* parent,
       bool guest_session,
-      bool allows_browser_windows,
+      std::optional<bool> allows_browser_windows,
       bool is_new_profile,
       bool is_supervised_profile,
 #if BUILDFLAG(IS_CHROMEOS)

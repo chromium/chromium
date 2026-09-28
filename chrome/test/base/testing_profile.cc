@@ -222,7 +222,7 @@ TestingProfile::TestingProfile(const base::FilePath& path,
                      /*prefs=*/nullptr,
                      /*parent=*/nullptr,
                      /*guest_session=*/false,
-                     /*allows_browser_windows=*/true,
+                     /*allows_browser_windows=*/std::nullopt,
                      /*is_new_profile=*/false,
                      /*is_supervised_profile=*/false,
                      /*policy_manager=*/{},
@@ -244,7 +244,7 @@ TestingProfile::TestingProfile(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingProfile* parent,
     bool guest_session,
-    bool allows_browser_windows,
+    std::optional<bool> allows_browser_windows,
     bool is_new_profile,
     bool is_supervised_profile,
 #if BUILDFLAG(IS_CHROMEOS)
@@ -285,7 +285,9 @@ TestingProfile::TestingProfile(
       profile_load_tracker_enabled_(profile_load_tracker_enabled)
 #endif
 {
-  set_allows_browser_windows_for_testing(allows_browser_windows);
+  if (allows_browser_windows.has_value()) {
+    set_allows_browser_windows_for_testing(*allows_browser_windows);
+  }
   // TestingProfile is not registered with ProfileManager in most unit tests,
   // but AddKeepAlive() should still work on it without failing CHECK().
   set_lifecycle_state(LifecycleState::kRegistered);
