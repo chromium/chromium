@@ -16,119 +16,199 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 // Trigger identifiers currently used; duplicates not allowed.
-extern const char kHatsSurveyTriggerAutofillAddress[];
-extern const char kHatsSurveyTriggerAutofillAiSavePrompt[];
-extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[];
-extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[];
-extern const char kHatsSurveyTriggerAutofillPasswordUserPerception[];
-extern const char kHatsSurveyTriggerAutofillCard[];
-extern const char kHatsSurveyTriggerAutofillPassword[];
-extern const char kHatsSurveyTriggerAutoPipAllowed[];
-extern const char kHatsSurveyTriggerAutoPipBlocked[];
-extern const char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[];
-extern const char kHatsSurveyTriggerContextualCueingDismissed[];
-extern const char kHatsSurveyTriggerManageYourSavedInfoPerception[];
-extern const char kHatsSurveyTriggerManagePasswordsPerception[];
-extern const char kHatsSurveyTriggerManagePaymentsPerception[];
-extern const char kHatsSurveyTriggerManageContactInfoPerception[];
-extern const char kHatsSurveyTriggerManageIdentityDocsPerception[];
-extern const char kHatsSurveyTriggerManageTravelPerception[];
-extern const char kHatsSurveyTriggerDownloadWarningBubbleBypass[];
-extern const char kHatsSurveyTriggerDownloadWarningBubbleHeed[];
-extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];
-extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
-extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
-extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
-extern const char kHatsSurveyTriggerHistoryEmbeddings[];
-extern const char kHatsSurveyTriggerHistoryPageExperiment[];
-extern const char kHatsSurveyTriggerHistoryPageControl[];
-extern const char kHatsSurveyTriggerIdentityAddressBubbleSignin[];
-extern const char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[];
-extern const char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[];
-extern const char kHatsSurveyTriggerIdentityFirstRunSignin[];
-extern const char kHatsSurveyTriggerIdentityFirstRunCompleted[];
-extern const char kHatsSurveyTriggerIdentityPasswordBubbleSignin[];
-extern const char kHatsSurveyTriggerIdentityProfileMenuDismissed[];
-extern const char kHatsSurveyTriggerIdentityProfileMenuSignin[];
-extern const char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[];
-extern const char kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted[];
-extern const char kHatsSurveyTriggerFirstRunDesktopRevampCompleted[];
-extern const char
-    kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted[];
-extern const char kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted[];
-extern const char
-    kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted[];
-extern const char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[];
-extern const char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[];
-extern const char kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu[];
-extern const char kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker[];
-extern const char kHatsSurveyTriggerLensOverlayResults[];
-extern const char kHatsSurveyTriggerNtpModules[];
-extern const char kHatsSurveyTriggerNextPanel[];
-extern const char kHatsSurveyTriggerNtpPhotosModuleOptOut[];
-extern const char kHatsSurveyTriggerPerformanceControlsPPM[];
-extern const char kHatsSurveyTriggerPrivacyGuide[];
-extern const char kHatsSurveyTriggerRedWarning[];
-extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[];
-extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[];
-extern const char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[];
-extern const char kHatsSurveyTriggerSettings[];
-extern const char kHatsSurveyTriggerSEHijacking[];
-extern const char kHatsSurveyTriggerSettingsPrivacy[];
-extern const char kHatsSurveyTriggerSettingsSecurity[];
-extern const char kHatsSurveyTriggerSettingsSecurityV2[];
-extern const char kHatsSurveyTriggerTrustSafetyPrivacySettings[];
-extern const char kHatsSurveyTriggerTrustSafetyTrustedSurface[];
-extern const char kHatsSurveyTriggerTrustSafetyTransactions[];
-extern const char kHatsSurveyTriggerTrustSafetyV2BrowsingData[];
-extern const char kHatsSurveyTriggerTrustSafetyV2ControlGroup[];
-extern const char kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI[];
-extern const char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[];
-extern const char kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI[];
-extern const char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[];
-extern const char kHatsSurveyTriggerTrustSafetyV2SafetyHubNotification[];
-extern const char kHatsSurveyTriggerTrustSafetyV2SafetyHubInteraction[];
-extern const char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[];
-extern const char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[];
-extern const char kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[];
-extern const char kHatsSurveyTriggerWallpaperSearch[];
+inline constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+inline constexpr char kHatsSurveyTriggerAutofillAiSavePrompt[] =
+    "autofill-ai-walletable-entity-save-prompt";
+inline constexpr char
+    kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[] =
+        "autofill-address-users-perception";
+inline constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[] =
+    "autofill-address-user-declined-save";
+inline constexpr char kHatsSurveyTriggerAutofillPasswordUserPerception[] =
+    "autofill-password-users-perception";
+inline constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
+inline constexpr char kHatsSurveyTriggerAutofillPassword[] =
+    "autofill-password";
+inline constexpr char kHatsSurveyTriggerAutoPipAllowed[] = "autopip-allowed";
+inline constexpr char kHatsSurveyTriggerAutoPipBlocked[] = "autopip-blocked";
+inline constexpr char kHatsSurveyTriggerAutoPipPermissionPromptIgnored[] =
+    "autopip-permission-prompt-ignored";
+inline constexpr char kHatsSurveyTriggerContextualCueingDismissed[] =
+    "contextual-cueing-dismissed";
+inline constexpr char kHatsSurveyTriggerManageYourSavedInfoPerception[] =
+    "autofill-manage-your-saved-info-perception";
+inline constexpr char kHatsSurveyTriggerManagePasswordsPerception[] =
+    "autofill-manage-passwords-perception";
+inline constexpr char kHatsSurveyTriggerManagePaymentsPerception[] =
+    "autofill-manage-payments-perception";
+inline constexpr char kHatsSurveyTriggerManageContactInfoPerception[] =
+    "autofill-manage-contact-info-perception";
+inline constexpr char kHatsSurveyTriggerManageIdentityDocsPerception[] =
+    "autofill-manage-identity-docs-perception";
+inline constexpr char kHatsSurveyTriggerManageTravelPerception[] =
+    "autofill-manage-travel-perception";
+inline constexpr char kHatsSurveyTriggerDownloadWarningBubbleBypass[] =
+    "download-warning-bubble-bypass";
+inline constexpr char kHatsSurveyTriggerDownloadWarningBubbleHeed[] =
+    "download-warning-bubble-heed";
+inline constexpr char kHatsSurveyTriggerDownloadWarningBubbleIgnore[] =
+    "download-warning-bubble-ignore";
+inline constexpr char kHatsSurveyTriggerDownloadWarningPageBypass[] =
+    "download-warning-page-bypass";
+inline constexpr char kHatsSurveyTriggerDownloadWarningPageHeed[] =
+    "download-warning-page-heed";
+inline constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
+    "download-warning-page-ignore";
+inline constexpr char kHatsSurveyTriggerHistoryEmbeddings[] =
+    "history-embeddings";
+inline constexpr char kHatsSurveyTriggerHistoryPageExperiment[] =
+    "history-page-experiment";
+inline constexpr char kHatsSurveyTriggerHistoryPageControl[] =
+    "history-page-control";
+inline constexpr char kHatsSurveyTriggerIdentityAddressBubbleSignin[] =
+    "identity-address-bubble-signin";
+inline constexpr char kHatsSurveyTriggerIdentityDiceWebSigninAccepted[] =
+    "identity-dice-web-signin-accepted";
+inline constexpr char kHatsSurveyTriggerIdentityDiceWebSigninDeclined[] =
+    "identity-dice-web-signin-declined";
+inline constexpr char kHatsSurveyTriggerIdentityFirstRunSignin[] =
+    "identity-first-run-signin";
+inline constexpr char kHatsSurveyTriggerIdentityFirstRunCompleted[] =
+    "identity-first-run-completed";
+inline constexpr char kHatsSurveyTriggerIdentityPasswordBubbleSignin[] =
+    "identity-password-bubble-signin";
+inline constexpr char kHatsSurveyTriggerIdentityProfileMenuDismissed[] =
+    "identity-profile-menu-dismissed";
+inline constexpr char kHatsSurveyTriggerIdentityProfileMenuSignin[] =
+    "identity-profile-menu-signin";
+inline constexpr char
+    kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[] =
+        "identity-profile-picker-add-profile-signin";
+inline constexpr char kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted[] =
+    "identity-refreshed-first-run-completed";
+inline constexpr char kHatsSurveyTriggerFirstRunDesktopRevampCompleted[] =
+    "identity-revamp-first-run-completed";
+inline constexpr char
+    kHatsSurveyTriggerFirstRunDesktopRevampNoFeatureShowcaseCompleted[] =
+        "identity-revamp-no-feature-showcase-first-run-completed";
+inline constexpr char kHatsSurveyTriggerPreFirstRunDesktopRefreshCompleted[] =
+    "identity-pre-first-run-desktop-refresh-completed";
+inline constexpr char
+    kHatsSurveyTriggerPreFirstRunDesktopRefreshNoFeatureShowcaseCompleted[] =
+        "identity-pre-first-run-desktop-refresh-no-feature-showcase-completed";
+inline constexpr char
+    kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
+        "identity-signin-intercept-profile-separation";
+inline constexpr char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[] =
+    "identity-signin-promo-bubble-dismissed";
+inline constexpr char kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu[] =
+    "identity-switch-profile-profile-menu";
+inline constexpr char
+    kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker[] =
+        "identity-switch-profile-profile-picker";
+inline constexpr char kHatsSurveyTriggerLensOverlayResults[] =
+    "lens-overlay-results";
+inline constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+inline constexpr char kHatsSurveyTriggerNextPanel[] = "next-panel";
+inline constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
+    "ntp-photos-module-opt-out";
+inline constexpr char kHatsSurveyTriggerPerformanceControlsPPM[] =
+    "performance-ppm";
+inline constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
+inline constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
+inline constexpr char kHatsSurveyTriggerSettings[] = "settings";
+inline constexpr char kHatsSurveyTriggerSEHijacking[] =
+    "search-engine-hijacking";
+inline constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+inline constexpr char kHatsSurveyTriggerSettingsSecurity[] =
+    "settings-security";
+inline constexpr char kHatsSurveyTriggerSettingsSecurityV2[] =
+    "settings-security-v2";
+inline constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
+    "ts-privacy-settings";
+inline constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
+    "ts-trusted-surface";
+inline constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] =
+    "ts-transactions";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2BrowsingData[] =
+    "ts-v2-browsing-data";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2ControlGroup[] =
+    "ts-v2-control-group";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2DownloadWarningUI[] =
+    "ts-v2-download-warning-ui";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2PasswordCheck[] =
+    "ts-v2-password-check";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2PasswordProtectionUI[] =
+    "ts-v2-password-protection-ui";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyCheck[] =
+    "ts-v2-safety-check";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyHubNotification[] =
+    "ts-v2-safety-hub-notification";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2SafetyHubInteraction[] =
+    "ts-v2-safety-hub-interaction";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2TrustedSurface[] =
+    "ts-v2-trusted-surface";
+inline constexpr char kHatsSurveyTriggerTrustSafetyV2PrivacyGuide[] =
+    "ts-v2-privacy-guide";
+inline constexpr char
+    kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial[] =
+        "ts-v2-safe-browsing-interstitial";
+inline constexpr char kHatsSurveyTriggerWallpaperSearch[] = "wallpaper-search";
 #if BUILDFLAG(ENABLE_COMPOSE)
-extern const char kHatsSurveyTriggerComposeAcceptance[];
-extern const char kHatsSurveyTriggerComposeClose[];
-extern const char kHatsSurveyTriggerComposeNudgeClose[];
+inline constexpr char kHatsSurveyTriggerComposeAcceptance[] =
+    "compose-acceptance";
+inline constexpr char kHatsSurveyTriggerComposeClose[] = "compose-close";
+inline constexpr char kHatsSurveyTriggerComposeNudgeClose[] =
+    "compose-nudge-close";
 #endif  // #if BUILDFLAG(ENABLE_COMPOSE)
-extern const char kHatsSurveyTriggerWhatsNew[];
-extern const char kHatsSurveyTriggerReadingModeExit[];
+inline constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
+inline constexpr char kHatsSurveyTriggerReadingModeExit[] = "reading-mode-exit";
 #else   // BUILDFLAG(IS_ANDROID)
-extern const char kHatsSurveyTriggerAndroidStartupSurvey[];
-extern const char kHatsSurveyTriggerRedWarningAndroid[];
-extern const char kHatsSurveyTriggerSigninFirstRun[];
-extern const char kHatsSurveyTriggerSigninWeb[];
-extern const char kHatsSurveyTriggerSigninNtpSigninButton[];
-extern const char kHatsSurveyTriggerSigninNtpAccountAvatarTap[];
-extern const char kHatsSurveyTriggerSigninNtpPromo[];
-extern const char kHatsSurveyTriggerSigninBookmarkPromo[];
-extern const char kHatsSurveyTriggerSuspiciousSiteWarning[];
+inline constexpr char kHatsSurveyTriggerAndroidStartupSurvey[] =
+    "startup_survey";
+inline constexpr char kHatsSurveyTriggerRedWarningAndroid[] =
+    "red-warning-android";
+inline constexpr char kHatsSurveyTriggerSigninFirstRun[] = "signin-first-run";
+inline constexpr char kHatsSurveyTriggerSigninWeb[] = "signin-web";
+inline constexpr char kHatsSurveyTriggerSigninNtpSigninButton[] =
+    "signin-ntp-signin-button";
+inline constexpr char kHatsSurveyTriggerSigninNtpAccountAvatarTap[] =
+    "signin-ntp-account-avatar-tap";
+inline constexpr char kHatsSurveyTriggerSigninNtpPromo[] = "signin-ntp-promo";
+inline constexpr char kHatsSurveyTriggerSigninBookmarkPromo[] =
+    "signin-bookmark-promo";
+inline constexpr char kHatsSurveyTriggerSuspiciousSiteWarning[] =
+    "suspicious-site-warning";
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
-extern const char
-    kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[];
-extern const char
-    kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled[];
-extern const char kHatsSurveyTriggerPermissionsPrompt[];
-extern const char kHatsSurveyTriggerPrivacySandboxActSurvey[];
-extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[];
-extern const char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[];
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled[] =
+        "autofill-personalization-and-trust-address-filled";
+// This survey is a requirement for the Ambient Autofill feature to allow users
+// to provide feedback and should not be removed without legal approval. Its
+// PSDs must allow to see if Ambient Autofill (pContext record type) was used.
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled[] =
+        "autofill-personalization-and-trust-autofill-ai-filled";
+inline constexpr char kHatsSurveyTriggerPermissionsPrompt[] =
+    "permissions-prompt";
+inline constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
+    "omnibox-on-focus-happiness";
+inline constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsUtility[] =
+    "omnibox-on-focus-utility";
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-extern const char kHatsSurveyConsumerTriggerPdfSaveToDrive[];
-extern const char kHatsSurveyEnterpriseTriggerPdfSaveToDrive[];
+inline constexpr char kHatsSurveyConsumerTriggerPdfSaveToDrive[] =
+    "save-to-drive-consumer";
+inline constexpr char kHatsSurveyEnterpriseTriggerPdfSaveToDrive[] =
+    "save-to-drive-enterprise";
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
-extern const char kHatsSurveyTriggerTesting[];
+inline constexpr char kHatsSurveyTriggerTesting[] = "testing";
 // The Trigger ID for a test HaTS Next survey which is available for testing
 // and demo purposes when the migration feature flag is enabled.
-extern const char kHatsNextSurveyTriggerIDTesting[];
+inline constexpr char kHatsNextSurveyTriggerIDTesting[] =
+    "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 namespace hats {
 struct SurveyConfig {
