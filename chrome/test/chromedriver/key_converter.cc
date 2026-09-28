@@ -272,6 +272,7 @@ constexpr auto kNormalisedKeyValue = std::to_array<const char*>({
 // * Replaced "OSLeft" and "OSRight" with "MetaLeft" and "MetaRight", to be
 //   compatible with Chrome.
 //   TODO(johnchen@chromium.org): Find a better way to handle this.
+// clang-format off
 const struct {
   char16_t key;
   char16_t alternate_key;
@@ -348,6 +349,8 @@ const struct {
     {0xE012, 0,      "ArrowLeft"},
     {0xE014, 0,      "ArrowRight"},
     {0xE013, 0,      "ArrowUp"},
+    {0xE019, 0,      "NumpadEqual"},
+    {0xE00B, 0,      "Pause"},
     {0xE00C, 0,      "Escape"},
     {0xE031, 0,      "F1"},
     {0xE032, 0,      "F2"},
@@ -379,6 +382,7 @@ const struct {
     {0xE024, 0,      "NumpadMultiply"},
     {0xE027, 0,      "NumpadSubtract"},
 };
+// clang-format on
 
 // The "key location for key" table from W3C spec
 // (https://w3c.github.io/webdriver/#dfn-key-location). For simplicity, it is
@@ -386,8 +390,9 @@ const struct {
 int GetKeyLocation(uint32_t code_point) {
   if (code_point >= 0xe007 && code_point <= 0xe00a)
     return 1;
-  if (code_point >= 0xe01a && code_point <= 0xe029)
+  if (code_point >= 0xe019 && code_point <= 0xe029) {
     return 3;
+  }
   if (code_point == 0xe03d)
     return 1;
   if (code_point >= 0xe050 && code_point <= 0xe053)

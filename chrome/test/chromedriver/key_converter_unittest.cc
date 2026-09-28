@@ -98,6 +98,22 @@ void CheckShiftChar(ui::KeyboardCode key_code, char character, char lower) {
   EXPECT_EQ(ui::VKEY_SHIFT, it->key_code) << "Char: " << character;
 }
 
+void CheckKeyActionCode(char16_t key, const std::string& code, int location) {
+  base::DictValue action;
+  action.Set("value", base::UTF16ToUTF8(std::u16string(1, key)));
+  base::DictValue input_state;
+  input_state.Set("pressed", base::DictValue());
+  input_state.Set("modifiers", 0);
+  std::vector<KeyEvent> events;
+
+  ASSERT_EQ(kOk, ConvertKeyActionToKeyEvent(action, input_state,
+                                            /*is_key_down=*/true, &events)
+                     .code());
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(code, events[0].code);
+  EXPECT_EQ(location, events[0].location);
+}
+
 }  // namespace
 
 TEST(KeyConverter, SingleChar) {
@@ -141,6 +157,12 @@ TEST(KeyConverter, WebDriverSpecialNonCharKey) {
   builder.SetKeyCode(ui::VKEY_F1)->Generate(&key_events);
   std::u16string keys = u"\uE031";
   CheckEventsReleaseModifiers(keys, key_events);
+}
+
+TEST(KeyConverter, WebDriverActionSpecialKeyCodes) {
+  ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
+  CheckKeyActionCode(u'\uE019', "NumpadEqual", 3);
+  CheckKeyActionCode(u'\uE00B', "Pause", 0);
 }
 
 #if BUILDFLAG(IS_WIN)
