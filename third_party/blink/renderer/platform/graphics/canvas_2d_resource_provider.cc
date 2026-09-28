@@ -586,49 +586,11 @@ void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
   is_cleared_ = true;
   auto* image_provider = GetOrCreateCanvasImageProvider();
 
-  auto client_si = resource()->GetSharedImage();
-  auto access = client_si->BeginRasterAccess(RasterInterface(),
-                                             resource()->acquire_sync_token(),
-                                             /*readonly=*/false);
-  gpu::raster::RasterInterface* ri = RasterInterface();
-  SkColor4f background_color = GetAlphaType() == kOpaque_SkAlphaType
-                                   ? SkColors::kBlack
-                                   : SkColors::kTransparent;
-
-  auto list = base::MakeRefCounted<cc::DisplayItemList>();
-  list->StartPaint();
-  list->push<cc::DrawRecordOp>(std::move(last_recording));
-  list->EndPaintOfUnpaired(gfx::Rect(Size().width(), Size().height()));
-  list->Finalize();
-
-  gfx::Size size(Size().width(), Size().height());
-  size_t max_op_size_hint = gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
-  gfx::Rect full_raster_rect(Size().width(), Size().height());
-  gfx::Rect playback_rect(Size().width(), Size().height());
-  gfx::Vector2dF post_translate(0.f, 0.f);
-  gfx::Vector2dF post_scale(1.f, 1.f);
-
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-  const auto& caps =
-      context_provider_wrapper_->ContextProvider().GetCapabilities();
-  bool use_msaa = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
-  ri->BeginRasterCHROMIUM(
-      background_color, needs_clear,
-      /*msaa_sample_count=*/use_msaa ? 1 : 0,
-      use_msaa ? gpu::raster::MsaaMode::kDMSAA : gpu::raster::MsaaMode::kNoMSAA,
-      can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-      /*hdr_headroom=*/0.f, client_si->mailbox().name);
-
-  ri->RasterCHROMIUM(list.get(), image_provider, size, full_raster_rect,
-                     playback_rect, post_translate, post_scale,
-                     /*requires_clear=*/false,
-                     /*raster_inducing_scroll_offsets=*/nullptr,
-                     &max_op_size_hint, custom_callback);
-
-  ri->EndRasterCHROMIUM();
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
+  gpu::SyncToken sync_token = RasterInterface()->RasterSharedImage(
+      resource()->GetSharedImage(), resource()->acquire_sync_token(),
+      std::move(last_recording), image_provider, needs_clear,
+      std::move(custom_callback));
   resource()->SetReleaseSyncToken(sync_token);
-  client_si->UpdateDestructionSyncToken(sync_token);
 }
 
 void Canvas2DResourceProvider::OnFlushForImage(
