@@ -69,6 +69,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.page_scale_factor;
   }
 
+  static float surface_backing_size_scale_factor(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.surface_backing_size_scale_factor;
+  }
+
   static gfx::SizeF scrollable_viewport_size(
       const viz::CompositorFrameMetadata& metadata) {
     return metadata.scrollable_viewport_size;

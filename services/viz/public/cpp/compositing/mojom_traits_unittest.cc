@@ -855,6 +855,7 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   const float device_scale_factor = 2.6f;
   const gfx::PointF root_scroll_offset(1234.5f, 6789.1f);
   const float page_scale_factor = 1337.5f;
+  const float surface_backing_size_scale_factor = 2.5f;
   const gfx::SizeF scrollable_viewport_size(1337.7f, 1234.5f);
   const bool may_contain_video = true;
   const SkColor4f root_background_color = {0.0f, 0.02f, 0.224f, 0.0f};
@@ -881,6 +882,7 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   input.device_scale_factor = device_scale_factor;
   input.root_scroll_offset = root_scroll_offset;
   input.page_scale_factor = page_scale_factor;
+  input.surface_backing_size_scale_factor = surface_backing_size_scale_factor;
   input.scrollable_viewport_size = scrollable_viewport_size;
   input.may_contain_video = may_contain_video;
   input.root_background_color = root_background_color;
@@ -902,6 +904,8 @@ TEST_F(CompositingStructTraitsTest, CompositorFrameMetadata) {
   EXPECT_EQ(device_scale_factor, output.device_scale_factor);
   EXPECT_EQ(root_scroll_offset, output.root_scroll_offset);
   EXPECT_EQ(page_scale_factor, output.page_scale_factor);
+  EXPECT_EQ(surface_backing_size_scale_factor,
+            output.surface_backing_size_scale_factor);
   EXPECT_EQ(scrollable_viewport_size, output.scrollable_viewport_size);
   EXPECT_EQ(may_contain_video, output.may_contain_video);
   EXPECT_EQ(root_background_color, output.root_background_color);

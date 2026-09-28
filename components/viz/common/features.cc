@@ -417,6 +417,13 @@ BASE_FEATURE(kRpdqFilterLookupOptimizations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBypassOutdatedSurfaceActivation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a non-mergeable surface's root render pass backing is enlarged
+// to match the scale at which the frame's content was rasterized. This avoids
+// downsampling and then upsampling the content, keeping text sharp
+// (crbug.com/513611535).
+BASE_FEATURE(kRenderNonMergedSurfaceAtBackingScale,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Use BufferQueue for the primary plane instead of a DXGI swap chain or DComp
 // surface.

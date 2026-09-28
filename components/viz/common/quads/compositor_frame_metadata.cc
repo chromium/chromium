@@ -31,6 +31,8 @@ void CompositorFrameMetadata::AsValueInto(
   cc::MathUtil::AddToTracedValue("root_scroll_offset", root_scroll_offset,
                                  value);
   value->SetDouble("page_scale_factor", page_scale_factor);
+  value->SetDouble("surface_backing_size_scale_factor",
+                   surface_backing_size_scale_factor);
   cc::MathUtil::AddToTracedValue("scrollable_viewport_size",
                                  scrollable_viewport_size, value);
   cc::MathUtil::AddToTracedValue("visible_viewport_size", visible_viewport_size,
@@ -140,6 +142,8 @@ CompositorFrameMetadata::CompositorFrameMetadata(
     : device_scale_factor(other.device_scale_factor),
       root_scroll_offset(other.root_scroll_offset),
       page_scale_factor(other.page_scale_factor),
+      surface_backing_size_scale_factor(
+          other.surface_backing_size_scale_factor),
       scrollable_viewport_size(other.scrollable_viewport_size),
       visible_viewport_size(other.visible_viewport_size),
       content_color_usage(other.content_color_usage),

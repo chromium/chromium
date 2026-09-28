@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel=match href="opacity-oopif-with-text-expected.html">
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+
+    function done() {
+      if (window.testRunner) {
+        requestAnimationFrame(()=> {
+          requestAnimationFrame(()=> {
+            testRunner.notifyDone();
+          });
+        });
+      }
+    }
+  </script>
+  <!-- Verifies that text in the OOP iframe stays crisp when the OOPIF has a
+       magnifying scale and is made non-mergeable (crbug.com/513611535).
+       The fuzzy allowance below covers only sub-pixel AA from the native scrollbar. -->
+  <meta name="fuzzy" content="maxDifference=0-120;totalPixels=0-900">
+  <style>
+  * {
+      margin: 0;
+    }
+  </style>
+</head>
+  <body>  
+    <div style="transform: scale(1.8); transform-origin: 0 0;
+                width: 200px; height: 80px;
+                overflow: hidden; background-color: pink">
+      <!-- Use of localhost below will make the iframe an OOPIF -->
+      <!-- Scaled OOPIF made non-mergeable by opacity < 1. -->
+      <iframe src="http://localhost:8080/html/resources/oopif-scrolling-text.html"
+              scrolling="yes"
+              style="border: none; height: 80px; width: 200px; opacity: 0.99;"
+              onload="done()"></iframe>
+    </div>
+  </body>
+</html>

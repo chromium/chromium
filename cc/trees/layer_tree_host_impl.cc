@@ -2508,6 +2508,8 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata(
                                  active_tree_->device_scale_factor();
 
   metadata.page_scale_factor = active_tree_->current_page_scale_factor();
+  metadata.surface_backing_size_scale_factor =
+      active_tree_->external_page_scale_factor();
   metadata.scrollable_viewport_size = active_tree_->ScrollableViewportSize();
 
   if (InnerViewportScrollNode()) {

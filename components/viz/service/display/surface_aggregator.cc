@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <utility>
 #include <vector>
@@ -964,6 +965,20 @@ void SurfaceAggregator::EmitSurfaceContent(
   size_t num_render_passes = resolved_passes.size();
   size_t passes_to_copy =
       merge_pass ? num_render_passes - 1 : num_render_passes;
+
+  // Only retained root passes need enlargement. Non-root effect passes are
+  // already sized at the external page scale. Preserve the source coordinate
+  // space throughout video capture.
+  float root_pass_backing_scale = 1.0f;
+  if (base::FeatureList::IsEnabled(
+          features::kRenderNonMergedSurfaceAtBackingScale) &&
+      !merge_pass && !has_video_capture) {
+    root_pass_backing_scale = frame_metadata.surface_backing_size_scale_factor;
+    root_pass_backing_scale = std::isfinite(root_pass_backing_scale)
+                                  ? std::max(root_pass_backing_scale, 1.0f)
+                                  : 1.0f;
+  }
+
   for (size_t j = 0; j < passes_to_copy; ++j) {
     ResolvedPassData& resolved_pass = resolved_passes[j];
     const CompositorRenderPass& source = resolved_pass.render_pass();
@@ -972,7 +987,14 @@ void SurfaceAggregator::EmitSurfaceContent(
     size_t dq_size = source.quad_list.size();
     auto copy_pass = std::make_unique<AggregatedRenderPass>(sqs_size, dq_size);
 
-    gfx::Rect output_rect = source.output_rect;
+    const float pass_backing_scale =
+        resolved_pass.is_root() ? root_pass_backing_scale : 1.0f;
+    // Express the root pass output in backing coordinates. If it exceeds the
+    // render-target limit, crop the unavailable portion below without reducing
+    // the requested pixel scale.
+    gfx::Rect output_rect =
+        gfx::ScaleToEnclosingRect(source.output_rect, pass_backing_scale);
+
     if (max_render_target_size_ > 0) {
       output_rect.set_width(
           std::min(output_rect.width(), max_render_target_size_));
@@ -998,10 +1020,17 @@ void SurfaceAggregator::EmitSurfaceContent(
     copy_pass->transform_to_root_target.PostConcat(combined_transform);
     copy_pass->transform_to_root_target.PostConcat(
         dest_pass->transform_to_root_target);
+    // Scale quads into the enlarged backing and remove the same backing-only
+    // scale from the pass's mapping to the root target, preserving its
+    // on-screen geometry.
+    copy_pass->transform_to_root_target.Scale(1.0f / pass_backing_scale);
+    const gfx::Transform content_to_pass_transform =
+        gfx::Transform::MakeScale(pass_backing_scale);
 
     CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),
-                    resolved_frame.device_scale_factor(), gfx::Transform(), {},
-                    dest_root_target_clip_rect, MaskFilterInfoExt(),
+                    resolved_frame.device_scale_factor(),
+                    content_to_pass_transform, {}, dest_root_target_clip_rect,
+                    MaskFilterInfoExt(),
                     surface_quad->override_child_filter_quality,
                     surface_quad->override_child_dynamic_range_limit);
 
@@ -1055,15 +1084,23 @@ void SurfaceAggregator::EmitSurfaceContent(
                     surface_quad->override_child_filter_quality,
                     surface_quad->override_child_dynamic_range_limit);
   } else {
+    // Remove the backing scale from the RenderPassDrawQuad's target transform.
+    gfx::Transform render_pass_quad_to_target_transform =
+        scaled_quad_to_target_transform;
+    render_pass_quad_to_target_transform.Scale(1.0f / root_pass_backing_scale);
+
+    // Convert surface quad rects back to root-pass content space, then express
+    // them in the scaled backing's coordinate space.
+    gfx::Transform render_pass_rect_transform = gfx::Transform::MakeScale(
+        inverse_extra_content_scale_x, inverse_extra_content_scale_y);
+    render_pass_rect_transform.Scale(root_pass_backing_scale);
+
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
         surface_quad_sqs, embedder_client_namespace_id,
-        scaled_quad_to_target_transform, target_transform,
-        gfx::ScaleToEnclosingRect(surface_quad_sqs->quad_layer_rect,
-                                  inverse_extra_content_scale_x,
-                                  inverse_extra_content_scale_y),
-        gfx::ScaleToEnclosingRect(surface_quad_sqs->visible_quad_layer_rect,
-                                  inverse_extra_content_scale_x,
-                                  inverse_extra_content_scale_y),
+        render_pass_quad_to_target_transform, target_transform,
+        render_pass_rect_transform.MapRect(surface_quad_sqs->quad_layer_rect),
+        render_pass_rect_transform.MapRect(
+            surface_quad_sqs->visible_quad_layer_rect),
         added_clip_rect, mask_filter_info, dest_pass);
 
     // At this point, we need to calculate three values in order to construct
@@ -1072,8 +1109,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     // |quad_rect| - A rectangle representing the RenderPass's output area in
     //   content space. This is equal to the root render pass (|last_pass|)
     //   output rect.
-    gfx::Rect quad_rect = resolved_root_pass.render_pass().output_rect;
-
+    const gfx::Rect quad_rect = gfx::ScaleToEnclosingRect(
+        resolved_root_pass.render_pass().output_rect, root_pass_backing_scale);
     // |quad_visible_rect| - A rectangle representing the visible portion of
     //   the RenderPass, in content space. As the SurfaceDrawQuad being
     //   embedded may be clipped further than its root render pass, we use the
@@ -1083,9 +1120,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     //   render pass's content space to the surface's content space, we remove
     //   this so that |quad_visible_rect| is in the render pass's content
     //   space.
-    gfx::Rect quad_visible_rect(gfx::ScaleToEnclosingRect(
-        surface_quad->visible_rect, inverse_extra_content_scale_x,
-        inverse_extra_content_scale_y));
+    gfx::Rect quad_visible_rect =
+        render_pass_rect_transform.MapRect(surface_quad->visible_rect);
 
     // We can't produce content outside of |quad_rect|, so clip the visible
     // rect if necessary.

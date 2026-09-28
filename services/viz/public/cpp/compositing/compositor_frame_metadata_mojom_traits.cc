@@ -36,6 +36,8 @@ StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   }
 
   out->page_scale_factor = data.page_scale_factor();
+  out->surface_backing_size_scale_factor =
+      data.surface_backing_size_scale_factor();
   if (!data.ReadScrollableViewportSize(&out->scrollable_viewport_size)) {
     return base::unexpected(DeserializationError());
   }
