@@ -126,17 +126,23 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
                        ActionItemRegistrationAndSessionToggle) {
-  RunTestSequence(CheckHasSession(false),
+  // clang-format off
+  RunTestSequence(
+    CheckHasSession(false),
 
-                  SetToolbarButtonPinned(true),
-                  WaitForShow(kPinnedToolbarActionTtcElementId),
-                  CheckToolbarButtonHighlighted(false),
+    SetToolbarButtonPinned(true),
+    WaitForShow(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonHighlighted(false),
 
-                  PressButton(kPinnedToolbarActionTtcElementId),
-                  CheckHasSession(true), CheckToolbarButtonHighlighted(true),
+    PressButton(kPinnedToolbarActionTtcElementId),
+    CheckHasSession(true),
+    CheckToolbarButtonHighlighted(true),
 
-                  PressButton(kPinnedToolbarActionTtcElementId),
-                  CheckHasSession(false), CheckToolbarButtonHighlighted(false));
+    PressButton(kPinnedToolbarActionTtcElementId),
+    CheckHasSession(false),
+    CheckToolbarButtonHighlighted(false)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
@@ -146,91 +152,137 @@ IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
   const ui::ElementContext second_context =
       BrowserElements::From(second_browser)->GetContext();
 
+  // clang-format off
   RunTestSequence(
-      CheckHasSession(false),
+    CheckHasSession(false),
 
-      SetToolbarButtonPinned(true),
+    SetToolbarButtonPinned(true),
+    WaitForShow(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonHighlighted(false),
+    InContext(
+      second_context,
       WaitForShow(kPinnedToolbarActionTtcElementId),
-      CheckToolbarButtonHighlighted(false),
-      InContext(second_context, WaitForShow(kPinnedToolbarActionTtcElementId),
-                CheckToolbarButtonHighlighted(false)),
+      CheckToolbarButtonHighlighted(false)
+    ),
 
-      PressButton(kPinnedToolbarActionTtcElementId), CheckHasSession(true),
-      CheckToolbarButtonHighlighted(true),
-      InContext(second_context, CheckToolbarButtonHighlighted(true)),
+    PressButton(kPinnedToolbarActionTtcElementId),
+    CheckHasSession(true),
+    CheckToolbarButtonHighlighted(true),
+    InContext(
+      second_context,
+      CheckToolbarButtonHighlighted(true)
+    ),
 
-      InContext(second_context, PressButton(kPinnedToolbarActionTtcElementId)),
-      CheckHasSession(false), CheckToolbarButtonHighlighted(false),
-      InContext(second_context, CheckToolbarButtonHighlighted(false)));
+    InContext(
+      second_context,
+      PressButton(kPinnedToolbarActionTtcElementId)
+    ),
+    CheckHasSession(false),
+    CheckToolbarButtonHighlighted(false),
+    InContext(
+      second_context,
+      CheckToolbarButtonHighlighted(false)
+    )
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
                        UnpinnedButtonPopsOutDuringSession) {
+  // clang-format off
   RunTestSequence(
-      CheckHasSession(false),
+    CheckHasSession(false),
 
-      SetToolbarButtonPinned(false),
-      WaitForHide(kPinnedToolbarActionTtcElementId),
-      CheckToolbarButtonPoppedOut(browser(), false),
+    SetToolbarButtonPinned(false),
+    WaitForHide(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonPoppedOut(browser(), false),
 
-      Do([this]() { ttc_service().StartSession(); }), CheckHasSession(true),
+    Do([this]() { ttc_service().StartSession(); }),
+    CheckHasSession(true),
 
-      WaitForShow(kPinnedToolbarActionTtcElementId),
-      CheckToolbarButtonPoppedOut(browser(), true),
-      CheckToolbarButtonHighlighted(true),
+    WaitForShow(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonPoppedOut(browser(), true),
+    CheckToolbarButtonHighlighted(true),
 
-      Do([this]() { ttc_service().EndSession(); }), CheckHasSession(false),
-      WaitForHide(kPinnedToolbarActionTtcElementId),
-      CheckToolbarButtonPoppedOut(browser(), false));
+    Do([this]() { ttc_service().EndSession(); }),
+    CheckHasSession(false),
+    WaitForHide(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonPoppedOut(browser(), false)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_F(EntrypointControllerInteractiveTest,
                        NewBrowserWindowReflectsActiveSession) {
-  RunTestSequence(CheckHasSession(false),
+  // clang-format off
+  RunTestSequence(
+    CheckHasSession(false),
 
-                  SetToolbarButtonPinned(true),
-                  WaitForShow(kPinnedToolbarActionTtcElementId),
+    SetToolbarButtonPinned(true),
+    WaitForShow(kPinnedToolbarActionTtcElementId),
 
-                  PressButton(kPinnedToolbarActionTtcElementId),
-                  CheckHasSession(true), CheckToolbarButtonHighlighted(true));
+    PressButton(kPinnedToolbarActionTtcElementId),
+    CheckHasSession(true),
+    CheckToolbarButtonHighlighted(true)
+  );
+  // clang-format on
 
   BrowserWindowInterface* const second_browser = CreateBrowser(profile());
   ASSERT_NE(second_browser, nullptr);
 
-  RunTestSequenceInContext(BrowserElements::From(second_browser)->GetContext(),
+  // clang-format off
+  RunTestSequenceInContext(
+    BrowserElements::From(second_browser)->GetContext(),
 
-                           WaitForShow(kPinnedToolbarActionTtcElementId),
-                           CheckToolbarButtonHighlighted(true),
-                           CheckHasSession(true));
+    WaitForShow(kPinnedToolbarActionTtcElementId),
+    CheckToolbarButtonHighlighted(true),
+    CheckHasSession(true)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
                        AppMenuEntrypointStateFollowsSession) {
+  // clang-format off
   RunTestSequence(
-      CheckHasSession(false), CheckAppMenuEntrypointEnabled(browser(), true),
+    CheckHasSession(false),
+    CheckAppMenuEntrypointEnabled(browser(), true),
 
-      Do([this]() { ttc_service().StartSession(); }), CheckHasSession(true),
-      CheckAppMenuEntrypointEnabled(browser(), false),
+    Do([this]() { ttc_service().StartSession(); }),
+    CheckHasSession(true),
+    CheckAppMenuEntrypointEnabled(browser(), false),
 
-      Do([this]() { ttc_service().EndSession(); }), CheckHasSession(false),
-      CheckAppMenuEntrypointEnabled(browser(), true));
+    Do([this]() { ttc_service().EndSession(); }),
+    CheckHasSession(false),
+    CheckAppMenuEntrypointEnabled(browser(), true)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
                        AppMenuCommandStartsSession) {
+  // clang-format off
   RunTestSequence(
-      CheckHasSession(false),
+    CheckHasSession(false),
 
-      Do([this]() { chrome::ExecuteCommand(browser(), IDC_SHOW_TTC_MENU); }),
-      CheckHasSession(true), CheckAppMenuCommandEnabled(browser(), false));
+    Do([this]() { chrome::ExecuteCommand(browser(), IDC_SHOW_TTC_MENU); }),
+    CheckHasSession(true),
+    CheckAppMenuCommandEnabled(browser(), false)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
                        AppMenuActionStartsSession) {
-  RunTestSequence(CheckHasSession(false),
+  // clang-format off
+  RunTestSequence(
+    CheckHasSession(false),
 
-                  InvokeAppMenuAction(browser()), CheckHasSession(true),
-                  CheckAppMenuActionEnabled(browser(), false));
+    InvokeAppMenuAction(browser()),
+    CheckHasSession(true),
+    CheckAppMenuActionEnabled(browser(), false)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
@@ -238,28 +290,42 @@ IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
   BrowserWindowInterface* const second_browser = CreateBrowser(profile());
   ASSERT_NE(second_browser, nullptr);
 
+  // clang-format off
   RunTestSequence(
-      CheckHasSession(false), CheckAppMenuEntrypointEnabled(browser(), true),
-      CheckAppMenuEntrypointEnabled(second_browser, true),
+    CheckHasSession(false),
+    CheckAppMenuEntrypointEnabled(browser(), true),
+    CheckAppMenuEntrypointEnabled(second_browser, true),
 
-      Do([this]() { ttc_service().StartSession(); }), CheckHasSession(true),
-      CheckAppMenuEntrypointEnabled(browser(), false),
-      CheckAppMenuEntrypointEnabled(second_browser, false),
+    Do([this]() { ttc_service().StartSession(); }),
+    CheckHasSession(true),
+    CheckAppMenuEntrypointEnabled(browser(), false),
+    CheckAppMenuEntrypointEnabled(second_browser, false),
 
-      Do([this]() { ttc_service().EndSession(); }), CheckHasSession(false),
-      CheckAppMenuEntrypointEnabled(browser(), true),
-      CheckAppMenuEntrypointEnabled(second_browser, true));
+    Do([this]() { ttc_service().EndSession(); }),
+    CheckHasSession(false),
+    CheckAppMenuEntrypointEnabled(browser(), true),
+    CheckAppMenuEntrypointEnabled(second_browser, true)
+  );
+  // clang-format on
 }
 
 IN_PROC_BROWSER_TEST_P(EntrypointControllerAppMenuInteractiveTest,
                        NewBrowserWindowAppMenuEntrypointReflectsActiveSession) {
-  RunTestSequence(Do([this]() { ttc_service().StartSession(); }),
-                  CheckHasSession(true));
+  // clang-format off
+  RunTestSequence(
+    Do([this]() { ttc_service().StartSession(); }),
+    CheckHasSession(true)
+  );
+  // clang-format on
 
   BrowserWindowInterface* const second_browser = CreateBrowser(profile());
   ASSERT_NE(second_browser, nullptr);
 
-  RunTestSequence(CheckAppMenuEntrypointEnabled(second_browser, false));
+  // clang-format off
+  RunTestSequence(
+    CheckAppMenuEntrypointEnabled(second_browser, false)
+  );
+  // clang-format on
 }
 
 }  // namespace
