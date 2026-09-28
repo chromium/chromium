@@ -7298,10 +7298,17 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxUsesChromeComposeClient)},
 
-    {"composebox-rich-image-suggestions",
-     flag_descriptions::kComposeboxRichImageSuggestionsName,
-     flag_descriptions::kComposeboxRichImageSuggestionsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(omnibox::kComposeboxRichImageSuggestions)},
+    {"composebox-rich-image-suggestions-omnibox",
+     flag_descriptions::kComposeboxRichImageSuggestionsOmniboxName,
+     flag_descriptions::kComposeboxRichImageSuggestionsOmniboxDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxRichImageSuggestionsOmnibox)},
+
+    {"composebox-rich-image-suggestions-realbox",
+     flag_descriptions::kComposeboxRichImageSuggestionsRealboxName,
+     flag_descriptions::kComposeboxRichImageSuggestionsRealboxDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxRichImageSuggestionsRealbox)},
 
     {"composebox-persistent-aim-button-omnibox",
      flag_descriptions::kComposeboxPersistentAimButtonOmniboxName,

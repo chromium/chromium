@@ -41,8 +41,12 @@ BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxEverywhere);
 BASE_DECLARE_FEATURE(kComposeboxSkillsOmniboxPopup);
 
 // If enabled, richer suggestions (e.g. image grids) for tools such as Create
-// Image will be shown in the Composebox.
-BASE_DECLARE_FEATURE(kComposeboxRichImageSuggestions);
+// Image will be shown in the Realbox Composebox.
+BASE_DECLARE_FEATURE(kComposeboxRichImageSuggestionsRealbox);
+
+// If enabled, richer suggestions (e.g. image grids) for tools such as Create
+// Image will be shown in the Omnibox Composebox.
+BASE_DECLARE_FEATURE(kComposeboxRichImageSuggestionsOmnibox);
 
 // If enabled, persists the AIM button in the Realbox Composebox.
 BASE_DECLARE_FEATURE(kComposeboxPersistentAimButtonRealbox);

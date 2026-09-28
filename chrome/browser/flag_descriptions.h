@@ -1619,10 +1619,17 @@ inline constexpr char kCollaborationSharedTabGroupAccountDataName[] =
 inline constexpr char kCollaborationSharedTabGroupAccountDataDescription[] =
     "Enable the messaging sync backend for shared tab groups.";
 
-inline constexpr char kComposeboxRichImageSuggestionsName[] =
-    "Composebox Rich Image Suggestions";
-inline constexpr char kComposeboxRichImageSuggestionsDescription[] =
-    "Enables richer image suggestions in the Composebox for image generation.";
+inline constexpr char kComposeboxRichImageSuggestionsRealboxName[] =
+    "Composebox Rich Image Suggestions (Realbox)";
+inline constexpr char kComposeboxRichImageSuggestionsRealboxDescription[] =
+    "Enables richer image suggestions in the Realbox Composebox for image "
+    "generation.";
+
+inline constexpr char kComposeboxRichImageSuggestionsOmniboxName[] =
+    "Composebox Rich Image Suggestions (Omnibox)";
+inline constexpr char kComposeboxRichImageSuggestionsOmniboxDescription[] =
+    "Enables richer image suggestions in the Omnibox Composebox for image "
+    "generation.";
 
 inline constexpr char kComposeboxPersistentAimButtonRealboxName[] =
     "Composebox Persistent AIM Button (Realbox)";
