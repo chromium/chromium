@@ -60,6 +60,7 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
   - In production code, always use `try`-with-resources blocks (or explicitly document why it cannot be used) whenever referencing a class that supports it (implements `AutoCloseable`, e.g. `TimingMetric`).
   - In test code, the use of `try`-with-resources is recommended but not required.
 - **View Inflation**: Prefer using `AsyncViewInflation` where possible to keep the Main Thread free and reduce startup latency.
+  - **Ban `GestureDetector` in Constructors**: Never instantiate `GestureDetector` (or `GestureDetectorCompat`) inside a `View` or component constructor. `GestureDetector` creates an internal `Handler` bound to the calling thread's `Looper`, which fails out-of-UI-thread inflation (`AsyncLayoutInflater`) and forces an on-UI-thread retry. Attach gesture detection at a later lifecycle stage instead (e.g. after the view is inflated in `onFinishInflate()`, or when attached to the window in `onAttachedToWindow()`).
 - **Imports**: Use `import` statements whenever possible instead of using fully qualified class names within the code.
 - **Avoid Ambiguous `var`**: Avoid using `var` when the type is not obvious from immediately surrounding code.
 - **Javadoc & Method Contracts**:
