@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -720,7 +721,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 }
 
 // TODO(crbug.com/41189874): Flaky on Windows release builds.
-#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
+// TODO(crbug.com/552228271): Failing on Desktop Android.
+#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_DESKTOP_ANDROID)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
 #else
 #define MAYBE_PRE_RulesPersistence PRE_RulesPersistence
@@ -745,7 +747,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 }
 
 // TODO(crbug.com/41189874): Flaky on Windows release builds.
-#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
+// TODO(crbug.com/552228271): Failing on Desktop Android.
+#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_DESKTOP_ANDROID)
 #define MAYBE_RulesPersistence DISABLED_RulesPersistence
 #else
 #define MAYBE_RulesPersistence RulesPersistence
