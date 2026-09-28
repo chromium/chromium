@@ -79,12 +79,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -482,9 +480,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         }
     }
 
-    // Used to ensure we only call queryIntentActivities when we really need to. Also carries
-    // per-navigation state memoized across the URL-override check: the sole self-owned WebAPK
-    // package and per-earlier-URL WebAPK-handled results.
+    // Used to ensure we only call queryIntentActivities when we really need to.
     protected class QueryIntentActivitiesSupplier extends IntentBasedSupplier<List<ResolveInfo>> {
         // We need the query to include non-default intent filters, but should not return
         // them for clients that don't explicitly need to check non-default filters.
@@ -508,18 +504,6 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             assertIntentMatches();
             return mNonDefaultSupplier.get();
         }
-
-        // Memoizes the resolved sole self-owned WebAPK package for the lifetime of a single
-        // URL-override check, so pickWebApkIfSoleIntentHandler does not repeat WebApkValidator
-        // and DomainVerificationManager Binder IPCs on every call within one navigation.
-        // mSoleWebApkComputed distinguishes "not computed yet" from a computed null result.
-        private boolean mSoleWebApkComputed;
-        private @Nullable String mSoleWebApkPackage;
-
-        // Memoizes, per earlier-intent data URI, whether that earlier URL already resolved to the
-        // sole self-owned WebAPK, so the stay- and keep-in-app checks do not repeat the
-        // non-default PackageManager query for the same earlier URL within one navigation.
-        private final Map<String, Boolean> mEarlierUrlHandledByWebApk = new HashMap<>();
     }
 
     protected static class ResolveActivitySupplier
@@ -831,12 +815,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                     Intent intent =
                             Intent.parseUri(browserFallbackUrl.getSpec(), Intent.URI_INTENT_SCHEME);
                     sanitizeQueryIntentActivitiesIntent(intent);
-                    GURL intentTargetUrl = getTargetUrlFromIntent(intent);
                     QueryIntentActivitiesSupplier supplier =
                             new QueryIntentActivitiesSupplier(intent);
-                    if (!isAlreadyInTargetWebApk(supplier, params, intentTargetUrl)
-                            && launchWebApkIfSoleIntentHandler(
-                                    supplier, intent, params, intentTargetUrl)) {
+                    if (!isAlreadyInTargetWebApk(supplier, params)
+                            && launchWebApkIfSoleIntentHandler(supplier, intent, params)) {
                         return OverrideUrlLoadingResult.forExternalFallbackUrl();
                     }
                 } catch (Exception e) {
@@ -1044,12 +1026,9 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     // Note that we also need to query for non-default handlers as WebApks being non-default
     // Web Intent handlers is the cause of the issue.
     private boolean intentMatchesNonDefaultWebApk(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            GURL intentTargetUrl) {
+            ExternalNavigationParams params, QueryIntentActivitiesSupplier resolvingInfos) {
         if (params.isFromIntent() && mDelegate.shouldLaunchWebApksOnInitialIntent()) {
-            String packageName =
-                    pickWebApkIfSoleIntentHandler(params, resolvingInfos, intentTargetUrl);
+            String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos);
             if (packageName != null) {
                 if (debug()) Log.i(TAG, "Matches possibly non-default WebApk");
                 return true;
@@ -1305,10 +1284,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             ExternalNavigationParams params,
             boolean intentMatchesNonDefaultWebApk,
             boolean incomingIntentRedirect) {
-        if (!params.isFromIntent()) return false;
-
         // S+ workaround for WebAPKs not being able to handle Intents.
         if (intentMatchesNonDefaultWebApk) return false;
+
+        if (!params.isFromIntent()) return false;
 
         // Redirects off of intents are still allowed to launch apps (eg. URL shorteners).
         if (incomingIntentRedirect) return false;
@@ -1521,29 +1500,18 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
     }
 
     /**
-     * Current URL has at least one specialized handler available. For navigations within the same
-     * host, keep the navigation inside the browser unless the set of available apps to handle the
-     * new navigation is different. http://crbug.com/463138
+     * Current URL has at least one specialized handler available. For navigations
+     * within the same host, keep the navigation inside the browser unless the set of
+     * available apps to handle the new navigation is different. http://crbug.com/463138
      */
     private boolean shouldStayWithinHost(
             ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            boolean isExternalProtocol,
-            GURL intentTargetUrl) {
+            List<ResolveInfo> resolvingInfos,
+            boolean isExternalProtocol) {
         if (isExternalProtocol || !params.isRendererInitiated()) return false;
 
         GURL previousUrl = getLastCommittedUrl();
         if (previousUrl == null) previousUrl = params.getReferrerUrl();
-        // First navigation in a frame still has about:blank as last-committed, which is not
-        // the document URL.
-        if (ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH.isEnabled()
-                && params.isInitialNavigationInFrame()
-                && !UrlUtilities.isHttpOrHttps(previousUrl)) {
-            GURL referrer = params.getReferrerUrl();
-            if (UrlUtilities.isHttpOrHttps(referrer)) {
-                previousUrl = referrer;
-            }
-        }
         if (previousUrl.isEmpty()) return false;
 
         GURL currentUrl = params.getUrl();
@@ -1555,10 +1523,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         Intent previousIntent = new Intent(Intent.ACTION_VIEW);
         previousIntent.setData(Uri.parse(previousUrl.getSpec()));
 
-        if (resolversSubsetOf(resolvingInfos.get(), queryIntentActivities(previousIntent))) {
-            if (isNewSoleSelfOwnedWebApk(params, resolvingInfos, previousIntent, intentTargetUrl)) {
-                return false;
-            }
+        if (resolversSubsetOf(resolvingInfos, queryIntentActivities(previousIntent))) {
             if (debug()) Log.i(TAG, "Same host, no new resolvers");
             return true;
         }
@@ -1752,31 +1717,24 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * If another app, or the user, chose to launch this app for an intent, we should keep that
      * navigation within this app through redirects until it resolves to a new app or external
      * protocol given this app was intentionally chosen. Custom tabs always explicitly target the
-     * browser and this issue is handled elsewhere through {@link
-     * RedirectHandler#intentPrefersToStayInChrome()}.
+     * browser and this issue is handled elsewhere through
+     * {@link RedirectHandler#intentPrefersToStayInChrome()}.
      *
-     * <p>Usually this covers cases like https://www.youtube.com/ redirecting to
+     * Usually this covers cases like https://www.youtube.com/ redirecting to
      * https://m.youtube.com/. Note that this isn't covered by {@link #shouldStayWithinHost()} as
      * for intent navigation there is no previously committed URL.
      */
     private boolean shouldKeepIntentRedirectInApp(
             ExternalNavigationParams params,
             boolean incomingIntentRedirect,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            boolean isExternalProtocol,
-            GURL intentTargetUrl) {
+            List<ResolveInfo> resolvingInfos,
+            boolean isExternalProtocol) {
         if (incomingIntentRedirect
                 && !isExternalProtocol
                 && !params.getRedirectHandler().isFromCustomTabIntent()
                 && !params.getRedirectHandler()
                         .hasNewResolver(
-                                resolvingInfos.get(),
-                                (Intent intent) -> queryIntentActivities(intent))) {
-            Intent initial = params.getRedirectHandler().getInitialIntent();
-            if (initial != null
-                    && isNewSoleSelfOwnedWebApk(params, resolvingInfos, initial, intentTargetUrl)) {
-                return false;
-            }
+                                resolvingInfos, (Intent intent) -> queryIntentActivities(intent))) {
             if (debug()) Log.i(TAG, "Intent navigation with no new handlers.");
             return true;
         }
@@ -1803,13 +1761,10 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * are currently showing the WebAPK (params#nativeClientPackageName()) that we will redirect to.
      */
     private boolean isAlreadyInTargetWebApk(
-            QueryIntentActivitiesSupplier resolvingInfos,
-            ExternalNavigationParams params,
-            GURL intentTargetUrl) {
+            QueryIntentActivitiesSupplier resolvingInfos, ExternalNavigationParams params) {
         String currentName = params.nativeClientPackageName();
         if (currentName == null) return false;
-        for (ResolveInfo resolveInfo :
-                getResolveInfosForWebApks(params, resolvingInfos, intentTargetUrl)) {
+        for (ResolveInfo resolveInfo : getResolveInfosForWebApks(params, resolvingInfos)) {
             ActivityInfo info = resolveInfo.activityInfo;
             if (info != null && currentName.equals(info.packageName)) {
                 if (debug()) Log.i(TAG, "Already in WebAPK");
@@ -1923,7 +1878,13 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         boolean incomingIntentRedirect = isIncomingIntentRedirect(params);
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
 
-        GURL intentTargetUrl = getTargetUrlFromIntent(targetIntent);
+        GURL intentTargetUrl = new GURL(targetIntent.getDataString());
+        // Unpack schemes targeting the current browser.
+        String selfScheme = mDelegate.getSelfScheme();
+        if (selfScheme != null && intentTargetUrl.getScheme().equals(selfScheme)) {
+            intentTargetUrl =
+                    new GURL(getUrlFromSelfSchemeUrl(selfScheme, intentTargetUrl.getSpec()));
+        }
 
         if (params.isIncognito() && params.getUrl() != null) {
             // Accessing chrome://extensions in incognito is not allowed, and causes sending an
@@ -2013,7 +1974,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
                 new QueryIntentActivitiesSupplier(targetIntent);
 
         boolean intentMatchesNonDefaultWebApk =
-                intentMatchesNonDefaultWebApk(params, resolvingInfos, intentTargetUrl);
+                intentMatchesNonDefaultWebApk(params, resolvingInfos);
         if (isDirectIntentNavigation(
                 params, intentMatchesNonDefaultWebApk, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -2074,30 +2035,20 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
         }
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
-        if (!isExternalProtocol
-                && !hasSpecializedHandlerOrNonDefaultWebApk(
-                        params,
-                        resolvingInfos,
-                        hasSpecializedHandler,
-                        intentMatchesNonDefaultWebApk,
-                        intentTargetUrl)) {
+        if (!isExternalProtocol && !hasSpecializedHandler && !intentMatchesNonDefaultWebApk) {
             return fallBackToHandlingInApp(params);
         }
 
-        if (shouldStayWithinHost(params, resolvingInfos, isExternalProtocol, intentTargetUrl)) {
+        if (shouldStayWithinHost(params, resolvingInfos.get(), isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
         if (shouldKeepIntentRedirectInApp(
-                params,
-                incomingIntentRedirect,
-                resolvingInfos,
-                isExternalProtocol,
-                intentTargetUrl)) {
+                params, incomingIntentRedirect, resolvingInfos.get(), isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        if (isAlreadyInTargetWebApk(resolvingInfos, params, intentTargetUrl)) {
+        if (isAlreadyInTargetWebApk(resolvingInfos, params)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -2122,8 +2073,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             return handleDigitalCredentialsIntent(params, targetIntent);
         }
 
-        if (launchWebApkIfSoleIntentHandler(
-                resolvingInfos, targetIntent, params, intentTargetUrl)) {
+        if (launchWebApkIfSoleIntentHandler(resolvingInfos, targetIntent, params)) {
             return OverrideUrlLoadingResult.forExternalIntent();
         }
 
@@ -2416,15 +2366,13 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
     /**
      * Launches WebAPK if the WebAPK is the sole non-browser handler for the given intent.
-     *
      * @return Whether a WebAPK was launched.
      */
     private boolean launchWebApkIfSoleIntentHandler(
             QueryIntentActivitiesSupplier resolvingInfos,
             Intent targetIntent,
-            ExternalNavigationParams params,
-            GURL intentTargetUrl) {
-        String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos, intentTargetUrl);
+            ExternalNavigationParams params) {
+        String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos);
         if (packageName == null) return false;
 
         if (mDelegate.shouldLaunchNewWindow(params)) {
@@ -2448,114 +2396,18 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
 
     // https://crbug.com/1232514. See #intentMatchesNonDefaultWebApk.
     private List<ResolveInfo> getResolveInfosForWebApks(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            GURL intentTargetUrl) {
-        if (shouldQueryNonDefaultWebApks(params, intentTargetUrl)) {
+            ExternalNavigationParams params, QueryIntentActivitiesSupplier resolvingInfos) {
+        if (params.isFromIntent() && mDelegate.shouldLaunchWebApksOnInitialIntent()) {
             return resolvingInfos.getIncludingNonDefaultResolveInfos();
         }
         return resolvingInfos.get();
     }
 
-    private boolean shouldQueryNonDefaultWebApks(
-            ExternalNavigationParams params, GURL intentTargetUrl) {
-        if (!mDelegate.shouldLaunchWebApksOnInitialIntent()) return false;
-        if (params.isFromIntent()) return true;
-        if (!ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH.isEnabled()) {
-            return false;
-        }
-        return !intentTargetUrl.isEmpty() && mDelegate.maybeHasWebApkForUrl(intentTargetUrl);
-    }
-
-    private boolean hasSpecializedHandlerOrNonDefaultWebApk(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            boolean hasSpecializedHandler,
-            boolean intentMatchesNonDefaultWebApk,
-            GURL intentTargetUrl) {
-        if (hasSpecializedHandler || intentMatchesNonDefaultWebApk) return true;
-        if (params.isFromIntent()) return false;
-
-        // Renderer navigations into unverified WebAPKs need a non-default query because Android S+
-        // hides those handlers from MATCH_DEFAULT_ONLY results.
-        return shouldQueryNonDefaultWebApks(params, intentTargetUrl)
-                && pickWebApkIfSoleIntentHandler(params, resolvingInfos, intentTargetUrl) != null;
-    }
-
-    // MATCH_DEFAULT_ONLY stay/keep-in-app cannot see an unverified WebAPK. If the destination
-    // has a sole WebAPK that did not handle the earlier URL, do not stay.
-    private boolean isNewSoleSelfOwnedWebApk(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            Intent earlierIntent,
-            GURL intentTargetUrl) {
-        if (!ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH.isEnabled()) {
-            return false;
-        }
-        if (!shouldQueryNonDefaultWebApks(params, intentTargetUrl)) return false;
-        if (earlierIntent.getData() == null) return false;
-        String packageName = pickWebApkIfSoleIntentHandler(params, resolvingInfos, intentTargetUrl);
-        if (packageName == null) return false;
-        String earlierUri = earlierIntent.getData().toString();
-        assert resolvingInfos.mSoleWebApkComputed;
-        Boolean earlierHandled = resolvingInfos.mEarlierUrlHandledByWebApk.get(earlierUri);
-        if (earlierHandled == null) {
-            List<ResolveInfo> earlierInfos =
-                    queryIntentActivitiesIncludingNonDefault(earlierIntent);
-            earlierHandled = getSpecializedHandlers(earlierInfos).contains(packageName);
-            resolvingInfos.mEarlierUrlHandledByWebApk.put(earlierUri, earlierHandled);
-        }
-        return !earlierHandled;
-    }
-
-    private List<ResolveInfo> queryIntentActivitiesIncludingNonDefault(Intent intent) {
-        return PackageManagerUtils.queryIntentActivities(
-                intent, PackageManager.GET_RESOLVED_FILTER);
-    }
-
-    /**
-     * Returns the URL {@code intent} is actually targeting, derived from the intent data with
-     * self-scheme URLs unpacked. Used instead of {@code params.getUrl()} because for {@code
-     * intent://} navigations or fallback URLs that outer URL is not the real target and would fail
-     * the WebAPK origin pre-check.
-     */
-    private GURL getTargetUrlFromIntent(Intent intent) {
-        String dataString = intent.getDataString();
-        if (dataString == null) return GURL.emptyGURL();
-        GURL targetUrl = new GURL(dataString);
-        String selfScheme = mDelegate.getSelfScheme();
-        if (selfScheme != null
-                && targetUrl.getScheme() != null
-                && targetUrl.getScheme().equals(selfScheme)) {
-            targetUrl = new GURL(getUrlFromSelfSchemeUrl(selfScheme, targetUrl.getSpec()));
-        }
-        return targetUrl;
-    }
-
     private @Nullable String pickWebApkIfSoleIntentHandler(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            GURL intentTargetUrl) {
-        if (!resolvingInfos.mSoleWebApkComputed) {
-            resolvingInfos.mSoleWebApkPackage =
-                    computeSoleWebApkPackage(params, resolvingInfos, intentTargetUrl);
-            resolvingInfos.mSoleWebApkComputed = true;
-        }
-        return resolvingInfos.mSoleWebApkPackage;
-    }
-
-    private @Nullable String computeSoleWebApkPackage(
-            ExternalNavigationParams params,
-            QueryIntentActivitiesSupplier resolvingInfos,
-            GURL intentTargetUrl) {
+            ExternalNavigationParams params, QueryIntentActivitiesSupplier resolvingInfos) {
         ArrayList<String> packages =
-                getSpecializedHandlers(
-                        getResolveInfosForWebApks(params, resolvingInfos, intentTargetUrl));
+                getSpecializedHandlers(getResolveInfosForWebApks(params, resolvingInfos));
         if (packages.size() != 1 || !isValidWebApk(packages.get(0))) return null;
-        if (ExternalIntentsFeatures.WEBAPK_SELF_OWNED_RENDERER_NAV_LAUNCH.isEnabled()
-                && !mDelegate.isWebApkLinkHandlingAllowed(packages.get(0))) {
-            return null;
-        }
         return packages.get(0);
     }
 
@@ -2668,7 +2520,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
      * @param intent The intent we want to send.
      */
     private OverrideUrlLoadingResult startActivity(Intent intent, ExternalNavigationParams params) {
-        return startActivity(intent, params, false, null, null, null, GURL.emptyGURL());
+        return startActivity(intent, params, false, null, null, null, null);
     }
 
     /**
@@ -2693,7 +2545,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             @Nullable QueryIntentActivitiesSupplier resolvingInfos,
             @Nullable ResolveActivitySupplier resolveActivity,
             @Nullable GURL browserFallbackUrl,
-            GURL intentTargetUrl) {
+            @Nullable GURL intentTargetUrl) {
         // https://crbug.com/330555390. If we've launched an app on the current redirect chain, we
         // should never launch a second one.
         if (params.getRedirectHandler().isOnNavigation()) {
@@ -2770,7 +2622,7 @@ public class ExternalNavigationHandler implements ExternalNavigationHelper {
             QueryIntentActivitiesSupplier resolvingInfos,
             ResolveActivitySupplier resolveActivity,
             @Nullable GURL browserFallbackUrl,
-            GURL intentTargetUrl,
+            @Nullable GURL intentTargetUrl,
             final ExternalNavigationParams params,
             Context context) {
         ResolveInfo intentResolveInfo = resolveActivity.get();

@@ -11,7 +11,6 @@ namespace external_intents {
 
 BASE_DECLARE_FEATURE(kExternalNavigationDebugLogs);
 BASE_DECLARE_FEATURE(kDontClobberTabsWithChromeAppId);
-BASE_DECLARE_FEATURE(kWebApkSelfOwnedRendererNavLaunch);
 
 }  // namespace external_intents
 

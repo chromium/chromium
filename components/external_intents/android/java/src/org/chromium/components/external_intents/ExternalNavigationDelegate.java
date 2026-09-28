@@ -128,22 +128,6 @@ public interface ExternalNavigationDelegate {
     /** Whether WebAPKs should be launched even on the initial Intent. */
     boolean shouldLaunchWebApksOnInitialIntent();
 
-    /**
-     * Per-package "Open supported links" setting, not per-host verification. Default true so
-     * embedders that do not read the setting keep existing incoming VIEW WebAPK launches.
-     */
-    default boolean isWebApkLinkHandlingAllowed(@Nullable String packageName) {
-        return packageName != null;
-    }
-
-    /**
-     * Cheap precheck for renderer navigations before querying non-default WebAPK handlers. Default
-     * true preserves behavior for embedders that do not keep an in-memory WebAPK registry.
-     */
-    default boolean maybeHasWebApkForUrl(GURL url) {
-        return true;
-    }
-
     /** Adds a target package to the Intent. Only called if isForTrustedCallingApp is true. */
     void setPackageForTrustedCallingApp(Intent intent);
 

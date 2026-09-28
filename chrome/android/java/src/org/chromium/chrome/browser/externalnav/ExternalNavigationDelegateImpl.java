@@ -11,12 +11,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.verify.domain.DomainVerificationManager;
-import android.content.pm.verify.domain.DomainVerificationUserState;
 import android.net.Uri;
 import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.ApplicationState;
@@ -45,7 +41,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
@@ -71,7 +66,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     private @TabLaunchType int mTabLaunchType;
 
     private static @Nullable Predicate<Intent> sWillChromeHandleIntentHookForTesting;
-    private static @Nullable Boolean sIsWebApkLinkHandlingAllowedForTesting;
 
     public ExternalNavigationDelegateImpl(Tab tab) {
         mTab = tab;
@@ -113,11 +107,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     public static void setWillChromeHandleIntentHookForTesting(Predicate<Intent> hook) {
         sWillChromeHandleIntentHookForTesting = hook;
         ResettersForTesting.register(() -> sWillChromeHandleIntentHookForTesting = null);
-    }
-
-    public static void setIsWebApkLinkHandlingAllowedForTesting(boolean allowed) {
-        sIsWebApkLinkHandlingAllowedForTesting = allowed;
-        ResettersForTesting.register(() -> sIsWebApkLinkHandlingAllowedForTesting = null);
     }
 
     /**
@@ -254,43 +243,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean shouldLaunchWebApksOnInitialIntent() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-    }
-
-    @Override
-    public boolean isWebApkLinkHandlingAllowed(@Nullable String packageName) {
-        if (sIsWebApkLinkHandlingAllowedForTesting != null) {
-            return sIsWebApkLinkHandlingAllowedForTesting;
-        }
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true;
-        if (packageName == null) return false;
-        return isWebApkLinkHandlingAllowedOnS(packageName);
-    }
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private boolean isWebApkLinkHandlingAllowedOnS(String packageName) {
-        try {
-            DomainVerificationManager manager =
-                    ContextUtils.getApplicationContext()
-                            .getSystemService(DomainVerificationManager.class);
-            if (manager == null) return false;
-            DomainVerificationUserState userState =
-                    manager.getDomainVerificationUserState(packageName);
-            if (userState == null) return false;
-            return userState.isLinkHandlingAllowed();
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
-        } catch (Exception e) {
-            // DomainVerificationManager talks to OS APIs. Treat failures while recovering the
-            // WebAPK link-handling state as "link handling not allowed" so the link simply loads
-            // in the browser tab instead of crashing during navigation interception.
-            return false;
-        }
-    }
-
-    @Override
-    public boolean maybeHasWebApkForUrl(GURL url) {
-        return WebappRegistry.getInstance()
-                .hasAtLeastOneWebApkForOriginWithoutPackageCheck(url.getSpec());
     }
 
     @Override
