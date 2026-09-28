@@ -17,7 +17,6 @@
 #include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -84,8 +83,6 @@ TransactionalLevelDBDatabase::TransactionalLevelDBDatabase(
 }
 
 TransactionalLevelDBDatabase::~TransactionalLevelDBDatabase() {
-  LOCAL_HISTOGRAM_COUNTS_10000("Storage.IndexedDB.LevelDB.MaxIterators",
-                               max_iterators_);
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
 }
@@ -147,7 +144,6 @@ std::unique_ptr<TransactionalLevelDBIterator>
 TransactionalLevelDBDatabase::CreateIterator(leveldb::ReadOptions options) {
   DCHECK(!options.snapshot);
   num_iterators_++;
-  max_iterators_ = std::max(max_iterators_, num_iterators_);
   std::unique_ptr<LevelDBSnapshot> snapshot =
       std::make_unique<LevelDBSnapshot>(this);
   options.snapshot = snapshot->snapshot();
@@ -171,7 +167,6 @@ TransactionalLevelDBDatabase::CreateIterator(
   // iterator lists. The implementation assumes that the iterator lives in
   // either the database list or the transaction list, and not both.
   num_iterators_++;
-  max_iterators_ = std::max(max_iterators_, num_iterators_);
   std::unique_ptr<LevelDBSnapshot> snapshot =
       std::make_unique<LevelDBSnapshot>(this);
   options.snapshot = snapshot->snapshot();

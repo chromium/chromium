@@ -172,9 +172,7 @@ class TransactionalLevelDBDatabase
   base::HashingLRUCache<TransactionalLevelDBIterator*, DetachIteratorOnDestruct>
       iterator_lru_;
 
-  // Recorded for UMA reporting.
   uint32_t num_iterators_ = 0;
-  uint32_t max_iterators_ = 0;
 
   base::WeakPtrFactory<TransactionalLevelDBDatabase>
       weak_factory_for_iterators_{this};
