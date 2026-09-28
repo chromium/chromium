@@ -81,6 +81,7 @@ import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -855,14 +856,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // done even if the user cancelled the flow (i.e. resultCode != RESULT_OK) because it's
         // harmless to issue a redundant notifyKeysChanged().
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL) {
-            TrustedVaultClient.get()
+            TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                     .notifyKeysChanged(TrustedVaultUserActionTriggerForUMA.SETTINGS);
             if (resultCode == Activity.RESULT_OK) {
                 mShouldUpdatePrefs = true;
             }
         }
         if (requestCode == REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED) {
-            TrustedVaultClient.get().notifyRecoverabilityChanged();
+            TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).notifyRecoverabilityChanged();
         }
     }
 

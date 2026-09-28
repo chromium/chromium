@@ -47,6 +47,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -344,7 +345,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         if (primaryAccountInfo == null) {
             return;
         }
-        TrustedVaultClient.get()
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
@@ -369,7 +370,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         if (primaryAccountInfo == null) {
             return;
         }
-        TrustedVaultClient.get()
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                 .createRecoverabilityDegradedIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {

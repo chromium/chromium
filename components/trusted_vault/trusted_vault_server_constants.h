@@ -20,6 +20,7 @@ inline constexpr char kPasskeysSecurityDomainName[] = "hw_protected";
 // Append new values at the end and update kMaxValue. Note: Values are persisted
 // in disk storage (e.g. DomainData.domain_id) and must not be renumbered or
 // reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.trusted_vault
 enum class SecurityDomainId {
   kChromeSync = 1,
   kPasskeys = 2,

@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 
 // JNI bridge for a Java implementation of the TrustedVaultClient interface,
 // used on Android.
@@ -30,7 +31,8 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   using GetAccountInfoByGaiaIdCallback =
       base::RepeatingCallback<CoreAccountInfo(const GaiaId& gaia_id)>;
 
-  explicit TrustedVaultClientAndroid(
+  TrustedVaultClientAndroid(
+      trusted_vault::SecurityDomainId security_domain_id,
       const GetAccountInfoByGaiaIdCallback& gaia_account_info_by_gaia_id_cb);
   ~TrustedVaultClientAndroid() override;
 
@@ -149,6 +151,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   RequestId RegisterNewOngoingRequest(OngoingRequest request);
   OngoingRequest GetAndUnregisterOngoingRequest(RequestId id);
 
+  const trusted_vault::SecurityDomainId security_domain_id_;
   const GetAccountInfoByGaiaIdCallback gaia_account_info_by_gaia_id_cb_;
 
   // Each in-flight request gets assigned an auto-increment ID and gets cached

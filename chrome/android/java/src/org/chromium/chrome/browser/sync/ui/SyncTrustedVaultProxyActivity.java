@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
@@ -170,11 +171,13 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         // notifications (SyncErrorNotifier), because the user may ignore or dismiss a notification.
         switch (mRequestCode) {
             case REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL:
-                TrustedVaultClient.get().recordKeyRetrievalTrigger(mUserActionTrigger);
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .recordKeyRetrievalTrigger(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:
-                TrustedVaultClient.get().recordRecoverabilityDegradedFixTrigger(mUserActionTrigger);
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .recordRecoverabilityDegradedFixTrigger(mUserActionTrigger);
                 break;
 
             default:
@@ -192,12 +195,13 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
                 // Upon key retrieval completion, the keys in TrustedVaultClient could have changed.
                 // This is done even if the user cancelled the flow (i.e. resultCode != RESULT_OK)
                 // because it's harmless to issue a redundant notifyKeysChanged().
-                TrustedVaultClient.get().notifyKeysChanged(mUserActionTrigger);
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .notifyKeysChanged(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:
                 // Same as above, it is harmless to issue redundant notifyRecoverabilityChanged().
-                TrustedVaultClient.get().notifyRecoverabilityChanged();
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).notifyRecoverabilityChanged();
                 break;
 
             default:

@@ -28,6 +28,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
@@ -224,12 +225,13 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        TrustedVaultClient.get()
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                 .recordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(
                 fragment,
                 requestCode,
-                TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .createKeyRetrievalIntent(accountInfo));
     }
 
     /**
@@ -243,13 +245,14 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultRecoverabilityDegradedDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        TrustedVaultClient.get()
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                 .recordRecoverabilityDegradedFixTrigger(
                         TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(
                 fragment,
                 requestCode,
-                TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .createRecoverabilityDegradedIntent(accountInfo));
     }
 
     /**
@@ -263,7 +266,10 @@ public class SyncSettingsUtils {
     public static void openTrustedVaultOptInDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
         openTrustedVaultDialogForPendingIntent(
-                fragment, requestCode, TrustedVaultClient.get().createOptInIntent(accountInfo));
+                fragment,
+                requestCode,
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .createOptInIntent(accountInfo));
     }
 
     /**

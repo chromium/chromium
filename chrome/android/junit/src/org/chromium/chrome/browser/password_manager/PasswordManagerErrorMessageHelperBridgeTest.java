@@ -49,6 +49,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -104,7 +105,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        TrustedVaultClient.get().setBackendForTesting(mTrustedVaultBackend);
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                .setBackendForTesting(mTrustedVaultBackend);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
     }
 

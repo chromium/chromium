@@ -13,10 +13,15 @@
 namespace trusted_vault {
 
 TrustedVaultService::TrustedVaultService(
-    std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client)
+    std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client,
+    std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client)
     : chrome_sync_security_domain_client_(
-          std::move(chrome_sync_security_domain_client)) {
+          std::move(chrome_sync_security_domain_client)),
+      passkeys_security_domain_client_(
+          std::move(passkeys_security_domain_client)) {
   CHECK(chrome_sync_security_domain_client_);
+  // Note: `passkeys_security_domain_client_` is allowed to be null on platforms
+  // where the passkeys security domain is not managed by TrustedVaultService.
 }
 
 TrustedVaultService::~TrustedVaultService() = default;
@@ -27,7 +32,7 @@ trusted_vault::TrustedVaultClient* TrustedVaultService::GetTrustedVaultClient(
     case SecurityDomainId::kChromeSync:
       return chrome_sync_security_domain_client_.get();
     case SecurityDomainId::kPasskeys:
-      return nullptr;
+      return passkeys_security_domain_client_.get();
   }
   NOTREACHED();
 }

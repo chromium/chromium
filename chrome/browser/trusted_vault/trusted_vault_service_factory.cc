@@ -49,25 +49,38 @@ CreateChromeSyncStandaloneTrustedVaultClient(Profile* profile) {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+TrustedVaultClientAndroid::GetAccountInfoByGaiaIdCallback
+GetAccountInfoCallback(Profile* profile) {
+  return base::BindRepeating(
+      [](signin::IdentityManager* identity_manager,
+         const GaiaId& gaia_id) -> CoreAccountInfo {
+        return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
+            .GetCoreAccountInfo();
+      },
+      IdentityManagerFactory::GetForProfile(profile));
+}
+#endif
+
 std::unique_ptr<trusted_vault::TrustedVaultClient>
 CreateChromeSyncTrustedVaultClient(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<
-      TrustedVaultClientAndroid>(/*gaia_account_info_by_gaia_id_cb=*/
-                                 base::BindRepeating(
-                                     [](signin::IdentityManager*
-                                            identity_manager,
-                                        const GaiaId& gaia_id)
-                                         -> CoreAccountInfo {
-                                       return identity_manager
-                                           ->FindExtendedAccountInfoByGaiaId(
-                                               gaia_id)
-                                           .GetCoreAccountInfo();
-                                     },
-                                     IdentityManagerFactory::GetForProfile(
-                                         profile)));
+  return std::make_unique<TrustedVaultClientAndroid>(
+      trusted_vault::SecurityDomainId::kChromeSync,
+      GetAccountInfoCallback(profile));
 #else
   return CreateChromeSyncStandaloneTrustedVaultClient(profile);
+#endif
+}
+
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreatePasskeysTrustedVaultClient(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<TrustedVaultClientAndroid>(
+      trusted_vault::SecurityDomainId::kPasskeys,
+      GetAccountInfoCallback(profile));
+#else
+  return nullptr;
 #endif
 }
 
@@ -76,7 +89,8 @@ std::unique_ptr<KeyedService> BuildTrustedVaultService(
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
   return std::make_unique<trusted_vault::TrustedVaultService>(
-      CreateChromeSyncTrustedVaultClient(profile));
+      CreateChromeSyncTrustedVaultClient(profile),
+      CreatePasskeysTrustedVaultClient(profile));
 }
 
 }  // namespace

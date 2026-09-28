@@ -67,6 +67,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.UserActionableError;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
@@ -321,7 +322,7 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         // TODO(crbug.com/334124078): Simplify the test using FakeTrustedVaultClientBackend once the
         // bug is resolved.
         TestTrustedVaultClientBackend backend = new TestTrustedVaultClientBackend();
-        TrustedVaultClient.get().setBackendForTesting(backend);
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).setBackendForTesting(backend);
 
         final FakeSyncServiceImpl fakeSyncService =
                 (FakeSyncServiceImpl) mSyncTestRule.getSyncService();

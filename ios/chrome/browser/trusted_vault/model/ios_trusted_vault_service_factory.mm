@@ -47,5 +47,9 @@ IOSTrustedVaultServiceFactory::BuildServiceInstanceFor(
           ChromeAccountManagerServiceFactory::GetForProfile(profile),
           IdentityManagerFactory::GetForProfile(profile),
           TrustedVaultClientBackendFactory::GetForProfile(profile),
-          profile->GetSharedURLLoaderFactory()));
+          profile->GetSharedURLLoaderFactory()),
+      // TODO(crbug.com/540854648): Consider providing an IOSTrustedVaultClient
+      // for SecurityDomainId::kPasskeys and migrating iOS passkey callers to
+      // TrustedVaultService.
+      /*passkeys_security_domain_client=*/nullptr);
 }

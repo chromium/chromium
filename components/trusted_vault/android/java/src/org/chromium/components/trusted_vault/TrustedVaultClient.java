@@ -16,14 +16,15 @@ import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Consumer;
@@ -144,17 +145,26 @@ public class TrustedVaultClient {
         }
     }
 
-    private static @MonotonicNonNull TrustedVaultClient sInstance;
+    /** Factory for creating security-domain-specific Backend instances. */
+    public interface BackendFactory {
+        Backend createBackend(@SecurityDomainId int securityDomainId);
+    }
+
+    // Maps @SecurityDomainId values to their corresponding TrustedVaultClient singleton instances.
+    private static final Map<Integer, TrustedVaultClient> sInstances =
+            Collections.synchronizedMap(new HashMap<>());
 
     private Backend mBackend;
+    private final @SecurityDomainId int mSecurityDomainId;
 
     // Registered native TrustedVaultClientAndroid instances. Usually exactly one.
     private final Set<Long> mNativeTrustedVaultClientAndroidSet = new TreeSet<>();
 
     @VisibleForTesting
-    public TrustedVaultClient(Backend backend) {
+    public TrustedVaultClient(Backend backend, @SecurityDomainId int securityDomainId) {
         assert backend != null;
         mBackend = backend;
+        mSecurityDomainId = securityDomainId;
     }
 
     public void setBackendForTesting(Backend backend) {
@@ -164,18 +174,50 @@ public class TrustedVaultClient {
     }
 
     /**
-     * Displays a UI that allows the user to reauthenticate and retrieve the sync encryption keys.
+     * Returns the TrustedVaultClient singleton for the given security domain.
+     *
+     * @param securityDomainId The security domain identifier.
      */
-    public static TrustedVaultClient get() {
-        if (sInstance == null) {
-            TrustedVaultClient.Backend backend =
-                    ServiceLoaderUtil.maybeCreate(TrustedVaultClient.Backend.class);
-            if (backend == null) {
-                backend = new TrustedVaultClient.EmptyBackend();
+    public static TrustedVaultClient get(@SecurityDomainId int securityDomainId) {
+        // TODO(crbug.com/540854648): Synchronized defensively; investigate enforcing
+        // UI-thread-only access and removing this synchronization.
+        synchronized (sInstances) {
+            TrustedVaultClient instance = sInstances.get(securityDomainId);
+            if (instance == null) {
+                instance =
+                        new TrustedVaultClient(createBackend(securityDomainId), securityDomainId);
+                sInstances.put(securityDomainId, instance);
             }
-            sInstance = new TrustedVaultClient(backend);
+            return instance;
         }
-        return sInstance;
+    }
+
+    private static Backend createBackend(@SecurityDomainId int securityDomainId) {
+        BackendFactory factory = ServiceLoaderUtil.maybeCreate(BackendFactory.class);
+        if (factory != null) {
+            return factory.createBackend(securityDomainId);
+        }
+        // TODO(crbug.com/540854648): Remove this legacy fallback once the downstream
+        // implementation is migrated from @ServiceImpl(Backend.class) (which only supports
+        // CHROME_SYNC) to @ServiceImpl(BackendFactory.class).
+        if (securityDomainId == SecurityDomainId.CHROME_SYNC) {
+            Backend legacyBackend = ServiceLoaderUtil.maybeCreate(Backend.class);
+            if (legacyBackend != null) {
+                return legacyBackend;
+            }
+        }
+        return new EmptyBackend();
+    }
+
+    /**
+     * Deprecated overload for downstream compatibility until callers pass SecurityDomainId.
+     *
+     * <p>TODO(crbug.com/540854648): Remove once downstream callers are migrated to
+     * get(SecurityDomainId).
+     */
+    @Deprecated
+    public static TrustedVaultClient get() {
+        return get(SecurityDomainId.CHROME_SYNC);
     }
 
     /**
@@ -252,9 +294,12 @@ public class TrustedVaultClient {
      */
     @VisibleForTesting
     @CalledByNative
-    public static void registerNative(long nativeTrustedVaultClientAndroid) {
-        assert !isNativeRegistered(nativeTrustedVaultClientAndroid);
-        get().mNativeTrustedVaultClientAndroidSet.add(nativeTrustedVaultClientAndroid);
+    public static void registerNative(
+            long nativeTrustedVaultClientAndroid, @SecurityDomainId int securityDomainId) {
+        assert !isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
+        get(securityDomainId)
+                .mNativeTrustedVaultClientAndroidSet
+                .add(nativeTrustedVaultClientAndroid);
     }
 
     /**
@@ -263,25 +308,40 @@ public class TrustedVaultClient {
      */
     @VisibleForTesting
     @CalledByNative
-    public static void unregisterNative(long nativeTrustedVaultClientAndroid) {
-        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
-        get().mNativeTrustedVaultClientAndroidSet.remove(nativeTrustedVaultClientAndroid);
+    public static void unregisterNative(
+            long nativeTrustedVaultClientAndroid, @SecurityDomainId int securityDomainId) {
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
+        get(securityDomainId)
+                .mNativeTrustedVaultClientAndroidSet
+                .remove(nativeTrustedVaultClientAndroid);
     }
 
-    /** Records TrustedVaultKeyRetrievalTrigger histogram. */
+    /** Records TrustedVaultKeyRetrievalTrigger histogram for the CHROME_SYNC security domain. */
     public void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger) {
-        TrustedVaultClientJni.get().recordKeyRetrievalTrigger(trigger);
+        // TODO(crbug.com/540854648): Record the same metric for the passkeys security domain.
+        if (mSecurityDomainId == SecurityDomainId.CHROME_SYNC) {
+            TrustedVaultClientJni.get().recordKeyRetrievalTrigger(trigger);
+        }
     }
 
-    /** Records TrustedVaultRecoverabilityDegradedFixTrigger histogram. */
+    /**
+     * Records TrustedVaultRecoverabilityDegradedFixTrigger histogram for the CHROME_SYNC security
+     * domain.
+     */
     public void recordRecoverabilityDegradedFixTrigger(
             @TrustedVaultUserActionTriggerForUMA int trigger) {
-        TrustedVaultClientJni.get().recordRecoverabilityDegradedFixTrigger(trigger);
+        // TODO(crbug.com/540854648): Record the same metric for the passkeys security domain.
+        if (mSecurityDomainId == SecurityDomainId.CHROME_SYNC) {
+            TrustedVaultClientJni.get().recordRecoverabilityDegradedFixTrigger(trigger);
+        }
     }
 
     /** Convenience function to check if a native client has been registered. */
-    private static boolean isNativeRegistered(long nativeTrustedVaultClientAndroid) {
-        return get().mNativeTrustedVaultClientAndroidSet.contains(nativeTrustedVaultClientAndroid);
+    private static boolean isNativeRegistered(
+            long nativeTrustedVaultClientAndroid, @SecurityDomainId int securityDomainId) {
+        return get(securityDomainId)
+                .mNativeTrustedVaultClientAndroidSet
+                .contains(nativeTrustedVaultClientAndroid);
     }
 
     /**
@@ -291,13 +351,14 @@ public class TrustedVaultClient {
     @CalledByNative
     private static void fetchKeys(
             long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
             int requestId,
             @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
-        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
 
         Consumer<List<byte[]>> responseCb =
                 keys -> {
-                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
                         // Native already unregistered, no response needed.
                         return;
                     }
@@ -308,7 +369,8 @@ public class TrustedVaultClient {
                                     accountInfo.getGaiaId().toString(),
                                     keys.toArray(new byte[0][]));
                 };
-        get().mBackend
+        get(securityDomainId)
+                .mBackend
                 .fetchKeys(accountInfo)
                 .then(responseCb::accept, exception -> responseCb.accept(new ArrayList<byte[]>()));
     }
@@ -320,13 +382,14 @@ public class TrustedVaultClient {
     @CalledByNative
     private static void markLocalKeysAsStale(
             long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
             int requestId,
             @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
-        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
 
         Consumer<Boolean> responseCallback =
                 succeeded -> {
-                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
                         // Native already unregistered, no response needed.
                         return;
                     }
@@ -334,7 +397,8 @@ public class TrustedVaultClient {
                             .markLocalKeysAsStaleCompleted(
                                     nativeTrustedVaultClientAndroid, requestId, succeeded);
                 };
-        get().mBackend
+        get(securityDomainId)
+                .mBackend
                 .markLocalKeysAsStale(accountInfo)
                 // If an exception occurred, it's unknown whether the operation made any
                 // difference. In doubt return true, since false positives are allowed.
@@ -348,13 +412,14 @@ public class TrustedVaultClient {
     @CalledByNative
     private static void getIsRecoverabilityDegraded(
             long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
             int requestId,
             @JniType("CoreAccountInfo") CoreAccountInfo accountInfo) {
-        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
 
         Consumer<Boolean> responseCallback =
                 isDegraded -> {
-                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
                         // Native already unregistered, no response needed.
                         return;
                     }
@@ -363,7 +428,8 @@ public class TrustedVaultClient {
                                     nativeTrustedVaultClientAndroid, requestId, isDegraded);
                 };
 
-        get().mBackend
+        get(securityDomainId)
+                .mBackend
                 .getIsRecoverabilityDegraded(accountInfo)
                 // If an exception occurred, it's unknown whether recoverability is degraded. In
                 // doubt reply with `false`, so the user isn't bothered with a prompt.
@@ -377,26 +443,32 @@ public class TrustedVaultClient {
     @CalledByNative
     private static void addTrustedRecoveryMethod(
             long nativeTrustedVaultClientAndroid,
+            @SecurityDomainId int securityDomainId,
             int requestId,
             @JniType("CoreAccountInfo") CoreAccountInfo accountInfo,
             byte[] publicKey,
             int methodTypeHint) {
-        assert isNativeRegistered(nativeTrustedVaultClientAndroid);
+        assert isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId);
 
         Consumer<Boolean> responseCallback =
                 success -> {
-                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid)) {
+                    if (!isNativeRegistered(nativeTrustedVaultClientAndroid, securityDomainId)) {
                         // Native already unregistered, no response needed.
                         return;
                     }
-                    RecordHistogram.recordBooleanHistogram(
-                            "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", success);
+                    // TODO(crbug.com/540854648): Record the same metric for the passkeys security
+                    // domain.
+                    if (securityDomainId == SecurityDomainId.CHROME_SYNC) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Sync.TrustedVaultJavascriptAddRecoveryMethodSucceeded", success);
+                    }
                     TrustedVaultClientJni.get()
                             .addTrustedRecoveryMethodCompleted(
                                     nativeTrustedVaultClientAndroid, requestId);
                 };
 
-        get().mBackend
+        get(securityDomainId)
+                .mBackend
                 .addTrustedRecoveryMethod(accountInfo, publicKey, methodTypeHint)
                 .then(
                         _ -> responseCallback.accept(true),

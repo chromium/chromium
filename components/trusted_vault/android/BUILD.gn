@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enums",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/components/trusted_vault/TrustedVaultClient.java",
   ]
@@ -20,6 +23,10 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+}
+
+java_cpp_enum("java_enums") {
+  sources = [ "//components/trusted_vault/trusted_vault_server_constants.h" ]
 }
 
 generate_jni("jni_headers") {

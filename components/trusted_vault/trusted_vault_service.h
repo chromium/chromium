@@ -15,8 +15,12 @@ namespace trusted_vault {
 
 class TrustedVaultService : public KeyedService {
  public:
-  explicit TrustedVaultService(
-      std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client);
+  // `chrome_sync_security_domain_client` must be non-null.
+  // `passkeys_security_domain_client` may be null on platforms where the
+  // passkeys security domain is not managed through TrustedVaultService.
+  TrustedVaultService(
+      std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client,
+      std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client);
 
   TrustedVaultService(const TrustedVaultService&) = delete;
   TrustedVaultService& operator=(const TrustedVaultService&) = delete;
@@ -27,6 +31,9 @@ class TrustedVaultService : public KeyedService {
 
  private:
   std::unique_ptr<TrustedVaultClient> chrome_sync_security_domain_client_;
+  // May be null on platforms where the passkeys security domain is not managed
+  // through TrustedVaultService (e.g. desktop and iOS).
+  std::unique_ptr<TrustedVaultClient> passkeys_security_domain_client_;
 };
 
 }  // namespace trusted_vault

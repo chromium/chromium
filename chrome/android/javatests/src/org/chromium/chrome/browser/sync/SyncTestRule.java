@@ -48,6 +48,7 @@ import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -302,7 +303,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     @Override
     protected void before() throws Throwable {
         super.before();
-        TrustedVaultClient.get().setBackendForTesting(FakeTrustedVaultClientBackend.get());
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                .setBackendForTesting(FakeTrustedVaultClientBackend.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

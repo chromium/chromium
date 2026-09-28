@@ -31,6 +31,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -146,7 +147,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         assert activity instanceof ChromeBaseAppCompatActivity;
         final ChromeBaseAppCompatActivity chromeActivity = (ChromeBaseAppCompatActivity) activity;
 
-        TrustedVaultClient.get()
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
