@@ -38,18 +38,18 @@ class CustomDetails extends HTMLElement {
 }
 `;
     shadowRoot.appendChild(style);
+
+    this.childListObserver = new MutationObserver(() => this.updateAssignment());
   }
 
   connectedCallback() {
     this.updateOpen();
     this.updateAssignment();
-    this.addEventListener('DOMNodeInserted', this.updateAssignment);
-    this.addEventListener('DOMNodeRemoved', this.updateAssignment);
+    this.childListObserver.observe(this, {childList: true});
   }
 
   disconnectedCallback() {
-    this.removeEventListener('DOMNodeInserted', this.updateAssignment);
-    this.removeEventListener('DOMNodeRemoved', this.updateAssignment);
+    this.childListObserver.disconnect();
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

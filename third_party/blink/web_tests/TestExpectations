@@ -193,19 +193,6 @@ crbug.com/40849593 external/wpt/content-security-policy/media-src/media-src-7_1_
 
 # ====== Timed HTML parser budget tests to here ========================
 
-# ====== Mutation Events tests from here ========================
-# TODO(crbug.com/1446498) These fail when Mutation Events are disabled, but
-# these are tests of other (non-Mutation-Event) things, and just happen to use
-# Mutation Events for the test. These still need triage to either fix or remove
-# them. Mutation events have been removed.
-crbug.com/1446498 accessibility/details-summary-crash.html [ Failure Pass ]
-crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass ]
-crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
-crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
-# ====== Mutation Events tests to here ========================
-
-
 # ====== Site Isolation failures from here ======
 # See also third_party/blink/web_tests/virtual/not-site-per-process/README.md
 # Tests temporarily disabled with Site Isolation - uninvestigated bugs:

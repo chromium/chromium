@@ -1,4 +1,6 @@
 This test passes if it doesn't crash.
+summary 2
+summary 2
 summary 1
 summary 1
 summary 2

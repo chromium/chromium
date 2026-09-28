@@ -89,67 +89,6 @@ function run()
     });
 
     runTest(function() {
-        iframeDoc.body.appendChild(document.createElement('div'));
-        var element = elementInCurrentDocument('insertBefore');
-        // Make sure we don't crash if the element is moved back to the original document during the insertBefore call.
-        var mutationHandler = function() {
-            document.body.removeEventListener('DOMSubtreeModified', mutationHandler, true);
-            document.body.appendChild(element);
-            // Access something on the element to see if it's in a valid state.
-            element.offsetLeft;
-        };
-        document.body.addEventListener('DOMSubtreeModified', mutationHandler, true);
-        try {
-            iframeDoc.body.insertBefore(element);
-        } catch (e) {
-          throw e;
-        } finally {
-          // Clear the event handler to avoid affecting the following tests.
-        }
-    }, "TypeError");
-    
-    runTest(function() {
-        iframeDoc.body.appendChild(document.createElement('div'));
-        var element = elementInCurrentDocument('appendChild');
-        // Make sure we don't crash if the element is moved back to the original document during the insertBefore call.
-        var mutationHandler = function() {
-            document.body.removeEventListener('DOMSubtreeModified', mutationHandler, true);
-            document.body.appendChild(element);
-            // Access something on the element to see if it's in a valid state.
-            element.offsetLeft;
-        };
-        document.body.addEventListener('DOMSubtreeModified', mutationHandler, true);
-        try {
-            iframeDoc.body.appendChild(element);
-        } catch (e) {
-          throw e;
-        } finally {
-          // Clear the event handler to avoid affecting the following tests.
-        }
-    });
-
-    runTest(function() {
-        iframeDoc.body.appendChild(document.createElement('div'));
-        var element = elementInCurrentDocument('replaceChild');
-        // Make sure we don't crash if the element is moved back to the original
-        // document during the replaceChild call.
-        var mutationHandler = function() {
-            document.body.removeEventListener('DOMSubtreeModified', mutationHandler, true);
-            document.body.appendChild(element);
-            // Access something on the element to see if it's in a valid state.
-            element.offsetLeft;
-        };
-        document.body.addEventListener('DOMSubtreeModified', mutationHandler, true);
-        try {
-            iframeDoc.body.replaceChild(element, iframeDoc.body.firstChild);
-        } catch (e) {
-          throw e;
-        } finally {
-          // Clear the event handler to avoid affecting the following tests.
-        }
-    });
-
-    runTest(function() {
         var attribute = document.createAttribute('asdf');
         iframeDoc.body.attributes.setNamedItem(attribute);
     });

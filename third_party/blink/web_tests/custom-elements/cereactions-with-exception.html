@@ -6,20 +6,6 @@
 <div id=container></div>
 <script>
 test(() => {
-  var upgraded = false;
-  class MyCustomElement extends HTMLElement {
-    constructor() { super(); upgraded = true; }
-  }
-  customElements.define('my-custom-element', MyCustomElement);
-  log.addEventListener('DOMNodeRemoved', function (e) {
-    if (document.querySelector('#log'))
-      document.adoptNode(log);
-  });
-  assert_throws_dom('NotFoundError', () => { log.outerHTML = '<my-custom-element></my-custom-element>'; });
-  assert_true(upgraded, 'MyCustomElement constructor should be called');
-}, 'CEReactions should rethrow an exception by the originally-specified steps; 1');
-
-test(() => {
   var disconnected = false;
   class MyCustomElement2 extends HTMLElement {
     disconnectedCallback() { this.style.display = 'none'; disconnected = true; }

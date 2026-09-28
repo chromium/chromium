@@ -393,8 +393,6 @@ crbug.com/554992299 [ tvOS26-simulator ] compositing/video/video-reflection.html
 crbug.com/554992299 [ tvOS26-simulator ] css3/filters/composited-layer-child-bounds-after-composited-to-sw-shadow-change.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] custom-elements/cereactions-with-exception.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] dom/node/replace_child_recheck.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] editing/execCommand/crash-inserting-list.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] editing/execCommand/format-block-multiple-paragraphs-in-pre.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] editing/execCommand/format-block-multiple-paragraphs.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] editing/pasteboard/drag-files-to-editable-element.html [ Failure ]

@@ -17,12 +17,7 @@
 17. PASS
 18. PASS
 19. PASS
-20. PASS
-21. PASS
-22. PASS
 
-insertBefore
-appendChild
 comparePoint
 setStart
 setEnd
