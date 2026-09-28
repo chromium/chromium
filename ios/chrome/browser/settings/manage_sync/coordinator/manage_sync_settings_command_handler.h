@@ -43,7 +43,8 @@
 // Open the view to manage account storage
 - (void)openAccountStorage;
 
-// Opens the account menu to switch account.
+// Opens the account menu to switch account. Assumes sign-in is enabled and
+// there is a primary account.
 - (void)openAccountMenu;
 
 // Close the manage sync settings view.

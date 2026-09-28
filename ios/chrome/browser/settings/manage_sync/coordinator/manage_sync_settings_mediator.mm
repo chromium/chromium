@@ -551,23 +551,25 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
   // Creates items in the switch account and sign-out section.
   // Switch Account item.
-  TableViewTextItem* item =
+  TableViewTextItem* switchAccountItem =
       [[TableViewTextItem alloc] initWithType:SwitchAccountItemType];
-  item.text = l10n_util::GetNSString(
+  switchAccountItem.text = l10n_util::GetNSString(
       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SWITCH_ACCOUNT_ITEM);
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits |= UIAccessibilityTraitButton;
-  item.accessibilityIdentifier = kUseAnotherAccountAccessibilityIdentifier;
-  [model addItem:item
+  switchAccountItem.textColor = [UIColor colorNamed:kBlueColor];
+  switchAccountItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  switchAccountItem.accessibilityIdentifier =
+      kUseAnotherAccountAccessibilityIdentifier;
+  [model addItem:switchAccountItem
       toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
 
   // Sign out item.
-  item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
-  item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
-  item.textColor = [UIColor colorNamed:kBlueColor];
-  item.accessibilityTraits |= UIAccessibilityTraitButton;
-  item.accessibilityIdentifier = kSignOutAccessibilityIdentifier;
-  [model addItem:item
+  TableViewTextItem* signOutItem =
+      [[TableViewTextItem alloc] initWithType:SignOutItemType];
+  signOutItem.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
+  signOutItem.textColor = [UIColor colorNamed:kBlueColor];
+  signOutItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  signOutItem.accessibilityIdentifier = kSignOutAccessibilityIdentifier;
+  [model addItem:signOutItem
       toSectionWithIdentifier:SwitchAccountAndSignOutSectionIdentifier];
   if (self.forcedSigninEnabled) {
     [model setFooter:[self createForcedSigninFooterItem]
@@ -1085,6 +1087,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 #pragma mark - ManageSyncSettingsServiceDelegate
 
 - (void)didSelectItem:(TableViewItem*)item cellRect:(CGRect)cellRect {
+  // The tap is handled asynchronously, so the user could have signed out or
+  // sign-in could have been disabled while the settings page was open.
+  if (!(_authenticationService && _authenticationService->SigninEnabled() &&
+        _authenticationService->HasPrimaryIdentity())) {
+    return;
+  }
   SyncSettingsItemType itemType = static_cast<SyncSettingsItemType>(item.type);
   switch (itemType) {
     case EncryptionItemType: {

@@ -558,7 +558,7 @@ enum class ActionAfterReauth {
 
 - (void)openAccountMenu {
   if (_accountMenuCoordinator) {
-    // This can occurs in cause of double tap.
+    // This can occur in case of double tap.
     return;
   }
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]

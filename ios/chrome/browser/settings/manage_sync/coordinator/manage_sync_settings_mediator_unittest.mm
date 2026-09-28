@@ -691,3 +691,25 @@ TEST_F(ManageSyncSettingsMediatorTest,
   EXPECT_FALSE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:BatchUploadSectionIdentifier]);
 }
+
+// Tests that selecting SwitchAccountItemType does not open account menu when
+// sign-in is disabled.
+TEST_F(ManageSyncSettingsMediatorTest,
+       TestSwitchAccountSelectionDoesNotOpenAccountMenuWhenSigninDisabled) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+
+  id mockCommandHandler =
+      OCMProtocolMock(@protocol(ManageSyncSettingsCommandHandler));
+  mediator_.commandHandler = mockCommandHandler;
+
+  OCMReject([mockCommandHandler openAccountMenu]);
+
+  TableViewItem* item =
+      [[TableViewItem alloc] initWithType:SwitchAccountItemType];
+  [mediator_ didSelectItem:item cellRect:CGRectZero];
+
+  EXPECT_OCMOCK_VERIFY(mockCommandHandler);
+}
