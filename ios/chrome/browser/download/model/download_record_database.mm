@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/download/model/download_record_database.h"
 
+#import <array>
 #import <string>
+#import <string_view>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "base/i18n/string_search.h"
-#import "base/no_destructor.h"
 #import "base/notreached.h"
+#import "base/strings/cstring_view.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/utf_string_conversions.h"
@@ -32,155 +35,372 @@ using ::download_model::NormalizeFileName;
 //     `file_name_normalized` column (case-folded `file_name`) backfilled for
 //     existing rows, to support keyset pagination + case-insensitive
 //     substring search.
-const int kCurrentVersionNumber = 2;
+constexpr int kCurrentVersionNumber = 2;
 // Lowest version that can still read v2. v1 binaries cannot — the
 // insert/update statements assume `file_name_normalized` exists.
-const int kCompatibleVersionNumber = 2;
+constexpr int kCompatibleVersionNumber = 2;
 
 // Field name constants.
-const char kDownloadIdField[] = "download_id";
-const char kOriginalUrlField[] = "original_url";
-const char kRedirectedUrlField[] = "redirected_url";
-const char kFileNameField[] = "file_name";
-const char kFilePathField[] = "file_path";
-const char kResponsePathField[] = "response_path";
-const char kOriginalMimeTypeField[] = "original_mime_type";
-const char kMimeTypeField[] = "mime_type";
-const char kContentDispositionField[] = "content_disposition";
-const char kOriginatingHostField[] = "originating_host";
-const char kHttpMethodField[] = "http_method";
-const char kHttpCodeField[] = "http_code";
-const char kErrorCodeField[] = "error_code";
-const char kTotalBytesField[] = "total_bytes";
-const char kStateField[] = "state";
-const char kCreatedTimeField[] = "created_time";
-const char kCompletedTimeField[] = "completed_time";
-const char kHasPerformedBackgroundDownloadField[] =
+constexpr char kDownloadIdField[] = "download_id";
+constexpr char kOriginalUrlField[] = "original_url";
+constexpr char kRedirectedUrlField[] = "redirected_url";
+constexpr char kFileNameField[] = "file_name";
+constexpr char kFilePathField[] = "file_path";
+constexpr char kResponsePathField[] = "response_path";
+constexpr char kOriginalMimeTypeField[] = "original_mime_type";
+constexpr char kMimeTypeField[] = "mime_type";
+constexpr char kContentDispositionField[] = "content_disposition";
+constexpr char kOriginatingHostField[] = "originating_host";
+constexpr char kHttpMethodField[] = "http_method";
+constexpr char kHttpCodeField[] = "http_code";
+constexpr char kErrorCodeField[] = "error_code";
+constexpr char kTotalBytesField[] = "total_bytes";
+constexpr char kStateField[] = "state";
+constexpr char kCreatedTimeField[] = "created_time";
+constexpr char kCompletedTimeField[] = "completed_time";
+constexpr char kHasPerformedBackgroundDownloadField[] =
     "has_performed_background_download";
-const char kFileNameNormalizedField[] = "file_name_normalized";
+constexpr char kFileNameNormalizedField[] = "file_name_normalized";
 
-const char kTableName[] = "download_records";
-const char kIndexName[] = "idx_records_created_time";
+constexpr char kTableName[] = "download_records";
+constexpr char kIndexName[] = "idx_records_created_time";
 
-const std::string& CreateTableSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "CREATE TABLE IF NOT EXISTS %s ("
-      "%s TEXT PRIMARY KEY NOT NULL,%s TEXT NOT NULL,%s TEXT,%s TEXT NOT NULL,"
-      "%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,%s TEXT,"
-      "%s INTEGER,%s INTEGER,%s INTEGER,%s INTEGER,%s INTEGER,%s INTEGER,%s "
-      "INTEGER,%s TEXT)",
-      kTableName, kDownloadIdField, kOriginalUrlField, kRedirectedUrlField,
-      kFileNameField, kFilePathField, kResponsePathField,
-      kOriginalMimeTypeField, kMimeTypeField, kContentDispositionField,
-      kOriginatingHostField, kHttpMethodField, kHttpCodeField, kErrorCodeField,
-      kTotalBytesField, kStateField, kCreatedTimeField, kCompletedTimeField,
-      kHasPerformedBackgroundDownloadField, kFileNameNormalizedField));
-  return *sql;
+// Concatenates a compile-time array of `std::string_view` fragments into a
+// NUL-terminated `std::array<char, N>`.
+template <const auto& kParts>
+consteval auto BuildSqlArray() {
+  constexpr size_t kTotalLength = [] {
+    size_t total = 0;
+    for (std::string_view part : kParts) {
+      total += part.size();
+    }
+    return total;
+  }();
+  std::array<char, kTotalLength + 1> result{};
+  size_t pos = 0;
+  for (std::string_view part : kParts) {
+    for (char c : part) {
+      result[pos++] = c;
+    }
+  }
+  result[pos] = '\0';
+  return result;
 }
 
-const std::string& InsertRecordSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "INSERT INTO %s "
-      "(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-      kTableName, kDownloadIdField, kOriginalUrlField, kRedirectedUrlField,
-      kFileNameField, kFilePathField, kResponsePathField,
-      kOriginalMimeTypeField, kMimeTypeField, kContentDispositionField,
-      kOriginatingHostField, kHttpMethodField, kHttpCodeField, kErrorCodeField,
-      kTotalBytesField, kStateField, kCreatedTimeField, kCompletedTimeField,
-      kHasPerformedBackgroundDownloadField, kFileNameNormalizedField));
-  return *sql;
+// Unpacks a compile-time `std::array<char, N>` into a `static constexpr`
+// built-in C character array `char[N]` so it can be passed directly to
+// `base::cstring_view`'s safe array constructor.
+template <const auto& kArr,
+          typename Seq = std::make_index_sequence<kArr.size()>>
+struct SqlCStringStorage;
+
+template <const auto& kArr, size_t... Is>
+struct SqlCStringStorage<kArr, std::index_sequence<Is...>> {
+  static constexpr char kData[sizeof...(Is)] = {kArr[Is]...};
+};
+
+template <const auto& kSqlArray>
+  requires(kSqlArray.size() > 0 && kSqlArray.back() == '\0')
+constexpr base::cstring_view kSqlView = SqlCStringStorage<kSqlArray>::kData;
+
+base::cstring_view CreateTableSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "CREATE TABLE IF NOT EXISTS ",
+      kTableName,
+      " (",
+      kDownloadIdField,
+      " TEXT PRIMARY KEY NOT NULL,",
+      kOriginalUrlField,
+      " TEXT NOT NULL,",
+      kRedirectedUrlField,
+      " TEXT,",
+      kFileNameField,
+      " TEXT NOT NULL,",
+      kFilePathField,
+      " TEXT,",
+      kResponsePathField,
+      " TEXT,",
+      kOriginalMimeTypeField,
+      " TEXT,",
+      kMimeTypeField,
+      " TEXT,",
+      kContentDispositionField,
+      " TEXT,",
+      kOriginatingHostField,
+      " TEXT,",
+      kHttpMethodField,
+      " TEXT,",
+      kHttpCodeField,
+      " INTEGER,",
+      kErrorCodeField,
+      " INTEGER,",
+      kTotalBytesField,
+      " INTEGER,",
+      kStateField,
+      " INTEGER,",
+      kCreatedTimeField,
+      " INTEGER,",
+      kCompletedTimeField,
+      " INTEGER,",
+      kHasPerformedBackgroundDownloadField,
+      " INTEGER,",
+      kFileNameNormalizedField,
+      " TEXT)",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& UpdateRecordSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "UPDATE %s SET %s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,"
-      "%s=?,%s=?,%s=?,%s=?,%s=?,%s=?,%s=? WHERE %s=?",
-      kTableName, kOriginalUrlField, kRedirectedUrlField, kFileNameField,
-      kFilePathField, kResponsePathField, kOriginalMimeTypeField,
-      kMimeTypeField, kContentDispositionField, kOriginatingHostField,
-      kHttpMethodField, kHttpCodeField, kErrorCodeField, kTotalBytesField,
-      kStateField, kCompletedTimeField, kHasPerformedBackgroundDownloadField,
-      kFileNameNormalizedField, kDownloadIdField));
-  return *sql;
+base::cstring_view InsertRecordSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "INSERT INTO ",
+      kTableName,
+      " (",
+      kDownloadIdField,
+      ",",
+      kOriginalUrlField,
+      ",",
+      kRedirectedUrlField,
+      ",",
+      kFileNameField,
+      ",",
+      kFilePathField,
+      ",",
+      kResponsePathField,
+      ",",
+      kOriginalMimeTypeField,
+      ",",
+      kMimeTypeField,
+      ",",
+      kContentDispositionField,
+      ",",
+      kOriginatingHostField,
+      ",",
+      kHttpMethodField,
+      ",",
+      kHttpCodeField,
+      ",",
+      kErrorCodeField,
+      ",",
+      kTotalBytesField,
+      ",",
+      kStateField,
+      ",",
+      kCreatedTimeField,
+      ",",
+      kCompletedTimeField,
+      ",",
+      kHasPerformedBackgroundDownloadField,
+      ",",
+      kFileNameNormalizedField,
+      ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& SelectRecordSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s "
-      "FROM %s WHERE %s=?",
-      kDownloadIdField, kOriginalUrlField, kRedirectedUrlField, kFileNameField,
-      kFilePathField, kResponsePathField, kOriginalMimeTypeField,
-      kMimeTypeField, kContentDispositionField, kOriginatingHostField,
-      kHttpMethodField, kHttpCodeField, kErrorCodeField, kTotalBytesField,
-      kStateField, kCreatedTimeField, kCompletedTimeField,
-      kHasPerformedBackgroundDownloadField, kTableName, kDownloadIdField));
-  return *sql;
+base::cstring_view UpdateRecordSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "UPDATE ",   kTableName,
+      " SET ",     kOriginalUrlField,
+      "=?,",       kRedirectedUrlField,
+      "=?,",       kFileNameField,
+      "=?,",       kFilePathField,
+      "=?,",       kResponsePathField,
+      "=?,",       kOriginalMimeTypeField,
+      "=?,",       kMimeTypeField,
+      "=?,",       kContentDispositionField,
+      "=?,",       kOriginatingHostField,
+      "=?,",       kHttpMethodField,
+      "=?,",       kHttpCodeField,
+      "=?,",       kErrorCodeField,
+      "=?,",       kTotalBytesField,
+      "=?,",       kStateField,
+      "=?,",       kCompletedTimeField,
+      "=?,",       kHasPerformedBackgroundDownloadField,
+      "=?,",       kFileNameNormalizedField,
+      "=? WHERE ", kDownloadIdField,
+      "=?",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& SelectAllRecordsSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s "
-      "FROM %s ORDER BY %s DESC",
-      kDownloadIdField, kOriginalUrlField, kRedirectedUrlField, kFileNameField,
-      kFilePathField, kResponsePathField, kOriginalMimeTypeField,
-      kMimeTypeField, kContentDispositionField, kOriginatingHostField,
-      kHttpMethodField, kHttpCodeField, kErrorCodeField, kTotalBytesField,
-      kStateField, kCreatedTimeField, kCompletedTimeField,
-      kHasPerformedBackgroundDownloadField, kTableName, kCreatedTimeField));
-  return *sql;
+base::cstring_view SelectRecordSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "SELECT ", kDownloadIdField,
+      ",",       kOriginalUrlField,
+      ",",       kRedirectedUrlField,
+      ",",       kFileNameField,
+      ",",       kFilePathField,
+      ",",       kResponsePathField,
+      ",",       kOriginalMimeTypeField,
+      ",",       kMimeTypeField,
+      ",",       kContentDispositionField,
+      ",",       kOriginatingHostField,
+      ",",       kHttpMethodField,
+      ",",       kHttpCodeField,
+      ",",       kErrorCodeField,
+      ",",       kTotalBytesField,
+      ",",       kStateField,
+      ",",       kCreatedTimeField,
+      ",",       kCompletedTimeField,
+      ",",       kHasPerformedBackgroundDownloadField,
+      " FROM ",  kTableName,
+      " WHERE ", kDownloadIdField,
+      "=?",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& DeleteRecordSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "DELETE FROM %s WHERE %s=?", kTableName, kDownloadIdField));
-  return *sql;
+base::cstring_view SelectAllRecordsSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "SELECT ",    kDownloadIdField,
+      ",",          kOriginalUrlField,
+      ",",          kRedirectedUrlField,
+      ",",          kFileNameField,
+      ",",          kFilePathField,
+      ",",          kResponsePathField,
+      ",",          kOriginalMimeTypeField,
+      ",",          kMimeTypeField,
+      ",",          kContentDispositionField,
+      ",",          kOriginatingHostField,
+      ",",          kHttpMethodField,
+      ",",          kHttpCodeField,
+      ",",          kErrorCodeField,
+      ",",          kTotalBytesField,
+      ",",          kStateField,
+      ",",          kCreatedTimeField,
+      ",",          kCompletedTimeField,
+      ",",          kHasPerformedBackgroundDownloadField,
+      " FROM ",     kTableName,
+      " ORDER BY ", kCreatedTimeField,
+      " DESC",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& UpdateRecordsStateSql() {
-  static const base::NoDestructor<std::string> sql(
-      base::StringPrintf("UPDATE %s SET %s=? WHERE %s=?", kTableName,
-                         kStateField, kDownloadIdField));
-  return *sql;
+base::cstring_view DeleteRecordSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "DELETE FROM ",
+      kTableName,
+      " WHERE ",
+      kDownloadIdField,
+      "=?",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
-const std::string& CheckTableExistsSql() {
-  static const base::NoDestructor<std::string> sql(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name=?");
-  return *sql;
+base::cstring_view UpdateRecordsStateSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "UPDATE ",
+      kTableName,
+      " SET ",
+      kStateField,
+      "=? WHERE ",
+      kDownloadIdField,
+      "=?",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
+}
+
+base::cstring_view CheckTableExistsSql() {
+  static constexpr base::cstring_view kSql =
+      "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
+  return kSql;
 }
 
 // Composite index supporting keyset pagination ordered by
 // `(created_time DESC, download_id DESC)`. Both columns `DESC` lets the
 // pagination `ORDER BY` be satisfied without a separate sort.
-const std::string& CreateIndexSql() {
-  static const base::NoDestructor<std::string> sql(base::StringPrintf(
-      "CREATE INDEX IF NOT EXISTS %s ON %s (%s DESC, %s DESC)", kIndexName,
-      kTableName, kCreatedTimeField, kDownloadIdField));
-  return *sql;
+base::cstring_view CreateIndexSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "CREATE INDEX IF NOT EXISTS ",
+      kIndexName,
+      " ON ",
+      kTableName,
+      " (",
+      kCreatedTimeField,
+      " DESC, ",
+      kDownloadIdField,
+      " DESC)",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
 // Column list shared by row-returning `SELECT` statements. Order matches
 // `CreateRecordFromStatement`.
-const std::string& SelectColumns() {
-  static const base::NoDestructor<std::string> cols(base::StringPrintf(
-      "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", kDownloadIdField,
-      kOriginalUrlField, kRedirectedUrlField, kFileNameField, kFilePathField,
-      kResponsePathField, kOriginalMimeTypeField, kMimeTypeField,
-      kContentDispositionField, kOriginatingHostField, kHttpMethodField,
-      kHttpCodeField, kErrorCodeField, kTotalBytesField, kStateField,
-      kCreatedTimeField, kCompletedTimeField,
-      kHasPerformedBackgroundDownloadField));
-  return *cols;
+base::cstring_view SelectColumns() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      kDownloadIdField,
+      ",",
+      kOriginalUrlField,
+      ",",
+      kRedirectedUrlField,
+      ",",
+      kFileNameField,
+      ",",
+      kFilePathField,
+      ",",
+      kResponsePathField,
+      ",",
+      kOriginalMimeTypeField,
+      ",",
+      kMimeTypeField,
+      ",",
+      kContentDispositionField,
+      ",",
+      kOriginatingHostField,
+      ",",
+      kHttpMethodField,
+      ",",
+      kHttpCodeField,
+      ",",
+      kErrorCodeField,
+      ",",
+      kTotalBytesField,
+      ",",
+      kStateField,
+      ",",
+      kCreatedTimeField,
+      ",",
+      kCompletedTimeField,
+      ",",
+      kHasPerformedBackgroundDownloadField,
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
 // Single SQL `UPDATE` that flips state from `kNotStarted` or `kInProgress`
 // to `kFailed`. Other states are untouched.
-const std::string& MarkUnfinishedAsFailedSql() {
-  static const base::NoDestructor<std::string> sql(
-      base::StringPrintf("UPDATE %s SET %s=? WHERE %s IN (?, ?)", kTableName,
-                         kStateField, kStateField));
-  return *sql;
+base::cstring_view MarkUnfinishedAsFailedSql() {
+  static constexpr auto kParts = std::to_array<std::string_view>({
+      "UPDATE ",
+      kTableName,
+      " SET ",
+      kStateField,
+      "=? WHERE ",
+      kStateField,
+      " IN (?, ?)",
+  });
+  static constexpr auto kSqlArray = BuildSqlArray<kParts>();
+  static constexpr base::cstring_view kSql = kSqlView<kSqlArray>;
+  return kSql;
 }
 
 // SQL predicate matching `filter_type` against `mime_type`. Returns "1" for
