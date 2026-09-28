@@ -9,6 +9,7 @@
 #import "base/test/gtest_util.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -58,6 +59,7 @@ class BackgroundContinuedProcessingTaskContextTest : public PlatformTest {
   id mock_scheduler_;
 };
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Tests that completing the context before the OS delivers the underlying task
 // cancels the pending task request, and immediately marks the system task with
 // the recorded outcome (success or failure) upon delivery.
@@ -105,6 +107,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     }
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 // Tests that multiple completion calls are idempotent and mutations after
 // completion are ignored.
@@ -554,6 +557,7 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
   EXPECT_EQ(failureContext.completedUnits, unitsBeforeFailure);
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Tests that updating progress syncs to the underlying OS task when attached.
 TEST_F(BackgroundContinuedProcessingTaskContextTest,
        TestProgressSyncsToUnderlyingTask) {
@@ -726,3 +730,4 @@ TEST_F(BackgroundContinuedProcessingTaskContextTest,
     EXPECT_OCMOCK_VERIFY(mockTask);
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)

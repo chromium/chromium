@@ -14,6 +14,6 @@ bool IsBackgroundContinuedProcessingEnabled() {
   if (@available(iOS 26.0, *)) {
     return base::FeatureList::IsEnabled(kEnableBackgroundContinuedProcessing);
   }
-#endif
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   return false;
 }

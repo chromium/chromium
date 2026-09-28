@@ -15,6 +15,7 @@
 #import "base/logging.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 
 namespace {
@@ -87,8 +88,10 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
   // Finish handler invoked upon task completion or expiration.
   ProceduralBlock _finishHandler;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   // The underlying iOS background continued processing task provided by the OS.
   BGContinuedProcessingTask* _task API_AVAILABLE(ios(26.0));
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   // The underlying `NSProgress` object tracking progress units.
   NSProgress* _progress;
@@ -197,11 +200,13 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
       std::clamp<int64_t>(completedUnits, 0, _progress.totalUnitCount);
   _progress.completedUnitCount = clampedUnits;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (@available(iOS 26.0, *)) {
     if (_task) {
       _task.progress.completedUnitCount = clampedUnits;
     }
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 }
 
 - (void)incrementProgressByUnits:(int64_t)units {
@@ -279,6 +284,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
   _successfulCompletion = success;
   _expirationHandler = nil;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (@available(iOS 26.0, *)) {
     if (_task) {
       _task.expirationHandler = nil;
@@ -289,6 +295,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
           cancelTaskRequestWithIdentifier:_taskIdentifier];
     }
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   ProceduralBlock finishHandler = _finishHandler;
   _finishHandler = nil;
@@ -297,6 +304,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
   }
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 #pragma mark - Internal
 
 - (void)attachUnderlyingTask:(BGContinuedProcessingTask*)task
@@ -336,19 +344,23 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
     _task.progress.completedUnitCount = _progress.completedUnitCount;
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 #pragma mark - Private
 
 // Propagates the cached title and subtitle to the underlying system task.
 - (void)updateUnderlyingTaskTitleAndSubtitle {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (@available(iOS 26.0, *)) {
     if (_task) {
       [_task updateTitle:_title subtitle:_subtitle ?: @""];
     }
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 - (void)handleSystemExpiration {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_completed) {
@@ -381,6 +393,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
     finishHandler();
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 - (void)dealloc {
   if (_completed) {
@@ -391,6 +404,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
                    "without being marked as completed: "
                 << base::SysNSStringToUTF8(_taskIdentifier);
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   if (@available(iOS 26.0, *)) {
     if (_task) {
       _task.expirationHandler = nil;
@@ -400,6 +414,7 @@ int64_t LinearStepForUnits(int64_t units, double stepRatio) {
           cancelTaskRequestWithIdentifier:_taskIdentifier];
     }
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 }
 
 @end

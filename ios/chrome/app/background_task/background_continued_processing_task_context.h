@@ -8,9 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 
 @class BackgroundContinuedProcessingTaskConfiguration;
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 @class BGContinuedProcessingTask;
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 // Context representing an active continued processing background task.
 // Used to interact with an existing task. This object and its properties are
@@ -74,11 +77,13 @@
                          finishHandler:(ProceduralBlock)finishHandler
     NS_DESIGNATED_INITIALIZER;
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 // Attaches an underlying system `BGContinuedProcessingTask` to the context once
 // the OS launch handler fires, setting properties on it. Internal: consumers
 // must not invoke this method.
 - (void)attachUnderlyingTask:(BGContinuedProcessingTask*)task
     API_AVAILABLE(ios(26.0));
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 - (instancetype)init NS_UNAVAILABLE;
 

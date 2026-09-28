@@ -125,12 +125,14 @@ declare_args() {
 }
 
 if (target_environment == "catalyst") {
-  # Some extensions uses API that are not available in "catalyst" environment.
+  # Some extensions and background modes use APIs that are not available in
+  # the "catalyst" environment.
   ios_enable_credential_provider_extension = false
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
   ios_enable_open_extension = false
   ios_enable_push_notification_service_extension = false
+  ios_enable_background_continued_processing = false
 }
 
 if (ios_chrome_generate_order_file) {

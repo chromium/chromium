@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/build/chrome_build.gni")
-
 source_set("model") {
   sources = [
     "actor_browser_agent.h",
@@ -31,7 +29,11 @@ source_set("model") {
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
-    "//ios/chrome/app:background_mode_buildflags",
+
+    # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/background_task",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -45,6 +47,7 @@ source_set("model") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/origin_gating/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser:utils",
     "//ios/chrome/browser/shared/model/profile",
@@ -57,15 +60,6 @@ source_set("model") {
     "//ios/web/public/js_messaging",
     "//url",
   ]
-
-  if (ios_enable_background_continued_processing) {
-    deps += [
-      "//ios/chrome/app/application_delegate:app_state",
-      "//ios/chrome/app/background_task",
-      "//ios/chrome/app/profile",
-      "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    ]
-  }
 }
 
 source_set("tab_helper") {
@@ -115,7 +109,12 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/origin_gating/core",
-    "//ios/chrome/app:background_mode_buildflags",
+
+    # TODO(crbug.com/496196467): Invert dependencies on //ios/chrome/app/.
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/background_task",
+    "//ios/chrome/app/background_task:features",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/intelligence/actor/public:actor_control_state",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
@@ -129,6 +128,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:page_context_extractor_feature",
     "//ios/chrome/browser/origin_gating/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -151,14 +151,4 @@ source_set("unit_tests") {
     "//third_party/ocmock",
     "//url",
   ]
-
-  if (ios_enable_background_continued_processing) {
-    deps += [
-      "//ios/chrome/app/application_delegate:app_state",
-      "//ios/chrome/app/background_task",
-      "//ios/chrome/app/background_task:features",
-      "//ios/chrome/app/profile",
-      "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    ]
-  }
 }

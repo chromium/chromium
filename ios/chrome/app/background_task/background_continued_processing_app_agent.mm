@@ -14,10 +14,12 @@
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_context.h"
 #import "ios/chrome/app/background_task/features.h"
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 namespace {
 
 // Prefix for continued processing task identifiers. Must be kept in sync with
@@ -38,6 +40,7 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
 }
 
 }  // namespace
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 @implementation BackgroundContinuedProcessingAppAgent {
   // Active task contexts retained by the agent for their execution lifetime.
@@ -93,6 +96,7 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
     return nil;
   }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   NSString* taskIdentifier = FullTaskIdentifierForIdentifier(identifier);
 
   __weak BackgroundContinuedProcessingAppAgent* weakSelf = self;
@@ -145,10 +149,12 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
     _activeTasks[taskIdentifier] = context;
     return context;
   }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
   return nil;
 }
 
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 #pragma mark - Private
 
 // Handles task completion by removing the task identifier from `_activeTasks`.
@@ -189,5 +195,6 @@ NSString* FullTaskIdentifierForIdentifier(NSString* task_identifier) {
     [task setTaskCompletedWithSuccess:NO];
   }
 }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
 
 @end

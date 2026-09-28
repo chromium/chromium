@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "ios/chrome/app/background_mode_buildflags.h"
 
 @implementation BackgroundContinuedProcessingTaskConfiguration
 
@@ -23,10 +24,12 @@
     _expirationHandler = [expirationHandler copy];
     _totalUnits = kDefaultTotalUnitsOfProgress;
     _expectedStepCount = kDefaultExpectedStepCount;
+#if BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
     if (@available(iOS 26.0, *)) {
       _strategy = BGContinuedProcessingTaskRequestSubmissionStrategyQueue;
       _requiredResources = BGContinuedProcessingTaskRequestResourcesDefault;
     }
+#endif  // BUILDFLAG(IOS_BACKGROUND_CONTINUED_PROCESSING_ENABLED)
   }
   return self;
 }
