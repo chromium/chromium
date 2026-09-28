@@ -14,10 +14,10 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -26,6 +26,10 @@
 
 namespace ash {
 namespace {
+
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@test",
+                                            GaiaId::Literal("fakegaia"));
 
 class BrowserContextHelperTest : public testing::Test {
  public:
@@ -42,7 +46,7 @@ class BrowserContextHelperAccountIdTest
     : public BrowserContextHelperTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  void SetUp() override {
+  BrowserContextHelperAccountIdTest() {
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(ash::features::kUseAnnotatedAccountId);
     } else {
@@ -51,8 +55,26 @@ class BrowserContextHelperAccountIdTest
     }
   }
 
- private:
+  ~BrowserContextHelperAccountIdTest() override = default;
+
+  void SetUp() override {
+    BrowserContextHelperTest::SetUp();
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  }
+
+  void TearDown() override {
+    user_session_test_environment_.reset();
+    BrowserContextHelperTest::TearDown();
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 }  // namespace
@@ -91,36 +113,31 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByAccountId) {
   auto* delegate_ptr = delegate.get();
   BrowserContextHelper helper(std::move(delegate));
 
-  // Set up UserManager.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager(
-          std::make_unique<user_manager::FakeUserManager>(&local_state));
-
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-  const std::string username_hash =
-      user_manager::TestHelper::GetFakeUsernameHash(account_id);
-  fake_user_manager->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash);
+  const user_manager::User* user =
+      user_session_test_environment_->AddRegularUser(kTestAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment_->LogIn(kTestAccountId);
+  const std::string& username_hash = user->username_hash();
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
-  AnnotatedAccountId::Set(browser_context, account_id,
+  AnnotatedAccountId::Set(browser_context, kTestAccountId,
                           /*for_test=*/false);
-  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
+  user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
+                                                         /*prefs=*/nullptr);
 
   // BrowserContext instance corresponding to the account_id should be returned.
-  EXPECT_EQ(browser_context, helper.GetBrowserContextByAccountId(account_id));
+  EXPECT_EQ(browser_context,
+            helper.GetBrowserContextByAccountId(kTestAccountId));
 
   // It returns nullptr, if User instance corresponding to account_id is not
   // found.
   EXPECT_FALSE(helper.GetBrowserContextByAccountId(
       AccountId::FromUserEmail("notfound@test")));
 
-  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+      kTestAccountId);
 }
 
 TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser) {
@@ -129,25 +146,16 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser) {
   auto* delegate_ptr = delegate.get();
   BrowserContextHelper helper(std::move(delegate));
 
-  // Set up UserManager.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager(
-          std::make_unique<user_manager::FakeUserManager>(&local_state));
-
   // Set up a User and its BrowserContext instance.
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-  const std::string username_hash =
-      user_manager::TestHelper::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddGaiaUser(
-      account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash);
+  const user_manager::User* user =
+      user_session_test_environment_->AddRegularUser(kTestAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment_->LogIn(kTestAccountId);
+  const std::string& username_hash = user->username_hash();
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
-  AnnotatedAccountId::Set(browser_context, account_id,
+  AnnotatedAccountId::Set(browser_context, kTestAccountId,
                           /*for_test=*/false);
 
   // Before User is marked that its Profile is created, GetBrowserContextByUser
@@ -155,12 +163,14 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser) {
   EXPECT_FALSE(helper.GetBrowserContextByUser(user));
 
   // Mark User as if Profile is created.
-  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
+  user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
+                                                         /*prefs=*/nullptr);
 
   // Then the appropriate BrowserContext instance should be returned.
   EXPECT_EQ(browser_context, helper.GetBrowserContextByUser(user));
 
-  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+      kTestAccountId);
 }
 
 TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
@@ -169,19 +179,13 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
   auto* delegate_ptr = delegate.get();
   BrowserContextHelper helper(std::move(delegate));
 
-  // Set up UserManager.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager(
-          std::make_unique<user_manager::FakeUserManager>(&local_state));
-
   // Set up a User and its BrowserContext instance.
-  const user_manager::User* user = fake_user_manager->AddGuestUser();
+  const user_manager::User* user =
+      user_session_test_environment_->AddGuestUser();
+  ASSERT_TRUE(user);
   const AccountId& account_id = user->GetAccountId();
-  const std::string username_hash =
-      user_manager::TestHelper::GetFakeUsernameHash(account_id);
-  fake_user_manager->UserLoggedIn(account_id, username_hash);
+  user_session_test_environment_->LogIn(account_id);
+  const std::string& username_hash = user->username_hash();
 
   auto* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
@@ -192,12 +196,13 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
       delegate_ptr->CreateBrowserContext(
           delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
           /*is_off_the_record=*/true);
-  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
+  user_manager::UserManager::Get()->OnUserProfileCreated(account_id,
+                                                         /*prefs=*/nullptr);
 
   // Off the record instance should be returned.
   EXPECT_EQ(otr_browser_context, helper.GetBrowserContextByUser(user));
 
-  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(account_id);
 }
 
 TEST_P(BrowserContextHelperAccountIdTest, GetUserByBrowserContext) {
@@ -206,26 +211,18 @@ TEST_P(BrowserContextHelperAccountIdTest, GetUserByBrowserContext) {
   auto* delegate_ptr = delegate.get();
   BrowserContextHelper helper(std::move(delegate));
 
-  // Set up UserManager.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager(
-          std::make_unique<user_manager::FakeUserManager>(&local_state));
-
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
-  const std::string username_hash =
-      user_manager::TestHelper::GetFakeUsernameHash(account_id);
-  const user_manager::User* user = fake_user_manager->AddGaiaUser(
-      account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash);
+  const user_manager::User* user =
+      user_session_test_environment_->AddRegularUser(kTestAccountId);
+  ASSERT_TRUE(user);
+  user_session_test_environment_->LogIn(kTestAccountId);
+  const std::string& username_hash = user->username_hash();
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
-  AnnotatedAccountId::Set(browser_context, account_id,
+  AnnotatedAccountId::Set(browser_context, kTestAccountId,
                           /*for_test=*/false);
-  fake_user_manager->OnUserProfileCreated(account_id, /*prefs=*/nullptr);
+  user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
+                                                         /*prefs=*/nullptr);
 
   EXPECT_EQ(user, helper.GetUserByBrowserContext(browser_context));
 
@@ -246,7 +243,8 @@ TEST_P(BrowserContextHelperAccountIdTest, GetUserByBrowserContext) {
                           /*for_test=*/false);
   EXPECT_FALSE(helper.GetUserByBrowserContext(unknown_browser_context));
 
-  fake_user_manager->OnUserProfileWillBeDestroyed(account_id);
+  user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+      kTestAccountId);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

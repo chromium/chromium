@@ -8,3 +8,11 @@ include_rules = [
   # For testing.
   "+content/public/test",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+components/prefs",
+    "+components/session_manager/test",
+    "+google_apis/gaia",
+  ],
+}
