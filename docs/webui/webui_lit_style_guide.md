@@ -473,20 +473,56 @@ rendering), prefer `this.$.<id>` to access them. This provides a strictly typed
 and consistent way to access elements compared to
 `this.shadowRoot.querySelector`.
 
+Because elements accessed via `this.$` are expected to always exist in the DOM,
+member properties on the `$` interface must not be optional or nullable (e.g.,
+`conditionalButton?: CrButtonElement` or
+`conditionalButton: CrButtonElement|null` are disallowed). For conditionally
+rendered elements that may not always be present in the DOM, use
+`this.shadowRoot.querySelector` instead.
+
 **Do not:**
+
+Don't add conditional/nullable/undefineable elements via the `$` interface.
+
+```html
+export function getHtml(this: MyElement) {
+  return html`
+${this.someCondition ? html`
+  <cr-button id="conditionalButton"></cr-button>
+` : ''}
+`;
+}
+```
+
 ```ts
-const button = this.shadowRoot.querySelector('#submitButton');
+// Declaring optional or nullable properties on the $ interface:
+export interface MyElement {
+  $: {
+    conditionalButton?: CrButtonElement, // <-- This is incorrect
+  }
+}
 ```
 
 **Do:**
+
+Do add elements that are guaranteed to always exist in the DOM to the `$`
+interface.
+
+```html
+export function getHtml(this: MyElement) {
+  return html`
+<cr-button id="submitButton">Submit</cr-button>
+`;
+}
+```
+
 ```ts
-// In your class definition
 export interface MyElement {
   $: {
-    submitButton: CrButtonElement,
+    submitButton: CrButtonElement, // <-- This is correct!
   }
 }
 
-// In your code
+// Later in your code
 const button = this.$.submitButton;
 ```

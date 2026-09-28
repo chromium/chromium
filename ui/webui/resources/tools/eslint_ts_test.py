@@ -325,6 +325,7 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_SUPER_CALLS_ERROR = "Missing superclass calls for lifecycle method(s) %(lifecycleMethods)s in class %(className)s"
     _EXPECTED_MISSING_TAG_NAME_REGISTRATION_ERROR = "Tag/class name pair registration to HTMLElementTagNameMap interface missing for %(domName)s ↔ %(className)s"
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
+    _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR = "Optional or nullable property '%(propertyName)s' is not allowed on the '$' interface of '%(className)s'. Elements accessed via '$' are expected to always exist in the DOM"
 
     super_call_required_methods = [
       'connectedCallback',
@@ -419,6 +420,22 @@ class EslintTsTest(unittest.TestCase):
       % {
         'className': 'TestError11Element',
         'domName': 'test-other-error11',
+      },
+      # Case 1.12
+      _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR
+      % {
+        'className': 'TestError12Element',
+        'propertyName': 'optionalBtn',
+      },
+      _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR
+      % {
+        'className': 'TestError12Element',
+        'propertyName': 'nullableBtn',
+      },
+      _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR
+      % {
+        'className': 'TestError12Element',
+        'propertyName': 'undefinableBtn',
       },
     ]
     for e in errors:

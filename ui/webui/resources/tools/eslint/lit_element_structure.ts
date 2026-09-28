@@ -30,10 +30,11 @@ interface OrderEntry {
 }
 
 type Options = [];
-type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
-    'inconsistentFilename'|'incorrectClassNameSuffix'|
-    'incorrectDollarSignNotation'|'incorrectDomNameSuffix'|
-    'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
+type MessageIds =
+    'htmlImportInTsFile'|'inconsistentClassName'|'inconsistentFilename'|
+    'incorrectClassNameSuffix'|'incorrectDollarSignNotation'|
+    'incorrectDomNameSuffix'|'incorrectFilenameSuffix'|
+    'incorrectMethodDefinitionOrder'|'invalidDollarSignProperty'|
     'missingCustomElementRegistration'|'missingCustomEventTypeParameter'|
     'missingStaticIsGetter'|'missingSuperCalls'|'missingTagNameRegistration';
 
@@ -353,6 +354,46 @@ class ClassInfo {
       },
     });
   }
+
+  runInvalidDollarSignPropertyCheck(node: TSESTree.TSPropertySignature) {
+    assert.ok(node.typeAnnotation);
+    assert.ok(isType(node.typeAnnotation.typeAnnotation, Node.TSTypeLiteral));
+
+    const typeLiteral = node.typeAnnotation.typeAnnotation;
+    for (const member of typeLiteral.members) {
+      if (!isType(member, Node.TSPropertySignature)) {
+        continue;
+      }
+
+      assert.ok(member.typeAnnotation);
+      const isInvalid = member.optional ||
+          isNullableOrUndefinable(member.typeAnnotation.typeAnnotation);
+      if (isInvalid) {
+        assert.ok(isIdentifier(member.key));
+        this.context.report({
+          node: member,
+          messageId: 'invalidDollarSignProperty',
+          data: {
+            className: this.name,
+            propertyName: member.key.name,
+          },
+        });
+      }
+    }
+  }
+}
+
+function isNullableOrUndefinable(typeNode: TSESTree.TypeNode): boolean {
+  if (isType(typeNode, Node.TSNullKeyword) ||
+      isType(typeNode, Node.TSUndefinedKeyword)) {
+    return true;
+  }
+
+  if (isType(typeNode, Node.TSUnionType)) {
+    return typeNode.types.some(isNullableOrUndefinable);
+  }
+
+  return false;
 }
 
 function canImportHtml(filename: string, importsRender: boolean): boolean {
@@ -417,6 +458,8 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           'Missing customElements.define({{className}}.is, {{className}}) call.',
       missingCustomEventTypeParameter:
           'Missing CustomEvent type parameter for {{type}} \'{{name}}\' (use CustomEvent<void> or CustomEvent<SomeType>).',
+      invalidDollarSignProperty:
+          'Optional or nullable property \'{{propertyName}}\' is not allowed on the \'$\' interface of \'{{className}}\'. Elements accessed via \'$\' are expected to always exist in the DOM.',
     },
     schema: [],
   },
@@ -426,6 +469,9 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
     let hasLitImport = false;
     let importsRender = false;
     let htmlImportNode: TSESTree.Node|null = null;
+
+    // Dollar sign property signatures in this file, keyed by interface name.
+    const dollarProperties = new Map<string, TSESTree.TSPropertySignature>();
 
     // Whether operating on a test file, assuming all files end with the
     // '_test.ts' suffix.
@@ -572,10 +618,26 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           classInfo.visitCustomElementsDefineCall(node);
         }
       },
+      ['TSInterfaceDeclaration > TSInterfaceBody > TSPropertySignature[key.name="$"]'](
+          node: TSESTree.TSPropertySignature) {
+        if (!hasLitImport) {
+          return;
+        }
+
+        assert.ok(isType(node.parent.parent, Node.TSInterfaceDeclaration));
+        dollarProperties.set(node.parent.parent.id.name, node);
+      },
       'Program:exit'(_node: TSESTree.Program) {
         for (const classInfo of classInfos.values()) {
           classInfo.runMissingTagNameRegistrationCheck();
           classInfo.runMissingCustomElementRegistrationCheck();
+        }
+
+        for (const [interfaceName, dollarProp] of dollarProperties) {
+          const classInfo = classInfos.get(interfaceName);
+          if (classInfo) {
+            classInfo.runInvalidDollarSignPropertyCheck(dollarProp);
+          }
         }
 
         if (htmlImportNode && classInfos.size > 0 &&

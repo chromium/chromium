@@ -208,7 +208,34 @@ declare global {
   }
 }
 
-customElements.define(TestError11Element.is, TestError11Element);
+// Case1.12: Invalid (optional/nullable/undefinable) properties in '$'
+// interface.
+export interface TestError12Element {
+  $: {
+    input: HTMLInputElement,
+    nullableBtn: HTMLElement|null,
+    undefinableBtn: HTMLElement|undefined,
+    optionalBtn?: HTMLElement,
+  };
+}
+
+export class TestError12Element extends CrLitElement {
+  static get is() {
+    return 'test-error12';
+  }
+
+  override render() {
+    return '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-error12': TestError12Element;
+  }
+}
+
+customElements.define(TestError12Element.is, TestError12Element);
 
 
 /* Cases with no violations below. */
