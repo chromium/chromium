@@ -187,7 +187,7 @@ std::optional<network::mojom::RequestDestination> RequestDestinationFromString(
 const char* RequestDestinationToStringForHistogram(
     network::mojom::RequestDestination dest) {
   return RequestDestinationToString(
-      dest, EmptyRequestDestinationOption::kUseTheEmptyString);
+      dest, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
 }
 
 bool IsRequestDestinationEmbeddedFrame(

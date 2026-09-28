@@ -98,6 +98,9 @@ TEST(RequestDestinationTest, ToStringUseFiveCharEmptyString) {
               RequestDestinationToString(
                   testcase.request_destination,
                   EmptyRequestDestinationOption::kUseFiveCharEmptyString));
+    EXPECT_EQ(testcase.expected_string,
+              RequestDestinationToStringForHistogram(
+                  testcase.request_destination));
   }
 }
 
