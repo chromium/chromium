@@ -1352,6 +1352,27 @@ TEST_P(PrintContextTest, WhiteRootBackgroundWithShouldPrintBackgroundEnabled) {
   PrintSinglePage(canvas);
 }
 
+TEST_P(PrintContextTest, MeterWithShouldPrintBackgroundDisabled) {
+  MockPageContextCanvas canvas;
+  SetBodyInnerHTML("<meter value=0.5></meter>");
+
+  GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
+  Vector<SkColor> rect_colors;
+  EXPECT_CALL(canvas, onDrawRect(_, _))
+      .Times(testing::AnyNumber())
+      .WillRepeatedly([&rect_colors](const SkRect&, const SkPaint& paint) {
+        rect_colors.push_back(paint.getColor());
+      });
+  PrintSinglePage(canvas);
+
+  // The <meter> gauge is drawn with CSS backgrounds in the UA shadow tree.
+  // It should be visible in print output even when backgrounds are disabled,
+  // i.e. not be forced to white. crbug.com/41198413
+  EXPECT_TRUE(std::ranges::any_of(rect_colors, [](SkColor color) {
+    return color != SK_ColorWHITE;
+  })) << "expected a non-white fill for the <meter> value";
+}
+
 TEST_P(PrintContextFrameTest, SafePrintableInset) {
   SetBodyInnerHTML(R"HTML(
       <style>

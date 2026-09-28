@@ -1546,6 +1546,15 @@ meter::-webkit-meter-even-less-good-value:-internal-shadow-host-has-non-auto-app
     }
 }
 
+/* The meter gauge is drawn with CSS backgrounds. Keep it visible when
+ * printing without background graphics. crbug.com/41198413 */
+meter::-webkit-meter-bar,
+meter::-webkit-meter-optimum-value,
+meter::-webkit-meter-suboptimum-value,
+meter::-webkit-meter-even-less-good-value {
+    print-color-adjust: exact;
+}
+
 /* progress */
 
 progress {
