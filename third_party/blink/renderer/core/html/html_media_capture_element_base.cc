@@ -208,6 +208,14 @@ void HTMLMediaCaptureElementBase::UpdateAppearance() {
   UpdateIcon(permission_count == 1 ? permission_name
                                    : PermissionName::VIDEO_CAPTURE);
 
+  if (IsIconOnly()) {
+    if (permission_text_span() &&
+        !permission_text_span()->textContent().empty()) {
+      permission_text_span()->setInnerText(g_empty_string);
+    }
+    return;
+  }
+
   AtomicString language_string = ComputeInheritedLanguage().ToAsciiLower();
   bool granted = ShouldShowGrantedAppearance();
 

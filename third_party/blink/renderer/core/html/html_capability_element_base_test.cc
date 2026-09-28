@@ -445,6 +445,56 @@ TEST_F(HTMLCapabilityElementBaseTest, SetTypeAfterInsertedInto) {
   }
 }
 
+TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnly) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
+  for (const char* type : {"camera", "microphone", "geolocation"}) {
+    auto* permission_element = CreatePermissionElement(type);
+    WaitForPermissionElementRegistration(permission_element);
+    EXPECT_FALSE(permission_element->IsIconOnly());
+    EXPECT_FALSE(permission_element->permission_text_span_for_testing()
+                     ->innerText()
+                     .empty());
+
+    permission_element->setAttribute(html_names::kDisplaymodeAttr,
+                                     AtomicString("icon-only"));
+    EXPECT_TRUE(permission_element->IsIconOnly());
+    CheckInnerText(permission_element, g_empty_string);
+
+    permission_element->removeAttribute(html_names::kDisplaymodeAttr);
+    EXPECT_FALSE(permission_element->IsIconOnly());
+    EXPECT_FALSE(permission_element->permission_text_span_for_testing()
+                     ->innerText()
+                     .empty());
+  }
+}
+
+TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyCaseInsensitive) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
+  auto* permission_element = CreatePermissionElement("camera");
+  WaitForPermissionElementRegistration(permission_element);
+  permission_element->setAttribute(html_names::kDisplaymodeAttr,
+                                   AtomicString("iCoN-oNlY"));
+  EXPECT_TRUE(permission_element->IsIconOnly());
+  CheckInnerText(permission_element, g_empty_string);
+}
+
+TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyDisabled) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(false);
+  auto* permission_element = CreatePermissionElement("camera");
+  WaitForPermissionElementRegistration(permission_element);
+  EXPECT_FALSE(permission_element->IsIconOnly());
+  EXPECT_FALSE(permission_element->permission_text_span_for_testing()
+                   ->innerText()
+                   .empty());
+
+  permission_element->setAttribute(html_names::kDisplaymodeAttr,
+                                   AtomicString("icon-only"));
+  EXPECT_FALSE(permission_element->IsIconOnly());
+  EXPECT_FALSE(permission_element->permission_text_span_for_testing()
+                   ->innerText()
+                   .empty());
+}
+
 TEST_F(HTMLCapabilityElementBaseTest,
        SetInnerTextAfterRegistrationSingleElement) {
   const struct {

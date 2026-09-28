@@ -288,6 +288,36 @@ TEST_F(HTMLGeolocationElementTest, GeolocationAccuracyModeCaseInsensitive) {
   CheckInnerText(geolocation_element, kPreciseGeolocationString);
 }
 
+TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnly) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
+  auto* geolocation_element = CreateGeolocationElement();
+  WaitForPermissionElementRegistration(geolocation_element);
+  EXPECT_FALSE(geolocation_element->IsIconOnly());
+  CheckInnerText(geolocation_element, kGeolocationString);
+
+  geolocation_element->setAttribute(html_names::kDisplaymodeAttr,
+                                    AtomicString("icon-only"));
+  EXPECT_TRUE(geolocation_element->IsIconOnly());
+  CheckInnerText(geolocation_element, g_empty_string);
+
+  geolocation_element->removeAttribute(html_names::kDisplaymodeAttr);
+  EXPECT_FALSE(geolocation_element->IsIconOnly());
+  CheckInnerText(geolocation_element, kGeolocationString);
+}
+
+TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnlyDisabled) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(false);
+  auto* geolocation_element = CreateGeolocationElement();
+  WaitForPermissionElementRegistration(geolocation_element);
+  EXPECT_FALSE(geolocation_element->IsIconOnly());
+  CheckInnerText(geolocation_element, kGeolocationString);
+
+  geolocation_element->setAttribute(html_names::kDisplaymodeAttr,
+                                    AtomicString("icon-only"));
+  EXPECT_FALSE(geolocation_element->IsIconOnly());
+  CheckInnerText(geolocation_element, kGeolocationString);
+}
+
 TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {
   const struct {
     MojoPermissionStatus status;

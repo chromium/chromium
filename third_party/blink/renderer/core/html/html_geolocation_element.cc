@@ -347,6 +347,13 @@ void HTMLGeolocationElement::MaybeTriggerAutolocate(ForceAutolocate force) {
 }
 
 void HTMLGeolocationElement::UpdateText() {
+  if (IsIconOnly()) {
+    if (permission_text_span() &&
+        !permission_text_span()->textContent().empty()) {
+      permission_text_span()->setInnerText(g_empty_string);
+    }
+    return;
+  }
   uint16_t message_id = GetTranslatedMessageID(
       is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
                             : IDS_PERMISSION_REQUEST_GEOLOCATION,

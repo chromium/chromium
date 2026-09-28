@@ -490,6 +490,16 @@ void HTMLCapabilityElementBase::SetPreciseLocation(bool is_precise_location) {
   UpdateAppearance();
 }
 
+bool HTMLCapabilityElementBase::IsIconOnly() const {
+  if (IsHTMLInstallElement() ||
+      !RuntimeEnabledFeatures::CapabilityElementIconOnlyModeEnabled(
+          GetDocument().GetExecutionContext())) {
+    return false;
+  }
+  return EqualIgnoringAsciiCase(FastGetAttribute(html_names::kDisplaymodeAttr),
+                                "icon-only");
+}
+
 void HTMLCapabilityElementBase::UpdatePermissionStatus() {
   if (std::ranges::any_of(permission_status_map_, [](const auto& status) {
         return status.value == MojoPermissionStatus::DENIED;
@@ -688,6 +698,14 @@ void HTMLCapabilityElementBase::ParseAttribute(
 
   if (params.name == html_names::kPreciselocationAttr) {
     SetPreciseLocation(params.new_value != nullptr);
+  } else if (params.name == html_names::kDisplaymodeAttr) {
+    if (!IsHTMLInstallElement() &&
+        RuntimeEnabledFeatures::CapabilityElementIconOnlyModeEnabled(
+            GetDocument().GetExecutionContext()) &&
+        EqualIgnoringAsciiCase(params.old_value, "icon-only") !=
+            EqualIgnoringAsciiCase(params.new_value, "icon-only")) {
+      UpdateAppearance();
+    }
   }
 
   HTMLElement::ParseAttribute(params);

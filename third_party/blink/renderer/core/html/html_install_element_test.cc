@@ -838,4 +838,17 @@ TEST_F(HTMLInstallElementTestBase,
   EXPECT_FALSE(web_install_service_.WasCalled());
 }
 
+TEST_F(HTMLInstallElementTestBase, DisplayModeIconOnlyNotSupported) {
+  ScopedCapabilityElementIconOnlyModeForTest scoped_feature(true);
+  auto* element = MakeGarbageCollected<HTMLInstallElement>(GetDocument());
+  WaitForElementRegistration(element);
+  EXPECT_FALSE(element->IsIconOnly());
+  CheckInnerText(element, kInstallString);
+
+  element->setAttribute(html_names::kDisplaymodeAttr,
+                        AtomicString("icon-only"));
+  EXPECT_FALSE(element->IsIconOnly());
+  CheckInnerText(element, kInstallString);
+}
+
 }  // namespace blink

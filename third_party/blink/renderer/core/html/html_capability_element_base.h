@@ -85,6 +85,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
   bool IsRendered() const;
   bool granted() const { return PermissionsGranted(); }
 
+  bool IsIconOnly() const;
+
   const Member<HTMLSpanElement>& permission_text_span_for_testing() const {
     return permission_text_span_;
   }
