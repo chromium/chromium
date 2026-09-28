@@ -3701,7 +3701,6 @@ if (!is_android) {
     # NOTE: This is the main "browser_tests" section for |is_chromeos|.
     if (is_chromeos) {
       sources += [
-        "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "//third_party/liblouis/wasm/liblouis_wrapper_browsertest.cc",
         "base/ash/web_ui_browser_test_browsertest.cc",
         "data/webui/chromeos/async_gen.cc",

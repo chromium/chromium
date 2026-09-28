@@ -140,7 +140,14 @@ if (!is_android) {
     ]
 
     if (is_chromeos) {
-      deps += [ "//chrome/browser/apps/app_service" ]
+      sources += [ "cloud_identifier/cloud_identifier_util_ash_browsertest.cc" ]
+      deps += [
+        "//chrome/browser:cloud_identifier_util_ash",
+        "//chrome/browser/apps/app_service",
+        "//chrome/browser/ash/drive:test_support",
+        "//chrome/browser/ash/file_manager:test_support",
+        "//chromeos/ash/components/drivefs:test_support",
+      ]
     }
 
     if (enable_extensions) {
