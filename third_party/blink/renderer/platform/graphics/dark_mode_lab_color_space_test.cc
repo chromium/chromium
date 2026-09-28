@@ -1,3 +1,7 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "third_party/blink/renderer/platform/graphics/dark_mode_lab_color_space.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
