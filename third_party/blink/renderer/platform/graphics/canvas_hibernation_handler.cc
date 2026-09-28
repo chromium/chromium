@@ -135,13 +135,11 @@ CanvasHibernationHandler::~CanvasHibernationHandler() {
 
 void CanvasHibernationHandler::SaveForHibernation(
     sk_sp<SkImage>&& image,
-    std::unique_ptr<MemoryManagedPaintRecorder> recorder,
     base::MemoryReductionTaskContext context,
     base::TimeDelta delay) {
   DCheckInvariant();
   DCHECK(image);
   image_ = image;
-  recorder_ = std::move(recorder);
 
   width_ = image_->width();
   height_ = image_->height();
@@ -360,7 +358,6 @@ void CanvasHibernationHandler::Clear() {
   HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
   encoded_ = nullptr;
   image_ = nullptr;
-  recorder_ = nullptr;
 }
 
 size_t CanvasHibernationHandler::memory_size() const {
@@ -461,8 +458,7 @@ void CanvasHibernationHandler::Hibernate(
         HibernationEvent::kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  SaveForHibernation(std::move(sw_image), delegate_->ReleaseRecorder(), context,
-                     delay);
+  SaveForHibernation(std::move(sw_image), context, delay);
 
   delegate_->ResetResourceProvider();
   delegate_->ClearCanvas2DLayerTexture();

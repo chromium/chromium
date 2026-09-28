@@ -502,11 +502,6 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return &Recorder()->getRecordingCanvas();
 }
 
-std::unique_ptr<MemoryManagedPaintRecorder>
-CanvasRenderingContext2D::ReleaseRecorder() {
-  return BaseRenderingContext2D::ReleaseRecorder();
-}
-
 void CanvasRenderingContext2D::RecordingCleared() {
   BaseRenderingContext2D::RecordingCleared();
   if (shared_image_provider_) {
@@ -1426,8 +1421,6 @@ void CanvasRenderingContext2D::WakeUpFromHibernation() {
   } else if (bitmap_provider_) {
     bitmap_provider_->RestoreBackBuffer(builder.TakePaintImage());
   }
-  SetRecorder(hibernation_handler->ReleaseRecorder(),
-              shared_image_provider_ && shared_image_provider_->IsGraphite());
   // The hibernation image is no longer valid, clear it.
   hibernation_handler->Clear();
   DCHECK(!hibernation_handler->IsHibernating());

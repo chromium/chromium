@@ -83,7 +83,6 @@ class ExecutionContext;
 class ImageData;
 class ImageDataSettings;
 class MemoryManagedPaintCanvas;
-class MemoryManagedPaintRecorder;
 class Path2D;
 class SVGResource;
 class Canvas2DResourceProvider;
@@ -176,7 +175,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return canvas() && canvas()->IsPageVisible();
   }
   void ResetResourceProvider() override;
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
   void SetNeedsCompositingUpdate() override {
     if (canvas()) {
       canvas()->SetNeedsCompositingUpdate();

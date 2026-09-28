@@ -14,7 +14,6 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -44,7 +43,6 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     virtual void ResetResourceProvider() = 0;
     virtual void SetNeedsCompositingUpdate() = 0;
     virtual void ClearCanvas2DLayerTexture() {}
-    virtual std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() = 0;
     virtual std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) = 0;
   };
 
@@ -94,16 +92,12 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   void InitiateHibernationIfNecessary();
 
   void SaveForHibernation(sk_sp<SkImage>&& image,
-                          std::unique_ptr<MemoryManagedPaintRecorder> recorder,
                           base::MemoryReductionTaskContext context,
                           base::TimeDelta delay);
   // Returns the uncompressed image for this hibernation image. Does not
   // invalidate the hibernated image. Must call `Clear()` if invalidation is
   // required.
   sk_sp<SkImage> GetImage();
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() {
-    return std::move(recorder_);
-  }
   // Invalidate the hibernated image.
   void Clear();
 
@@ -178,7 +172,6 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   // Compressed hibernation image.
   sk_sp<SkData> encoded_ = nullptr;
   CompressionAlgorithm algorithm_ = CompressionAlgorithm::kZlib;
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   scoped_refptr<base::SingleThreadTaskRunner>
       background_thread_task_runner_for_testing_;
   int width_;

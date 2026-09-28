@@ -3001,6 +3001,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
 
   CreateContext(kNonOpaque);
   Context2D()->InitializeResourceProvider();
+  const MemoryManagedPaintRecorder* initial_recorder = Context2D()->Recorder();
+  ASSERT_NE(initial_recorder, nullptr);
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
 
@@ -3008,6 +3010,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
+  EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   // Reset the canvas, ending hibernation.
   {
@@ -3018,6 +3021,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
         CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset,
         1);
     EXPECT_FALSE(handler.IsHibernating());
+    EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
   }
 }
 
@@ -3380,8 +3384,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   // Make sure the task above runs.
   RunIdleTasks();
 
+  const MemoryManagedPaintRecorder* initial_recorder = Context2D()->Recorder();
+  ASSERT_NE(initial_recorder, nullptr);
+
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   WaitForHibernation();
+  EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   // Hibernating should have rastered paint ops preceding `beginLayer`.
   EXPECT_THAT(hibernation_raster,
@@ -3393,6 +3401,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   NonThrowableExceptionState exception_state;
   Context2D()->endLayer(exception_state);
+  EXPECT_EQ(Context2D()->Recorder(), initial_recorder);
 
   // Post hibernation recording now holds the layer content.
   EXPECT_THAT(
