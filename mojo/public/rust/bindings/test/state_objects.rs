@@ -22,6 +22,8 @@ use bindings::remote::{AssociatedRemote, PendingAssociatedRemote};
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use test_mojom::{AssociatedSender, HandleService, MathService, TwoInts, TypemapService};
 
+use crate::cxx::ffi;
+
 // Various implementers of the `MathService` interface
 
 // Wraps around if overflow would happen
@@ -319,3 +321,53 @@ impl AssociatedSender for AssociatedSenderInteropRustImpl {
 }
 
 register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderInteropRustImpl);
+
+// Creates or receives pending associated receivers from C++, and then calls
+// back out to C++ to bind them to a PlusSevenMathService.
+#[derive(Clone, Default)]
+pub struct AssociatedSenderRustToCppImpl;
+
+impl AssociatedSender for AssociatedSenderRustToCppImpl {
+    fn SendRemote(&mut self, _remote: PendingAssociatedRemote<dyn MathService>) {}
+
+    fn SendReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn MathService>) {
+        let cpp_adapter = receiver.into_cpp();
+        ffi::BindPlusSevenAssociatedReceiver(cpp_adapter);
+    }
+
+    fn SendHandleReceiver(&mut self, receiver: PendingAssociatedReceiver<dyn HandleService>) {
+        let cpp_adapter = receiver.into_cpp();
+        ffi::BindCppHandleServiceReceiver(cpp_adapter);
+    }
+
+    fn SendAssociatedSender(&mut self, _receiver: PendingAssociatedReceiver<dyn AssociatedSender>) {
+    }
+
+    fn RequestRemote(
+        &mut self,
+        response_callback: impl Send + 'static + FnOnce(PendingAssociatedRemote<dyn MathService>),
+    ) {
+        let (remote, cpp_adapter) = PendingAssociatedRemote::<dyn MathService>::new_pair_cpp();
+        ffi::BindPlusSevenAssociatedReceiver(cpp_adapter);
+        response_callback(remote);
+    }
+
+    fn RequestReceiver(
+        &mut self,
+        _response_callback: impl Send + 'static + FnOnce(PendingAssociatedReceiver<dyn MathService>),
+    ) {
+    }
+
+    fn RequestHandleRemote(
+        &mut self,
+        response_callback: impl Send + 'static + FnOnce(PendingAssociatedRemote<dyn HandleService>),
+    ) {
+        let (remote, cpp_adapter) = PendingAssociatedRemote::<dyn HandleService>::new_pair_cpp();
+        ffi::BindCppHandleServiceReceiver(cpp_adapter);
+        response_callback(remote);
+    }
+
+    fn ClearActiveEndpoints(&mut self) {}
+}
+
+register_mojom_state_object_impls!(impl AssociatedSender for AssociatedSenderRustToCppImpl);

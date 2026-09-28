@@ -9,6 +9,7 @@ rust_static_library("bindings_unittests") {
   sources = [
     "cxx.rs",
     "lib.rs",
+    "rust_associated_sender.rs",
     "state_objects.rs",
     "tests.rs",
   ]
@@ -46,6 +47,7 @@ source_set("math_service_cpp") {
     ":bindings_unittests_cxx_generated_gen",
     ":bindings_unittests_mojom",
     "../../system",
+    "//base/test:test_support",
     "//mojo/public/cpp/bindings",
     "//mojo/public/rust/bindings:cpp_router_handle_cc",
     "//testing/gtest",

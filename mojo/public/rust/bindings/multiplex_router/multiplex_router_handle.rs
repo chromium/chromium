@@ -129,4 +129,18 @@ impl MultiplexRouterHandle {
     pub fn interface_id(&self) -> InterfaceId {
         self.interface_id
     }
+
+    /// Breaks this handle into its component parts.
+    /// This is used to transfer ownership to C++ without closing the interface.
+    pub(crate) fn into_parts(self) -> (InterfaceId, MultiplexRouter) {
+        // We can't destructure `self` because we implement `Drop`, and we can't
+        // clone `router` because that would skip `Drop` for the original
+        // router, leaking a reference.
+        let this = std::mem::ManuallyDrop::new(self);
+        // Strictly speaking this bitwise copies the router without incrementing
+        // refcounts, but the compiler will optimize away the copies.
+        // SAFETY: The pointer is derived from a reference.
+        let router = unsafe { std::ptr::read(&this.router) };
+        (this.interface_id, router)
+    }
 }

@@ -150,6 +150,12 @@ pub mod ffi {
             peer_out: &mut UniquePtr<AssociatedEndpointRustAdapter>,
         );
 
+        /// Creates a C++ adapter attached to a Rust router's group controller.
+        fn CreateWithRustController(
+            controller: Pin<&mut RustAssociatedGroupController>,
+            interface_id: u32,
+        ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+
         /// Binds the endpoint to a sequence and starts routing incoming
         /// messages to Rust.
         fn Bind(

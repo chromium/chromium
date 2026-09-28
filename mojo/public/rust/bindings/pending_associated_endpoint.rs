@@ -193,6 +193,24 @@ where
         Self::new_singleton(AssociatedRouterHandle::Cpp(cpp_handle))
     }
 
+    /// Converts an associated endpoint into a version that can be used to
+    /// create an associated endpoint in C++.
+    ///
+    /// This function should only be called on endpoints that were received via
+    /// a Rust pipe, which are intended to be used as an associated interface in
+    /// C++ code. If you want to create a pair in Rust and pass one side to C++,
+    /// use `new_pair_cpp` instead.
+    ///
+    /// The returned `CxxPendingAssociatedEndpoint` can then be passed across
+    /// FFI to C++ and bound using `PassPendingAssociatedRemote` or
+    /// `PassPendingAssociatedReceiver`.
+    pub fn into_cpp(self) -> UniquePtr<CxxPendingAssociatedEndpoint> {
+        let AssociatedEndpointState::Singleton(handle) = self.state else {
+            panic!("Use new_pair_cpp to create a pair with one side in Rust and the other in C++")
+        };
+        handle.into_cpp()
+    }
+
     /// Checks if the endpoint has been associated with a specific pipe yet,
     /// and is therefore ready to send/receive messages once bound.
     ///

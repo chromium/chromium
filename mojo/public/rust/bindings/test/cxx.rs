@@ -7,6 +7,7 @@ chromium::import! {
     "//mojo/public/rust/system";
 }
 
+use crate::rust_associated_sender::{RequestHandleRemote, RequestRemote, RustAssociatedSender};
 use crate::tests::{
     BindRustAssociatedSenderReceiver, BindRustHandleServiceReceiver, BindRustMathServiceReceiver,
 };
@@ -23,6 +24,14 @@ pub mod ffi {
         fn BindRustMathServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
         fn BindRustHandleServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
         fn BindRustAssociatedSenderReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+
+        type RustAssociatedSender;
+        fn RequestRemote(
+            sender: &mut RustAssociatedSender,
+        ) -> UniquePtr<AssociatedEndpointRustAdapter>;
+        fn RequestHandleRemote(
+            sender: &mut RustAssociatedSender,
+        ) -> UniquePtr<AssociatedEndpointRustAdapter>;
     }
 
     unsafe extern "C++" {
@@ -76,6 +85,34 @@ pub mod ffi {
             receiver_adapter: UniquePtr<AssociatedEndpointRustAdapter>,
         );
 
+        fn TestSendReceiverAndAddCppRemote(remote: Pin<&mut AssociatedSenderTestRemote>);
+
+        fn TestSendHandleReceiverAndPassHandlesCppRemote(
+            remote: Pin<&mut AssociatedSenderTestRemote>,
+        );
+
+        fn BindPlusSevenAssociatedReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+        fn BindCppHandleServiceReceiver(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+        fn BindPlusSevenAssociatedSender(adapter: UniquePtr<AssociatedEndpointRustAdapter>);
+
+        fn CreatePlusSevenAssociatedReceiver(
+            adapter: UniquePtr<AssociatedEndpointRustAdapter>,
+        ) -> UniquePtr<PlusSevenMathService>;
+
+        fn TestRequestRemoteAndAddRustRemote(sender: &mut RustAssociatedSender);
+
+        fn TestRequestHandleRemoteAndPassHandlesRustRemote(sender: &mut RustAssociatedSender);
+
+        fn SetPlusSevenDisconnectCallback(
+            service: Pin<&mut PlusSevenMathService>,
+            handler_type: i32,
+        );
+
         fn TestBadMessageToRustReceiver();
+
+        fn HaveSameGroupController(
+            first: UniquePtr<AssociatedEndpointRustAdapter>,
+            second: UniquePtr<AssociatedEndpointRustAdapter>,
+        ) -> bool;
     }
 }

@@ -30,6 +30,7 @@ use system::scoped_handle_interop::ScopedMessagePipeHandleWrapper;
 use test_mojom::{AssociatedSender, HandleService, MathService, TwoInts, TypemapService};
 
 use crate::cxx::ffi;
+use crate::rust_associated_sender::RustAssociatedSender;
 use crate::state_objects::*;
 
 #[gtest(RustBindingsAPI, MessagePipeWatcherBasicTests)]
@@ -950,6 +951,54 @@ fn test_bad_control_message() {
     expect_eq!(reported.unwrap(), "Control message has incorrect message ID");
 }
 
+/// Tests that we correctly report a bad message that is sent across a Rust
+/// primary pipe to a C++ associated receiver.
+#[gtest(RustBindingsAPI, TestBadMessageToCppAssociatedReceiver)]
+fn test_bad_message_to_cpp_associated_receiver() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+
+    let bad_message_flag = Arc::new(Mutex::new(None::<String>));
+    let bad_message_flag_clone = bad_message_flag.clone();
+    test_util::set_default_process_error_handler(move |msg: &str| {
+        *bad_message_flag_clone.lock().unwrap() = Some(msg.to_string());
+    });
+
+    {
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+        let _primary_receiver = pending_receiver.bind(AssociatedSenderRustToCppImpl {});
+
+        let mut remote = pending_remote.bind();
+        let (math_rem, math_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+        remote.SendReceiver(math_rec);
+
+        let mut math_remote = math_rem.bind();
+
+        // Create a new nonsense message
+        let header = MessageHeader::new(0, 9999, MessageHeaderFlags::default(), 0, 0);
+        let msg = MojomMessage {
+            header,
+            payload: vec![0u8; 8],
+            handles: vec![],
+            raw_message_handle: None,
+        };
+        // Don't call this yourself! We're being bad here!
+        math_remote.send_message_internal(msg, None);
+
+        let run_loop = RunLoop::new();
+        run_loop.run_until_idle();
+    }
+
+    let reported = bad_message_flag.lock().unwrap().take();
+    expect_true!(reported.is_some());
+
+    let run_loop_idle = RunLoop::new();
+    run_loop_idle.run_until_idle();
+
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+}
+
 /// Tests that we correctly report a bad message that is sent across a C++
 /// primary pipe to a Rust associated receiver.
 #[gtest(RustBindingsAPI, TestBadMessageToRustAssociatedReceiver)]
@@ -1400,6 +1449,214 @@ fn test_associated_interop_cpp_primary_remote() {
     run_loop.run();
 }
 
+/// Every C++ endpoint on a given Rust router should share a single
+/// `AssociatedGroupController`, since mojo sometimes compares controllers
+/// rather than the pipes behind them.
+#[gtest(RustBindingsAPI, TestGroupControllerIsShared)]
+fn test_group_controller_is_shared() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let mut primary_remote = pending_remote.bind();
+    let state_object = AssociatedSenderImpl::new();
+    let _primary_receiver = pending_receiver.bind(state_object.clone());
+
+    // Send two associated receivers over the same pipe, taking each one back
+    // out of the state object as it arrives. Note that we have to hold onto
+    // the remote halves: dropping one would queue a disconnect notification
+    // for an endpoint that nobody has bound, which blocks the second message.
+    let (_first_remote, first_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    let (_second_remote, second_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+
+    primary_remote.SendReceiver(first_receiver);
+    RunLoop::new().run_until_idle();
+    let first = state_object
+        .send_receiver
+        .lock()
+        .unwrap()
+        .take()
+        .expect("Should have received the first PendingAssociatedReceiver<MathService>");
+
+    primary_remote.SendReceiver(second_receiver);
+    RunLoop::new().run_until_idle();
+    let second = state_object
+        .send_receiver
+        .lock()
+        .unwrap()
+        .take()
+        .expect("Should have received the second PendingAssociatedReceiver<MathService>");
+
+    assert!(ffi::HaveSameGroupController(first.into_cpp(), second.into_cpp()));
+}
+
+/// Ensure that we can attach a C++ associated endpoint to a primary pipe
+/// endpoint in Rust.
+///
+/// Overall strategy:
+/// 1. Create the primary pair in Rust; bind the receiver immediately, and send
+///    the remote to C++.
+/// 2. The receiver is bound to a state object that calls back into C++ to
+///    create an associated endpoint (`AssociatedSenderRustToCppImpl`).
+/// 3. Then we shift control of the test to C++. The C++ code will request a
+///    remote in order to invoke that state object; the corresponding associated
+///    receiver will be bound to the primary pipe.
+/// 4. Once that's done, C++ will send a message to make sure it all works
+///    properly.
+///
+/// We then perform steps (3) and (4) again, but invoking `SendReceiver` to
+/// cover the case where Rust parses the receiver instead of serializing it.
+#[gtest(RustBindingsAPI, TestAssociatedInteropRustPrimaryReceiver)]
+fn test_associated_interop_rust_primary_receiver() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    {
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+        let _primary_receiver = pending_receiver.bind(AssociatedSenderRustToCppImpl {});
+
+        let remote_wrapper =
+            ScopedMessagePipeHandleWrapper::from_message_endpoint(pending_remote.into_endpoint());
+
+        let mut cxx_remote = ffi::CreateAssociatedSenderTestRemote(remote_wrapper);
+
+        // The testing functions are defined in cpp/test_runners.cc
+
+        // Case 2: C++ calls SendReceiver
+        ffi::TestSendReceiverAndAddCppRemote(cxx_remote.pin_mut());
+
+        // Case 4: C++ calls SendHandleReceiver and tests passing handles
+        ffi::TestSendHandleReceiverAndPassHandlesCppRemote(cxx_remote.pin_mut());
+    }
+
+    let run_loop_idle = RunLoop::new();
+    run_loop_idle.run_until_idle();
+}
+
+/// Similar to the above test, but in this case the remote is in Rust so C++
+/// has to do conversions before sending its messages. The receiver is in C++
+/// for convenience, so it doesn't need to do conversions on that side.
+#[gtest(RustBindingsAPI, TestAssociatedInteropRustPrimaryRemote)]
+fn test_associated_interop_rust_primary_remote() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+    let primary_remote = pending_remote.bind();
+
+    let receiver_wrapper =
+        ScopedMessagePipeHandleWrapper::from_message_endpoint(pending_receiver.into_endpoint());
+
+    // Bind the receiver in C++ to a standard AssociatedSender impl (which just
+    // receives/creates endpoints as requested by the remote).
+    ffi::CreateCppAssociatedSender(receiver_wrapper);
+
+    // A RustAssociatedSender is just a thin wrapper around the remote so
+    // that we can pass it across cxx, since cxx can't handle generics like
+    // <dyn AssociatedSender>
+    let mut rust_sender = RustAssociatedSender::new(primary_remote);
+
+    // The testing functions are defined in cpp/test_runners.cc
+
+    // Case 2: C++ requests an associated remote from Rust
+    ffi::TestRequestRemoteAndAddRustRemote(&mut rust_sender);
+
+    // Case 4: C++ requests an associated HandleService remote from Rust
+    ffi::TestRequestHandleRemoteAndPassHandlesRustRemote(&mut rust_sender);
+}
+
+/// Tests disconnect event propagation when primary pipe is in Rust.
+#[gtest(RustBindingsAPI, TestAssociatedDisconnectRust)]
+fn test_associated_disconnect_rust() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_remote, pending_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+
+    let mut primary_remote = pending_remote.bind();
+    let state_object = AssociatedSenderImpl::new();
+    let _primary_receiver = pending_receiver.bind(state_object.clone());
+
+    // 1. Dropping C++ receiver triggers disconnect on Rust remote.
+    {
+        let (pending_math_remote, pending_math_receiver) =
+            PendingAssociatedRemote::<dyn MathService>::new_pair();
+
+        primary_remote.SendReceiver(pending_math_receiver);
+
+        let run_loop = RunLoop::new();
+        let quit = run_loop.get_quit_closure();
+
+        let disconnect_handler = Box::new(quit);
+
+        let _math_remote = pending_math_remote.bind_with_options(None, Some(disconnect_handler));
+
+        RunLoop::new().run_until_idle();
+
+        let pending_math_receiver = state_object
+            .send_receiver
+            .lock()
+            .unwrap()
+            .take()
+            .expect("Should have received PendingAssociatedReceiver");
+
+        let cpp_adapter = pending_math_receiver.into_cpp();
+        let cpp_service = ffi::CreatePlusSevenAssociatedReceiver(cpp_adapter);
+
+        drop(cpp_service);
+
+        // We know the handler ran if this run loop finishes.
+        run_loop.run();
+    }
+
+    // 2. Dropping Rust remote triggers disconnect on C++ receiver.
+    {
+        *CPP_DISCONNECT_CALLBACK.lock().unwrap() = None;
+
+        let (pending_math_remote, pending_math_receiver) =
+            PendingAssociatedRemote::<dyn MathService>::new_pair();
+
+        primary_remote.SendReceiver(pending_math_receiver);
+
+        let math_remote = pending_math_remote.bind();
+
+        RunLoop::new().run_until_idle();
+
+        let pending_math_receiver = state_object
+            .send_receiver
+            .lock()
+            .unwrap()
+            .take()
+            .expect("Should have received PendingAssociatedReceiver");
+
+        let cpp_adapter = pending_math_receiver.into_cpp();
+        let mut cpp_service = ffi::CreatePlusSevenAssociatedReceiver(cpp_adapter);
+
+        let run_loop = RunLoop::new();
+        let quit = run_loop.get_quit_closure();
+        *CPP_DISCONNECT_CALLBACK.lock().unwrap() = Some(Box::new(move |handler_type| {
+            expect_eq!(handler_type, 2); // C++ PlusSevenMathService (type 2)
+                                         // disconnected
+            quit();
+        }));
+
+        ffi::SetPlusSevenDisconnectCallback(cpp_service.pin_mut(), 2);
+
+        drop(math_remote);
+
+        run_loop.run();
+
+        // Reset the C++ callback state
+        *CPP_DISCONNECT_CALLBACK.lock().unwrap() = None;
+    }
+}
+
 /// Registering an already-registered interface ID should fail and
 /// return null.
 #[gtest(RustBindingsAPI, TestDuplicateInterfaceIdRejected)]
@@ -1448,11 +1705,11 @@ fn test_duplicate_interface_id_reports_bad_message() {
         raw_msg.read_bytes().unwrap().to_vec()
     };
 
-    // Sending the message twice, through a pure-rust pipe
+    // Sending the message twice, through a Rust receiver
     {
         let (handle0, handle1) = system::message_pipe::MessageEndpoint::create_pipe().unwrap();
-        let _receiver =
-            PendingReceiver::<dyn AssociatedSender>::new(handle0).bind(AssociatedSenderImpl::new());
+        let _receiver = PendingReceiver::<dyn AssociatedSender>::new(handle0)
+            .bind(AssociatedSenderRustToCppImpl {});
 
         let msg1 = system::message::WritableMessage::new_with_bytes(&message_bytes).unwrap().into();
         let msg2 = system::message::WritableMessage::new_with_bytes(&message_bytes).unwrap().into();
@@ -1463,6 +1720,57 @@ fn test_duplicate_interface_id_reports_bad_message() {
 
         let reported = bad_message_flag.lock().unwrap().take();
         expect_true!(reported.is_some());
+    }
+
+    // Case 2: As above, but through a C++ associated interface.
+    {
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+        let mut primary_remote = pending_remote.bind();
+        let state_object = AssociatedSenderImpl::new();
+        let _primary_receiver = pending_receiver.bind(state_object.clone());
+
+        let (pending_sender_rem, pending_sender_rec) =
+            PendingAssociatedRemote::<dyn AssociatedSender>::new_pair();
+
+        primary_remote.SendAssociatedSender(pending_sender_rec);
+        RunLoop::new().run_until_idle();
+
+        let received_sender_rec = state_object
+            .send_associated_sender
+            .lock()
+            .unwrap()
+            .take()
+            .expect("Should have received PendingAssociatedReceiver<AssociatedSender>");
+
+        ffi::BindPlusSevenAssociatedSender(received_sender_rec.into_cpp());
+
+        let mut sender_rem = pending_sender_rem.bind();
+
+        let (payload_slice, header) = MessageHeader::deserialize(&message_bytes).unwrap();
+        // Annoyingly necessary type conversions
+        let msg1 = MojomMessage {
+            header,
+            payload: payload_slice.to_vec(),
+            handles: vec![],
+            raw_message_handle: None,
+        };
+        let msg2 = MojomMessage {
+            header,
+            payload: payload_slice.to_vec(),
+            handles: vec![],
+            raw_message_handle: None,
+        };
+        sender_rem.send_message_internal(msg1, None);
+        sender_rem.send_message_internal(msg2, None);
+
+        RunLoop::new().run_until_idle();
+
+        let reported = bad_message_flag.lock().unwrap().take();
+        expect_eq!(
+            reported.as_deref(),
+            Some("Failed to deserialize associated endpoint handles: duplicate or invalid interface ID")
+        );
     }
 
     let run_loop_idle = RunLoop::new();
@@ -1506,6 +1814,56 @@ fn test_failed_send_message_notifies_serialized_endpoint_pure_rust() {
     run_loop.run();
 
     assert!(*child_disconnected.lock().unwrap());
+}
+
+/// Tests that we can send nested associated endpoints through a primary Rust
+/// pipe to an associated C++ receiver.
+#[gtest(RustBindingsAPI, TestNestedAssociatedReceiverCpp)]
+fn test_nested_associated_receiver_to_cpp() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    {
+        let (pending_remote, pending_receiver) =
+            PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+        let mut primary_remote = pending_remote.bind();
+        let state_object = AssociatedSenderImpl::new();
+        let _primary_receiver = pending_receiver.bind(state_object.clone());
+
+        let (pending_sender_rem, pending_sender_rec) =
+            PendingAssociatedRemote::<dyn AssociatedSender>::new_pair();
+
+        primary_remote.SendAssociatedSender(pending_sender_rec);
+        RunLoop::new().run_until_idle();
+
+        let received_sender_rec = state_object
+            .send_associated_sender
+            .lock()
+            .unwrap()
+            .take()
+            .expect("Should have received PendingAssociatedReceiver<AssociatedSender>");
+
+        ffi::BindPlusSevenAssociatedSender(received_sender_rec.into_cpp());
+
+        let mut sender_rem = pending_sender_rem.bind();
+
+        let (math_rem, math_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+        let mut math_rem = math_rem.bind();
+
+        sender_rem.SendReceiver(math_rec);
+
+        let run_loop = RunLoop::new();
+        let quit = run_loop.get_quit_closure();
+
+        math_rem.Add(10, 20, move |res| {
+            assert_eq!(res, 37); // PlusSevenMathService adds 7
+            quit();
+        });
+        run_loop.run();
+    }
+
+    let run_loop_idle = RunLoop::new();
+    run_loop_idle.run_until_idle();
 }
 
 /// Tests that we can send nested associated endpoints through a primary C++

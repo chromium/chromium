@@ -17,10 +17,12 @@
 
 use std::sync::{Arc, OnceLock};
 
+use cxx::UniquePtr;
+
 use crate::message::MojomMessage;
 use crate::pending_associated_endpoint_parsing::Registrar;
 
-use super::cpp_interop::CppRouterHandle;
+use super::cpp_interop::{ffi, CppRouterHandle};
 use super::endpoint_registry::{EndpointInfo, InterfaceId};
 use super::multiplex_router_handle::MultiplexRouterHandle;
 
@@ -121,6 +123,17 @@ impl AssociatedRouterHandle {
         match self {
             Self::Rust(handle) => handle.bind(endpoint_info),
             Self::Cpp(cpp_handle) => cpp_handle.bind(endpoint_info),
+        }
+    }
+
+    /// Converts this handle into a C++ FFI adapter.
+    pub(crate) fn into_cpp(self) -> UniquePtr<ffi::AssociatedEndpointRustAdapter> {
+        match self {
+            Self::Rust(handle) => {
+                let (id, router) = handle.into_parts();
+                ffi::CreateWithRustController(router.cpp_group_controller().as_pin(), id)
+            }
+            Self::Cpp(handle) => handle.into_adapter(),
         }
     }
 }

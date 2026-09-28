@@ -33,18 +33,22 @@
 
 chromium::import! {
   "//mojo/public/rust/system";
+  "//base:scoped_refptr";
   "//base:sequenced_task_runner";
 }
 
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex, Weak};
 
+use scoped_refptr::ScopedRefPtr;
+use sequenced_task_runner::SequencedTaskRunnerHandle;
 use system::message_pipe::MessageEndpoint;
 
 use super::arc_or_weak::ArcOrWeak;
 use super::control_messages::{
     construct_peer_endpoint_closed_message, parse_incoming_control_message, RunOrClosePipeInput,
 };
+use super::cpp_interop::ffi;
 
 use crate::message::MojomMessage;
 use crate::message_pipe_watcher::{MessagePipeWatcher, ResponseSender};
@@ -97,6 +101,15 @@ pub(super) struct MultiplexRouterSharedState {
     /// schedule the disconnect handler for any new endpoints as soon as they're
     /// bound.
     pipe_closed: bool,
+    /// The C++ `AssociatedGroupController` for this router, if any C++
+    /// endpoint has needed one. This is just a cache so that new
+    /// C++ endpoints re-use the same controller; each endpoint
+    /// stores its own reference to the controller. The controller
+    /// also has a reference back to the router, so to prevent
+    /// reference cycles we enforce the following invariant:
+    /// Invariant: this field is only `Some` while the pipe is
+    /// connected.
+    cpp_group_controller: Option<ScopedRefPtr<ffi::RustAssociatedGroupController>>,
 }
 
 impl MultiplexRouter {
@@ -121,6 +134,7 @@ impl MultiplexRouter {
             registry: EndpointRegistry::new(sets_high_bit, endpoint_map),
             unscheduled_tasks: VecDeque::new(),
             pipe_closed: false,
+            cpp_group_controller: None,
         }));
         let shared_state_clone = Arc::clone(&shared_state);
 
@@ -163,6 +177,7 @@ impl MultiplexRouter {
                 registry: EndpointRegistry::new(sets_high_bit, HashMap::new()),
                 unscheduled_tasks: VecDeque::new(),
                 pipe_closed: false,
+                cpp_group_controller: None,
             })),
         }
     }
@@ -247,9 +262,10 @@ impl MultiplexRouter {
             // and document/check for them.
             let previous =
                 shared_state.registry.endpoint_map.insert(interface_id, Some(endpoint_info));
-            // Overwriting an entry is always a bug: either the endpoint was
-            // already bound (and we just threw away its handlers),
-            // or it was removed because it was disconnected.
+            // Whatever the story is for the missing-entry case, overwriting an
+            // entry is always a bug: either the endpoint was already bound (and
+            // we just threw away its handlers), or it was removed because it
+            // disconnected (and we just resurrected a dead ID).
             assert!(
                 !matches!(previous, Some(Some(_))),
                 "Endpoint {interface_id} was already bound to this router"
@@ -507,6 +523,11 @@ impl MultiplexRouter {
             }
 
             shared_state.pipe_closed = true;
+            // The cached controller holds a reference back to this router, so
+            // we have to drop it to break the cycle. C++ endpoints
+            // that are still alive hold their own references, so
+            // they are unaffected.
+            drop(shared_state.cpp_group_controller.take());
         }
         self.schedule_all_possible_tasks();
     }
@@ -522,5 +543,50 @@ impl MultiplexRouter {
     /// registry information, ignoring their reference to the watcher.
     pub(super) fn same_registry(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.shared_state, &other.shared_state)
+    }
+
+    /// Return a reference to the C++ `AssociatedGroupController` for this
+    /// router, creating it if it doesn't exist yet.
+    ///
+    /// The controller holds a reference back to this router. To avoid a
+    /// reference cycle, a controller is only cached while the pipe is still
+    /// usable; any endpoints that are added after that point get a
+    /// freshly-created controller.
+    pub(super) fn cpp_group_controller(&self) -> ScopedRefPtr<ffi::RustAssociatedGroupController> {
+        let mut shared_state = self.shared_state.lock().unwrap();
+        if let Some(controller) = shared_state.cpp_group_controller.as_ref() {
+            return controller.clone();
+        }
+
+        // The controller uses the primary endpoint's sequence,
+        // if it exists. Otherwise, whatever sequence it's created on.
+        let runner = shared_state
+            .registry
+            .endpoint_map
+            .get(&PRIMARY_INTERFACE_ID)
+            .and_then(|info| info.as_ref())
+            .map(|info| info.runner.clone())
+            .or_else(SequencedTaskRunnerHandle::get_current_default)
+            .expect("Mojo endpoints must be used in a sequenced context");
+
+        // The controller only ever gets a weak reference to the pipe, so that
+        // C++ endpoints can't keep it alive on their own.
+        let controller_ptr = ffi::CreateGroupControllerForRustRouter(
+            Box::new(self.clone_and_downgrade()),
+            runner.as_scoped_refptr().as_pin(),
+        );
+        // SAFETY: The controller was just created, and the returned pointer
+        // owns one of its ref-counts.
+        let controller = unsafe { ScopedRefPtr::wrap_ref_counted(controller_ptr) }
+            .expect("Failed to create a group controller");
+
+        // Only cache while there's a live pipe, because closing the pipe is the
+        // only thing that breaks the cycle between the shared state and the
+        // controller. A router with no pipe at all is only used in tests.
+        if !shared_state.pipe_closed && self.endpoint_watcher.to_arc().is_some() {
+            shared_state.cpp_group_controller = Some(controller.clone());
+        }
+
+        controller
     }
 }

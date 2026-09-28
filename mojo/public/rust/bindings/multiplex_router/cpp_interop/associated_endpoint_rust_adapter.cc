@@ -22,10 +22,11 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "mojo/public/cpp/bindings/interface_id.h"
+#include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/cxx.rs.h"
 #include "mojo/public/rust/bindings/multiplex_router/cpp_interop/interface_endpoint_client_adapter.h"
+#include "mojo/public/rust/bindings/multiplex_router/cpp_interop/rust_associated_group_controller.h"
 
 namespace mojo::rust::bindings {
 
@@ -90,6 +91,17 @@ std::unique_ptr<AssociatedEndpointRustAdapter>
 AssociatedEndpointRustAdapter::Create(
     mojo::ScopedInterfaceEndpointHandle handle) {
   return std::make_unique<AssociatedEndpointRustAdapter>(std::move(handle));
+}
+
+std::unique_ptr<AssociatedEndpointRustAdapter> CreateWithRustController(
+    RustAssociatedGroupController& controller,
+    uint32_t interface_id) {
+  mojo::ScopedInterfaceEndpointHandle handle =
+      controller.CreateScopedHandleForExistingEndpoint(interface_id);
+  if (!handle.is_valid()) {
+    return nullptr;
+  }
+  return AssociatedEndpointRustAdapter::Create(std::move(handle));
 }
 
 void CreatePairPendingAssociation(

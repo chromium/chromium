@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 mod cxx;
+mod rust_associated_sender;
 mod state_objects;
 mod tests;
