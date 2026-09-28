@@ -96,8 +96,10 @@ AX_TEST_F(
       await mockFeedback.replay();
     });
 
+// TODO(crbug.com/551463089): Fix flakiness.
 AX_TEST_F(
-    'ChromeVoxDesktopAutomationHandlerTest', 'OnAutofillAvailabilityChanged',
+    'ChromeVoxDesktopAutomationHandlerTest',
+    'DISABLED_OnAutofillAvailabilityChanged',
     async function() {
       const AUTOFILL_AVAILABLE_UTTERANCE =
           'Press up or down arrow for auto completions';
