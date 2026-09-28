@@ -13,6 +13,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -205,8 +206,18 @@ public class BlankCTATabInitialStateRule implements TestRule {
                                                             .build());
                                 }
                             }
+                            // Closing the last tab in a batched test initiates an asynchronous
+                            // transition to LayoutType.HUB that is not cancelled on tablets when a
+                            // new tab is launched above. Ensure LayoutType.BROWSING is active
+                            // before the next test starts.
+                            LayoutManagerChrome layoutManager = getActivity().getLayoutManager();
+                            if (!layoutManager.isLayoutVisible(LayoutType.BROWSING)
+                                    || layoutManager.isLayoutStartingToHide(LayoutType.BROWSING)) {
+                                layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
+                            }
                             return newTab;
                         });
         ChromeTabUtils.waitForTabPageLoaded(createdTab, "about:blank");
+        LayoutTestUtils.waitForLayout(getActivity().getLayoutManager(), LayoutType.BROWSING);
     }
 }

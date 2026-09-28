@@ -444,6 +444,7 @@ android_library("chrome_java_integration_test_support") {
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/theme:java",
