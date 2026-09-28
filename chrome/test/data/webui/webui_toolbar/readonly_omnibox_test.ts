@@ -447,6 +447,14 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('visible', style.get('visibility')?.toString());
 
     getTextInput().dispatchEvent(new CompositionEvent('compositionend'));
+    await microtasksFinished();
+
+    // Ending composition immediately transitions inline autocompletion from the
+    // standalone span to selected text in the input.
+    assertEquals('example.com/articles/1/', getTextInput().value);
+    assertEquals('les/1/', getStringSelection());
+    style = omnibox.$.inlineAutocomplete.computedStyleMap();
+    assertEquals('hidden', style.get('visibility')?.toString());
 
     // Now try with IME uninvolved.
     omnibox.browserOmniboxState = {
@@ -1372,4 +1380,34 @@ suite('ReadonlyOmnibox', function() {
           assertEquals(key, lastArgs.key.key);
         }
       });
+
+  // https://crbug.com/565552101: Keys used by the IME during composition (e.g.
+  // Enter to commit raw Pinyin text) must not be forwarded to the browser.
+  test('Keys during IME composition are not forwarded', async () => {
+    const input = getTextInput();
+    for (const key
+             of ['Enter', 'Escape', 'ArrowUp', 'ArrowDown', ' ', 'Backspace',
+                 'Tab', 'PageUp', 'PageDown']) {
+      uiHandler.reset();
+      input.dispatchEvent(new KeyboardEvent('keydown', {
+        key,
+        cancelable: true,
+        isComposing: true,
+      }));
+      await microtasksFinished();
+      assertEquals(0, uiHandler.getCallCount('onOmniboxAction'), key);
+    }
+
+    // Enter outside of composition is forwarded.
+    uiHandler.reset();
+    input.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      cancelable: true,
+    }));
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+    assertTrue(!!lastArgs.key);
+    assertEquals('Enter', lastArgs.key.key);
+  });
 });
