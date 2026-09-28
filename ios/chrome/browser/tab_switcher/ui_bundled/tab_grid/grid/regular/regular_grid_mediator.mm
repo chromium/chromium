@@ -282,7 +282,9 @@ using ScopedTabGroupSyncObservation =
     [self configureButtonsInSelectionMode:toolbarsConfiguration];
   } else {
     toolbarsConfiguration.closeAllButton = [self canCloseRegularOrInactiveTabs];
-    toolbarsConfiguration.exitTabGridButton = !self.webStateList->empty();
+    toolbarsConfiguration.exitTabGridButton =
+        !self.webStateList->empty() &&
+        self.modeHolder.mode == TabGridMode::kNormal;
     toolbarsConfiguration.newTabButton = YES;
     toolbarsConfiguration.searchButtonHidden = NO;
     toolbarsConfiguration.searchButton = YES;

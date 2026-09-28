@@ -542,6 +542,7 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithoutSelection) {
   EXPECT_EQ(0u, fake_toolbars_mediator_.configuration.selectedItemsCount);
 
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.exitTabGridButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
@@ -570,11 +571,20 @@ TEST_P(BaseGridMediatorTest, TestToolbarsSelectionModeWithSelection) {
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.addToButton);
 
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.closeAllButton);
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.exitTabGridButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.searchButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.selectTabsButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.deselectAllButton);
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
+}
+
+// Test that the Exit Tab Grid button is disabled when in search mode.
+TEST_P(BaseGridMediatorTest, TestToolbarsSearchModeWithWebstates) {
+  EXPECT_EQ(3UL, consumer_.items.size());
+  [mediator_ searchButtonTapped:nil];
+
+  EXPECT_FALSE(fake_toolbars_mediator_.configuration.exitTabGridButton);
 }
 
 // Tests that no updates to the toolbars happen when the mediator is not

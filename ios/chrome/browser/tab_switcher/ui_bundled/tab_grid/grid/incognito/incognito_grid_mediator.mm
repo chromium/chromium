@@ -180,7 +180,9 @@
     [self configureButtonsInSelectionMode:toolbarsConfiguration];
   } else {
     toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
-    toolbarsConfiguration.exitTabGridButton = !self.webStateList->empty();
+    toolbarsConfiguration.exitTabGridButton =
+        !self.webStateList->empty() &&
+        self.modeHolder.mode == TabGridMode::kNormal;
     toolbarsConfiguration.newTabButton = YES;
     toolbarsConfiguration.searchButtonHidden = self.webStateList->empty();
     toolbarsConfiguration.searchButton = !self.webStateList->empty();
