@@ -25,6 +25,16 @@
                   '|isimpledom' \
                   '|liblouis'
     },
+    'accessibility_android': {
+      'filepath': 'content/public/android/java/src/org/chromium/content/browser/accessibility/' \
+                  '|content/public/android/javatests/src/org/chromium/content/browser/accessibility/' \
+                  '|ui/accessibility/android/'
+    },
+    'accessibility_browser': {
+      'filepath': 'content/browser/accessibility/' \
+                  '|ui/accessibility/ax_(node_position|position|range)' \
+                  '|ui/accessibility/platform/browser_accessibility'
+    },
     'accessibility_component_extensions': {
       'filepath': 'chrome/browser/resources/chromeos/accessibility'
     },
@@ -2596,6 +2606,8 @@
                       'kyungjunlee+watcha11y@google.com',
                       'yuzo+watch@chromium.org',
                       'francisjp+watcha11y@google.com'],
+    'accessibility_android': ['lucasradaelli+watch@google.com'],
+    'accessibility_browser': ['lucasradaelli+watch@google.com'],
     'accessibility_component_extensions': ['anastasi+watch@google.com',
                                            'hirokisato+watch@chromium.org',
                                            'katie+watch@chromium.org',
