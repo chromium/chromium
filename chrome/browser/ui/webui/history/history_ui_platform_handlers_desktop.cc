@@ -63,12 +63,12 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
       glic::GlicEnabling::IsEnabledAndConsentForProfile(profile) &&
       glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb();
 
-  source->AddBoolean("isGlicEnabled", is_glic_enabled);
-  source->AddBoolean("isGlicWebActuationAvailable",
+  source->AddBoolean(kIsGlicEnabledKey, is_glic_enabled);
+  source->AddBoolean(kIsGlicWebActuationAvailableKey,
                      is_glic_web_actuation_available);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  source->AddLocalizedString("turnOnSyncButton",
+  source->AddLocalizedString(kTurnOnSyncButtonKey,
                              IDS_HISTORY_TURN_ON_SYNC_BUTTON);
 #else
   signin::IdentityManager* identity_manager =
@@ -89,7 +89,7 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
       preferred_account->gaia_id == account_info.GetGaiaId();
 
   source->AddString(
-      "historySyncPromoBodySignedIn",
+      kHistorySyncPromoBodySignedInKey,
       has_matching_preferred_account
           ? base::UTF8ToUTF16(
                 signin::GetAccountPreviewHistorySignedInPromoSubtitle(
@@ -105,14 +105,14 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   }
   if (custom_signed_out_subtitle.has_value() &&
       !custom_signed_out_subtitle->empty()) {
-    source->AddString("historySyncPromoBodyWebOnlySignedIn",
+    source->AddString(kHistorySyncPromoBodyWebOnlySignedInKey,
                       *custom_signed_out_subtitle);
   } else {
-    source->AddLocalizedString("historySyncPromoBodyWebOnlySignedIn",
+    source->AddLocalizedString(kHistorySyncPromoBodyWebOnlySignedInKey,
                                IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_OUT);
   }
   source->AddString(
-      "turnOnSignedInSyncHistoryPromoBodySignInSyncOff",
+      kTurnOnSignedInSyncHistoryPromoBodySignInSyncOffKey,
       has_matching_preferred_account
           ? base::UTF8ToUTF16(
                 signin::GetAccountPreviewRecentTabsSignedInPromoSubtitle(
@@ -128,49 +128,35 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
   }
   if (custom_recent_tabs_signed_out_subtitle.has_value() &&
       !custom_recent_tabs_signed_out_subtitle->empty()) {
-    source->AddString("syncHistoryPromoBodyWebOnlySignedIn",
+    source->AddString(kSyncHistoryPromoBodyWebOnlySignedInKey,
                       *custom_recent_tabs_signed_out_subtitle);
   } else {
     source->AddLocalizedString(
-        "syncHistoryPromoBodyWebOnlySignedIn",
+        kSyncHistoryPromoBodyWebOnlySignedInKey,
         IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT);
   }
-  source->AddString("accountName", account_info.GetFullName().value_or(""));
-  source->AddString("accountEmail", account_info.GetEmail());
+  source->AddString(kAccountNameKey, account_info.GetFullName().value_or(""));
+  source->AddString(kAccountEmailKey, account_info.GetEmail());
   if (!has_primary_account && !account_info.IsEmpty()) {
     source->AddString(
-        "turnOnSyncButton",
+        kTurnOnSyncButtonKey,
         l10n_util::GetStringFUTF16(
             IDS_PROFILES_DICE_WEB_ONLY_SIGNIN_BUTTON,
             base::UTF8ToUTF16(account_info.GetGivenName().value_or(
                 account_info.GetEmail()))));
   } else {
-    source->AddLocalizedString("turnOnSyncButton",
+    source->AddLocalizedString(kTurnOnSyncButtonKey,
                                IDS_HISTORY_TURN_ON_SYNC_BUTTON);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool enable_history_embeddings =
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile);
-  source->AddBoolean("enableHistoryEmbeddings", enable_history_embeddings);
+  source->AddBoolean(kEnableHistoryEmbeddingsKey, enable_history_embeddings);
   source->AddBoolean(
-      "maybeShowEmbeddingsIph",
+      kMaybeShowEmbeddingsIphKey,
       history_embeddings::IsHistoryEmbeddingsSettingVisible(profile) &&
           !enable_history_embeddings);
-
-  static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
-      {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
-      {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
-      {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
-      {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
-      {"historyEmbeddingsAnswersPromoHeading",
-       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING},
-      {"historyEmbeddingsAnswersPromoBody",
-       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY},
-      {"historyEmbeddingsPromoSettingsLinkText",
-       IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
-  };
-  source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

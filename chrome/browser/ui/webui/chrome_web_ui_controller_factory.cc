@@ -54,12 +54,16 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+#include "chrome/browser/ui/webui/history/history_ui.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui_android.h"
-#include "chrome/browser/ui/webui/history/history_ui_android.h"
 #include "components/feed/feed_feature_list.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "base/memory/ref_counted_memory.h"
@@ -71,7 +75,6 @@
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
-#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -408,7 +411,12 @@ ChromeWebUIControllerFactory::GetFaviconResourceBytes(
   }
 
   if (page_url.host() == chrome::kChromeUIHistoryHost) {
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
     return HistoryUI::GetFaviconResourceBytes(scale_factor);
+#else
+    return ui::ResourceBundle::GetSharedInstance()
+        .LoadDataResourceBytesForScale(IDR_HISTORY_FAVICON, scale_factor);
+#endif
   }
 
   if (page_url.host() == chrome::kChromeUISettingsHost) {

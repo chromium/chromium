@@ -24,6 +24,29 @@ class WebUIDataSource;
 
 namespace history {
 
+// WebUIDataSource and WebUI message keys used by platform handlers.
+inline constexpr char kIsGlicEnabledKey[] = "isGlicEnabled";
+inline constexpr char kIsGlicWebActuationAvailableKey[] =
+    "isGlicWebActuationAvailable";
+inline constexpr char kTurnOnSyncButtonKey[] = "turnOnSyncButton";
+inline constexpr char kHistorySyncPromoBodySignedInKey[] =
+    "historySyncPromoBodySignedIn";
+inline constexpr char kHistorySyncPromoBodyWebOnlySignedInKey[] =
+    "historySyncPromoBodyWebOnlySignedIn";
+inline constexpr char kTurnOnSignedInSyncHistoryPromoBodySignInSyncOffKey[] =
+    "turnOnSignedInSyncHistoryPromoBodySignInSyncOff";
+inline constexpr char kSyncHistoryPromoBodyWebOnlySignedInKey[] =
+    "syncHistoryPromoBodyWebOnlySignedIn";
+inline constexpr char kAccountNameKey[] = "accountName";
+inline constexpr char kAccountEmailKey[] = "accountEmail";
+inline constexpr char kEnableHistoryEmbeddingsKey[] = "enableHistoryEmbeddings";
+inline constexpr char kMaybeShowEmbeddingsIphKey[] = "maybeShowEmbeddingsIph";
+inline constexpr char kIsHistoryClustersEnabledKey[] =
+    "isHistoryClustersEnabled";
+inline constexpr char kManagedByIconKey[] = "managedByIcon";
+inline constexpr char kIsManagedKey[] = "isManaged";
+inline constexpr char kObserveManagedUIMessage[] = "observeManagedUI";
+
 // Populates platform-specific WebUIDataSource strings and feature flags.
 void PopulatePlatformDataSource(content::WebUIDataSource* source,
                                 Profile* profile);

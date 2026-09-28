@@ -37,21 +37,12 @@
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/glic_enums.mojom.h"
@@ -91,6 +82,26 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/browser/settings/jni_headers/SettingsNavigationFactory_jni.h"
+#endif
+
 using bookmarks::BookmarkModel;
 using history::BrowsingHistoryService;
 using history::HistoryService;
@@ -98,7 +109,7 @@ using history::WebHistoryService;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 constexpr int kHistorySyncPromoShownThreshold = 5;
 constexpr base::TimeDelta kHistorySyncPromoCooldown = base::Days(7);
 
@@ -449,10 +460,12 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
 
 BrowsingHistoryHandler::~BrowsingHistoryHandler() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
 void BrowsingHistoryHandler::SetSidePanelUIEmbedder(
     base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder) {
   side_panel_embedder_ = side_panel_embedder;
 }
+#endif
 
 void BrowsingHistoryHandler::SetPage(
     mojo::PendingRemote<history::mojom::Page> pending_page) {
@@ -463,6 +476,7 @@ void BrowsingHistoryHandler::SetPage(
   }
   deferred_callbacks_.clear();
 
+#if !BUILDFLAG(IS_ANDROID)
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_,
                                         /* create_if_necessary = */ true);
@@ -501,12 +515,15 @@ void BrowsingHistoryHandler::SetPage(
             .Get()
             .InMilliseconds());
   }
+#endif
 }
 
 void BrowsingHistoryHandler::ShowSidePanelUI() {
+#if !BUILDFLAG(IS_ANDROID)
   if (side_panel_embedder_) {
     side_panel_embedder_->ShowUI();
   }
+#endif
 }
 
 void BrowsingHistoryHandler::StartQueryHistory() {
@@ -644,16 +661,28 @@ void BrowsingHistoryHandler::RemoveVisits(
 }
 
 void BrowsingHistoryHandler::OpenClearBrowsingDataDialog() {
-  // TODO(beng): This is an improper direct dependency on Browser. Route this
-  // through some sort of delegate.
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroid* window =
+      web_contents_ ? web_contents_->GetTopLevelNativeWindow() : nullptr;
+  if (window) {
+    Java_SettingsNavigationFactory_showClearBrowsingData(
+        base::android::AttachCurrentThread(), window->GetJavaObject());
+  } else {
+    DLOG(WARNING)
+        << "Cannot open Clear Browsing Data: TopLevelNativeWindow is null";
+  }
+#else
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
-  chrome::ShowClearBrowsingDataDialog(browser);
+  if (browser) {
+    chrome::ShowClearBrowsingDataDialog(browser);
+  }
+#endif
 }
 
 void BrowsingHistoryHandler::TurnOnHistorySync(
     history::mojom::AccessPoint access_point) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   if (browser) {
@@ -670,13 +699,29 @@ void BrowsingHistoryHandler::TurnOnHistorySync(
                                                signin_access_point);
   }
 #else
-  // This is not expected to be called on ChromeOS as the screen that uses this
-  // function is never shown for ChromeOS (using <if expr="not is_chromeos">).
+  // This is not expected to be called on Android or ChromeOS as history sync
+  // promos are disabled on those platforms.
   NOTREACHED();
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+// On Android, history sync promos are not shown in History WebUI.
+// However, history.mojom and the frontend templates guard these calls with
+// !is_chromeos rather than desktop-only flags. Because Android is not ChromeOS,
+// omitting them from C++ would break the Mojo interface and crash WebUI
+// initialization. Returning false from ShouldShowHistoryPageHistorySyncPromo()
+// suppresses the promo cleanly without adding !is_android conditionals across
+// shared WebUI resources.
+void BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromo(
+    ShouldShowHistoryPageHistorySyncPromoCallback callback) {
+  std::move(callback).Run(false);
+}
+
+void BrowsingHistoryHandler::RecordHistoryPageHistorySyncPromoDismissed() {}
+
+void BrowsingHistoryHandler::IncrementHistoryPageHistorySyncPromoShownCount() {}
+#elif !BUILDFLAG(IS_CHROMEOS)
 void BrowsingHistoryHandler::ShouldShowHistoryPageHistorySyncPromo(
     ShouldShowHistoryPageHistorySyncPromoCallback callback) {
   const int promo_shown_count = GetHistoryPageHistorySyncPromoShownCount();
@@ -1010,7 +1055,11 @@ Profile* BrowsingHistoryHandler::GetProfile() {
 
 void BrowsingHistoryHandler::RequestAccountInfo(
     RequestAccountInfoCallback callback) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+  // Sign-in and sync promo cards are disabled on Android History WebUI; return
+  // an empty AccountInfo without observing IdentityManager for promo updates.
+  std::move(callback).Run(history::mojom::AccountInfo::New());
+#elif !BUILDFLAG(IS_CHROMEOS)
   AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
       &identity_manager_.get(),
       AccountPreviewDataServiceFactory::GetForProfile(profile_));
@@ -1028,7 +1077,11 @@ void BrowsingHistoryHandler::RequestAccountInfo(
 
 void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+  // Promos are disabled on Android History WebUI, so account updates are
+  // ignored.
+  return;
+#elif !BUILDFLAG(IS_CHROMEOS)
   AccountInfo account_to_display = signin_ui_util::GetSingleAccountForPromos(
       &identity_manager_.get(),
       AccountPreviewDataServiceFactory::GetForProfile(profile_));

@@ -6000,6 +6000,10 @@ test("unit_tests") {
       ]
     }
 
+    if (enable_webui_history) {
+      deps += [ "//chrome/browser/ui/webui/history:unit_tests" ]
+    }
+
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:unit_tests_filters" ]
     }

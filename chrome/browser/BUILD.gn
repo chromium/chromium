@@ -1311,7 +1311,6 @@ source_set("core") {
       "//chrome/browser/ui/webui:chrome_content_browser_client_webui_part",
       "//chrome/browser/ui/webui/critical_actions",
       "//chrome/browser/ui/webui/critical_actions:mojo_bindings",
-      "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/image",
       "//chrome/browser/ui/webui/indigo_internals",
       "//chrome/browser/ui/webui/indigo_internals:mojo_bindings",
@@ -1859,11 +1858,23 @@ source_set("core") {
     ]
   }
 
+  if (enable_webui_history) {
+    deps += [ "//chrome/browser/ui/webui/history" ]
+  }
+
+  if (is_android && enable_webui_history) {
+    deps += [
+      "//components/page_image_service/mojom:mojo_bindings",
+      "//components/user_education/webui:mojo_bindings",
+      "//ui/webui/resources/cr_components/history:mojo_bindings",
+    ]
+  }
+
   if (!is_android || enable_webui_ntp) {
     deps += [ "//ui/webui/resources/cr_components/composebox:mojo_bindings" ]
   }
 
-  if (!is_android || enable_webui_ntp || enable_pdf) {
+  if (!is_android || enable_webui_ntp || enable_pdf || enable_webui_history) {
     deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
   }
 

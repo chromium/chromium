@@ -1392,7 +1392,6 @@ static_library("ui") {
     "//chrome/browser/ui/webui/about:impl",
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/accessibility:impl",
-    "//chrome/browser/ui/webui/history",
     "//chrome/browser/undo",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/updates/announcement_notification:impl",
@@ -2460,6 +2459,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_page:impl",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:impl",
     ]
+  }
+
+  if (enable_webui_history) {
+    deps += [ "//chrome/browser/ui/webui/history" ]
   }
 
   if (enable_extensions) {

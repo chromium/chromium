@@ -117,7 +117,6 @@ source_set("configs") {
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/critical_actions",
-      "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/infobar_internals",
       "//chrome/browser/ui/webui/inspect",
       "//chrome/browser/ui/webui/iwa_dev",
@@ -277,6 +276,10 @@ source_set("configs") {
 
   if (enable_webui_ntp) {
     deps += [ "//chrome/browser/ui/webui/ntp_microsoft_auth" ]
+  }
+
+  if (enable_webui_history) {
+    deps += [ "//chrome/browser/ui/webui/history" ]
   }
 }
 
@@ -582,12 +585,12 @@ source_set("chrome_web_ui_controller_factory") {
     "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/codec",
+    "//ui/webui:buildflags",
   ]
 
   if (is_android) {
     deps += [
       "//chrome/browser/ui/webui/bookmarks:bookmarks_android",
-      "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/management",
     ]
   } else {
@@ -595,12 +598,15 @@ source_set("chrome_web_ui_controller_factory") {
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/downloads",
-      "//chrome/browser/ui/webui/history",
       "//chrome/browser/ui/webui/iwa_dev",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
       "//chrome/browser/ui/webui/settings",
       "//ui/web_dialogs",
     ]
+  }
+
+  if (enable_webui_history) {
+    deps += [ "//chrome/browser/ui/webui/history" ]
   }
 
   if (enable_devtools_frontend) {

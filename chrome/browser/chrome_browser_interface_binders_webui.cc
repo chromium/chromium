@@ -60,7 +60,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/critical_actions/critical_actions.mojom.h"
 #include "chrome/browser/ui/webui/critical_actions/critical_actions_ui.h"
-#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals.mojom.h"
 #include "chrome/browser/ui/webui/indigo_internals/indigo_internals_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
@@ -77,6 +76,10 @@
 #endif
 #endif
 
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+#include "chrome/browser/ui/webui/history/history_ui.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
@@ -91,8 +94,9 @@
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
-#if BUILDFLAG(ENABLE_WEBUI_NTP) || \
-    BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+#if BUILDFLAG(ENABLE_WEBUI_NTP) ||                         \
+    BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX) || \
+    BUILDFLAG(ENABLE_WEBUI_HISTORY)
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif
 
@@ -165,6 +169,9 @@ void BindTrackedElementHandlerRestricted(
   DCHECK(controller);
 
   const bool is_allowed =
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+      controller->GetAs<HistoryUI>() ||
+#endif
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
       controller->GetAs<NewTabPageUI>() ||
       controller->GetAs<CustomizeChromeUI>() ||
@@ -173,7 +180,6 @@ void BindTrackedElementHandlerRestricted(
       controller->GetAs<UserEducationInternalsUI>() ||
       controller->GetAs<ReadingListUI>() ||
       controller->GetAs<PasswordManagerUI>() ||
-      controller->GetAs<HistoryUI>() ||
       controller->GetAs<OmniboxEverywhereUI>() ||
 #if !BUILDFLAG(IS_CHROMEOS)
       controller->GetAs<ProfilePickerUI>() ||
@@ -348,9 +354,12 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       searchbox::mojom::PageHandlerFactory, NewTabPageUI>(map);
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP) && BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID) &&        \
-    (BUILDFLAG(ENABLE_WEBUI_NTP) || \
-     BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX))
+#if BUILDFLAG(IS_ANDROID) &&                                \
+    (BUILDFLAG(ENABLE_WEBUI_NTP) ||                         \
+     BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX) || \
+     BUILDFLAG(ENABLE_WEBUI_HISTORY))
+#if BUILDFLAG(ENABLE_WEBUI_NTP) || \
+    BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
   RegisterWebUIControllerInterfaceBinder<composebox::mojom::PageHandlerFactory
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
                                          ,
@@ -361,6 +370,8 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
                                          ContextualTasksUI
 #endif
                                          >(map);
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP) ||
+        // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
 
   RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory
@@ -372,8 +383,11 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       ,
       ContextualTasksUI, contextual_tasks::ContextualTasksUIPostRearchitecture
 #endif
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+      ,
+      HistoryUI
+#endif
       >(map);
-
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Variants of these exist in
   // chrome_browser_interface_binders_webui_parts_desktop.cc that also register
@@ -387,7 +401,9 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
       theme_color_picker::mojom::ThemeColorPickerHandlerFactory,
       CustomizeChromeUI>(map);
 #endif
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && (BUILDFLAG(ENABLE_WEBUI_NTP) ||
+        // BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX) ||
+        // BUILDFLAG(ENABLE_WEBUI_HISTORY))
 
   map->Add<tracked_element::mojom::TrackedElementHandler>(
       base::BindRepeating(&BindTrackedElementHandlerRestricted));

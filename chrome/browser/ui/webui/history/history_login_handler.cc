@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -21,6 +20,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/signin/signin_ui_util.h"
+#endif
 
 HistoryLoginHandler::HistoryLoginHandler(
     base::RepeatingClosure identity_state_changed_callback)
@@ -87,6 +90,7 @@ void HistoryLoginHandler::IdentityStateChanged() {
 
 void HistoryLoginHandler::HandleTurnOnSyncFlow(
     const base::ListValue& /*args*/) {
+#if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromWebUI(web_ui());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -102,6 +106,7 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile, account_info, signin_metrics::AccessPoint::kRecentTabs);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void HistoryLoginHandler::HandleRecordSigninPendingOffered(

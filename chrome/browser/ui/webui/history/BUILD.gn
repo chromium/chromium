@@ -3,76 +3,116 @@
 # found in the LICENSE file.
 
 import("//components/signin/features.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_webui_history)
 
 source_set("history") {
+  sources = [
+    "browsing_history_handler.cc",
+    "history_identity_state_watcher.cc",
+    "history_login_handler.cc",
+    "history_ui.cc",
+    "navigation_handler.cc",
+  ]
+  public = [
+    "browsing_history_handler.h",
+    "history_identity_state_watcher.h",
+    "history_login_handler.h",
+    "history_ui.h",
+    "history_ui_platform_handlers.h",
+    "navigation_handler.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/critical_actions",
+    "//chrome/browser/favicon",
+    "//chrome/browser/history",
+    "//chrome/browser/page_image_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/history:resources",
+    "//chrome/browser/sessions",
+    "//chrome/browser/signin",
+    "//chrome/browser/supervised_user",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:url_identity",
+    "//chrome/browser/ui/webui:favicon_source",
+    "//chrome/browser/ui/webui:metrics_handler",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/cr_components/history",
+    "//chrome/browser/ui/webui/cr_components/history_clusters",
+    "//chrome/common",
+    "//chrome/common:glic_enums_mojom",
+    "//components/critical_actions/core/browser",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//components/history_clusters/core",
+    "//components/history_embeddings/core",
+    "//components/page_image_service",
+    "//components/page_image_service/mojom:mojo_bindings",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/query_parser",
+    "//components/sessions",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/supervised_user/core/browser",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/sync_device_info",
+    "//components/sync_sessions",
+    "//components/user_education/webui",
+    "//components/user_education/webui:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//ui/base",
+    "//ui/webui",
+    "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/cr_components/history:mojo_bindings",
+    "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+    "//ui/webui/tracked_element",
+    "//url",
+  ]
+
+  if (enable_dice_support) {
+    sources += [ "history_cross_device_signin_promo_handler.cc" ]
+    public += [ "history_cross_device_signin_promo_handler.h" ]
+  }
+
   if (is_android) {
-    sources = [ "history_ui_android.cc" ]
-    public = [ "history_ui_android.h" ]
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [
-      "//base",
-      "//components/resources:components_scaled_resources",
-      "//ui/base",
+    sources += [ "history_ui_platform_handlers_android.cc" ]
+    deps += [
+      "//chrome/browser/settings:jni_headers",
+      "//ui/android",
     ]
-  } else {
-    sources = [
-      "browsing_history_handler.cc",
+  }
+
+  if (!is_android) {
+    sources += [
       "foreign_session_handler.cc",
-      "history_identity_state_watcher.cc",
-      "history_login_handler.cc",
-      "history_ui.cc",
       "history_ui_platform_handlers_desktop.cc",
-      "navigation_handler.cc",
     ]
-    if (enable_dice_support) {
-      sources += [ "history_cross_device_signin_promo_handler.cc" ]
-    }
-    public = [
-      "browsing_history_handler.h",
-      "foreign_session_handler.h",
-      "history_identity_state_watcher.h",
-      "history_login_handler.h",
-      "history_ui.h",
-      "history_ui_platform_handlers.h",
-      "navigation_handler.h",
-    ]
-    if (enable_dice_support) {
-      public += [ "history_cross_device_signin_promo_handler.h" ]
-    }
-    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-    deps = [
-      "//base",
-      "//chrome/app:generated_resources",
-      "//chrome/browser/bookmarks",
-      "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/critical_actions",
-      "//chrome/browser/favicon",
+    public += [ "foreign_session_handler.h" ]
+    deps += [
       "//chrome/browser/glic",
-      "//chrome/browser/history",
       "//chrome/browser/history_embeddings",
-      "//chrome/browser/page_image_service",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/resources/history:resources",
-      "//chrome/browser/sessions",
-      "//chrome/browser/signin",
-      "//chrome/browser/supervised_user",
-      "//chrome/browser/sync",
-      "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui:chrome_pages",
-      "//chrome/browser/ui:ui_features",
-      "//chrome/browser/ui:url_identity",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/webui:favicon_source",
       "//chrome/browser/ui/webui:managed_ui_handler",
-      "//chrome/browser/ui/webui:metrics_handler",
       "//chrome/browser/ui/webui:theme_source",
-      "//chrome/browser/ui/webui:webui_util",
-      "//chrome/browser/ui/webui/cr_components/history",
-      "//chrome/browser/ui/webui/cr_components/history_clusters",
       "//chrome/browser/ui/webui/cr_components/history_embeddings",
       "//chrome/browser/ui/webui/history_clusters",
       "//chrome/browser/ui/webui/ntp",
@@ -81,57 +121,38 @@ source_set("history") {
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/user_education",
-      "//chrome/common",
-      "//components/critical_actions/core/browser",
-      "//components/favicon_base",
-      "//components/history/core/browser",
-      "//components/history_clusters/core",
-      "//components/history_embeddings/core",
-      "//components/page_image_service",
-      "//components/page_image_service/mojom:mojo_bindings",
-      "//components/pref_registry",
-      "//components/prefs",
-      "//components/query_parser",
-      "//components/sessions",
       "//components/signin/core/browser",
-      "//components/signin/public/base",
-      "//components/signin/public/identity_manager",
-      "//components/strings:components_strings",
-      "//components/supervised_user/core/browser",
-      "//components/sync/base",
-      "//components/sync/service",
-      "//components/sync_device_info",
-      "//components/sync_sessions",
       "//components/tabs:public",
-      "//components/user_education/webui",
-      "//components/user_education/webui:mojo_bindings",
-      "//content/public/browser",
-      "//mojo/public/cpp/bindings",
-      "//net",
-      "//ui/base",
-      "//ui/webui",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-      "//ui/webui/resources/cr_components/history:mojo_bindings",
-      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
-      "//ui/webui/tracked_element",
-      "//url",
     ]
   }
 }
 
-if (!is_android) {
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "history_ui_unittest.cc" ]
+  deps = [
+    ":history",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/user_education/webui:mojo_bindings",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/webui/resources/cr_components/history:mojo_bindings",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
       "browsing_history_handler_unittest.cc",
       "foreign_session_handler_unittest.cc",
       "history_identity_state_watcher_unittest.cc",
     ]
-    deps = [
-      ":history",
-      "//base",
-      "//base/test:test_support",
+    deps += [
       "//chrome/browser/bookmarks",
       "//chrome/browser/critical_actions",
       "//chrome/browser/signin",
@@ -143,7 +164,6 @@ if (!is_android) {
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/common",
-      "//chrome/test:test_support",
       "//chrome/test/base:chrome_render_view_host_test_harness",
       "//components/critical_actions/core/browser",
       "//components/history/core/browser",
@@ -156,15 +176,8 @@ if (!is_android) {
       "//components/sync_device_info",
       "//components/sync_device_info:test_support",
       "//components/sync_sessions",
-      "//content/public/browser",
-      "//content/test:test_support",
-      "//mojo/public/cpp/bindings",
       "//net",
-      "//testing/gmock",
-      "//testing/gtest",
       "//ui/base",
-      "//ui/webui/resources/cr_components/history:mojo_bindings",
-      "//url",
     ]
   }
 }
