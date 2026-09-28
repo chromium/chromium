@@ -5,7 +5,15 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
+#include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -23,13 +31,18 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/shell_dialogs/fake_select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 using testing::NiceMock;
 using testing::Return;
@@ -299,6 +312,65 @@ TEST_F(ContextualTasksWebViewTest, RedirectToSearchUrlShowsGhostLoader) {
   // Redirect to a search URL: ghost loader should be shown.
   sim->Redirect(GURL("https://www.google.com/search?q=test"));
   EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+}
+
+class TestFileSelectListener : public content::FileSelectListener {
+ public:
+  explicit TestFileSelectListener(base::OnceClosure on_canceled)
+      : on_canceled_(std::move(on_canceled)) {}
+
+  // content::FileSelectListener:
+  void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
+                    const base::FilePath& base_dir,
+                    blink::mojom::FileChooserParams::Mode mode) override {}
+  void FileSelectionCanceled() override {
+    canceled_ = true;
+    if (on_canceled_) {
+      std::move(on_canceled_).Run();
+    }
+  }
+
+  bool canceled() const { return canceled_; }
+
+ private:
+  ~TestFileSelectListener() override = default;
+
+  base::OnceClosure on_canceled_;
+  bool canceled_ = false;
+};
+
+// Web content in the side panel must be able to show the file picker, e.g. for
+// the "Add images" and "Add files" actions of the AI Mode input plate.
+TEST_F(ContextualTasksWebViewTest, RunFileChooserOpensFileDialog) {
+  base::RunLoop run_loop;
+  ui::FakeSelectFileDialog::Factory* factory =
+      ui::FakeSelectFileDialog::RegisterFactory();
+  factory->SetOpenCallback(run_loop.QuitClosure());
+  base::ScopedClosureRunner reset_factory(
+      base::BindOnce([] { ui::SelectFileDialog::SetFactory(nullptr); }));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), GURL("https://www.google.com/search?q=test"));
+
+  auto listener =
+      base::MakeRefCounted<TestFileSelectListener>(run_loop.QuitClosure());
+  blink::mojom::FileChooserParams params;
+  params.mode = blink::mojom::FileChooserParams::Mode::kOpen;
+  web_contents->GetDelegate()->RunFileChooser(
+      web_contents->GetPrimaryMainFrame(), listener, params);
+  run_loop.Run();
+
+  EXPECT_FALSE(listener->canceled());
+  ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
+  ASSERT_NE(dialog, nullptr);
+
+  // Close the dialog so that `FileSelectHelper` releases its self-reference.
+  dialog->CallFileSelectionCanceled();
+  EXPECT_TRUE(listener->canceled());
 }
 
 }  // namespace

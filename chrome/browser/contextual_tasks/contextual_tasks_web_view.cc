@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -20,6 +23,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
@@ -296,6 +300,16 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     VLOG(1) << "Cannot find browser to open URL from tab.";
     return nullptr;
   }
+}
+
+void ContextualTasksWebView::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  // Show the native file picker for `<input type="file">` in the hosted page.
+  // The default `WebContentsDelegate` implementation cancels the request.
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
 }
 
 web_modal::WebContentsModalDialogHost*

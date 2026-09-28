@@ -471,6 +471,7 @@ source_set("ui_impl") {
       "location_bar_stub.cc",
     ]
     deps += [
+      "//chrome/browser:file_select_helper",
       "//chrome/browser/pdf",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/resources/webui_toolbar_shared:resources",
@@ -783,6 +784,8 @@ source_set("unit_tests") {
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
+      "//ui/shell_dialogs",
+      "//ui/shell_dialogs:test_support",
     ]
   }
 
