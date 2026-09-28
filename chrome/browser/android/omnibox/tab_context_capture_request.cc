@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -29,7 +30,7 @@ TabContextCaptureRequest::TabContextCaptureRequest(
       scheduled_capture_(base::DoNothing()),
       tab_contextualization_controller_(tab_contextualization_controller),
       weak_tab_(tab->GetWeakPtr()),
-      callback_(std::move(callback)) {}
+      callback_(base::BindPostTaskToCurrentDefault(std::move(callback))) {}
 
 TabContextCaptureRequest::~TabContextCaptureRequest() = default;
 

@@ -24,7 +24,8 @@ namespace tabs {
 class TabInterface;
 }  // namespace tabs
 
-// Helper class to defer capturing the tab context until it is ready.
+// Helper class to defer capturing the tab context until it is ready. The
+// callback is always invoked asynchronously (never re-entrantly from Start()).
 class TabContextCaptureRequest : content::WebContentsObserver {
  public:
   TabContextCaptureRequest(

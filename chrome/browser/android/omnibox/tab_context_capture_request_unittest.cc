@@ -105,7 +105,8 @@ class TabContextCaptureRequestTest : public testing::Test {
 
   void ExpectSingleCapture() {
     EXPECT_CALL(*mock_controller_, GetPageContext(_))
-        .WillOnce([](auto callback) {
+        .WillOnce([this](auto callback) {
+          capture_triggered_ = true;
           std::move(callback).Run(
               std::make_unique<lens::ContextualInputData>());
         });
@@ -128,6 +129,9 @@ class TabContextCaptureRequestTest : public testing::Test {
   raw_ptr<TabContextCaptureRequest> request_ = nullptr;
 
   std::unique_ptr<base::WeakPtrFactory<tabs::TabInterface>> tab_weak_factory_;
+  // Set when GetPageContext() is called. The request's callback is always
+  // posted, so tests check this to see if a signal triggered the capture.
+  bool capture_triggered_ = false;
 };
 
 TEST_F(TabContextCaptureRequestTest, CaptureTriggeredWhenPageLoaded) {
@@ -207,6 +211,27 @@ TEST_F(TabContextCaptureRequestTest, CaptureTriggeredImmediately) {
   // Simulate immediate capture.
   request_->Start();
 
+  run_loop.Run();
+}
+
+TEST_F(TabContextCaptureRequestTest, CallbackNotRunSynchronouslyFromStart) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      chrome::android::kOnDemandBackgroundTabContextCapture);
+
+  base::RunLoop run_loop;
+  CreateTabContextCaptureRequest(base::BindLambdaForTesting(
+      [&](std::unique_ptr<lens::ContextualInputData> data) {
+        EXPECT_EQ(data, nullptr);
+        run_loop.Quit();
+      }));
+  EXPECT_CALL(*mock_controller_, GetPageContext(_)).WillOnce([](auto callback) {
+    std::move(callback).Run(nullptr);
+  });
+
+  request_->Start();
+  // The reply must not re-enter the caller from within Start().
+  EXPECT_FALSE(run_loop.AnyQuitCalled());
   run_loop.Run();
 }
 
@@ -350,14 +375,10 @@ TEST_F(TabContextCaptureRequestTest,
 
   // Should trigger GetPageContext immediately on Start() despite document
   // not being loaded.
-  EXPECT_CALL(*mock_controller_, GetPageContext(_))
-      .Times(1)
-      .WillOnce([](auto callback) {
-        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
-      });
+  ExpectSingleCapture();
 
   request_->Start();
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
@@ -378,17 +399,12 @@ TEST_F(TabContextCaptureRequestTest,
       }));
 
   EXPECT_CALL(*mock_tab_interface_, IsActivated()).WillRepeatedly(Return(true));
-
-  EXPECT_CALL(*mock_controller_, GetPageContext(_))
-      .Times(1)
-      .WillOnce([](auto callback) {
-        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
-      });
+  ExpectSingleCapture();
 
   // Calling DocumentOnLoadCompleted should trigger capture directly without
   // the 5-second sleep.
   request_->DocumentOnLoadCompletedInPrimaryMainFrame();
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
@@ -415,13 +431,14 @@ TEST_F(TabContextCaptureRequestTest,
   EXPECT_CALL(*mock_controller_, GetPageContext(_))
       .Times(1)
       .WillOnce([&](auto callback) {
+        capture_triggered_ = true;
         // DocumentOnLoadCompleted arrives while GetPageContext is in flight.
         request_->DocumentOnLoadCompletedInPrimaryMainFrame();
         std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
       });
 
   request_->Start();
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
@@ -440,9 +457,9 @@ TEST_F(TabContextCaptureRequestTest, BackgroundTabCapturesOnDomContentLoaded) {
   ExpectSingleCapture();
 
   request_->Start();
-  ASSERT_FALSE(run_loop.AnyQuitCalled());
+  ASSERT_FALSE(capture_triggered_);
   request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
@@ -458,7 +475,7 @@ TEST_F(TabContextCaptureRequestTest,
 
   request_->Start();
   request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  EXPECT_FALSE(capture_triggered_);
   task_environment()->FastForwardBy(base::Seconds(25));
   run_loop.Run();
 }
@@ -476,7 +493,7 @@ TEST_F(TabContextCaptureRequestTest, ActiveTabIgnoresDomContentLoaded) {
 
   request_->Start();
   request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  EXPECT_FALSE(capture_triggered_);
   task_environment()->FastForwardBy(base::Seconds(25));
   run_loop.Run();
 }
@@ -492,7 +509,7 @@ TEST_F(TabContextCaptureRequestTest, BackgroundTabSkipsPaintGraceOnLoad) {
   ExpectSingleCapture();
 
   request_->DocumentOnLoadCompletedInPrimaryMainFrame();
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
@@ -515,9 +532,9 @@ TEST_F(TabContextCaptureRequestTest, SubframeDomContentLoadedIsIgnored) {
 
   request_->Start();
   request_->DOMContentLoaded(subframe);
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  EXPECT_FALSE(capture_triggered_);
   request_->DOMContentLoaded(web_contents()->GetPrimaryMainFrame());
-  EXPECT_TRUE(run_loop.AnyQuitCalled());
+  EXPECT_TRUE(capture_triggered_);
   run_loop.Run();
 }
 
