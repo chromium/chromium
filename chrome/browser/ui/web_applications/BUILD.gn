@@ -104,6 +104,7 @@ source_set("impl") {
     "//chrome/browser/banners",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:browser_window_state",
+    "//chrome/browser/ui:unload_controller",
     "//chrome/browser/ui/browser_window:create_browser_window",
   ]
 

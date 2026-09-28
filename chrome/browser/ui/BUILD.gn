@@ -566,6 +566,63 @@ if (!is_android) {
       "//components/sessions",
     ]
   }
+
+  source_set("unload_controller") {
+    public = [ "unload_controller.h" ]
+    public_deps = [
+      ":download_close_type",
+      "//base",
+      "//chrome/browser/tab_contents",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//ui/base/unowned_user_data",
+    ]
+  }
+
+  source_set("unload_controller_impl") {
+    sources = [ "unload_controller.cc" ]
+    public_deps = [
+      ":unload_controller",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":browser_live_tab_context",
+      ":browser_manager_service",
+      ":browser_window_header",
+      ":chrome_pages",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/devtools",
+      "//chrome/browser/download",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/common:chrome_features",
+      "//components/keep_alive_registry",
+      "//components/performance_manager",
+      "//components/sessions",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//components/webapps/common",
+      "//content/public/browser",
+      "//extensions/buildflags",
+    ]
+    if (enable_extensions_core) {
+      deps += [
+        "//extensions/browser",
+        "//extensions/common:common_constants",
+      ]
+    }
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ash/boca/on_task" ]
+    }
+  }
 }
 
 if (is_mac) {
@@ -1918,8 +1975,6 @@ static_library("ui") {
       "browser_commands.h",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
-      "unload_controller.cc",
-      "unload_controller.h",
     ]
 
     if (enable_dice_support) {
@@ -1954,6 +2009,8 @@ static_library("ui") {
       ":tab_helpers_impl",
       ":tab_ui_helper",
       ":uma_browsing_activity_observer",
+      ":unload_controller",
+      ":unload_controller_impl",
       "//base",
       "//chrome/browser:chrome_browser_interface_binders_webui_parts",
       "//chrome/browser/actor/ui:actor_overlay",
@@ -2290,6 +2347,10 @@ static_library("ui") {
       "//chrome/browser/ui/webui/top_chrome:impl",
       "//chrome/browser/ui/webui_browser",
       "//chrome/browser/ui/webui_browser:impl",
+
+      # unload_controller.cc includes browser_tabstrip.h, browser_window.h,
+      # and browser_commands.h from //chrome/browser/ui:ui.
+      ":unload_controller_impl",
 
       # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
       "//chrome/browser/ui/lens:impl",
@@ -4485,10 +4546,10 @@ if (!is_android) {
       "browser_tab_strip_model_delegate.h",
       "browser_tab_strip_tracker.h",
       "browser_tab_strip_tracker_delegate.h",
-      "unload_controller.h",
     ]
     public_deps = [
       ":download_close_type",
+      ":unload_controller",
       "//base",
       "//chrome/browser/tab_contents",
       "//chrome/browser/ui/browser_window",
@@ -4511,6 +4572,7 @@ if (!is_android) {
       ":browser_window_header",
       ":tab_helpers",
       ":ui_features",
+      ":unload_controller",
       "//base",
       "//build:buildflag_header_h",
       "//chrome/browser:primitives",
