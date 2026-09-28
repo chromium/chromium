@@ -61,6 +61,7 @@ constexpr auto kAccountId =
 class FakePpdProvider : public chromeos::PpdProvider {
  public:
   FakePpdProvider() = default;
+  ~FakePpdProvider() override = default;
 
   void ResolvePpdLicense(std::string_view effective_make_and_model,
                          ResolvePpdLicenseCallback cb) override {
@@ -82,9 +83,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
                        ResolvePrintersCallback cb) override {}
   void ReverseLookup(const std::string& effective_make_and_model,
                      ReverseLookupCallback cb) override {}
-
- private:
-  ~FakePpdProvider() override = default;
 };
 
 class TestLocalPrinterImpl : public LocalPrinterImpl {
@@ -95,9 +93,9 @@ class TestLocalPrinterImpl : public LocalPrinterImpl {
                              ->application_locale_storage()) {}
   ~TestLocalPrinterImpl() override = default;
 
-  scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
+  std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile) override {
-    return base::MakeRefCounted<FakePpdProvider>();
+    return std::make_unique<FakePpdProvider>();
   }
 };
 

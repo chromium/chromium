@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "url/gurl.h"
 
 class ApplicationLocaleStorage;
@@ -85,11 +84,11 @@ using PrinterSetupCallback = base::OnceCallback<void(PrinterSetupResult)>;
 // Class must be constructed and used on the UI thread.
 class PrinterConfigurer {
  public:
-  // `application_locale_storage` must be non-null and must outlive the returned
-  // object.
+  // 'application_locale_storage' and 'ppd_provider' must be non-null and must
+  // outlive the returned object.
   static std::unique_ptr<PrinterConfigurer> Create(
       const ApplicationLocaleStorage* application_locale_storage,
-      scoped_refptr<chromeos::PpdProvider> ppd_provider,
+      chromeos::PpdProvider* ppd_provider,
       DlcserviceClient* dlc_service_client);
 
   PrinterConfigurer(const PrinterConfigurer&) = delete;

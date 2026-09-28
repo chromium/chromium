@@ -97,6 +97,8 @@ class PpdProviderImpl : public PpdProvider {
             {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
+  ~PpdProviderImpl() override = default;
+
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {
     metadata_manager_->GetManufacturers(kMaxDataAge, std::move(cb));
   }
@@ -222,9 +224,6 @@ class PpdProviderImpl : public PpdProvider {
         {lowercased_effective_make_and_model}, kMaxDataAge,
         std::move(callback));
   }
-
- protected:
-  ~PpdProviderImpl() override = default;
 
  private:
   // Convenience container used throughout ResolvePpdReference().
@@ -850,13 +849,13 @@ std::string PpdProvider::PpdBasenameToCacheKey(std::string_view ppd_basename) {
 }
 
 // static
-scoped_refptr<PpdProvider> PpdProvider::Create(
+std::unique_ptr<PpdProvider> PpdProvider::Create(
     const base::Version& current_version,
     scoped_refptr<PpdCache> cache,
     std::unique_ptr<PpdMetadataManager> metadata_manager,
     std::unique_ptr<PrinterConfigCache> config_cache,
     std::unique_ptr<RemotePpdFetcher> remote_ppd_fetcher) {
-  return base::MakeRefCounted<PpdProviderImpl>(
+  return std::make_unique<PpdProviderImpl>(
       current_version, cache, std::move(metadata_manager),
       std::move(config_cache), std::move(remote_ppd_fetcher));
 }

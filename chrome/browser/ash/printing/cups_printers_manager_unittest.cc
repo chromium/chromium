@@ -267,6 +267,7 @@ class FakePrinterDetector : public PrinterDetector {
 class FakePpdProvider : public PpdProvider {
  public:
   FakePpdProvider() = default;
+  ~FakePpdProvider() override = default;
 
   void ResolvePpdReference(const PrinterSearchData& search_data,
                            ResolvePpdReferenceCallback cb) override {
@@ -315,7 +316,6 @@ class FakePpdProvider : public PpdProvider {
                      ReverseLookupCallback cb) override {}
 
  private:
-  ~FakePpdProvider() override = default;
   std::string usb_manufacturer_;
   std::string license_name_;
   std::string ppd_content_ = "ppd content";
@@ -411,21 +411,23 @@ class FakePrintServersManager : public PrintServersManager {
 class CupsPrintersManagerTest : public testing::Test,
                                 public CupsPrintersManager::Observer {
  public:
-  CupsPrintersManagerTest() : ppd_provider_(new FakePpdProvider) {
+  CupsPrintersManagerTest() {
     // Zeroconf and usb detector ownerships are taken by the manager, so we
     // have to keep raw pointers to them.
-    auto zeroconf_detector = std::make_unique<FakePrinterDetector>();
-    zeroconf_detector_ = zeroconf_detector.get();
     auto usb_detector = std::make_unique<FakePrinterDetector>();
     usb_detector_ = usb_detector.get();
+    auto zeroconf_detector = std::make_unique<FakePrinterDetector>();
+    zeroconf_detector_ = zeroconf_detector.get();
+    auto ppd_provider = std::make_unique<FakePpdProvider>();
+    ppd_provider_ = ppd_provider.get();
     auto usb_notif_controller =
         std::make_unique<FakeUsbPrinterNotificationController>();
     usb_notif_controller_ = usb_notif_controller.get();
+    auto print_servers_manager = std::make_unique<FakePrintServersManager>();
+    print_servers_manager_ = print_servers_manager.get();
     auto enterprise_printers_provider =
         std::make_unique<FakeEnterprisePrintersProvider>();
     enterprise_printers_provider_ = enterprise_printers_provider.get();
-    auto print_servers_manager = std::make_unique<FakePrintServersManager>();
-    print_servers_manager_ = print_servers_manager.get();
 
     // To make sure it is not called.
     dlc_service_client_.set_install_error(dlcservice::kErrorInternal);
@@ -438,8 +440,9 @@ class CupsPrintersManagerTest : public testing::Test,
             ->GetFeatures()
             ->application_locale_storage(),
         &synced_printers_manager_, std::move(usb_detector),
-        std::move(zeroconf_detector), ppd_provider_, &dlc_service_client_,
-        std::move(usb_notif_controller), std::move(print_servers_manager),
+        std::move(zeroconf_detector), std::move(ppd_provider),
+        &dlc_service_client_, std::move(usb_notif_controller),
+        std::move(print_servers_manager),
         std::move(enterprise_printers_provider), &event_tracker_,
         &pref_service_);
     manager_->AddObserver(this);
@@ -451,6 +454,14 @@ class CupsPrintersManagerTest : public testing::Test,
     // Fast forwarding so that delayed tasks like |SendScannerCountToUMA| will
     // run and not leak memory in unused callbacks.
     task_environment_.FastForwardUntilNoTasksRemain();
+    usb_detector_ = nullptr;
+    zeroconf_detector_ = nullptr;
+    ppd_provider_ = nullptr;
+    usb_notif_controller_ = nullptr;
+    print_servers_manager_ = nullptr;
+    enterprise_printers_provider_ = nullptr;
+    manager_->RemoveObserver(this);
+    manager_.reset();
   }
 
   void SetUp() override {
@@ -525,18 +536,14 @@ class CupsPrintersManagerTest : public testing::Test,
 
   // Backend fakes driving the CupsPrintersManager.
   FakeSyncedPrintersManager synced_printers_manager_;
-  raw_ptr<FakeEnterprisePrintersProvider, DanglingUntriaged>
-      enterprise_printers_provider_;                              // Not owned.
-  raw_ptr<FakePrinterDetector, DanglingUntriaged> usb_detector_;  // Not owned.
-  raw_ptr<FakePrinterDetector, DanglingUntriaged>
-      zeroconf_detector_;  // Not owned.
-  raw_ptr<FakeUsbPrinterNotificationController,
-          DanglingUntriaged>
-      usb_notif_controller_;  // Not owned.
-  raw_ptr<FakePrintServersManager, DanglingUntriaged>
-      print_servers_manager_;  // Not owned.
-  scoped_refptr<FakePpdProvider> ppd_provider_;
+  raw_ptr<FakePrinterDetector> usb_detector_ = nullptr;
+  raw_ptr<FakePrinterDetector> zeroconf_detector_ = nullptr;
+  raw_ptr<FakePpdProvider> ppd_provider_ = nullptr;
   FakeDlcserviceClient dlc_service_client_;
+  raw_ptr<FakeUsbPrinterNotificationController> usb_notif_controller_ = nullptr;
+  raw_ptr<FakePrintServersManager> print_servers_manager_ = nullptr;
+  raw_ptr<FakeEnterprisePrintersProvider> enterprise_printers_provider_ =
+      nullptr;
 
   // This is unused, it's just here for memory ownership.
   PrinterEventTracker event_tracker_;

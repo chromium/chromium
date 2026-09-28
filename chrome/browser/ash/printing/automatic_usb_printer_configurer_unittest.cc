@@ -87,6 +87,7 @@ class FakeUsbPrinterNotificationController
 class FakePpdProvider : public chromeos::PpdProvider {
  public:
   FakePpdProvider() = default;
+  ~FakePpdProvider() override = default;
 
   void SetPpd(const std::string& make_and_model,
               const std::string& effective_make_and_model) {
@@ -136,7 +137,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
                      ReverseLookupCallback cb) override {}
 
  private:
-  ~FakePpdProvider() override = default;
   base::flat_map<std::string, std::string> ppds_;
 };
 
@@ -167,8 +167,8 @@ class AutomaticUsbPrinterConfigurerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<FakeUsbPrinterNotificationController>
       fake_notification_controller_ =
           std::make_unique<FakeUsbPrinterNotificationController>();
-  scoped_refptr<FakePpdProvider> fake_ppd_provider_ =
-      base::MakeRefCounted<FakePpdProvider>();
+  std::unique_ptr<FakePpdProvider> fake_ppd_provider_ =
+      std::make_unique<FakePpdProvider>();
   std::unique_ptr<AutomaticUsbPrinterConfigurer> auto_usb_printer_configurer_ =
       std::make_unique<AutomaticUsbPrinterConfigurer>(
           fake_installation_manager_.get(),

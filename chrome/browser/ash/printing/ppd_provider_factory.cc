@@ -46,7 +46,7 @@ chromeos::PpdIndexChannel ToPpdIndexChannel(const std::string& channel) {
 
 }  // namespace
 
-scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
+std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile) {
   const chromeos::PpdIndexChannel channel = ToPpdIndexChannel(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ash::switches::kPrintingPpdChannel));

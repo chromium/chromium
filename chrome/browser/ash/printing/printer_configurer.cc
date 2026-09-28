@@ -22,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
@@ -141,12 +140,11 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
   PrinterConfigurerImpl(
       const ApplicationLocaleStorage* application_locale_storage,
-      scoped_refptr<PpdProvider> ppd_provider,
+      PpdProvider* ppd_provider,
       DlcserviceClient* dlc_service_client)
       : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
-        ppd_provider_(ppd_provider),
+        ppd_provider_(CHECK_DEREF(ppd_provider)),
         dlc_service_client_(dlc_service_client) {
-    CHECK(ppd_provider_, base::NotFatalUntil::M160);
     CHECK(dlc_service_client_, base::NotFatalUntil::M160);
   }
 
@@ -358,7 +356,7 @@ class PrinterConfigurerImpl : public PrinterConfigurer {
   std::string GetLastPpdBasename() const override { return ppd_filename_; }
 
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
-  scoped_refptr<PpdProvider> ppd_provider_;
+  const raw_ref<PpdProvider> ppd_provider_;
   raw_ptr<DlcserviceClient> dlc_service_client_;
   std::string ppd_filename_;
   base::WeakPtrFactory<PrinterConfigurerImpl> weak_factory_{this};
@@ -387,7 +385,7 @@ void PrinterConfigurer::RecordUsbPrinterSetupSource(
 // static
 std::unique_ptr<PrinterConfigurer> PrinterConfigurer::Create(
     const ApplicationLocaleStorage* application_locale_storage,
-    scoped_refptr<PpdProvider> ppd_provider,
+    PpdProvider* ppd_provider,
     DlcserviceClient* dlc_service_client) {
   return std::make_unique<PrinterConfigurerImpl>(
       application_locale_storage, ppd_provider, dlc_service_client);

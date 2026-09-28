@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PPD_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PRINTING_PPD_PROVIDER_FACTORY_H_
 
-#include "base/memory/scoped_refptr.h"
+#include <memory>
 
 class Profile;
 
@@ -15,7 +15,7 @@ class PpdProvider;
 
 namespace ash {
 
-scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile);
+std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(Profile* profile);
 
 }  // namespace ash
 

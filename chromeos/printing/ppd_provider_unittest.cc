@@ -124,7 +124,7 @@ class PpdProviderTest : public ::testing::Test {
   }
 
   // Creates and return a provider for a test that uses the given |options|.
-  scoped_refptr<PpdProvider> CreateProvider(
+  std::unique_ptr<PpdProvider> CreateProvider(
       PpdCacheRunLocation where_ppd_cache_runs) {
     switch (where_ppd_cache_runs) {
       case PpdCacheRunLocation::kOnTestThread:

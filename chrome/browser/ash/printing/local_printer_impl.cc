@@ -29,10 +29,9 @@ namespace {
 
 // Generates and returns a url for a PPD license which is empty if
 // an error occurs e.g. the ppd provider callback failed.
-// When bound to a ppd provider scoped refptr, the reference count
-// will be decremented once the callback is done executing and the
-// ppd provider destroyed if it hits zero.
-GURL GenerateEulaUrl(scoped_refptr<chromeos::PpdProvider>,
+// When bound to a ppd provider unique_ptr, the ppd provider will be
+// destroyed once the callback is done executing.
+GURL GenerateEulaUrl(std::unique_ptr<chromeos::PpdProvider>,
                      chromeos::PpdProvider::CallbackResultCode result,
                      const std::string& license) {
   if (result != chromeos::PpdProvider::CallbackResultCode::SUCCESS ||
@@ -260,11 +259,13 @@ void LocalPrinterImpl::GetEulaUrl(const AccountId& accountId,
     std::move(callback).Run(GURL());
     return;
   }
-  scoped_refptr<chromeos::PpdProvider> ppd_provider =
+  std::unique_ptr<chromeos::PpdProvider> ppd_provider =
       CreatePpdProvider(profile);
-  ppd_provider->ResolvePpdLicense(
+  chromeos::PpdProvider& ppd_provider_ref = *ppd_provider;
+  ppd_provider_ref.ResolvePpdLicense(
       printer->ppd_reference().effective_make_and_model,
-      base::BindOnce(GenerateEulaUrl, ppd_provider).Then(std::move(callback)));
+      base::BindOnce(GenerateEulaUrl, std::move(ppd_provider))
+          .Then(std::move(callback)));
 }
 
 void LocalPrinterImpl::GetStatus(const AccountId& accountId,
@@ -311,7 +312,7 @@ void LocalPrinterImpl::GetOAuthAccessToken(
                      std::move(callback)));
 }
 
-scoped_refptr<chromeos::PpdProvider> LocalPrinterImpl::CreatePpdProvider(
+std::unique_ptr<chromeos::PpdProvider> LocalPrinterImpl::CreatePpdProvider(
     Profile* profile) {
   return ash::CreatePpdProvider(profile);
 }

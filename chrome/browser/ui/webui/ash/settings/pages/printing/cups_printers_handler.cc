@@ -249,10 +249,10 @@ CupsPrintersHandler::CupsPrintersHandler(Profile* profile,
 
 CupsPrintersHandler::CupsPrintersHandler(
     Profile* profile,
-    scoped_refptr<PpdProvider> ppd_provider,
+    std::unique_ptr<PpdProvider> ppd_provider,
     CupsPrintersManager* printers_manager)
     : profile_(profile),
-      ppd_provider_(ppd_provider),
+      ppd_provider_(std::move(ppd_provider)),
       printers_manager_(printers_manager),
       endpoint_resolver_(
           std::make_unique<local_discovery::EndpointResolver>()) {}
@@ -260,11 +260,11 @@ CupsPrintersHandler::CupsPrintersHandler(
 // static
 std::unique_ptr<CupsPrintersHandler> CupsPrintersHandler::CreateForTesting(
     Profile* profile,
-    scoped_refptr<PpdProvider> ppd_provider,
+    std::unique_ptr<PpdProvider> ppd_provider,
     CupsPrintersManager* printers_manager) {
   // Using 'new' to access non-public constructor.
-  return base::WrapUnique(
-      new CupsPrintersHandler(profile, ppd_provider, printers_manager));
+  return base::WrapUnique(new CupsPrintersHandler(
+      profile, std::move(ppd_provider), printers_manager));
 }
 
 CupsPrintersHandler::~CupsPrintersHandler() {

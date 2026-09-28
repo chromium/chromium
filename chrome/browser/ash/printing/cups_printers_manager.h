@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
@@ -95,7 +94,7 @@ class CupsPrintersManager : public PrinterInstallationManager,
       SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,
-      scoped_refptr<chromeos::PpdProvider> ppd_provider,
+      std::unique_ptr<chromeos::PpdProvider> ppd_provider,
       DlcserviceClient* dlc_service_client,
       std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,

@@ -85,6 +85,7 @@ void RemovedPrinter(base::OnceClosure quit_closure,
 class FakePpdProvider : public chromeos::PpdProvider {
  public:
   FakePpdProvider() = default;
+  ~FakePpdProvider() override = default;
 
   void ResolveManufacturers(ResolveManufacturersCallback cb) override {}
   void ResolvePrinters(const std::string& manufacturer,
@@ -97,9 +98,6 @@ class FakePpdProvider : public chromeos::PpdProvider {
                          ResolvePpdLicenseCallback cb) override {}
   void ReverseLookup(const std::string& effective_make_and_model,
                      ReverseLookupCallback cb) override {}
-
- private:
-  ~FakePpdProvider() override {}
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of
@@ -211,7 +209,7 @@ class CupsPrintersHandlerTest : public testing::Test {
 
   void SetUp() override {
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
-        profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
+        profile_.get(), std::make_unique<FakePpdProvider>(),
         &printers_manager_);
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();

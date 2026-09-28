@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/printing/local_printer.h"
 
 class ApplicationLocaleStorage;
@@ -52,7 +51,7 @@ class LocalPrinterImpl : public LocalPrinter {
                            GetOAuthAccessTokenCallback callback) override;
 
  protected:
-  virtual scoped_refptr<chromeos::PpdProvider> CreatePpdProvider(
+  virtual std::unique_ptr<chromeos::PpdProvider> CreatePpdProvider(
       Profile* profile);
 
  private:
