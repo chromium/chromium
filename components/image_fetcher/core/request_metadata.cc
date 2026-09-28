@@ -4,9 +4,11 @@
 
 #include "components/image_fetcher/core/request_metadata.h"
 
+#include "net/base/net_errors.h"
+
 namespace image_fetcher {
 
 RequestMetadata::RequestMetadata()
-    : http_response_code(RESPONSE_CODE_INVALID) {}
+    : http_response_code(RESPONSE_CODE_INVALID), net_error(net::OK) {}
 
 }  // namespace image_fetcher

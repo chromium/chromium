@@ -18,6 +18,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.net.NetError;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,7 +123,7 @@ public class CachedImageFetcher extends ImageFetcher {
             callback.onResult(
                     new ImageDataFetchResult(
                             cachedGif.getData(),
-                            new RequestMetadata("image/gif", -1, "from_cache")));
+                            new RequestMetadata("image/gif", -1, NetError.OK, "from_cache")));
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);
             getImageFetcherBridge().reportCacheHitTime(params.clientName, startTimeMillis);
         } else {
@@ -138,6 +139,7 @@ public class CachedImageFetcher extends ImageFetcher {
                                                     new RequestMetadata(
                                                             "image/gif",
                                                             -1,
+                                                            NetError.OK,
                                                             "from_native_empty_result"));
                                 }
                                 callback.onResult(gifFromNativeFetchResult);
@@ -226,7 +228,8 @@ public class CachedImageFetcher extends ImageFetcher {
             }
             callback.onResult(
                     new ImageFetchResult(
-                            cachedBitmap, new RequestMetadata("unknown", -1, "from_cache")));
+                            cachedBitmap,
+                            new RequestMetadata("unknown", -1, NetError.OK, "from_cache")));
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);
             getImageFetcherBridge().reportCacheHitTime(params.clientName, startTimeMillis);
         } else {

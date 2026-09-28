@@ -13,6 +13,7 @@
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "net/base/data_url.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -118,6 +119,9 @@ void ImageDataFetcher::FetchImageData(const GURL& image_url,
     std::string charset, data;
     if (!net::DataURL::Parse(image_url, &metadata.mime_type, &charset, &data)) {
       DVLOG(0) << "Failed to parse data url";
+      data.clear();
+      metadata.mime_type.clear();
+      metadata.net_error = net::ERR_INVALID_URL;
     }
 
     std::move(callback).Run(std::move(data), metadata);
@@ -176,10 +180,10 @@ void ImageDataFetcher::OnURLLoaderComplete(
               perfetto::Flow::ProcessScoped(flow_id));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_requests_.find(source) != pending_requests_.end());
-  bool success = source->NetError() == net::OK;
-  int status_code = source->NetError();
-
   RequestMetadata metadata;
+  metadata.net_error = source->NetError();
+  bool success = metadata.net_error == net::OK;
+  int status_code = metadata.net_error;
   if (success && source->ResponseInfo() && source->ResponseInfo()->headers) {
     net::HttpResponseHeaders* headers = source->ResponseInfo()->headers.get();
     metadata.mime_type = source->ResponseInfo()->mime_type;

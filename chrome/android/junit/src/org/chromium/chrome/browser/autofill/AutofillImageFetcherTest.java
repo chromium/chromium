@@ -46,9 +46,10 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.image_fetcher.ImageFetchResult;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.RequestMetadata;
+import org.chromium.net.NetError;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
@@ -66,10 +67,13 @@ public class AutofillImageFetcherTest {
     private static final ImageFetchResult TEST_IMAGE_FETCH_RESULT =
             new ImageFetchResult(
                     TEST_IMAGE,
-                    new RequestMetadata("image/jpeg", 200, "test_content_location_header"));
+                    new RequestMetadata(
+                            "image/jpeg", 200, NetError.OK, "test_content_location_header"));
     private static final ImageFetchResult TEST_IMAGE_FETCH_NULL_BITMAP_RESULT =
             new ImageFetchResult(
-                    null, new RequestMetadata("image/jpeg", -1, "null_image_location_header"));
+                    null,
+                    new RequestMetadata(
+                            "image/jpeg", -1, NetError.OK, "null_image_location_header"));
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

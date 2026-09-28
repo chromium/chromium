@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.net.NetError;
 import org.chromium.ui.test.util.MockitoHelper;
 
 /** Test for NetworkImageFetcher.java. */
@@ -59,7 +60,8 @@ public class NetworkImageFetcherTest {
         mGifFetchResult =
                 new ImageDataFetchResult(
                         mGif.getData(),
-                        new RequestMetadata("image/gif", 200, "test_content_location_header"));
+                        new RequestMetadata(
+                                "image/gif", 200, NetError.OK, "test_content_location_header"));
 
         ArgumentCaptor<Callback<Bitmap>> bitmapCallbackCaptor = MockitoHelper.callbackCaptor();
         doAnswer(

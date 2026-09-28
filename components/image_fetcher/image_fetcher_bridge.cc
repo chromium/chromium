@@ -286,6 +286,7 @@ ScopedJavaLocalRef<jobject> ImageFetcherBridge::ConvertRequestMetadataToJava(
   return Java_ImageFetcherBridge_createRequestMetadata(
       j_env, j_mime_type,
       static_cast<int32_t>(request_metadata.http_response_code),
+      static_cast<int32_t>(request_metadata.net_error),
       j_content_location_header);
 }
 

@@ -17,6 +17,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.net.NetError;
 
 /** Provides access to native implementations of ImageFetcher for the given browser context. */
 @JNINamespace("image_fetcher")
@@ -186,9 +187,13 @@ public class ImageFetcherBridge {
     }
 
     @CalledByNative
-    private static RequestMetadata createRequestMetadata(
-            String mimeType, int httpResponseCode, String contentLocationHeader) {
-        return new RequestMetadata(mimeType, httpResponseCode, contentLocationHeader);
+    @VisibleForTesting
+    static RequestMetadata createRequestMetadata(
+            String mimeType,
+            int httpResponseCode,
+            @NetError int netError,
+            String contentLocationHeader) {
+        return new RequestMetadata(mimeType, httpResponseCode, netError, contentLocationHeader);
     }
 
     @CalledByNative

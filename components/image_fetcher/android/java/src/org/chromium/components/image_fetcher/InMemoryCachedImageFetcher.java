@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.BitmapCache;
 import org.chromium.components.browser_ui.util.ConversionUtils;
+import org.chromium.net.NetError;
 
 /** ImageFetcher implementation with an in-memory cache. Can also be configured to use a disk cache. */
 @NullMarked
@@ -128,7 +129,8 @@ public class InMemoryCachedImageFetcher extends ImageFetcher {
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_IN_MEMORY_CACHE_HIT);
             callback.onResult(
                     new ImageFetchResult(
-                            cachedBitmap, new RequestMetadata("unknown", -1, "from_cache")));
+                            cachedBitmap,
+                            new RequestMetadata("unknown", -1, NetError.OK, "from_cache")));
         }
     }
 
