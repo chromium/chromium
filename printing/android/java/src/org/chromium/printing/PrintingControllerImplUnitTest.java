@@ -16,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
@@ -28,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link PrintingControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class PrintingControllerImplUnitTest {
     private static class FakePrintable implements Printable {
         @Override
