@@ -125,6 +125,43 @@ class PydepsPresubmitTest(unittest.TestCase):
         results = self._RunCheck()
         self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
 
+    def testPresubmitPyIgnored(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('PRESUBMIT.py', []),
+            MockAffectedFile('PRESUBMIT_test.py', []),
+        ]
+        self.mock_input_api.subprocess.SetPopenCallback(
+            lambda cmd: self.fail(f'Unexpected command execution: {cmd!r}')
+        )
+
+        self.assertEqual(set(), self.checker.ComputeAffectedPydeps())
+        results = self._RunCheck()
+        self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
+
+    def testDepsTriggersAllPydeps(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', []),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps), self.checker.ComputeAffectedPydeps()
+        )
+
+    def testPydepsPresubmitTriggersAllPydeps(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('build/pydeps_presubmit.py', []),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps), self.checker.ComputeAffectedPydeps()
+        )
+
+    def testPrintPythonDepsTriggersAllPydeps(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('build/print_python_deps.py', []),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps), self.checker.ComputeAffectedPydeps()
+        )
+
     def testRelevantPyNoChange(self):
         self.mock_input_api.files = [
             MockAffectedFile('A.py', []),

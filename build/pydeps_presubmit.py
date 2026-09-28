@@ -44,7 +44,7 @@ class PydepsChecker:
         return ret
 
     def ComputeAffectedPydeps(self):
-        """Returns an iterable of .pydeps files that might need regenerating."""
+        """Returns a set of .pydeps files that might need regenerating."""
         affected_pydeps = set()
         file_to_pydeps_map = None
         for f in self._input_api.AffectedFiles(include_deletes=True):
@@ -54,13 +54,10 @@ class PydepsChecker:
             # re-check all files.
             # Changes to print_python_deps.py or pydeps_presubmit.py affect all
             # .pydeps.
-            if local_path in (
-                'DEPS',
-                'PRESUBMIT.py',
-            ) or local_path.endswith(
+            if local_path == 'DEPS' or local_path.endswith(
                 ('print_python_deps.py', 'pydeps_presubmit.py')
             ):
-                return self._pydeps_files
+                return set(self._pydeps_files)
             if local_path.endswith('.pydeps'):
                 if local_path in self._pydeps_files:
                     affected_pydeps.add(local_path)
