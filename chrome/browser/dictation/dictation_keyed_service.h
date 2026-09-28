@@ -16,6 +16,7 @@
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
+#include "chrome/browser/dictation/reviewing_page_status_ui_controller.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
 #include "chrome/browser/dictation/target.h"
@@ -59,6 +60,13 @@ class DictationKeyedService : public KeyedService,
   std::unique_ptr<SessionUi> CreateUi(
       SessionController& controller) const override;
   void EndSession() override;
+
+  // Returns true if the reviewing page status UI should be shown, and consumes
+  // the show state (starting the 60-minute cooldown for the active document).
+  bool ConsumeShowReviewingPageStatus() const;
+
+  // Enables or disables reviewing page status for testing.
+  void SetReviewingPageStatusEnabledForTesting(bool enabled);
 
   // Called when onboarding is completed. Starts a new session from the given
   // target. It's the caller's responsibility to ensure this is never called
@@ -151,6 +159,8 @@ class DictationKeyedService : public KeyedService,
   OnboardingManager onboarding_manager_;
 
   DictationLogBuffer log_buffer_;
+
+  ReviewingPageStatusUiController reviewing_page_status_ui_controller_;
 
   std::unique_ptr<LocalHotkeyManager> local_hotkey_manager_;
 

@@ -186,6 +186,17 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
   return std::make_unique<SessionUiImpl>(*tab, controller);
 }
 
+bool DictationKeyedService::ConsumeShowReviewingPageStatus() const {
+  return reviewing_page_status_ui_controller_.ConsumeShowReviewingPageStatus(
+      GetActiveDictationTab());
+}
+
+void DictationKeyedService::SetReviewingPageStatusEnabledForTesting(
+    bool enabled) {
+  reviewing_page_status_ui_controller_.SetEnabledForTesting(  // IN-TEST
+      enabled);
+}
+
 base::CallbackListSubscription
 DictationKeyedService::AddDictationTabChangedCallback(
     base::RepeatingCallback<void(tabs::TabInterface*)> callback) {

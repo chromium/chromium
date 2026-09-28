@@ -346,7 +346,9 @@ std::unique_ptr<StreamProvider> MockDictationKeyedService::CreateStreamProvider(
 }
 std::unique_ptr<SessionUi> MockDictationKeyedService::CreateUi(
     SessionController& controller) const {
-  return std::make_unique<testing::NiceMock<MockSessionUi>>();
+  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
+  mock_ui->set_show_reviewing_page_status(ConsumeShowReviewingPageStatus());
+  return mock_ui;
 }
 
 }  // namespace dictation

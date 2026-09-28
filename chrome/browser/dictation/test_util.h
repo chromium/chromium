@@ -134,6 +134,13 @@ class MockSessionUi : public SessionUi {
   MockSessionUi();
   ~MockSessionUi() override;
 
+  bool show_reviewing_page_status() const {
+    return show_reviewing_page_status_;
+  }
+  void set_show_reviewing_page_status(bool show) {
+    show_reviewing_page_status_ = show;
+  }
+
   MOCK_METHOD(void,
               OnError,
               (StreamType stream_type, StreamErrorReason reason),
@@ -144,6 +151,9 @@ class MockSessionUi : public SessionUi {
               OnStartedStream,
               (content::GlobalDOMNodeId target_id),
               (override));
+
+ private:
+  bool show_reviewing_page_status_ = false;
 };
 
 class MockSessionControllerDelegate : public SessionControllerDelegate {
