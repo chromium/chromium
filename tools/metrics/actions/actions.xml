@@ -1072,6 +1072,8 @@ should be able to be added at any place in this file.
   <variant name="" summary="aggregated"/>
   <variant name=".AddedToComparisonTable" summary="Added to comparison table"/>
   <variant name=".AddedToReadingList" summary="Added to reading list"/>
+  <variant name=".AutofillAiSuggestionRemoved"
+      summary="Autofill AI suggestion removed"/>
   <variant name=".DiceUserMigrated" summary="DICe user migrated"/>
   <variant name=".EnhancedBundledSecuritySettings"
       summary="Enhanced protection user migrated"/>

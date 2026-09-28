@@ -125,6 +125,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "ScheduledRestartOnIdle";
     case ToastId::kEmailVerificationError:
       return "EmailVerificationError";
+    case ToastId::kAutofillAiSuggestionRemoved:
+      return "AutofillAiSuggestionRemoved";
   }
 
   NOTREACHED();

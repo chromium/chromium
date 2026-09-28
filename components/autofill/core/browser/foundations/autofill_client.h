@@ -908,9 +908,12 @@ class AutofillClient {
       base::OnceCallback<void(bool)> callback);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  // Displays a notification informing the user that an Autofill AI suggestion
-  // was removed, offering an undo action that runs `on_undo_clicked`.
+  // Displays a notification informing the user that the Autofill AI suggestion
+  // for the personal-context `entity` was removed, offering an undo action.
+  // Depending on the platform, undoing may either run `on_undo_clicked` (e.g.
+  // Android snackbar) or unsuppress `entity` directly (e.g. Desktop toast).
   virtual void ShowAutofillAiSuggestionRemovedNotification(
+      const EntityInstance& entity,
       base::OnceClosure on_undo_clicked);
 
   // Shows a yes/no prompt asking the user to confirm that they want to verify

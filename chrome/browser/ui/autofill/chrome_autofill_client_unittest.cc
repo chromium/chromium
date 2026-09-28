@@ -53,6 +53,7 @@
 #include "components/autofill/core/browser/metrics/cross_tab_copy_paste_tracker.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1281,7 +1282,10 @@ TEST_F(ChromeAutofillClientTest,
   base::MockCallback<base::OnceClosure> on_undo_clicked;
   EXPECT_CALL(on_undo_clicked, Run);
 
-  client()->ShowAutofillAiSuggestionRemovedNotification(on_undo_clicked.Get());
+  client()->ShowAutofillAiSuggestionRemovedNotification(
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}),
+      on_undo_clicked.Get());
 
   AutofillSnackbarControllerImpl* snackbar_controller =
       client()->GetAutofillSnackbarController();

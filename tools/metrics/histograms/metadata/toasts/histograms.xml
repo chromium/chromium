@@ -54,6 +54,8 @@ found in the LICENSE file.
   </summary>
   <token key="ToastName">
     <variant name="AddedToReadingList" summary="add to reading list"/>
+    <variant name="AutofillAiSuggestionRemoved"
+        summary="Autofill AI suggestion removed"/>
     <variant name="DiceUserMigrated" summary="dice user migrated"/>
     <variant name="EnhancedBundledSecuritySettings"
         summary="enhanced protection user migrated"/>

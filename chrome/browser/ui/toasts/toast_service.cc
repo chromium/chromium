@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
@@ -40,6 +41,8 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -456,6 +459,38 @@ void ToastService::RegisterToasts(
                 ? vector_icons::kPersonTextIcon
                 : vector_icons::kPersonTextOldIcon,
             IDS_AUTOFILL_AI_FETCH_ENTITY_FAILURE_NOTIFICATION)
+            .AddGlobalScoped()
+            .Build());
+  }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofillSuppressionUI)) {
+    toast_registry_->RegisterToast(
+        ToastId::kAutofillAiSuggestionRemoved,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kInfoIcon
+                : vector_icons::kInfoRefreshOldIcon,
+            IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_TEXT)
+            .AddCloseButton()
+            .AddActionButton(
+                IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_ACTION_BUTTON,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window,
+                       const base::Value& entity_id) {
+                      Profile* profile = window->GetProfile();
+                      if (!profile || !entity_id.is_string()) {
+                        return;
+                      }
+                      if (autofill::
+                              EntitySuppressionManager* suppression_manager =
+                                  autofill::EntitySuppressionManagerFactory::
+                                      GetForProfile(profile)) {
+                        suppression_manager->UndoInSessionSuppressedEntity(
+                            autofill::EntityInstance::EntityId(
+                                entity_id.GetString()));
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
             .AddGlobalScoped()
             .Build());
   }

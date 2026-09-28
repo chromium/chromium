@@ -460,6 +460,7 @@ void AutofillClient::ShowAutofillAiSuppressionConfirmationDialog(
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void AutofillClient::ShowAutofillAiSuggestionRemovedNotification(
+    const EntityInstance& entity,
     base::OnceClosure on_undo_clicked) {
   NOTIMPLEMENTED();
 }

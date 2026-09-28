@@ -301,7 +301,7 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void,
               ShowAutofillAiSuggestionRemovedNotification,
-              (base::OnceClosure),
+              (const EntityInstance&, base::OnceClosure),
               (override));
 
   // `IsAutofillTypeBlockedByPolicy` is needed in the mock because it is called
@@ -4149,8 +4149,9 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   base::OnceClosure on_undo_clicked;
   EXPECT_CALL(autofill_client(), ShowAutofillAiSuppressionConfirmationDialog)
       .WillOnce(RunOnceCallback<1>(/*confirmed=*/true));
-  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
-      .WillOnce(MoveArg<0>(&on_undo_clicked));
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillAiSuggestionRemovedNotification(Eq(passport), _))
+      .WillOnce(MoveArg<1>(&on_undo_clicked));
 
   ASSERT_FALSE(external_delegate().RemoveSuggestion(suggestion));
   ASSERT_TRUE(
@@ -4244,8 +4245,9 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   suggestion.payload = Suggestion::AutofillAiPayload(full_passport.guid());
 
   base::OnceClosure undo_completed;
-  EXPECT_CALL(autofill_client(), ShowAutofillAiSuggestionRemovedNotification)
-      .WillOnce(MoveArg<0>(&undo_completed));
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillAiSuggestionRemovedNotification(Eq(full_passport), _))
+      .WillOnce(MoveArg<1>(&undo_completed));
   EXPECT_TRUE(external_delegate().RemoveSuggestion(suggestion));
 
   EXPECT_TRUE(autofill_client().GetEntitySuppressionManager()->IsSuppressed(

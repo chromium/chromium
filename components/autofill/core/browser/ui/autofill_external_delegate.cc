@@ -1874,9 +1874,9 @@ bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
   const bool newly_suppressed = suppression_manager->SuppressEntity(entity);
   if (newly_suppressed) {
     manager_->client().ShowAutofillAiSuggestionRemovedNotification(
-        base::BindOnce(&AutofillExternalDelegate::OnAutofillAiSuppressionUndone,
-                       weak_ptr_factory_.GetWeakPtr(), entity.guid(),
-                       field_id));
+        entity, base::BindOnce(
+                    &AutofillExternalDelegate::OnAutofillAiSuppressionUndone,
+                    weak_ptr_factory_.GetWeakPtr(), entity.guid(), field_id));
     return true;
   }
   return suppression_manager->IsSuppressed(entity);

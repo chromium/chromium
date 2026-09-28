@@ -1672,6 +1672,9 @@
      =1 {Suggestion removed. Your original source won't be deleted.}
      other {Suggestion removed. Your original sources won't be deleted.}}
   </message>
+  <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_UNDO_TOAST_ACTION_BUTTON" meaning="Verb: action button to undo removal of an Autofill AI suggestion" desc="Label of the button in the toast notification that allows the user to undo removing an Autofill AI suggestion.">
+    Undo
+  </message>
 
   <message name="IDS_AUTOFILL_AI_ENTITY_SUPPRESSION_CONFIRMATION_TITLE" desc="Title of the dialog that asks the user to confirm that an Autofill AI suggestion should no longer be suggested by Chrome.">
     Remove from Chrome?

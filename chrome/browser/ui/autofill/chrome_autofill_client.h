@@ -313,6 +313,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
       base::OnceCallback<void(bool)> callback) final;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ShowAutofillAiSuggestionRemovedNotification(
+      const EntityInstance& entity,
       base::OnceClosure on_undo_clicked) final;
   void ShowEmailVerifiedToast(const GURL& issuer) final;
   void ShowEmailVerificationPopup(

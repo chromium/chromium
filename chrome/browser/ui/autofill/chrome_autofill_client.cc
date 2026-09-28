@@ -1690,15 +1690,34 @@ void ChromeAutofillClient::ShowAutofillAiSuppressionConfirmationDialog(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
+    const EntityInstance& entity,
     base::OnceClosure on_undo_clicked) {
-#if BUILDFLAG(IS_ANDROID)
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAmbientAutofillSuppressionUI)) {
     return;
   }
+#if BUILDFLAG(IS_ANDROID)
   GetAutofillSnackbarController()->Show(
       AutofillSnackbarType::kAutofillAiSuppressionUndo,
       std::move(on_undo_clicked));
+#else
+  // `on_undo_clicked` is not used here: toast action buttons are registered
+  // once per `ToastId` in `ToastService`, so a toast cannot run a closure
+  // passed at show time. Instead, the toast's Undo button undoes the
+  // suppression through `EntitySuppressionManager`, using the entity ID passed
+  // in `action_button_callback_data`.
+  ToastController* toast_controller = GetToastController();
+  if (!toast_controller) {
+    return;
+  }
+  ToastParams params(ToastId::kAutofillAiSuggestionRemoved);
+  params.body_string_cardinality_param =
+      std::get<EntityInstance::PersonalContextRecordTypePayload>(
+          entity.record_type_data())
+          .sources.size();
+  params.action_button_callback_data = base::Value(*entity.guid());
+  toast_controller->MaybeShowToast(std::move(params));
 #endif
 }
 

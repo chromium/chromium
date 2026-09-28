@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor/resources:common_resources",
     "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/autofill",
     "//chrome/browser/dictation",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
