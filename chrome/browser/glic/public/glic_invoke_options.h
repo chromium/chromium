@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -247,7 +248,12 @@ enum class GlicInvokeError {
   kClientLoadError = 20,
   kMaxValue = kClientLoadError,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/host/glic_internals_page_handler.cc:GlicInvokeError)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvokeResult,//chrome/browser/glic/public/glic_invoke_options.cc:GlicInvokeErrorToString)
+
+// Returns a human-readable, non-localized description of `error`. Intended for
+// logging and developer-facing surfaces (e.g. chrome://glic-internals); not for
+// display to end users.
+std::string_view GlicInvokeErrorToString(GlicInvokeError error);
 
 // Details for invoking Glic with tabs shared. See
 // GlicSharingManagerInternal::PinTabs().

@@ -834,6 +834,7 @@ source_set("unit_tests") {
     "host/guest_util_unittest.cc",
     "public/glic_cui_tracker_unittest.cc",
     "public/glic_enabling_unittest.cc",
+    "public/glic_invoke_options_unittest.cc",
     "service/glic_invoke_handler_unittest.cc",
     "service/glic_invoke_task_unittest.cc",
     "suggestions/caching_zero_state_suggestions_manager_unittest.cc",

@@ -17,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -278,47 +277,6 @@ bool CanShowDeviceOptInUi() {
   return base::android::ApplicationStatusListener::HasVisibleActivities();
 }
 #endif
-
-std::string_view GlicInvokeErrorToString(GlicInvokeError error) {
-  switch (error) {
-    case GlicInvokeError::kUnknown:
-      return "Unknown error";
-    case GlicInvokeError::kTimeout:
-      return "Invocation timed out";
-    case GlicInvokeError::kInvalidConversationId:
-      return "Invalid conversation ID";
-    case GlicInvokeError::kInvalidTab:
-      return "Target tab was invalid";
-    case GlicInvokeError::kTabClosed:
-      return "Target tab was closed";
-    case GlicInvokeError::kInstanceDestroyed:
-      return "Glic instance was destroyed";
-    case GlicInvokeError::kInvokeInProgress:
-      return "Another invocation is already in progress";
-    case GlicInvokeError::kInvalidConfiguration:
-      return "Invalid configuration for invocation";
-    case GlicInvokeError::kAdditionalContextSawNavigation:
-    case GlicInvokeError::kAdditionalContextFailedCopyPolicy:
-    case GlicInvokeError::kAdditionalContextFailedPastePolicy:
-    case GlicInvokeError::kAdditionalContextNoSourceFrame:
-    case GlicInvokeError::kAdditionalContextNoClientFrame:
-    case GlicInvokeError::kAdditionalContextNoClipboardMetadata:
-      return "Additional context error";
-    case GlicInvokeError::kInstanceNotFound:
-      return "Glic instance not found";
-    case GlicInvokeError::kProfileNotEnabled:
-      return "Glic is not enabled for the profile";
-    case GlicInvokeError::kCancelled:
-      return "Invocation was cancelled";
-    case GlicInvokeError::kSuperseded:
-      return "Invocation was superseded";
-    case GlicInvokeError::kLiveModeActive:
-      return "Glic instance is in live mode";
-    case GlicInvokeError::kClientLoadError:
-      return "Client load error";
-  }
-  NOTREACHED();
-}
 
 GlicExperimentalTriggeringExecutionOutcome GlicInvokeErrorToOutcome(
     GlicInvokeError error,

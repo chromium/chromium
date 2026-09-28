@@ -838,75 +838,7 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
 
   options.on_error = base::BindOnce(
       [](TriggerInvokeFromInternalsActionCallback cb, GlicInvokeError error) {
-        std::string error_msg;
-        // LINT.IfChange(GlicInvokeError)
-        switch (error) {
-          case GlicInvokeError::kTimeout:
-            error_msg = "Timeout";
-            break;
-          case GlicInvokeError::kInvalidConversationId:
-            error_msg = "Invalid Conversation ID";
-            break;
-          case GlicInvokeError::kInvalidTab:
-            error_msg = "Invalid Tab";
-            break;
-          case GlicInvokeError::kTabClosed:
-            error_msg = "Tab Closed";
-            break;
-          case GlicInvokeError::kInstanceDestroyed:
-            error_msg = "Instance Destroyed";
-            break;
-          case GlicInvokeError::kInvokeInProgress:
-            error_msg = "Invoke In Progress";
-            break;
-          case GlicInvokeError::kInvalidConfiguration:
-            error_msg = "Invalid Configuration";
-            break;
-          case GlicInvokeError::kAdditionalContextSawNavigation:
-            error_msg = "Navigation during context gathering";
-            break;
-          case GlicInvokeError::kAdditionalContextFailedCopyPolicy:
-            error_msg = "Copy policy check failed";
-            break;
-          case GlicInvokeError::kAdditionalContextFailedPastePolicy:
-            error_msg = "Paste policy check failed";
-            break;
-          case GlicInvokeError::kAdditionalContextNoSourceFrame:
-            error_msg = "No source frame for context";
-            break;
-          case GlicInvokeError::kAdditionalContextNoClientFrame:
-            error_msg = "No client frame for context";
-            break;
-          case GlicInvokeError::kAdditionalContextNoClipboardMetadata:
-            error_msg = "No clipboard metadata for context";
-            break;
-          case GlicInvokeError::kInstanceNotFound:
-            error_msg = "Instance Not Found";
-            break;
-          case GlicInvokeError::kProfileNotEnabled:
-            error_msg = "Profile Not Enabled";
-            break;
-          case GlicInvokeError::kSuperseded:
-            error_msg = "Superseded By Another Invocation";
-            break;
-          case GlicInvokeError::kUnknown:
-            error_msg = "Unknown Error";
-            break;
-          case GlicInvokeError::kCancelled:
-            error_msg = "Cancelled";
-            break;
-          case GlicInvokeError::kLiveModeActive:
-            error_msg = "Instance Is In Live Mode";
-            break;
-          case GlicInvokeError::kClientLoadError:
-            error_msg = "Client Load Error";
-            break;
-          default:
-            error_msg = "Unknown Error";
-            break;
-        }
-        // LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError)
-        std::move(cb).Run(false, error_msg);
+        std::move(cb).Run(false, std::string(GlicInvokeErrorToString(error)));
       },
       std::move(split_callback.second));
 

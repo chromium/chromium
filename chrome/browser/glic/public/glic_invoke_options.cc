@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -129,5 +131,53 @@ GlicInvokeWithAutoSubmitOptions::GlicInvokeWithAutoSubmitOptions(
     GlicInvokeWithAutoSubmitOptions&&) = default;
 GlicInvokeWithAutoSubmitOptions& GlicInvokeWithAutoSubmitOptions::operator=(
     GlicInvokeWithAutoSubmitOptions&&) = default;
+
+// LINT.IfChange(GlicInvokeErrorToString)
+std::string_view GlicInvokeErrorToString(GlicInvokeError error) {
+  switch (error) {
+    case GlicInvokeError::kUnknown:
+      return "Unknown error";
+    case GlicInvokeError::kTimeout:
+      return "Invocation timed out";
+    case GlicInvokeError::kInvalidConversationId:
+      return "Invalid conversation ID";
+    case GlicInvokeError::kInvalidTab:
+      return "Target tab was invalid";
+    case GlicInvokeError::kTabClosed:
+      return "Target tab was closed";
+    case GlicInvokeError::kInstanceDestroyed:
+      return "Glic instance was destroyed";
+    case GlicInvokeError::kInvokeInProgress:
+      return "Another invocation is already in progress";
+    case GlicInvokeError::kInvalidConfiguration:
+      return "Invalid configuration for invocation";
+    case GlicInvokeError::kAdditionalContextSawNavigation:
+      return "Navigation occurred while gathering additional context";
+    case GlicInvokeError::kAdditionalContextFailedCopyPolicy:
+      return "Additional context failed the copy policy check";
+    case GlicInvokeError::kAdditionalContextFailedPastePolicy:
+      return "Additional context failed the paste policy check";
+    case GlicInvokeError::kAdditionalContextNoSourceFrame:
+      return "No source frame for additional context";
+    case GlicInvokeError::kAdditionalContextNoClientFrame:
+      return "No client frame for additional context";
+    case GlicInvokeError::kAdditionalContextNoClipboardMetadata:
+      return "No clipboard metadata for additional context";
+    case GlicInvokeError::kInstanceNotFound:
+      return "Glic instance not found";
+    case GlicInvokeError::kProfileNotEnabled:
+      return "Glic is not enabled for the profile";
+    case GlicInvokeError::kCancelled:
+      return "Invocation was cancelled";
+    case GlicInvokeError::kSuperseded:
+      return "Invocation was superseded";
+    case GlicInvokeError::kLiveModeActive:
+      return "Glic instance is in live mode";
+    case GlicInvokeError::kClientLoadError:
+      return "Client load error";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//chrome/browser/glic/public/glic_invoke_options.h:GlicInvokeError)
 
 }  // namespace glic
