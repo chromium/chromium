@@ -1643,6 +1643,27 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSignedIn) {
                                        AppBarAssistantButtonState::kAccount, 1);
 }
 
+// Tests that tapping the assistant button in the kAccount state does nothing
+// when sign-in is disabled, even if there is a primary identity.
+TEST_F(AppBarMediatorTest, TestAssistantButtonTappedAccountSigninDisabled) {
+  SignInAndSetCapability(true);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice, false);
+
+  id mock_delegate = OCMProtocolMock(@protocol(AppBarMediatorDelegate));
+  mediator_.delegate = mock_delegate;
+
+  UIView* dummy_view = [[UIView alloc] init];
+  OCMReject([mock_delegate showSignin:[OCMArg any]]);
+  OCMReject([mock_delegate showAccountMenu:[OCMArg any]]);
+
+  [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAccount
+                                   fromView:dummy_view];
+  EXPECT_OCMOCK_VERIFY(mock_delegate);
+  histogram_tester_.ExpectUniqueSample(kAppBarAssistantButtonTappedHistogram,
+                                       AppBarAssistantButtonState::kAccount, 1);
+}
+
 // Tests that the assistant button is in the kAccount state with an avatar when
 // signed in.
 TEST_F(AppBarMediatorTest, TestAssistantButtonStateAccountWithAvatar) {

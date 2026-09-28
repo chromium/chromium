@@ -43,6 +43,7 @@ class WebStateList;
 @protocol AppBarMediatorDelegate
 
 // Indicates to the delegate to show the account menu anchored to `anchorView`.
+// Assumes that sign-in is enabled and that there is a primary account.
 - (void)showAccountMenu:(UIView*)anchorView;
 
 // Indicates to the delegate to show the sign-in flow anchored to `anchorView`.

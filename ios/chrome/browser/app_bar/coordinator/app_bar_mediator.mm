@@ -706,9 +706,14 @@ inline LayoutStateAssistantPassKey PassKey() {
       break;
     }
     case AppBarAssistantButtonState::kAccount:
+      // The tap is handled asynchronously, so sign-in could have been disabled
+      // between when the button was configured and when the user tapped it.
+      if (!_authenticationService->SigninEnabled()) {
+        return;
+      }
       if (_authenticationService->HasPrimaryIdentity()) {
         [self.delegate showAccountMenu:sender];
-      } else if (_authenticationService->SigninEnabled()) {
+      } else {
         [self.delegate showSignin:sender];
       }
       break;
