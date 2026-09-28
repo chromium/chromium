@@ -15,12 +15,12 @@
 
 namespace blink {
 
-class DummyTokenHandler : public DateTimeFormat::TokenHandler {
+class DummyTokenHandler : public date_time_format::TokenHandler {
  public:
   ~DummyTokenHandler() override = default;
 
-  void VisitField(DateTimeFormat::FieldType field_type, int count) override {
-    CHECK(field_type != DateTimeFormat::FieldType::kFieldTypeInvalid);
+  void VisitField(date_time_format::FieldType field_type, int count) override {
+    CHECK(field_type != date_time_format::FieldType::kFieldTypeInvalid);
     CHECK_GE(count, 1);
   }
 
@@ -36,6 +36,6 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
       blink::BlinkFuzzerTestSupport();
   blink::test::TaskEnvironment task_environment;
   blink::DummyTokenHandler handler;
-  blink::DateTimeFormat::Parse(blink::String::FromUtf8(data), handler);
+  blink::date_time_format::Parse(blink::String::FromUtf8(data), handler);
   return 0;
 }

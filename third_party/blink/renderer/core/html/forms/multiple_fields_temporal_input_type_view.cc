@@ -63,7 +63,7 @@ namespace blink {
 
 using mojom::blink::FormControlType;
 
-class DateTimeFormatValidator : public DateTimeFormat::TokenHandler {
+class DateTimeFormatValidator : public date_time_format::TokenHandler {
  public:
   DateTimeFormatValidator()
       : has_year_(false),
@@ -75,7 +75,7 @@ class DateTimeFormatValidator : public DateTimeFormat::TokenHandler {
         has_minute_(false),
         has_second_(false) {}
 
-  void VisitField(DateTimeFormat::FieldType, int) final;
+  void VisitField(date_time_format::FieldType, int) final;
   void VisitLiteral(const String&) final {}
 
   bool ValidateFormat(const String& format, const BaseTemporalInputType&);
@@ -91,40 +91,46 @@ class DateTimeFormatValidator : public DateTimeFormat::TokenHandler {
   bool has_second_;
 };
 
-void DateTimeFormatValidator::VisitField(DateTimeFormat::FieldType field_type,
+void DateTimeFormatValidator::VisitField(date_time_format::FieldType field_type,
                                          int) {
+  using date_time_format::FieldType;
   switch (field_type) {
-    case DateTimeFormat::kFieldTypeYear:
+    case FieldType::kFieldTypeYear:
       has_year_ = true;
       break;
-    case DateTimeFormat::kFieldTypeMonth:  // Fallthrough.
-    case DateTimeFormat::kFieldTypeMonthStandAlone:
+    case FieldType::kFieldTypeMonth:
+      [[fallthrough]];
+    case FieldType::kFieldTypeMonthStandAlone:
       has_month_ = true;
       break;
-    case DateTimeFormat::kFieldTypeWeekOfYear:
+    case FieldType::kFieldTypeWeekOfYear:
       has_week_ = true;
       break;
-    case DateTimeFormat::kFieldTypeDayOfMonth:
+    case FieldType::kFieldTypeDayOfMonth:
       has_day_ = true;
       break;
-    case DateTimeFormat::kFieldTypePeriod:
-    case DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight:
-    case DateTimeFormat::kFieldTypePeriodFlexible:
+    case FieldType::kFieldTypePeriod:
+      [[fallthrough]];
+    case FieldType::kFieldTypePeriodAmPmNoonMidnight:
+      [[fallthrough]];
+    case FieldType::kFieldTypePeriodFlexible:
       has_ampm_ = true;
       break;
-    case DateTimeFormat::kFieldTypeHour11:  // Fallthrough.
-    case DateTimeFormat::kFieldTypeHour12:
+    case FieldType::kFieldTypeHour11:
+      [[fallthrough]];
+    case FieldType::kFieldTypeHour12:
       has_hour_ = true;
       break;
-    case DateTimeFormat::kFieldTypeHour23:  // Fallthrough.
-    case DateTimeFormat::kFieldTypeHour24:
+    case FieldType::kFieldTypeHour23:
+      [[fallthrough]];
+    case FieldType::kFieldTypeHour24:
       has_hour_ = true;
       has_ampm_ = true;
       break;
-    case DateTimeFormat::kFieldTypeMinute:
+    case FieldType::kFieldTypeMinute:
       has_minute_ = true;
       break;
-    case DateTimeFormat::kFieldTypeSecond:
+    case FieldType::kFieldTypeSecond:
       has_second_ = true;
       break;
     default:
@@ -135,8 +141,9 @@ void DateTimeFormatValidator::VisitField(DateTimeFormat::FieldType field_type,
 bool DateTimeFormatValidator::ValidateFormat(
     const String& format,
     const BaseTemporalInputType& input_type) {
-  if (!DateTimeFormat::Parse(format, *this))
+  if (!date_time_format::Parse(format, *this)) {
     return false;
+  }
   return input_type.IsValidFormat(has_year_, has_month_, has_week_, has_day_,
                                   has_ampm_, has_hour_, has_minute_,
                                   has_second_);

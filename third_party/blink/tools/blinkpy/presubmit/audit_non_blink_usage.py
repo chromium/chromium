@@ -895,6 +895,7 @@ _CONFIG = [
             'cors::.+',
             'css_parsing_utils::.+',
             'cssvalue::.+',
+            'date_time_format::.+',
             'element_locator::.+',
             'encoding::.+',
             'encoding_enum::.+',

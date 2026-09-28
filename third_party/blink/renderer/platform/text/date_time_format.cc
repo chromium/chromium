@@ -30,69 +30,67 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace blink {
+namespace blink::date_time_format {
 
-static const std::array<DateTimeFormat::FieldType, 26>
-    kLowerCaseToFieldTypeMap = {
-        DateTimeFormat::kFieldTypePeriod,                   // a
-        DateTimeFormat::kFieldTypePeriodAmPmNoonMidnight,   // b
-        DateTimeFormat::kFieldTypeLocalDayOfWeekStandAlon,  // c
-        DateTimeFormat::kFieldTypeDayOfMonth,               // d
-        DateTimeFormat::kFieldTypeLocalDayOfWeek,           // e
-        DateTimeFormat::kFieldTypeInvalid,                  // f
-        DateTimeFormat::kFieldTypeModifiedJulianDay,        // g
-        DateTimeFormat::kFieldTypeHour12,                   // h
-        DateTimeFormat::kFieldTypeInvalid,                  // i
-        DateTimeFormat::kFieldTypeInvalid,                  // j
-        DateTimeFormat::kFieldTypeHour24,                   // k
-        DateTimeFormat::kFieldTypeInvalid,                  // l
-        DateTimeFormat::kFieldTypeMinute,                   // m
-        DateTimeFormat::kFieldTypeInvalid,                  // n
-        DateTimeFormat::kFieldTypeInvalid,                  // o
-        DateTimeFormat::kFieldTypeInvalid,                  // p
-        DateTimeFormat::kFieldTypeQuaterStandAlone,         // q
-        DateTimeFormat::kFieldTypeYearRelatedGregorian,     // r
-        DateTimeFormat::kFieldTypeSecond,                   // s
-        DateTimeFormat::kFieldTypeInvalid,                  // t
-        DateTimeFormat::kFieldTypeExtendedYear,             // u
-        DateTimeFormat::kFieldTypeNonLocationZone,          // v
-        DateTimeFormat::kFieldTypeWeekOfYear,               // w
-        DateTimeFormat::kFieldTypeZoneIso8601,              // x
-        DateTimeFormat::kFieldTypeYear,                     // y
-        DateTimeFormat::kFieldTypeZone,                     // z
+static const std::array<FieldType, 26> kLowerCaseToFieldTypeMap = {
+    FieldType::kFieldTypePeriod,                   // a
+    FieldType::kFieldTypePeriodAmPmNoonMidnight,   // b
+    FieldType::kFieldTypeLocalDayOfWeekStandAlon,  // c
+    FieldType::kFieldTypeDayOfMonth,               // d
+    FieldType::kFieldTypeLocalDayOfWeek,           // e
+    FieldType::kFieldTypeInvalid,                  // f
+    FieldType::kFieldTypeModifiedJulianDay,        // g
+    FieldType::kFieldTypeHour12,                   // h
+    FieldType::kFieldTypeInvalid,                  // i
+    FieldType::kFieldTypeInvalid,                  // j
+    FieldType::kFieldTypeHour24,                   // k
+    FieldType::kFieldTypeInvalid,                  // l
+    FieldType::kFieldTypeMinute,                   // m
+    FieldType::kFieldTypeInvalid,                  // n
+    FieldType::kFieldTypeInvalid,                  // o
+    FieldType::kFieldTypeInvalid,                  // p
+    FieldType::kFieldTypeQuarterStandAlone,        // q
+    FieldType::kFieldTypeYearRelatedGregorian,     // r
+    FieldType::kFieldTypeSecond,                   // s
+    FieldType::kFieldTypeInvalid,                  // t
+    FieldType::kFieldTypeExtendedYear,             // u
+    FieldType::kFieldTypeNonLocationZone,          // v
+    FieldType::kFieldTypeWeekOfYear,               // w
+    FieldType::kFieldTypeZoneIso8601,              // x
+    FieldType::kFieldTypeYear,                     // y
+    FieldType::kFieldTypeZone,                     // z
 };
 
-static const std::array<DateTimeFormat::FieldType, 26>
-    kUpperCaseToFieldTypeMap = {
-        DateTimeFormat::kFieldTypeMillisecondsInDay,  // A
-        DateTimeFormat::kFieldTypePeriodFlexible,     // B
-        DateTimeFormat::kFieldTypeInvalid,            // C
-        DateTimeFormat::kFieldTypeDayOfYear,          // D
-        DateTimeFormat::kFieldTypeDayOfWeek,          // E
-        DateTimeFormat::kFieldTypeDayOfWeekInMonth,   // F
-        DateTimeFormat::kFieldTypeEra,                // G
-        DateTimeFormat::kFieldTypeHour23,             // H
-        DateTimeFormat::kFieldTypeInvalid,            // I
-        DateTimeFormat::kFieldTypeInvalid,            // J
-        DateTimeFormat::kFieldTypeHour11,             // K
-        DateTimeFormat::kFieldTypeMonthStandAlone,    // L
-        DateTimeFormat::kFieldTypeMonth,              // M
-        DateTimeFormat::kFieldTypeInvalid,            // N
-        DateTimeFormat::kFieldTypeZoneLocalized,      // O
-        DateTimeFormat::kFieldTypeInvalid,            // P
-        DateTimeFormat::kFieldTypeQuater,             // Q
-        DateTimeFormat::kFieldTypeInvalid,            // R
-        DateTimeFormat::kFieldTypeFractionalSecond,   // S
-        DateTimeFormat::kFieldTypeInvalid,            // T
-        DateTimeFormat::kFieldTypeYearCyclicName,     // U
-        DateTimeFormat::kFieldTypeZoneId,             // V
-        DateTimeFormat::kFieldTypeWeekOfMonth,        // W
-        DateTimeFormat::kFieldTypeZoneIso8601Z,       // X
-        DateTimeFormat::kFieldTypeYearOfWeekOfYear,   // Y
-        DateTimeFormat::kFieldTypeRfc822Zone,         // Z
+static const std::array<FieldType, 26> kUpperCaseToFieldTypeMap = {
+    FieldType::kFieldTypeMillisecondsInDay,  // A
+    FieldType::kFieldTypePeriodFlexible,     // B
+    FieldType::kFieldTypeInvalid,            // C
+    FieldType::kFieldTypeDayOfYear,          // D
+    FieldType::kFieldTypeDayOfWeek,          // E
+    FieldType::kFieldTypeDayOfWeekInMonth,   // F
+    FieldType::kFieldTypeEra,                // G
+    FieldType::kFieldTypeHour23,             // H
+    FieldType::kFieldTypeInvalid,            // I
+    FieldType::kFieldTypeInvalid,            // J
+    FieldType::kFieldTypeHour11,             // K
+    FieldType::kFieldTypeMonthStandAlone,    // L
+    FieldType::kFieldTypeMonth,              // M
+    FieldType::kFieldTypeInvalid,            // N
+    FieldType::kFieldTypeZoneLocalized,      // O
+    FieldType::kFieldTypeInvalid,            // P
+    FieldType::kFieldTypeQuarter,            // Q
+    FieldType::kFieldTypeInvalid,            // R
+    FieldType::kFieldTypeFractionalSecond,   // S
+    FieldType::kFieldTypeInvalid,            // T
+    FieldType::kFieldTypeYearCyclicName,     // U
+    FieldType::kFieldTypeZoneId,             // V
+    FieldType::kFieldTypeWeekOfMonth,        // W
+    FieldType::kFieldTypeZoneIso8601Z,       // X
+    FieldType::kFieldTypeYearOfWeekOfYear,   // Y
+    FieldType::kFieldTypeRfc822Zone,         // Z
 };
 
-static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {
+static FieldType MapCharacterToFieldType(const UChar ch) {
   if (IsAsciiUpper(ch)) {
     return kUpperCaseToFieldTypeMap[ch - 'A'];
   }
@@ -101,10 +99,10 @@ static DateTimeFormat::FieldType MapCharacterToFieldType(const UChar ch) {
     return kLowerCaseToFieldTypeMap[ch - 'a'];
   }
 
-  return DateTimeFormat::kFieldTypeLiteral;
+  return FieldType::kFieldTypeLiteral;
 }
 
-bool DateTimeFormat::Parse(const String& source, TokenHandler& token_handler) {
+bool Parse(const String& source, TokenHandler& token_handler) {
   enum State {
     kStateInQuote,
     kStateInQuoteQuote,
@@ -246,8 +244,7 @@ static bool IsAsciiAlphabetOrQuote(UChar ch) {
   return IsAsciiAlpha(ch) || ch == '\'';
 }
 
-void DateTimeFormat::QuoteAndAppend(const StringView& literal,
-                                    StringBuilder& buffer) {
+void QuoteAndAppend(const StringView& literal, StringBuilder& buffer) {
   if (literal.length() <= 0)
     return;
 
@@ -277,4 +274,4 @@ void DateTimeFormat::QuoteAndAppend(const StringView& literal,
   }
 }
 
-}  // namespace blink
+}  // namespace blink::date_time_format

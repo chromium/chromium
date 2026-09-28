@@ -30,98 +30,98 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
-namespace blink {
+namespace blink::date_time_format {
 
-// DateTimeFormat parses date time format defined in Unicode Technical
-// standard 35, Locale Data Markup Language (LDML)[1].
-// [1] https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
-class PLATFORM_EXPORT DateTimeFormat {
-  STATIC_ONLY(DateTimeFormat);
+enum FieldType {
+  kFieldTypeInvalid,
+  kFieldTypeLiteral,
 
- public:
-  enum FieldType {
-    kFieldTypeInvalid,
-    kFieldTypeLiteral,
+  // Era: AD
+  kFieldTypeEra = 'G',
 
-    // Era: AD
-    kFieldTypeEra = 'G',
+  // Year: 1996
+  kFieldTypeYear = 'y',
+  kFieldTypeYearOfWeekOfYear = 'Y',
+  kFieldTypeExtendedYear = 'u',
+  kFieldTypeYearCyclicName = 'U',
+  kFieldTypeYearRelatedGregorian = 'r',
 
-    // Year: 1996
-    kFieldTypeYear = 'y',
-    kFieldTypeYearOfWeekOfYear = 'Y',
-    kFieldTypeExtendedYear = 'u',
-    kFieldTypeYearCyclicName = 'U',
-    kFieldTypeYearRelatedGregorian = 'r',
+  // Quarter: Q2
+  kFieldTypeQuarter = 'Q',
+  kFieldTypeQuarterStandAlone = 'q',
 
-    // Quater: Q2
-    kFieldTypeQuater = 'Q',
-    kFieldTypeQuaterStandAlone = 'q',
+  // Month: September
+  kFieldTypeMonth = 'M',
+  kFieldTypeMonthStandAlone = 'L',
 
-    // Month: September
-    kFieldTypeMonth = 'M',
-    kFieldTypeMonthStandAlone = 'L',
+  // Week: 42
+  kFieldTypeWeekOfYear = 'w',
+  kFieldTypeWeekOfMonth = 'W',
 
-    // Week: 42
-    kFieldTypeWeekOfYear = 'w',
-    kFieldTypeWeekOfMonth = 'W',
+  // Day: 12
+  kFieldTypeDayOfMonth = 'd',
+  kFieldTypeDayOfYear = 'D',
+  kFieldTypeDayOfWeekInMonth = 'F',
+  kFieldTypeModifiedJulianDay = 'g',
 
-    // Day: 12
-    kFieldTypeDayOfMonth = 'd',
-    kFieldTypeDayOfYear = 'D',
-    kFieldTypeDayOfWeekInMonth = 'F',
-    kFieldTypeModifiedJulianDay = 'g',
+  // Week Day: Tuesday
+  kFieldTypeDayOfWeek = 'E',
+  kFieldTypeLocalDayOfWeek = 'e',
+  kFieldTypeLocalDayOfWeekStandAlon = 'c',
 
-    // Week Day: Tuesday
-    kFieldTypeDayOfWeek = 'E',
-    kFieldTypeLocalDayOfWeek = 'e',
-    kFieldTypeLocalDayOfWeekStandAlon = 'c',
+  // Period: AM or PM
+  kFieldTypePeriod = 'a',
+  kFieldTypePeriodAmPmNoonMidnight = 'b',
+  kFieldTypePeriodFlexible = 'B',
 
-    // Period: AM or PM
-    kFieldTypePeriod = 'a',
-    kFieldTypePeriodAmPmNoonMidnight = 'b',
-    kFieldTypePeriodFlexible = 'B',
+  // Hour: 7
+  kFieldTypeHour12 = 'h',
+  kFieldTypeHour23 = 'H',
+  kFieldTypeHour11 = 'K',
+  kFieldTypeHour24 = 'k',
 
-    // Hour: 7
-    kFieldTypeHour12 = 'h',
-    kFieldTypeHour23 = 'H',
-    kFieldTypeHour11 = 'K',
-    kFieldTypeHour24 = 'k',
+  // Minute: 59
+  kFieldTypeMinute = 'm',
 
-    // Minute: 59
-    kFieldTypeMinute = 'm',
+  // Second: 12
+  kFieldTypeSecond = 's',
+  kFieldTypeFractionalSecond = 'S',
+  kFieldTypeMillisecondsInDay = 'A',
 
-    // Second: 12
-    kFieldTypeSecond = 's',
-    kFieldTypeFractionalSecond = 'S',
-    kFieldTypeMillisecondsInDay = 'A',
-
-    // Zone: PDT
-    kFieldTypeZone = 'z',
-    kFieldTypeZoneLocalized = 'O',
-    kFieldTypeNonLocationZone = 'v',
-    kFieldTypeZoneId = 'V',
-    kFieldTypeRfc822Zone = 'Z',
-    kFieldTypeZoneIso8601Z = 'X',
-    kFieldTypeZoneIso8601 = 'x',
-  };
-
-  class TokenHandler {
-    STACK_ALLOCATED();
-
-   public:
-    TokenHandler() = default;
-    TokenHandler(const TokenHandler&) = delete;
-    TokenHandler& operator=(const TokenHandler&) = delete;
-    virtual ~TokenHandler() = default;
-    virtual void VisitField(FieldType, int number_of_pattern_characters) = 0;
-    virtual void VisitLiteral(const String&) = 0;
-  };
-
-  // Returns true if succeeded, false if failed.
-  static bool Parse(const String&, TokenHandler&);
-  static void QuoteAndAppend(const StringView&, StringBuilder&);
+  // Zone: PDT
+  kFieldTypeZone = 'z',
+  kFieldTypeZoneLocalized = 'O',
+  kFieldTypeNonLocationZone = 'v',
+  kFieldTypeZoneId = 'V',
+  kFieldTypeRfc822Zone = 'Z',
+  kFieldTypeZoneIso8601Z = 'X',
+  kFieldTypeZoneIso8601 = 'x',
 };
 
-}  // namespace blink
+class TokenHandler {
+  STACK_ALLOCATED();
+
+ public:
+  TokenHandler() = default;
+  TokenHandler(const TokenHandler&) = delete;
+  TokenHandler& operator=(const TokenHandler&) = delete;
+  virtual ~TokenHandler() = default;
+  virtual void VisitField(FieldType, int number_of_pattern_characters) = 0;
+  virtual void VisitLiteral(const String&) = 0;
+};
+
+// This function parses date time format defined in Unicode Technical
+// standard 35, Locale Data Markup Language (LDML)[1].
+//
+// Returns true if succeeded, false if failed.
+//
+// [1] https://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns
+PLATFORM_EXPORT bool Parse(const String&, TokenHandler&);
+
+// Appends the given string to the given StringBuilder, escaping any characters
+// that would be interpreted as format specifiers.
+PLATFORM_EXPORT void QuoteAndAppend(const StringView&, StringBuilder&);
+
+}  // namespace blink::date_time_format
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_DATE_TIME_FORMAT_H_
