@@ -25,6 +25,11 @@ sed -i 's/_GNU_SOURCE$/_GNU_SOURCE 1/' ../include/meson-config.h
 # as locally we build without FreeType.
 sed -i '/#define ENABLE_FREETYPE 1/{N;d}' ../include/meson-config.h
 sed -i '/#define FREETYPE_PCF_LONG_FAMILY_NAMES/{N;d}' ../include/meson-config.h
+# Remove HAVE_SYMLINK so that fontconfig does not create .cache-N symlinks for
+# older cache versions.  Chrome's Fontations-based caches are not suitable for
+# consumption by the host's (FreeType-based) fontconfig.  See
+# https://crbug.com/565132857.
+sed -i '/#define HAVE_SYMLINK 1/{N;d}' ../include/meson-config.h
 # Use libxml2 instead of libexpat.  Currently, there's no way
 # to configure this with meson options.
 echo '#define ENABLE_LIBXML2 1' >>../include/config.h
