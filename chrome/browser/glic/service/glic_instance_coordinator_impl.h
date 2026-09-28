@@ -7,14 +7,15 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -64,10 +65,13 @@ BASE_DECLARE_FEATURE(kGlicHibernateOnMemoryUsage);
 class GlicInstanceCoordinatorImpl
     : public GlicInstanceCoordinator,
       public GlicInstanceImpl::InstanceCoordinatorDelegate,
-      public base::MemoryPressureListener,
+      public base::MemoryConsumer,
       public GlicInstanceCoordinatorMetrics::DataProvider,
       public signin::IdentityManager::Observer {
  public:
+  static constexpr std::string_view kMemoryConsumerName =
+      "GlicInstanceCoordinatorImpl";
+
   GlicInstanceCoordinatorImpl(const GlicInstanceCoordinatorImpl&) = delete;
   GlicInstanceCoordinatorImpl& operator=(const GlicInstanceCoordinatorImpl&) =
       delete;
@@ -266,7 +270,9 @@ class GlicInstanceCoordinatorImpl
 
   void CloseFloaty(const CloseOptions& options = {});
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   // Enforces the maximum awake instances limit (`kGlicMaxAwakeInstances`).
   // If the current count of awake (non-hibernated) instances is at or above the
@@ -283,8 +289,15 @@ class GlicInstanceCoordinatorImpl
   // the limit may be temporarily exceeded.
   void TrimAwakeInstancesTo(size_t target_total_awake_count);
 
-  // Returns the current maximum number of awake instances allowed. When
-  // `base::kStatefulMemoryPressure` is enabled, this limit is dynamically
+  // Returns the current count of unhibernated (awake) Glic instances.
+  size_t GetAwakeInstancesCount() const;
+
+  // Computes the target maximum number of awake instances based on current
+  // memory pressure (`ScaleAwakeInstancesLimit`).
+  size_t ComputeTargetMaxAwakeInstancesLimit() const;
+
+  // Returns the currently enforced maximum number of awake instances allowed.
+  // When `base::kStatefulMemoryPressure` is enabled, this limit is dynamically
   // scaled down based on the current system memory pressure level.
   size_t GetCurrentMaxAwakeInstancesLimit() const;
 
@@ -361,8 +374,11 @@ class GlicInstanceCoordinatorImpl
       active_instance_changed_callback_list_;
   base::RepeatingClosureList global_show_hide_callback_list_;
 
-  base::MemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::MemoryConsumerRegistration memory_consumer_registration_;
+
+  // The effective awake limit applied during OnUpdateMemoryLimit() and
+  // OnReleaseMemory().
+  size_t current_max_awake_limit_ = 0;
 
   bool warming_enabled_ = true;
 

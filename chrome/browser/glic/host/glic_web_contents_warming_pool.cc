@@ -277,14 +277,19 @@ void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   }
 }
 
-void GlicWebContentsWarmingPool::OnMemoryPressure(
+void GlicWebContentsWarmingPool::OnUpdateMemoryLimit(
     base::MemoryLimit memory_limit) {
   memory_limit_ = memory_limit;
 
-  // Clear the warmed container when receiving critical memory pressure.
-  // Pre-warming is suspended while the system remains under critical pressure.
   if (IsUnderMemoryPressure()) {
-    Clear(ClearReason::kMemoryPressure);
+    // Stop any pending refill timer so no new container is created while
+    // under memory pressure.
+    if (backfill_scheduler_.IsScheduled()) {
+      metrics_->RecordClear(ClearReason::kMemoryPressure,
+                            /*had_container=*/false,
+                            /*had_pending_backfill=*/true);
+      backfill_scheduler_.Cancel();
+    }
     return;
   }
 
@@ -296,6 +301,11 @@ void GlicWebContentsWarmingPool::OnMemoryPressure(
   }
 }
 
+void GlicWebContentsWarmingPool::OnReleaseMemory() {
+  if (IsUnderMemoryPressure()) {
+    Clear(ClearReason::kMemoryPressure);
+  }
+}
 bool GlicWebContentsWarmingPool::IsUnderMemoryPressure() const {
   return memory_limit_ <= base::kCriticalMemoryPressureThreshold;
 }

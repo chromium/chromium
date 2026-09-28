@@ -75,8 +75,8 @@ class GlicInstanceCoordinatorMetrics {
   // Called when activating a tab with a conversation to record candidate count.
   void RecordActivateTabCandidateTabCount(size_t count);
 
-  // Called on memory pressure events to record memory footprint metrics.
-  void OnMemoryPressure(base::MemoryLimit memory_limit);
+  // Called on memory release events to record memory footprint metrics.
+  void OnReleaseMemory(base::MemoryLimit memory_limit);
 
   // Called periodically to record memory footprint metrics using the averaging
   // and totals scheme.

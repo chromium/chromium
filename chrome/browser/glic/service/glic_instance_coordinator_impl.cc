@@ -106,6 +106,18 @@ bool CanLiveModeBehaviorTakeEffect(const Target& target) {
   }
 }
 
+constexpr base::MemoryConsumerTraits kGlicInstanceCoordinatorTraits(
+    // Each awake Glic instance can use up to a hundred megabytes.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Iterates active instances to identify and hibernate background
+    // candidates.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Hibernating a background Glic instance preserves session state.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Releases memory synchronously.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Awakening an instance requires spawning a new WebContents.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 }  // namespace
 
 GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
@@ -119,19 +131,22 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       profile_(profile),
       service_(service),
       contextual_cueing_service_(contextual_cueing_service),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kGlicKeyedService,
-          this),
+      memory_consumer_registration_(
+          kMemoryConsumerName,
+          kGlicInstanceCoordinatorTraits,
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled),
+      current_max_awake_limit_(
+          base::FeatureList::IsEnabled(kGlicMaxAwakeInstances)
+              ? ComputeTargetMaxAwakeInstancesLimit()
+              : 0),
       metrics_(this),
       web_contents_warming_pool_(
           std::make_unique<GlicWebContentsWarmingPool>(profile, enabling)),
       active_instance_sharing_manager_(
           std::make_unique<GlicActiveInstanceSharingManager>(profile,
                                                              enabling)) {
-  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
-    OnMemoryPressure(memory_pressure_level());
-  }
+  OnUpdateMemoryLimit();
   if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
   }
@@ -1098,7 +1113,18 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
   return nullptr;
 }
 
-size_t GlicInstanceCoordinatorImpl::GetCurrentMaxAwakeInstancesLimit() const {
+size_t GlicInstanceCoordinatorImpl::GetAwakeInstancesCount() const {
+  size_t total_awake_count = 0;
+  for (const auto& [id, instance] : instances_) {
+    if (!instance->IsHibernated()) {
+      total_awake_count++;
+    }
+  }
+  return total_awake_count;
+}
+
+size_t GlicInstanceCoordinatorImpl::ComputeTargetMaxAwakeInstancesLimit()
+    const {
   CHECK(base::FeatureList::IsEnabled(kGlicMaxAwakeInstances));
   const size_t baseline_limit =
       static_cast<size_t>(std::max(1, kGlicMaxAwakeInstancesLimit.Get()));
@@ -1106,7 +1132,12 @@ size_t GlicInstanceCoordinatorImpl::GetCurrentMaxAwakeInstancesLimit() const {
     return baseline_limit;
   }
 
-  return CalculateAwakeInstancesLimit(baseline_limit, GetMemoryLimit());
+  return CalculateAwakeInstancesLimit(baseline_limit, memory_limit());
+}
+
+size_t GlicInstanceCoordinatorImpl::GetCurrentMaxAwakeInstancesLimit() const {
+  CHECK(base::FeatureList::IsEnabled(kGlicMaxAwakeInstances));
+  return current_max_awake_limit_;
 }
 
 void GlicInstanceCoordinatorImpl::TrimAwakeInstancesTo(
@@ -1597,23 +1628,33 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
       /*success=*/true, creation_event.new_tab, creation_event.old_tab);
 }
 
-void GlicInstanceCoordinatorImpl::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  const base::MemoryLimit memory_limit = GetMemoryLimit();
-
-  metrics_.OnMemoryPressure(memory_limit);
-  web_contents_warming_pool_->OnMemoryPressure(memory_limit);
+void GlicInstanceCoordinatorImpl::OnUpdateMemoryLimit() {
+  web_contents_warming_pool_->OnUpdateMemoryLimit(memory_limit());
 
   if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances) ||
       !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
+    return;
+  }
+
+  const size_t target_limit = ComputeTargetMaxAwakeInstancesLimit();
+  current_max_awake_limit_ = std::max(GetAwakeInstancesCount(), target_limit);
+}
+
+void GlicInstanceCoordinatorImpl::OnReleaseMemory() {
+  metrics_.OnReleaseMemory(memory_limit());
+  web_contents_warming_pool_->OnReleaseMemory();
+
+  if (!base::FeatureList::IsEnabled(kGlicMaxAwakeInstances) ||
+      !base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
       TrimAwakeInstancesTo(0u);
     }
     return;
   }
 
   // Both features are enabled; dynamically trim awake instances to the limit
-  // configured for the current memory limit.
+  // configured for the current memory pressure level.
+  current_max_awake_limit_ = ComputeTargetMaxAwakeInstancesLimit();
   TrimAwakeInstancesTo(GetCurrentMaxAwakeInstancesLimit());
 }
 

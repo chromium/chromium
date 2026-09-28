@@ -69,9 +69,10 @@ class GlicWebContentsWarmingPool : public ProfileObserver {
   // stopping all timers.
   void Shutdown();
 
-  // Handles memory pressure notifications by clearing or statefully disabling
-  // pre-warming, depending on feature configuration.
-  void OnMemoryPressure(base::MemoryLimit memory_limit);
+  // Handles memory limit updates and memory release requests by clearing or
+  // suspending pre-warming while the system remains under critical pressure.
+  void OnUpdateMemoryLimit(base::MemoryLimit memory_limit);
+  void OnReleaseMemory();
 
   // LINT.IfChange(GlicWarmingPoolStatus)
   enum class WarmingPoolStatus {
