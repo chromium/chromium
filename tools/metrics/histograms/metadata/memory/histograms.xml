@@ -2881,6 +2881,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Memory.Renderer.PrivateMemoryFootprint.{RendererLifecycleState}"
+    units="MB" expires_after="2027-04-01">
+  <owner>ziadyoussef@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    A rough estimate of the private memory footprint of a renderer process in
+    the {RendererLifecycleState} state.
+
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
+    Android WebView.
+  </summary>
+<!-- LINT.IfChange(AwRenderProcessLifecycleState) -->
+
+  <token key="RendererLifecycleState">
+    <variant name="Active" summary="Active"/>
+    <variant name="SpareKeptAlive" summary="SpareKeptAlive"/>
+    <variant name="SpareNeverUsed" summary="SpareNeverUsed"/>
+    <variant name="Unknown" summary="Unknown"/>
+  </token>
+<!-- LINT.ThenChange(/android_webview/browser/aw_render_process_lifecycle.h:AwRenderProcessLifecycleState) -->
+
+</histogram>
+
 <histogram name="Memory.Renderer.PrivateSwapFootprint" units="MB"
     expires_after="2027-03-21">
   <owner>erikchen@chromium.org</owner>

@@ -32,6 +32,8 @@ class AwRenderProcessKeepAlive : public base::SupportsUserData::Data {
 
   bool kept_alive() const { return kept_alive_; }
 
+  bool has_aw_contents() const { return aw_contents_count_ > 0; }
+
  private:
   explicit AwRenderProcessKeepAlive(
       content::RenderProcessHost* render_process_host);

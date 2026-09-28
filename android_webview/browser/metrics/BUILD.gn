@@ -34,6 +34,7 @@ source_set("metrics") {
   deps = [
     "//android_webview:browser_jni_headers",
     "//android_webview/browser:browser_enums",
+    "//android_webview/browser:render_process",
     "//android_webview/browser/lifecycle",
     "//android_webview/common",
     "//base",

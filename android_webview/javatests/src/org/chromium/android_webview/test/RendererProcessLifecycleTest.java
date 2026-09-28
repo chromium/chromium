@@ -16,11 +16,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
+import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 @RunWith(AwJUnit4ClassRunner.class)
@@ -83,6 +85,18 @@ public class RendererProcessLifecycleTest {
                     int state = renderProcess.getEffectiveChildBindingStateForTesting();
                     return state == ChildBindingState.WAIVED;
                 });
+
+        // The renderer is alive but hosts no AwContents, so its memory should be attributed to
+        // the SpareKeptAlive state.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Memory.Renderer.PrivateMemoryFootprint.SpareKeptAlive")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.Active")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.SpareNeverUsed")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.Unknown")
+                        .build();
+        Assert.assertTrue(MemoryMetricsLoggerUtilsJni.get().forceRecordHistograms());
+        histogramWatcher.assertExpected();
     }
 
     @Test

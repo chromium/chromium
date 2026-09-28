@@ -54,6 +54,7 @@ public class MemoryMetricsLoggerTest extends AwParameterizedTest {
                         .expectAnyRecordTimes("Memory.Renderer.PrivateMemoryFootprint", 1)
                         .expectAnyRecordTimes("Memory.Renderer.ResidentSet", 1)
                         .expectAnyRecordTimes("Memory.Renderer.ResidentSetPeak", 1)
+                        .expectAnyRecordTimes("Memory.Renderer.PrivateMemoryFootprint.Active", 1)
                         .allowExtraRecordsForHistogramsAbove()
                         .build();
         mHistogramExpectationRendererSingle =
@@ -61,6 +62,7 @@ public class MemoryMetricsLoggerTest extends AwParameterizedTest {
                         .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint")
                         .expectNoRecords("Memory.Renderer.ResidentSet")
                         .expectNoRecords("Memory.Renderer.ResidentSetPeak")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.Active")
                         .build();
         mHistogramExpectationTotal =
                 HistogramWatcher.newBuilder()

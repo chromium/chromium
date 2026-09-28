@@ -1,5 +1,6 @@
 include_rules = [
   "-android_webview/browser",
+  "+android_webview/browser/aw_render_process_lifecycle.h",
   "+android_webview/browser/lifecycle/webview_app_state_observer.h",
   "+android_webview/browser/metrics",
   "+components/language/core/browser/locale_util.h",

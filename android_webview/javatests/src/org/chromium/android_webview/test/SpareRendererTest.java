@@ -5,6 +5,7 @@
 package org.chromium.android_webview.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
@@ -18,11 +19,13 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.test.util.MemoryMetricsLoggerUtilsJni;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.ChildProcessUtils;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.net.test.util.TestWebServer;
@@ -108,6 +111,18 @@ public class SpareRendererTest extends AwParameterizedTest {
         // for one second for the binding state to settle down.
         Thread.sleep(1100);
         assertEquals(ChildBindingState.WAIVED, RenderProcessHostUtils.getSpareRenderBindingState());
+
+        // The spare renderer has never hosted a WebView, so its memory should be attributed to
+        // the SpareNeverUsed state.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Memory.Renderer.PrivateMemoryFootprint.SpareNeverUsed")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.Active")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.SpareKeptAlive")
+                        .expectNoRecords("Memory.Renderer.PrivateMemoryFootprint.Unknown")
+                        .build();
+        assertTrue(MemoryMetricsLoggerUtilsJni.get().forceRecordHistograms());
+        histogramWatcher.assertExpected();
     }
 
     @Test

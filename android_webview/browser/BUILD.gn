@@ -20,6 +20,30 @@ java_cpp_enum("browser_enums") {
   ]
 }
 
+# This is deliberately a separate target from ":browser" so that
+# lower-level targets which ":browser" itself depends on (notably
+# "//android_webview/browser/metrics") can query the renderer lifecycle
+# without creating a dependency cycle.
+source_set("render_process") {
+  sources = [
+    "aw_render_process.cc",
+    "aw_render_process.h",
+    "aw_render_process_keep_alive.cc",
+    "aw_render_process_keep_alive.h",
+    "aw_render_process_lifecycle.cc",
+    "aw_render_process_lifecycle.h",
+  ]
+  deps = [
+    "//android_webview:browser_jni_headers",
+    "//android_webview/common",
+    "//android_webview/common:mojom",
+    "//base",
+    "//content/public/browser",
+    "//ipc",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 source_set("browser") {
   sources = [
     "android_protocol_handler.cc",
@@ -102,11 +126,7 @@ source_set("browser") {
     "aw_proxy_controller.cc",
     "aw_quota_manager_bridge.cc",
     "aw_quota_manager_bridge.h",
-    "aw_render_process.cc",
-    "aw_render_process.h",
     "aw_render_process_gone_delegate.h",
-    "aw_render_process_keep_alive.cc",
-    "aw_render_process_keep_alive.h",
     "aw_renderer_priority.h",
     "aw_settings.cc",
     "aw_settings.h",
@@ -257,6 +277,7 @@ source_set("browser") {
   ]
 
   deps = [
+    ":render_process",
     "//android_webview:browser_jni_headers",
     "//android_webview:generate_components_strings",
     "//android_webview/browser/gfx",
