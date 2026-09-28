@@ -561,7 +561,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry) {
     // Navigate to the settings list.
-    [self.delegate displaySavedPasswordList];
+    id<SettingsCommands> settingsHandler =
+        HandlerForProtocol(self.dispatcher, SettingsCommands);
+    [settingsHandler showSavedPasswordsSettingsFromViewController:nil];
   } else if (_webState) {
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(_webState->GetBrowserState());

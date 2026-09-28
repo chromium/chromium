@@ -27,12 +27,12 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
@@ -55,9 +55,6 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 @end
 
 @implementation CredentialSuggestionBottomSheetCoordinator {
-  // The password controller delegate used to open the password manager.
-  __weak id<PasswordControllerDelegate> _passwordControllerDelegate;
-
   // Currently in the process of dismissing the bottom sheet.
   bool _dismissing;
 
@@ -74,29 +71,25 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                        params:(const autofill::FormActivityParams&)params
-                      delegate:(id<PasswordControllerDelegate>)delegate {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(const autofill::FormActivityParams&)
+                                               params {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _passwordControllerDelegate = delegate;
     _dismissing = NO;
     _params = params;
   }
   return self;
 }
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                   requestInfo:
-                       (webauthn::IOSPasskeyClient::RequestInfo)requestInfo
-                      delegate:(id<PasswordControllerDelegate>)delegate {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               requestInfo:
+                                   (webauthn::IOSPasskeyClient::RequestInfo)
+                                       requestInfo {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _passwordControllerDelegate = delegate;
     _dismissing = NO;
     _requestInfo = std::move(requestInfo);
   }
@@ -230,7 +223,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           [weakSelf displaySavedPasswordList];
+                           [weakSelf showSavedPasswordsSettings];
                            [weakSelf dismissPasswordSuggestions];
                          }];
 }
@@ -393,13 +386,21 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
 #pragma mark - Private
 
+// Returns the handler for settings commands.
+- (id<SettingsCommands>)settingsHandler {
+  return HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                            SettingsCommands);
+}
+
 - (void)setInitialVoiceOverFocus {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   _viewController.aboveTitleView);
 }
 
-- (void)displaySavedPasswordList {
-  [_passwordControllerDelegate displaySavedPasswordList];
+// Opens the list of saved passwords in the settings.
+- (void)showSavedPasswordsSettings {
+  [[self settingsHandler]
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
 // Sends the information about which suggestion from the bottom sheet was
@@ -412,9 +413,11 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
                       completion:completion];
 }
 
+// Opens the password details for `credential`.
 - (void)showPasswordDetailsForCredential:
     (password_manager::CredentialUIEntry)credential {
-  [_passwordControllerDelegate showPasswordDetailsForCredential:credential];
+  [[self settingsHandler] showPasswordDetailsForCredential:std::move(credential)
+                                                inEditMode:NO];
 }
 
 // Dismisses the soft keyboard. Make sure to only call this when there is an

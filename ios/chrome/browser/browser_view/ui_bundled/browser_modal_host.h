@@ -10,16 +10,10 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 
 class Browser;
-@protocol PasswordControllerDelegate;
 
 // Host for all the modal features at the Browser level. This is a class that is
 // the handler for a lot of commands that only show/hide modal features.
 @interface BrowserModalHost : NSObject
-
-// The password controller delegate.
-// TODO(crbug.com/40806286): This should not be public.
-@property(nonatomic, weak) id<PasswordControllerDelegate>
-    passwordControllerDelegate;
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 

@@ -17,7 +17,6 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/supervised_user/core/common/features.h"
@@ -77,7 +76,6 @@
 #import "ios/chrome/browser/page_info/coordinator/page_info_coordinator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_coordinator.h"
-#import "ios/chrome/browser/passwords/model/password_controller_delegate.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
@@ -853,8 +851,7 @@ const char kContextPanelDismissedHistogram[] =
       [[CredentialSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:_baseViewController
                              browser:_browser
-                              params:params
-                            delegate:self.passwordControllerDelegate];
+                              params:params];
   [_credentialSuggestionBottomSheetCoordinator start];
 }
 
@@ -1627,8 +1624,7 @@ const char kContextPanelDismissedHistogram[] =
       [[CredentialSuggestionBottomSheetCoordinator alloc]
           initWithBaseViewController:_baseViewController
                              browser:_browser
-                         requestInfo:std::move(requestInfo)
-                            delegate:self.passwordControllerDelegate];
+                         requestInfo:std::move(requestInfo)];
   [_credentialSuggestionBottomSheetCoordinator start];
 }
 

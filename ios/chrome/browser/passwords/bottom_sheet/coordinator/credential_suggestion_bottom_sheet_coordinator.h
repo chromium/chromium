@@ -16,10 +16,6 @@ namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
-@protocol BrowserCoordinatorCommands;
-@protocol PasswordControllerDelegate;
-@protocol SettingsCommands;
-
 // This coordinator is responsible for creating the bottom sheet's mediator and
 // view controller.
 @interface CredentialSuggestionBottomSheetCoordinator
@@ -31,24 +27,20 @@ struct FormActivityParams;
 // `viewController` is the VC used to present the bottom sheet.
 // `params` comes from the form (in bottom_sheet.ts) and contains
 // the information required to query password suggestions.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                        params:(const autofill::FormActivityParams&)params
-                      delegate:(id<PasswordControllerDelegate>)delegate
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                    params:(const autofill::FormActivityParams&)
+                                               params NS_DESIGNATED_INITIALIZER;
 
 // Initializer for modal passkey requests, which will only show passkey
 // suggestions. `viewController` is the VC used to present the bottom sheet.
 // `requestInfo` comes from the PasskeyTabHelper and contains information on the
 // passkey request which triggered this bottom sheet.
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                   requestInfo:
-                       (webauthn::IOSPasskeyClient::RequestInfo)requestInfo
-                      delegate:(id<PasswordControllerDelegate>)delegate
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               requestInfo:
+                                   (webauthn::IOSPasskeyClient::RequestInfo)
+                                       requestInfo NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

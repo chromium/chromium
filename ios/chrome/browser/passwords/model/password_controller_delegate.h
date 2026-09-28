@@ -5,10 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_CONTROLLER_DELEGATE_H_
 
-namespace password_manager {
-struct CredentialUIEntry;
-}  // namespace password_manager
-
 namespace web {
 class WebStateID;
 }  // namespace web
@@ -23,13 +19,6 @@ class WebStateID;
 // notification. Returns YES if view was displayed, NO otherwise.
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
                         fromTabId:(web::WebStateID)tabId;
-
-// Opens the list of saved passwords in the settings.
-- (void)displaySavedPasswordList;
-
-// Opens the password details for credential.
-- (void)showPasswordDetailsForCredential:
-    (password_manager::CredentialUIEntry)credential;
 
 @end
 
