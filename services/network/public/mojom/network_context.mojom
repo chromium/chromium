@@ -1019,6 +1019,19 @@ struct IdAndAllowlistedPatterns {
   ConnectionAllowlists allowlists;
 };
 
+// Configuration for a wildcard QUIC hint that matches hostnames by suffix.
+// Wildcard hints only match subdomains (e.g. "mail.google.com"), not apex
+// domains ("google.com"). For apex or exact domains, AddQuicHints should be
+// used instead.
+struct WildcardQuicHint {
+  // Suffix of hostnames that should match. Must start with "*." (e.g.
+  // "*.google.com") or leading "." (e.g. ".google.com"). Bare domains without
+  // a wildcard prefix are rejected.
+  string host_suffix;
+  // Port to match and use for QUIC attempts.
+  uint16 port = 443;
+};
+
 // Represents a distinct context for making network requests, with its own
 // storage (e.g. cookies and cache).
 //
@@ -1953,6 +1966,19 @@ interface NetworkContext {
   // origins.
   AddQuicHints(array<url.mojom.SchemeHostPort> origins,
                NetworkAnonymizationKey network_anonymization_key);
+
+  // Requests that the network service prioritizes QUIC connections to hostnames
+  // matching the given wildcard suffixes (e.g. ".google.com"). Unlike
+  // AddQuicHints which is scoped to a specific NetworkAnonymizationKey,
+  // wildcard hints apply globally across all network partitions within this
+  // NetworkContext (though brokenness is tracked per partition).
+  AddWildcardQuicHints(array<WildcardQuicHint> hints);
+
+  // Configures whether to try QUIC by default for all HTTPS origins when no
+  // specific alternative service or known QUIC hint is found. Applies globally
+  // across all network partitions within this NetworkContext (though brokenness
+  // is tracked per partition).
+  SetTryQuicByDefault(bool enable);
 
   // Updates the variations headers to be used for requests.
   SetVariationsHeaders(variations.mojom.VariationsHeaders? variations_headers);

@@ -632,6 +632,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void AddQuicHints(
       const std::vector<url::SchemeHostPort>& origins,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
+  void AddWildcardQuicHints(
+      std::vector<mojom::WildcardQuicHintPtr> hints) override;
+  void SetTryQuicByDefault(bool enable) override;
 
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override;

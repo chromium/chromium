@@ -132,6 +132,7 @@
 #include "net/http/http_cache_invalidation_pickle_traits.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_server_properties_manager.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_stream_key.h"
@@ -13127,6 +13128,296 @@ TEST_F(NetworkContextTest, AddQuicHints) {
   EXPECT_EQ(443, example_infos[0].GetHostPortPair().port());
   EXPECT_EQ("www.example.com", example_infos[0].GetHostPortPair().host());
   EXPECT_EQ(net::NextProto::kProtoQUIC, example_infos[0].protocol());
+}
+
+TEST_F(NetworkContextTest, SetTryQuicByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      net::features::kPartitionConnectionsByNetworkIsolationKey);
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  url::SchemeHostPort https_server("https", "foo.test", 443);
+  url::SchemeHostPort https_server2("https", "bar.test", 443);
+  url::SchemeHostPort http_server("http", "foo.test", 80);
+  net::NetworkAnonymizationKey key =
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          net::SchemefulSite(GURL("https://partition1.test")));
+
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->http_server_properties()
+                   ->try_quic_by_default_for_testing());
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(https_server, key)
+                  .empty());
+
+  network_context->SetTryQuicByDefault(true);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->try_quic_by_default_for_testing());
+
+  // Non-HTTPS schemes (e.g. HTTP) must not receive QUIC alternative services.
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(http_server, key)
+                  .empty());
+
+  net::AlternativeServiceInfoVector infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(https_server, key);
+  ASSERT_EQ(1u, infos.size());
+  EXPECT_EQ(443, infos[0].GetHostPortPair().port());
+  EXPECT_EQ("foo.test", infos[0].GetHostPortPair().host());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, infos[0].protocol());
+
+  net::AlternativeServiceInfoVector infos2 =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(https_server2, key);
+  ASSERT_EQ(1u, infos2.size());
+  EXPECT_EQ(443, infos2[0].GetHostPortPair().port());
+  EXPECT_EQ("bar.test", infos2[0].GetHostPortPair().host());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, infos2[0].protocol());
+
+  // Brokenness tracking: broken services should be suppressed for that origin.
+  network_context->url_request_context()
+      ->http_server_properties()
+      ->MarkAlternativeServiceBroken(infos[0].alternative_service(), key);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(https_server, key)
+                  .empty());
+  // Other origins remain unbroken.
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->http_server_properties()
+                   ->GetAlternativeServiceInfos(https_server2, key)
+                   .empty());
+  // Other partitions remain unbroken for the same origin.
+  net::NetworkAnonymizationKey partition2 =
+      net::NetworkAnonymizationKey::CreateCrossSite(
+          net::SchemefulSite(GURL("https://partition2.test")));
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->http_server_properties()
+                   ->GetAlternativeServiceInfos(https_server, partition2)
+                   .empty());
+
+  network_context->SetTryQuicByDefault(false);
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->http_server_properties()
+                   ->try_quic_by_default_for_testing());
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(https_server2, key)
+                  .empty());
+}
+
+TEST_F(NetworkContextTest, AddWildcardQuicHints) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  std::vector<mojom::WildcardQuicHintPtr> hints;
+  auto hint1 = mojom::WildcardQuicHint::New();
+  hint1->host_suffix = ".google.com";
+  hint1->port = 443;
+  hints.push_back(std::move(hint1));
+
+  auto hint2 = mojom::WildcardQuicHint::New();
+  hint2->host_suffix = "*.example.com";
+  hint2->port = 8443;
+  hints.push_back(std::move(hint2));
+
+  // Trailing dot normalization: "*.trailing-dot.test." normalized.
+  auto hint3 = mojom::WildcardQuicHint::New();
+  hint3->host_suffix = "*.trailing-dot.test.";
+  hint3->port = 443;
+  hints.push_back(std::move(hint3));
+
+  network_context->AddWildcardQuicHints(std::move(hints));
+
+  net::NetworkAnonymizationKey key;
+  url::SchemeHostPort google_subdomain("https", "mail.google.com", 443);
+  url::SchemeHostPort example_subdomain("https", "api.example.com", 8443);
+  url::SchemeHostPort trailing_subdomain("https", "sub.trailing-dot.test", 443);
+  url::SchemeHostPort unrelated("https", "other.test", 443);
+
+  net::AlternativeServiceInfoVector google_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(google_subdomain, key);
+  ASSERT_EQ(1u, google_infos.size());
+  EXPECT_EQ("mail.google.com", google_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(443, google_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, google_infos[0].protocol());
+
+  net::AlternativeServiceInfoVector example_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(example_subdomain, key);
+  ASSERT_EQ(1u, example_infos.size());
+  EXPECT_EQ("api.example.com", example_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(8443, example_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, example_infos[0].protocol());
+
+  net::AlternativeServiceInfoVector trailing_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(trailing_subdomain, key);
+  ASSERT_EQ(1u, trailing_infos.size());
+  EXPECT_EQ("sub.trailing-dot.test",
+            trailing_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(443, trailing_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, trailing_infos[0].protocol());
+
+  // Wildcard hints only match subdomains, not the apex domain.
+  url::SchemeHostPort google_apex("https", "google.com", 443);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(google_apex, key)
+                  .empty());
+  url::SchemeHostPort trailing_apex("https", "trailing-dot.test", 443);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(trailing_apex, key)
+                  .empty());
+
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(unrelated, key)
+                  .empty());
+
+  // IDN domain support (e.g. "*.münchen.de").
+  std::vector<mojom::WildcardQuicHintPtr> idn_hints;
+  auto idn_hint = mojom::WildcardQuicHint::New();
+  idn_hint->host_suffix = "*.münchen.de";
+  idn_hint->port = 443;
+  idn_hints.push_back(std::move(idn_hint));
+  network_context->AddWildcardQuicHints(std::move(idn_hints));
+
+  url::SchemeHostPort idn_subdomain("https", "sub.xn--mnchen-3ya.de", 443);
+  net::AlternativeServiceInfoVector idn_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(idn_subdomain, key);
+  ASSERT_EQ(1u, idn_infos.size());
+  EXPECT_EQ("sub.xn--mnchen-3ya.de", idn_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(443, idn_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, idn_infos[0].protocol());
+
+  // Negative test cases: invalid suffixes, IP addresses, malformed hosts, and
+  // bare domains without wildcard prefix (e.g. "bare-domain.test", "com",
+  // "co.uk") should be rejected.
+  const char* const kInvalidSuffixes[] = {"",
+                                          ".",
+                                          "*.",
+                                          "..",
+                                          "...",
+                                          "127.0.0.1",
+                                          "::1",
+                                          "[::1]",
+                                          "-invalid..host-",
+                                          "bare-domain.test",
+                                          "google.com",
+                                          "com",
+                                          "co.uk"};
+  for (const char* invalid_suffix : kInvalidSuffixes) {
+    std::vector<mojom::WildcardQuicHintPtr> invalid_hints;
+    auto bad_hint = mojom::WildcardQuicHint::New();
+    bad_hint->host_suffix = invalid_suffix;
+    bad_hint->port = 443;
+    invalid_hints.push_back(std::move(bad_hint));
+    network_context->AddWildcardQuicHints(std::move(invalid_hints));
+  }
+
+  // Ensure invalid suffixes were rejected and no alternative services are
+  // returned.
+  const url::SchemeHostPort kProhibitedQueries[] = {
+      url::SchemeHostPort("https", "127.0.0.1", 443),
+      url::SchemeHostPort("https", "sub.127.0.0.1", 443),
+      url::SchemeHostPort("https", "[::1]", 443),
+      url::SchemeHostPort("https", "sub.-invalid..host-", 443),
+      url::SchemeHostPort("https", "sub.bare-domain.test", 443),
+      url::SchemeHostPort("https", "com", 443),
+      url::SchemeHostPort("https", "sub.com", 443),
+      url::SchemeHostPort("https", "co.uk", 443),
+      url::SchemeHostPort("https", "sub.co.uk", 443),
+  };
+  for (const auto& query : kProhibitedQueries) {
+    SCOPED_TRACE(query.Serialize());
+    EXPECT_THAT(network_context->url_request_context()
+                    ->http_server_properties()
+                    ->GetAlternativeServiceInfos(query, key),
+                testing::IsEmpty());
+  }
+
+  // TLDs and multi-label eTLDs (e.g. "*.com", "*.co.uk") are allowed.
+  std::vector<mojom::WildcardQuicHintPtr> etld_hints;
+  auto com_hint = mojom::WildcardQuicHint::New();
+  com_hint->host_suffix = "*.com";
+  com_hint->port = 443;
+  etld_hints.push_back(std::move(com_hint));
+
+  auto co_uk_hint = mojom::WildcardQuicHint::New();
+  co_uk_hint->host_suffix = "*.co.uk";
+  co_uk_hint->port = 443;
+  etld_hints.push_back(std::move(co_uk_hint));
+
+  network_context->AddWildcardQuicHints(std::move(etld_hints));
+
+  url::SchemeHostPort com_subdomain("https", "sub.com", 443);
+  net::AlternativeServiceInfoVector com_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(com_subdomain, key);
+  ASSERT_EQ(1u, com_infos.size());
+  EXPECT_EQ("sub.com", com_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(443, com_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, com_infos[0].protocol());
+
+  url::SchemeHostPort co_uk_subdomain("https", "sub.co.uk", 443);
+  net::AlternativeServiceInfoVector co_uk_infos =
+      network_context->url_request_context()
+          ->http_server_properties()
+          ->GetAlternativeServiceInfos(co_uk_subdomain, key);
+  ASSERT_EQ(1u, co_uk_infos.size());
+  EXPECT_EQ("sub.co.uk", co_uk_infos[0].GetHostPortPair().host());
+  EXPECT_EQ(443, co_uk_infos[0].GetHostPortPair().port());
+  EXPECT_EQ(net::NextProto::kProtoQUIC, co_uk_infos[0].protocol());
+
+  // Wildcard hints only match subdomains, not the TLD apex itself.
+  url::SchemeHostPort com_apex("https", "com", 443);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(com_apex, key)
+                  .empty());
+
+  // Invalid ports: port = 0 or restricted ports should be rejected.
+  std::vector<mojom::WildcardQuicHintPtr> bad_port_hints;
+  auto zero_port_hint = mojom::WildcardQuicHint::New();
+  zero_port_hint->host_suffix = ".zero-port.test";
+  zero_port_hint->port = 0;
+  bad_port_hints.push_back(std::move(zero_port_hint));
+
+  auto restricted_port_hint = mojom::WildcardQuicHint::New();
+  restricted_port_hint->host_suffix = ".restricted-port.test";
+  restricted_port_hint->port = 25;  // SMTP (restricted)
+  bad_port_hints.push_back(std::move(restricted_port_hint));
+
+  network_context->AddWildcardQuicHints(std::move(bad_port_hints));
+
+  url::SchemeHostPort zero_port_subdomain("https", "sub.zero-port.test", 443);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(zero_port_subdomain, key)
+                  .empty());
+  url::SchemeHostPort restricted_port_subdomain("https",
+                                                "sub.restricted-port.test", 25);
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->http_server_properties()
+                  ->GetAlternativeServiceInfos(restricted_port_subdomain, key)
+                  .empty());
 }
 
 TEST_F(NetworkContextTest, ProvidedResponseBodyStream) {

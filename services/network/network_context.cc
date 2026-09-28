@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -73,6 +74,7 @@
 #include "net/base/port_util.h"
 #include "net/base/reconnect_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
@@ -181,6 +183,8 @@
 #include "services/network/url_request_context_builder_mojo.h"
 #include "services/network/web_transport.h"
 #include "url/gurl.h"
+#include "url/url_canon.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "services/network/device_bound_session_service_delegate.h"
@@ -3932,6 +3936,67 @@ void NetworkContext::AddQuicHints(
         canonical_origin, network_anonymization_key, alternative_service,
         base::Time::Max(), quic::ParsedQuicVersionVector());
   }
+}
+
+void NetworkContext::AddWildcardQuicHints(
+    std::vector<mojom::WildcardQuicHintPtr> hints) {
+  if (!url_request_context_ ||
+      !url_request_context_->http_server_properties()) {
+    return;
+  }
+
+  for (const auto& hint : hints) {
+    if (!hint || hint->host_suffix.empty()) {
+      continue;
+    }
+    if (hint->port == 0 ||
+        !net::IsPortAllowedForScheme(hint->port, url::kHttpsScheme)) {
+      DVLOG(1) << "Invalid or restricted QUIC hint port: " << hint->port;
+      continue;
+    }
+
+    std::string_view domain = hint->host_suffix;
+    if (domain.starts_with("*.")) {
+      domain.remove_prefix(2);
+    } else if (domain.starts_with(".")) {
+      domain.remove_prefix(1);
+    } else {
+      DVLOG(1) << "Invalid QUIC hint suffix (missing wildcard prefix): "
+               << hint->host_suffix;
+      continue;
+    }
+
+    if (domain.empty()) {
+      DVLOG(1) << "Invalid QUIC hint suffix: " << hint->host_suffix;
+      continue;
+    }
+
+    url::CanonHostInfo host_info;
+    std::string canonical_domain = net::CanonicalizeHost(domain, &host_info);
+    if (canonical_domain.ends_with(".")) {
+      canonical_domain.pop_back();
+    }
+
+    if (canonical_domain.empty() || host_info.IsIPAddress() ||
+        !net::IsCanonicalizedHostCompliant(canonical_domain)) {
+      DVLOG(1) << "Invalid QUIC hint suffix: " << hint->host_suffix;
+      continue;
+    }
+
+    std::string canonical_suffix = base::StrCat({".", canonical_domain});
+    url_request_context_->http_server_properties()
+        ->SetKnownQuicAlternativeService(canonical_suffix, hint->port,
+                                         hint->port,
+                                         /*is_suffix=*/true);
+  }
+}
+
+void NetworkContext::SetTryQuicByDefault(bool enable) {
+  if (!url_request_context_ ||
+      !url_request_context_->http_server_properties()) {
+    return;
+  }
+  url_request_context_->http_server_properties()->SetTryQuicByDefault(enable);
 }
 
 bool NetworkContext::IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
