@@ -7,40 +7,24 @@
 
 #include <Foundation/Foundation.h>
 
-#include <memory>
-#include <optional>
-#include <string>
-
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
-#include "base/version.h"
-#include "ios/chrome/browser/omaha/model/omaha_persistent_state.h"
 #include "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 
-class OmahaService;
-struct OmahaPersistentState;
-enum class OmahaPingEvent;
+class OmahaBackend;
+class PrefService;
 
 namespace network {
 class SharedURLLoaderFactory;
-class SimpleURLLoader;
 }  // namespace network
 
-struct UpgradeRecommendedDetails;
-
-// This service handles the communication with the Omaha server. It also
-// handles all the scheduling necessary to contact the server regularly.
-// All methods, but the constructor, `GetInstance` and `Start` methods, must be
-// called from the IO thread.
+// This service handles the communication with the Omaha server.
 class OmahaService {
  public:
   // Called when an upgrade is recommended.
@@ -51,9 +35,9 @@ class OmahaService {
   using OneOffCallback =
       base::OnceCallback<void(const UpgradeRecommendedDetails&)>;
 
-  // Starts the service. Also set the `URLLoaderFactory` necessary to access the
-  // Omaha server. This method should only be called once.  Does nothing if
-  // Omaha should not be enabled for this build variant.
+  // Starts the service using the given SharedURLLoaderFactory. If the callback
+  // is set it will be invoked when a ping is received from the server. Calling
+  // this method twice is an error.
   static void Start(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       UpgradeRecommendedCallback upgrade_recommended_callback = {});
@@ -63,77 +47,20 @@ class OmahaService {
   // the Omaha service is unavailable or not started.
   //
   // Clients should always check if the Omaha service was started by
-  // calling this method before invoking `CheckNow()`. Calling methods on
-  // an unstarted or unavailable Omaha service may result in undefined behavior
-  // or crashes.
+  // calling this method before invoking `CheckNow()`.
   static bool HasStarted();
 
-  OmahaService(const OmahaService&) = delete;
-  OmahaService& operator=(const OmahaService&) = delete;
-
-  // Posts to CheckNowOnIOThread on IO thread to perform an immediate check
-  // if the device is up to date.
+  // Request an immediate check with the Omaha server. The callback will
+  // be called with the result of the ping.
   static void CheckNow(OneOffCallback callback);
 
-  // Returns debug information about the omaha service.
+  // Returns debug information about the Omaha service.
   static void GetDebugInformation(
       base::OnceCallback<void(base::DictValue)> callback);
 
  private:
-  // For tests:
-  friend class OmahaServiceTest;
-  friend class OmahaServiceInternalTest;
-
-  // Callback used to serialize the service state.
-  using SavePersistentStateCallback =
-      base::RepeatingCallback<void(const OmahaPersistentState&)>;
-
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingMessageTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest,
-                           PingMessageTestWithUnknownInstallDate);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, InstallEventMessageTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingFailure);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingSuccess);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest,
-                           CallbackForScheduledNotUsedOnErrorResponse);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffSuccess);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OngoingPingOneOffCallbackUsed);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, OneOffCallbackUsedOnlyOnce);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ScheduledPingDuringOneOffDropped);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ParseAndEchoLastServerDate);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendInstallEventSuccess);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, SendPingReceiveUpdate);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PersistStatesTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, BackoffTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, NonSpammingTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ActivePingAfterInstallEventTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, InstallRetryTest);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingUpToDateUpdatesUserDefaults);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceInternalTest,
-                           PingMessageTestWithProfileData);
-  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ResyncTimerAfterSystemSuspend);
-
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
-
-  // Callback to create a SharedURLLoaderFactory.
-  using PendingSharedURLLoaderFactoryCallback =
-      base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
-
-  // Starts the service.
-  void StartInternal(
-      OmahaPersistentState initial_state,
-      PendingSharedURLLoaderFactoryCallback pending_url_loader_factory,
-      UpgradeRecommendedCallback upgrade_recommended_callback,
-      SavePersistentStateCallback save_persistent_state_callback);
-
-  // Resyncs the timer if device sleep has caused it to get out of
-  // sync with `next_tries_time_`.
-  void ResyncTimerIfNeeded();
-
-  // URL loader completion callback.
-  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   // Returns whether Omaha is enabled for this build variant.
   static bool IsEnabled();
@@ -142,103 +69,54 @@ class OmahaService {
   // only be called if `IsEnabled()` returns true.
   static OmahaService* GetInstance();
 
-  // Private constructor, only used by the singleton.
+  // Default constructor for use by the singleton.
   OmahaService();
-  // Private constructor, only used for tests.
-  explicit OmahaService(bool schedule);
+
+  // Creates a service with the given language tag and local state. May be
+  // disabled if depending on the build variant.
+  OmahaService(const PrefService& local_state,
+               const base::i18n::LanguageTag& language_tag);
+
+  OmahaService(const OmahaService&) = delete;
+  OmahaService& operator=(const OmahaService&) = delete;
+
   ~OmahaService();
 
-  // Returns the time to wait before next attempt.
-  static base::TimeDelta GetBackOff(uint8_t number_of_tries);
+  // Internal implementation of Start().
+  void StartImpl(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      UpgradeRecommendedCallback upgrade_recommended_callback);
 
-  // Sends a ping to the Omaha server.
-  void SendPing();
+  // Internal implementation of HasStarted().
+  bool HasStartedImpl() const;
 
-  // Method that will either start sending a ping to the server, or schedule
-  // itself to be called again when the next ping must be send.
-  void SendOrScheduleNextPing();
+  // Internal implementation of CheckNow().
+  void CheckNowImpl(OneOffCallback callback);
 
-  // Persists the state of the service.
-  void PersistStates();
-
-  // Returns the XML representation of the ping message to send to the Omaha
-  // server. If `sendInstallEvent` is true, the message will contain an
-  // installation complete event.
-  std::string GetPingContent(const std::string& requestId,
-                             const std::string& sessionId,
-                             const std::string& versionName,
-                             const std::string& channelName,
-                             base::Time installationTime,
-                             OmahaPingEvent pingContent);
-
-  // Returns the xml representation of the ping message to send to the Omaha
-  // server. Use the current state of the service to compute the right message.
-  std::string GetCurrentPingContent();
-
-  // Performs an immediate check to see if the device is up to date. Start must
-  // have been previously called.
-  void CheckNowOnIOThread(OneOffCallback callback);
-
-  // Computes debugging information and fill `result`.
-  void GetDebugInformationOnIOThread(
+  // Internal implementation of GetDebugInformation().
+  void GetDebugInformationImpl(
       base::OnceCallback<void(base::DictValue)> callback);
 
-  // Returns whether the next ping to send must a an install/update ping. If
-  // `true`, the next ping must use `GetInstallRetryRequestId` as identifier
-  // for the request and must include a X-RequestAge header.
-  bool IsNextPingInstallRetry();
+  // Called from the callback passed to OmahaBackend::Start().
+  void OnPingReceived(const UpgradeRecommendedDetails& details);
 
-  // Returns the request identifier to use for the next ping. If it is an
-  // install/update retry, it will return the identifier used on the initial
-  // request. If this is not the case, returns a random id.
-  // `send_install_event` must be true if the next ping is a install/update
-  // event, in that case, the identifier will be stored so that it can be
-  // reused until the ping is successful.
-  std::string GetNextPingRequestId(OmahaPingEvent ping_content);
+  // OmahaService is sequence-bound.
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // To communicate with the Omaha server.
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  PendingSharedURLLoaderFactoryCallback pending_url_loader_factory_;
+  // To communicate with the OmahaService.
+  base::SequenceBound<OmahaBackend> backend_;
 
-  // Whether the service has been started.
-  bool started_;
-
-  // The timer that call this object back when needed.
-  base::OneShotTimer timer_;
-
-  // Whether to schedule pings. This is only false for tests.
-  const bool schedule_;
-
-  // The install date of the application.  This is fetched in `StartInternal` on
-  // the main thread and cached for use on the IO thread.
-  int64_t application_install_date_;
-
-  // The language in use at start up.
-  std::string locale_lang_;
-
-  // The current service state.
-  OmahaPersistentState current_state_;
-
-  // Whether the ping currently being sent is an install (new or update) ping.
-  bool sending_install_event_;
-
-  // If a scheduled ping was canceled.
-  bool scheduled_ping_canceled_ = false;
-
-  // An opaque handle to the applicationWillEnterForeground
-  // notification registration. Used to cancel the registration and to
-  // prevent registering multiple times.
-  id foreground_notification_registration_handle_;
-
-  // Called to notify that upgrade is recommended.
+  // The saved UpgradeRecommendedCallback passed to Start().
   UpgradeRecommendedCallback upgrade_recommended_callback_;
 
-  // Stores the callback for one off Omaha checks.
-  OneOffCallback one_off_check_callback_;
+  // The saved OneOffCallback passed to CheckNow().
+  OneOffCallback one_off_callback_;
 
-  // Called to save the current state of the service.
-  SavePersistentStateCallback save_persistent_state_callback_;
+  // Whether the service has been started.
+  bool started_ = false;
+
+  // Ensure that callbacks won't see dangling pointers.
+  base::WeakPtrFactory<OmahaService> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
