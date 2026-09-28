@@ -9,6 +9,7 @@ source_set("autofill_ai") {
     "autofill_ai_bubble_utils.h",
     "autofill_ai_import_data_bubble_view.h",
     "autofill_ai_local_save_notification_view.h",
+    "entity_suppression_dialog_view.h",
   ]
   public_deps = [
     "//base",
@@ -24,17 +25,20 @@ source_set("impl") {
     "autofill_ai_bubble_utils.cc",
     "autofill_ai_import_data_bubble_view.cc",
     "autofill_ai_local_save_notification_view.cc",
+    "entity_suppression_dialog_view.cc",
   ]
   public_deps = [ ":autofill_ai" ]
   deps = [
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/autofill:autofill_bubble_utils",
     "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
     "//components/autofill/core/common",
     "//components/strings",
     "//components/vector_icons",
+    "//content/public/browser",
     "//ui/accessibility:ax_base",
     "//ui/base",
     "//ui/color",

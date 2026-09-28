@@ -232,6 +232,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"  // nogncheck
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/entity_suppression_dialog_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
@@ -1673,6 +1674,20 @@ void ChromeAutofillClient::ShowAutofillAiPrivateInferenceNotice() {
       AutofillMetrics::PopupNoticeInteractions::kShown);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ChromeAutofillClient::ShowAutofillAiSuppressionConfirmationDialog(
+    const EntityInstance& entity,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
+  ShowEntitySuppressionDialogView(
+      web_contents(),
+      std::get<EntityInstance::PersonalContextRecordTypePayload>(
+          entity.record_type_data())
+          .sources.size(),
+      std::move(callback));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromeAutofillClient::ShowAutofillAiSuggestionRemovedNotification(
     base::OnceClosure on_undo_clicked) {

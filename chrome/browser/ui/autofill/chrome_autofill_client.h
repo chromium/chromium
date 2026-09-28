@@ -307,6 +307,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
       std::optional<std::u16string> message_override) final;
   void ShowAutofillAiPreFetchFailureNotification() final;
   void ShowAutofillAiPrivateInferenceNotice() final;
+#if !BUILDFLAG(IS_ANDROID)
+  void ShowAutofillAiSuppressionConfirmationDialog(
+      const EntityInstance& entity,
+      base::OnceCallback<void(bool)> callback) final;
+#endif  // !BUILDFLAG(IS_ANDROID)
   void ShowAutofillAiSuggestionRemovedNotification(
       base::OnceClosure on_undo_clicked) final;
   void ShowEmailVerifiedToast(const GURL& issuer) final;

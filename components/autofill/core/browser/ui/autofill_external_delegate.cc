@@ -1824,7 +1824,9 @@ bool AutofillExternalDelegate::ShouldShowPayNowPayLaterTabs() {
 bool AutofillExternalDelegate::SuppressAutofillAiEntity(
     const Suggestion& suggestion) {
   if (!base::FeatureList::IsEnabled(
-          features::kAutofillAmbientAutofillSuppression)) {
+          features::kAutofillAmbientAutofillSuppression) ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSuppressionUI)) {
     return false;
   }
   if (!std::holds_alternative<Suggestion::AutofillAiPayload>(
@@ -1837,19 +1839,47 @@ bool AutofillExternalDelegate::SuppressAutofillAiEntity(
       entity->record_type() != EntityInstance::RecordType::kPersonalContext) {
     return false;
   }
+  if (!manager_->client().GetEntitySuppressionManager()) {
+    return false;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  manager_->client().ShowAutofillAiSuppressionConfirmationDialog(
+      *entity,
+      base::BindOnce(
+          [](base::WeakPtr<AutofillExternalDelegate> self,
+             EntityInstance entity, FieldGlobalId field_id, bool confirmed) {
+            if (self && confirmed) {
+              self->SuppressEntityAndOfferUndo(std::move(entity), field_id);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), *entity, last_query_.field_id));
+  // The entity is suppressed only once the user confirms. Return false, so
+  // that the suggestion is not removed from the UI prematurely.
+  return false;
+#else
+  // The user has already confirmed the suppression, see the header.
+  return SuppressEntityAndOfferUndo(*entity, last_query_.field_id);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+}
+
+bool AutofillExternalDelegate::SuppressEntityAndOfferUndo(
+    EntityInstance entity,
+    FieldGlobalId field_id) {
   EntitySuppressionManager* suppression_manager =
       manager_->client().GetEntitySuppressionManager();
   if (!suppression_manager) {
     return false;
   }
-  const bool newly_suppressed = suppression_manager->SuppressEntity(*entity);
+  const bool newly_suppressed = suppression_manager->SuppressEntity(entity);
   if (newly_suppressed) {
     manager_->client().ShowAutofillAiSuggestionRemovedNotification(
         base::BindOnce(&AutofillExternalDelegate::OnAutofillAiSuppressionUndone,
-                       weak_ptr_factory_.GetWeakPtr(), *entity,
-                       last_query_.field_id));
+                       weak_ptr_factory_.GetWeakPtr(), std::move(entity),
+                       field_id));
+    return true;
   }
-  return newly_suppressed || suppression_manager->IsSuppressed(*entity);
+  return suppression_manager->IsSuppressed(entity);
 }
 
 void AutofillExternalDelegate::OnAutofillAiSuppressionUndone(

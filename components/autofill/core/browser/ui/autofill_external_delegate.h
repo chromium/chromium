@@ -252,10 +252,25 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // Returns if the Pay Now Pay Later tabs should be shown.
   virtual bool ShouldShowPayNowPayLaterTabs();
 
-  // Attempts to suppress `suggestion`'s Autofill AI personal-context entity.
-  // If suppression succeeds, triggers the removal undo notification on the
-  // client with a re-query callback. Returns true if the entity is suppressed.
+  // Suppresses the Autofill AI personal-context entity behind `suggestion` and
+  // offers to undo that. Does nothing if the suppression UI is disabled.
+  // - On Desktop, where this is triggered by the "Remove this info" entry or by
+  //   Shift+Delete, the user is first asked to confirm in a dialog. The entity
+  //   is only suppressed once they confirm; if they decline, nothing happens.
+  // - On Android, the keyboard accessory asks the user to confirm before it
+  //   calls the delegate, so the entity is suppressed right away.
+  // - iOS does not call this: `FormInputAccessoryCoordinator` asks for
+  //   confirmation and suppresses the entity itself.
+  // Returns whether the entity is suppressed when this function returns, i.e.
+  // always false on Desktop, where the user has not confirmed yet.
   bool SuppressAutofillAiEntity(const Suggestion& suggestion);
+
+  // Suppresses `entity` and, if it was not suppressed before, lets the client
+  // notify the user and offer an undo, which runs
+  // `OnAutofillAiSuppressionUndone()`. Returns true if the entity is
+  // suppressed.
+  bool SuppressEntityAndOfferUndo(EntityInstance entity,
+                                  FieldGlobalId field_id);
 
   // Unsuppresses `entity` and re-triggers Autofill suggestions on `field_id`.
   void OnAutofillAiSuppressionUndone(const EntityInstance& entity,

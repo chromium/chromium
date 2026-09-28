@@ -898,6 +898,16 @@ class AutofillClient {
   // default.
   virtual void ShowAutofillAiPrivateInferenceNotice();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // Shows a dialog that asks the user to confirm that the Autofill AI
+  // personal-context entity `entity` will no longer be suggested. `callback` is
+  // run with true if the user confirms, and with false if they cancel or close
+  // the dialog.
+  virtual void ShowAutofillAiSuppressionConfirmationDialog(
+      const EntityInstance& entity,
+      base::OnceCallback<void(bool)> callback);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
   // Displays a notification informing the user that an Autofill AI suggestion
   // was removed, offering an undo action that runs `on_undo_clicked`.
   virtual void ShowAutofillAiSuggestionRemovedNotification(
