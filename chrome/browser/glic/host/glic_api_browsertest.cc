@@ -3341,6 +3341,10 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kChromeTools));
   }
+  if (features::IsGlicNoWebviewEnabled()) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kNoWebview));
+  }
 
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
@@ -5284,7 +5288,8 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{.trust_first_onboarding_arm2 = true,
                                .auto_open_pdf = true},
                     TestParams{.skills_v2 = true},
-                    TestParams{.enable_embedded_pdf_bytes_extraction = true}),
+                    TestParams{.enable_embedded_pdf_bytes_extraction = true},
+                    TestParams{.no_webview = true}),
     &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(,

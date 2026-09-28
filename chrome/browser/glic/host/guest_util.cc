@@ -779,6 +779,10 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(mojom::HostCapability::kNoWebUiLoader);
   }
 
+  if (features::IsGlicNoWebviewEnabled()) {
+    state->host_capabilities.push_back(mojom::HostCapability::kNoWebview);
+  }
+
   if (base::FeatureList::IsEnabled(features::kGlicPasteEligibilityCheck)) {
     state->host_capabilities.push_back(
         mojom::HostCapability::kEnforcesPasteEligibility);

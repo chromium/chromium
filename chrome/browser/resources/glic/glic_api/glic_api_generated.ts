@@ -482,6 +482,8 @@ export enum HostCapability {
   // Indicates that the host supports bytes extraction of embedded PDF rendered
   // in the Chrome PDF viewer.
   EMBEDDED_PDF_BYTES_EXTRACTION = 18,
+  // Indicates that the host operates in NoWebview mode.
+  NO_WEBVIEW = 19,
 }
 
 // Lists capabilities that the glic web client may support.

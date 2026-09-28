@@ -167,10 +167,10 @@ function updateGlicApiExports(
 function getAst(dirname: string): MojomAst {
   const parsePyPath = path.resolve(dirname, 'parse.py');
   try {
-    const vpythonCmd =
-        process.platform === 'win32' ? 'vpython3.bat' : 'vpython3';
+    const pythonCmd = process.env['PYTHON_EXECUTABLE'] ||
+        (process.platform === 'win32' ? 'vpython3.bat' : 'vpython3');
     const jsonStr = execFileSync(
-        vpythonCmd, [parsePyPath],
+        pythonCmd, [parsePyPath],
         {encoding: 'utf-8', shell: process.platform === 'win32'});
     return JSON.parse(jsonStr) as MojomAst;
   } catch (e) {

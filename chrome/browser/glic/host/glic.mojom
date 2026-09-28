@@ -2400,6 +2400,8 @@ enum HostCapability {
   // Indicates that the host supports bytes extraction of embedded PDF rendered
   // in the Chrome PDF viewer.
   kEmbeddedPdfBytesExtraction = 18,
+  // Indicates that the host operates in NoWebview mode.
+  kNoWebview = 19,
 };
 
 // @generate glic_api
