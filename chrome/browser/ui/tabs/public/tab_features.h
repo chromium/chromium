@@ -83,6 +83,7 @@ class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
 class SharedHighlightingPromo;
 class SidePanelRegistry;
+class SoundContentSettingObserver;
 class StorageAccessAPITabHelper;
 class TabCaptureContentsBorderHelper;
 class TabContextDecryptionTokenTabHelper;
@@ -888,6 +889,8 @@ class TabFeatures {
 #endif
 
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
+
+  std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

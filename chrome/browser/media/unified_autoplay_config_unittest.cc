@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/media/unified_autoplay_config.h"
+
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -31,7 +33,13 @@ class UnifiedAutoplaySoundSettingsTest
                                           {});
     ChromeRenderViewHostTestHarness::SetUp();
 
-    SoundContentSettingObserver::CreateForWebContents(web_contents());
+    sound_content_setting_observer_ =
+        std::make_unique<SoundContentSettingObserver>(tab_, web_contents());
+  }
+
+  void TearDown() override {
+    sound_content_setting_observer_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void SetSoundContentSettingDefault(ContentSetting value) {
@@ -61,6 +69,8 @@ class UnifiedAutoplaySoundSettingsTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
 
  private:
   PrefService* GetPrefs() { return profile()->GetPrefs(); }
@@ -76,7 +86,8 @@ class UnifiedAutoplaySoundSettingsTestFeatureDisabled
                                           {media::kAutoplayDisableSettings});
     ChromeRenderViewHostTestHarness::SetUp();
 
-    SoundContentSettingObserver::CreateForWebContents(web_contents());
+    sound_content_setting_observer_ =
+        std::make_unique<SoundContentSettingObserver>(tab_, web_contents());
   }
 };
 

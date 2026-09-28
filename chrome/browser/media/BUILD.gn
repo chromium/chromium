@@ -88,6 +88,7 @@ source_set("unittests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/site_engagement/content",
+    "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//content/public/browser",
     "//content/test:test_support",

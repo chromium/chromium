@@ -543,6 +543,7 @@ if (!is_android) {
       "//chrome/browser/collaboration/messaging",
       "//chrome/browser/commerce",
       "//chrome/browser/commerce/in_stock_notification",
+      "//chrome/browser/content_settings",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/external_protocol",

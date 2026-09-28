@@ -30,7 +30,9 @@ source_set("content_settings") {
     "//components/custom_handlers",
     "//components/permissions",
     "//components/prefs",
+    "//components/tabs:public",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = []
@@ -345,6 +347,7 @@ source_set("unit_tests") {
     "//components/safe_browsing/core/common:features",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//components/tabs:test_support",
     "//components/ukm:test_support",
     "//components/ukm/content",
     "//content/public/browser",

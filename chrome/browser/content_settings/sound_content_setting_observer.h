@@ -13,17 +13,21 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class Page;
 }
 
-class SoundContentSettingObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<SoundContentSettingObserver>,
-      public content_settings::Observer {
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
+class SoundContentSettingObserver : public content::WebContentsObserver,
+                                    public content_settings::Observer {
  public:
+  DECLARE_USER_DATA(SoundContentSettingObserver);
+
   // The reason why the site was muted. This is logged to UKM, so add new values
   // at the end.
   enum MuteReason {
@@ -32,11 +36,15 @@ class SoundContentSettingObserver
                          // block.
   };
 
+  SoundContentSettingObserver(tabs::TabInterface& tab,
+                              content::WebContents* web_contents);
   SoundContentSettingObserver(const SoundContentSettingObserver&) = delete;
   SoundContentSettingObserver& operator=(const SoundContentSettingObserver&) =
       delete;
 
   ~SoundContentSettingObserver() override;
+
+  static SoundContentSettingObserver* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver implementation.
   void ReadyToCommitNavigation(
@@ -53,9 +61,6 @@ class SoundContentSettingObserver
   bool HasLoggedSiteMutedUkmForTesting() { return logged_site_muted_ukm_; }
 
  private:
-  explicit SoundContentSettingObserver(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<SoundContentSettingObserver>;
-
   void MuteOrUnmuteIfNecessary();
   ContentSetting GetCurrentContentSetting();
 
@@ -84,7 +89,8 @@ class SoundContentSettingObserver
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<SoundContentSettingObserver>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_

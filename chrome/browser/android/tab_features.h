@@ -113,6 +113,7 @@ class PluginObserverAndroid;
 class PolicyAuditorBridge;
 class RevokedPermissionsTabHelper;
 class SecurityStateEventObserver;
+class SoundContentSettingObserver;
 class StorageAccessAPITabHelper;
 class TabContextDecryptionTokenTabHelper;
 
@@ -238,6 +239,7 @@ class TabFeatures {
       auto_fetch_navigation_observer_;
   std::unique_ptr<PluginObserverAndroid> plugin_observer_android_;
   std::unique_ptr<AboutThisSiteTabHelper> about_this_site_tab_helper_;
+  std::unique_ptr<SoundContentSettingObserver> sound_content_setting_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

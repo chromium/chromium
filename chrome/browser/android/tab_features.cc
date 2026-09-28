@@ -12,6 +12,7 @@
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_navigation_controller.h"
@@ -350,6 +351,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
               *tab, *tab, web_contents, optimization_guide_decider);
     }
   }
+
+  sound_content_setting_observer_ =
+      GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
+          *tab, *tab, web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

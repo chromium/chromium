@@ -19,6 +19,7 @@
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_web_contents_observer.h"
@@ -922,6 +923,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
               tab, tab, tab.GetContents(), optimization_guide_decider);
     }
   }
+
+  sound_content_setting_observer_ =
+      GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
+          tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1252,6 +1257,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
               *tab, *tab, new_contents, optimization_guide_decider);
     }
   }
+
+  sound_content_setting_observer_.reset();
+  sound_content_setting_observer_ =
+      GetUserDataFactory().CreateInstance<SoundContentSettingObserver>(
+          *tab, *tab, new_contents);
 }
 
 customize_chrome::SidePanelController*

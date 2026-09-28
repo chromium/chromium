@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SoundContentSettingObserverBrowserTest,
   run_loop.Run();
 
   SoundContentSettingObserver* observer =
-      SoundContentSettingObserver::FromWebContents(web_contents());
+      SoundContentSettingObserver::From(browser()->GetActiveTabInterface());
   // `logged_site_muted_ukm_` should be set.
   EXPECT_TRUE(observer->HasLoggedSiteMutedUkmForTesting());
 

@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -26,10 +27,13 @@
 
 using content_settings::SettingSource;
 
+DEFINE_USER_DATA(SoundContentSettingObserver);
+
 SoundContentSettingObserver::SoundContentSettingObserver(
+    tabs::TabInterface& tab,
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      content::WebContentsUserData<SoundContentSettingObserver>(*contents) {
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
@@ -47,6 +51,12 @@ SoundContentSettingObserver::SoundContentSettingObserver(
 }
 
 SoundContentSettingObserver::~SoundContentSettingObserver() = default;
+
+// static
+SoundContentSettingObserver* SoundContentSettingObserver::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void SoundContentSettingObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -200,5 +210,3 @@ void SoundContentSettingObserver::UpdateAutoplayPolicy() {
   web_contents()->OnWebPreferencesChanged();
 }
 #endif
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SoundContentSettingObserver);
