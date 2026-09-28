@@ -8,6 +8,7 @@ import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 group("tests") {
   testonly = true
@@ -191,10 +192,17 @@ fuzzer_test("llvm_crashing_fuzzer") {
   is_fuzztest_compatible = false
 }
 
+fuzzable_proto_library("lpm_test_proto") {
+  sources = [ "lpm_test.proto" ]
+}
+
 # Regression test fuzzer for LPM.
 fuzzer_test("lpm_stub_fuzzer") {
   sources = [ "lpm_stub_fuzzer.cc" ]
-  deps = [ "//third_party/libprotobuf-mutator" ]
+  deps = [
+    ":lpm_test_proto_fuzzable",
+    "//third_party/libprotobuf-mutator",
+  ]
   deps += _test_fuzzer_extra_deps
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
   is_fuzztest_compatible = false
