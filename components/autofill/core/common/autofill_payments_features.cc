@@ -385,9 +385,6 @@ BASE_FEATURE(kAutofillSkipSaveCardForTabModalPopup,
 // When enabled, eWallet accounts are synced from the Google Payments servers
 // and displayed on the payment methods settings page.
 BASE_FEATURE(kAutofillSyncEwalletAccounts, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAutofillTouchToFillShowManualFillForVcnFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Controls offering credit card upload to Google Payments. Cannot ever be

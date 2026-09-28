@@ -13068,15 +13068,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kMobileNTPPromoOnDesktopVariations,
                                     "MobileNTPPromoOnDesktop")},
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-touch-to-fill-show-manual-fill-for-vcn-fix",
-     flag_descriptions::kAutofillTouchToFillShowManualFillForVcnFixName,
-     flag_descriptions::kAutofillTouchToFillShowManualFillForVcnFixDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillTouchToFillShowManualFillForVcnFix)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"apb144-patch1", flag_descriptions::kApb144Patch1Name,
      flag_descriptions::kApb144Patch1Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch1)},

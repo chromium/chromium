@@ -1311,11 +1311,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "autofill-touch-to-fill-show-manual-fill-for-vcn-fix",
-    "owners": ["viplavkadam@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 155
-  },
-  {
     "name": "autofill-upstream-enforce-strike-delay",
     "owners": ["osaul@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 160

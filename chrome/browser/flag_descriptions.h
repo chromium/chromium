@@ -1260,14 +1260,6 @@ inline constexpr char kAutofillPreferBuyNowPayLaterBlocklistsDescription[] =
     "corresponding issuer's blocklist instead of allowlist to check for "
     "website eligibility.";
 
-inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixName[] =
-    "Ensures showing of the BNPL VCN on manual fallback sheet in the Touch To "
-    "Fill flow";
-inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixDescription[] =
-    "When enabled, it successfully shows the VCN when the BNPL flow is "
-    "successful and the user clicks on the 'show card' button to fill the card "
-    "manually.";
-
 inline constexpr char kAutofillUpstreamEnforceStrikeDelayName[] =
     "Require a week between offers to save credit cards";
 inline constexpr char kAutofillUpstreamEnforceStrikeDelayDescription[] =

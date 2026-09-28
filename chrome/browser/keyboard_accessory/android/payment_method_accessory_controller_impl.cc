@@ -39,8 +39,6 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -420,12 +418,9 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
           client->GetValuablesDataManager()) {
     valuables_data_manager_observation_.Observe(valuables_data_manager);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillTouchToFillShowManualFillForVcnFix)) {
-    autofill_managers_observation_.Observe(
-        client, ScopedAutofillManagersObservation::InitializationPolicy::
-                    kObservePreexistingManagers);
-  }
+  autofill_managers_observation_.Observe(
+      client, ScopedAutofillManagersObservation::InitializationPolicy::
+                  kObservePreexistingManagers);
 }
 
 // TODO(crbug.com/481734563): Use TestContentAutofillClient for manager setup
@@ -448,14 +443,11 @@ PaymentMethodAccessoryControllerImpl::PaymentMethodAccessoryControllerImpl(
   if (valuables_data_manager) {
     valuables_data_manager_observation_.Observe(valuables_data_manager);
   }
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillTouchToFillShowManualFillForVcnFix)) {
-    if (ContentAutofillClient* client =
-            ContentAutofillClient::FromWebContents(web_contents)) {
-      autofill_managers_observation_.Observe(
-          client, ScopedAutofillManagersObservation::InitializationPolicy::
-                      kObservePreexistingManagers);
-    }
+  if (ContentAutofillClient* client =
+          ContentAutofillClient::FromWebContents(web_contents)) {
+    autofill_managers_observation_.Observe(
+        client, ScopedAutofillManagersObservation::InitializationPolicy::
+                    kObservePreexistingManagers);
   }
 }
 
@@ -555,9 +547,7 @@ PaymentMethodAccessoryControllerImpl::GetAutofillManager() const {
 
 BrowserAutofillManager*
 PaymentMethodAccessoryControllerImpl::GetAutofillManager() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillTouchToFillShowManualFillForVcnFix) &&
-      browser_autofill_manager_) {
+  if (browser_autofill_manager_) {
     return browser_autofill_manager_.get();
   } else {
     DCHECK(GetWebContents().GetFocusedFrame());

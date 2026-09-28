@@ -807,10 +807,6 @@ class PaymentMethodAccessoryControllerTestForBnpl
  public:
   PaymentMethodAccessoryControllerTestForBnpl()
       : PaymentMethodAccessoryControllerTestBase(GURL("https://example.com")) {}
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillTouchToFillShowManualFillForVcnFix};
 };
 
 TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
