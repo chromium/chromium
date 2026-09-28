@@ -6,11 +6,18 @@ package org.chromium.components.policy;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.RestrictionsManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.os.UserManager;
 
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
@@ -19,6 +26,25 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     private static final String TAG = "AppResProvider";
+
+    /**
+     * Get the app restriction information from provided restrictions manager.
+     *
+     * @param restrictionsManager RestrictionsManager service from Android System service.
+     * @return The restrictions for the application, or an empty bundle if they are not available.
+     */
+    public static Bundle getApplicationRestrictionsFromRestrictionsManager(
+            RestrictionsManager restrictionsManager) {
+        try {
+            Bundle bundle = restrictionsManager.getApplicationRestrictions();
+            Log.i(TAG, "#getApplicationRestrictionsFromRestrictionsManager() " + bundle);
+            return bundle != null ? bundle : new Bundle();
+        } catch (SecurityException e) {
+            // Android bug may throw SecurityException. See crbug.com/886814.
+            Log.i(TAG, "#getApplicationRestrictionsFromRestrictionsManager() " + e.getMessage());
+            return new Bundle();
+        }
+    }
 
     /**
      * Get the app restriction information from provided user manager, and record some timing
@@ -42,16 +68,35 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
     }
 
     private final UserManager mUserManager;
+    private final @Nullable RestrictionsManager mRestrictionsManager;
 
     public AppRestrictionsProvider(Context context) {
         super(context);
 
         mUserManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
+        mRestrictionsManager =
+                (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);
     }
 
     @Override
     protected Bundle getApplicationRestrictions(String packageName) {
-        return getApplicationRestrictionsFromUserManager(mUserManager, packageName);
+        long startTime = SystemClock.elapsedRealtime();
+        Bundle bundle;
+        try (TraceEvent te =
+                TraceEvent.scoped("AppRestrictionsProvider.getApplicationRestrictions")) {
+            if (PolicyFeatureMap.sUseRestrictionsManagerInAppRestrictionsProvider.isEnabled()) {
+                Objects.requireNonNull(
+                        mRestrictionsManager,
+                        "getSystemService(RESTRICTIONS_SERVICE) returned null");
+                bundle = getApplicationRestrictionsFromRestrictionsManager(mRestrictionsManager);
+            } else {
+                bundle = getApplicationRestrictionsFromUserManager(mUserManager, packageName);
+            }
+        }
+        long durationMs = SystemClock.elapsedRealtime() - startTime;
+        RecordHistogram.recordTimesHistogram(
+                "Enterprise.Policy.AppRestrictionsProviderFetchTime", durationMs);
+        return bundle;
     }
 
     @Override

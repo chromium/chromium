@@ -29,7 +29,17 @@ public final class PolicyFeatureMap extends FeatureMap {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
 
-    public static final List<CachedFlag> sCachedFlags = List.of(sAndroidUseAdminsForEnterpriseInfo);
+    public static final CachedFlag sUseRestrictionsManagerInAppRestrictionsProvider =
+            new CachedFlag(
+                    sInstance,
+                    PolicyFeatures.USE_RESTRICTIONS_MANAGER_IN_APP_RESTRICTIONS_PROVIDER,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
+
+    public static final List<CachedFlag> sCachedFlags =
+            List.of(
+                    sAndroidUseAdminsForEnterpriseInfo,
+                    sUseRestrictionsManagerInAppRestrictionsProvider);
 
     public static PolicyFeatureMap getInstance() {
         return sInstance;

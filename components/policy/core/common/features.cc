@@ -34,6 +34,9 @@ BASE_FEATURE(kInitializePoliciesForSignedInUserInNewEntryPoints,
 
 BASE_FEATURE(kAndroidUseAdminsForEnterpriseInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kUseRestrictionsManagerInAppRestrictionsProvider,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables a configurable delay for policy registration.

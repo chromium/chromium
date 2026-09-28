@@ -18899,6 +18899,21 @@
             ]
         }
     ],
+    "UseRestrictionsManagerInAppRestrictionsProvider": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseRestrictionsManagerInAppRestrictionsProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseRustCborParser": [
         {
             "platforms": [

@@ -4013,6 +4013,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Policy.AppRestrictionsProviderFetchTime" units="ms"
+    expires_after="2027-09-01">
+  <owner>shadmehr@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Measures the synchronous app restrictions fetch latency on Android. Recorded
+    by AppRestrictionsProvider each time restrictions are fetched.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Policy.AppRestrictionsRegisterReceiverTime"
     units="ms" expires_after="2027-04-01">
   <owner>zmin@chromium.org</owner>

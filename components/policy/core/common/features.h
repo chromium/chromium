@@ -36,6 +36,11 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(
 
 // Controls whether to use active admins to calculate the enterprise info.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kAndroidUseAdminsForEnterpriseInfo);
+
+// Controls whether to use RestrictionsManager instead of UserManager in
+// AppRestrictionsProvider to retrieve application restrictions.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kUseRestrictionsManagerInAppRestrictionsProvider);
 #endif
 
 // Enables a configurable delay for policy registration.
