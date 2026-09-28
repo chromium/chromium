@@ -1107,6 +1107,16 @@ void AuthenticatorCommonImpl::MakeCredential(
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
 
+  if (options->remote_client_data_json &&
+      (!base::FeatureList::IsEnabled(device::kWebAuthnRemoteClientDataJson) ||
+       options->is_conditional)) {
+    mojo::ReportBadMessage("invalid remoteClientDataJSON request");
+    req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   BeginRequestTimeout(options->timeout);
 
   WebAuthRequestSecurityChecker::RequestType request_type =
@@ -1115,8 +1125,10 @@ void AuthenticatorCommonImpl::MakeCredential(
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
-      security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
-                                                 &is_cross_origin_iframe);
+      security_checker_->ValidateAncestorOrigins(
+          caller_origin, request_type,
+          options->remote_client_data_json.has_value(),
+          &is_cross_origin_iframe);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     req_state_->request_outcome = MakeCredentialOutcome::kSecurityError;
     CompleteMakeCredentialRequest(status);
@@ -1136,16 +1148,6 @@ void AuthenticatorCommonImpl::MakeCredential(
       GetContentClient()->browser()->ShouldDisallowCredentialRequest(
           WebContents::FromRenderFrameHost(GetRenderFrameHost()))) {
     req_state_->request_outcome = MakeCredentialOutcome::kBlockedByEmbedder;
-    CompleteMakeCredentialRequest(
-        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    return;
-  }
-
-  if (options->remote_client_data_json &&
-      (!base::FeatureList::IsEnabled(device::kWebAuthnRemoteClientDataJson) ||
-       options->is_conditional)) {
-    mojo::ReportBadMessage("invalid remoteClientDataJSON request");
-    req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
     return;
@@ -1670,8 +1672,10 @@ void AuthenticatorCommonImpl::GetCredential(
   }
   bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
-      security_checker_->ValidateAncestorOrigins(caller_origin, request_type,
-                                                 &is_cross_origin_iframe);
+      security_checker_->ValidateAncestorOrigins(
+          caller_origin, request_type,
+          public_key_options->extensions->remote_client_data_json.has_value(),
+          &is_cross_origin_iframe);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     req_state_->request_outcome = GetAssertionOutcome::kSecurityError;
     CompleteGetAssertionRequest(status);
@@ -1773,7 +1777,7 @@ void AuthenticatorCommonImpl::GetPasswordOnlyCredential(
       security_checker_->ValidateAncestorOrigins(
           caller_origin,
           WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
-          &is_cross_origin_iframe);
+          /*uses_remote_client_data_json=*/false, &is_cross_origin_iframe);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     req_state_->request_outcome = GetAssertionOutcome::kSecurityError;
     CompleteGetAssertionRequest(status);
@@ -2370,7 +2374,7 @@ void AuthenticatorCommonImpl::Report(
       security_checker_->ValidateAncestorOrigins(
           req_state_->caller_origin,
           WebAuthRequestSecurityChecker::RequestType::kReport,
-          &is_cross_origin_iframe);
+          /*uses_remote_client_data_json=*/false, &is_cross_origin_iframe);
 
   // TODO(crbug.com/347727501): Add test for ValidateAncestorOrigins's status.
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {

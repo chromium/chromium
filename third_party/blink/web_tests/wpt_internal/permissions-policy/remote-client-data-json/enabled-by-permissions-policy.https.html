@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>remoteClientDataJSON enabled by Permissions Policy</title>
+<link rel="help" href="https://w3c.github.io/webauthn/#sctn-permissions-policy">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/permissions-policy/resources/permissions-policy.js"></script>
+<script src="resources/remote-client-data-json-policy.js"></script>
+<body></body>
+<script>
+"use strict";
+
+runRemoteClientDataJsonHeaderPolicyTests(
+    get_host_info().HTTPS_REMOTE_ORIGIN,
+    {topLevel: true, sameOrigin: true, crossOrigin: true},
+    "Permissions-Policy header with a wildcard allowlist enables the feature");
+</script>

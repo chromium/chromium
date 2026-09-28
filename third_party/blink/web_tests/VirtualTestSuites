@@ -3986,6 +3986,31 @@
     ],
     "expires": "Jan 1, 2028"
   },
+  "Runs the remoteClientDataJSON Permissions Policy tests with its runtime",
+  "feature enabled. Requests use invalid client data so policy behavior is",
+  "tested without invoking an authenticator.",
+  {
+    "prefix": "remote-client-data-json-policy",
+    "owners": [
+      "chrome-webauthn@google.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "webexposed/feature-policy-features.html",
+      "wpt_internal/permissions-policy/remote-client-data-json/"
+    ],
+    "exclusive_tests": [
+      "wpt_internal/permissions-policy/remote-client-data-json/"
+    ],
+    "args": [
+      "--enable-features=WebAuthnRemoteClientDataJson"
+    ],
+    "expires": "Mar 17, 2027"
+  },
   "--webauthn-remote-desktop-support can be toggled with enterprise policies, ",
   "so we need to support this long term.",
   {

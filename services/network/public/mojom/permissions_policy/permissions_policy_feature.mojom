@@ -353,6 +353,10 @@ enum PermissionsPolicyFeature {
   // See https://github.com/WICG/web-haptics/blob/main/readme.md.
   kHaptics = 148,
 
+  // Controls the WebAuthn remoteClientDataJSON extension.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  kPublicKeyCredentialsRemoteClientDataJson = 149,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update

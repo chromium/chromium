@@ -152,6 +152,7 @@ domain Page
       private-state-token-redemption
       publickey-credentials-create
       publickey-credentials-get
+      publickey-credentials-remote-client-data-json
       rewriter
       screen-wake-lock
       serial

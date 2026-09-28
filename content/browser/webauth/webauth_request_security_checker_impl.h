@@ -54,6 +54,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityCheckerImpl
   blink::mojom::AuthenticatorStatus ValidateAncestorOrigins(
       const url::Origin& origin,
       RequestType type,
+      bool uses_remote_client_data_json,
       bool* is_cross_origin);
   blink::mojom::AuthenticatorStatus ValidateAppIdExtension(
       std::string appid,

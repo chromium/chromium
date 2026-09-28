@@ -496,6 +496,13 @@
       permissions_policy_name: "publickey-credentials-get",
     },
     {
+      // TODO(crbug.com/506062130): Use EnableForNone when it is standardized.
+      name: "PublicKeyCredentialsRemoteClientDataJson",
+      permissions_policy_name: "publickey-credentials-remote-client-data-json",
+      feature_default: "EnableForSelf",
+      depends_on: ["WebAuthenticationRemoteClientDataJson"],
+    },
+    {
       name: "Rewriter",
       permissions_policy_name: "rewriter",
       depends_on: ["AIRewriterAPI"],

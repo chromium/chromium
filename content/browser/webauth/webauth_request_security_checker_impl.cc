@@ -104,6 +104,7 @@ blink::mojom::AuthenticatorStatus
 WebAuthRequestSecurityCheckerImpl::ValidateAncestorOrigins(
     const url::Origin& origin,
     RequestType type,
+    bool uses_remote_client_data_json,
     bool* is_cross_origin) {
   if (render_frame_host_->IsNestedWithinFencedFrame()) {
     bad_message::ReceivedBadMessage(
@@ -113,6 +114,13 @@ WebAuthRequestSecurityCheckerImpl::ValidateAncestorOrigins(
   }
 
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
+
+  if (uses_remote_client_data_json &&
+      !render_frame_host_->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::
+              kPublicKeyCredentialsRemoteClientDataJson)) {
+    return blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+  }
 
   // Requests in cross-origin iframes are permitted if enabled via permissions
   // policy and for SPC requests.

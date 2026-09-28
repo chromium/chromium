@@ -102,6 +102,16 @@ network::ParsedPermissionsPolicy CreatePolicyToDenyWebAuthn() {
       /*matches_opaque_src=*/false)};
 }
 
+network::ParsedPermissionsPolicy CreateRemoteClientDataJsonPolicy(
+    bool is_allowed) {
+  return {network::ParsedPermissionsPolicyDeclaration(
+      network::mojom::PermissionsPolicyFeature::
+          kPublicKeyCredentialsRemoteClientDataJson,
+      /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
+      /*matches_all_origins=*/is_allowed,
+      /*matches_opaque_src=*/false)};
+}
+
 network::ParsedPermissionsPolicy CreatePolicyToAllowWebPayments() {
   return {network::ParsedPermissionsPolicyDeclaration(
       network::mojom::PermissionsPolicyFeature::kPayment,
@@ -115,12 +125,14 @@ struct TestCase {
            const network::ParsedPermissionsPolicy& policy,
            WebAuthRequestSecurityChecker::RequestType request_type,
            bool expected_is_cross_origin,
-           blink::mojom::AuthenticatorStatus expected_status)
+           blink::mojom::AuthenticatorStatus expected_status,
+           bool uses_remote_client_data_json = false)
       : url(url),
         policy(policy),
         request_type(request_type),
         expected_is_cross_origin(expected_is_cross_origin),
-        expected_status(expected_status) {}
+        expected_status(expected_status),
+        uses_remote_client_data_json(uses_remote_client_data_json) {}
 
   ~TestCase() = default;
 
@@ -129,6 +141,7 @@ struct TestCase {
   const WebAuthRequestSecurityChecker::RequestType request_type;
   const bool expected_is_cross_origin;
   const blink::mojom::AuthenticatorStatus expected_status;
+  const bool uses_remote_client_data_json;
 };
 
 std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
@@ -194,7 +207,7 @@ TEST_P(WebAuthRequestSecurityCheckerTest, ValidateAncestorOrigins) {
   blink::mojom::AuthenticatorStatus actual_status =
       checker->ValidateAncestorOrigins(
           url::Origin::Create(GURL(GetParam().url)), GetParam().request_type,
-          &actual_is_cross_origin);
+          GetParam().uses_remote_client_data_json, &actual_is_cross_origin);
 
   EXPECT_EQ(GetParam().expected_status, actual_status);
   EXPECT_EQ(GetParam().expected_is_cross_origin, actual_is_cross_origin);
@@ -314,16 +327,19 @@ INSTANTIATE_TEST_SUITE_P(
 struct SingleFrameTestCase {
   SingleFrameTestCase(const network::ParsedPermissionsPolicy& policy,
                       WebAuthRequestSecurityChecker::RequestType request_type,
-                      blink::mojom::AuthenticatorStatus expected_status)
+                      blink::mojom::AuthenticatorStatus expected_status,
+                      bool uses_remote_client_data_json = false)
       : policy(policy),
         request_type(request_type),
-        expected_status(expected_status) {}
+        expected_status(expected_status),
+        uses_remote_client_data_json(uses_remote_client_data_json) {}
 
   ~SingleFrameTestCase() = default;
 
   const network::ParsedPermissionsPolicy policy;
   const WebAuthRequestSecurityChecker::RequestType request_type;
   const blink::mojom::AuthenticatorStatus expected_status;
+  const bool uses_remote_client_data_json;
 };
 
 class WebAuthRequestSecurityCheckerSingleFrameTest
@@ -364,7 +380,8 @@ TEST_P(WebAuthRequestSecurityCheckerSingleFrameTest,
   blink::mojom::AuthenticatorStatus actual_status =
       checker->ValidateAncestorOrigins(
           url::Origin::Create(GURL("https://same-origin.com")),
-          GetParam().request_type, &actual_is_cross_origin);
+          GetParam().request_type, GetParam().uses_remote_client_data_json,
+          &actual_is_cross_origin);
 
   EXPECT_EQ(GetParam().expected_status, actual_status);
   EXPECT_EQ(false, actual_is_cross_origin);
@@ -389,7 +406,27 @@ INSTANTIATE_TEST_SUITE_P(
         SingleFrameTestCase(
             CreatePolicyToDenyWebAuthn(),
             WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
-            blink::mojom::AuthenticatorStatus::SUCCESS)));
+            blink::mojom::AuthenticatorStatus::SUCCESS),
+        SingleFrameTestCase(
+            CreateRemoteClientDataJsonPolicy(/*is_allowed=*/true),
+            WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+            blink::mojom::AuthenticatorStatus::SUCCESS,
+            /*uses_remote_client_data_json=*/true),
+        SingleFrameTestCase(
+            CreateRemoteClientDataJsonPolicy(/*is_allowed=*/false),
+            WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
+            /*uses_remote_client_data_json=*/true),
+        SingleFrameTestCase(
+            CreateRemoteClientDataJsonPolicy(/*is_allowed=*/true),
+            WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
+            blink::mojom::AuthenticatorStatus::SUCCESS,
+            /*uses_remote_client_data_json=*/true),
+        SingleFrameTestCase(
+            CreateRemoteClientDataJsonPolicy(/*is_allowed=*/false),
+            WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
+            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR,
+            /*uses_remote_client_data_json=*/true)));
 
 class WebAuthRequestSecurityCheckerWellKnownJSONTest : public testing::Test {
  protected:

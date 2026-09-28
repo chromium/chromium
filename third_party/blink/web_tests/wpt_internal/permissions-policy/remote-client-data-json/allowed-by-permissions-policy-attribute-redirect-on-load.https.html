@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>remoteClientDataJSON Permissions Policy delegation after redirect</title>
+<link rel="help" href="https://w3c.github.io/webauthn/#sctn-permissions-policy">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/permissions-policy/resources/permissions-policy.js"></script>
+<script src="resources/remote-client-data-json-policy.js"></script>
+<body></body>
+<script>
+"use strict";
+
+if (page_loaded_in_iframe()) {
+  test_feature_in_iframe(
+      remoteClientDataJsonPolicyFeature,
+      useRemoteClientDataJsonPolicyFeature);
+} else {
+  const redirect = "/permissions-policy/resources/redirect-on-load.html#";
+  const destination = same_origin_url(remoteClientDataJsonPolicyFeature);
+
+  promise_test(
+      t => test_feature_availability_with_post_message_result(
+          t, redirect + destination, "#OK",
+          allRemoteClientDataJsonPolicyFeatures),
+      "The allow attribute delegates the feature after a same-origin redirect.");
+
+  promise_test(
+      t => test_feature_availability_with_post_message_result(
+          t, redirect + get_host_info().HTTPS_REMOTE_ORIGIN + destination,
+          "NotAllowedError", allRemoteClientDataJsonPolicyFeatures),
+      "The allow attribute does not delegate the feature after a " +
+          "cross-origin redirect.");
+}
+</script>

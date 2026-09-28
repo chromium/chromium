@@ -19141,7 +19141,8 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
           : WebAuthRequestSecurityChecker::RequestType::kGetAssertion;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityCheckerImpl()->ValidateAncestorOrigins(
-          effective_origin, request_type, &is_cross_origin);
+          effective_origin, request_type,
+          /*uses_remote_client_data_json=*/false, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     std::move(callback).Run(status, is_cross_origin);
     return;
@@ -19216,7 +19217,8 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
           : WebAuthRequestSecurityChecker::RequestType::kMakeCredential;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityCheckerImpl()->ValidateAncestorOrigins(
-          effective_origin, request_type, &is_cross_origin);
+          effective_origin, request_type,
+          /*uses_remote_client_data_json=*/false, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     std::move(callback).Run(status, is_cross_origin);
     return;
@@ -19285,7 +19287,7 @@ void RenderFrameHostImpl::PerformReportWebAuthSecurityChecks(
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityCheckerImpl()->ValidateAncestorOrigins(
           effective_origin, WebAuthRequestSecurityChecker::RequestType::kReport,
-          &is_cross_origin);
+          /*uses_remote_client_data_json=*/false, &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     std::move(callback).Run(status, is_cross_origin);
     return;

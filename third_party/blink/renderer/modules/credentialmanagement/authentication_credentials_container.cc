@@ -1963,6 +1963,18 @@ AuthenticationCredentialsContainer::create(
       }
     }
 
+    if (extensions->hasRemoteClientDataJSON() &&
+        !context->IsFeatureEnabled(
+            network::mojom::PermissionsPolicyFeature::
+                kPublicKeyCredentialsRemoteClientDataJson)) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "The 'publickey-credentials-remote-client-data-json' feature is not "
+          "enabled in this document. Permissions Policy may be used to "
+          "delegate this capability to cross-origin child frames."));
+      return promise;
+    }
+
     RecordCreateExtensionsUseCounters(context, *extensions);
   }
 
@@ -2366,6 +2378,19 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
             DOMExceptionCode::kNotAllowedError,
             "The 'payment' extension is only valid when creating a "
             "credential"));
+        return;
+      }
+
+      if (extensions->hasRemoteClientDataJSON() &&
+          !context->IsFeatureEnabled(
+              network::mojom::PermissionsPolicyFeature::
+                  kPublicKeyCredentialsRemoteClientDataJson)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "The 'publickey-credentials-remote-client-data-json' "
+            "feature is not enabled in this document. Permissions Policy may "
+            "be used to delegate this capability to cross-origin child "
+            "frames."));
         return;
       }
 

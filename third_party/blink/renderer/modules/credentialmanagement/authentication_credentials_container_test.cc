@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/testing/gc_object_liveness_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
@@ -1398,6 +1400,159 @@ TEST(AuthenticationCredentialsContainerTest,
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_TRUE(context.DomWindow().document()->IsUseCounted(
       WebFeature::kWebAuthnConditionalCreateSuccess));
+}
+
+class RemoteClientDataJsonPermissionsPolicyTest : public testing::Test {
+ protected:
+  CredentialCreationOptions* CreateOptions() {
+    auto* options = CredentialCreationOptions::Create();
+    auto* public_key = PublicKeyCredentialCreationOptions::Create();
+    auto* rp = PublicKeyCredentialRpEntity::Create();
+    rp->setId("example.test");
+    rp->setName("Example");
+    public_key->setRp(rp);
+
+    auto* user = PublicKeyCredentialUserEntity::Create();
+    user->setId(MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+        DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+    user->setName("user");
+    user->setDisplayName("User");
+    public_key->setUser(user);
+
+    auto* param = PublicKeyCredentialParameters::Create();
+    param->setAlg(-7);
+    param->setType("public-key");
+    public_key->setPubKeyCredParams({param});
+    public_key->setChallenge(
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+            DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+    auto* extensions = AuthenticationExtensionsClientInputs::Create();
+    extensions->setRemoteClientDataJSON(
+        R"({"type":"webauthn.create","challenge":"AQIDBA",)"
+        R"("origin":"https://example.test","crossOrigin":false})");
+    public_key->setExtensions(extensions);
+    options->setPublicKey(public_key);
+    return options;
+  }
+
+  CredentialRequestOptions* GetOptions() {
+    auto* options = CredentialRequestOptions::Create();
+    auto* public_key = PublicKeyCredentialRequestOptions::Create();
+    public_key->setRpId("example.test");
+    public_key->setChallenge(
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
+            DOMArrayBuffer::Create(Vector<uint8_t>{1, 2, 3, 4})));
+    auto* extensions = AuthenticationExtensionsClientInputs::Create();
+    extensions->setRemoteClientDataJSON(
+        R"({"type":"webauthn.get","challenge":"AQIDBA",)"
+        R"("origin":"https://example.test","crossOrigin":false})");
+    public_key->setExtensions(extensions);
+    options->setPublicKey(public_key);
+    return options;
+  }
+
+  void DisablePolicy(CredentialManagerTestingContext& context) {
+    network::ParsedPermissionsPolicy parsed_policy;
+    DisallowFeature(network::mojom::PermissionsPolicyFeature::
+                        kPublicKeyCredentialsRemoteClientDataJson,
+                    parsed_policy);
+    context.DomWindow().GetSecurityContext().SetPermissionsPolicy(
+        network::PermissionsPolicy::CreateFromParentPolicy(
+            nullptr, parsed_policy, {},
+            context.DomWindow().GetSecurityOrigin()->ToUrlOrigin()));
+  }
+
+  void ExpectRejection(CredentialManagerTestingContext& context,
+                       MockAuthenticatorInterface& authenticator,
+                       ScriptPromise<IDLNullable<Credential>> promise,
+                       const char* name,
+                       const char* message) {
+    ScriptPromiseTester tester(context.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToWrappable(
+        context.GetScriptState()->GetIsolate(), tester.Value().V8Value());
+    ASSERT_TRUE(exception);
+    EXPECT_EQ(exception->name(), name);
+    EXPECT_EQ(exception->message(), message);
+    test::RunPendingTasks();
+    EXPECT_FALSE(authenticator.last_creation_options());
+    EXPECT_FALSE(authenticator.last_get_options());
+  }
+
+  static constexpr char kPolicyError[] =
+      "The 'publickey-credentials-remote-client-data-json' feature is not "
+      "enabled in this document. Permissions Policy may be used to "
+      "delegate this capability to cross-origin child frames.";
+
+ private:
+  test::TaskEnvironment task_environment_;
+  ScopedWebAuthenticationRemoteClientDataJsonForTest rcdj_enabled_{true};
+};
+
+TEST_F(RemoteClientDataJsonPermissionsPolicyTest,
+       CreateAllowedOnTopLevelByDefault) {
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+  auto* creation_options = CreateOptions();
+
+  AuthenticationCredentialsContainer::credentials(
+      *context.DomWindow().navigator())
+      ->create(context.GetScriptState(), creation_options,
+               IGNORE_EXCEPTION_FOR_TESTING);
+
+  mock_authenticator.WaitForCallToMakeCredential();
+  ASSERT_TRUE(mock_authenticator.last_creation_options());
+  EXPECT_EQ(
+      mock_authenticator.last_creation_options()->remote_client_data_json,
+      creation_options->publicKey()->extensions()->remoteClientDataJSON());
+  mock_authenticator.InvokeMakeCredentialCallback();
+}
+
+TEST_F(RemoteClientDataJsonPermissionsPolicyTest,
+       GetAllowedOnTopLevelByDefault) {
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+  auto* options = GetOptions();
+  AuthenticationCredentialsContainer::credentials(
+      *context.DomWindow().navigator())
+      ->get(context.GetScriptState(), options, IGNORE_EXCEPTION_FOR_TESTING);
+
+  mock_authenticator.WaitForCallToGet();
+  ASSERT_TRUE(mock_authenticator.last_get_options());
+  ASSERT_TRUE(mock_authenticator.last_get_options()->public_key);
+  EXPECT_EQ(mock_authenticator.last_get_options()
+                ->public_key->extensions->remote_client_data_json,
+            options->publicKey()->extensions()->remoteClientDataJSON());
+  mock_authenticator.InvokeGetCallback();
+}
+
+TEST_F(RemoteClientDataJsonPermissionsPolicyTest, CreateDeniedByPolicy) {
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+  DisablePolicy(context);
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->create(context.GetScriptState(), CreateOptions(),
+                              IGNORE_EXCEPTION_FOR_TESTING);
+  ExpectRejection(context, mock_authenticator, promise, "NotAllowedError",
+                  kPolicyError);
+}
+
+TEST_F(RemoteClientDataJsonPermissionsPolicyTest, GetDeniedByPolicy) {
+  MockAuthenticatorInterface mock_authenticator;
+  CredentialManagerTestingContext context(/*mock_credential_manager=*/nullptr,
+                                          &mock_authenticator);
+  DisablePolicy(context);
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), GetOptions(),
+                           IGNORE_EXCEPTION_FOR_TESTING);
+  ExpectRejection(context, mock_authenticator, promise, "NotAllowedError",
+                  kPolicyError);
 }
 
 TEST(AuthenticationCredentialsContainerTest, PublicKeyCreateCmtgKeyExtension) {
