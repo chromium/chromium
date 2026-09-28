@@ -4654,9 +4654,6 @@ crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/aut
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-permissions-policy.https.sub.html [ Crash Failure Pass Timeout ]
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-disabled-by-permissions-policy.https.sub.html [ Crash Failure Pass Timeout ]
 
-# Does not work on Mac
-crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Timeout ]
-
 # Different paths may have different anti-aliasing pixels 2018-02-21
 skbug.com/7641 external/wpt/css/css-paint-api/paint2d-paths.https.html [ Failure Pass ]
 

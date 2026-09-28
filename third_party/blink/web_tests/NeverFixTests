@@ -161,6 +161,7 @@ crbug.com/41254976 [ Mac ] fast/events/pointerevents/pointer-event-in-slop-regio
 crbug.com/41254976 [ Mac ] fast/events/touch/gesture/* [ Skip ]
 crbug.com/41254976 [ Mac ] fast/scrolling/resize-corner-tracking-touch.html [ Skip ]
 crbug.com/41254976 [ Mac ] fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Skip ]
+crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Skip ]
 crbug.com/41254976 [ Mac ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Skip ]
 
 # Thumb snapping is not supported on Linux and Mac.
