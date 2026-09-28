@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/glib/scoped_gsignal.h"
@@ -45,6 +46,47 @@ TEST(GtkUtilTest, GetThemeFallback) {
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kThemeName), "Adwaita");
   EXPECT_STREQ(GetThemeFallback(ThemeProperty::kCursorThemeName), "Adwaita");
   EXPECT_EQ(GetThemeFallback(ThemeProperty::kKeyThemeName), nullptr);
+}
+
+class GtkUtilXftDpiTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    settings_ = GetDefaultGtkSettings();
+    ASSERT_TRUE(settings_);
+    g_object_get(settings_, "gtk-xft-dpi", &original_dpi_, nullptr);
+  }
+  void TearDown() override {
+    g_object_set(settings_, "gtk-xft-dpi", original_dpi_, nullptr);
+  }
+
+  void SetXftDpi(int dpi) {
+    g_object_set(settings_, "gtk-xft-dpi", dpi, nullptr);
+  }
+
+ private:
+  raw_ptr<GtkSettings> settings_ = nullptr;
+  int original_dpi_ = -1;
+};
+
+TEST_F(GtkUtilXftDpiTest, GetFontScaleFromXftDpi) {
+  SetXftDpi(144 * 1024);
+  EXPECT_EQ(GetXftDpi(), 144 * 1024);
+  EXPECT_EQ(GetFontScale(), 1.5);
+}
+
+// Regression test for crbug.com/566241627: `gtk-xft-dpi` is unset on GTK4
+// Wayland when the xdg-desktop-portal Settings interface is unavailable.
+// GetFontScale() must not call GTK3-only GdkScreen APIs on GTK4, which are
+// unresolved there.
+TEST_F(GtkUtilXftDpiTest, GetFontScaleWithoutXftDpi) {
+  SetXftDpi(-1);
+  EXPECT_EQ(GetXftDpi(), 0);
+  const double font_scale = GetFontScale();
+  if (GtkCheckVersion(4)) {
+    EXPECT_EQ(font_scale, 1.0);
+  } else {
+    EXPECT_GT(font_scale, 0.0);
+  }
 }
 
 TEST(GtkUtilTest, IsGdkFatalErrorMessage) {

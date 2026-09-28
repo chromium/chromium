@@ -8,6 +8,7 @@
 #include <locale.h>
 #include <stddef.h>
 
+#include <cmath>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -793,6 +794,29 @@ float GetDeviceScaleFactor() {
     return linux_ui->display_config().primary_scale;
   }
   return 1.0f;
+}
+
+int GetXftDpi() {
+  int dpi = -1;
+  g_object_get(gtk_settings_get_default(), "gtk-xft-dpi", &dpi, nullptr);
+  return dpi < 0 ? 0 : dpi;
+}
+
+double GetFontScale() {
+  double resolution = 0;
+  if (const int dpi = GetXftDpi()) {
+    resolution = dpi / 1024.0;
+  } else if (!GtkCheckVersion(4)) {
+    // GdkScreen was removed in GTK4.  On GTK4, `gtk-xft-dpi` may be unset
+    // (eg. on Wayland without the xdg-desktop-portal Settings interface), in
+    // which case the default font scale is used.
+    GdkScreen* screen = gdk_screen_get_default();
+    resolution = gdk_screen_get_resolution(screen);
+  }
+  const double font_scale = resolution > 0 ? resolution / kDefaultDPI : 1.0;
+  // Round to the nearest 1/64th so that UI can losslessly multiply and divide
+  // the scale factor.
+  return std::round(font_scale * 64) / 64;
 }
 
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node) {

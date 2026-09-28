@@ -200,6 +200,17 @@ gfx::Size GetSeparatorSize(bool horizontal);
 
 float GetDeviceScaleFactor();
 
+// The reference DPI that corresponds to a font scale of 1.0.
+inline constexpr double kDefaultDPI = 96;
+
+// Returns the value of the `gtk-xft-dpi` setting in 1/1024ths of an inch, or 0
+// if it's unset.
+COMPONENT_EXPORT(GTK) int GetXftDpi();
+
+// Returns the font scale implied by the system DPI, rounded to the nearest
+// 1/64th.  Returns 1.0 if the DPI is unknown.
+COMPONENT_EXPORT(GTK) double GetFontScale();
+
 // This should only be called on Gtk4.
 GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
