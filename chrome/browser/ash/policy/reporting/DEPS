@@ -43,7 +43,6 @@ include_rules = [
   # TODO: b/335799773 - We can remove this dependency once support tool files
   # have been separated from //chrome/browser/support_tool.
   "+chrome/browser/support_tool",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/upgrade_detector",
@@ -54,6 +53,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need //chrome/browser/sync.
+  "app_usage_telemetry_sampler_browsertest\\.cc": [
+    "+chrome/browser/sync/sync_service_factory.h",
+  ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/web_applications/test",
   ],

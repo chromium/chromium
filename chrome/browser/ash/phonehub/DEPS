@@ -23,8 +23,15 @@ include_rules = [
   "+chrome/browser/download",
   "+chrome/browser/favicon",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # The keyed service factories are the //chrome seam for the sync services.
+  "phone_hub_manager_factory\\.cc": [
+    "+chrome/browser/sync/session_sync_service_factory.h",
+    "+chrome/browser/sync/sync_service_factory.h",
+  ],
+}
