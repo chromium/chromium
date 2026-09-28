@@ -35,11 +35,14 @@ void EntitySuppressionManagerImpl::RemoveObserver(
 
 bool EntitySuppressionManagerImpl::SuppressEntity(
     const EntityInstance& entity) {
+  // Copy the ID because `Suppress()` notifies observers, which may destroy
+  // `entity`. For example, the `EntityDataManager` evicts suppressed
+  // personal-context entities.
+  const EntityInstance::EntityId entity_id = entity.guid();
   bool modified = false;
   for (EntitySuppressionEntry& entry : GetEntitySuppressionEntries(entity)) {
     if (sync_bridge_->Suppress(entry)) {
-      suppressed_entries_by_entity_id_[entity.guid()].push_back(
-          std::move(entry));
+      suppressed_entries_by_entity_id_[entity_id].push_back(std::move(entry));
       modified = true;
     }
   }
