@@ -6,6 +6,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -19,6 +21,7 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -31,6 +34,7 @@
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -266,9 +270,19 @@ class PermissionChipBrowserTest : public InProcessBrowserTest {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
 
+  // WebUIPermissionChip resolves the prompt bubble's anchor asynchronously,
+  // once the WebUI has registered the chip element over Mojo. Waits for it so
+  // that any pending prompt bubble is created by the time this returns.
+  void WaitForBubbleAnchor(ChipController* controller) {
+    ASSERT_TRUE(base::test::RunUntil([controller] {
+      return !controller->is_waiting_for_anchor_for_testing();
+    }));
+  }
+
   void ClickOnChip(ChipController* controller) {
     controller->chip()->ExecuteForTesting();
     base::RunLoop().RunUntilIdle();
+    WaitForBubbleAnchor(controller);
   }
 
   void ClickOnAcceptPermissionRequestQuietChip(ChipController* controller) {
@@ -376,6 +390,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnRequestChipTest) {
   chip_controller->chip()->ResetAnimation(
       PermissionChipInterface::AnimationState::kExpanded);
   chip_controller->OnExpandAnimationEnded();
+  WaitForBubbleAnchor(chip_controller);
   EXPECT_FALSE(chip_controller->IsAnimating());
 
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
@@ -646,6 +661,54 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(delegate.Requests().empty());
   EXPECT_EQ(chip_controller->permission_prompt_model(), nullptr);
   EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+}
+
+// Uses the WebUI location bar, whose chips wait for the WebUI to register the
+// chip element before the prompt bubble is shown.
+class PermissionChipWebUIBrowserTest : public PermissionChipBrowserTest {
+ public:
+  PermissionChipWebUIBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUILocationBar}, {});
+  }
+
+ private:
+  ScopedFeatureList feature_list_;
+};
+
+// Hovering the chip while it waits for its anchor must not start the collapse
+// or dismiss timers, which would keep running once the bubble is shown.
+IN_PROC_BROWSER_TEST_F(PermissionChipWebUIBrowserTest,
+                       HoverWhileWaitingForAnchorDoesNotStartTimers) {
+  auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
+      GURL("https://test.origin"), {permissions::RequestType::kNotifications},
+      true, web_contents_);
+  PermissionPromptChip chip_prompt(web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  // The bubble opens automatically once the chip has expanded, after waiting
+  // for the WebUI to register the chip element.
+  chip_controller->chip()->ResetAnimation(
+      PermissionChipInterface::AnimationState::kExpanded);
+  chip_controller->OnExpandAnimationEnded();
+  ASSERT_TRUE(chip_controller->is_waiting_for_anchor_for_testing());
+  EXPECT_FALSE(chip_controller->IsBubbleShowing());
+
+  chip_controller->RestartTimersOnMouseHover();
+  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
+
+  WaitForBubbleAnchor(chip_controller);
+  EXPECT_TRUE(chip_controller->IsBubbleShowing());
+  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
+  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
+
+  EXPECT_CALL(delegate, Dismiss(_)).WillOnce([&delegate]() {
+    delegate.ClearRequests();
+  });
+  ClickOnChip(chip_controller);
+  EXPECT_FALSE(chip_controller->IsBubbleShowing());
 }
 
 class PermissionPromiseLifetimeModulationTest

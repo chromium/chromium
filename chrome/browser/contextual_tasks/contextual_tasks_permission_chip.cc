@@ -329,6 +329,16 @@ views::BubbleAnchor ContextualTasksPermissionChip::GetAnchor() {
   return views::BubbleAnchor();
 }
 
+void ContextualTasksPermissionChip::WaitForAnchor(base::OnceClosure callback) {
+  // TODO(crbug.com/558978384): This is currently a placeholder that runs
+  // `callback` right away, without waiting for the chip element. Remove this
+  // class and use WebUIPermissionChip directly in Contextual Tasks instead,
+  // whose WaitForAnchor() already waits for the chip element. First,
+  // WebUIPermissionChip needs to look up the chip in the side panel toolbar's
+  // element context rather than the browser window's.
+  std::move(callback).Run();
+}
+
 void ContextualTasksPermissionChip::SetBubbleOwner(BubbleOwnerDelegate* owner) {
   bubble_owner_ = owner;
 }

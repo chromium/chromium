@@ -149,7 +149,8 @@ bool ChipController::IsAnimating() const {
 
 void ChipController::RestartTimersOnMouseHover() {
   ResetTimers();
-  if (!permission_prompt_model_ || IsBubbleShowing() || IsAnimating()) {
+  if (!permission_prompt_model_ || IsBubbleShowing() ||
+      is_waiting_for_anchor_ || IsAnimating()) {
     return;
   }
 
@@ -400,6 +401,9 @@ void ChipController::PromptDecided(permissions::PermissionAction action) {
 }
 
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
+  is_waiting_for_anchor_ = false;
+  anchor_weak_factory_.InvalidateWeakPtrs();
+
   views::Widget* const bubble_widget = GetBubbleWidget();
   if (bubble_widget) {
     disallowed_custom_cursors_scope_.RunAndReset();
@@ -646,13 +650,37 @@ void ChipController::OpenPermissionPromptBubble() {
     return;
   }
 
+  // Prevent re-entrancy while waiting for an asynchronous anchor resolution
+  // (e.g. if the user clicks the chip again before WebUI finishes registering
+  // the tracked element over Mojo).
+  if (is_waiting_for_anchor_) {
+    return;
+  }
+
+  // Prevent chip from collapsing while prompt bubble is open.
+  ResetTimers();
+
+  is_waiting_for_anchor_ = true;
+  chip_->WaitForAnchor(
+      base::BindOnce(&ChipController::OnPromptBubbleAnchorReady,
+                     anchor_weak_factory_.GetWeakPtr()));
+}
+
+void ChipController::OnPromptBubbleAnchorReady() {
+  is_waiting_for_anchor_ = false;
+
+  if (IsBubbleShowing() || !permission_prompt_model_ ||
+      !permission_prompt_model_->GetDelegate() ||
+      permission_prompt_model_->GetDelegate()->Requests().empty() ||
+      !location_bar_->GetWebContents() || !IsPermissionPromptChipVisible() ||
+      is_bubble_suppressed_) {
+    return;
+  }
+
   disallowed_custom_cursors_scope_ =
       permission_prompt_model_->GetDelegate()
           ->GetAssociatedWebContents()
           ->CreateDisallowCustomCursorScope(/*max_dimension_dips=*/0);
-
-  // Prevent chip from collapsing while prompt bubble is open.
-  ResetTimers();
 
   if (permission_prompt_model_->GetPromptStyle() ==
       PermissionPromptStyle::kChip) {

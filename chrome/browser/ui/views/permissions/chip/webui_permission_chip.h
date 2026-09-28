@@ -10,13 +10,16 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/permissions/permission_actions_history.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -24,7 +27,8 @@ class LocationBar;
 
 class WebUIPermissionChip : public PermissionChipInterface {
  public:
-  explicit WebUIPermissionChip(LocationBar* location_bar);
+  WebUIPermissionChip(LocationBar* location_bar,
+                      ui::ElementIdentifier element_id);
   ~WebUIPermissionChip() override;
 
   // PermissionChipInterface:
@@ -60,6 +64,7 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void SetPressedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
   views::BubbleAnchor GetAnchor() override;
+  void WaitForAnchor(base::OnceClosure callback) override;
   void SetBubbleOwner(BubbleOwnerDelegate* owner) override;
   void ExecuteForTesting() override;
   void EndAnimationForTesting() override;
@@ -81,11 +86,19 @@ class WebUIPermissionChip : public PermissionChipInterface {
   void InvalidateStateToken() { ++state_token_; }
 
  private:
+  friend class WebUIPermissionChipTest;
+
+  // How long `WaitForAnchor()` waits for the chip element to be shown before
+  // timing out and running the callback anyway. `GetAnchor()` then returns a
+  // fallback anchor.
+  static constexpr base::TimeDelta kAnchorFallbackTimeout = base::Seconds(3);
+
   void NotifyVisibilityChanged();
   void UpdateState();
   void FinishAnimation(AnimationState state);
 
   raw_ptr<LocationBar> location_bar_;
+  const ui::ElementIdentifier element_id_;
 
   // An epoch counter that increments whenever the chip's visibility or
   // animation state changes (which occurs on tab switches, navigations, and
@@ -128,6 +141,13 @@ class WebUIPermissionChip : public PermissionChipInterface {
       base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
   base::RepeatingClosureList visibility_callbacks_;
+
+  void RunPendingAnchorCallback();
+
+  base::CallbackListSubscription element_shown_subscription_;
+  base::OneShotTimer anchor_fallback_timer_;
+  base::OnceClosure pending_anchor_callback_;
+  base::WeakPtrFactory<WebUIPermissionChip> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_WEBUI_PERMISSION_CHIP_H_

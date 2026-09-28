@@ -107,13 +107,21 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
     // gfx::Animation. `base::RunLoop().RunUntilIdle()` alone does not wait for
     // the WebUI IPC callback to arrive. If the chip is still animating,
     // forcibly snap the chip to expanded and trigger `OnExpandAnimationEnded()`
-    // so the prompt bubble widget is created synchronously before `ShowUi()`
-    // returns.
+    // to open the prompt bubble.
     ChipController* chip_controller = GetChipController();
     if (chip_controller && chip_controller->IsAnimating()) {
       chip_controller->chip()->ResetAnimation(
           PermissionChipInterface::AnimationState::kExpanded);
       chip_controller->OnExpandAnimationEnded();
+    }
+
+    // WebUIPermissionChip also resolves the bubble's anchor asynchronously,
+    // once the WebUI has registered the chip element over Mojo. Wait for it so
+    // that the prompt bubble widget is created before `ShowUi()` returns.
+    if (chip_controller) {
+      ASSERT_TRUE(base::test::RunUntil([chip_controller] {
+        return !chip_controller->is_waiting_for_anchor_for_testing();
+      }));
     }
   }
 

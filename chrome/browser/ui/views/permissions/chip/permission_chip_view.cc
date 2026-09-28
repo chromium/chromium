@@ -435,6 +435,10 @@ views::BubbleAnchor PermissionChipView::GetAnchor() {
   return views::BubbleAnchor(this);
 }
 
+void PermissionChipView::WaitForAnchor(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 namespace {
 class BubbleButtonController : public views::ButtonController {
  public:

@@ -4,10 +4,14 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "ui/base/base_window.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
 
@@ -74,8 +78,11 @@ toolbar_ui_api::mojom::PermissionAction GetMojoPermissionAction(
 
 }  // namespace
 
-WebUIPermissionChip::WebUIPermissionChip(LocationBar* location_bar)
-    : location_bar_(location_bar) {}
+WebUIPermissionChip::WebUIPermissionChip(LocationBar* location_bar,
+                                         ui::ElementIdentifier element_id)
+    : location_bar_(location_bar), element_id_(element_id) {
+  CHECK(element_id_);
+}
 
 WebUIPermissionChip::~WebUIPermissionChip() = default;
 
@@ -85,6 +92,9 @@ void WebUIPermissionChip::SetVisible(bool visible) {
   }
   ++state_token_;
   is_visible_ = visible;
+  if (!is_visible_) {
+    RunPendingAnchorCallback();
+  }
   NotifyVisibilityChanged();
   UpdateState();
 }
@@ -265,21 +275,62 @@ void WebUIPermissionChip::SetPressedCallback(
 }
 
 views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
-  // The WebUI element tracker registration happens asynchronously over Mojo.
-  // If a permission is requested during browser startup, we might attempt to
-  // anchor the bubble before the WebUI has finished registering the tracked
-  // element, causing GetAnchorOrNull() to return nullptr. We fallback to the
-  // main window contents view to prevent a crash during this sub-millisecond
-  // race condition.
+  // 1. Try to anchor to the specific tracked WebUI chip element if available.
+  BrowserElements* browser_elements =
+      BrowserElements::From(location_bar_->GetBrowser());
+  if (ui::TrackedElement* element = browser_elements->GetElement(element_id_)) {
+    return views::BubbleAnchor(element);
+  }
+
+  // 2. The WebUI element tracker registration happens asynchronously over Mojo.
+  // If a permission is requested before the WebUI has finished registering the
+  // chip element, fallback to the location bar container to prevent a crash.
   if (ui::TrackedElement* element = location_bar_->GetAnchorOrNull()) {
     return views::BubbleAnchor(element);
   }
+
+  // 3. Fallback to the main window contents view if the location bar is also
+  // not yet tracked.
   ui::BaseWindow* window = location_bar_->GetBrowser()->GetWindow();
   CHECK(window);
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
   CHECK(widget);
   return views::BubbleAnchor(widget->GetContentsView());
+}
+
+void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {
+  CHECK(!pending_anchor_callback_);
+  BrowserElements* browser_elements =
+      BrowserElements::From(location_bar_->GetBrowser());
+
+  // 1. If the element is already tracked, run the callback immediately.
+  if (browser_elements->GetElement(element_id_)) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // 2. Otherwise, subscribe to the ElementTracker and wait for the element to
+  // appear.
+  pending_anchor_callback_ = std::move(callback);
+  element_shown_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          element_id_, browser_elements->GetContext(),
+          base::IgnoreArgs<ui::TrackedElement*>(base::BindRepeating(
+              &WebUIPermissionChip::RunPendingAnchorCallback,
+              weak_factory_.GetWeakPtr())));
+  anchor_fallback_timer_.Start(
+      FROM_HERE, kAnchorFallbackTimeout,
+      base::BindOnce(&WebUIPermissionChip::RunPendingAnchorCallback,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void WebUIPermissionChip::RunPendingAnchorCallback() {
+  element_shown_subscription_ = {};
+  anchor_fallback_timer_.Stop();
+  if (pending_anchor_callback_) {
+    std::move(pending_anchor_callback_).Run();
+  }
 }
 
 void WebUIPermissionChip::SetBubbleOwner(BubbleOwnerDelegate* owner) {

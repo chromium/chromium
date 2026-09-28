@@ -127,6 +127,12 @@ class PermissionBubbleInteractiveUITest : public InProcessBrowserTest {
         !lb->GetChipController()->IsBubbleShowing()) {
       lb->GetChipController()->chip()->ExecuteForTesting();
       base::RunLoop().RunUntilIdle();
+      // A `WebUIPermissionChip` resolves the bubble's anchor asynchronously,
+      // once the WebUI has registered the chip element over Mojo. Wait for it
+      // so that the prompt bubble exists by the time this returns.
+      ASSERT_TRUE(base::test::RunUntil([lb] {
+        return !lb->GetChipController()->is_waiting_for_anchor_for_testing();
+      }));
     }
   }
 

@@ -20,11 +20,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestPermissionChipElementId);
 
 class TestLocationBarViewDelegate : public LocationBarView::Delegate {
  public:
@@ -159,7 +162,7 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
 }
 
 TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
-  WebUIPermissionChip chip(location_bar_);
+  WebUIPermissionChip chip(location_bar_, kTestPermissionChipElementId);
 
   chip.SetVisible(true);
   chip.SetChipIcon(features::IsRoundedIconsEnabled() ? kPhotoCameraIcon

@@ -4,15 +4,15 @@
 
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
-#include "ui/base/base_window.h"
-#include "ui/views/widget/widget.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 
 WebUIPermissionDashboard::WebUIPermissionDashboard(LocationBar* location_bar)
     : location_bar_(location_bar),
-      request_chip_(location_bar),
-      indicator_chip_(location_bar) {}
+      request_chip_(location_bar,
+                    PermissionChipView::kPermissionRequestChipElementId),
+      indicator_chip_(location_bar,
+                      PermissionChipView::kIndicatorChipElementId) {}
 
 WebUIPermissionDashboard::~WebUIPermissionDashboard() = default;
 
@@ -37,21 +37,9 @@ PermissionChipInterface* WebUIPermissionDashboard::GetIndicatorChip() {
 }
 
 views::BubbleAnchor WebUIPermissionDashboard::GetAnchor() {
-  // Note: Native Views anchors the bubble to the PermissionDashboardView
-  // (which tightly bounds the chips). However, when manually tested, the bubble
-  // seems to always align with the left side of the location bar anyway.
-  // For WebUI, we just anchor to the location bar for simplicity. We can
-  // revisit this as a follow-up if tighter anchoring to the individual WebUI
-  // chips is found to be necessary.
-  if (ui::TrackedElement* element = location_bar_->GetAnchorOrNull()) {
-    return views::BubbleAnchor(element);
-  }
-  ui::BaseWindow* window = location_bar_->GetBrowser()->GetWindow();
-  CHECK(window);
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
-  CHECK(widget);
-  return views::BubbleAnchor(widget->GetContentsView());
+  // Views anchors to the whole dashboard, whose leading chip is the indicator
+  // chip, so the page info bubble ends up in the same place.
+  return indicator_chip_.GetAnchor();
 }
 
 toolbar_ui_api::mojom::PermissionDashboardStatePtr

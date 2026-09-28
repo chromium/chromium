@@ -98,7 +98,26 @@ class PermissionChipInterface {
   virtual void SetPressedCallback(
       base::RepeatingCallback<void(bool)> callback) = 0;
 
+  // Synchronously returns the anchor for the chip.
+  // * For native Views, this returns the anchor view.
+  // * For WebUI, this returns the tracked WebUI element if already registered,
+  // or a fallback anchor (e.g. location bar container). This is safe to use
+  // when the chip is already visible and rendered (e.g. user clicks opening
+  // PageInfo), but may fall back during initial prompt display if the WebUI
+  // element is still registering. Use WaitForAnchor() to wait for it before
+  // showing permission prompts.
   virtual views::BubbleAnchor GetAnchor() = 0;
+
+  // Runs `callback` once GetAnchor() can return the chip itself, or once it's
+  // time to stop waiting and let GetAnchor() fall back.
+  // * For native Views, this runs `callback` synchronously.
+  // * For WebUI, if the tracked element is not yet registered over Mojo, this
+  // waits for it to become available (or until a fallback timeout, or until
+  // the chip is hidden) before running `callback`. This ensures permission
+  // prompt bubbles, which look up their anchor when they're created, anchor to
+  // the correct location during initial presentation. `callback` is dropped if
+  // the chip is destroyed first. Only one call can be waiting at a time.
+  virtual void WaitForAnchor(base::OnceClosure callback) = 0;
 
   virtual void SetBubbleOwner(BubbleOwnerDelegate* owner) = 0;
 

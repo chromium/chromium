@@ -98,6 +98,7 @@ class PermissionChipView : public views::MdTextButton,
   void SetPressedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
   views::BubbleAnchor GetAnchor() override;
+  void WaitForAnchor(base::OnceClosure callback) override;
   void SetBubbleOwner(
       PermissionChipInterface::BubbleOwnerDelegate* owner) override;
   void ExecuteForTesting() override;

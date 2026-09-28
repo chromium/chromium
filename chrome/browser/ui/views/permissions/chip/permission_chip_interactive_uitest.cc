@@ -191,6 +191,13 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
     ASSERT_FALSE(GetChipController()->GetBubbleWidget());
 
     chip->ExecuteForTesting();
+
+    // WebUIPermissionChip resolves the prompt bubble's anchor asynchronously,
+    // once the WebUI has registered the chip element over Mojo. Wait for it so
+    // that any pending prompt bubble is created by the time this returns.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return !GetChipController()->is_waiting_for_anchor_for_testing();
+    }));
   }
 
   void ForceUpdateVisibility() {

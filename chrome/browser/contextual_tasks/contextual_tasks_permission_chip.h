@@ -83,6 +83,7 @@ class ContextualTasksPermissionChip : public PermissionChipInterface {
   void SetPressedCallback(
       base::RepeatingCallback<void(bool)> callback) override;
   views::BubbleAnchor GetAnchor() override;
+  void WaitForAnchor(base::OnceClosure callback) override;
   void SetBubbleOwner(BubbleOwnerDelegate* owner) override;
   void ExecuteForTesting() override;
   void EndAnimationForTesting() override;

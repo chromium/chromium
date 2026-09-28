@@ -26,6 +26,7 @@ class PermissionDashboardInterface {
   // Return the chip that is used to display in-use activity indicators.
   virtual PermissionChipInterface* GetIndicatorChip() = 0;
 
+  // Return the anchor for the page info bubble opened from the indicator chip.
   virtual views::BubbleAnchor GetAnchor() = 0;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_INTERFACE_H_
