@@ -2602,7 +2602,7 @@
       "zalmashni@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 156
+    "expiry_milestone": 162
   },
   {
     "name": "dcheck-is-fatal",
@@ -9815,7 +9815,7 @@
   {
     "name": "universal-opt-out-settings",
     "owners": [ "azamatmz@google.com", "zalmashni@google.com", "chrome-privacy-team@google.com" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 162
   },
   {
     "name": "uno-phase-2-follow-up",
