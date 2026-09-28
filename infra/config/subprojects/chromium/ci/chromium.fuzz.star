@@ -723,6 +723,44 @@ centipede_linux_asan_builder(
     use_ssd_for_test_builder = None,
 )
 
+def centipede_mac_asan_builder(
+        gn_extra_configs = [],
+        swarming_mixins = ["mac_default_arm64"],
+        **kwargs):
+    return fuzz_target_builder(
+        build_config = builder_config.build_config.RELEASE,
+        fuzzing_engine = "centipede",
+        cores = None,
+        cpu = cpu.ARM64,
+        os = os.MAC_DEFAULT,
+        sanitizer = "asan",
+        swarming_mixins = swarming_mixins,
+        target_arch = builder_config.target_arch.ARM,
+        target_bits = 64,
+        target_platform = builder_config.target_platform.MAC,
+        gn_extra_configs = [
+            "asan",
+            "chrome_with_codecs",
+            "disable_seed_corpus",
+            "mojo_fuzzer",
+            "optimize_for_fuzzing",
+            "pdf_xfa",
+        ] + gn_extra_configs,
+        **kwargs
+    )
+
+centipede_mac_asan_builder(
+    name = "mac-arm64-centipede-asan-rel",
+    description_html = "This builder uploads Centipede Mac arm64 fuzzers.",
+    free_space = builders.free_space.standard,
+    # TODO(crbug.com/552017873): Update this once it is reliably green.
+    gardener_rotations = args.ignore_default(None),
+    clusterfuzz_archive_path = "mac-release-asan/centipede-mac-arm64-release",
+    execution_timeout = 6 * time.hour,
+    free_space_for_test_builder = builders.free_space.standard,
+    test_builder_name = "mac-arm64-centipede-asan-rel-tests",
+)
+
 browser_asan_builder(
     name = "ASan Release Media (32-bit x86 with V8-ARM)",
     description_html = "Produces a Linux x86 32-bit release Chromium build with V8 ARM simulator, ChromeOS media codecs, and AddressSanitizer for ClusterFuzz.",

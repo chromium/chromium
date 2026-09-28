@@ -1,0 +1,13 @@
+{
+  "$build/siso": {
+    "configs": [
+      "builder"
+    ],
+    "enable_cloud_monitoring": true,
+    "enable_cloud_trace": true,
+    "experiments": [],
+    "profile_mode": "cloud",
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 250
+  }
+}

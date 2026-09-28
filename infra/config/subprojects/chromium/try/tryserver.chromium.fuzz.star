@@ -129,6 +129,13 @@ _mirror_builder(name = "android-desktop-x64-asan-rel")
 
 _mirror_builder(name = "android-arm64-libfuzzer-hwasan", executable = "recipe:chromium/fuzz")
 
+_mirror_builder(
+    name = "mac-arm64-centipede-asan-rel",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+)
+
 _builder(
     name = "mac-asan-rel",
     cores = None,
@@ -213,3 +220,12 @@ _test_builder(
 )
 
 _test_builder(name = "linux-x64-centipede-asan-rel-tests")
+
+# TODO(crbug.com/552017873): Change this to a _test_builder once it is reliably
+# green.
+_mirror_builder(
+    name = "mac-arm64-centipede-asan-rel-tests",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+)
