@@ -9,6 +9,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,6 +22,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -40,6 +42,28 @@ PasswordGenerationUIData CreatePasswordGenerationUIData() {
       /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
       autofill::FormData(), /*input_field_empty=*/true);
 }
+
+class DropFullscreenDelegate : public content::WebContentsDelegate {
+ public:
+  explicit DropFullscreenDelegate(base::RepeatingClosure on_exit)
+      : on_exit_(std::move(on_exit)) {}
+
+  content::FullscreenState GetFullscreenState(
+      const content::WebContents* web_contents) const override {
+    content::FullscreenState state;
+    state.target_mode = content::FullscreenMode::kContent;
+    return state;
+  }
+
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
+    if (on_exit_) {
+      on_exit_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure on_exit_;
+};
 
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
@@ -326,6 +350,54 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   EXPECT_CALL(driver(), PreviewGenerationSuggestion);
   controller->Show(
       PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest, ShowDropsFullscreen) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh());
+
+  controller->SetViewForTesting(popup_view());
+  ON_CALL(*popup_view(), UpdateBoundsAndRedrawPopup)
+      .WillByDefault(Return(true));
+
+  bool exit_fullscreen_called = false;
+  DropFullscreenDelegate delegate(
+      base::BindLambdaForTesting([&]() { exit_fullscreen_called = true; }));
+  web_contents()->SetDelegate(&delegate);
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+
+  EXPECT_TRUE(exit_fullscreen_called);
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       DestroyedWhileExitingFullscreenDoesNotCrash) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(), weak_driver(),
+          /*observer=*/nullptr, web_contents(), main_rfh());
+
+  controller->SetViewForTesting(popup_view());
+
+  DropFullscreenDelegate delegate(base::BindLambdaForTesting([&]() {
+    if (controller) {
+      static_cast<PasswordGenerationPopupController*>(controller.get())
+          ->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
+    }
+  }));
+  web_contents()->SetDelegate(&delegate);
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+
+  EXPECT_FALSE(controller);
+  web_contents()->SetDelegate(nullptr);
 }
 
 }  // namespace password_manager

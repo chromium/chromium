@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -227,6 +228,9 @@ class PasswordGenerationPopupControllerImpl
   GenerationUIState state_;
 
   std::unique_ptr<KeyPressRegistrator> key_press_handler_manager_;
+
+  // Fullscreen block held while the popup is showing.
+  base::ScopedClosureRunner fullscreen_blocker_;
 
   base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
       zoom_observation_{this};

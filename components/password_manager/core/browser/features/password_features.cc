@@ -166,6 +166,9 @@ BASE_FEATURE(kPasswordFormClientsideClassifier,
 BASE_FEATURE(kPasswordFormGroupedAffiliations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordGenerationDropFullscreenAndCheckPointerLock,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPasswordManagerLogToTerminal, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordManagerOnDeviceEncryptionMetricsReporter,

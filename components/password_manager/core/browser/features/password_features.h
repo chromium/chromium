@@ -175,6 +175,10 @@ BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
 // Enables offering credentials for filling across grouped domains.
 BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 
+// Kill switch for dropping fullscreen and checking pointer lock before
+// showing or accepting password generation popups.
+BASE_DECLARE_FEATURE(kPasswordGenerationDropFullscreenAndCheckPointerLock);
+
 // Enables logging the content of chrome://password-manager-internals to the
 // terminal.
 BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
