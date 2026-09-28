@@ -846,7 +846,8 @@ void CanvasNon2DResourceProvider::FlushRecording(
     }
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
-    auto access = WillDrawInternal();
+    EnsureResourceReadyForDraw();
+    auto access = resource_->BeginAccess(/*readonly=*/false);
     EnsureWriteAccess();
 
     const bool needs_clear = !is_cleared_;
