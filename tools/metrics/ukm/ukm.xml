@@ -416,7 +416,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.ReadAnything">
-  <owner>abigailbklein@google.com</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
   <summary>
     Records the time taken to distill a web page.
   </summary>
@@ -550,7 +551,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.ReadAnything.EmptyState">
-  <owner>abigailbklein@google.com</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
   <summary>
     Recorded when an empty state is shown in Read Anything. The empty state is
     shown whenever distillation fails. When this happens, the user can

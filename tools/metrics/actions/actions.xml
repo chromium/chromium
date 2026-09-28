@@ -34863,7 +34863,8 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadAnything.Pinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>abigailbklein@chromium.org</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is pinned via the pin
@@ -34873,7 +34874,8 @@ should be able to be added at any place in this file.
 
 <action name="SidePanel.ReadAnything.Unpinned.BySidePanelHeaderButton">
   <owner>corising@chromium.org</owner>
-  <owner>abigailbklein@chromium.org</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>
     Recorded when the read anything side panel entry is unpinned via the pin
