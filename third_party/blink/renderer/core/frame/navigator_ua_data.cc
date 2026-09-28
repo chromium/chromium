@@ -6,13 +6,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_ua_data_values.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
-#include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
 
