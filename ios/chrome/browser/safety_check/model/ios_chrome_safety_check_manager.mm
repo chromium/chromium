@@ -12,6 +12,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "base/version.h"
 #import "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/prefs/pref_service.h"
