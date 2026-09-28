@@ -1954,6 +1954,56 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<!-- LINT.IfChange(PrewarmDurationOutcome) -->
+
+<histogram name="Net.DeviceBoundSessions.Prewarm.Duration{Outcome}" units="ms"
+    expires_after="2027-09-30">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how long a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) pre-warm takes,
+    measured from issuing the PrewarmSessionsForUrl call until its response is
+    received, for a pre-warm that completed {Outcome}. Covers network roundtrips
+    and any key signing.
+
+    Logged once per completed pre-warm that found at least one bound session. A
+    pre-warm reporting a mix of outcomes is recorded under the least successful
+    one, in this order: .OtherTransientError, .Unreachable, .FatalError,
+    .Success, .NotYetNeeded.
+  </summary>
+  <token key="Outcome">
+    <variant name=".FatalError"
+        summary="with a fatal error that terminated the session"/>
+    <variant name=".NotYetNeeded"
+        summary="with no session needing a refresh yet"/>
+    <variant name=".OtherTransientError"
+        summary="with a server or signing error"/>
+    <variant name=".Success" summary="with a successful refresh"/>
+    <variant name=".Unreachable"
+        summary="with the refresh endpoint unreachable"/>
+  </token>
+</histogram>
+
+<!-- LINT.ThenChange(//chrome/browser/net/device_bound_session_prewarmer.cc:PrewarmDurationOutcome) -->
+
+<histogram name="Net.DeviceBoundSessions.Prewarm.NextRefreshDelay" units="ms"
+    expires_after="2027-09-30">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    How far in the future the next Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) refresh is due
+    when a pre-warm completes. Recorded before the value is clamped to the
+    minimum pre-warm interval; a refresh that is already due is recorded as
+    zero.
+
+    Logged once per completed pre-warm that reported no transient error and
+    returned a next refresh time, i.e. whenever that time is used to schedule
+    the next pre-warm.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.PrewarmResult.{PrewarmType}"
     enum="DeviceBoundSessionRefreshResult" expires_after="2027-04-12">
   <owner>santosls@google.com</owner>

@@ -5,9 +5,13 @@
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -766,4 +770,188 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .WillOnce(RunPrewarmCallback(base::Time::Now() + base::Hours(1)));
   task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+struct PrewarmMetricsTestCase {
+  const char* name;
+  std::vector<RefreshResult> results;
+  // Offset from the completion time; `std::nullopt` returns no refresh time.
+  std::optional<base::TimeDelta> next_refresh_offset;
+  // `nullptr` if no `Duration` sample is expected.
+  const char* expected_duration_suffix;
+  // `std::nullopt` if no `NextRefreshDelay` sample is expected.
+  std::optional<base::TimeDelta> expected_next_refresh_delay;
+};
+
+const PrewarmMetricsTestCase kPrewarmMetricsTestCases[] = {
+    {"NoSessions", {}, std::nullopt, nullptr, std::nullopt},
+    {"NotYetNeeded",
+     {RefreshResult::kInScopeRefreshNotYetNeeded},
+     base::Minutes(10),
+     ".NotYetNeeded",
+     base::Minutes(10)},
+    // Below `kMinPrewarmInterval`: recorded before clamping.
+    {"Success",
+     {RefreshResult::kRefreshed},
+     base::Seconds(10),
+     ".Success",
+     base::Seconds(10)},
+    {"SuccessAlreadyDue",
+     {RefreshResult::kRefreshed},
+     base::Seconds(-5),
+     ".Success",
+     base::TimeDelta()},
+    {"SuccessWithoutNextRefresh",
+     {RefreshResult::kRefreshedAsWaiter},
+     std::nullopt,
+     ".Success",
+     std::nullopt},
+    // Not expected for pre-warms; folded into other transient errors.
+    {"InitializedService",
+     {RefreshResult::kInitializedService},
+     std::nullopt,
+     ".OtherTransientError",
+     std::nullopt},
+    {"FatalError",
+     {RefreshResult::kFatalError},
+     std::nullopt,
+     ".FatalError",
+     std::nullopt},
+    // Transient errors ignore the returned refresh time.
+    {"Unreachable",
+     {RefreshResult::kUnreachable},
+     base::Seconds(10),
+     ".Unreachable",
+     std::nullopt},
+    {"ServerError",
+     {RefreshResult::kServerError},
+     base::Seconds(10),
+     ".OtherTransientError",
+     std::nullopt},
+    {"SigningErrors",
+     {RefreshResult::kSigningQuotaExceeded,
+      RefreshResult::kTransientSigningError},
+     std::nullopt,
+     ".OtherTransientError",
+     std::nullopt},
+    // Mixed results are recorded under the least successful outcome.
+    {"MixedSuccessAndNotYetNeeded",
+     {RefreshResult::kInScopeRefreshNotYetNeeded, RefreshResult::kRefreshed},
+     base::Minutes(10),
+     ".Success",
+     base::Minutes(10)},
+    {"MixedSuccessAndFatalError",
+     {RefreshResult::kRefreshed, RefreshResult::kFatalError},
+     std::nullopt,
+     ".FatalError",
+     std::nullopt},
+    {"MixedFatalErrorAndUnreachable",
+     {RefreshResult::kFatalError, RefreshResult::kUnreachable},
+     std::nullopt,
+     ".Unreachable",
+     std::nullopt},
+    {"MixedUnreachableAndServerError",
+     {RefreshResult::kUnreachable, RefreshResult::kServerError},
+     std::nullopt,
+     ".OtherTransientError",
+     std::nullopt},
+};
+
+class DeviceBoundSessionPrewarmerMetricsTest
+    : public DeviceBoundSessionPrewarmerTest,
+      public testing::WithParamInterface<PrewarmMetricsTestCase> {};
+
+TEST_P(DeviceBoundSessionPrewarmerMetricsTest, LogsMetrics) {
+  constexpr base::TimeDelta kPrewarmDuration = base::Milliseconds(250);
+  const PrewarmMetricsTestCase& test_case = GetParam();
+  base::HistogramTester histogram_tester;
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillOnce([&](const GURL&,
+                    network::mojom::DeviceBoundSessionManager::
+                        PrewarmSessionsForUrlCallback callback) {
+        task_environment_.AdvanceClock(kPrewarmDuration);
+        std::optional<base::Time> next_refresh_time;
+        if (test_case.next_refresh_offset) {
+          next_refresh_time =
+              base::Time::Now() + *test_case.next_refresh_offset;
+        }
+        std::move(callback).Run(test_case.results, next_refresh_time);
+      });
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  base::HistogramTester::CountsMap duration_counts =
+      histogram_tester.GetTotalCountsForPrefix(
+          "Net.DeviceBoundSessions.Prewarm.Duration.");
+  if (test_case.expected_duration_suffix) {
+    const std::string duration_histogram =
+        base::StrCat({"Net.DeviceBoundSessions.Prewarm.Duration",
+                      test_case.expected_duration_suffix});
+    EXPECT_THAT(duration_counts,
+                testing::ElementsAre(testing::Pair(duration_histogram, 1)));
+    histogram_tester.ExpectUniqueTimeSample(duration_histogram,
+                                            kPrewarmDuration, 1);
+  } else {
+    EXPECT_THAT(duration_counts, testing::IsEmpty());
+  }
+
+  if (test_case.expected_next_refresh_delay) {
+    histogram_tester.ExpectUniqueTimeSample(
+        "Net.DeviceBoundSessions.Prewarm.NextRefreshDelay",
+        *test_case.expected_next_refresh_delay, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Net.DeviceBoundSessions.Prewarm.NextRefreshDelay", 0);
+  }
+
+  prewarmer.Stop();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DeviceBoundSessionPrewarmerMetricsTest,
+    testing::ValuesIn(kPrewarmMetricsTestCases),
+    [](const testing::TestParamInfo<PrewarmMetricsTestCase>& info) {
+      return info.param.name;
+    });
+
+// Each pre-warm is timed from its own start, even when two are in flight.
+TEST_F(DeviceBoundSessionPrewarmerTest, TimesOverlappingPrewarmsIndependently) {
+  base::HistogramTester histogram_tester;
+  std::vector<
+      network::mojom::DeviceBoundSessionManager::PrewarmSessionsForUrlCallback>
+      callbacks;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .Times(2)
+      .WillRepeatedly([&](const GURL&,
+                          network::mojom::DeviceBoundSessionManager::
+                              PrewarmSessionsForUrlCallback callback) {
+        callbacks.push_back(std::move(callback));
+      });
+
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider());
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+
+  // A session creation issues a second pre-warm 100ms into the first one.
+  task_environment_.AdvanceClock(base::Milliseconds(100));
+  WaitForObserverRemote()->OnDeviceBoundSessionAccessed(
+      {SessionAccess::AccessType::kCreation,
+       SessionKey{net::SchemefulSite(target_url_),
+                  SessionKey::Id("session_id")}});
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(callbacks.size(), 2u);
+
+  task_environment_.AdvanceClock(base::Milliseconds(50));
+  std::move(callbacks[0]).Run({RefreshResult::kRefreshed}, std::nullopt);
+  std::move(callbacks[1]).Run({RefreshResult::kRefreshed}, std::nullopt);
+
+  const char kHistogram[] = "Net.DeviceBoundSessions.Prewarm.Duration.Success";
+  histogram_tester.ExpectTimeBucketCount(kHistogram, base::Milliseconds(150),
+                                         1);
+  histogram_tester.ExpectTimeBucketCount(kHistogram, base::Milliseconds(50), 1);
+
+  prewarmer.Stop();
 }

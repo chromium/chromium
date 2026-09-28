@@ -5,6 +5,7 @@
 #include "chrome/browser/net/device_bound_session_prewarmer.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace {
@@ -20,6 +22,71 @@ namespace {
 // - The fallback interval when a transient error is returned.
 // - The fallback interval when the session manager is unavailable.
 constexpr base::TimeDelta kMinPrewarmInterval = base::Seconds(60);
+
+// Outcome of a single session in a pre-warm, ordered from most to least
+// successful.
+enum class PrewarmOutcome {
+  kNotYetNeeded,
+  kSuccess,
+  kFatalError,
+  kUnreachable,
+  kOtherTransientError,
+};
+
+PrewarmOutcome GetPrewarmOutcome(
+    net::device_bound_sessions::RefreshResult result) {
+  switch (result) {
+    case net::device_bound_sessions::RefreshResult::kInScopeRefreshNotYetNeeded:
+      return PrewarmOutcome::kNotYetNeeded;
+    case net::device_bound_sessions::RefreshResult::kRefreshed:
+    case net::device_bound_sessions::RefreshResult::kRefreshedAsWaiter:
+      return PrewarmOutcome::kSuccess;
+    case net::device_bound_sessions::RefreshResult::kFatalError:
+      return PrewarmOutcome::kFatalError;
+    case net::device_bound_sessions::RefreshResult::kUnreachable:
+      return PrewarmOutcome::kUnreachable;
+    // Not expected: pre-warms wait for the service to initialize. Folded into
+    // `kOtherTransientError` rather than `NOTREACHED()` so that an unexpected
+    // value from the network service doesn't crash the browser.
+    case net::device_bound_sessions::RefreshResult::kInitializedService:
+    case net::device_bound_sessions::RefreshResult::kServerError:
+    case net::device_bound_sessions::RefreshResult::kSigningQuotaExceeded:
+    case net::device_bound_sessions::RefreshResult::kTransientSigningError:
+      return PrewarmOutcome::kOtherTransientError;
+  }
+  NOTREACHED();
+}
+
+// LINT.IfChange(PrewarmDurationOutcome)
+std::string_view GetPrewarmOutcomeSuffix(PrewarmOutcome outcome) {
+  switch (outcome) {
+    case PrewarmOutcome::kNotYetNeeded:
+      return ".NotYetNeeded";
+    case PrewarmOutcome::kSuccess:
+      return ".Success";
+    case PrewarmOutcome::kFatalError:
+      return ".FatalError";
+    case PrewarmOutcome::kUnreachable:
+      return ".Unreachable";
+    case PrewarmOutcome::kOtherTransientError:
+      return ".OtherTransientError";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:PrewarmDurationOutcome)
+
+// Returns the `Net.DeviceBoundSessions.Prewarm.Duration` variant suffix for
+// `results`. A single pre-warm can return a mix of outcomes; it is recorded
+// under the least successful one, so that a failure is never hidden by
+// successes in the same pre-warm.
+std::string_view GetDurationOutcomeSuffix(
+    const std::vector<net::device_bound_sessions::RefreshResult>& results) {
+  PrewarmOutcome outcome = PrewarmOutcome::kNotYetNeeded;
+  for (net::device_bound_sessions::RefreshResult result : results) {
+    outcome = std::max(outcome, GetPrewarmOutcome(result));
+  }
+  return GetPrewarmOutcomeSuffix(outcome);
+}
 
 }  // namespace
 
@@ -84,7 +151,7 @@ void DeviceBoundSessionPrewarmer::DoPrewarm() {
     session_manager->PrewarmSessionsForUrl(
         prewarm_url_,
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
   } else {
     timer_.Start(FROM_HERE, kMinPrewarmInterval, this,
                  &DeviceBoundSessionPrewarmer::DoPrewarm);
@@ -110,6 +177,7 @@ bool DeviceBoundSessionPrewarmer::IsTransientError(
 }
 
 void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
+    base::ElapsedTimer prewarm_timer,
     const std::vector<net::device_bound_sessions::RefreshResult>& results,
     std::optional<base::Time> earliest_next_refresh_time) {
   bool is_startup = std::exchange(is_startup_prewarm_, false);
@@ -121,6 +189,14 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
       base::UmaHistogramEnumeration(
           "Net.DeviceBoundSessions.PrewarmResult.Scheduled", result);
     }
+  }
+
+  if (!results.empty()) {
+    // Use `MediumTimes` because some refreshes take more than 10 seconds.
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"Net.DeviceBoundSessions.Prewarm.Duration",
+                      GetDurationOutcomeSuffix(results)}),
+        prewarm_timer.Elapsed());
   }
 
   if (std::ranges::any_of(results,
@@ -143,11 +219,20 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     return;
   }
 
+  const base::TimeDelta next_refresh_delay =
+      *earliest_next_refresh_time - base::Time::Now();
+  // Recorded before clamping to `kMinPrewarmInterval`, so that refreshes that
+  // are already due remain visible.
+  // TODO(crbug.com/566073494): Also record the time since the last successful
+  // pre-warm, which differs from this because of sleep and errors.
+  base::UmaHistogramCustomTimes(
+      "Net.DeviceBoundSessions.Prewarm.NextRefreshDelay", next_refresh_delay,
+      base::Milliseconds(1), base::Minutes(150), 100);
+
   // If the next refresh time is in the past or shorter than the minimum
   // interval, schedule the next prewarm after `kMinPrewarmInterval` to avoid
   // infinite loops or excessive requests.
-  base::TimeDelta delay = std::max(
-      *earliest_next_refresh_time - base::Time::Now(), kMinPrewarmInterval);
+  base::TimeDelta delay = std::max(next_refresh_delay, kMinPrewarmInterval);
   timer_.Start(FROM_HERE, delay, this, &DeviceBoundSessionPrewarmer::DoPrewarm);
 }
 

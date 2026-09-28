@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/device_bound_sessions/refresh_result.h"
@@ -83,7 +84,9 @@ class DeviceBoundSessionPrewarmer
   void OnObserverDisconnected();
 
   // Callback from network service containing prewarming results.
+  // `prewarm_timer` was started when the pre-warm was issued.
   void OnPrewarmComplete(
+      base::ElapsedTimer prewarm_timer,
       const std::vector<net::device_bound_sessions::RefreshResult>& results,
       std::optional<base::Time> earliest_next_refresh_time);
 
