@@ -244,7 +244,7 @@ public class TabStripContextMenuCoordinator {
         Profile profile = mTabModel.getProfile();
         if (profile != null) {
             profile = profile.getOriginalProfile();
-            if (GlicUtils.isTabStripGlicSupported(profile)) {
+            if (GlicUtils.isTabStripGlicSupported(mContext, profile)) {
                 itemList.add(BasicListMenu.buildMenuDivider(isIncognito));
 
                 boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(profile);

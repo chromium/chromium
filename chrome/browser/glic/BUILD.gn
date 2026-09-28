@@ -252,6 +252,7 @@ if (is_android) {
       "//base:build_info_java",
       "//build/android:build_java",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
+      "//chrome/browser/glic/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/side_panel/android:java",

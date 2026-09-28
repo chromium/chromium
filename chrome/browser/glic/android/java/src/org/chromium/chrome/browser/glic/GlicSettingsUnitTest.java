@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -254,6 +255,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGlicButtonPreference_SidePanel_Pinned() {
+        DeviceInfo.setIsDesktopForTesting(true);
         when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
         GlicSettings fragment = launchFragment();
 
@@ -272,6 +274,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testGlicButtonPreference_SidePanel_Toggle() {
+        DeviceInfo.setIsDesktopForTesting(true);
         when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(false);
         GlicSettings fragment = launchFragment();
 
@@ -712,6 +715,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_InitialState_Enabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(true);
         GlicSettings fragment = launchFragment();
@@ -750,6 +754,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testLauncherToggle_Click() {
+        DeviceInfo.setIsDesktopForTesting(true);
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(false);
         GlicSettings fragment = launchFragment();
@@ -777,8 +782,9 @@ public class GlicSettingsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testNavigationShortcutPreference_SidePanelDisabled() {
-        // Even if launcher is enabled, the navigation shortcut should be invisible if side panel is
-        // disabled.
+        // Even if launcher is enabled, the navigation shortcut should be invisible if the form
+        // factor does not support the side panel. A phone never does.
+        DeviceInfo.setIsDesktopForTesting(false);
         when(mLocalPrefServiceMock.getBoolean(GlicPrefNames.GLIC_LAUNCHER_ENABLED))
                 .thenReturn(true);
         GlicSettings fragment = launchFragment();
@@ -793,6 +799,7 @@ public class GlicSettingsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSearchIndex_SidePanelEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
         GlicSettings.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfileMock);
         verify(mSearchIndexDataMock)

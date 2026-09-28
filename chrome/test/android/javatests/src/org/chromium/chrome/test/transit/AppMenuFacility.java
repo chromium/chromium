@@ -114,6 +114,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int TAB_GROUPS_PARENT_ID = R.id.tab_groups_parent_menu_id;
     public static final @IdRes int SAVE_AND_SHARE_PARENT_ID = R.id.save_and_share_parent_menu_id;
     public static final @IdRes int HELP_PARENT_ID = R.id.help_parent_menu_id;
+    public static final @IdRes int GLIC_ID = R.id.glic_menu_id;
 
     /** Default behavior for "Open new tab". */
     protected RegularNewTabPageStation createNewTabPageStation() {

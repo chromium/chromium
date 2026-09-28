@@ -51,6 +51,7 @@ public class RegularWebPageAppMenuFacility extends PageAppMenuFacility<WebPageSt
             declareMenuItem(items, FIND_IN_PAGE_ID);
             declareMenuItem(items, HELP_AND_FEEDBACK_ID);
         }
+        declarePossibleStubMenuItem(items, GLIC_ID);
         declarePossibleStubMenuItem(items, TRANSLATE_ID);
         mReaderMode = declarePossibleMenuItem(items, READER_MODE_ID);
 

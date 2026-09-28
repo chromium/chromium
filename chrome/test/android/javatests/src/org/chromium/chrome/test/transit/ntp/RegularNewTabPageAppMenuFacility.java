@@ -50,6 +50,7 @@ public class RegularNewTabPageAppMenuFacility
             declareMenuItem(items, RECENT_TABS_ID);
             declareMenuItem(items, HELP_AND_FEEDBACK_ID);
         }
+        declarePossibleStubMenuItem(items, GLIC_ID);
 
         mSettings = declareMenuItem(items, SETTINGS_ID);
     }

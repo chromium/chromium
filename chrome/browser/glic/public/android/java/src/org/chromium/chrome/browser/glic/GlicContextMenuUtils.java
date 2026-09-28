@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -14,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
-import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 
 /** Enabling checks and parameters for Ask Gemini context menu entry points. */
 @NullMarked
@@ -66,33 +66,34 @@ public final class GlicContextMenuUtils {
                 && GlicEnabling.isEnabledForProfile(profile);
     }
 
-    private static boolean isContainerAvailable() {
-        return AndroidSidePanelEnabledFn.isEnabled()
+    private static boolean isContainerAvailable(Context context) {
+        return GlicUtils.isSidePanelFormFactor(context)
                 || TabBottomSheetUtils.isTabBottomSheetEnabled();
     }
 
     /** Whether the "Ask Gemini" item should be shown for text selection. */
-    public static boolean shouldShowAskGeminiForSelection(@Nullable Profile profile) {
+    public static boolean shouldShowAskGeminiForSelection(
+            @Nullable Profile profile, Context context) {
         return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_SELECTION, true)
-                && isContainerAvailable();
+                && isContainerAvailable(context);
     }
 
     /**
-     * Whether the "Ask Gemini" item should be shown for a link context menu. Enabled on desktop
-     * Android if the side panel is enabled, and on mobile if the bottom sheet is enabled.
+     * Whether the "Ask Gemini" item should be shown for a link context menu. Enabled on the side
+     * panel form factor, and on mobile if the bottom sheet is enabled.
      */
-    public static boolean shouldShowAskGeminiForLink(@Nullable Profile profile) {
+    public static boolean shouldShowAskGeminiForLink(@Nullable Profile profile, Context context) {
         return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_LINK, true)
-                && isContainerAvailable();
+                && isContainerAvailable(context);
     }
 
     /**
      * Whether the "Ask Gemini" item should be shown for an empty-space (page) context menu. This
-     * entry point is desktop Android only, where Glic is presented in the side panel.
+     * entry point is only available on the side panel form factor.
      */
-    public static boolean shouldShowAskGeminiForPage(@Nullable Profile profile) {
+    public static boolean shouldShowAskGeminiForPage(@Nullable Profile profile, Context context) {
         return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_PAGE, false)
-                && AndroidSidePanelEnabledFn.isEnabled();
+                && GlicUtils.isSidePanelFormFactor(context);
     }
 
     /**

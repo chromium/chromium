@@ -503,12 +503,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowAskGeminiForLink() {
-        return GlicContextMenuUtils.shouldShowAskGeminiForLink(getProfile());
+        return GlicContextMenuUtils.shouldShowAskGeminiForLink(getProfile(), mContext);
     }
 
     @VisibleForTesting
     boolean shouldShowAskGeminiForPage() {
-        return GlicContextMenuUtils.shouldShowAskGeminiForPage(getProfile());
+        return GlicContextMenuUtils.shouldShowAskGeminiForPage(getProfile(), mContext);
     }
 
     @VisibleForTesting

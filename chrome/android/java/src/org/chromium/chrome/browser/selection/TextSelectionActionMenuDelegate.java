@@ -282,7 +282,8 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
             boolean isSelectionPassword, String selectedText) {
         if (TextUtils.isEmpty(selectedText) || isSelectionPassword) return false;
         if (mTab.isDestroyed()) return false;
-        return GlicContextMenuUtils.shouldShowAskGeminiForSelection(mTab.getProfile());
+        return GlicContextMenuUtils.shouldShowAskGeminiForSelection(
+                mTab.getProfile(), mTab.getContext());
     }
 
     private void setAskGeminiOrderAndCategory(SelectionMenuItem.Builder builder) {
