@@ -65,7 +65,9 @@
 
 // Resets the selection area to the initial position.
 - (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
-  // NO-OP
+  if (completion) {
+    completion();
+  }
 }
 
 - (void)hideUserSelection {

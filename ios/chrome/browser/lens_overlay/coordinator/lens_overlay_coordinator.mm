@@ -326,6 +326,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)stop {
+  if (self.stopped) {
+    return;
+  }
   self.stopped = YES;
 
   if (Browser* browser = self.browser) {
@@ -575,6 +578,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // If the destroy command is invoked on the stopped coordinator, immediately
   // destroy all dependencies even if another exit flow is in progress.
   if (self.stopped) {
+    [self dismissLensOverlayAnimated:NO completion:nil];
+    [self exitFullscreenAnimated:NO];
     [self completeLensOverlayDestroy];
     return;
   }
@@ -590,7 +595,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   __weak __typeof(self) weakSelf = self;
   [self exitAnimated:shouldAnimate
           completion:^{
-            [weakSelf completeLensOverlayDestroy];
+            if (!weakSelf.isStopped) {
+              [weakSelf completeLensOverlayDestroy];
+            }
           }];
 }
 
@@ -600,6 +607,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   __weak __typeof(self) weakSelf = self;
 
   auto onExitComplete = ^{
+    if (weakSelf.isStopped) {
+      return;
+    }
     if (!animated) {
       [weakSelf exitFullscreenAnimated:NO];
     }
@@ -609,6 +619,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   };
 
   auto dismissLensOverlay = ^{
+    if (weakSelf.isStopped) {
+      return;
+    }
     [weakSelf dismissLensOverlayAnimated:animated completion:onExitComplete];
   };
 
@@ -660,6 +673,9 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
       _containerPresenter;
 
   void (^onSelectionExitPositionSettled)() = ^{
+    if (weakSelf.isStopped) {
+      return;
+    }
     [weakSelf exitFullscreenAnimated:YES];
     if (!weakContainerPresenter) {
       if (completion) {
@@ -681,8 +697,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)dismissLensOverlayAnimated:(BOOL)animated
                         completion:(ProceduralBlock)completion {
-  if (!_containerPresenter && completion) {
-    completion();
+  if (!_containerPresenter) {
+    if (completion) {
+      completion();
+    }
+    return;
   }
   [_containerPresenter dismissContainerAnimated:animated completion:completion];
 }
