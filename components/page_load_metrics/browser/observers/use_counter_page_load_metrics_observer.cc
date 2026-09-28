@@ -289,6 +289,22 @@ void UseCounterMetricsRecorder::RecordWebFeatures(ukm::SourceId ukm_source_id) {
             uma_main_frame_features_.IsRecordedOrDeferred(web_feature))
         .Record(ukm::UkmRecorder::Get());
   }
+  RecordAutofillSyntheticSelect(ukm_source_id);
+}
+
+void UseCounterMetricsRecorder::RecordAutofillSyntheticSelect(
+    ukm::SourceId ukm_source_id) {
+  const bool has_synthetic_select =
+      uma_features_.IsRecordedOrDeferred(WebFeature::kAutofillSyntheticSelect);
+  const bool has_maybe_synthetic_select = uma_features_.IsRecordedOrDeferred(
+      WebFeature::kAutofillMaybeSyntheticSelect);
+  if (!has_synthetic_select && !has_maybe_synthetic_select) {
+    return;
+  }
+  ukm::builders::Autofill_SyntheticSelect(ukm_source_id)
+      .SetSyntheticSelect(has_synthetic_select)
+      .SetMaybeSyntheticSelect(has_maybe_synthetic_select)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void UseCounterMetricsRecorder::RecordWebDXFeatures(

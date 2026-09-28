@@ -3695,6 +3695,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.SyntheticSelect" singular="true">
+  <owner>fleimgruber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records on page load whether the site may contain a synthetic select based
+    on the heuristics from go/analyzing-synthetic-selects. Separated from
+    Blink.UseCounter because these features occur on &gt;1% of page loads and
+    require standard UKM sampling.
+  </summary>
+  <metric name="MaybeSyntheticSelect" enum="Boolean">
+    <summary>
+      True if WebFeature::kAutofillMaybeSyntheticSelect was observed on the
+      page.
+    </summary>
+  </metric>
+  <metric name="SyntheticSelect" enum="Boolean">
+    <summary>
+      True if WebFeature::kAutofillSyntheticSelect was observed on the page.
+    </summary>
+  </metric>
+</event>
+
 <event name="Autofill.TextFieldDidChange">
   <owner>osaul@google.com</owner>
   <summary>

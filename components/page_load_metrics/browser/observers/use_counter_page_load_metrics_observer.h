@@ -72,6 +72,12 @@ class UseCounterMetricsRecorder {
   // Returns a list of opt-in UKM features for use counter.
   static const UkmFeatureList& GetAllowedUkmFeatures();
 
+  // Records a separate UKM metric for `WebFeature::kAutofillSyntheticSelect`
+  // and `WebFeature::kAutofillMaybeSyntheticSelect`. These events are not
+  // sufficiently rare to be emitted the standard Blink counter UKM and are thus
+  // emitted separately, subject to UKM sampling.
+  void RecordAutofillSyntheticSelect(ukm::SourceId ukm_source_id);
+
   // To keep tracks of which features have been measured.
   // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_features_;

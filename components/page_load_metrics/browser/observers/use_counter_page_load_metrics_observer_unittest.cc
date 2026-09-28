@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/use_counter/webdx_feature_maps.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -390,4 +391,23 @@ TEST_F(UseCounterPageLoadMetricsObserverTest,
   const auto& webdx_map = blink::GetWebFeatureToWebDXFeatureMap();
   EXPECT_EQ(webdx_map.at(WebFeature::kGeolocationAccuracyModeApproximate),
             WebDXFeature::kDRAFT_GeolocationAccuracyModeApproximate);
+}
+
+TEST_F(UseCounterPageLoadMetricsObserverTest,
+       AutofillSyntheticSelectUkmRecorded) {
+  NavigateAndCommit(GURL(kTestUrl));
+  tester()->SimulateFeaturesUpdate(
+      {{FeatureType::kWebFeature,
+        static_cast<uint32_t>(WebFeature::kAutofillSyntheticSelect)}});
+  DeleteContents();
+
+  const auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::Autofill_SyntheticSelect::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entries[0], ukm::builders::Autofill_SyntheticSelect::kSyntheticSelectName,
+      1);
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entries[0],
+      ukm::builders::Autofill_SyntheticSelect::kMaybeSyntheticSelectName, 0);
 }
