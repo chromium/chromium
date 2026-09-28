@@ -46,6 +46,9 @@ def __step_config(ctx, step_config):
         # under components/policy/resources/templates/ directory.
         "components/policy/resources/policy_templates.py",
         "mojo/public/tools/bindings/minify_with_terser.py",
+        # Invokes dpkg-buildpackage which requires debhelper (dh) not present in
+        # the RBE worker container image.
+        "remoting/host/installer/linux/build_deb.py",
         "remoting/tools/build/remoting_copy_locales.py",
         "testing/libfuzzer/fuzzers/generate_v8_inspector_fuzzer_corpus.py",
         "testing/scripts/rust/generate_script.py",
