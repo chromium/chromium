@@ -34,6 +34,7 @@ static_library("quick_insert") {
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/lobster",
     "//chrome/browser/ash/login/session",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/thumbnail_loader",
     "//chrome/common",

@@ -44,6 +44,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
 #include "chrome/browser/ui/ash/quick_insert/quick_insert_thumbnail_loader.h"
@@ -564,6 +565,7 @@ QuickInsertClientImpl::CreateOmniboxProvider(bool bookmarks,
       profile_, GetEmptyAppListControllerDelegate(),
       ash::TemplateURLServiceProvider::Get().Find(CHECK_DEREF(
           ash::AnnotatedAccountId::Get(profile_->GetOriginalProfile()))),
+      BookmarkModelFactory::GetForBrowserContext(profile_),
       LauncherSearchProviderTypes(bookmarks, history, open_tabs));
 }
 

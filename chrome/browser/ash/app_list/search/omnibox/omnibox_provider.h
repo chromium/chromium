@@ -23,6 +23,10 @@ class AutocompleteResult;
 class Profile;
 class TemplateURLService;
 
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
 namespace app_list {
 
 // OmniboxProvider wraps AutocompleteController to provide omnibox results.
@@ -33,9 +37,12 @@ class OmniboxProvider : public SearchProvider,
   // `template_url_service` is forwarded to each OmniboxResult so search-engine
   // descriptions can be formatted. Must not be nullptr and must outlive this
   // object.
+  // `bookmark_model` may be null; results are then not annotated as
+  // bookmarked.
   OmniboxProvider(Profile* profile,
                   AppListControllerDelegate* list_controller,
                   TemplateURLService* template_url_service,
+                  bookmarks::BookmarkModel* bookmark_model,
                   int provider_types);
 
   OmniboxProvider(const OmniboxProvider&) = delete;
@@ -65,6 +72,7 @@ class OmniboxProvider : public SearchProvider,
   raw_ptr<Profile> profile_;
   raw_ptr<AppListControllerDelegate> list_controller_;
   const raw_ref<TemplateURLService> template_url_service_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;

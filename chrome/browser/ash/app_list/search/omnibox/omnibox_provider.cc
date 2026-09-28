@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -63,11 +62,13 @@ history::HistoryService* GetHistoryService(Profile* profile) {
 OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller,
                                  TemplateURLService* template_url_service,
+                                 bookmarks::BookmarkModel* bookmark_model,
                                  int provider_types)
     : SearchProvider(SearchCategory::kOmnibox),
       profile_(profile),
       list_controller_(list_controller),
       template_url_service_(CHECK_DEREF(template_url_service)),
+      bookmark_model_(bookmark_model),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS),
@@ -141,9 +142,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       CHECK(last_tokenized_query_.has_value(), base::NotFatalUntil::M160);
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
-          CreateResult(match, controller_.get(),
-                       BookmarkModelFactory::GetForBrowserContext(profile_),
-                       input_),
+          CreateResult(match, controller_.get(), bookmark_model_, input_),
           last_tokenized_query_.value(), &favicon_cache_));
     } else if (!IsCalculator(match)) {
       // Filters out omnibox results if web is disabled in launcher search
@@ -153,9 +152,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       }
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_, &template_url_service_.get(),
-          CreateResult(match, controller_.get(),
-                       BookmarkModelFactory::GetForBrowserContext(profile_),
-                       input_),
+          CreateResult(match, controller_.get(), bookmark_model_, input_),
           last_query_, &favicon_cache_));
     } else {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(

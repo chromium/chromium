@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -146,6 +147,7 @@ class OmniboxProviderTest : public testing::Test {
     auto provider = std::make_unique<OmniboxProvider>(
         profile_, list_controller_.get(),
         TemplateURLServiceFactory::GetForProfile(profile_),
+        BookmarkModelFactory::GetForBrowserContext(profile_),
         /*provider_types=*/0);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
