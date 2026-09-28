@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionProperties.HeaderProperties;
 import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
 import org.chromium.components.autofill.autofill_ai.SourceType;
@@ -81,14 +82,20 @@ public class AutofillAiSourceAttributionCoordinatorTest {
 
     @Test
     public void testRequestShowContent_success() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Autofill.Ai.AttributionSheet.Shown", true);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
         assertTrue(mCoordinator.requestShowContent());
         assertTrue(mCoordinator.isShowingForTesting());
         verify(mBottomSheetController).addObserver(mCoordinator.getSheetObserverForTesting());
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testRequestShowContent_failureRetractsAndDestroys() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Ai.AttributionSheet.Shown", false);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(false);
         assertFalse(mCoordinator.requestShowContent());
         assertFalse(mCoordinator.isShowingForTesting());
@@ -97,6 +104,7 @@ public class AutofillAiSourceAttributionCoordinatorTest {
         verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
         verify(mBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());
         verify(mOnDismissedCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -115,7 +123,6 @@ public class AutofillAiSourceAttributionCoordinatorTest {
 
         mCoordinator.destroy();
         assertFalse(mCoordinator.isShowingForTesting());
-        verify(mOnDismissedCallback).run();
 
         // Repeated call should be a no-op
         mCoordinator.destroy();
@@ -126,9 +133,9 @@ public class AutofillAiSourceAttributionCoordinatorTest {
     public void testDestroy_afterFailedShow_idempotent() {
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(false);
         mCoordinator.requestShowContent();
-        verify(mOnDismissedCallback, times(1)).run();
 
         mCoordinator.destroy();
+        verify(mOnDismissedCallback, times(1)).run();
     }
 
     @Test
@@ -147,6 +154,10 @@ public class AutofillAiSourceAttributionCoordinatorTest {
 
     @Test
     public void testOnSheetClosed_matchingContent_triggersDestroy() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Ai.AttributionSheet.Dismissed",
+                        StateChangeReason.INTERACTION_COMPLETE);
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
         mCoordinator.requestShowContent();
 
@@ -157,6 +168,7 @@ public class AutofillAiSourceAttributionCoordinatorTest {
                 .onSheetClosed(StateChangeReason.INTERACTION_COMPLETE);
         assertFalse(mCoordinator.isShowingForTesting());
         verify(mOnDismissedCallback).run();
+        histogramWatcher.assertExpected();
     }
 
     @Test

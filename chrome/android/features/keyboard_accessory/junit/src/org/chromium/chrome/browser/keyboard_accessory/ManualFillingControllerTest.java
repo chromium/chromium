@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
@@ -50,11 +51,13 @@ import static org.chromium.chrome.browser.tab.TabLaunchType.FROM_BROWSER_ACTIONS
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_NEW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.RectF;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
+import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
@@ -67,6 +70,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -118,7 +122,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.autofill_ai.AutofillAiSourceAttributionInfo;
 import org.chromium.components.autofill.autofill_ai.SourceType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogHandle;
@@ -374,6 +380,9 @@ public class ManualFillingControllerTest {
         when(mMockActivity.getCompositorViewHolderSupplier())
                 .thenReturn(compositorViewHolderSupplier);
         when(mMockActivity.getResources()).thenReturn(mMockResources);
+        ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
+        when(mMockActivity.getTheme())
+                .thenReturn(ApplicationProvider.getApplicationContext().getTheme());
         when(mMockActivity.getColor(anyInt()))
                 .thenAnswer(
                         invocation ->
@@ -381,7 +390,14 @@ public class ManualFillingControllerTest {
                                         .getColor((Integer) invocation.getArgument(0)));
         when(mMockActivity.getPackageManager())
                 .thenReturn(RuntimeEnvironment.application.getPackageManager());
-        when(mMockActivity.getTheme()).thenReturn(RuntimeEnvironment.application.getTheme());
+        when(mMockActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                .thenReturn(
+                        ApplicationProvider.getApplicationContext()
+                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE));
+        when(mMockActivity.getSystemService(LayoutInflater.class))
+                .thenReturn(
+                        ApplicationProvider.getApplicationContext()
+                                .getSystemService(LayoutInflater.class));
         when(mMockActivity.findViewById(android.R.id.content)).thenReturn(mMockContentView);
         when(mMockContentView.getRootView()).thenReturn(mock(View.class));
         mLastMockWebContents = mock(MockWebContents.class);
@@ -563,7 +579,8 @@ public class ManualFillingControllerTest {
                                 SourceType.GMAIL,
                                 new GURL("https://mail.google.com"),
                                 "Flight Confirmation"));
-        CharSequence formatted = mMediator.formatAutofillAiSuppressionMessage(rawBody, sources);
+        CharSequence formatted =
+                mMediator.formatAutofillAiSuppressionMessage(rawBody, sources, "Passport details");
 
         assertTrue(formatted instanceof Spanned);
         Spanned spanned = (Spanned) formatted;
@@ -587,11 +604,91 @@ public class ManualFillingControllerTest {
         // Trigger settings click
         spans[1].onClick(null);
         verify(mockSettingsNavigation).startSettings(eq(mMockActivity), any(), any(), eq(true));
+
+        when(mMockBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        // Trigger attribution click
+        spans[0].onClick(null);
+
+        // Trigger attribution click a second time while active and verify debounce
+        spans[0].onClick(null);
+        verify(mMockBottomSheetController, times(1))
+                .requestShowContent(argThat(isAttributionSheet()), eq(true));
+    }
+
+    @Test
+    public void testDestroy_DestroysActiveSourceAttributionCoordinator() {
+        String rawBody = "Suggested by Gemini · <src_link>View sources</src_link>";
+        List<AutofillAiSourceAttributionInfo> sources =
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation"));
+        CharSequence formatted = mMediator.formatAutofillAiSuppressionMessage(rawBody, sources, "");
+        Spanned spanned = (Spanned) formatted;
+        ClickableSpan[] spans = spanned.getSpans(0, spanned.length(), ClickableSpan.class);
+        assertEquals(1, spans.length);
+
+        when(mMockBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        spans[0].onClick(null);
+
+        mMediator.destroy();
+        verify(mMockBottomSheetController)
+                .hideContent(argThat(isAttributionSheet()), eq(false), eq(StateChangeReason.NONE));
+    }
+
+    @Test
+    public void testPause_DestroysActiveSourceAttributionCoordinatorAndReleasesDebounce() {
+        String rawBody = "Suggested by Gemini · <src_link>View sources</src_link>";
+        List<AutofillAiSourceAttributionInfo> sources =
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation"));
+        CharSequence formatted = mMediator.formatAutofillAiSuppressionMessage(rawBody, sources, "");
+        Spanned spanned = (Spanned) formatted;
+        ClickableSpan[] spans = spanned.getSpans(0, spanned.length(), ClickableSpan.class);
+        assertEquals(1, spans.length);
+
+        when(mMockBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        spans[0].onClick(null);
+
+        mMediator.pause();
+        verify(mMockBottomSheetController)
+                .hideContent(argThat(isAttributionSheet()), eq(false), eq(StateChangeReason.NONE));
+
+        // Debounce guard should be released, allowing sheet to open again.
+        spans[0].onClick(null);
+        verify(mMockBottomSheetController, times(2))
+                .requestShowContent(argThat(isAttributionSheet()), eq(true));
+    }
+
+    @Test
+    public void testShowAutofillAiSourceAttribution_requestsShowContent() {
+        List<AutofillAiSourceAttributionInfo> sources =
+                List.of(
+                        new AutofillAiSourceAttributionInfo(
+                                SourceType.GMAIL,
+                                new GURL("https://mail.google.com/"),
+                                "Flight Confirmation"));
+        when(mMockBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
+        mMediator.showAutofillAiSourceAttribution(sources, "Remove passport?");
+        verify(mMockBottomSheetController)
+                .requestShowContent(argThat(isAttributionSheet()), eq(true));
+    }
+
+    private static ArgumentMatcher<BottomSheetContent> isAttributionSheet() {
+        return content ->
+                content != null
+                        && content.getSheetFullHeightAccessibilityStringId()
+                                == org.chromium.chrome.browser.autofill.R.string
+                                        .autofill_ai_attribution_sheet_accessibility_title;
     }
 
     @Test
     public void testFormatAutofillAiSuppressionMessage_MalformedTagsFallbackStripsLinkTags() {
-        // Mismatched or nested tags causing SpanApplier to throw IllegalArgumentException
+        // Overlapping or nested tags causing SpanApplier to throw IllegalArgumentException
         String malformedBody =
                 "Suggested by Gemini · <src_link><manage_link>View"
                         + " sources</src_link></manage_link>\n\n"
@@ -603,7 +700,7 @@ public class ManualFillingControllerTest {
                                 new GURL("https://mail.google.com"),
                                 "Flight Confirmation"));
         CharSequence formatted =
-                mMediator.formatAutofillAiSuppressionMessage(malformedBody, sources);
+                mMediator.formatAutofillAiSuppressionMessage(malformedBody, sources, "");
 
         String plainText = formatted.toString();
         assertFalse(plainText.contains("<src_link>"));

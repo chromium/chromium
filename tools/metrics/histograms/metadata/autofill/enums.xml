@@ -644,6 +644,15 @@ Called by update_autofill_enums.py.-->
   <int value="861" label="SHIPMENT_TRACKING_NUMBER: Failure"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAiSourceType) -->
+
+<enum name="AutofillAiSourceType">
+  <int value="0" label="Gmail"/>
+  <int value="1" label="Photos"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/data_model/autofill_ai/entity_instance.h:SourceType) -->
+
 <!-- LINT.IfChange(AutofillAiUnmaskResult) -->
 
 <enum name="AutofillAiUnmaskResult">

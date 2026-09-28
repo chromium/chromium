@@ -45,6 +45,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionCoordinator;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -152,6 +153,7 @@ class ManualFillingMediator
     private ManualFillingComponent.SoftKeyboardDelegate mSoftKeyboardDelegate;
     private ActionConfirmationDialog mActionConfirmationDialog;
     private @Nullable DialogHandle mConfirmationDialogDismissHandler;
+    private @Nullable AutofillAiSourceAttributionCoordinator mSourceAttributionCoordinator;
     private BackPressManager mBackPressManager;
     private Supplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier = SupplierUtils.ofNull();
     private BooleanSupplier mIsContextualSearchOpened;
@@ -443,10 +445,18 @@ class ManualFillingMediator
         mBackPressManager.removeHandler(this);
         mBackPressManager = null;
         mWindowAndroid = null;
+        dismissSourceAttributionSheetIfShown();
         mActivity = null;
         // The dialog holds the Activity as its Context; clear it to avoid leaking the Activity.
         dismissConfirmationDialogIfShown();
         mActionConfirmationDialog = null;
+    }
+
+    private void dismissSourceAttributionSheetIfShown() {
+        if (mSourceAttributionCoordinator != null) {
+            mSourceAttributionCoordinator.destroy();
+            mSourceAttributionCoordinator = null;
+        }
     }
 
     boolean onBackPressed() {
@@ -513,6 +523,7 @@ class ManualFillingMediator
         mKeyboardAccessory.skipClosingAnimationOnce();
         mModel.set(KEYBOARD_EXTENSION_STATE, HIDDEN);
         dismissConfirmationDialogIfShown();
+        dismissSourceAttributionSheetIfShown();
     }
 
     private void onOrientationChange() {
@@ -882,7 +893,7 @@ class ManualFillingMediator
 
     @VisibleForTesting
     CharSequence formatAutofillAiSuppressionMessage(
-            String body, List<AutofillAiSourceAttributionInfo> sources) {
+            String body, List<AutofillAiSourceAttributionInfo> sources, String title) {
         assert !sources.isEmpty() : "Sources should not be empty for Autofill AI suppression";
         if (mActivity == null) {
             return body;
@@ -891,11 +902,7 @@ class ManualFillingMediator
         if (body.contains(SOURCE_LINK_OPEN_TAG) && body.contains(SOURCE_LINK_CLOSE_TAG)) {
             ChromeClickableSpan attributionSpan =
                     new ChromeClickableSpan(
-                            mActivity,
-                            view -> {
-                                // TODO(crbug.com/391950346): Open attribution bottom sheet in
-                                // follow-ups.
-                            });
+                            mActivity, view -> showAutofillAiSourceAttribution(sources, title));
             spanInfos.add(
                     new SpanApplier.SpanInfo(
                             SOURCE_LINK_OPEN_TAG, SOURCE_LINK_CLOSE_TAG, attributionSpan));
@@ -921,6 +928,25 @@ class ManualFillingMediator
         } catch (IllegalArgumentException e) {
             return body.replaceAll("</?\\w+_link>", "");
         }
+    }
+
+    void showAutofillAiSourceAttribution(
+            List<AutofillAiSourceAttributionInfo> sources, String subtitle) {
+        if (mActivity == null
+                || mBottomSheetController == null
+                || mSourceAttributionCoordinator != null) {
+            return;
+        }
+        mSourceAttributionCoordinator =
+                new AutofillAiSourceAttributionCoordinator(
+                        mActivity,
+                        mBottomSheetController,
+                        sources,
+                        subtitle,
+                        () -> {
+                            mSourceAttributionCoordinator = null;
+                        });
+        mSourceAttributionCoordinator.requestShowContent();
     }
 
     void confirmDeletionOperation(
@@ -959,7 +985,7 @@ class ManualFillingMediator
         ConfirmationDialogParams params =
                 new ConfirmationDialogParams.Builder(mActivity)
                         .withTitle(title)
-                        .withDescription(formatAutofillAiSuppressionMessage(body, sources))
+                        .withDescription(formatAutofillAiSuppressionMessage(body, sources, title))
                         .withSupportStopShowing(false)
                         .withPositiveButton(primaryButtonText)
                         .withNegativeButton(confirmButtonText)

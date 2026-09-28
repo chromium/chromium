@@ -340,9 +340,11 @@ class EntityInstance final {
       //   org.chromium.components.autofill.autofill_ai)
       // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SourceType
       enum class Type {
+        // LINT.IfChange(SourceType)
         kGmail = 0,
         kPhotos = 1,
         kMaxValue = kPhotos,
+        // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiSourceType)
       };
 
       GURL url;

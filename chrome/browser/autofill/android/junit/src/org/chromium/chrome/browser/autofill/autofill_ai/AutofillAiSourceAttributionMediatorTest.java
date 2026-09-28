@@ -22,6 +22,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionProperties.HeaderProperties;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionProperties.ItemType;
@@ -101,8 +102,13 @@ public class AutofillAiSourceAttributionMediatorTest {
 
     @Test
     public void testSourceCardItemClickListener_launchesCustomTab() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Ai.AttributionSheet.SourceClicked", SourceType.GMAIL);
         ListItem item = mModelList.get(1);
         item.model.get(SourceCardProperties.ON_CLICK_LISTENER).run();
+        histogramWatcher.assertExpected();
+
         Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(intent);
         assertEquals(Intent.ACTION_VIEW, intent.getAction());

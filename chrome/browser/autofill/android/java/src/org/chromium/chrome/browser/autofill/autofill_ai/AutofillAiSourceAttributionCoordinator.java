@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionProperties.ItemType;
@@ -77,6 +78,10 @@ public class AutofillAiSourceAttributionCoordinator {
                         if (mBottomSheetController.getCurrentSheetContent() != mContent) {
                             return;
                         }
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Autofill.Ai.AttributionSheet.Dismissed",
+                                reason,
+                                StateChangeReason.MAX_VALUE + 1);
                         mIsShowing = false;
                         destroy();
                     }
@@ -87,7 +92,9 @@ public class AutofillAiSourceAttributionCoordinator {
         if (mIsDestroyed || mIsShowing) {
             return false;
         }
-        if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
+        boolean shown = mBottomSheetController.requestShowContent(mContent, /* animate= */ true);
+        RecordHistogram.recordBooleanHistogram("Autofill.Ai.AttributionSheet.Shown", shown);
+        if (!shown) {
             destroy();
             return false;
         }
