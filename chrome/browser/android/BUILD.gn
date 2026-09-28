@@ -37,12 +37,52 @@ source_set("tabs_public") {
   ]
 }
 
+source_set("oom_intervention") {
+  sources = [
+    "oom_intervention/near_oom_reduction_message_delegate.cc",
+    "oom_intervention/near_oom_reduction_message_delegate.h",
+    "oom_intervention/oom_intervention_config.cc",
+    "oom_intervention/oom_intervention_config.h",
+    "oom_intervention/oom_intervention_decider.cc",
+    "oom_intervention/oom_intervention_decider.h",
+    "oom_intervention/oom_intervention_tab_helper.cc",
+    "oom_intervention/oom_intervention_tab_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/interventions",
+    "//components/crash/content/browser",
+    "//components/messages/android",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//services/service_manager/public/cpp",
+    "//third_party/blink/public/mojom:android_mojo_bindings_blink",
+  ]
+  deps = [
+    ":resource_mapper",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+    "//components/messages/android:feature_flags",
+    "//components/metrics",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//components/subresource_filter/core/common",
+    "//third_party/blink/public/common",
+    "//ui/base",
+  ]
+}
+
 source_set("tabs_impl") {
   # TODO(crbug.com/486820940): Split tab_android.cc into smaller build target
   # files.
   sources = [ "tab_features.cc" ]
 
   deps = [
+    ":oom_intervention",
     ":tabs_public",
     "//chrome/browser/actor",
     "//chrome/browser/actor/android",
@@ -356,14 +396,6 @@ if (is_android) {
       "omnibox/suggestions_omt_input_anchor.h",
       "omnibox/tab_context_capture_request.cc",
       "omnibox/tab_context_capture_request.h",
-      "oom_intervention/near_oom_reduction_message_delegate.cc",
-      "oom_intervention/near_oom_reduction_message_delegate.h",
-      "oom_intervention/oom_intervention_config.cc",
-      "oom_intervention/oom_intervention_config.h",
-      "oom_intervention/oom_intervention_decider.cc",
-      "oom_intervention/oom_intervention_decider.h",
-      "oom_intervention/oom_intervention_tab_helper.cc",
-      "oom_intervention/oom_intervention_tab_helper.h",
       "overlay_panel/overlay_panel_content.cc",
       "overlay_panel/overlay_panel_content.h",
       "partner_browser_customizations.cc",
@@ -490,6 +522,7 @@ if (is_android) {
     deps = [
       ":delta_file_proto",
       ":language_data_proto",
+      ":oom_intervention",
       ":profile_key_startup_accessor",
       ":profile_token",
       ":sensitivity_data_proto",
@@ -1042,6 +1075,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   deps = [
     ":android",
+    ":oom_intervention",
     ":tabs_public",
     ":usage_stats_proto",
     "//base/test:test_support",

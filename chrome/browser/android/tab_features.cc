@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
@@ -297,6 +298,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
                 profile));
   }
 #endif
+
+  if (OomInterventionTabHelper::IsEnabled()) {
+    oom_intervention_tab_helper_ =
+        std::make_unique<OomInterventionTabHelper>(web_contents);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

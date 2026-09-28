@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/interventions/intervention_delegate.h"
 #include "components/crash/content/browser/crash_metrics_reporter_android.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,13 +32,13 @@ class OomInterventionDecider;
 // A tab helper for near-OOM intervention.
 class OomInterventionTabHelper
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<OomInterventionTabHelper>,
       public crash_reporter::CrashMetricsReporter::Observer,
       public blink::mojom::OomInterventionHost,
       public InterventionDelegate {
  public:
   static bool IsEnabled();
 
+  explicit OomInterventionTabHelper(content::WebContents* web_contents);
   ~OomInterventionTabHelper() override;
 
   // blink::mojom::OomInterventionHost:
@@ -52,9 +51,6 @@ class OomInterventionTabHelper
   void DeclineInterventionSticky() override;
 
  private:
-  explicit OomInterventionTabHelper(content::WebContents* web_contents);
-
-  friend class content::WebContentsUserData<OomInterventionTabHelper>;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -127,7 +123,6 @@ class OomInterventionTabHelper
       near_oom_reduction_message_delegate_;
 
   base::WeakPtrFactory<OomInterventionTabHelper> weak_ptr_factory_{this};
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_TAB_HELPER_H_

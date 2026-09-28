@@ -43,7 +43,6 @@ bool OomInterventionTabHelper::IsEnabled() {
 OomInterventionTabHelper::OomInterventionTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<OomInterventionTabHelper>(*web_contents),
       decider_(OomInterventionDecider::GetForBrowserContext(
           web_contents->GetBrowserContext())) {
   scoped_observation_.Observe(
@@ -282,5 +281,3 @@ void OomInterventionTabHelper::ResetInterfaces() {
   intervention_.reset();
   receiver_.reset();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OomInterventionTabHelper);

@@ -98,6 +98,7 @@ class ExternalProtocolObserver;
 class HttpAuthCacheStatus;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
+class OomInterventionTabHelper;
 class RevokedPermissionsTabHelper;
 class SecurityStateEventObserver;
 class StorageAccessAPITabHelper;
@@ -216,6 +217,7 @@ class TabFeatures {
   std::unique_ptr<safe_browsing::TailoredSecurityUrlObserver>
       tailored_security_url_observer_;
 #endif
+  std::unique_ptr<OomInterventionTabHelper> oom_intervention_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
