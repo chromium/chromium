@@ -8,8 +8,8 @@ import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '//resources/cr_elements/icons.html.js';
+import '../icons.html.js';
 import './memory_banks_edit_dialog.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -43,8 +43,6 @@ function downloadFile(
   URL.revokeObjectURL(url);
 }
 
-const FOLDER_TAB_ICON: string =
-    'chrome://resources/images/icon_folder_open.svg';
 
 export interface MemoryBanksElement {
   $: {
@@ -70,7 +68,12 @@ export class MemoryBanksElement extends CrLitElement {
       entries: {type: Array},
       selectedIds: {type: Object},
       searchQuery: {type: String},
-      selectedCollection: {type: String},
+      selectedCollections_: {type: Object, state: true},
+      selectedTags_: {type: Object, state: true},
+      activeFilterMenu_: {type: String, state: true},
+      availableCollections_: {type: Array, state: true},
+      availableTags_: {type: Array, state: true},
+      filteredEntries_: {type: Array, state: true},
       geminiResponse_: {type: String, state: true},
       isAskingGemini_: {type: Boolean, state: true},
       showGeminiPanel_: {type: Boolean, state: true},
@@ -83,7 +86,16 @@ export class MemoryBanksElement extends CrLitElement {
   accessor entries: MemoryBankEntry[] = [];
   accessor selectedIds: Set<bigint> = new Set();
   accessor searchQuery: string = '';
-  accessor selectedCollection: string = '';
+  // The collections / tags checked in the chip filters; when non-empty, only
+  // entries matching at least one selected value are shown. `''` is the
+  // "No collection" / "No tags" bucket. Everything starts out unchecked
+  // (no filter applied, all entries shown).
+  protected accessor selectedCollections_: Set<string> = new Set();
+  protected accessor selectedTags_: Set<string> = new Set();
+  protected accessor activeFilterMenu_: 'collections'|'tags'|null = null;
+  protected accessor availableCollections_: string[] = [];
+  protected accessor availableTags_: string[] = [];
+  protected accessor filteredEntries_: MemoryBankEntry[] = [];
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
@@ -91,19 +103,44 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor searchSuggestions_: SearchSuggestion[] = [];
   protected accessor highlightedSuggestionIndex_: number = -1;
   private activeMenuEntry_: MemoryBankEntry|null = null;
-  private availableCollections_: string[] = [];
-  private availableTags_: string[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
     this.fetchEntries();
+    document.addEventListener('pointerdown', this.onDocumentPointerDown_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('pointerdown', this.onDocumentPointerDown_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
     if (changedProperties.has('entries')) {
       this.availableCollections_ = this.computeAvailableCollections_();
       this.availableTags_ = this.computeAvailableTags_();
+      this.selectedCollections_ = new Set(this.availableCollections_.filter(
+          c => this.selectedCollections_.has(c)));
+      this.selectedTags_ =
+          new Set(this.availableTags_.filter(t => this.selectedTags_.has(t)));
+    }
+
+    if (changedProperties.has('entries') ||
+        changedProperties.has('searchQuery') ||
+        changedPrivateProperties.has('selectedCollections_') ||
+        changedPrivateProperties.has('selectedTags_')) {
+      this.filteredEntries_ = this.computeFilteredEntries_();
+      // Drop selections that are no longer visible, so bulk actions (copy,
+      // download, delete, Ask Gemini) never act on entries the user can't see.
+      const visibleIds = new Set(this.filteredEntries_.map(entry => entry.id));
+      const nextSelectedIds = new Set(
+          Array.from(this.selectedIds).filter(id => visibleIds.has(id)));
+      if (nextSelectedIds.size !== this.selectedIds.size) {
+        this.selectedIds = nextSelectedIds;
+      }
     }
   }
 
@@ -113,28 +150,30 @@ export class MemoryBanksElement extends CrLitElement {
     this.entries = entries;
   }
 
-  protected getAvailableCollections_(): string[] {
-    return this.availableCollections_;
-  }
-
-  protected getAvailableTags_(): string[] {
-    return this.availableTags_;
-  }
-
   private computeAvailableCollections_(): string[] {
     const set = new Set<string>();
+    let hasUncollected = false;
     for (const entry of this.entries) {
       if (entry.collection) {
         set.add(entry.collection);
+      } else {
+        hasUncollected = true;
       }
     }
-    return Array.from(set).sort();
+    const sorted = Array.from(set).sort((a, b) => a.localeCompare(b));
+    if (hasUncollected) {
+      sorted.unshift('');
+    }
+    return sorted;
   }
 
   private computeAvailableTags_(): string[] {
     const set = new Set<string>();
+    let hasUntagged = false;
     for (const entry of this.entries) {
-      if (entry.tags) {
+      if (!entry.tags || entry.tags.length === 0) {
+        hasUntagged = true;
+      } else {
         for (const tag of entry.tags) {
           if (tag) {
             set.add(tag);
@@ -142,14 +181,14 @@ export class MemoryBanksElement extends CrLitElement {
         }
       }
     }
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
+    const sorted = Array.from(set).sort((a, b) => a.localeCompare(b));
+    if (hasUntagged) {
+      sorted.unshift('');
+    }
+    return sorted;
   }
 
-  protected getRecentlySaved_(): MemoryBankEntry[] {
-    return this.entries.slice(0, 3);
-  }
-
-  protected getFilteredEntries_(): MemoryBankEntry[] {
+  private computeFilteredEntries_(): MemoryBankEntry[] {
     const query = this.searchQuery.trim();
     if (query) {
       const parsed = parseSearchQuery(query);
@@ -157,40 +196,119 @@ export class MemoryBanksElement extends CrLitElement {
           entry => matchesMemoryBankEntry(entry, parsed));
     }
 
-    if (this.selectedCollection) {
-      return this.entries.filter(e => e.collection === this.selectedCollection);
+    let result = this.entries;
+
+    // `''` represents the "No collection" / "No tags" bucket for entries
+    // without those annotations.
+    if (this.isCollectionFilterActive_()) {
+      result = result.filter(
+          entry => this.selectedCollections_.has(entry.collection || ''));
     }
 
-    return this.entries;
-  }
-
-  protected getTabNames_(): string[] {
-    return ['All', ...this.getAvailableCollections_()];
-  }
-
-  protected getTabIcons_(): string[] {
-    return this.getTabNames_().map(() => FOLDER_TAB_ICON);
-  }
-
-  protected getSelectedTabIndex_(): number {
-    if (!this.selectedCollection) {
-      return 0;
+    if (this.isTagFilterActive_()) {
+      result = result.filter(
+          entry => !entry.tags || entry.tags.length === 0 ?
+              this.selectedTags_.has('') :
+              entry.tags.some(tag => this.selectedTags_.has(tag)));
     }
-    const index =
-        this.getAvailableCollections_().indexOf(this.selectedCollection);
-    return index === -1 ? 0 : index + 1;
+
+    return result;
   }
 
-  protected onTabsSelectedChanged_(e: CustomEvent<{value: number}>) {
-    const index = e.detail.value;
-    if (index === 0) {
-      this.selectedCollection = '';
+  protected onFilterChipClick_(e: MouseEvent) {
+    e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    const type = target.dataset['type'] as 'collections' | 'tags';
+    this.activeFilterMenu_ = this.activeFilterMenu_ === type ? null : type;
+  }
+
+  protected getSelectedCollectionCount_(): number {
+    return this.selectedCollections_.size;
+  }
+
+  protected isCollectionFilterActive_(): boolean {
+    return this.selectedCollections_.size > 0;
+  }
+
+  protected isAllCollectionsSelected_(): boolean {
+    return this.selectedCollections_.size === 0;
+  }
+
+  protected isCollectionSelected_(collection: string): boolean {
+    return this.selectedCollections_.has(collection);
+  }
+
+  protected onToggleAllCollectionsChange_(e: Event) {
+    const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
+    checkbox.checked = true;
+    this.selectedCollections_ = new Set();
+  }
+
+  protected onCollectionCheckboxChange_(e: Event) {
+    const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
+    const collection = checkbox.dataset['collection'] ?? '';
+    const updated = new Set(this.selectedCollections_);
+    if (checkbox.checked) {
+      updated.add(collection);
     } else {
-      this.selectedCollection =
-          this.getAvailableCollections_()[index - 1] || '';
+      updated.delete(collection);
     }
-    this.selectedIds = new Set();
+    this.selectedCollections_ = updated;
   }
+
+  protected getSelectedTagCount_(): number {
+    return this.selectedTags_.size;
+  }
+
+  protected isTagFilterActive_(): boolean {
+    return this.selectedTags_.size > 0;
+  }
+
+  protected isAllTagsSelected_(): boolean {
+    return this.selectedTags_.size === 0;
+  }
+
+  protected isTagSelected_(tag: string): boolean {
+    return this.selectedTags_.has(tag);
+  }
+
+  protected onToggleAllTagsChange_(e: Event) {
+    const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
+    checkbox.checked = true;
+    this.selectedTags_ = new Set();
+  }
+
+  protected onTagCheckboxChange_(e: Event) {
+    const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
+    const tag = checkbox.dataset['tag'] ?? '';
+    const updated = new Set(this.selectedTags_);
+    if (checkbox.checked) {
+      updated.add(tag);
+    } else {
+      updated.delete(tag);
+    }
+    this.selectedTags_ = updated;
+  }
+
+  protected onFilterDropdownKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Escape' && this.activeFilterMenu_) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.activeFilterMenu_ = null;
+    }
+  }
+
+  private onDocumentPointerDown_ = (e: PointerEvent) => {
+    if (!this.activeFilterMenu_) {
+      return;
+    }
+    const isInsideChipWrapper = e.composedPath().some(
+        el => el instanceof HTMLElement &&
+            el.classList.contains('filter-chip-wrapper'));
+    if (!isInsideChipWrapper) {
+      this.activeFilterMenu_ = null;
+    }
+  };
 
   protected onMoreActionsClick_(entry: MemoryBankEntry, e: MouseEvent) {
     e.preventDefault();
@@ -224,10 +342,6 @@ export class MemoryBanksElement extends CrLitElement {
     const {id, collection, note, tags} = e.detail;
     this.entries = this.entries.map(
         entry => entry.id === id ? {...entry, collection, note, tags} : entry);
-    if (this.selectedCollection &&
-        !this.getAvailableCollections_().includes(this.selectedCollection)) {
-      this.selectedCollection = '';
-    }
     this.editingEntry_ = null;
   }
 
@@ -247,7 +361,7 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected isAllSelected_(): boolean {
-    const filtered = this.getFilteredEntries_();
+    const filtered = this.filteredEntries_;
     return filtered.length > 0 &&
         filtered.every(entry => this.selectedIds.has(entry.id));
   }
@@ -256,7 +370,7 @@ export class MemoryBanksElement extends CrLitElement {
     if (this.selectedIds.size === 0) {
       return false;
     }
-    const filtered = this.getFilteredEntries_();
+    const filtered = this.filteredEntries_;
     const filteredSelected =
         filtered.filter(entry => this.selectedIds.has(entry.id));
     return filteredSelected.length > 0 &&
@@ -270,19 +384,19 @@ export class MemoryBanksElement extends CrLitElement {
   onCheckboxChange(e: Event) {
     const checkbox = e.target as HTMLElement & {checked: boolean};
     const id = BigInt(checkbox.dataset['id']!);
+    const updated = new Set(this.selectedIds);
     if (checkbox.checked) {
-      this.selectedIds.add(id);
+      updated.add(id);
     } else {
-      this.selectedIds.delete(id);
+      updated.delete(id);
     }
-    this.selectedIds = new Set(this.selectedIds);
+    this.selectedIds = updated;
   }
 
   protected onSelectAllChange_(e: Event) {
     const checkbox = e.target as HTMLElement & {checked: boolean};
     if (checkbox.checked) {
-      this.selectedIds =
-          new Set(this.getFilteredEntries_().map(entry => entry.id));
+      this.selectedIds = new Set(this.filteredEntries_.map(entry => entry.id));
     } else {
       this.selectedIds = new Set();
     }
@@ -296,7 +410,8 @@ export class MemoryBanksElement extends CrLitElement {
 
   protected updateSuggestions_(input: string = this.searchQuery) {
     this.searchSuggestions_ = computeSuggestions(
-        input, this.getAvailableTags_(), this.getAvailableCollections_());
+        input, this.availableTags_.filter(Boolean),
+        this.availableCollections_.filter(Boolean));
     this.highlightedSuggestionIndex_ = -1;
   }
 
@@ -414,10 +529,11 @@ export class MemoryBanksElement extends CrLitElement {
   private async deleteEntries_(ids: bigint[]) {
     await browserProxyFactory.getInstance().handler.deleteMemoryBankEntries(
         ids);
+    const updated = new Set(this.selectedIds);
     for (const id of ids) {
-      this.selectedIds.delete(id);
+      updated.delete(id);
     }
-    this.selectedIds = new Set(this.selectedIds);
+    this.selectedIds = updated;
     await this.fetchEntries();
   }
 
