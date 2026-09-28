@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/test/mock_callback.h"
@@ -71,6 +72,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
@@ -81,6 +83,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1291,5 +1294,40 @@ TEST_F(ChromeAutofillClientTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+class OpenUrlTestWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    last_params_ = params;
+    return source;
+  }
+
+  const std::optional<content::OpenURLParams>& last_params() const {
+    return last_params_;
+  }
+
+ private:
+  std::optional<content::OpenURLParams> last_params_;
+};
+
+TEST_F(ChromeAutofillClientTest, OpenGmailForOtps) {
+  OpenUrlTestWebContentsDelegate delegate;
+  content::WebContentsDelegate* original_delegate =
+      web_contents()->GetDelegate();
+  base::ScopedClosureRunner reset_delegate(
+      base::BindOnce(&content::WebContents::SetDelegate,
+                     base::Unretained(web_contents()), original_delegate));
+  web_contents()->SetDelegate(&delegate);
+
+  client()->OpenGmailForOtps();
+
+  ASSERT_TRUE(delegate.last_params().has_value());
+  EXPECT_EQ(delegate.last_params()->url, GURL("https://mail.google.com"));
+  EXPECT_EQ(delegate.last_params()->disposition,
+            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
 }  // namespace
 }  // namespace autofill

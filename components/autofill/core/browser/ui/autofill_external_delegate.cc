@@ -1240,8 +1240,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       NOTIMPLEMENTED();
       break;
     case SuggestionType::kOpenGmailForOtps:
-      // TODO(crbug.com/556171578): Handle OpenGmail action.
-      NOTIMPLEMENTED();
+      manager_->client().OpenGmailForOtps();
       break;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAllSavedPasswordsEntry:

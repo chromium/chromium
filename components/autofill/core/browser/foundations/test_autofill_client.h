@@ -394,6 +394,9 @@ class TestAutofillClientTemplate : public T {
 
   void ShowAutofillSettings(SuggestionType suggestion_type) override {}
 
+  void OpenGmailForOtps() override { opened_gmail_for_otps_ = true; }
+  bool opened_gmail_for_otps() const { return opened_gmail_for_otps_; }
+
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
@@ -1053,6 +1056,7 @@ class TestAutofillClientTemplate : public T {
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
   url::Origin last_committed_primary_main_frame_origin_ =
       url::Origin::Create(last_committed_primary_main_frame_url_);
+  bool opened_gmail_for_otps_ = false;
   std::u16string page_title_ = u"Test page title";
 
   std::optional<AutofillClient::SuggestionUiSessionId>

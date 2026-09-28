@@ -287,6 +287,7 @@ class MockAutofillClient : public TestAutofillClient {
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
+  MOCK_METHOD(void, OpenGmailForOtps, (), (override));
   MOCK_METHOD(void, OpenGeminiInSidebar, (const std::u16string&), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
@@ -3196,6 +3197,19 @@ TEST_F(AutofillExternalDelegateTest, AcceptedGmailOtpSuggestion) {
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kGmailOneTimePasswordEntry,
                                /*main_text_value=*/otp_value),
+      {.multi_index = {0}});
+}
+
+// Tests that accepting the `kOpenGmailForOtps` suggestion footer delegates
+// opening Gmail to the `AutofillClient` and hides the suggestions popup.
+TEST_F(AutofillExternalDelegateTest, AcceptedOpenGmailSuggestion) {
+  IssueOnQuery();
+
+  EXPECT_CALL(autofill_client(), OpenGmailForOtps());
+  EXPECT_CALL(autofill_client(),
+              HideSuggestions(SuggestionHidingReason::kAcceptSuggestion, _));
+  external_delegate().DidAcceptSuggestion(
+      CreateAutofillSuggestion(SuggestionType::kOpenGmailForOtps),
       {.multi_index = {0}});
 }
 

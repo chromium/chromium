@@ -179,6 +179,7 @@
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -188,8 +189,11 @@
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1744,6 +1748,18 @@ void ChromeAutofillClient::OnActorTaskStateChange(actor::ActorTask& task) {
           .conversation_id = task.source_info().id.value_or(""),
           .task_id = task_id,
       });
+}
+
+void ChromeAutofillClient::OpenGmailForOtps() {
+  if (!web_contents()) {
+    return;
+  }
+  static constexpr std::string_view kGmailUrl = "https://mail.google.com";
+  web_contents()->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          GURL(kGmailUrl), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 void ChromeAutofillClient::OpenGeminiInSidebar(const std::u16string& prompt) {
