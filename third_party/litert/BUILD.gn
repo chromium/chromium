@@ -60,6 +60,7 @@ tflite_group("litert") {
     ":litert_core",
     ":litert_runtime",
     ":litert_runtime_accelerators",
+    ":litert_toml_parser",
   ]
 }
 
@@ -140,6 +141,7 @@ config("tflite_flags") {
     "-Wno-deprecated-anon-enum-enum-conversion",
     "-Wno-unused-function",
     "-Wno-unreachable-code-return",
+    "-Wno-unused-lambda-capture",
 
     # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
     "-Wno-sign-compare",
@@ -407,6 +409,17 @@ copy("litert_build_config") {
   outputs = [ "$target_gen_dir/src/litert/build_common/build_config.h" ]
 }
 
+tflite_static_library("litert_toml_parser") {
+  sources = [
+    "src/litert/core/litert_toml_parser.cc",
+    "src/litert/core/litert_toml_parser.h",
+  ]
+  deps = [ ":litert_headers" ]
+  configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+  configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
+  visibility = [ ":*" ]
+}
+
 tflite_static_library("litert_c") {
   sources = [
     "src/litert/c/internal/litert_accelerator.cc",
@@ -449,9 +462,13 @@ tflite_static_library("litert_c") {
     "src/litert/c/options/litert_webnn_options.cc",
   ]
   deps = [ ":litert_headers" ]
+  conditional_deps = [ ":litert_toml_parser" ]
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [ "//build/config/compiler:no_chromium_code" ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//components/optimization_guide/internal/*",
+  ]
 }
 
 tflite_static_library("litert_compiler") {
@@ -461,9 +478,10 @@ tflite_static_library("litert_compiler") {
     "src/litert/compiler/plugin/litert_compiler_options.cc",
   ]
   deps = [ ":litert_headers" ]
+  conditional_deps = [ ":litert_toml_parser" ]
 
   if (build_litert_with_xnnpack) {
-    conditional_deps = [ "//third_party/xnnpack" ]
+    conditional_deps += [ "//third_party/xnnpack" ]
   }
 
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
@@ -507,7 +525,6 @@ tflite_static_library("litert_core") {
     "src/litert/core/environment_options.cc",
     "src/litert/core/error_reporter.cc",
     "src/litert/core/filesystem.cc",
-    "src/litert/core/litert_toml_parser.cc",
     "src/litert/core/model/flatbuffer_to_litert.cc",
     "src/litert/core/model/litert_to_flatbuffer.cc",
     "src/litert/core/model/model.cc",
@@ -641,15 +658,6 @@ if (use_litert_tflite) {
 
   tflite_static_library("tflite_builtin_op_resolver") {
     sources = [
-      "src/tflite/c/c_api_opaque_internal.cc",
-      "src/tflite/c/c_api_opaque_internal.h",
-      "src/tflite/core/c/c_api.cc",
-      "src/tflite/core/c/c_api.h",
-      "src/tflite/core/c/c_api_opaque.cc",
-      "src/tflite/core/c/c_api_opaque.h",
-      "src/tflite/core/c/operator.cc",
-      "src/tflite/core/c/operator.h",
-      "src/tflite/core/create_op_resolver.h",
       "src/tflite/core/create_op_resolver_with_builtin_ops.cc",
       "src/tflite/core/kernels/register.cc",
       "src/tflite/core/kernels/register.h",
@@ -704,7 +712,10 @@ if (use_litert_tflite) {
       "//third_party/tflite:tflite_op_resolver_proto",
     ]
 
-    conditional_public_deps = [ ":tflite" ]
+    conditional_public_deps = [
+      ":tflite",
+      ":tflite_c_api",
+    ]
 
     configs_to_remove = [ "//build/config/compiler:chromium_code" ]
     configs_to_add = [
@@ -752,8 +763,10 @@ if (use_litert_tflite) {
       "src/tflite/converter/schema/schema_generated.h",
       "src/tflite/converter/schema/schema_utils.h",
       "src/tflite/core/api/profiler.h",
+      "src/tflite/core/c/c_api.h",
       "src/tflite/core/c/c_api_types.h",
       "src/tflite/core/c/common.h",
+      "src/tflite/core/create_op_resolver.h",
       "src/tflite/core/interpreter.h",
       "src/tflite/core/interpreter_builder.h",
       "src/tflite/core/macros.h",
@@ -790,6 +803,7 @@ if (use_litert_tflite) {
     configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
     public = [
       "src/tflite/core/kernels/register.h",
+      "src/tflite/experimental/resource/initialization_status.h",
       "src/tflite/experimental/resource/resource_base.h",
       "src/tflite/experimental/resource/resource_variable.h",
       "src/tflite/external_cpu_backend_context.h",
@@ -801,6 +815,7 @@ if (use_litert_tflite) {
       "src/tflite/kernels/internal/runtime_shape.h",
       "src/tflite/kernels/internal/tensor_ctypes.h",
       "src/tflite/kernels/kernel_util.h",
+      "src/tflite/kernels/lstm_shared.h",
       "src/tflite/kernels/op_macros.h",
       "src/tflite/kernels/register_ref.h",
       "src/tflite/kernels/stablehlo_elementwise.h",
@@ -994,6 +1009,49 @@ if (use_litert_tflite) {
     ]
   }
 
+  # Only consumed within //third_party/litert (:tflite and
+  # :tflite_framework_core). External consumers reach it via :tflite_framework.
+  source_set("tflite_core_c") {
+    _configs = configs
+    configs = []
+    configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
+    sources = [ "src/tflite/core/c/common.cc" ]
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_public_headers",
+    ]
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+    visibility = [ ":*" ]
+  }
+
+  source_set("tflite_kernel_util") {
+    _configs = configs
+    configs = []
+    configs = [ "//third_party/tflite:tflite_shim_config" ] + _configs
+    sources = [
+      "src/tflite/kernels/kernel_util.cc",
+      "src/tflite/kernels/kernel_util.h",
+    ]
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+    ]
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+
+    # Only consumed within //third_party/litert (:tflite_kernels and
+    # :tflite_framework_core). External consumers reach it via
+    # :tflite_framework.
+    visibility = [ ":*" ]
+  }
+
   tflite_static_library("tflite_kernels") {
     sources = [
       "src/tflite/kernels/activations.cc",
@@ -1044,7 +1102,6 @@ if (use_litert_tflite) {
       "src/tflite/kernels/hadamard_rotation.cc",
       "src/tflite/kernels/hashtable_lookup.cc",
       "src/tflite/kernels/if.cc",
-      "src/tflite/kernels/kernel_util.cc",
       "src/tflite/kernels/l2norm.cc",
       "src/tflite/kernels/local_response_norm.cc",
       "src/tflite/kernels/logical.cc",
@@ -1052,7 +1109,6 @@ if (use_litert_tflite) {
       "src/tflite/kernels/lstm.cc",
       "src/tflite/kernels/lstm_eval.cc",
       "src/tflite/kernels/lstm_eval.h",
-      "src/tflite/kernels/lstm_shared.h",
       "src/tflite/kernels/matrix_diag.cc",
       "src/tflite/kernels/matrix_set_diag.cc",
       "src/tflite/kernels/maximum_minimum.cc",
@@ -1122,6 +1178,7 @@ if (use_litert_tflite) {
     deps = [
       ":tflite_kernel_common_headers",
       ":tflite_kernel_internals",
+      ":tflite_kernel_util",
       ":tflite_public_headers",
       "//third_party/abseil-cpp:absl",
       "//third_party/farmhash",
@@ -1274,7 +1331,7 @@ if (use_litert_tflite) {
     ]
   }
 
-  tflite_static_library("tflite") {
+  tflite_static_library("tflite_framework_core") {
     sources = [
       "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.cc",
       "//third_party/tflite/src/third_party/xla/xla/tsl/util/stats_calculator.h",
@@ -1311,7 +1368,6 @@ if (use_litert_tflite) {
       "src/tflite/core/async/async_subgraph.h",
       "src/tflite/core/async/task_internal.cc",
       "src/tflite/core/async/task_internal.h",
-      "src/tflite/core/c/common.cc",
       "src/tflite/core/interpreter.cc",
       "src/tflite/core/interpreter_builder.cc",
       "src/tflite/core/interpreter_experimental.cc",
@@ -1329,10 +1385,7 @@ if (use_litert_tflite) {
       "src/tflite/delegates/serialization.h",
       "src/tflite/delegates/utils.cc",
       "src/tflite/delegates/utils.h",
-      "src/tflite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
-      "src/tflite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
       "src/tflite/experimental/resource/initialization_status.cc",
-      "src/tflite/experimental/resource/initialization_status.h",
       "src/tflite/experimental/resource/lookup_interfaces.h",
       "src/tflite/experimental/resource/lookup_util.h",
       "src/tflite/experimental/resource/resource_variable.cc",
@@ -1376,8 +1429,6 @@ if (use_litert_tflite) {
       "src/tflite/simple_memory_arena.h",
       "src/tflite/stderr_reporter.cc",
       "src/tflite/string_util.cc",
-      "src/tflite/tflite_with_xnnpack_optional.cc",
-      "src/tflite/tflite_with_xnnpack_optional.h",
       "src/tflite/tools/command_line_flags.h",
       "src/tflite/tools/delegates/delegate_provider.h",
       "src/tflite/tools/logging.h",
@@ -1388,6 +1439,150 @@ if (use_litert_tflite) {
       "src/tflite/tools/versioning/op_signature.h",
       "src/tflite/util.cc",
       "src/tflite/version.h",
+    ]
+
+    if (is_win) {
+      sources += [ "src/tflite/converter/mmap_allocation_disabled.cc" ]
+    } else {
+      sources += [ "src/tflite/converter/mmap_allocation.cc" ]
+    }
+
+    if (is_ios) {
+      sources += [
+        "src/tflite/profiling/signpost_profiler.h",
+        "src/tflite/profiling/signpost_profiler.mm",
+      ]
+    } else if (is_android) {
+      sources += [
+        "src/tflite/profiling/atrace_profiler.cc",
+        "src/tflite/profiling/atrace_profiler.h",
+      ]
+    }
+
+    deps = [
+      ":tflite_core_c",
+      ":tflite_kernel_internals",
+      ":tflite_kernel_util",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/farmhash",
+      "//third_party/fp16",
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+    ]
+
+    conditional_deps = [
+      ":tflite_logging",
+      "//third_party/pthreadpool",
+    ]
+
+    conditional_public_deps = [ ":tflite_litert" ]
+
+    public_deps = [
+      ":mutable_tflite_schema",
+      ":tflite_compiler_utils",
+      ":tflite_kernel_common_headers",
+      ":tflite_proto",
+      ":tflite_public_headers",
+      "//third_party/flatbuffers",
+      "//third_party/ruy",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [ ":tflite_config" ]
+    public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
+    visibility = [ ":*" ]
+  }
+
+  # C API and delegate wrapper implementation shared by :tflite_framework and
+  # :tflite_builtin_op_resolver. Kept separate from :tflite_framework_core
+  # because c_api.cc calls tflite::CreateOpResolver(), which is not linked by
+  # targets that depend only on :tflite (e.g. webrtc_component under
+  # -Wl,--whole-archive).
+  tflite_static_library("tflite_c_api") {
+    sources = [
+      "src/tflite/c/c_api_opaque_internal.cc",
+      "src/tflite/c/c_api_opaque_internal.h",
+      "src/tflite/core/c/c_api.cc",
+      "src/tflite/core/c/c_api_opaque.cc",
+      "src/tflite/core/c/c_api_opaque.h",
+      "src/tflite/core/c/operator.cc",
+      "src/tflite/core/c/operator.h",
+      "src/tflite/delegates/utils/simple_delegate.cc",
+      "src/tflite/delegates/utils/simple_delegate.h",
+      "src/tflite/delegates/utils/simple_opaque_delegate.cc",
+      "src/tflite/delegates/utils/simple_opaque_delegate.h",
+    ]
+
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+    ]
+
+    conditional_deps = [ ":tflite_framework_core" ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [ ":tflite_config" ]
+
+    visibility = [ ":*" ]
+  }
+
+  tflite_static_library("tflite_framework") {
+    sources = [ "//third_party/tflite/shims/create_op_resolver_empty.cc" ]
+
+    deps = [
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    conditional_public_deps = [
+      ":tflite_c_api",
+      ":tflite_framework_core",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [ ":tflite_config" ]
+    public_deps_for_standalone = [ "//third_party/neon_2_sse" ]
+  }
+
+  tflite_static_library("tflite") {
+    sources = [
+      "src/tflite/tflite_with_xnnpack_optional.cc",
+      "src/tflite/tflite_with_xnnpack_optional.h",
     ]
 
     if (build_tflite_with_xnnpack) {
@@ -1409,29 +1604,13 @@ if (use_litert_tflite) {
       ]
     }
 
-    if (is_win) {
-      sources += [ "src/tflite/converter/mmap_allocation_disabled.cc" ]
-    } else {
-      sources += [ "src/tflite/converter/mmap_allocation.cc" ]
-    }
-
-    if (is_ios) {
-      sources += [
-        "src/tflite/profiling/signpost_profiler.h",
-        "src/tflite/profiling/signpost_profiler.mm",
-      ]
-    } else if (is_android) {
-      sources += [
-        "src/tflite/profiling/atrace_profiler.cc",
-        "src/tflite/profiling/atrace_profiler.h",
-      ]
-    }
-
     deps = [
+      ":tflite_core_c",
       "//third_party/abseil-cpp:absl",
       "//third_party/farmhash",
       "//third_party/fft2d",
       "//third_party/fp16",
+      "//third_party/gemmlowp",
       "//third_party/neon_2_sse",
     ]
 
@@ -1449,6 +1628,7 @@ if (use_litert_tflite) {
     }
 
     conditional_public_deps = [
+      ":tflite_framework_core",
       ":tflite_kernels",
       ":tflite_litert",
     ]
@@ -1468,7 +1648,6 @@ if (use_litert_tflite) {
       "//third_party/flatbuffers",
       "//third_party/ruy",
     ]
-    deps += [ "//third_party/gemmlowp" ]
     configs_to_remove = [ "//build/config/compiler:chromium_code" ]
     configs_to_add = [
       "//build/config/compiler:no_chromium_code",

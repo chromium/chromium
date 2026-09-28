@@ -53,6 +53,11 @@ if (use_litert_tflite) {
     conditional_public_deps = [ "//third_party/litert:tflite" ]
   }
 
+  tflite_group("tflite_framework") {
+    public_configs = [ ":tflite_shim_config" ]
+    conditional_public_deps = [ "//third_party/litert:tflite_framework" ]
+  }
+
   tflite_group("tflite_builtin_op_resolver") {
     public_configs = [ ":tflite_shim_config" ]
     conditional_public_deps =
@@ -316,22 +321,9 @@ if (!use_litert_tflite) {
 
   tflite_static_library("tflite_builtin_op_resolver") {
     sources = [
-      "src/tensorflow/lite/c/c_api_opaque_internal.cc",
-      "src/tensorflow/lite/c/c_api_opaque_internal.h",
-      "src/tensorflow/lite/core/c/c_api.cc",
-      "src/tensorflow/lite/core/c/c_api.h",
-      "src/tensorflow/lite/core/c/c_api_opaque.cc",
-      "src/tensorflow/lite/core/c/c_api_opaque.h",
-      "src/tensorflow/lite/core/c/operator.cc",
-      "src/tensorflow/lite/core/c/operator.h",
-      "src/tensorflow/lite/core/create_op_resolver.h",
       "src/tensorflow/lite/core/create_op_resolver_with_builtin_ops.cc",
       "src/tensorflow/lite/core/kernels/register.cc",
       "src/tensorflow/lite/core/kernels/register.h",
-      "src/tensorflow/lite/delegates/utils/simple_delegate.cc",
-      "src/tensorflow/lite/delegates/utils/simple_delegate.h",
-      "src/tensorflow/lite/delegates/utils/simple_opaque_delegate.cc",
-      "src/tensorflow/lite/delegates/utils/simple_opaque_delegate.h",
       "src/tensorflow/lite/kernels/atan2.cc",
       "src/tensorflow/lite/kernels/atan2_custom.cc",
       "src/tensorflow/lite/kernels/audio_spectrogram.cc",
@@ -403,6 +395,7 @@ if (!use_litert_tflite) {
     ]
 
     conditional_deps = [ ":tflite" ]
+    conditional_public_deps = [ ":tflite_c_api" ]
   }
 
   flatbuffer("mutable_schema_tflite_path") {
@@ -449,8 +442,10 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/c/builtin_op_data.h",
       "src/tensorflow/lite/context.h",
       "src/tensorflow/lite/context_util.h",
+      "src/tensorflow/lite/core/c/c_api.h",
       "src/tensorflow/lite/core/c/c_api_types.h",
       "src/tensorflow/lite/core/c/common.h",
+      "src/tensorflow/lite/core/create_op_resolver.h",
       "src/tensorflow/lite/core/interpreter.h",
       "src/tensorflow/lite/core/interpreter_builder.h",
       "src/tensorflow/lite/core/macros.h",
@@ -494,6 +489,7 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/internal/runtime_shape.h",
       "src/tensorflow/lite/kernels/internal/tensor_ctypes.h",
       "src/tensorflow/lite/kernels/kernel_util.h",
+      "src/tensorflow/lite/kernels/lstm_shared.h",
       "src/tensorflow/lite/kernels/op_macros.h",
       "src/tensorflow/lite/kernels/register_ref.h",
       "src/tensorflow/lite/kernels/stablehlo_elementwise.h",
@@ -675,6 +671,51 @@ if (!use_litert_tflite) {
     visibility = [ ":*" ]
   }
 
+  source_set("tflite_core_c") {
+    _configs = configs
+    configs = []
+    configs = [ ":tflite_shim_config" ] + _configs
+    sources = [ "src/tensorflow/lite/core/c/common.cc" ]
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_public_headers",
+    ]
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+
+    # Only consumed within //third_party/tflite (:tflite and
+    # :tflite_framework_core). External consumers reach it via
+    # :tflite_framework.
+    visibility = [ ":*" ]
+  }
+
+  source_set("tflite_kernel_util") {
+    _configs = configs
+    configs = []
+    configs = [ ":tflite_shim_config" ] + _configs
+    sources = [
+      "src/tensorflow/lite/kernels/kernel_util.cc",
+      "src/tensorflow/lite/kernels/kernel_util.h",
+    ]
+    deps = [
+      ":tflite_kernel_common_headers",
+      ":tflite_kernel_internals",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+    ]
+    configs += [
+      ":tflite_config",
+      ":tflite_flags",
+    ]
+
+    # Only consumed within //third_party/tflite (:tflite_kernels and
+    # :tflite_framework_core). External consumers reach it via
+    # :tflite_framework.
+    visibility = [ ":*" ]
+  }
+
   tflite_static_library("tflite_kernels") {
     sources = [
       "src/tensorflow/lite/kernels/activations.cc",
@@ -726,7 +767,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/hadamard_rotation.cc",
       "src/tensorflow/lite/kernels/hashtable_lookup.cc",
       "src/tensorflow/lite/kernels/if.cc",
-      "src/tensorflow/lite/kernels/kernel_util.cc",
       "src/tensorflow/lite/kernels/l2norm.cc",
       "src/tensorflow/lite/kernels/local_response_norm.cc",
       "src/tensorflow/lite/kernels/logical.cc",
@@ -734,7 +774,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/kernels/lstm.cc",
       "src/tensorflow/lite/kernels/lstm_eval.cc",
       "src/tensorflow/lite/kernels/lstm_eval.h",
-      "src/tensorflow/lite/kernels/lstm_shared.h",
       "src/tensorflow/lite/kernels/matrix_diag.cc",
       "src/tensorflow/lite/kernels/matrix_set_diag.cc",
       "src/tensorflow/lite/kernels/maximum_minimum.cc",
@@ -807,6 +846,7 @@ if (!use_litert_tflite) {
       ":fft2d_deps",
       ":tflite_kernel_common_headers",
       ":tflite_kernel_internals",
+      ":tflite_kernel_util",
       ":tflite_public_headers",
       "//third_party/abseil-cpp:absl",
       "//third_party/farmhash",
@@ -1028,7 +1068,7 @@ if (!use_litert_tflite) {
   # the tflite version.
   # TODO(crbug.com/372526657): Use tflite registration directly and not the C
   # API.
-  tflite_static_library("tflite") {
+  tflite_static_library("tflite_framework_core") {
     sources = [
       "src/tensorflow/compiler/mlir/lite/allocation.cc",
       "src/tensorflow/compiler/mlir/lite/allocation.h",
@@ -1063,7 +1103,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/core/async/async_subgraph.h",
       "src/tensorflow/lite/core/async/task_internal.cc",
       "src/tensorflow/lite/core/async/task_internal.h",
-      "src/tensorflow/lite/core/c/common.cc",
       "src/tensorflow/lite/core/interpreter.cc",
       "src/tensorflow/lite/core/interpreter_builder.cc",
       "src/tensorflow/lite/core/interpreter_experimental.cc",
@@ -1081,10 +1120,10 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/delegates/serialization.h",
       "src/tensorflow/lite/delegates/utils.cc",
       "src/tensorflow/lite/delegates/utils.h",
+      "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
       "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
       "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
       "src/tensorflow/lite/experimental/resource/initialization_status.cc",
-      "src/tensorflow/lite/experimental/resource/initialization_status.h",
       "src/tensorflow/lite/experimental/resource/lookup_interfaces.h",
       "src/tensorflow/lite/experimental/resource/lookup_util.h",
       "src/tensorflow/lite/experimental/resource/resource_variable.cc",
@@ -1129,8 +1168,6 @@ if (!use_litert_tflite) {
       "src/tensorflow/lite/simple_memory_arena.h",
       "src/tensorflow/lite/stderr_reporter.cc",
       "src/tensorflow/lite/string_util.cc",
-      "src/tensorflow/lite/tflite_with_xnnpack_optional.cc",
-      "src/tensorflow/lite/tflite_with_xnnpack_optional.h",
       "src/tensorflow/lite/tools/command_line_flags.h",
       "src/tensorflow/lite/tools/delegates/delegate_provider.h",
       "src/tensorflow/lite/tools/logging.h",
@@ -1144,25 +1181,6 @@ if (!use_litert_tflite) {
       "src/third_party/xla/xla/tsl/util/stats_calculator.cc",
       "src/third_party/xla/xla/tsl/util/stats_calculator.h",
     ]
-
-    if (build_tflite_with_xnnpack) {
-      sources += [
-        "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
-        "src/tensorflow/lite/delegates/xnnpack/file_util.h",
-        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.cc",
-        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.h",
-        "src/tensorflow/lite/delegates/xnnpack/moe_delegate_kernel.cc",
-        "src/tensorflow/lite/delegates/xnnpack/moe_delegate_kernel.h",
-        "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
-        "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
-        "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
-        "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
-        "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
-        "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
-        "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
-        "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.h",
-      ]
-    }
 
     if (is_win) {
       sources +=
@@ -1185,6 +1203,178 @@ if (!use_litert_tflite) {
 
     deps = [
       ":buildflags",
+      ":tflite_core_c",
+      ":tflite_kernel_internals",
+      ":tflite_kernel_util",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/farmhash",
+      "//third_party/fp16",
+      "//third_party/gemmlowp",
+      "//third_party/neon_2_sse",
+    ]
+
+    conditional_deps = [
+      ":tflite_logging",
+      "//third_party/pthreadpool",
+    ]
+
+    conditional_public_deps = [ ":tflite_litert" ]
+    if (is_ios) {
+      conditional_public_deps += [ ":tflite_coreml_delegate" ]
+    }
+
+    public_deps = [
+      ":mutable_schema",
+      ":tflite_compiler_utils",
+      ":tflite_kernel_common_headers",
+      ":tflite_proto",
+      ":tflite_public_headers",
+      "//third_party/flatbuffers",
+      "//third_party/ruy",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [
+      ":tflite_shim_config",
+      ":tflite_config",
+    ]
+
+    public_deps_for_standalone = [
+      "//third_party/neon_2_sse",
+      "//third_party/gemmlowp",
+    ]
+    visibility = [ ":*" ]
+  }
+
+  # C API and delegate wrapper implementation shared by :tflite_framework and
+  # :tflite_builtin_op_resolver. Kept separate from :tflite_framework_core
+  # because c_api.cc calls tflite::CreateOpResolver(), which is not linked by
+  # targets that depend only on :tflite (e.g. webrtc_component under
+  # -Wl,--whole-archive).
+  tflite_static_library("tflite_c_api") {
+    sources = [
+      "src/tensorflow/lite/c/c_api_opaque_internal.cc",
+      "src/tensorflow/lite/c/c_api_opaque_internal.h",
+      "src/tensorflow/lite/core/c/c_api.cc",
+      "src/tensorflow/lite/core/c/c_api_opaque.cc",
+      "src/tensorflow/lite/core/c/c_api_opaque.h",
+      "src/tensorflow/lite/core/c/operator.cc",
+      "src/tensorflow/lite/core/c/operator.h",
+      "src/tensorflow/lite/delegates/utils/simple_delegate.cc",
+      "src/tensorflow/lite/delegates/utils/simple_delegate.h",
+      "src/tensorflow/lite/delegates/utils/simple_opaque_delegate.cc",
+      "src/tensorflow/lite/delegates/utils/simple_opaque_delegate.h",
+    ]
+
+    deps = [
+      ":buildflags",
+      ":tflite_kernel_common_headers",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/flatbuffers",
+    ]
+
+    conditional_deps = [ ":tflite_framework_core" ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [
+      ":tflite_shim_config",
+      ":tflite_config",
+    ]
+
+    visibility = [ ":*" ]
+  }
+
+  # Provides the core TFLite runtime and interpreter without builtin CPU
+  # op kernels (:tflite_kernels) or XNNPACK delegate. This allows standalone
+  # accelerator libraries (e.g. libLiteRtWebGpuAccelerator.dll) to link the
+  # core TFLite framework without pulling in unused CPU kernels and XNNPACK.
+  tflite_static_library("tflite_framework") {
+    sources = [ "shims/create_op_resolver_empty.cc" ]
+
+    deps = [
+      ":buildflags",
+      ":tflite_public_headers",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    conditional_public_deps = [
+      ":tflite_c_api",
+      ":tflite_framework_core",
+    ]
+
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
+      "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:rtti",
+      "//third_party/eigen3:eigen_includes",
+      ":tflite_flags",
+    ]
+
+    if (is_apple) {
+      configs_to_remove += [ "//build/config/compiler:enable_arc" ]
+    }
+
+    public_configs = [
+      ":tflite_shim_config",
+      ":tflite_config",
+    ]
+
+    public_deps_for_standalone = [
+      "//third_party/neon_2_sse",
+      "//third_party/gemmlowp",
+    ]
+  }
+
+  tflite_static_library("tflite") {
+    sources = [
+      "src/tensorflow/lite/tflite_with_xnnpack_optional.cc",
+      "src/tensorflow/lite/tflite_with_xnnpack_optional.h",
+    ]
+
+    if (build_tflite_with_xnnpack) {
+      sources += [
+        "src/tensorflow/lite/delegates/xnnpack/file_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/file_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.cc",
+        "src/tensorflow/lite/delegates/xnnpack/mmap_handle.h",
+        "src/tensorflow/lite/delegates/xnnpack/moe_delegate_kernel.cc",
+        "src/tensorflow/lite/delegates/xnnpack/moe_delegate_kernel.h",
+        "src/tensorflow/lite/delegates/xnnpack/quantization_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/quantization_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/weight_cache.cc",
+        "src/tensorflow/lite/delegates/xnnpack/weight_cache.h",
+        "src/tensorflow/lite/delegates/xnnpack/windows_util.cc",
+        "src/tensorflow/lite/delegates/xnnpack/windows_util.h",
+        "src/tensorflow/lite/delegates/xnnpack/xnnpack_delegate.cc",
+      ]
+    }
+
+    deps = [
+      ":buildflags",
+      ":tflite_core_c",
       "//third_party/abseil-cpp:absl",
       "//third_party/farmhash",
       "//third_party/fft2d",
@@ -1207,6 +1397,7 @@ if (!use_litert_tflite) {
     }
 
     conditional_public_deps = [
+      ":tflite_framework_core",
       ":tflite_kernels",
       ":tflite_litert",
     ]
