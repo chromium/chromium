@@ -82,6 +82,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs:tab_group",

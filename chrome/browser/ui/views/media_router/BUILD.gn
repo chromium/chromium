@@ -204,6 +204,7 @@ if (!is_chromeos_device) {
 
     deps = [
       ":media_router",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/views/frame:browser_view_header",

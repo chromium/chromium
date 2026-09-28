@@ -348,6 +348,7 @@ source_set("impl") {
     deps += [
       ":signin_promo",
       "//chrome/browser/feature_engagement",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",

@@ -322,7 +322,10 @@ source_set("impl") {
     ]
   }
   if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_window_header" ]
+    deps += [
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_window_header",
+    ]
   }
 }
 
@@ -565,7 +568,10 @@ source_set("browser_tests") {
   if (is_android) {
     deps += [ "//chrome/test:test_support_ui_android" ]
   } else {
-    deps += [ "//chrome/test:test_support_ui" ]
+    deps += [
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/test:test_support_ui",
+    ]
     sources += [ "actor_keyed_service_browsertest_desktop.cc" ]
   }
 
@@ -651,6 +657,7 @@ if (!skip_android_unmigrated_actor_files) {
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",
       "//components/favicon/core/test:test_support",
       "//content/test:browsertest_support",

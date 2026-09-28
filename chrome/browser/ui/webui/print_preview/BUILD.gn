@@ -264,6 +264,7 @@ source_set("browser_tests") {
     ":print_preview",
     "//base",
     "//chrome/browser/printing",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",

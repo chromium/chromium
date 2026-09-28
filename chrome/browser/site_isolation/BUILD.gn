@@ -68,6 +68,7 @@ if (!is_android) {
       ":site_isolation",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/subresource_filter:test_support",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",

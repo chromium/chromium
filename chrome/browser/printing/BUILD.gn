@@ -307,6 +307,7 @@ if (enable_printing) {
       deps = [
         ":printing",
         "//base",
+        "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui:browser_window_header",
         "//chrome/common:constants",
         "//chrome/test:test_support",

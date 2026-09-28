@@ -897,6 +897,7 @@ source_set("web_applications_test_support") {
     "//chrome/browser/component_updater",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/webui/web_app_internals",
     "//components/base32",
@@ -1388,6 +1389,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/push_messaging",
     "//chrome/browser/push_messaging:service_impl_public",
     "//chrome/browser/ui:browser_command_controller",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:simple_message_box_internal",
     "//chrome/browser/ui/navigator",
@@ -1491,6 +1493,7 @@ source_set("app_service_browser_tests") {
     "preinstalled_web_app_migration_browsertest.cc",
   ]
   deps = [
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/web_applications/isolated_web_apps/test:test_support",
   ]
 
@@ -1551,6 +1554,7 @@ source_set("interactive_ui_tests") {
     ":web_applications_metrics",
     ":web_applications_test_support",
     "//chrome/app:command_ids",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/permissions",
@@ -1615,6 +1619,7 @@ if (!is_android) {
 
     public_deps = [
       "//base",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/test:test_support",
     ]
 

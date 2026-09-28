@@ -220,6 +220,7 @@ if (!is_android) {
       "//build/config/coverage:buildflags",
       "//chrome/browser/pdf:pdf_extension_test_base",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/pdf",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",

@@ -211,6 +211,7 @@ source_set("interactive_ui_tests") {
     ":page_action",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/test:test_support",

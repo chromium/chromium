@@ -67,6 +67,7 @@ source_set("browser_tests") {
 
   deps = [
     ":safe_browsing",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/test:dialog",
     "//chrome/test:test_support",

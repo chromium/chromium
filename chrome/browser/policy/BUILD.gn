@@ -432,6 +432,7 @@ source_set("policy_specific_browser_tests") {
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/task_manager",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
@@ -646,6 +647,7 @@ source_set("browser_tests") {
     sources += [ "cloud/component_cloud_policy_browsertest.cc" ]
 
     deps += [
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/test:test_support",
     ]

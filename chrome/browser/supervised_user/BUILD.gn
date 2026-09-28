@@ -349,6 +349,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/ssl",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:tab_ui_helper",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window",

@@ -68,6 +68,7 @@ source_set("browser_tests") {
     ":impl",
     ":infobars",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/test:test_support",

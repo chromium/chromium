@@ -113,6 +113,7 @@ if (!is_android) {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_otr_state",
       "//chrome/common:constants",
       "//chrome/test:test_support_ui",

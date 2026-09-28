@@ -640,7 +640,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = []
-    deps = []
+    deps = [ "//chrome/browser/ui:browser_commands" ]
 
     if (!is_chromeos_device) {
       sources += [

@@ -55,6 +55,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/common",
       "//chrome/test:test_support",
       "//components/prefs",

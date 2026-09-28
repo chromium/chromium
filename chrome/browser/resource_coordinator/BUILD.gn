@@ -243,6 +243,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/find_bar",

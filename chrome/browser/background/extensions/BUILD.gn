@@ -66,6 +66,7 @@ source_set("impl") {
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/status_icons",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/profiles",

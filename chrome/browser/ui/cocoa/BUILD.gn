@@ -155,6 +155,7 @@ source_set("cocoa") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:browser_command_controller",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:fullscreen_util_mac",
     "//chrome/browser/ui:recently_audible_helper",

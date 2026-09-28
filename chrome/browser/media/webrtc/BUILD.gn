@@ -450,6 +450,7 @@ if (!is_android) {
       "//chrome/browser/permissions",
       "//chrome/browser/sessions:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/tab_sharing",

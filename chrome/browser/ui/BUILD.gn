@@ -264,6 +264,7 @@ if (!is_android) {
     deps = [
       ":browser_actions",
       ":browser_command_controller",
+      ":browser_commands",
       ":browser_select_file_dialog_controller",
       ":browser_window_header",
       ":bubble_anchor_util",
@@ -527,6 +528,7 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_commands",
       ":browser_init_state",
       ":browser_tab_strip",
       ":browser_tabrestore",
@@ -559,6 +561,7 @@ if (!is_android) {
   source_set("browser_tab_restorer") {
     sources = [ "browser_tab_restorer.cc" ]
     deps = [
+      ":browser_commands",
       ":browser_live_tab_context",
       "//base",
       "//chrome/browser/profiles:profile",
@@ -587,6 +590,7 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_commands",
       ":browser_live_tab_context",
       ":browser_manager_service",
       ":browser_window_header",
@@ -654,6 +658,7 @@ if (!is_android) {
     deps = [
       ":accelerator_table",
       ":browser_actions",
+      ":browser_commands",
       ":browser_element_identifiers",
       ":browser_select_file_dialog_controller",
       ":browser_window_header",
@@ -771,6 +776,185 @@ if (!is_android) {
       ]
     }
   }
+
+  source_set("browser_commands") {
+    public = [ "browser_commands.h" ]
+    public_deps = [
+      ":chrome_pages",
+      "//base",
+      "//build:branding_buildflags",
+      "//build:buildflag_header_h",
+      "//chrome/browser/devtools:devtools_toggle_action",
+      "//chrome/browser/task_manager",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/split_tabs",
+      "//content/public/common",
+      "//printing/buildflags",
+      "//ui/actions",
+      "//ui/base:types",
+    ]
+  }
+
+  source_set("browser_commands_impl") {
+    sources = [ "browser_commands.cc" ]
+    public_deps = [
+      ":browser_commands",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":accelerator_utils_headers",
+      ":browser_command_controller",
+      ":browser_init_state",
+      ":browser_live_tab_context",
+      ":browser_window_header",
+      ":browser_window_state",
+      ":intent_picker_tab_helper",
+      ":scoped_tabbed_browser_displayer",
+      ":status_bubble",
+      ":tab_dialogs",
+      ":ui_features",
+      ":url_identity",
+      "//base",
+      "//build:branding_buildflags",
+      "//chrome/app:command_ids",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:chained_back_navigation_tracker",
+      "//chrome/browser:font_pref",
+      "//chrome/browser/actor/ui:actor_overlay",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/autocomplete",
+      "//chrome/browser/autofill",
+      "//chrome/browser/bookmarks",
+      "//chrome/browser/browsing_data",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/contextual_tasks:ui",
+      "//chrome/browser/custom_handlers",
+      "//chrome/browser/devtools",
+      "//chrome/browser/extensions",
+      "//chrome/browser/favicon",
+      "//chrome/browser/feedback",
+      "//chrome/browser/feedback:feedback_impl",
+      "//chrome/browser/history",
+      "//chrome/browser/lens/region_search",
+      "//chrome/browser/lifetime",
+      "//chrome/browser/media/router",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/page_info",
+      "//chrome/browser/password_manager",
+      "//chrome/browser/pdf",
+      "//chrome/browser/permissions",
+      "//chrome/browser/picture_in_picture",
+      "//chrome/browser/prefs",
+      "//chrome/browser/printing",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/reading_list",
+      "//chrome/browser/resource_coordinator",
+      "//chrome/browser/safe_browsing",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/sessions",
+      "//chrome/browser/signin",
+      "//chrome/browser/ssl",
+      "//chrome/browser/sync",
+      "//chrome/browser/task_manager",
+      "//chrome/browser/translate",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/commerce",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/focus",
+      "//chrome/browser/ui/fullscreen",
+      "//chrome/browser/ui/hats",
+      "//chrome/browser/ui/lens",
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/permission_bubble",
+      "//chrome/browser/ui/prefs",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/qrcode_generator",
+      "//chrome/browser/ui/safety_hub",
+      "//chrome/browser/ui/search",
+      "//chrome/browser/ui/send_tab_to_self",
+      "//chrome/browser/ui/sharing_hub",
+      "//chrome/browser/ui/side_panel",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs:tab_group",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/back_to_opener",
+      "//chrome/browser/ui/tabs/organizer",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/translate",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/contextual_tasks",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/tabs/organizer",
+      "//chrome/browser/ui/waap:window_metrics_manager",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/window_feature_controller",
+      "//chrome/browser/ui/zoom",
+      "//chrome/browser/upgrade_detector",
+      "//chrome/browser/web_applications/extensions",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/bookmarks/browser",
+      "//components/browsing_data/content",
+      "//components/commerce/core:pref_names",
+      "//components/commerce/core:utils",
+      "//components/dom_distiller/core",
+      "//components/embedder_support:user_agent",
+      "//components/favicon/core",
+      "//components/feed:feature_list",
+      "//components/find_in_page",
+      "//components/infobars/core",
+      "//components/language_detection/core",
+      "//components/lens",
+      "//components/lens:buildflags",
+      "//components/media_router/browser",
+      "//components/omnibox/browser",
+      "//components/page_info/core",
+      "//components/performance_manager",
+      "//components/prefs",
+      "//components/reading_list/core",
+      "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/saved_tab_groups/public",
+      "//components/search_engines",
+      "//components/segmentation_platform/public",
+      "//components/sessions",
+      "//components/tab_groups",
+      "//components/tabs:public",
+      "//components/translate/core/browser",
+      "//components/user_education/common",
+      "//components/web_modal",
+      "//components/webapps/browser",
+      "//components/zoom",
+      "//content/public/browser",
+      "//content/public/common",
+      "//extensions/buildflags",
+      "//pdf:features",
+      "//printing/buildflags",
+      "//ui/actions",
+      "//ui/base",
+      "//ui/base:types",
+      "//ui/base/clipboard",
+      "//ui/events",
+      "//ui/gfx",
+      "//ui/gfx/geometry",
+    ]
+  }
 }
 if (is_mac) {
   source_set("browser_commands_mac") {
@@ -784,6 +968,7 @@ if (is_mac) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_commands",
       ":browser_window_header",
       ":fullscreen_util_mac",
       "//base",
@@ -2117,8 +2302,6 @@ static_library("ui") {
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
       "browser.h",
-      "browser_commands.cc",
-      "browser_commands.h",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
     ]
@@ -2143,6 +2326,8 @@ static_library("ui") {
       ":browser_actions",
       ":browser_command_controller",
       ":browser_command_controller_impl",
+      ":browser_commands",
+      ":browser_commands_impl",
       ":browser_header",
       ":browser_manager_service",
       ":browser_select_file_dialog_controller",
@@ -2499,6 +2684,10 @@ static_library("ui") {
       # browser_command_controller.cc includes browser_window.h and
       # browser_commands.h from //chrome/browser/ui:ui.
       ":browser_command_controller_impl",
+
+      # browser_commands.cc includes browser_window.h and browser_tabstrip.h
+      # from //chrome/browser/ui:ui.
+      ":browser_commands_impl",
 
       # unload_controller.cc includes browser_tabstrip.h, browser_window.h,
       # and browser_commands.h from //chrome/browser/ui:ui.
@@ -4718,6 +4907,7 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
+      ":browser_commands",
       ":browser_init_state",
       ":browser_live_tab_context",
       ":browser_tab_menu_model_delegate",
@@ -4898,6 +5088,7 @@ if (!is_android) {
       ":breadcrumb_manager_browser_agent",
       ":browser_actions",
       ":browser_command_controller",
+      ":browser_commands",
       ":browser_instant_controller",
       ":browser_manager_service",
       ":browser_tabrestore",
@@ -5229,6 +5420,7 @@ if (!is_android && !is_chromeos_device) {
     ]
 
     deps = [
+      ":browser_commands",
       ":browser_window_header",
       ":chrome_pages",
       ":test_support",
@@ -5362,6 +5554,7 @@ if (toolkit_views) {
     ]
 
     deps = [
+      ":browser_commands",
       ":sad_tab",
       "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/browser/preloading/prefetch/no_state_prefetch:test_support",
@@ -5389,6 +5582,7 @@ if (toolkit_views) {
     sources = [ "views/sad_tab_view_interactive_uitest.cc" ]
 
     deps = [
+      ":browser_commands",
       ":sad_tab",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/frame",

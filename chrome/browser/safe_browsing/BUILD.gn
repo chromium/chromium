@@ -138,6 +138,7 @@ static_library("safe_browsing") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui/views/frame:browser_view_header",
@@ -1286,6 +1287,7 @@ source_set("browser_tests") {
   if (!is_android) {
     deps += [
       ":safe_browsing",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",

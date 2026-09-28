@@ -86,6 +86,7 @@ if (!is_android) {
     deps = [
       ":javascript_dialogs",
       "//base/test:test_support",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",

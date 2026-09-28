@@ -132,6 +132,7 @@ source_set("browser_commands_views") {
     "//build:buildflag_header_h",
     "//chrome/app:command_ids",
     "//chrome/browser:primitives",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/tabs:tab_strip",
     "//ui/base:features",

@@ -243,6 +243,7 @@ source_set("browser_tests") {
       "//chrome/browser/speech",
       "//chrome/browser/tab_group_sync",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support_ui",

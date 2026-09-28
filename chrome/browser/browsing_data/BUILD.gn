@@ -411,6 +411,7 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/unified_consent",
       "//chrome/browser/webdata_services",

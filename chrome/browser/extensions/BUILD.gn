@@ -717,6 +717,7 @@ source_set("extensions") {
     ]
     deps += [
       "//chrome/browser/indigo",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
@@ -2666,6 +2667,7 @@ source_set("browser_tests") {
       "//chrome/browser/contextual_tasks:test_support",
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui:browser_command_controller",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/tabs/saved_tab_groups",
@@ -3218,6 +3220,7 @@ source_set("interactive_ui_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/window_feature_controller",

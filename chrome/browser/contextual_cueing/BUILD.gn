@@ -121,6 +121,7 @@ if (!is_android) {
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/page_action",

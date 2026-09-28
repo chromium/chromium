@@ -134,6 +134,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/sharing_hub",
       "//chrome/browser/ui:browser_command_controller",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs:tab_strip",
@@ -229,6 +230,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/lens:test_support",

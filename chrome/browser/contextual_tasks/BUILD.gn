@@ -624,6 +624,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
@@ -876,6 +877,7 @@ source_set("interactive_ui_tests") {
     deps += [
       ":interactive_ui_test_support",
       ":ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/views/frame:browser_view_header",
 
       # TabUnderlineView currently resides under glic/browser_ui.

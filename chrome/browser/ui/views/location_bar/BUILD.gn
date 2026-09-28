@@ -75,6 +75,7 @@ source_set("impl") {
     ":location_bar",
     "//chrome/browser:defaults",
     "//chrome/browser/ui:browser_command_controller",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/select_file_policy",
@@ -286,6 +287,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/content_settings",
     "//chrome/browser/ui:browser_actions",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:intent_picker_tab_helper",
     "//chrome/browser/ui:ui_features",
@@ -369,6 +371,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     ":location_bar",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/lens",

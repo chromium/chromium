@@ -102,6 +102,7 @@ source_set("impl") {
     "//chrome/browser/sync:factories",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:layout_constants",

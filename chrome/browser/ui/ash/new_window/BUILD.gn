@@ -36,6 +36,7 @@ static_library("new_window") {
     "//chrome/browser/chromeos/network",
     "//chrome/browser/extensions",
     "//chrome/browser/prefs",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/ash/multi_user",

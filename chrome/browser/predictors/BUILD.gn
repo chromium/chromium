@@ -202,6 +202,7 @@ if (!is_android) {
       "//chrome/browser:browser_process",
       "//chrome/browser/optimization_guide",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/common",
       "//chrome/test:test_support",

@@ -248,6 +248,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/browser_window",

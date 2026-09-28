@@ -259,6 +259,7 @@ if (!is_android) {
       "//chrome/browser/glic/actor:test_support",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/tabs/alert:tab_alert",
       "//chrome/browser/ui/views/frame",

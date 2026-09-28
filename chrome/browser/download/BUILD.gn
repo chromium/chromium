@@ -577,6 +577,7 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser/subresource_filter:test_support",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/web_applications:web_applications_test_support",

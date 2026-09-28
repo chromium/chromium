@@ -369,6 +369,7 @@ source_set("browser_tests") {
     ":task_manager",
     ":test_support",
     "//base",
+    "//chrome/test/base:testing_browser_process",
     "//content/public/browser",
     "//content/test:test_support",
   ]
@@ -390,6 +391,7 @@ source_set("browser_tests") {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/task_manager/common",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/task_manager",

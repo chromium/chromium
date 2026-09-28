@@ -30,6 +30,7 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/autocomplete",
     "//chrome/browser/preloading",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/webui/webui_toolbar",

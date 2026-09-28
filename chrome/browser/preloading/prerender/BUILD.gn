@@ -152,6 +152,7 @@ if (!is_android) {
       "//chrome/browser/safe_browsing:test_support",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/common",

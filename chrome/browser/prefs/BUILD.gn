@@ -632,6 +632,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:browser_window_state",
       "//chrome/browser/ui/browser_window",

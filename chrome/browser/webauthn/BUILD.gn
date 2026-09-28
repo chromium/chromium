@@ -615,6 +615,7 @@ if (!is_android) {
         "//chrome/browser/ssl:cert_verifier_test_support",
         "//chrome/browser/sync",
         "//chrome/browser/ui",
+        "//chrome/browser/ui:browser_commands",
         "//chrome/browser/ui/autofill",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/views/webauthn",

@@ -446,6 +446,7 @@ source_set("interactive_ui_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
       "//chrome/test/data/webui:composebox_pixel_test_support",

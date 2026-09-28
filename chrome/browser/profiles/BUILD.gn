@@ -1244,6 +1244,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",

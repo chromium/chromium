@@ -93,6 +93,7 @@ if (!is_android) {
     deps = [
       ":blocked_content",
       "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/back_forward_cache",
@@ -114,6 +115,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/printing",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",

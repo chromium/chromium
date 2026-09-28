@@ -189,6 +189,7 @@ if (!is_android) {
     sources = [ "customize_chrome_interactive_uitest.cc" ]
     deps = [
       ":impl",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/views/new_tab_footer",

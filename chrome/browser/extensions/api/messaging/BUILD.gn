@@ -198,6 +198,10 @@ source_set("platform_browser_tests") {
     "//extensions/common",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui:browser_commands" ]
+  }
 }
 
 if (!is_android) {

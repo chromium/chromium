@@ -100,6 +100,7 @@ if (is_mac) {
       "//chrome/browser/devtools",
       "//chrome/browser/glic",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
       "//components/spellcheck/browser",
     ]
   }
@@ -127,6 +128,7 @@ if (!is_android) {
       "//chrome/browser/site_protection:utils",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/page_action",

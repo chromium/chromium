@@ -426,6 +426,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/metrics/critical_user_journeys",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_ui_controller",

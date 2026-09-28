@@ -36,6 +36,7 @@ source_set("interactive_ui_tests") {
 
   deps = [
     "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/frame:browser_view_header",
