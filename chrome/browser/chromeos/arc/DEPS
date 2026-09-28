@@ -11,13 +11,16 @@ include_rules = [
   "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/arc/intent_helper",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/renderer_context_menu",
   "+chrome/browser/sharing/sharing_service_factory.h",
   "+chrome/grit",
   "+chrome/test",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/renderer_context_menu",
+  ],
   "arc_external_protocol_dialog_unittest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",

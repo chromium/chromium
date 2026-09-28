@@ -18,16 +18,13 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/devtools",
-  "+chrome/browser/error_reporting",
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
-  "+chrome/browser/file_system_access",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/metrics",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/renderer_context_menu",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/chrome_pages.h",
@@ -66,6 +63,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/error_reporting",
+    "+chrome/browser/file_system_access",
+    "+chrome/browser/renderer_context_menu",
+  ],
   ".*(unittest|browsertest)\\.cc": [
     "+chrome/browser/web_applications/test",
   ],

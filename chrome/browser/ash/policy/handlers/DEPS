@@ -36,8 +36,6 @@ include_rules = [
   "+chrome/browser/media/webrtc",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/site_isolation",
-  "+chrome/browser/tracing",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/upgrade_detector",
@@ -48,6 +46,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/site_isolation",
+    "+chrome/browser/tracing",
+  ],
   "minimum_version_policy_handler_browsertest\\.cc": [
     "+chrome/browser/lifetime/termination_notification.h",
     "+ui/message_center/message_center.h",

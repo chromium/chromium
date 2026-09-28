@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/lobster",
   "+chrome/browser/ash/login/session",
-  "+chrome/browser/bookmarks",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser_window",
@@ -29,6 +28,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/bookmarks",
+  ],
   "quick_insert_accessibility_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
