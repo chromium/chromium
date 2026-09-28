@@ -2340,6 +2340,9 @@ ui::AcceleratorProvider* BrowserView::GetAcceleratorProvider() {
 }
 
 PinnedToolbarActions* BrowserView::GetPinnedToolbarActions() {
+  if (browser_->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL) {
+    return nullptr;
+  }
   // The provider is registered by the toolbar, so it is absent for windows
   // that have no toolbar and during window teardown.
   ToolbarButtonProvider* const provider = toolbar_button_provider();

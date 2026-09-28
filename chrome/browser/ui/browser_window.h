@@ -266,8 +266,9 @@ class BrowserWindow : public ui::BaseWindow {
   virtual ui::AcceleratorProvider* GetAcceleratorProvider() = 0;
 
   // Returns the PinnedToolbarActions for this window, or null if the window
-  // has no pinned toolbar actions, which is the case for windows with a
-  // custom tab toolbar and for window types that have no toolbar at all.
+  // has no pinned toolbar actions, which is the case for non-normal browser
+  // windows (e.g. web apps and popups), windows with a custom tab toolbar, and
+  // window types that have no toolbar at all.
   virtual PinnedToolbarActions* GetPinnedToolbarActions() = 0;
 
   // Tries to focus the location bar.  Clears the window focus (to avoid

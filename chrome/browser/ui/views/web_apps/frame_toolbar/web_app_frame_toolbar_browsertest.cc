@@ -523,6 +523,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   const GURL app_url("https://test.org");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
+  EXPECT_EQ(BrowserWindow::FromBrowser(helper()->app_browser())
+                ->GetPinnedToolbarActions(),
+            nullptr);
+
   CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
       << "Test needs modification to support WebUIPinnedToolbarActions";
   int button_count = 0;
