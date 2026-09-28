@@ -109,7 +109,14 @@ class PersonalizationAppSeaPenBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, SeaPen) {
+// TODO(crbug.com/566263805, crbug.com/566387414): Flaky and times out on debug
+// builds.
+#if !defined(NDEBUG)
+#define MAYBE_SeaPen DISABLED_SeaPen
+#else
+#define MAYBE_SeaPen SeaPen
+#endif
+IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, MAYBE_SeaPen) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('sea pen')");
