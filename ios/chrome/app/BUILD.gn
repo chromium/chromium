@@ -34,6 +34,14 @@ buildflag_header("background_mode_buildflags") {
   ]
 }
 
+buildflag_header("custom_scheme_buildflags") {
+  header = "custom_scheme_buildflags.h"
+  flags = [
+    "SECURE_CUSTOM_SCHEME=\"$url_secure_scheme\"",
+    "INSECURE_CUSTOM_SCHEME=\"$url_unsecure_scheme\"",
+  ]
+}
+
 buildflag_header("ios_force_build_chrome_framework_buildflags") {
   header = "ios_force_build_chrome_framework_buildflags.h"
   flags =
@@ -105,6 +113,7 @@ source_set("tasks_handling") {
   deps = [
     ":change_profile_commands",
     ":change_profile_continuation",
+    ":custom_scheme_buildflags",
     ":mode",
     "//base",
     "//components/crash/core/common",
@@ -217,6 +226,7 @@ source_set("unit_tests") {
     ":change_profile_animator",
     ":change_profile_commands",
     ":change_profile_continuation",
+    ":custom_scheme_buildflags",
     ":mode",
     ":safe_mode_app_state_agent",
     ":scene_identifier_map",

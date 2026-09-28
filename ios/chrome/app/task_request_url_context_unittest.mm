@@ -16,6 +16,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/custom_scheme_buildflags.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -578,4 +579,64 @@ TEST_F(TaskRequestForURLContextTest,
   EXPECT_TRUE(tab_opener.dismissOmnibox);
   EXPECT_TRUE(
       profile_->GetPrefs()->GetBoolean(prefs::kAppStoreGeminiPromoTriggered));
+}
+
+// Tests that standard HTTP/HTTPS and first-party custom scheme URLs open a tab
+// with the expected HTTP/HTTPS URL, and unrecognized schemes are ignored.
+TEST_F(TaskRequestForURLContextTest, TestStandardURLContextExecution) {
+  struct TestCase {
+    NSString* url_string;
+    GURL expected_url;
+  } test_cases[] = {
+      {@"http://www.example.com/page", GURL("http://www.example.com/page")},
+      {@"https://www.example.com/page", GURL("https://www.example.com/page")},
+      {[NSString stringWithFormat:@"%s://www.example.com/page",
+                                  BUILDFLAG(INSECURE_CUSTOM_SCHEME)],
+       GURL("http://www.example.com/page")},
+      {[NSString stringWithFormat:@"%s://www.example.com/page",
+                                  BUILDFLAG(SECURE_CUSTOM_SCHEME)],
+       GURL("https://www.example.com/page")},
+  };
+
+  for (const auto& test_case : test_cases) {
+    NSURL* url = [NSURL URLWithString:test_case.url_string];
+    UIOpenURLContext* context = CreateMockURLContext(url);
+
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    ASSERT_NE(request, nil);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+
+    [request execute];
+
+    EXPECT_EQ(tab_opener.targetMode, ApplicationModeForTabOpening::UNDETERMINED)
+        << "Failed for URL: " << base::SysNSStringToUTF8(test_case.url_string);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url, test_case.expected_url)
+        << "Failed for URL: " << base::SysNSStringToUTF8(test_case.url_string);
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty())
+        << "Failed for URL: " << base::SysNSStringToUTF8(test_case.url_string);
+    EXPECT_TRUE(tab_opener.dismissOmnibox)
+        << "Failed for URL: " << base::SysNSStringToUTF8(test_case.url_string);
+  }
+
+  // Verify that an unregistered custom scheme does not open a tab.
+  NSURL* unknown_url = [NSURL URLWithString:@"unknownscheme://www.example.com"];
+  UIOpenURLContext* unknown_context = CreateMockURLContext(unknown_url);
+  TaskRequestForURLContext* unknown_request =
+      [TaskRequestForURLContext taskRequestWithURLContext:unknown_context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  ASSERT_NE(unknown_request, nil);
+  TaskRequestURLContextTestTabOpener* tab_opener =
+      [[TaskRequestURLContextTestTabOpener alloc]
+          initWithSceneState:scene_state_];
+  scene_state_.controller = tab_opener;
+  [unknown_request execute];
+  EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
 }
