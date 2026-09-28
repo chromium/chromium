@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 
 import androidx.core.content.ContextCompat;
@@ -34,6 +35,8 @@ public class ActorOverlayView extends FrameLayout {
         super(context, attrs);
         setClickable(true);
         setFocusable(true);
+        setOutlineProvider(ViewOutlineProvider.BOUNDS);
+        setClipToOutline(true);
         setPointerIcon(PointerIcon.getSystemIcon(context, PointerIcon.TYPE_NO_DROP));
 
         InnerGlowDrawable normalDrawable = InnerGlowDrawable.createMainWebpageGlow(context);

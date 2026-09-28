@@ -11,6 +11,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.transition.Transition;
 import android.view.Gravity;
 import android.view.InputDevice;
@@ -20,6 +23,7 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -35,6 +39,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.GraphicsMode;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -1210,6 +1215,46 @@ public class ActorOverlayCoordinatorTest {
         expectedTopMargin = 200 - buttonContainerHeight / 2;
         lp = (FrameLayout.LayoutParams) mHandoffButtonView.getLayoutParams();
         Assert.assertEquals(expectedTopMargin, lp.topMargin);
+    }
+
+    @Test
+    public void testOverlayViewClipsToOutline() {
+        mCoordinator.showOverlayForTesting(true);
+        ActorOverlayView overlayView = mCoordinator.getOverlayViewForTesting();
+        Assert.assertNotNull(overlayView);
+        Assert.assertEquals(ViewOutlineProvider.BOUNDS, overlayView.getOutlineProvider());
+        Assert.assertTrue(overlayView.getClipToOutline());
+    }
+
+    @Test
+    @GraphicsMode(GraphicsMode.Mode.NATIVE)
+    public void testOverlayContainerDoesNotBleedIntoTopControls() {
+        int width = 800;
+        int height = 500;
+        int topControlsHeight = 112;
+
+        mCoordinator.showOverlayForTesting(true);
+        PropertyModel model = mCoordinator.getModelForTesting();
+        model.set(ActorOverlayProperties.TOP_MARGIN, topControlsHeight);
+        model.set(ActorOverlayProperties.CONTROLS_POSITION, ControlsPosition.TOP);
+        model.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+
+        mContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        mContainer.layout(0, 0, width, height);
+
+        Bitmap rendered = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mContainer.draw(new Canvas(rendered));
+
+        // Outside the centered handoff button (e.g. x = 40), the top controls region (y < 112)
+        // must remain completely transparent.
+        for (int y = 0; y < topControlsHeight; y++) {
+            Assert.assertEquals(
+                    "Unexpected glow bleed in top controls at y=" + y,
+                    Color.TRANSPARENT,
+                    rendered.getPixel(40, y));
+        }
     }
 
     @Test

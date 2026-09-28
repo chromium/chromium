@@ -155,11 +155,14 @@ public class InnerGlowDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
+        canvas.save();
+        canvas.clipRect(getBounds());
         RectF rect = new RectF(getBounds());
         // Draw the large soft glow first.
         canvas.drawRect(rect, mSoftGlowPaint);
         // Draw the tighter, stronger outline on top.
         canvas.drawRect(rect, mStrongOutlinePaint);
+        canvas.restore();
     }
 
     @Override

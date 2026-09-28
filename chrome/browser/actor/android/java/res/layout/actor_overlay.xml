@@ -18,8 +18,6 @@ found in the LICENSE file.
         android:id="@+id/actor_overlay_scrim"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         android:visibility="gone" />
 
     <ViewStub
