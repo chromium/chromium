@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
@@ -520,9 +521,17 @@ void ClassicPendingScript::NotifyFinished(Resource* resource) {
   classic_script_ =
       ClassicScript::CreateFromResource(To<ScriptResource>(resource), options_);
 
+  if (CachedMetadataHandler* cache_handler = classic_script_->CacheHandler()) {
+    cache_handler->Check(
+        ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+        classic_script_->SourceText());
+  }
+
   // We'll still wait for ScriptCacheConsumer before marking this PendingScript
-  // ready.
-  if (classic_script_->CacheConsumer()) {
+  // ready, provided the code cache passed validation.
+  if (classic_script_->CacheConsumer() &&
+      V8CodeCache::HasCodeCache(classic_script_->CacheHandler(),
+                                CachedMetadataHandler::kCrashIfUnchecked)) {
     AdvanceReadyState(kWaitingForCacheConsumer);
     // TODO(leszeks): Decide whether kNetworking is the right task type here.
     classic_script_->CacheConsumer()->NotifyClientWaiting(

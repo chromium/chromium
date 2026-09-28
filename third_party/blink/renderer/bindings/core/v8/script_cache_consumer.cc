@@ -176,6 +176,9 @@ void ScriptCacheConsumer::NotifyClientWaiting(
   CHECK(!finish_callback_task_runner_);
   finish_callback_task_runner_ = task_runner;
 
+  CHECK(V8CodeCache::HasCodeCache(classic_script->CacheHandler(),
+                                  CachedMetadataHandler::kCrashIfUnchecked));
+
   {
     v8::HandleScope scope(isolate_);
     const ParkableString& source_text = classic_script->SourceText();

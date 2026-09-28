@@ -27,11 +27,13 @@ class ScriptCacheConsumerClient;
 // cache off-thread and notifies a given ScriptCacheConsumerClient once it has
 // completed.
 //
-// ScriptCacheConsumer works on unchecked CachedMetadata speculatively, before
-// the source is available. If CachedMetadataHandler::Check() fails later,
-// the CachedMetadata on the CachedMetadataHandler will be cleared, and the
-// result of this ScriptCacheConsumer will be dropped on TakeV8ConsumeTask() due
-// to a CachedMetadata mismatch.
+// ScriptCacheConsumer starts consuming unchecked CachedMetadata speculatively,
+// before the source is available. Once the resource finishes loading,
+// ClassicPendingScript::NotifyFinished() runs CachedMetadataHandler::Check()
+// before calling NotifyClientWaiting() (which enforces kCrashIfUnchecked). If
+// Check() fails, the CachedMetadata is cleared and NotifyClientWaiting() is
+// never called, abandoning this consumer before SourceTextAvailable() or
+// MergeWithExistingScript() can run.
 //
 // The state of the ScriptCacheConsumer state is associated with a single
 // CachedMetadata, but it is independent of the state of the corresponding

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -557,6 +558,13 @@ ResourceResponse::GetUnencodedDigests() const {
 void ResourceResponse::SetUnencodedDigests(
     Vector<network::IntegrityMetadata> digests) {
   unencoded_digests_ = std::move(digests);
+}
+
+bool ResourceResponse::ShouldUseSourceHashForJSCodeCache() const {
+  return should_use_source_hash_for_js_code_cache_ ||
+         (was_fetched_via_service_worker_ &&
+          RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled() &&
+          RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled());
 }
 
 STATIC_ASSERT_ENUM(WebURLResponse::kHTTPVersionUnknown,

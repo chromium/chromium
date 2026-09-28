@@ -8,10 +8,17 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
+#include "third_party/blink/renderer/core/script/classic_pending_script.h"
+#include "third_party/blink/renderer/core/script/mock_script_element_base.h"
+#include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -350,8 +357,294 @@ TEST(ScriptResourceTest, ServiceWorkerCodeCacheFlag) {
     response.SetWasFetchedViaServiceWorker(true);
 
     resource->ResponseReceived(response);
-    EXPECT_TRUE(resource->CacheHandler());
+    ASSERT_TRUE(resource->CacheHandler());
+    EXPECT_TRUE(resource->CacheHandler()->HashRequired());
   }
+}
+
+TEST(ScriptResourceTest, CodeCacheForServiceWorkerResponseUsesHashing) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/script.js");
+  ScriptResource* resource =
+      ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  resource->ResponseReceived(response);
+  constexpr std::string_view kData = "abcd";
+  resource->AppendData(kData);
+  resource->FinishForTest();
+
+  auto* handler = resource->CacheHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+  EXPECT_EQ(Utf8Encoding().GetName(), handler->Encoding());
+}
+
+TEST(ScriptResourceTest, ServiceWorkerCodeCacheWithHashLoadedSuccessfully) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/script.js");
+  ScriptResource* resource =
+      ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  resource->ResponseReceived(response);
+
+  constexpr std::string_view kScriptContent = "console.log('test');";
+  ParkableString source_text(String(kScriptContent).Impl());
+  const ParkableString::DigestHolder digest_holder = source_text.Digest();
+  const SecureStringDigest& digest = digest_holder.Get();
+
+  constexpr uint32_t kDataTypeId = 1;
+  constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kDataTypeId, base::span(kDummyData));
+  Vector<uint8_t> serialized_with_hash =
+      ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
+          base::span(digest), metadata->SerializedData());
+
+  resource->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+
+  auto* handler = resource->CacheHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+  EXPECT_TRUE(handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kAllowUnchecked));
+
+  resource->AppendData(kScriptContent);
+  resource->FinishForTest();
+  handler->Check(nullptr, source_text);
+  EXPECT_TRUE(handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kCrashIfUnchecked));
+}
+
+TEST(ScriptResourceTest, ServiceWorkerLegacyCodeCacheWithoutHashRejected) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/script.js");
+  ScriptResource* resource =
+      ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  resource->ResponseReceived(response);
+
+  constexpr uint32_t kDataTypeId = 1;
+  constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kDataTypeId, base::span(kDummyData));
+
+  resource->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(metadata->SerializedData()));
+
+  auto* handler = resource->CacheHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+  EXPECT_FALSE(handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kAllowUnchecked));
+}
+
+TEST(ScriptResourceTest,
+     NonServiceWorkerResponseLoadsHashedCodeCacheGracefully) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/script.js");
+  ScriptResource* resource =
+      ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(false);
+
+  resource->ResponseReceived(response);
+
+  constexpr std::string_view kScriptContent = "console.log('test');";
+  ParkableString source_text(String(kScriptContent).Impl());
+  const ParkableString::DigestHolder digest_holder = source_text.Digest();
+  const SecureStringDigest& digest = digest_holder.Get();
+
+  constexpr uint32_t kDataTypeId = 1;
+  constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(kDataTypeId, base::span(kDummyData));
+  Vector<uint8_t> serialized_with_hash =
+      ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
+          base::span(digest), metadata->SerializedData());
+
+  resource->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+
+  auto* handler = resource->CacheHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE(handler->HashRequired());
+
+  // Verify Check() succeeds when the script source matches the stored hash.
+  handler->Check(nullptr, source_text);
+  scoped_refptr<CachedMetadata> loaded_metadata = handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kCrashIfUnchecked);
+  ASSERT_TRUE(loaded_metadata);
+  EXPECT_EQ(loaded_metadata->Data(), base::span(kDummyData));
+
+  // Verify Check() rejects and clears the metadata when a non-Service-Worker
+  // ScriptResource loads a hashed code cache entry whose SHA-256 hash
+  // mismatches the loaded script source.
+  ScriptResource* resource_mismatch =
+      ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+  resource_mismatch->ResponseReceived(response);
+  resource_mismatch->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(base::span(serialized_with_hash)));
+  auto* mismatch_handler = resource_mismatch->CacheHandler();
+  ASSERT_TRUE(mismatch_handler);
+  EXPECT_TRUE(mismatch_handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kAllowUnchecked));
+  mismatch_handler->Check(
+      nullptr, ParkableString(String("console.log('different');").Impl()));
+  EXPECT_FALSE(mismatch_handler->GetCachedMetadata(
+      kDataTypeId, CachedMetadataHandler::kAllowUnchecked));
+}
+
+TEST(ScriptResourceTest, ServiceWorkerCodeCachePlatformOverride) {
+  test::TaskEnvironment task_environment;
+  ScopedTestingPlatformSupport<MockTestingPlatformForCodeCache> platform;
+  V8TestingScope scope;
+  const auto create_resource = [&scope]() {
+    const KURL url("https://www.example.com/script.js");
+    ScriptResource* resource =
+        ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+    response.SetWasFetchedViaServiceWorker(true);
+
+    resource->ResponseReceived(response);
+    constexpr std::string_view kData = "abcd";
+    resource->AppendData(kData);
+    resource->FinishForTest();
+
+    return resource;
+  };
+
+  {
+    // Assert the cache handler is created when code caching is allowed by the
+    // platform.
+    platform->set_should_use_code_cache_with_hashing(true);
+    ScriptResource* resource = create_resource();
+
+    auto* handler = resource->CacheHandler();
+    ASSERT_TRUE(handler);
+    EXPECT_TRUE(handler->HashRequired());
+    EXPECT_EQ(Utf8Encoding().GetName(), handler->Encoding());
+  }
+
+  {
+    // Assert the cache handler is not created when code caching is restricted
+    // by the platform and does not fall back to unhashed caching.
+    platform->set_should_use_code_cache_with_hashing(false);
+    ScriptResource* resource = create_resource();
+
+    auto* handler = resource->CacheHandler();
+    EXPECT_FALSE(handler);
+  }
+}
+
+TEST(ScriptResourceTest,
+     ServiceWorkerCodeCacheMismatchClearedBeforeCacheConsumer) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/script.js");
+  url_test_helpers::RegisterMockedErrorURLLoad(url);
+
+  MockScriptElementBase* element =
+      MakeGarbageCollected<testing::NiceMock<MockScriptElementBase>>();
+  ON_CALL(*element, GetDocument())
+      .WillByDefault(testing::ReturnRef(scope.GetDocument()));
+  ON_CALL(*element, GetExecutionContext())
+      .WillByDefault(testing::Return(scope.GetExecutionContext()));
+
+  ClassicPendingScript* pending_script = ClassicPendingScript::Fetch(
+      url, scope.GetDocument(), ScriptFetchOptions(),
+      CrossOriginAttributeValue::kCrossOriginAttributeNotSet, Utf8Encoding(),
+      element, FetchParameters::kNoDefer, /*task_state=*/nullptr);
+  ASSERT_TRUE(pending_script);
+  ScriptResource* resource = To<ScriptResource>(pending_script->GetResource());
+  ASSERT_TRUE(resource);
+
+  ResourceResponse response(url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+  resource->ResponseReceived(response);
+
+  auto* handler = resource->CacheHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+
+  // Construct serialized metadata with a hash for script A.
+  ParkableString source_a(String("console.log('script A');").Impl());
+  const ParkableString::DigestHolder digest_a = source_a.Digest();
+  const uint32_t code_cache_tag = V8CodeCache::TagForCodeCache(handler);
+  constexpr uint8_t kDummyData[] = {1, 2, 3, 4};
+  scoped_refptr<CachedMetadata> metadata =
+      CachedMetadata::Create(code_cache_tag, base::span(kDummyData));
+  Vector<uint8_t> serialized_with_hash_a =
+      ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
+          base::span(digest_a.Get()), metadata->SerializedData());
+
+  resource->SetSerializedCachedMetadata(
+      mojo_base::BigBuffer(base::span(serialized_with_hash_a)));
+  EXPECT_TRUE(handler->GetCachedMetadata(
+      code_cache_tag, CachedMetadataHandler::kAllowUnchecked));
+
+  // Finish loading with script B (mismatched source).
+  resource->AppendData("console.log('script B');");
+  resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+
+  // ClassicPendingScript::NotifyFinished must have validated the hash via
+  // Check() and cleared the mismatched metadata before notifying
+  // ScriptCacheConsumer, advancing directly to kReady.
+  EXPECT_FALSE(handler->GetCachedMetadata(
+      code_cache_tag, CachedMetadataHandler::kAllowUnchecked));
+  EXPECT_TRUE(pending_script->IsReady());
+  url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+}
+
+TEST(ScriptResourceTest, ServiceWorkerNonHttpUrlDoesNotCreateCacheHandler) {
+  test::TaskEnvironment task_environment;
+  KURL request_url("https://www.example.com/sw_script.js");
+  ScriptResource* resource = ScriptResource::CreateForTest(
+      nullptr, request_url, Utf8Encoding(), mojom::blink::ScriptType::kClassic);
+
+  // If a Service Worker responds with a non-HTTP CurrentRequestUrl() (not in
+  // SchemeRegistry::SchemeSupportsCodeCacheWithHashing), no
+  // CachedMetadataHandler should be created because CodeCacheHost only accepts
+  // HTTP(S) or registered code-cache schemes.
+  ResourceResponse response(KURL("data:text/javascript,console.log(1);"));
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  resource->ResponseReceived(response);
+  EXPECT_FALSE(resource->CacheHandler());
+}
+
+TEST(ScriptResourceTest,
+     ServiceWorkerCodeCacheHashingDisabledFallsBackToUnhashedHandler) {
+  test::TaskEnvironment task_environment;
+  ScopedServiceWorkerCodeCacheHashingForTest hashing_disabled(false);
+  KURL request_url("https://www.example.com/sw_script.js");
+  ScriptResource* resource = ScriptResource::CreateForTest(
+      nullptr, request_url, Utf8Encoding(), mojom::blink::ScriptType::kClassic);
+
+  ResourceResponse response(request_url);
+  response.SetHttpStatusCode(200);
+  response.SetWasFetchedViaServiceWorker(true);
+
+  resource->ResponseReceived(response);
+  ASSERT_TRUE(resource->CacheHandler());
+  EXPECT_FALSE(resource->CacheHandler()->HashRequired());
 }
 
 }  // namespace

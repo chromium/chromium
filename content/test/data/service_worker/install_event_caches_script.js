@@ -12,3 +12,11 @@ self.addEventListener('install', evt => {
     await cache.put(url, response);
   }());
 });
+
+self.addEventListener('fetch', evt => {
+  evt.respondWith(async function() {
+    const cache = await caches.open('cache_name');
+    const response = await cache.match(evt.request);
+    return response || fetch(evt.request);
+  }());
+});

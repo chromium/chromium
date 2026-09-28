@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -201,10 +203,29 @@ CachedMetadataHandler* WorkerMainScriptLoader::CreateCachedMetadataHandler() {
     return nullptr;
   }
 
+  if (resource_response_.WasFetchedViaServiceWorker() &&
+      !RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled()) {
+    return nullptr;
+  }
+
+  const bool use_source_hash =
+      resource_response_.ShouldUseSourceHashForJSCodeCache();
+  if (use_source_hash && !Platform::Current()->ShouldUseCodeCacheWithHashing(
+                             WebURL(initial_request_url_))) {
+    return nullptr;
+  }
+
   std::unique_ptr<CachedMetadataSender> cached_metadata_sender =
       CachedMetadataSender::Create(
           resource_response_, mojom::blink::CodeCacheType::kJavascript,
           SecurityOrigin::Create(initial_request_url_));
+  if (use_source_hash) {
+    return MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+        script_encoding_, std::move(cached_metadata_sender));
+  }
+
+  CHECK(!resource_response_.WasFetchedViaServiceWorker() ||
+        !RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled());
   return MakeGarbageCollected<ScriptCachedMetadataHandler>(
       script_encoding_, std::move(cached_metadata_sender));
 }

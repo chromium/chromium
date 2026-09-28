@@ -20,9 +20,11 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/fake_resource_load_info_notifier.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
@@ -314,6 +316,127 @@ TEST_F(WorkerMainScriptLoaderTest, OnCompleteWithError) {
 
   EXPECT_FALSE(client_->LoadingIsFinished());
   EXPECT_TRUE(client_->LoadingIsFailed());
+}
+
+TEST_F(WorkerMainScriptLoaderTest, CreateCachedMetadataHandlerNormal) {
+  mojo::ScopedDataPipeProducerHandle body_producer;
+  std::unique_ptr<WorkerMainScriptLoadParameters>
+      worker_main_script_load_params =
+          CreateMainScriptLoaderParams(kHeader, &body_producer);
+  FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
+  MockResourceLoadObserver* mock_observer =
+      MakeGarbageCollected<MockResourceLoadObserver>();
+  EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  WorkerMainScriptLoader* worker_main_script_loader =
+      CreateWorkerMainScriptLoaderAndStartLoading(
+          std::move(worker_main_script_load_params), mock_observer,
+          &fake_resource_load_info_notifier);
+  mojo::BlockingCopyFromString(kTopLevelScript, body_producer);
+  body_producer.reset();
+  Complete(net::OK);
+
+  auto* handler = worker_main_script_loader->CreateCachedMetadataHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_FALSE(handler->HashRequired());
+}
+
+TEST_F(WorkerMainScriptLoaderTest, CreateCachedMetadataHandlerServiceWorker) {
+  mojo::ScopedDataPipeProducerHandle body_producer;
+  std::unique_ptr<WorkerMainScriptLoadParameters>
+      worker_main_script_load_params =
+          CreateMainScriptLoaderParams(kHeader, &body_producer);
+  worker_main_script_load_params->response_head
+      ->was_fetched_via_service_worker = true;
+  FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
+  MockResourceLoadObserver* mock_observer =
+      MakeGarbageCollected<MockResourceLoadObserver>();
+  EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  WorkerMainScriptLoader* worker_main_script_loader =
+      CreateWorkerMainScriptLoaderAndStartLoading(
+          std::move(worker_main_script_load_params), mock_observer,
+          &fake_resource_load_info_notifier);
+  mojo::BlockingCopyFromString(kTopLevelScript, body_producer);
+  body_producer.reset();
+  Complete(net::OK);
+
+  auto* handler = worker_main_script_loader->CreateCachedMetadataHandler();
+  ASSERT_TRUE(handler);
+  EXPECT_TRUE(handler->HashRequired());
+}
+
+TEST_F(WorkerMainScriptLoaderTest,
+       CreateCachedMetadataHandlerServiceWorkerDisabledByFeature) {
+  ScopedServiceWorkerCodeCacheForTest scoped_feature(false);
+  mojo::ScopedDataPipeProducerHandle body_producer;
+  std::unique_ptr<WorkerMainScriptLoadParameters>
+      worker_main_script_load_params =
+          CreateMainScriptLoaderParams(kHeader, &body_producer);
+  worker_main_script_load_params->response_head
+      ->was_fetched_via_service_worker = true;
+  FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
+  MockResourceLoadObserver* mock_observer =
+      MakeGarbageCollected<MockResourceLoadObserver>();
+  EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  WorkerMainScriptLoader* worker_main_script_loader =
+      CreateWorkerMainScriptLoaderAndStartLoading(
+          std::move(worker_main_script_load_params), mock_observer,
+          &fake_resource_load_info_notifier);
+  mojo::BlockingCopyFromString(kTopLevelScript, body_producer);
+  body_producer.reset();
+  Complete(net::OK);
+
+  auto* handler = worker_main_script_loader->CreateCachedMetadataHandler();
+  EXPECT_FALSE(handler);
+}
+
+class MockTestingPlatformForCodeCache : public TestingPlatformSupport {
+ public:
+  MockTestingPlatformForCodeCache() = default;
+  ~MockTestingPlatformForCodeCache() override = default;
+
+  // TestingPlatformSupport:
+  bool ShouldUseCodeCacheWithHashing(const WebURL& request_url) const override {
+    return should_use_code_cache_with_hashing_;
+  }
+
+  void set_should_use_code_cache_with_hashing(
+      bool should_use_code_cache_with_hashing) {
+    should_use_code_cache_with_hashing_ = should_use_code_cache_with_hashing;
+  }
+
+ private:
+  bool should_use_code_cache_with_hashing_ = true;
+};
+
+TEST_F(WorkerMainScriptLoaderTest,
+       CreateCachedMetadataHandlerServiceWorkerDisabledByPlatform) {
+  ScopedTestingPlatformSupport<MockTestingPlatformForCodeCache> platform;
+  platform->set_should_use_code_cache_with_hashing(false);
+
+  mojo::ScopedDataPipeProducerHandle body_producer;
+  std::unique_ptr<WorkerMainScriptLoadParameters>
+      worker_main_script_load_params =
+          CreateMainScriptLoaderParams(kHeader, &body_producer);
+  worker_main_script_load_params->response_head
+      ->was_fetched_via_service_worker = true;
+  FakeResourceLoadInfoNotifier fake_resource_load_info_notifier;
+  MockResourceLoadObserver* mock_observer =
+      MakeGarbageCollected<MockResourceLoadObserver>();
+  EXPECT_CALL(*mock_observer, DidReceiveResponse(_, _, _, _, _));
+  EXPECT_CALL(*mock_observer, DidFinishLoading(_, _, _, _));
+  WorkerMainScriptLoader* worker_main_script_loader =
+      CreateWorkerMainScriptLoaderAndStartLoading(
+          std::move(worker_main_script_load_params), mock_observer,
+          &fake_resource_load_info_notifier);
+  mojo::BlockingCopyFromString(kTopLevelScript, body_producer);
+  body_producer.reset();
+  Complete(net::OK);
+
+  auto* handler = worker_main_script_loader->CreateCachedMetadataHandler();
+  EXPECT_FALSE(handler);
 }
 
 }  // namespace

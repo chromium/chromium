@@ -5805,6 +5805,13 @@
     {
       // V8 Code Cache for resource requests passing through Service Worker.
       name: "ServiceWorkerCodeCache",
+      status: "stable",
+    },
+    {
+      // Enforces SHA-256 source hash verification for V8 code caches on
+      // scripts fetched via Service Worker (crbug.com/547815507).
+      name: "ServiceWorkerCodeCacheHashing",
+      status: "stable",
     },
     {
       // Support for Service Worker APIs in Dedicated Workers.

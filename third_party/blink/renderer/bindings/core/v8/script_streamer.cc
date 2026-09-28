@@ -37,6 +37,8 @@
 #include "third_party/blink/public/common/page/v8_compile_hints_histograms.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
@@ -114,6 +116,7 @@ struct StreamingDetails {
   TextEncoding encoding;
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
       compile_hints_builder;
+  const bool should_use_code_cache_with_hashing;
 };
 
 }  // namespace
@@ -1471,19 +1474,66 @@ std::ostream& operator<<(std::ostream& o, const BackgroundStreamingState& s) {
   return o << static_cast<unsigned>(s);
 }
 
+scoped_refptr<CachedMetadata> ExtractCachedMetadataFromBigBuffer(
+    std::optional<mojo_base::BigBuffer>& big_buffer,
+    bool requires_hash,
+    std::unique_ptr<SecureStringDigest>* out_sha256_digest = nullptr) {
+  if (!big_buffer) {
+    return nullptr;
+  }
+  scoped_refptr<CachedMetadata> metadata;
+  if (!requires_hash) {
+    metadata = CachedMetadata::CreateFromSerializedData(*big_buffer);
+  }
+  if (!metadata) {
+    // Check whether the cached metadata contains a content hash.
+    if (big_buffer->size() < sizeof(CachedMetadataHeaderWithHash)) {
+      if (requires_hash) {
+        big_buffer = std::nullopt;
+      }
+      return nullptr;
+    }
+    const CachedMetadataHeaderWithHash* header =
+        reinterpret_cast<const CachedMetadataHeaderWithHash*>(
+            big_buffer->data());
+    if (header->marker !=
+        CachedMetadataHandler::kSingleEntryWithHashAndPadding) {
+      if (requires_hash) {
+        big_buffer = std::nullopt;
+      }
+      return nullptr;
+    }
+    metadata = CachedMetadata::CreateFromSerializedData(
+        *big_buffer, sizeof(CachedMetadataHeaderWithHash));
+    if (!metadata) {
+      if (requires_hash) {
+        big_buffer = std::nullopt;
+      }
+      return nullptr;
+    }
+    if (out_sha256_digest) {
+      *out_sha256_digest = std::make_unique<SecureStringDigest>();
+      (*out_sha256_digest)->append_range(header->hash);
+    }
+  }
+  return metadata;
+}
+
 std::unique_ptr<v8_compile_hints::CompileHintsForStreaming>
 BuildCompileHintsForStreaming(
     std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
         builder,
     std::optional<mojo_base::BigBuffer>& big_buffer,
+    bool requires_hash,
+    std::unique_ptr<SecureStringDigest>* out_sha256_digest,
     const String& encoding) {
   // Same as the HasCodeCache() method above, this method creates a
-  // CachedMetadata from the the passed BigBuffer and passes it to
+  // CachedMetadata from the passed BigBuffer (unwrapping
+  // CachedMetadataHeaderWithHash if present) and passes it to
   // V8CodeCache::HasHotCompileHints(). And then takes the BigBuffer from the
-  // CachedMetadata and set it back to the input argument `big_buffer`.
-  scoped_refptr<CachedMetadata> metadata =
-      big_buffer ? CachedMetadata::CreateFromSerializedData(*big_buffer)
-                 : nullptr;
+  // CachedMetadata and sets it back to the input argument `big_buffer`.
+  scoped_refptr<CachedMetadata> metadata = ExtractCachedMetadataFromBigBuffer(
+      big_buffer, requires_hash, out_sha256_digest);
 
   V8CodeCache::RecordCacheGetStatistics(metadata.get(), encoding);
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming> result =
@@ -1531,6 +1581,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
       TextEncoding encoding,
       std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
           compile_hints_builder,
+      bool should_use_code_cache_with_hashing,
       CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle);
   BackgroundProcessor(const BackgroundProcessor&) = delete;
   BackgroundProcessor& operator=(const BackgroundProcessor&) = delete;
@@ -1601,6 +1652,9 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
                 script_resource->GetV8CrowdsourcedCompileHintsConsumer(),
                 script_resource->Url(),
                 script_resource->GetV8CompileHintsMagicCommentMode())),
+        should_use_code_cache_with_hashing_(
+            Platform::Current()->ShouldUseCodeCacheWithHashing(
+                WebURL(script_resource->Url()))),
         streamer_handle_(std::move(streamer_handle)) {}
   BackgroundProcessorFactory(const BackgroundProcessorFactory&) = delete;
   BackgroundProcessorFactory& operator=(const BackgroundProcessorFactory&) =
@@ -1616,6 +1670,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
   const TextEncoding encoding_;
   std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
       compile_hints_builder_;
+  const bool should_use_code_cache_with_hashing_;
   CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
 };
 
@@ -1823,14 +1878,16 @@ BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
     TextEncoding encoding,
     std::unique_ptr<v8_compile_hints::CompileHintsForStreaming::Builder>
         compile_hints_builder,
+    bool should_use_code_cache_with_hashing,
     CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle)
-    : details_(
-          std::make_unique<StreamingDetails>(script_type,
-                                             std::move(script_url_string),
-                                             script_resource_identifier,
-                                             isolate,
-                                             std::move(encoding),
-                                             std::move(compile_hints_builder))),
+    : details_(std::make_unique<StreamingDetails>(
+          script_type,
+          std::move(script_url_string),
+          script_resource_identifier,
+          isolate,
+          std::move(encoding),
+          std::move(compile_hints_builder),
+          should_use_code_cache_with_hashing)),
       streamer_handle_(std::move(streamer_handle)) {}
 
 bool BackgroundResourceScriptStreamer::BackgroundProcessor::
@@ -1875,8 +1932,13 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
     return false;
   }
 
-  if (!RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled() &&
-      head->was_fetched_via_service_worker) {
+  const bool sw_requires_hash =
+      head->was_fetched_via_service_worker &&
+      RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled();
+  if ((!RuntimeEnabledFeatures::ServiceWorkerCodeCacheEnabled() &&
+       head->was_fetched_via_service_worker) ||
+      (!details_->should_use_code_cache_with_hashing &&
+       (sw_requires_hash || head->should_use_source_hash_for_js_code_cache))) {
     cached_metadata.reset();
   }
 
@@ -1909,7 +1971,7 @@ BackgroundResourceScriptStreamer::BackgroundProcessorFactory::Create() && {
   return std::make_unique<BackgroundProcessor>(
       script_type_, script_url_string_, script_resource_identifier_, isolate_,
       encoding_, std::move(compile_hints_builder_),
-      std::move(streamer_handle_));
+      should_use_code_cache_with_hashing_, std::move(streamer_handle_));
 }
 
 void BackgroundJSStreamManager::SetState(BackgroundStreamingState state) {
@@ -2022,8 +2084,13 @@ bool BackgroundJSStreamManager::TryStartStreaming() {
     return false;
   }
 
+  const bool requires_hash =
+      head_->should_use_source_hash_for_js_code_cache ||
+      (head_->was_fetched_via_service_worker &&
+       RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled());
   compile_hints_ = BuildCompileHintsForStreaming(
       std::move(details_->compile_hints_builder), cached_metadata_,
+      requires_hash, &sha256_digest_from_code_cache_,
       details_->encoding.GetName());
   CHECK(compile_hints_);
 
@@ -2276,6 +2343,17 @@ void BackgroundJSStreamManager::OnFinishStreaming(
   source_stream_ptr_ = nullptr;
   CHECK_EQ(state_, BackgroundStreamingState::kWaitingForParseResult);
   SetState(BackgroundStreamingState::kFinished);
+  if (sha256_digest_from_code_cache_) {
+    if (!result.digest || *sha256_digest_from_code_cache_ != *result.digest) {
+      if (cached_metadata_ &&
+          cached_metadata_->size() > sizeof(CachedMetadataHeaderWithHash)) {
+        cached_metadata_ = mojo_base::BigBuffer(
+            base::span(*cached_metadata_)
+                .first(sizeof(CachedMetadataHeaderWithHash)));
+      }
+    }
+    sha256_digest_from_code_cache_ = nullptr;
+  }
   background_processor_->PostResultToMainThread(
       std::make_unique<BackgroundResourceScriptStreamer::Result>(
           std::move(result.decoded_data), std::move(result.digest),
@@ -2305,30 +2383,14 @@ BackgroundJSStreamManager::MaybeCreateConsumeCodeCacheTask(
     // Currently ModuleScript doesn't support off-thread cache consumption.
     return nullptr;
   }
-  if (!cached_metadata_) {
-    return nullptr;
-  }
-  scoped_refptr<CachedMetadata> metadata =
-      CachedMetadata::CreateFromSerializedData(*cached_metadata_);
+  const bool requires_hash =
+      head_->should_use_source_hash_for_js_code_cache ||
+      (head_->was_fetched_via_service_worker &&
+       RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled());
+  scoped_refptr<CachedMetadata> metadata = ExtractCachedMetadataFromBigBuffer(
+      cached_metadata_, requires_hash, &sha256_digest_from_code_cache_);
   if (!metadata) {
-    // Check whether the cached metadata contains a content hash.
-    if (cached_metadata_->size() < sizeof(CachedMetadataHeaderWithHash)) {
-      return nullptr;
-    }
-    const CachedMetadataHeaderWithHash* header =
-        reinterpret_cast<const CachedMetadataHeaderWithHash*>(
-            cached_metadata_->data());
-    if (header->marker !=
-        CachedMetadataHandler::kSingleEntryWithHashAndPadding) {
-      return nullptr;
-    }
-    metadata = CachedMetadata::CreateFromSerializedData(
-        *cached_metadata_, sizeof(CachedMetadataHeaderWithHash));
-    if (!metadata) {
-      return nullptr;
-    }
-    sha256_digest_from_code_cache_ = std::make_unique<SecureStringDigest>();
-    sha256_digest_from_code_cache_->append_range(header->hash);
+    return nullptr;
   }
   std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
   if (V8CodeCache::HasCodeCache(*metadata, details_->encoding.GetName())) {
@@ -2337,6 +2399,9 @@ BackgroundJSStreamManager::MaybeCreateConsumeCodeCacheTask(
       task.reset(v8::ScriptCompiler::StartConsumingCodeCacheOnBackground(
           details_->isolate, V8CodeCache::CreateCachedData(metadata)));
     }
+  }
+  if (!task) {
+    sha256_digest_from_code_cache_.reset();
   }
   // Keep the buffer alive while V8 reads from it.
   std::variant<Vector<uint8_t>, mojo_base::BigBuffer> drained_data =
@@ -2415,9 +2480,25 @@ void BackgroundJSStreamManager::OnFinishCodeCacheConsumerScriptDecode() {
   CHECK(decoder_result_);
   SetState(BackgroundStreamingState::kFinished);
   if (sha256_digest_from_code_cache_) {
-    if (*sha256_digest_from_code_cache_ != *decoder_result_->digest) {
-      // The deserialized code cache data is incorrect; abandon it.
+    if (!decoder_result_->digest ||
+        *sha256_digest_from_code_cache_ != *decoder_result_->digest) {
+      // The deserialized code cache data is incorrect; abandon it and strip
+      // the serialized bytecode payload so that the main thread cannot start a
+      // fallback ScriptCacheConsumer before the hash check runs, while keeping
+      // the CachedMetadataHeaderWithHash so the handler still clears persistent
+      // storage on Check().
+      // Note: `consume_code_cache_task_` holds a
+      // `v8::ScriptCompiler::CachedData` created with `BufferNotOwned` pointing
+      // into `cached_metadata_`'s backing buffer, so it must be destroyed
+      // before reassigning `cached_metadata_` below to avoid a dangling
+      // pointer.
       consume_code_cache_task_ = nullptr;
+      if (cached_metadata_ &&
+          cached_metadata_->size() > sizeof(CachedMetadataHeaderWithHash)) {
+        cached_metadata_ = mojo_base::BigBuffer(
+            base::span(*cached_metadata_)
+                .first(sizeof(CachedMetadataHeaderWithHash)));
+      }
     }
     sha256_digest_from_code_cache_ = nullptr;
   }

@@ -468,9 +468,7 @@ class PLATFORM_EXPORT ResourceResponse final {
     request_include_credentials_ = request_include_credentials;
   }
 
-  bool ShouldUseSourceHashForJSCodeCache() const {
-    return should_use_source_hash_for_js_code_cache_;
-  }
+  bool ShouldUseSourceHashForJSCodeCache() const;
   void SetShouldUseSourceHashForJSCodeCache(
       bool should_use_source_hash_for_js_code_cache) {
     if (should_use_source_hash_for_js_code_cache) {

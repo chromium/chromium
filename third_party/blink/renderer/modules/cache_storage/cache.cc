@@ -44,12 +44,15 @@
 #include "third_party/blink/renderer/modules/cache_storage/cache_utils.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
@@ -645,17 +648,45 @@ class Cache::CodeCacheHandleCallbackForPut final
     batch_operation->response = std::move(fetch_api_response_);
     batch_operation->response->blob = std::move(blob_handle_);
 
-    scoped_refptr<CachedMetadata> cached_metadata =
-        GenerateFullCodeCache(array_buffer);
-    if (cached_metadata) {
-      base::span<const uint8_t> serialized_data =
-          cached_metadata->SerializedData();
-      auto side_data_blob_data = std::make_unique<BlobData>();
-      side_data_blob_data->AppendBytes(serialized_data);
+    // Currently we only support UTF8 encoding.
+    // TODO: Use the charset in Content-type header of the response.
+    std::unique_ptr<TextResourceDecoder> text_decoder =
+        std::make_unique<TextResourceDecoder>(
+            TextResourceDecoderOptions::CreateUTF8Decode());
+    // Capture the initial encoding before `Decode()` potentially mutates
+    // `text_decoder->Encoding()` upon seeing a UTF-16 BOM, matching
+    // `ScriptResource::ResponseReceived()` which creates the metadata handler
+    // before decoding the response body.
+    const TextEncoding initial_encoding = text_decoder->Encoding();
+    StringBuilder script_text_builder;
+    script_text_builder.Append(text_decoder->Decode(array_buffer->ByteSpan()));
+    script_text_builder.Append(text_decoder->Flush());
+    String script_text = script_text_builder.ToString();
 
-      batch_operation->response->side_data_blob_for_cache_put =
-          BlobDataHandle::Create(std::move(side_data_blob_data),
-                                 serialized_data.size());
+    scoped_refptr<CachedMetadata> cached_metadata =
+        GenerateFullCodeCache(script_text, initial_encoding);
+    if (cached_metadata) {
+      auto side_data_blob_data = std::make_unique<BlobData>();
+      if (RuntimeEnabledFeatures::ServiceWorkerCodeCacheHashingEnabled()) {
+        ParkableString source_text(script_text.Impl());
+        const ParkableString::DigestHolder digest_holder = source_text.Digest();
+        const SecureStringDigest& digest = digest_holder.Get();
+
+        Vector<uint8_t> serialized_data =
+            ScriptCachedMetadataHandlerWithHashing::AddHashHeader(
+                base::span(digest), cached_metadata->SerializedData());
+        side_data_blob_data->AppendBytes(serialized_data);
+        batch_operation->response->side_data_blob_for_cache_put =
+            BlobDataHandle::Create(std::move(side_data_blob_data),
+                                   serialized_data.size());
+      } else {
+        base::span<const uint8_t> serialized_data =
+            cached_metadata->SerializedData();
+        side_data_blob_data->AppendBytes(serialized_data);
+        batch_operation->response->side_data_blob_for_cache_put =
+            BlobDataHandle::Create(std::move(side_data_blob_data),
+                                   serialized_data.size());
+      }
     }
 
     barrier_callback_->OnSuccess(index_, std::move(batch_operation));
@@ -687,21 +718,14 @@ class Cache::CodeCacheHandleCallbackForPut final
   }
 
   scoped_refptr<CachedMetadata> GenerateFullCodeCache(
-      DOMArrayBuffer* array_buffer) {
+      const String& script_text,
+      const TextEncoding& encoding) {
     TRACE_EVENT1("CacheStorage",
                  "Cache::CodeCacheHandleCallbackForPut::GenerateFullCodeCache",
                  "url", CacheStorageTracedValue(url_.GetString()));
 
-    // Currently we only support UTF8 encoding.
-    // TODO(horo): Use the charset in Content-type header of the response.
-    // See crbug.com/743311.
-    std::unique_ptr<TextResourceDecoder> text_decoder =
-        std::make_unique<TextResourceDecoder>(
-            TextResourceDecoderOptions::CreateUTF8Decode());
-
-    return V8CodeCache::GenerateFullCodeCache(
-        script_state_, text_decoder->Decode(array_buffer->ByteSpan()), url_,
-        text_decoder->Encoding(), opaque_mode_);
+    return V8CodeCache::GenerateFullCodeCache(script_state_, script_text, url_,
+                                              encoding, opaque_mode_);
   }
 
   const Member<ScriptState> script_state_;

@@ -1588,10 +1588,14 @@ TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
   AppendData(kLargeEnoughScript);
   producer_handle_.reset();
   background_response_processor_client_.WaitUntilFinished();
-  // Checking that the code cache data is passed to the finish callback.
+  // The serialized bytecode payload is stripped on hash mismatch so that a
+  // fallback ScriptCacheConsumer cannot be created before Check(), while the
+  // CachedMetadataHeaderWithHash is preserved so Check() clears persistent
+  // storage.
   background_response_processor_client_.CheckResultOfFinishCallback(
       /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
-      /*expected_cached_metadata=*/code_cache_data_copy);
+      /*expected_cached_metadata=*/base::span(code_cache_data_copy)
+          .first(sizeof(CachedMetadataHeaderWithHash)));
   EXPECT_TRUE(resource_->HasBackgroundStreamerWithDecodedData());
   // The cache consumption task was abandoned due to mismatching source hash.
   EXPECT_FALSE(resource_->HasBackgroundStreamerWithConsumeCodeCacheTask());
@@ -1600,6 +1604,37 @@ TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
   // When there is a code cache, we should not stream the script.
   CheckNotStreamingReason(
       ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground);
+}
+
+TEST_P(BackgroundResourceScriptStreamerCodeCacheDecodeStartTest,
+       ServiceWorkerRejectsUnhashedCodeCache) {
+  V8TestingScope scope;
+  Init(scope.GetIsolate());
+  mojo_base::BigBuffer unhashed_code_cache_data = CreateDummyCodeCacheData();
+  RunInBackgroundThread(base::BindLambdaForTesting([&]() {
+    network::mojom::URLResponseHeadPtr head = CreateURLResponseHead();
+    head->charset = "utf-8";
+    head->was_fetched_via_service_worker = true;
+    std::optional<mojo_base::BigBuffer> cached_metadata =
+        std::move(unhashed_code_cache_data);
+    EXPECT_TRUE(background_response_processor_->MaybeStartProcessingResponse(
+        head, consumer_handle_, cached_metadata,
+        background_resource_fetch_task_runner_,
+        &background_response_processor_client_));
+    EXPECT_FALSE(head);
+    EXPECT_FALSE(consumer_handle_);
+  }));
+  AppendData(kLargeEnoughScript);
+  producer_handle_.reset();
+  background_response_processor_client_.WaitUntilFinished();
+  background_response_processor_client_.CheckResultOfFinishCallback(
+      /*expected_body=*/base::span_from_cstring(kLargeEnoughScript),
+      /*expected_cached_metadata=*/std::nullopt);
+  EXPECT_FALSE(resource_->HasBackgroundStreamerWithConsumeCodeCacheTask());
+  Finish();
+  RunUntilResourceLoaded();
+  ScriptStreamer* streamer = TakeScriptStreamer();
+  EXPECT_TRUE(streamer);
 }
 
 TEST_P(BackgroundResourceScriptStreamerTest, HasTimeStampData) {

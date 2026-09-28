@@ -49,6 +49,8 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   scoped_refptr<CachedMetadata> GetCachedMetadata(
       uint32_t data_type_id,
       GetCachedMetadataBehavior behavior) const override;
+  void Check(CodeCacheHost* code_cache_host,
+             const ParkableString& source_text) override;
   // This returns the encoding at the time of ResponseReceived(). Therefore this
   // does NOT reflect encoding detection from body contents, but the actual
   // encoding after the encoding detection can be determined uniquely from
@@ -66,6 +68,8 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   // allow subclasses to append additional header metadata.
   virtual void CommitToPersistentStorage(CodeCacheHost* code_cache_host);
 
+  void SetSerializedCachedMetadataWithHash(mojo_base::BigBuffer data);
+
   CachedMetadataSender* sender() { return sender_.get(); }
 
   // Direct accessors for `cached_metadata_` by ScriptCachedMetadataHandler and
@@ -79,6 +83,19 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   void set_cached_metadata(scoped_refptr<CachedMetadata> cached_metadata) {
     cached_metadata_ = std::move(cached_metadata);
   }
+
+  static constexpr size_t kSha256Bytes = 256 / 8;
+  uint8_t hash_[kSha256Bytes] = {};
+
+  enum HashState {
+    kUninitialized,  // hash_ has not been written.
+    kDeserialized,   // hash_ contains data from the code cache that has not yet
+                     // been checked for matching the script text.
+    kChecked,        // hash_ contains the hash of the script text. Neither
+                     // hash_state_ nor hash_ will ever change again.
+  };
+
+  HashState hash_state_ = kUninitialized;
 
  private:
   friend class ModuleScriptTest;
@@ -100,11 +117,6 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
   // ScriptCachedMetadataHandler:
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
   bool HashRequired() const override { return true; }
-  scoped_refptr<CachedMetadata> GetCachedMetadata(
-      uint32_t data_type_id,
-      GetCachedMetadataBehavior behavior) const override;
-  void Check(CodeCacheHost* code_cache_host,
-             const ParkableString& source_text) override;
 
   // Pretend that the current content and hash were loaded from disk, not
   // created by the current process.
@@ -114,22 +126,14 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
   // with-hashing-specific headers.
   Vector<uint8_t> GetSerializedCachedMetadata() const;
 
+  // Serializes cached metadata with the hash header prepended.
+  static Vector<uint8_t> AddHashHeader(
+      base::span<const uint8_t> hash,
+      base::span<const uint8_t> serialized_metadata);
+
  protected:
   // ScriptCachedMetadataHandler:
   void CommitToPersistentStorage(CodeCacheHost*) override;
-
- private:
-  uint8_t hash_[kSha256Bytes] = {};
-
-  enum HashState {
-    kUninitialized,  // hash_ has not been written.
-    kDeserialized,   // hash_ contains data from the code cache that has not yet
-                     // been checked for matching the script text.
-    kChecked,        // hash_ contains the hash of the script text. Neither
-                     // hash_state_ nor hash_ will ever change again.
-  };
-
-  HashState hash_state_ = kUninitialized;
 };
 
 // The serialized header format for cached metadata which includes a hash of the
