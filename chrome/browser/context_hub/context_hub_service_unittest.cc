@@ -1615,6 +1615,41 @@ TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
   EXPECT_EQ(ungrouped_tabs[0].id, 1);
   EXPECT_EQ(ungrouped_tabs[1].id, 2);
   EXPECT_TRUE(text_response.empty());
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            auto throttled_error = optimization_guide::
+                OptimizationGuideModelExecutionError::FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kRequestThrottled);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::unexpected(throttled_error), nullptr),
+                nullptr);
+          });
+
+  base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
+                         std::string>
+      throttled_future;
+  service_.GroupTabs(
+      std::move(ungrouped_tabs), "",
+      throttled_future.GetCallback<std::vector<TabGroupEntry>,
+                                   std::vector<TabData>, std::string>());
+  auto [throttled_groups, throttled_ungrouped, throttled_text] =
+      throttled_future.Take();
+
+  EXPECT_TRUE(throttled_groups.empty());
+  EXPECT_EQ(throttled_text,
+            "Unable to group tabs due to high server load. Please try again "
+            "later.");
 }
 
 TEST_F(ContextHubServiceTest, AddAndGetTabGroupChatHistory) {

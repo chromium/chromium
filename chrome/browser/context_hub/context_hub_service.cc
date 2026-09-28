@@ -35,6 +35,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -1308,7 +1309,16 @@ void ContextHubService::HandleTabGroupModelExecutionResult(
         optimization_guide::proto::ContextHubResponse>(*result.response);
   }
   if (!response || !response->has_group_response()) {
-    std::move(callback).Run({}, std::move(tabs), /*text_response=*/"");
+    std::string error_message;
+    if (!result.response.has_value() &&
+        result.response.error().error() ==
+            optimization_guide::OptimizationGuideModelExecutionError::
+                ModelExecutionError::kRequestThrottled) {
+      error_message =
+          "Unable to group tabs due to high server load. Please try again "
+          "later.";
+    }
+    std::move(callback).Run({}, std::move(tabs), std::move(error_message));
     return;
   }
 

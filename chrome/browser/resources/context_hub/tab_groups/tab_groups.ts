@@ -237,7 +237,10 @@ export class TabGroupsElement extends CrLitElement {
         ...this.chatHistory_,
         {role: ChatRole.kAssistant, content: assistantContent},
       ]);
-      this.isGrouped_ = true;
+      this.isGrouped_ = this.groups_.length > 0;
+      if (!this.isGrouped_) {
+        this.tabs_ = ungroupedTabs;
+      }
     } catch (e) {
       console.error('Failed to retrieve and group tabs:', e);
       this.chatHistory_ = this.trimChatHistory_([
