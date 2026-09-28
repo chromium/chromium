@@ -21,6 +21,7 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -154,7 +155,7 @@ class PaymentMethodManifestDownloaderTest
     PaymentManifestDownloaderTestBase::SetUp();
     InitDownloader();
     downloader_->DownloadPaymentMethodManifest(
-        url::Origin::Create(GURL("https://chromium.org")), test_url_,
+        url::Origin::Create(GURL("https://example.test")), test_url_,
         base::BindOnce(&PaymentMethodManifestDownloaderTest::OnManifestDownload,
                        base::Unretained(this)));
   }
@@ -837,7 +838,7 @@ TEST_F(PaymentManifestDownloaderCSPTest,
           "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   downloader_->DownloadPaymentMethodManifest(
-      url::Origin::Create(GURL("https://chromium.org")), test_url_,
+      url::Origin::Create(GURL("https://example.test")), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
 
@@ -879,7 +880,7 @@ TEST_F(PaymentManifestDownloaderCSPTest, PaymentMethodManifestCSPDenied) {
           "Unable to download payment manifest \"https://bobpay.test/\"."));
 
   downloader_->DownloadPaymentMethodManifest(
-      url::Origin::Create(GURL("https://chromium.org")), test_url_,
+      url::Origin::Create(GURL("https://example.test")), test_url_,
       base::BindOnce(&PaymentManifestDownloaderCSPTest::OnManifestDownload,
                      base::Unretained(this)));
 
@@ -907,6 +908,80 @@ TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPDenied) {
   EXPECT_THAT(logged_errors(),
               ElementsAre("Content Security Policy denied the download of "
                           "payment manifest \"https://bobpay.test/\"."));
+}
+
+class PaymentManifestDownloaderLnaTest
+    : public PaymentManifestDownloaderTestBase {
+ protected:
+  PaymentManifestDownloaderLnaTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kPaymentRequestEnforceLNAWithClientSecurityState},
+        /*disabled_features=*/{features::kPaymentRequestUseRendererUrlLoader});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PaymentManifestDownloaderLnaTest,
+       TrustedParamsSetWhenEnforceLnaEnabled) {
+  InitDownloader();
+  downloader_->DownloadPaymentMethodManifest(
+      url::Origin::Create(GURL("https://example.test")), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderLnaTest::OnManifestDownload,
+                     base::Unretained(this)));
+
+  ASSERT_EQ(test_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_factory_.GetPendingRequest(0)->request;
+  ASSERT_TRUE(request.trusted_params.has_value());
+  auto client_security_state = network::mojom::ClientSecurityState::New();
+  client_security_state->is_web_secure_context = true;
+  client_security_state->ip_address_space =
+      network::mojom::IPAddressSpace::kPublic;
+  client_security_state->local_network_access_request_policy =
+      network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+  EXPECT_EQ(request.trusted_params->client_security_state,
+            client_security_state);
+  EXPECT_TRUE(request.trusted_params->isolation_info.IsEqualForTesting(
+      main_rfh()->GetIsolationInfoForSubresources()));
+}
+
+TEST_F(PaymentManifestDownloaderLnaTest,
+       TrustedParamsNotSetWhenEnforceLnaDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPaymentRequestEnforceLNAWithClientSecurityState);
+
+  InitDownloader();
+  downloader_->DownloadPaymentMethodManifest(
+      url::Origin::Create(GURL("https://example.test")), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderLnaTest::OnManifestDownload,
+                     base::Unretained(this)));
+
+  ASSERT_EQ(test_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_factory_.GetPendingRequest(0)->request;
+  EXPECT_FALSE(request.trusted_params.has_value());
+}
+
+TEST_F(PaymentManifestDownloaderLnaTest,
+       TrustedParamsNotSetWhenUsingRendererUrlLoader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPaymentRequestUseRendererUrlLoader);
+
+  InitDownloader();
+  downloader_->DownloadPaymentMethodManifest(
+      url::Origin::Create(GURL("https://example.test")), test_url_,
+      base::BindOnce(&PaymentManifestDownloaderLnaTest::OnManifestDownload,
+                     base::Unretained(this)));
+
+  ASSERT_EQ(test_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_factory_.GetPendingRequest(0)->request;
+  EXPECT_FALSE(request.trusted_params.has_value());
 }
 
 }  // namespace payments

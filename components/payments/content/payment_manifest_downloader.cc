@@ -432,6 +432,16 @@ void PaymentManifestDownloader::InitiateDownload(
   DCHECK(allowed_number_of_redirects == 0 ||
          download_type == Download::Type::LINK_HEADER);
 
+  content::RenderFrameHost* initiator_frame =
+      initiator_document_.AsRenderFrameHostIfValid();
+  if (!initiator_frame) {
+    // The initiator frame is gone. No request should be made.
+    RespondWithTemplateError(errors::kPaymentManifestDownloadFailed,
+                             url_before_redirects, url, *log_,
+                             std::move(callback));
+    return;
+  }
+
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("payment_manifest_downloader", R"(
         semantics {
@@ -477,6 +487,30 @@ void PaymentManifestDownloader::InitiateDownload(
       break;
   }
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  // Enforce Local Network Access (LNA) using initiator frame security state.
+  // When the RenderFrameHost URL Loader is used, the trusted params is already
+  // included and setting the value explicitly in the resource request may cause
+  // errors.
+  if (!(use_url_loader_factory_rfh &&
+        base::FeatureList::IsEnabled(
+            features::kPaymentRequestUseRendererUrlLoader)) &&
+      base::FeatureList::IsEnabled(
+          features::kPaymentRequestEnforceLNAWithClientSecurityState)) {
+    resource_request->trusted_params =
+        network::ResourceRequest::TrustedParams();
+    auto client_security_state = network::mojom::ClientSecurityState::New();
+    client_security_state->is_web_secure_context = true;
+    client_security_state->ip_address_space =
+        network::mojom::IPAddressSpace::kPublic;
+    client_security_state->local_network_access_request_policy =
+        network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
+    resource_request->trusted_params->client_security_state =
+        std::move(client_security_state);
+    resource_request->trusted_params->isolation_info =
+        initiator_frame->GetIsolationInfoForSubresources();
+  }
+
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
@@ -490,16 +524,6 @@ void PaymentManifestDownloader::InitiateDownload(
   download->loader = std::move(loader);
   download->callback = std::move(callback);
   download->allowed_number_of_redirects = allowed_number_of_redirects;
-
-  content::RenderFrameHost* initiator_frame =
-      initiator_document_.AsRenderFrameHostIfValid();
-  if (!initiator_frame) {
-    // The initiator frame is gone. No request should be made.
-    RespondWithTemplateError(
-        errors::kPaymentManifestDownloadFailed, download->url_before_redirects,
-        download->original_url, *log_, std::move(download->callback));
-    return;
-  }
 
   if (!(use_url_loader_factory_rfh &&
         base::FeatureList::IsEnabled(

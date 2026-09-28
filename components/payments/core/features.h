@@ -119,6 +119,10 @@ BASE_DECLARE_FEATURE(kThreeDSecureTelemetry);
 // instead of the browser tab.
 BASE_DECLARE_FEATURE(kPaymentHandlerModalDialogHost);
 
+// Used to enforce Local Network Access (LNA) for payment requests by setting
+// the client security state on the resource request.
+BASE_DECLARE_FEATURE(kPaymentRequestEnforceLNAWithClientSecurityState);
+
 }  // namespace features
 }  // namespace payments
 
