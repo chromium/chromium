@@ -128,21 +128,6 @@ void LayoutBlock::StyleDidChange(
 
   LayoutBox::StyleDidChange(diff, old_style, new_style, style_change_context);
 
-  if (old_style && Parent()) {
-    if (old_style->GetPosition() != new_style.GetPosition() &&
-        new_style.GetPosition() != EPosition::kStatic) {
-      // In LayoutObject::styleWillChange() we already removed ourself from our
-      // old containing block's positioned descendant list, and we will be
-      // inserted to the new containing block's list during layout. However the
-      // positioned descendant layout logic assumes layout objects to obey
-      // parent-child order in the list. Remove our descendants here so they
-      // will be re-inserted after us.
-      if (LayoutBlock* cb = ContainingBlock()) {
-        cb->RemovePositionedObjects(this);
-      }
-    }
-  }
-
   PropagateStyleToAnonymousChildren();
 
   if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
