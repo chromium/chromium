@@ -773,6 +773,217 @@ TEST_P(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
             commit_finish_time_2);
 }
 
+TEST_P(WindowPerformanceTest,
+       PerAnimationFrameSubpartsWithPostLayoutBoundaryEvents) {
+  FastForwardBy(base::Seconds(3));
+
+  // 1. Pre-render interaction event (click): processing duration 10ms.
+  auto* click_event =
+      CreatePointerEvent(event_type_names::kClick, base::TimeTicks::Now(), 4);
+  PerformanceEventTiming* click_entry =
+      SimulateEventDispatch(*click_event, base::Milliseconds(10));
+
+  // 2. Rendering starts 15ms after click processing ends.
+  FastForwardBy(base::Milliseconds(15));
+  base::TimeTicks render_start_time = base::TimeTicks::Now();
+  performance_->SetRenderStartTimeForPendingEvents(render_start_time);
+
+  // 3. During layout (5ms after render start), a boundary event (pointerout)
+  // is dispatched with duration 4ms. Its render_start_time will remain null.
+  FastForwardBy(base::Milliseconds(5));
+  auto* boundary_event = CreatePointerEvent(event_type_names::kPointerout,
+                                            base::TimeTicks::Now(), 4);
+  PerformanceEventTiming* boundary_entry =
+      SimulateEventDispatch(*boundary_event, base::Milliseconds(4));
+
+  // 4. Paint & commit finish 11ms later (20ms total after render_start_time).
+  FastForwardBy(base::Milliseconds(11));
+  uint64_t frame_index = GetCurrentFrameIndex();
+  SimulatePaintAndCommit();
+
+  // 5. Presentation resolves 15ms after commit.
+  FastForwardBy(base::Milliseconds(15));
+  SimulateJustPresentationTime(frame_index);
+
+  // Verify we did not mutate/copy render_start_time onto the post-layout entry.
+  EXPECT_EQ(click_entry->GetEventTimingReportingInfo()->render_start_time,
+            render_start_time);
+  EXPECT_TRUE(boundary_entry->GetEventTimingReportingInfo()
+                  ->render_start_time.is_null());
+
+  // EventProcessingDuration includes both pre-render (10ms) and
+  // inside-render (4ms) events = 14ms.
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.EventProcessingDuration.TapOrClick",
+      base::Milliseconds(14), 1);
+  // Unaccounted time before rendering starts is 15ms (25ms - 10ms).
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.UnaccountedDuration.TapOrClick",
+      base::Milliseconds(15), 1);
+
+  // RenderingDuration discounts the 4ms event inside rendering:
+  // (45ms - 25ms) - 4ms = 16ms.
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.RenderingDuration.TapOrClick",
+      base::Milliseconds(16), 1);
+  // Total MainThreadWork is 14ms + 15ms + 16ms = 45ms.
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame.MainThreadWork.TapOrClick",
+      base::Milliseconds(45), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame.PresentationDelay.TapOrClick",
+      base::Milliseconds(15), 1);
+}
+
+TEST_P(WindowPerformanceTest,
+       PerAnimationFrameSubpartsWhenAllEventsDispatchedAfterRenderStart) {
+  FastForwardBy(base::Seconds(3));
+
+  // All events in this frame are dispatched after WillBeginMainFrame (e.g.
+  // synthetic click + boundary event inside rAF/layout with a 5ms rendering
+  // gap between them), so render_start_time is null on all entries.
+  auto* click_event =
+      CreatePointerEvent(event_type_names::kClick, base::TimeTicks::Now(), 4);
+  PerformanceEventTiming* click_entry =
+      SimulateEventDispatch(*click_event, base::Milliseconds(10));
+
+  FastForwardBy(base::Milliseconds(5));
+  auto* boundary_event = CreatePointerEvent(event_type_names::kPointerout,
+                                            base::TimeTicks::Now(), 4);
+  PerformanceEventTiming* boundary_entry =
+      SimulateEventDispatch(*boundary_event, base::Milliseconds(4));
+
+  FastForwardBy(base::Milliseconds(15));
+  uint64_t frame_index = GetCurrentFrameIndex();
+  SimulatePaintAndCommit();
+
+  FastForwardBy(base::Milliseconds(15));
+  SimulateJustPresentationTime(frame_index);
+
+  EXPECT_TRUE(
+      click_entry->GetEventTimingReportingInfo()->render_start_time.is_null());
+  EXPECT_TRUE(boundary_entry->GetEventTimingReportingInfo()
+                  ->render_start_time.is_null());
+
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.EventProcessingDuration.TapOrClick",
+      base::Milliseconds(14), 1);
+  // Since all events ran during rendering (fallback to
+  // first_event_processing_start_time), the 5ms gap between events is counted
+  // as rendering (5ms + 15ms = 20ms) rather than unaccounted duration (0ms).
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.UnaccountedDuration.TapOrClick",
+      base::Milliseconds(0), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame."
+      "MainThreadWork.RenderingDuration.TapOrClick",
+      base::Milliseconds(20), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame.MainThreadWork.TapOrClick",
+      base::Milliseconds(34), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.PerAnimationFrame.PresentationDelay.TapOrClick",
+      base::Milliseconds(15), 1);
+}
+
+TEST_P(WindowPerformanceTest,
+       WithoutAnimationFrameSubpartsWhenRenderStartSetWithoutPresentation) {
+  FastForwardBy(base::Seconds(3));
+
+  // 1. First interaction event (pointerdown): creation->queue 2ms,
+  // queue->processing_start 3ms, processing duration 6ms.
+  base::TimeTicks creation_time = base::TimeTicks::Now();
+  FastForwardBy(base::Milliseconds(2));
+  base::TimeTicks queue_time = base::TimeTicks::Now();
+  FastForwardBy(base::Milliseconds(3));
+  auto* pointerdown =
+      CreatePointerEvent(event_type_names::kPointerdown, creation_time, 4);
+  {
+    EventQueuedTimestampScope scoped_queued_time(queue_time);
+    UIEventTiming ui_event_timing_pointerdown(GetFrame(), *pointerdown);
+    FastForwardBy(base::Milliseconds(6));
+  }
+
+  // 2. 4ms idle gap, then pointerup (0ms) and click (10ms total), with a
+  // nested input event (3ms) finishing before click finishes so
+  // frame_entries.back() is a nested event.
+  FastForwardBy(base::Milliseconds(4));
+  auto* pointerup = CreatePointerEvent(event_type_names::kPointerup,
+                                       base::TimeTicks::Now(), 4);
+  SimulateEventDispatch(*pointerup, base::Milliseconds(0));
+  auto* click =
+      CreatePointerEvent(event_type_names::kClick, base::TimeTicks::Now(), 4);
+  Event* nested_input = CreateInputEvent();
+  PerformanceEventTiming* click_entry = nullptr;
+  PerformanceEventTiming* nested_entry = nullptr;
+  {
+    UIEventTiming ui_event_timing_click(GetFrame(), *click);
+    FastForwardBy(base::Milliseconds(2));
+    {
+      UIEventTiming ui_event_timing_nested(GetFrame(), *nested_input);
+      FastForwardBy(base::Milliseconds(3));
+      nested_entry = ui_event_timing_nested.GetEntry();
+    }
+    FastForwardBy(base::Milliseconds(5));
+    click_entry = ui_event_timing_click.GetEntry();
+  }
+  EXPECT_TRUE(nested_entry->GetEventTimingReportingInfo()
+                  ->is_processing_fully_nested_in_another_event);
+
+  // 3. Rendering starts 15ms after event processing ends, setting
+  // render_start_time on the pending entries, but no paint/commit happens
+  // before the presentation promise resolves (i.e. did not need next paint).
+  FastForwardBy(base::Milliseconds(15));
+  base::TimeTicks render_start_time = base::TimeTicks::Now();
+  performance_->SetRenderStartTimeForPendingEvents(render_start_time);
+
+  FastForwardBy(base::Milliseconds(10));
+  SimulateJustPresentationTime(GetCurrentFrameIndex());
+
+  EXPECT_EQ(click_entry->GetEventTimingReportingInfo()->render_start_time,
+            render_start_time);
+
+  // InputDelay subparts: 2ms creation->queue + 3ms queue->processing_start.
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame."
+      "InputDelay.CreationToQueueTime.TapOrClick",
+      base::Milliseconds(2), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame."
+      "InputDelay.QueueToProcessingStartTime.TapOrClick",
+      base::Milliseconds(3), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame.InputDelay.TapOrClick",
+      base::Milliseconds(5), 1);
+
+  // MainThreadWork covers first_event_processing_start_time ->
+  // main_thread_end_time (render_start_time = 35ms), excluding the 10ms after
+  // render_start_time up to fallback_time (45ms).
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame."
+      "MainThreadWork.EventProcessingDuration.TapOrClick",
+      base::Milliseconds(16), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame."
+      "MainThreadWork.UnaccountedDuration.TapOrClick",
+      base::Milliseconds(19), 1);
+  GetHistogramTester().ExpectUniqueTimeSample(
+      "Blink.Responsiveness.WithoutAnimationFrame.MainThreadWork.TapOrClick",
+      base::Milliseconds(35), 1);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.WithoutAnimationFrame."
+      "MainThreadWork.RenderingDuration.TapOrClick",
+      0);
+  GetHistogramTester().ExpectTotalCount(
+      "Blink.Responsiveness.WithoutAnimationFrame.PresentationDelay.TapOrClick",
+      0);
+}
+
 // Test for existence of 'first-input' given different types of first events.
 TEST_P(WindowPerformanceTest, FirstInput_Keydown) {
   auto* event = CreateKeyboardEvent(
