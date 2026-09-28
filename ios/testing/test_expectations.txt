@@ -128,9 +128,6 @@ crbug.com/556842646 [ Simulator ] AutofillAIEGTest/testWalletFailureShowsErrorDi
 # Gardening suppression 2026-09-09
 crbug.com/559221484 TabGroupsTestCase/testGroupCreationFromAnotherGroupInSelectionMode [ Pass Failure ]
 
-# Gardening suppression 2026-09-10
-crbug.com/521844463 OmniboxPopupWithFakeSuggestionTestCase/testScrollingDismissesKeyboard [ Pass Failure ]
-
 # Gardening suppression 2026-09-14
 crbug.com/561644215 ComposeboxTestCase/testComposeboxAIModeEmptyTextStartsCobrowse [ Pass Failure ]
 crbug.com/561644215 AssistantAIMTestCase/testAssistantDoesNotReappearAfterExplicitClose [ Pass Failure ]
