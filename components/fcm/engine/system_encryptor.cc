@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gcm_driver/system_encryptor.h"
+#include "components/fcm/engine/system_encryptor.h"
+
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
-namespace gcm {
+namespace fcm {
 
 SystemEncryptor::SystemEncryptor(
     scoped_refptr<os_crypt_async::Encryptor> encryptor)
@@ -25,4 +27,4 @@ bool SystemEncryptor::DecryptString(const std::string& ciphertext,
   return encryptor_->DecryptString(ciphertext, plaintext);
 }
 
-}  // namespace gcm
+}  // namespace fcm

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_SYSTEM_ENCRYPTOR_H_
-#define COMPONENTS_GCM_DRIVER_SYSTEM_ENCRYPTOR_H_
+#ifndef COMPONENTS_FCM_ENGINE_SYSTEM_ENCRYPTOR_H_
+#define COMPONENTS_FCM_ENGINE_SYSTEM_ENCRYPTOR_H_
 
-#include "base/compiler_specific.h"
+#include <string>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "google_apis/gcm/base/encryptor.h"
 
-namespace gcm {
+namespace fcm {
 
-// Encryptor that uses the Chrome password manager's encryptor.
-class SystemEncryptor : public Encryptor {
+// Encryptor that uses os_crypt_async::Encryptor to implement gcm::Encryptor.
+class SystemEncryptor : public gcm::Encryptor {
  public:
   explicit SystemEncryptor(scoped_refptr<os_crypt_async::Encryptor> encryptor);
 
@@ -29,6 +30,6 @@ class SystemEncryptor : public Encryptor {
   scoped_refptr<os_crypt_async::Encryptor> encryptor_;
 };
 
-}  // namespace gcm
+}  // namespace fcm
 
-#endif  // COMPONENTS_GCM_DRIVER_SYSTEM_ENCRYPTOR_H_
+#endif  // COMPONENTS_FCM_ENGINE_SYSTEM_ENCRYPTOR_H_

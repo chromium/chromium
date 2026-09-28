@@ -1,5 +1,7 @@
 include_rules = [
   "+components/keyed_service/core",
+  "+components/os_crypt/async/common",
+  "+google_apis/gcm",
 
   # Dependency on legacy gcm_driver is not allowed.
   "-components/gcm_driver",

@@ -20,12 +20,12 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "components/fcm/engine/system_encryptor.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client_factory.h"
 #include "components/gcm_driver/gcm_delayed_task_controller.h"
 #include "components/gcm_driver/instance_id/instance_id_impl.h"
-#include "components/gcm_driver/system_encryptor.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "google_apis/gcm/engine/account_mapping.h"
@@ -172,7 +172,7 @@ void GCMDriverDesktop::IOWorker::Initialize(
       chrome_build_info, store_path, blocking_task_runner, io_thread_,
       std::move(get_socket_factory_callback), url_loader_factory_for_io,
       network_connection_tracker,
-      std::make_unique<SystemEncryptor>(std::move(encryptor)), this);
+      std::make_unique<fcm::SystemEncryptor>(std::move(encryptor)), this);
   gcm_client_ = std::move(gcm_client);
 
   if (start_mode_) {

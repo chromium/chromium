@@ -38,8 +38,6 @@ static_library("gcm_driver") {
     "gcm_profile_service.h",
     "registration_info.cc",
     "registration_info.h",
-    "system_encryptor.cc",
-    "system_encryptor.h",
   ]
 
   public_deps = [
@@ -105,6 +103,7 @@ static_library("gcm_driver") {
     ]
     deps += [
       "//components/crx_file",
+      "//components/fcm/engine",
       "//components/version_info",
       "//google_apis/gcm",
     ]

@@ -18,6 +18,11 @@ static_library("fcm") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/os_crypt/async/common",
+  ]
+
+  deps = [
+    "//google_apis/gcm",
   ]
 
   if (is_android) {
@@ -25,7 +30,9 @@ static_library("fcm") {
       "fcm_driver_android.cc",
       "fcm_driver_android.h",
     ]
-    deps = [ "android:jni_headers" ]
+    deps += [ "android:jni_headers" ]
+  } else {
+    deps += [ "//components/fcm/engine" ]
   }
 }
 
