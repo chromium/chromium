@@ -162,7 +162,7 @@ crbug.com/497637049 [ iPad Device ] PictureInPictureTestCase/testDefaultBrowserS
 # Gardening suppression 2026-09-24
 crbug.com/565776423 [ Device ] DownloadManagerTestCase/testDownloadWarnProceedWhenDownloadProtectionEnabled [ Pass Failure ]
 crbug.com/565777195 [ iPad ] TabGroupsTestCase/testCreateGroupFromTabInAnotherWindow [ Pass Failure ]
-crbug.com/565792499 [ Simulator ] PasswordControllerEGTest/testLoginEventReported [ Skip ]
+crbug.com/565792499 PasswordControllerEGTest/testLoginEventReported [ Pass Failure Skip Crash ]
 crbug.com/565748739 GeminiFirstRunTestCase/testVisualRichFRECarouselNavigation [ Pass Failure ]
 # Deterministic on iPad Pro (12.9-inch) devices (`ipad-device`), passing on
 # iPad 9th Gen (`ios27-beta-device`); on simulators only iPad Pro (12.9-inch)
