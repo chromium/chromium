@@ -9,11 +9,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/platform_keys/mock_platform_keys_service.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_manager {
@@ -85,16 +84,14 @@ class ProfileHelperForTesting {
   ~ProfileHelperForTesting();
 
   Profile* GetProfile() const;
-  user_manager::User* GetUser() const;
+  const user_manager::User* GetUser() const;
 
  private:
   void Init(bool user_is_affiliated);
 
-  TestingProfileManager testing_profile_manager_;
-  user_manager::TypedScopedUserManager<FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
+  test::UserSessionTestEnvironment user_session_test_environment_;
   raw_ptr<TestingProfile> testing_profile_ = nullptr;
-  raw_ptr<user_manager::User> user_ = nullptr;
+  raw_ptr<const user_manager::User> user_ = nullptr;
 };
 
 }  // namespace cert_provisioning

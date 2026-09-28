@@ -8,7 +8,10 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,30 +142,33 @@ ProfileHelperForTesting::ProfileHelperForTesting()
     : ProfileHelperForTesting(/*user_is_affiilated=*/false) {}
 
 ProfileHelperForTesting::ProfileHelperForTesting(bool user_is_affiliated)
-    : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    : user_session_test_environment_(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+              TestingBrowserProcess::GetGlobal())) {
   Init(user_is_affiliated);
 }
 
 ProfileHelperForTesting::~ProfileHelperForTesting() = default;
 
 void ProfileHelperForTesting::Init(bool user_is_affiliated) {
-  ASSERT_TRUE(testing_profile_manager_.SetUp());
-
-  testing_profile_ =
-      testing_profile_manager_.CreateTestingProfile(kTestUserEmail);
-  ASSERT_TRUE(testing_profile_);
-
   auto test_account =
       AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-  user_ = fake_user_manager_->AddUserWithAffiliation(test_account,
-                                                     user_is_affiliated);
+  user_ = user_session_test_environment_.AddRegularUser(test_account);
+  user_session_test_environment_.LogIn(test_account);
+  user_manager::UserManager::Get()->SetUserPolicyStatus(
+      test_account, /*is_managed=*/user_is_affiliated, user_is_affiliated);
+
+  testing_profile_ = static_cast<TestingProfile*>(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(user_));
+  ASSERT_TRUE(testing_profile_);
 }
 
 Profile* ProfileHelperForTesting::GetProfile() const {
   return testing_profile_;
 }
 
-user_manager::User* ProfileHelperForTesting::GetUser() const {
+const user_manager::User* ProfileHelperForTesting::GetUser() const {
   return user_;
 }
 

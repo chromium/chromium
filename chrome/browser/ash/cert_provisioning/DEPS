@@ -24,3 +24,9 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "cert_provisioning_test_helpers\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+  ]
+}
