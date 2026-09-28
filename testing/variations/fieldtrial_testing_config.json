@@ -8258,7 +8258,7 @@
             ]
         }
     ],
-    "FetchAccountInfoOnRestart": [
+    "FetchAccountCapabilitiesOnRestart": [
         {
             "platforms": [
                 "android",
@@ -8272,7 +8272,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "FetchAccountInfoOnRestart"
+                        "FetchAccountCapabilitiesOnRestart"
                     ]
                 }
             ]

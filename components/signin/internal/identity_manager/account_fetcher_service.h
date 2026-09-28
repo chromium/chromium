@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
@@ -120,6 +119,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
  private:
   void RefreshAllAccountInfo(bool only_fetch_if_invalid);
 
+  // Unconditionally fetches the Account Capabilities (but not the UserInfo) of
+  // all accounts with a refresh token.
+  void RefreshAllAccountCapabilities();
+
   void MaybeEnableNetworkFetches();
 
   // Virtual so that tests can override the network fetching behaviour.
@@ -164,10 +167,7 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
   bool enable_account_removal_for_test_ = false;
-  // Used when switches::kFetchAccountInfoOnRestart is disabled.
   std::unique_ptr<signin::PersistentRepeatingTimer> persistent_repeating_timer_;
-  // Used when switches::kFetchAccountInfoOnRestart is enabled.
-  std::unique_ptr<base::RepeatingTimer> repeating_timer_;
 
   // Holds references to account info fetchers keyed by account_id.
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>

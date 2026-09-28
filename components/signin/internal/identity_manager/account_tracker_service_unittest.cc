@@ -1316,9 +1316,9 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
-TEST_F(AccountTrackerServiceTest, FetchAccountInfoOnRestart) {
+TEST_F(AccountTrackerServiceTest, FetchAccountCapabilitiesOnRestart) {
   base::test::ScopedFeatureList scoped_feature_list(
-      switches::kFetchAccountInfoOnRestart);
+      switches::kFetchAccountCapabilitiesOnRestart);
 
   // Setup tracker with a valid, persisted account whose UserInfo and
   // Capabilities are known.
@@ -1327,7 +1327,7 @@ TEST_F(AccountTrackerServiceTest, FetchAccountInfoOnRestart) {
   ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
   ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
 
-  // Rewind time by 12 hours (not enough to trigger the legacy 24h timer).
+  // Rewind time by 12 hours (not enough to trigger the 24h timer).
   base::Time fake_update = base::Time::Now() - base::Hours(12);
   signin_client()->GetPrefs()->SetTime(AccountFetcherService::kLastUpdatePref,
                                        fake_update);
@@ -1340,8 +1340,37 @@ TEST_F(AccountTrackerServiceTest, FetchAccountInfoOnRestart) {
   // Enable network fetches (simulating startup completion).
   account_fetcher()->EnableNetworkFetchesForTest();
 
-  // BOTH UserInfo and Capabilities MUST be fetching due to the restart feature
-  // flag.
+  // Only Capabilities MUST be fetching due to the restart feature flag.
+  // UserInfo is still valid and fresh, so it MUST NOT be fetched.
+  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+
+TEST_F(AccountTrackerServiceTest,
+       FetchAccountCapabilitiesOnRestart_TimerStillRefreshesUserInfo) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kFetchAccountCapabilitiesOnRestart);
+
+  // Setup tracker with a valid, persisted account whose UserInfo and
+  // Capabilities are known.
+  ResetAccountTracker();
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+
+  // Rewind the last updated time enough to trigger the 24h timer.
+  base::Time fake_update = base::Time::Now() - base::Hours(25);
+  signin_client()->GetPrefs()->SetTime(AccountFetcherService::kLastUpdatePref,
+                                       fake_update);
+
+  ResetAccountTrackerNetworkDisabled();
+  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  account_fetcher()->EnableNetworkFetchesForTest();
+
+  // The persistent timer is due, so both UserInfo and Capabilities are
+  // fetched.
   EXPECT_FALSE(account_fetcher()->IsAllUserInfoFetched());
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }

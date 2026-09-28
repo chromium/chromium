@@ -148,6 +148,14 @@ void AccountFetcherService::RefreshAccountInfoIfStale(
 }
 #endif
 
+void AccountFetcherService::RefreshAllAccountCapabilities() {
+  for (const auto& account : token_service_->GetAccounts()) {
+    // No-op if a capabilities fetch is already in progress for `account`.
+    StartFetchingAccountCapabilities(
+        account_tracker_service_->GetAccountInfo(account).GetCoreAccountInfo());
+  }
+}
+
 void AccountFetcherService::MaybeEnableNetworkFetches() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!network_initialized_ || !refresh_tokens_loaded_) {
@@ -156,36 +164,28 @@ void AccountFetcherService::MaybeEnableNetworkFetches() {
 
   if (!network_fetches_enabled_) {
     network_fetches_enabled_ = true;
-    CHECK(!repeating_timer_);
     CHECK(!persistent_repeating_timer_);
-    if (base::FeatureList::IsEnabled(switches::kFetchAccountInfoOnRestart)) {
-      // Schedule a fetch kRefreshFromTokenServiceDelay from now.
-      repeating_timer_ = std::make_unique<base::RepeatingTimer>();
-      repeating_timer_->Start(
-          FROM_HERE, kRefreshFromTokenServiceDelay,
-          base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
-                              base::Unretained(this),
-                              /*only_fetch_if_invalid=*/false));
-    } else {
-      // Schedule a fetch kRefreshFromTokenServiceDelay from the last fetch
-      // time.
-      persistent_repeating_timer_ =
-          std::make_unique<signin::PersistentRepeatingTimer>(
-              signin_client_->GetPrefs(),
-              AccountFetcherService::kLastUpdatePref,
-              kRefreshFromTokenServiceDelay,
-              base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
-                                  base::Unretained(this),
-                                  /*only_fetch_if_invalid=*/false));
-      persistent_repeating_timer_->Start();
-    }
+    // Schedule a fetch kRefreshFromTokenServiceDelay from the last fetch
+    // time.
+    persistent_repeating_timer_ =
+        std::make_unique<signin::PersistentRepeatingTimer>(
+            signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
+            kRefreshFromTokenServiceDelay,
+            base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
+                                base::Unretained(this),
+                                /*only_fetch_if_invalid=*/false));
+    persistent_repeating_timer_->Start();
   }
 
-  // If kFetchAccountInfoOnRestart is enabled, fetch account info
-  // unconditionally. Otherwise, only fetch if the account info is invalid.
-  bool only_fetch_if_invalid =
-      !base::FeatureList::IsEnabled(switches::kFetchAccountInfoOnRestart);
-  RefreshAllAccountInfo(only_fetch_if_invalid);
+  RefreshAllAccountInfo(/*only_fetch_if_invalid=*/true);
+
+  // If kFetchAccountCapabilitiesOnRestart is enabled, fetch account
+  // capabilities unconditionally. UserInfo is intentionally not refreshed here
+  // to avoid increasing the load on the UserInfo endpoint.
+  if (base::FeatureList::IsEnabled(
+          switches::kFetchAccountCapabilitiesOnRestart)) {
+    RefreshAllAccountCapabilities();
+  }
 }
 
 // Starts fetching user information. This is called periodically to refresh.

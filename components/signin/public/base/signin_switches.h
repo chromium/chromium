@@ -516,9 +516,10 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kExtensionWebAuthFlowInitiatorOrigin);
 #endif
 
-// Feature flag to fetch AccountInfo (UserInfo & Capabilities) on restart.
+// Feature flag to fetch Account Capabilities on restart. UserInfo is not
+// affected and keeps being refreshed only when invalid or stale.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kFetchAccountInfoOnRestart);
+BASE_DECLARE_FEATURE(kFetchAccountCapabilitiesOnRestart);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This feature controls running visually refreshed first run and profile
