@@ -57,14 +57,9 @@ CRUBIT_GIT = (
 CRUBIT_SRC_DIR = os.path.join(
     CHROMIUM_DIR, 'third_party', 'rust-toolchain-intermediate', 'crubit'
 )
-CC_BINDINGS_FROM_RS_CARGO_TOML_PATH = os.path.join(
-    CRUBIT_SRC_DIR,
-    "cargo",
-    "cc_bindings_from_rs",
-    "cc_bindings_from_rs",
-    "Cargo.toml",
-)
 
+# The Crubit binaries that this script builds and installs.  All of them are
+# members of the root cargo workspace (see Crubit's `Cargo.toml`).
 CRUBIT_BINS = ['cc_bindings_from_rs']
 
 IS_WIN = sys.platform == 'win32'
@@ -79,24 +74,26 @@ def GetLatestCrubitCommit():
     return GetLatestCommit(url)
 
 
-def GetCcBindingsFromRsRustFlags():
-    # Need to help the runtime linker find the path to
-    # `librustc_driver-xxxxxxxxxxxxxxxx.so`.  This mimics how `rustc` is built
-    # as seen in
-    # https://github.com/rust-lang/rust/blob/b889870082dd0b0e3594bbfbebb4545d54710829/src/bootstrap/src/core/builder/cargo.rs#L285-L306
-    # See also https://crbug.com/460482110#comment14 - #comment16
+def GetRustcDriverRpathFlags():
+    """Returns rustflags that help `cc_bindings_from_rs` find `rustc_driver`.
+
+    We need to help the runtime linker find the path to
+    `librustc_driver-xxxxxxxxxxxxxxxx.so`.  This mimics how `rustc` is built
+    as seen in
+    https://github.com/rust-lang/rust/blob/b889870082dd0b0e3594bbfbebb4545d54710829/src/bootstrap/src/core/builder/cargo.rs#L285-L306
+    See also https://crbug.com/460482110#comment14 - #comment16
+    """
+    if IS_WIN:
+        return []
     if IS_MAC:
         return [
-            "-Zosx-rpath-install-name",
-            "-Clink-args=-Wl,-rpath,@loader_path/../lib",
+            '-Zosx-rpath-install-name',
+            '-Clink-args=-Wl,-rpath,@loader_path/../lib',
         ]
-    elif not IS_WIN:
-        return [
-            "-Clink-args=-Wl,-z,origin",
-            "-Clink-args=-Wl,-rpath,$ORIGIN/../lib",
-        ]
-    else:
-        return []
+    return [
+        '-Clink-args=-Wl,-z,origin',
+        '-Clink-args=-Wl,-rpath,$ORIGIN/../lib',
+    ]
 
 
 def GetNativeLibsRustFlags():
@@ -135,24 +132,30 @@ def GetNativeLibsRustFlags():
     ]
 
 
-def BuildCrubit(rust_sysroot, out_dir):
-    target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
-    release_dir = os.path.join(target_dir, 'release')
-    home_dir = os.path.join(target_dir, 'cargo_home')
-
-    print(f'Building cc_bindings_from_rs ...')
+def BuildCrubitBinaries(rust_sysroot, target_dir, home_dir):
+    """Builds all of `CRUBIT_BINS`; returns the cargo exit code."""
+    # All of `CRUBIT_BINS` are members of the root cargo workspace, so one
+    # `cargo build` against the workspace manifest builds all of them.
+    bins = ' and '.join(CRUBIT_BINS)
+    print(f'Building {bins} ...')
     cargo_args = ['build', '--release', '--verbose']
-    cargo_args += ['--locked']  # `Cargo.lock` added to Crubit in b/510364826
-    cargo_args += ['--bin', 'cc_bindings_from_rs']
+    # Crubit checks in a `Cargo.lock`; build exactly the versions it pins.
+    cargo_args += ['--locked']
+    # `-p` stops cargo from enabling dependency features that only other
+    # workspace members need.  Each binary has a package with the same name.
+    for bin_name in CRUBIT_BINS:
+        cargo_args += ['-p', bin_name, '--bin', bin_name]
     cargo_args += ['--target-dir', target_dir]
-    cargo_args += ['--manifest-path', CC_BINDINGS_FROM_RS_CARGO_TOML_PATH]
-    extra_rustflags = GetCcBindingsFromRsRustFlags()
-    extra_rustflags += GetNativeLibsRustFlags()
+    workspace_cargo_toml = os.path.join(CRUBIT_SRC_DIR, 'Cargo.toml')
+    cargo_args += ['--manifest-path', workspace_cargo_toml]
+    extra_rustflags = GetRustcDriverRpathFlags() + GetNativeLibsRustFlags()
     cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags)
-    print(f'Building cc_bindings_from_rs ... done.  Result: {cargo_result}')
-    if cargo_result:
-        return cargo_result
+    print(f'Building {bins} ... done.  Result: {cargo_result}')
+    return cargo_result
 
+
+def InstallCrubit(release_dir):
+    """Copies the built binaries and Crubit's support library into place."""
     print(f'Installing Crubit to {RUST_TOOLCHAIN_OUT_DIR} ...')
     for bin_name in CRUBIT_BINS:
         bin_exe = bin_name + EXE
@@ -169,7 +172,7 @@ def BuildCrubit(rust_sysroot, out_dir):
     crubit_target_dir = os.path.join(
         RUST_TOOLCHAIN_OUT_DIR, 'lib', 'third_party', 'crubit'
     )
-    for item in ["BUILD.gn", "LICENSE", "crubit.gni", "support"]:
+    for item in ['BUILD.gn', 'LICENSE', 'crubit.gni', 'support']:
         source_path = os.path.join(CRUBIT_SRC_DIR, item)
         target_path = os.path.join(crubit_target_dir, item)
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
@@ -178,6 +181,17 @@ def BuildCrubit(rust_sysroot, out_dir):
         else:
             shutil.copy2(source_path, target_path)
 
+
+def BuildCrubit(rust_sysroot, out_dir):
+    target_dir = os.path.abspath(os.path.join(out_dir, 'target'))
+    release_dir = os.path.join(target_dir, 'release')
+    home_dir = os.path.join(target_dir, 'cargo_home')
+
+    cargo_result = BuildCrubitBinaries(rust_sysroot, target_dir, home_dir)
+    if cargo_result:
+        return cargo_result
+
+    InstallCrubit(release_dir)
     return 0
 
 
@@ -210,7 +224,7 @@ def main():
         crubit_revision = CRUBIT_REVISION
 
     if not args.skip_checkout:
-        CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
+        CheckoutGitRepo('crubit', CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
     with contextlib.ExitStack() as stack:
         out_dir = args.out_dir or stack.enter_context(
