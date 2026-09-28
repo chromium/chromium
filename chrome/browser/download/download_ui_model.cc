@@ -35,6 +35,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "net/base/mime_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,10 +45,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "components/url_formatter/elide_url.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/vector_icons.h"
 #endif
@@ -604,6 +605,36 @@ GURL DownloadUIModel::GetOriginalURL() const {
 
 bool DownloadUIModel::ShouldPromoteOrigin() const {
   return false;
+}
+
+// static
+std::u16string DownloadUIModel::GetDownloadDomainForDisplay(
+    const download::DownloadItem* item) {
+  if (!item) {
+    return std::u16string();
+  }
+  url::Origin display_origin;
+  if (item->GetTabUrl().is_valid()) {
+    display_origin = url::Origin::Create(item->GetTabUrl());
+  } else if (item->GetRequestInitiator().has_value() &&
+             !item->GetRequestInitiator()->opaque()) {
+    display_origin = *item->GetRequestInitiator();
+  } else if (item->GetOriginalUrl().is_valid()) {
+    display_origin = url::Origin::Create(item->GetOriginalUrl());
+  } else {
+    display_origin = url::Origin::Create(item->GetURL());
+  }
+
+  if (display_origin.opaque()) {
+    // Return empty string for downloads from opaque origins.
+    return std::u16string();
+  }
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      display_origin.GetURL());
+}
+
+std::u16string DownloadUIModel::GetDownloadDomainForDisplay() const {
+  return std::u16string();
 }
 
 #if !BUILDFLAG(IS_ANDROID)

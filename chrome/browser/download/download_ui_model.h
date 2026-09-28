@@ -441,6 +441,18 @@ class DownloadUIModel {
   // security reasons.
   virtual bool ShouldPromoteOrigin() const;
 
+  // Returns the formatted domain string shown in download UI (omitting scheme,
+  // path, and trivial subdomains). This display string is derived from the
+  // origin or site that is "responsible" for the download, which is not always
+  // the origin from which the downloaded file's bytes were served. Currently,
+  // this is implemented as prioritizing the initiating top-level tab URL and
+  // request initiator over the download URL. Returns an empty string for
+  // origins that cannot or should not be displayed to the user, such as opaque
+  // origins.
+  static std::u16string GetDownloadDomainForDisplay(
+      const download::DownloadItem* item);
+  virtual std::u16string GetDownloadDomainForDisplay() const;
+
 #if !BUILDFLAG(IS_ANDROID)
   // Methods related to DownloadCommands.
   // Returns whether the given download command is enabled for this download.

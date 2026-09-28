@@ -82,6 +82,7 @@ class OfflineItemModel : public DownloadUIModel,
   offline_items_collection::FailState GetLastFailState() const override;
   GURL GetOriginalURL() const override;
   bool ShouldPromoteOrigin() const override;
+  std::u16string GetDownloadDomainForDisplay() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
   bool IsCommandEnabled(const DownloadCommands* download_commands,

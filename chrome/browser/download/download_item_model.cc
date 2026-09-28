@@ -599,6 +599,10 @@ bool DownloadItemModel::HasUserGesture() const {
   return download_->HasUserGesture();
 }
 
+std::u16string DownloadItemModel::GetDownloadDomainForDisplay() const {
+  return DownloadUIModel::GetDownloadDomainForDisplay(download_);
+}
+
 void DownloadItemModel::OnDownloadUpdated(DownloadItem* download) {
   if (delegate_)
     delegate_->OnDownloadUpdated();

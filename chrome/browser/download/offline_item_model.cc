@@ -18,6 +18,8 @@
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_items_collection/core/launch_location.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
+#include "components/url_formatter/elide_url.h"
+#include "url/origin.h"
 
 using offline_items_collection::ContentId;
 using offline_items_collection::FailState;
@@ -301,6 +303,25 @@ GURL OfflineItemModel::GetOriginalURL() const {
 
 bool OfflineItemModel::ShouldPromoteOrigin() const {
   return offline_item_ && offline_item_->promote_origin;
+}
+
+std::u16string OfflineItemModel::GetDownloadDomainForDisplay() const {
+  if (!offline_item_) {
+    return std::u16string();
+  }
+  url::Origin display_origin;
+  if (offline_item_->referrer_url.is_valid()) {
+    display_origin = url::Origin::Create(offline_item_->referrer_url);
+  } else if (GetOriginalURL().is_valid()) {
+    display_origin = url::Origin::Create(GetOriginalURL());
+  } else {
+    display_origin = url::Origin::Create(GetURL());
+  }
+  if (display_origin.opaque()) {
+    return std::u16string();
+  }
+  return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+      display_origin.GetURL());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

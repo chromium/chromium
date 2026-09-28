@@ -40,6 +40,11 @@ class DangerousDownloadDialogBridge : public download::DownloadItem::Observer {
   // download::DownloadItem::Observer:
   void OnDownloadDestroyed(download::DownloadItem* download_item) override;
 
+  // Returns the download domain string shown in the dialog. Exposed for
+  // testing.
+  static std::u16string GetDownloadDomainForTesting(
+      download::DownloadItem* item);
+
  private:
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
