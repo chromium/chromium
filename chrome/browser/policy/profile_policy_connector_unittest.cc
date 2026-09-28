@@ -237,7 +237,6 @@ TEST_F(ProfilePolicyConnectorTest, ChromeosPrimaryUserPoliciesProxied) {
       key::kAutofillAddressEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
       POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   cloud_policy_store_->NotifyStoreLoaded();
-  base::RunLoop().RunUntilIdle();
 
   ProfilePolicyConnector connector;
   const AccountId account_id =
