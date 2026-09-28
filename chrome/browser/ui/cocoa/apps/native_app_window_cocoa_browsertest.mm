@@ -375,7 +375,10 @@ IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MaximizeConstrained) {
 }
 
 // Test Minimize, Maximize, Restore combinations with their native equivalents.
-IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest, MinimizeMaximize) {
+// TODO(crbug.com/544159510): Flaky on macOS; the minimize can take longer than
+// the PropertyWaiter's default 1s timeout. Re-enable once fixed.
+IN_PROC_BROWSER_TEST_F(NativeAppWindowCocoaBrowserTest,
+                       DISABLED_MinimizeMaximize) {
   SetUpAppWithWindows(1);
   AppWindow* app_window = GetFirstAppWindow();
   extensions::NativeAppWindow* window = app_window->GetBaseWindow();
