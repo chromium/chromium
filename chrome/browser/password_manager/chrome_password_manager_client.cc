@@ -1638,6 +1638,10 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
   driver->GetPasswordAutofillManager()->MaybeShowPasswordSuggestions(
       field_id, element_bounds_in_screen_space, ui_data.text_direction);
 #else
+  if (web_contents()->GetFocusedFrame() != &rfh) {
+    return;
+  }
+
   // Attempt to show the autofill dropdown UI first.
   gfx::RectF element_bounds_in_top_frame_space =
       TransformToRootCoordinates(rfh, ui_data.bounds);
@@ -1745,6 +1749,10 @@ void ChromePasswordManagerClient::ShowPasswordEditingPopup(
                                                              password_value)) {
     return;
   }
+  if (web_contents()->GetFocusedFrame() != &rfh) {
+    return;
+  }
+
   auto* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           &rfh);
