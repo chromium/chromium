@@ -49,6 +49,27 @@ class TabWebContentsDelegateAndroid
 
   ~TabWebContentsDelegateAndroid() override;
 
+  // Marks `web_contents` so that its next `beforeunload` completion leaves the
+  // page open, giving Java's TabRemover sole authority to close it. See
+  // BeforeUnloadFired().
+  //
+  // A mark covers exactly one completion and is dropped on the abandonments
+  // that leave the tab behind: `web_contents` went away, its primary page
+  // changed, or `web_contents` left the tab whose closure marked it. A gone
+  // renderer is not among them, because the `beforeunload` timeout still
+  // produces a completion for the mark to meet. Some abandonments produce
+  // neither a completion nor a drop -- a dispatch consumed by an inner-delegate
+  // attach, or a hang on a build with the beforeunload timeout suppressed --
+  // and strand the mark until the next completion spends it. A null
+  // `web_contents` is a no-op.
+  static void SetSuppressBeforeUnloadAutoClose(
+      content::WebContents* web_contents,
+      bool suppress);
+
+  void BeforeUnloadFired(content::WebContents* web_contents,
+                         bool proceed,
+                         bool* proceed_to_fire_unload) override;
+
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -171,6 +192,13 @@ class TabWebContentsDelegateAndroid
       content::WebContents* contents) override;
 
   bool IsImmersivePlaybackEnabled() const override;
+
+  // Reports whether `web_contents` is currently marked by
+  // SetSuppressBeforeUnloadAutoClose(). Production code reads the mark only
+  // through BeforeUnloadFired(), which consumes it; this is the non-consuming
+  // peek tests need to tell "mark still set" from "mark spent".
+  static bool ShouldSuppressBeforeUnloadAutoCloseForTesting(
+      const content::WebContents* web_contents);
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>

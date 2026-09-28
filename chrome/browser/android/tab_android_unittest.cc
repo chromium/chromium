@@ -38,6 +38,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/common/window_container_type.mojom.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/http/http_response_headers.h"
@@ -221,6 +222,243 @@ TEST_F(TabAndroidTest, WebUIEmbeddingContext) {
 
   // Verify that GetTabInterface returns correct tab.
   EXPECT_EQ(tab.get(), webui::GetTabInterface(raw_web_contents));
+}
+
+// Covers the `beforeunload` auto-close gate: whether Content is allowed to
+// close a page once a `beforeunload` completion arrives, and how the one-shot
+// suppression mark that Java's TabRemover sets behaves.
+class TabWebContentsDelegateBeforeUnloadTest : public TabAndroidTest {
+ protected:
+  void SetUp() override {
+    TabAndroidTest::SetUp();
+    delegate_ = std::make_unique<android::TabWebContentsDelegateAndroid>(
+        env_, base::android::ScopedJavaLocalRef<jobject>());
+  }
+
+  void TearDown() override {
+    delegate_.reset();
+    TabAndroidTest::TearDown();
+  }
+
+  // The delegate is installed so that these tests run against the same object
+  // graph production does: the gate only matters for a WebContents whose
+  // delegate is a TabWebContentsDelegateAndroid.
+  std::unique_ptr<content::WebContents> CreateWebContents() {
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile_.get()));
+    web_contents->SetDelegate(delegate_.get());
+    return web_contents;
+  }
+
+  // Answers "would Content close the page?". The false initialiser mirrors
+  // RenderFrameHostManager::BeforeUnloadCompleted, so a delegate that failed to
+  // write an answer reads as "do not close".
+  bool WouldAutoClose(content::WebContents* web_contents, bool proceed) {
+    bool proceed_to_fire_unload = false;
+    delegate_->BeforeUnloadFired(web_contents, proceed,
+                                 &proceed_to_fire_unload);
+    return proceed_to_fire_unload;
+  }
+
+  // Reads the mark without consuming it.
+  bool IsSuppressed(const content::WebContents* web_contents) {
+    return android::TabWebContentsDelegateAndroid::
+        ShouldSuppressBeforeUnloadAutoCloseForTesting(web_contents);
+  }
+
+  std::unique_ptr<android::TabWebContentsDelegateAndroid> delegate_;
+};
+
+// An unmarked page closes when the user agrees to leave.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, AllowsAutoCloseWhenProceeding) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// An unmarked page survives when the user declines. Every Android path that
+// prompts before closing a tab depends on this, so a delegate that answered
+// unconditionally -- as the base WebContentsDelegate does -- would close tabs
+// out from under a "Stay".
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, BlocksAutoCloseWhenCancelling) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/false));
+}
+
+// The mark must be consumed by the completion it was set for, so that a later
+// unrelated closure is unaffected.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, SuppressionIsOneShot) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  EXPECT_TRUE(IsSuppressed(web_contents.get()));
+
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// Both answers end the closure, so the cancel path consumes the mark too. A
+// mark left behind by a cancelled prompt would silently suppress whatever the
+// tab did next.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, SuppressionConsumedOnCancel) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/false));
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+}
+
+// Marking one tab must not silence another. A batch closure marks each tab
+// individually, so cross-talk here would drop real closures on the floor.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, SuppressionIsPerWebContents) {
+  std::unique_ptr<content::WebContents> marked = CreateWebContents();
+  std::unique_ptr<content::WebContents> unmarked = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      marked.get(), /*suppress=*/true);
+
+  EXPECT_TRUE(WouldAutoClose(unmarked.get(), /*proceed=*/true));
+  EXPECT_TRUE(IsSuppressed(marked.get()));
+  EXPECT_FALSE(WouldAutoClose(marked.get(), /*proceed=*/true));
+}
+
+// A closure abandoned before `beforeunload` completes must be able to take the
+// mark back off, so it cannot leak into whatever the tab does next.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, SuppressionCanBeClearedEarly) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/false);
+
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// Setting the mark twice must not make it take two completions to clear.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, RepeatedMarkIsIdempotent) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// Tab.getWebContents() is nullable, so the Java entry point can arrive with no
+// native WebContents behind it. (BeforeUnloadFired() itself always gets a real
+// one -- Content passes the WebContents that is firing.)
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, NullWebContentsIsSafe) {
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      nullptr, /*suppress=*/true);
+  EXPECT_FALSE(IsSuppressed(nullptr));
+}
+
+// Clearing a mark that was never set must not disturb the default behaviour.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, ClearingUnmarkedIsHarmless) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/false);
+
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// A new primary page abandons a pending `beforeunload` without a completion,
+// so the mark has to go with it. One left behind would sit on a live tab and
+// spend itself on the next closure, which would then refuse to close a tab the
+// user had agreed to leave.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, MarkClearedByPrimaryPageChange) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  ASSERT_TRUE(IsSuppressed(web_contents.get()));
+
+  content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents.get())
+      ->Commit();
+
+  EXPECT_FALSE(IsSuppressed(web_contents.get()));
+  EXPECT_TRUE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// A same-document navigation leaves the page in place, so a dispatch in flight
+// still completes and the mark must survive to meet it. Clearing too eagerly is
+// the dangerous direction: Content would then auto-close a tab that TabRemover
+// is already closing, and for a cancelled batch it would close one the user
+// chose to keep.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, MarkSurvivesSameDocument) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents.get())
+      ->Commit();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  ASSERT_TRUE(IsSuppressed(web_contents.get()));
+
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com#fragment"),
+      web_contents->GetPrimaryMainFrame())
+      ->CommitSameDocument();
+
+  EXPECT_TRUE(IsSuppressed(web_contents.get()));
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// A gone renderer does not stop RenderFrameHostImpl's `beforeunload` timeout,
+// so a completion still arrives after it and must find the mark. Dropping the
+// mark here would let Content close a tab whose closure Java has already
+// resolved, half a second after the fact.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, MarkSurvivesRendererGone) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents.get())
+      ->Commit();
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents.get(), /*suppress=*/true);
+  ASSERT_TRUE(IsSuppressed(web_contents.get()));
+
+  static_cast<content::MockRenderProcessHost*>(
+      web_contents->GetPrimaryMainFrame()->GetProcess())
+      ->SimulateCrash();
+
+  EXPECT_TRUE(IsSuppressed(web_contents.get()));
+  EXPECT_FALSE(WouldAutoClose(web_contents.get(), /*proceed=*/true));
+}
+
+// A WebContents that leaves its tab leaves the tab's closure behind. The
+// delegate that consumes marks is detached by the same call, so a surviving
+// mark would be spent on a later closure under whichever delegate comes next.
+TEST_F(TabWebContentsDelegateBeforeUnloadTest, MarkClearedWhenTabReleasesIt) {
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  content::WebContents* raw_web_contents = web_contents.get();
+  std::unique_ptr<TabAndroid> tab = TabAndroid::CreateForTesting(
+      profile_.get(), kTabId + 1, std::move(web_contents));
+
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      raw_web_contents, /*suppress=*/true);
+  ASSERT_TRUE(IsSuppressed(raw_web_contents));
+
+  std::unique_ptr<content::WebContents> released =
+      tab->ReleaseWebContentsForTesting();
+
+  EXPECT_FALSE(IsSuppressed(released.get()));
 }
 
 class GlicTabAndroidTest : public TabAndroidTest {

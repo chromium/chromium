@@ -78,6 +78,8 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_features.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "net/base/filename_util.h"
@@ -205,6 +207,58 @@ class OpenFileSelectListener : public content::FileSelectListener {
   base::WeakPtr<content::WebContents> web_contents_;
 };
 
+// Marks a WebContents whose next `beforeunload` completion must not let Content
+// close the page automatically. Keyed on the WebContents, so the mark dies with
+// it and can never be observed by an unrelated later closure.
+//
+// A mark covers exactly one completion. A dispatch that completes consumes it
+// in BeforeUnloadFired(); one that can no longer complete drops it here, when
+// the primary page changes. TabAndroid drops it when the WebContents leaves
+// its tab.
+//
+// A gone renderer is deliberately not one of those signals. It does not stop
+// RenderFrameHostImpl's `beforeunload` timeout, so a completion still arrives
+// roughly half a second later and must find the mark still here; without it
+// Content would close a tab whose closure Java has already resolved. The
+// reload that follows a crash changes the primary page, which both stops that
+// timer and drops the mark.
+//
+// Compare ActorTabCloseSkipBeforeUnloadUserData, which tags a WebContents to
+// skip the `beforeunload` prompt altogether.
+class SuppressBeforeUnloadAutoCloseUserData
+    : public content::WebContentsUserData<
+          SuppressBeforeUnloadAutoCloseUserData>,
+      public content::WebContentsObserver {
+ public:
+  ~SuppressBeforeUnloadAutoCloseUserData() override = default;
+
+ private:
+  explicit SuppressBeforeUnloadAutoCloseUserData(
+      content::WebContents* web_contents)
+      : content::WebContentsUserData<SuppressBeforeUnloadAutoCloseUserData>(
+            *web_contents),
+        content::WebContentsObserver(web_contents) {}
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override { DeleteSelf(); }
+
+  // Deletes `this`, so nothing may touch the object afterwards.
+  void DeleteSelf() { web_contents()->RemoveUserData(UserDataKey()); }
+
+  friend WebContentsUserData;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SuppressBeforeUnloadAutoCloseUserData);
+
+// Whether `web_contents` currently carries the mark. A null WebContents is
+// never marked.
+bool IsBeforeUnloadAutoCloseSuppressed(
+    const content::WebContents* web_contents) {
+  return web_contents &&
+         SuppressBeforeUnloadAutoCloseUserData::FromWebContents(web_contents);
+}
+
 }  // anonymous namespace
 
 namespace android {
@@ -215,6 +269,54 @@ TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid(
     : WebContentsDelegateAndroid(env, obj) {}
 
 TabWebContentsDelegateAndroid::~TabWebContentsDelegateAndroid() = default;
+
+// static
+void TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+    content::WebContents* web_contents,
+    bool suppress) {
+  if (!web_contents) {
+    return;
+  }
+  if (suppress) {
+    SuppressBeforeUnloadAutoCloseUserData::CreateForWebContents(web_contents);
+  } else {
+    web_contents->RemoveUserData(
+        SuppressBeforeUnloadAutoCloseUserData::UserDataKey());
+  }
+}
+
+// static
+bool TabWebContentsDelegateAndroid::
+    ShouldSuppressBeforeUnloadAutoCloseForTesting(
+        const content::WebContents* web_contents) {
+  return IsBeforeUnloadAutoCloseSuppressed(web_contents);
+}
+
+void TabWebContentsDelegateAndroid::BeforeUnloadFired(
+    content::WebContents* web_contents,
+    bool proceed,
+    bool* proceed_to_fire_unload) {
+  // `*proceed_to_fire_unload` decides whether Content goes on to call
+  // RenderFrameHostImpl::ClosePage(), which reaches CloseContents() and closes
+  // the tab in the TabModel. The caller initialises it to false, so this method
+  // must always answer; falling through without writing suppresses every
+  // auto-close on Android.
+
+  // A marked WebContents keeps its page open however `beforeunload` resolved,
+  // because Java's TabRemover owns the closure and completes it once every tab
+  // in the batch has answered. Desktop withholds the auto-close the same way
+  // while UnloadController sequences a batch. Consuming the mark here is what
+  // holds it to the single completion it was set for.
+  if (IsBeforeUnloadAutoCloseSuppressed(web_contents)) {
+    SetSuppressBeforeUnloadAutoClose(web_contents, /*suppress=*/false);
+    *proceed_to_fire_unload = false;
+    return;
+  }
+
+  // Otherwise the page closes only if the user agreed to leave. Android keeps
+  // no state across the dispatch, so a false `proceed` needs no cleanup.
+  *proceed_to_fire_unload = proceed;
+}
 
 void TabWebContentsDelegateAndroid::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
@@ -922,6 +1024,14 @@ static void JNI_TabWebContentsDelegateAndroidImpl_OpenFile(
   if (auto* delegate = web_contents->GetDelegate()) {
     delegate->RunFileChooser(rfh, std::move(listener), params);
   }
+}
+
+static void
+JNI_TabWebContentsDelegateAndroidImpl_SetSuppressBeforeUnloadAutoClose(
+    content::WebContents* web_contents,
+    bool suppress) {
+  android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+      web_contents, suppress);
 }
 
 DEFINE_JNI(TabWebContentsDelegateAndroidImpl)

@@ -630,10 +630,30 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         mDelegate.destroy();
     }
 
+    /**
+     * Marks {@code webContents} so that its next {@code beforeunload} completion leaves the page
+     * open, giving {@code TabRemover} sole authority to close it. A null {@code webContents} is a
+     * no-op.
+     *
+     * <p>A mark covers exactly one completion, and is dropped if none can arrive: {@code
+     * webContents} goes away, its primary page changes, or {@code webContents} leaves this tab. A
+     * gone renderer is not one of those, because Content's {@code beforeunload} timeout still
+     * produces a completion for the mark to meet.
+     */
+    static void setSuppressBeforeUnloadAutoClose(
+            @Nullable WebContents webContents, boolean suppress) {
+        TabWebContentsDelegateAndroidImplJni.get()
+                .setSuppressBeforeUnloadAutoClose(webContents, suppress);
+    }
+
     @NativeMethods
     interface Natives {
         void onRendererUnresponsive(@JniType("content::WebContents*") WebContents webContents);
 
         void openFile(@JniType("content::WebContents*") WebContents webContents);
+
+        void setSuppressBeforeUnloadAutoClose(
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
+                boolean suppress);
     }
 }

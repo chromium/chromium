@@ -583,6 +583,13 @@ void WillRemoveWebContentsFromTab(content::WebContents* contents,
   contents->GetNativeView()->GetLayer()->RemoveFromParent();
 
   if (clear_delegate) {
+    // A beforeunload auto-close suppression mark belongs to a closure of the
+    // tab this WebContents is leaving, and the delegate being detached here is
+    // the only thing that consumes one. Dropping it keeps it from being spent
+    // on a later closure under a different delegate. A completion arriving
+    // while there is no delegate closes nothing either way.
+    android::TabWebContentsDelegateAndroid::SetSuppressBeforeUnloadAutoClose(
+        contents, /*suppress=*/false);
     contents->SetDelegate(nullptr);
   }
 }
