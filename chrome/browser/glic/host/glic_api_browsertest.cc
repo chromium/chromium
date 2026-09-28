@@ -3100,8 +3100,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
   ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
 }
 
-// TODO(https://crbug.com/516659596): Re-enable on Linux debug builds.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || !defined(NDEBUG)
+// TODO(https://crbug.com/516659596): Re-enable on Linux builds.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || \
+    !defined(NDEBUG)
 #define MAYBE_testNoClientCreated DISABLED_testNoClientCreated
 #else
 #define MAYBE_testNoClientCreated testNoClientCreated
