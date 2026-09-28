@@ -4905,6 +4905,13 @@
       status: "stable",
     },
     {
+      // Enables the "singular" versions of two values for the CSS
+      // `position-visibility` property: `anchor-valid` and `anchor-visible`.
+      // See crbug.com/526682332.
+      name: "PositionVisibilitySingularValues",
+      status: "experimental",
+    },
+    {
       name: "PotentialPermissionsPolicyReporting",
       status: "stable",
     },

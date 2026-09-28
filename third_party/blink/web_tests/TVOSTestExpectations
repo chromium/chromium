@@ -491,7 +491,6 @@ crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/an
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/anchor-abspos-to-fixedpos-003.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/position-visibility-anchor-valid.tentative.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/position-visibility-anchor-visible.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-001.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-002.html [ Failure ]

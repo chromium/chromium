@@ -2013,8 +2013,9 @@
 
     // position-visibility
     // always
-    // TODO(crbug.com/332933527): Support anchors-valid.
-    // "anchors-valid",
+    // TODO(crbug.com/332933527): Support anchor-valid.
+    "anchor-valid",
+    "anchor-visible",
     "anchors-visible",
     "no-overflow",
 

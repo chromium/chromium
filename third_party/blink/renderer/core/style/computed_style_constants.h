@@ -632,11 +632,11 @@ enum class TryTactic : uint8_t {
 
 typedef V8AnimationTriggerBehavior::Enum EAnimationTriggerBehavior;
 
-// TODO(crbug.com/332933527): Support anchors-valid.
+// TODO(crbug.com/332933527): Support anchor-valid.
 static const size_t kPositionVisibilityBits = 2;
 enum class PositionVisibility : uint8_t {
   kAlways = 0x0,
-  kAnchorsVisible = 0x1,
+  kAnchorVisible = 0x1,
   kNoOverflow = 0x2,
 };
 inline PositionVisibility operator|(PositionVisibility a,

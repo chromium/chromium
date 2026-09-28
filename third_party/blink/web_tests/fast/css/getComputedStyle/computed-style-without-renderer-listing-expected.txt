@@ -348,7 +348,7 @@ position-anchor: normal
 position-area: none
 position-try-fallbacks: none
 position-try-order: normal
-position-visibility: anchors-visible
+position-visibility: anchor-visible
 print-color-adjust: economy
 quotes: auto
 r: 0px

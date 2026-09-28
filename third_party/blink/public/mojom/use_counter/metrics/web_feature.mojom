@@ -5340,6 +5340,9 @@ enum WebFeature {
   kStickyVideoAdDetected = 6023,
   kCSSTimelineTreeScopeMismatch = 6024,
   kWorkerScriptURLFetchBlockedByCrossOrigin = 6025,
+  kCSSValuePositionVisibilityAnchorVisible = 6026,
+  kCSSValuePositionVisibilityAnchorsVisible = 6027,
+  kCSSValuePositionVisibilityAnchorValid = 6028,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

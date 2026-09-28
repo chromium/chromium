@@ -458,7 +458,7 @@ void UpdatePositionVisibilityAfterLayout(
   bool is_anchor_positioned = offset_info.needs_scroll_adjustment_in_x ||
                               offset_info.needs_scroll_adjustment_in_y;
   bool has_anchors_visible_visibility =
-      node.Style().HasPositionVisibility(PositionVisibility::kAnchorsVisible);
+      node.Style().HasPositionVisibility(PositionVisibility::kAnchorVisible);
   Element* anchored = DynamicTo<Element>(node.GetDOMNode());
   // https://drafts.csswg.org/css-anchor-position-1/#valdef-position-visibility-anchors-visible
   // We only need to track the default anchor for anchors-visible.

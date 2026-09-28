@@ -1,15 +1,15 @@
 This is a testharness.js-based test.
-[FAIL] Can set 'position-visibility' to the 'anchors-valid' keyword: anchors-valid
+[FAIL] Can set 'position-visibility' to the 'anchor-valid' keyword: anchor-valid
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'position-visibility' to the 'anchors-visible' keyword: anchors-visible
-  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
+[FAIL] Can set 'position-visibility' to the 'anchor-visible' keyword: anchor-visible
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
 [FAIL] Can set 'position-visibility' to the 'no-overflow' keyword: no-overflow
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
-[FAIL] 'position-visibility' does not support 'anchors-valid anchors-visible'
+[FAIL] 'position-visibility' does not support 'anchor-valid anchor-visible'
   assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
-[FAIL] 'position-visibility' does not support 'anchors-valid no-overflow'
+[FAIL] 'position-visibility' does not support 'anchor-valid no-overflow'
   assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
-[FAIL] 'position-visibility' does not support 'anchors-valid anchors-visible no-overflow'
+[FAIL] 'position-visibility' does not support 'anchor-valid anchor-visible no-overflow'
   assert_class_string: Unsupported value must be a CSSStyleValue and not one of its subclasses expected "[object CSSStyleValue]" but got "[object Undefined]"
 Harness: the test ran to completion.
 

@@ -846,7 +846,6 @@ external/wpt/css/css-anchor-position/parsing/position-visibility-parsing.html [ 
 external/wpt/css/css-anchor-position/position-try-ident-function.html [ Failure Pass ]
 external/wpt/css/css-anchor-position/position-visibility-anchor-valid.tentative.html [ Failure Pass ]
 external/wpt/css/css-anchor-position/position-visibility-anchor-visible.html [ Failure Pass ]
-external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure Pass ]
 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-000.html [ Failure Pass ]
 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-001.html [ Failure Pass ]
 external/wpt/css/css-anchor-position/scroll-to-anchored-fixed-002.html [ Failure Pass ]

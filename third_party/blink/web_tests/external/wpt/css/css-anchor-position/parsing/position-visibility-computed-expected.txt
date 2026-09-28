@@ -1,25 +1,25 @@
 This is a testharness.js-based test.
-[FAIL] Property position-visibility value 'anchors-valid'
-  assert_true: 'anchors-valid' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-valid anchors-visible'
-  assert_true: 'anchors-valid anchors-visible' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-valid no-overflow'
-  assert_true: 'anchors-valid no-overflow' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-visible anchors-valid'
-  assert_true: 'anchors-visible anchors-valid' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'no-overflow anchors-valid'
-  assert_true: 'no-overflow anchors-valid' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-valid anchors-visible no-overflow'
-  assert_true: 'anchors-valid anchors-visible no-overflow' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-valid no-overflow anchors-visible'
-  assert_true: 'anchors-valid no-overflow anchors-visible' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-visible anchors-valid no-overflow'
-  assert_true: 'anchors-visible anchors-valid no-overflow' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'anchors-visible no-overflow anchors-valid'
-  assert_true: 'anchors-visible no-overflow anchors-valid' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'no-overflow anchors-valid anchors-visible'
-  assert_true: 'no-overflow anchors-valid anchors-visible' is a supported value for position-visibility. expected true got false
-[FAIL] Property position-visibility value 'no-overflow anchors-visible anchors-valid'
-  assert_true: 'no-overflow anchors-visible anchors-valid' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-valid'
+  assert_true: 'anchor-valid' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-valid anchor-visible'
+  assert_true: 'anchor-valid anchor-visible' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-valid no-overflow'
+  assert_true: 'anchor-valid no-overflow' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-visible anchor-valid'
+  assert_true: 'anchor-visible anchor-valid' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'no-overflow anchor-valid'
+  assert_true: 'no-overflow anchor-valid' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-valid anchor-visible no-overflow'
+  assert_true: 'anchor-valid anchor-visible no-overflow' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-valid no-overflow anchor-visible'
+  assert_true: 'anchor-valid no-overflow anchor-visible' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-visible anchor-valid no-overflow'
+  assert_true: 'anchor-visible anchor-valid no-overflow' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'anchor-visible no-overflow anchor-valid'
+  assert_true: 'anchor-visible no-overflow anchor-valid' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'no-overflow anchor-valid anchor-visible'
+  assert_true: 'no-overflow anchor-valid anchor-visible' is a supported value for position-visibility. expected true got false
+[FAIL] Property position-visibility value 'no-overflow anchor-visible anchor-valid'
+  assert_true: 'no-overflow anchor-visible anchor-valid' is a supported value for position-visibility. expected true got false
 Harness: the test ran to completion.
 

@@ -6783,6 +6783,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6023" label="StickyVideoAdDetected"/>
   <int value="6024" label="CSSTimelineTreeScopeMismatch"/>
   <int value="6025" label="WorkerScriptURLFetchBlockedByCrossOrigin"/>
+  <int value="6026" label="CSSValuePositionVisibilityAnchorVisible"/>
+  <int value="6027" label="CSSValuePositionVisibilityAnchorsVisible"/>
+  <int value="6028" label="CSSValuePositionVisibilityAnchorValid"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
