@@ -382,10 +382,12 @@ enum class AccessPoint : int {
   // Triggered when entering the Gemini flow from an App Store In-App Event
   // external action. iOS only.
   kGeminiExternalAppStoreEvent = 113,
+  // Sign-in promo card shown on the Password Manager page. Desktop only.
+  kPasswordManagerCard = 114,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kGeminiExternalAppStoreEvent,  // This must be last.
+  kMaxValue = kPasswordManagerCard,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

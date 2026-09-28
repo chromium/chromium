@@ -157,6 +157,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAccountMenuSignedOutState:
     case AccessPoint::kAppSwitcherAISummarization:
     case AccessPoint::kGeminiExternalAppStoreEvent:
+    case AccessPoint::kPasswordManagerCard:
       return access_point;
   }
 
@@ -784,6 +785,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kSkills:
       base::RecordAction(base::UserMetricsAction("Signin_Signin_FromSkills"));
       break;
+    case AccessPoint::kPasswordManagerCard:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromPasswordManagerCard"));
+      break;
   }
 }
 
@@ -931,6 +936,10 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kComposeboxDriveContextMenuOptionBubble:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Impression_FromComposeboxDriveContextMenuOptionBubble"));
+      break;
+    case AccessPoint::kPasswordManagerCard:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Impression_FromPasswordManagerCard"));
       break;
     case AccessPoint::kExtensions:
     case AccessPoint::kMachineLogon:

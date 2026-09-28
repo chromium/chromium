@@ -495,6 +495,7 @@ bool IsValidAccessPointForHistoryOptinScreen(
     case signin_metrics::AccessPoint::kOverflowMenu:
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
+    case signin_metrics::AccessPoint::kPasswordManagerCard:
       return true;
   }
 }

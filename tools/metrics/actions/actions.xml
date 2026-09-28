@@ -35852,6 +35852,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Impression_FromPasswordManagerCard"
+    not_user_triggered="true">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded when the sign in promo is shown in the Password Manager.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromPostDeviceRestoreSigninPromo">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -36519,6 +36528,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kPasswordBubble.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromPasswordManagerCard">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kPasswordManagerCard.
   </description>
 </action>
 

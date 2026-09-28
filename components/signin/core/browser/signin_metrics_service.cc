@@ -211,6 +211,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kComposeboxDriveContextMenuOptionBubble:
     case signin_metrics::AccessPoint::kAppSwitcherAISummarization:
     case signin_metrics::AccessPoint::kGeminiExternalAppStoreEvent:
+    case signin_metrics::AccessPoint::kPasswordManagerCard:
       return;
   }
 
