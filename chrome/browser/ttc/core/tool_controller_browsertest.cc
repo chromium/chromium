@@ -36,6 +36,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -214,6 +215,83 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   EXPECT_NE(ttc_service().session_controller(), nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackAndGoForward) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+  const GURL first_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  const GURL second_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), second_url));
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "go_back";
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), first_url);
+  }
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "go_forward";
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_EQ(web_contents()->GetLastCommittedURL(), second_url);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackWithoutHistory) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "go_back";
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kHistoryNoBackEntries);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "reload_page";
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+
+  navigation_observer.Wait();
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -241,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 3u);
+  ASSERT_EQ(tools.size(), 6u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -305,6 +383,36 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
 
   // The tool takes no arguments.
   EXPECT_TRUE(close_current_tab.parameters_json_schema.empty());
+
+  const ToolDefinition& go_back = tools[3];
+  EXPECT_EQ(go_back.name, "go_back");
+  EXPECT_FALSE(go_back.description.empty());
+  EXPECT_EQ(go_back.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(go_back.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(go_back.parameters_json_schema.empty());
+
+  const ToolDefinition& go_forward = tools[4];
+  EXPECT_EQ(go_forward.name, "go_forward");
+  EXPECT_FALSE(go_forward.description.empty());
+  EXPECT_EQ(go_forward.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(go_forward.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(go_forward.parameters_json_schema.empty());
+
+  const ToolDefinition& reload_page = tools[5];
+  EXPECT_EQ(reload_page.name, "reload_page");
+  EXPECT_FALSE(reload_page.description.empty());
+  EXPECT_EQ(reload_page.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(reload_page.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(reload_page.parameters_json_schema.empty());
 }
 
 // TTC actor tasks are given TtcKeyedService's ActorUiStateManager rather than

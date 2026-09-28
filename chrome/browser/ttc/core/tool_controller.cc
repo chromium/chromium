@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
+#include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -67,6 +68,21 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "close_current_tab") {
     CloseCurrentTab(std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "go_back") {
+    GoBack(std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "go_forward") {
+    GoForward(std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "reload_page") {
+    ReloadPage(std::move(callback));
     return;
   }
 #endif
@@ -134,6 +150,30 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   close_current_tab.verbalization =
       ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(close_current_tab));
+
+  ToolDefinition go_back;
+  go_back.name = "go_back";
+  go_back.description = "Go back to the previous page in history.";
+  // The tool takes no arguments, so its schema is left empty.
+  go_back.behavior = ToolDefinition::Behavior::kBlocking;
+  go_back.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(go_back));
+
+  ToolDefinition go_forward;
+  go_forward.name = "go_forward";
+  go_forward.description = "Go forward to the next page in history.";
+  // The tool takes no arguments, so its schema is left empty.
+  go_forward.behavior = ToolDefinition::Behavior::kBlocking;
+  go_forward.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(go_forward));
+
+  ToolDefinition reload_page;
+  reload_page.name = "reload_page";
+  reload_page.description = "Reload the current page.";
+  // The tool takes no arguments, so its schema is left empty.
+  reload_page.behavior = ToolDefinition::Behavior::kBlocking;
+  reload_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(reload_page));
 #endif
 
   return tools;
@@ -222,6 +262,33 @@ void ToolController::CloseCurrentTab(ToolResponseCallback callback) {
   PerformActionOnActiveTab(
       [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::CloseTabToolRequest>(tab_handle);
+      },
+      std::move(callback));
+}
+
+void ToolController::GoBack(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryToolRequest>(
+            tab_handle, actor::HistoryToolRequest::Direction::kBack);
+      },
+      std::move(callback));
+}
+
+void ToolController::GoForward(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryToolRequest>(
+            tab_handle, actor::HistoryToolRequest::Direction::kForward);
+      },
+      std::move(callback));
+}
+
+void ToolController::ReloadPage(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::HistoryToolRequest>(
+            tab_handle, actor::HistoryToolRequest::Direction::kReload);
       },
       std::move(callback));
 }

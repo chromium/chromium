@@ -50,6 +50,9 @@ class ToolController {
   void PerformSearch(const base::DictValue& arguments,
                      ToolResponseCallback callback);
   void CloseCurrentTab(ToolResponseCallback callback);
+  void GoBack(ToolResponseCallback callback);
+  void GoForward(ToolResponseCallback callback);
+  void ReloadPage(ToolResponseCallback callback);
 
   // Runs the tool request returned by `create_action` against the session's
   // active tab, replying to `callback` with the result. Replies with an error
