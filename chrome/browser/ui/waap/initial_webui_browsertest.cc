@@ -665,8 +665,10 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMetricsMappingBrowserTest,
   EXPECT_GE(total_webium_count, 1);
 }
 
-// TODO(crbug.com/491012584): Flaky on ChromeOS MSan and Win.
-#if (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)) || \
+// TODO(crbug.com/491012584, crbug.com/540625890): Flaky on ChromeOS MSan/ASan,
+// Win, and Mac.
+#if (BUILDFLAG(IS_CHROMEOS) &&                                     \
+     (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NormalRendererMetricsAreNotMapped \
   DISABLED_NormalRendererMetricsAreNotMapped
