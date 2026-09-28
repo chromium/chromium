@@ -38,6 +38,10 @@
 #include "ui/base/ime/init/input_method_initializer.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "content/shell/browser/shell_devtools_manager_delegate.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/test/network_connection_change_simulator.h"
 #endif
@@ -199,6 +203,14 @@ void ContentBrowserTest::PostRunTestOnMainThread() {
   }
 
   Shell::Shutdown();
+
+#if BUILDFLAG(IS_IOS)
+  // ShellMainDelegate deliberately leaks BrowserMainRunner on iOS,
+  // so ShellBrowserMainParts::PostMainMessageLoopRun() does not stop the HTTP
+  // handler. Release its reference to the DevToolsManagerDelegate before the
+  // delegate is destroyed by the test suite's AtExitManager.
+  ShellDevToolsManagerDelegate::StopHttpHandler();
+#endif
 }
 
 Shell* ContentBrowserTest::CreateBrowser() {

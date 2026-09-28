@@ -71,6 +71,9 @@ def CheckChange(input_api, output_api):
                 'data/subresource_filter/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
+                'data/surface_embed/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+                input_api, output_api,
                 'data/url_rewrite/unit_tests_bundle_data')
         results += presubmit_support.CheckBundleData(
                 input_api, output_api,
