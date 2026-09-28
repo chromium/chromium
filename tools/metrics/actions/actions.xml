@@ -30992,6 +30992,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ProfileMenu_ActionableItemClicked_Isolated">
+  <owner>szpotekagata@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <description>
+    The user clicked a button or a link in the isolated profile menu.
+  </description>
+</action>
+
 <action name="ProfileMenu_ActionableItemClicked_Regular">
   <owner>droger@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
@@ -31016,6 +31024,12 @@ should be able to be added at any place in this file.
   <owner>droger@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <description>The user opened the incognito profile menu.</description>
+</action>
+
+<action name="ProfileMenu_Opened_Isolated">
+  <owner>szpotekagata@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <description>The user opened the isolated profile menu.</description>
 </action>
 
 <action name="ProfileMenu_Opened_Regular">

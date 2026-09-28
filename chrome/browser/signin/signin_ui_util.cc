@@ -544,6 +544,8 @@ void RecordProfileMenuViewShown(Profile* profile) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Guest"));
   } else if (profile->IsIncognitoProfile()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Incognito"));
+  } else if (profile->IsEnterpriseIsolatedModeProfile()) {
+    base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Isolated"));
   }
 }
 
@@ -559,6 +561,9 @@ void RecordProfileMenuClick(const Profile& profile) {
   } else if (profile.IsIncognitoProfile()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Incognito"));
+  } else if (profile.IsEnterpriseIsolatedModeProfile()) {
+    base::RecordAction(
+        base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Isolated"));
   }
 }
 
