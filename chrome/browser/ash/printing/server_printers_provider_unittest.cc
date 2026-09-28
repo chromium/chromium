@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider_factory.h"
 #include "chrome/browser/ash/printing/print_server.h"
 #include "chrome/test/base/testing_profile.h"
@@ -147,8 +149,16 @@ TEST_F(ServerPrintersProviderTest, GetPrinters) {
   std::vector<PrintServer> print_servers;
   print_servers.push_back(PrintServer1());
   print_servers.push_back(PrintServer2());
+  base::RunLoop run_loop;
+  server_printers_provider_->RegisterPrintersFoundCallback(
+      base::BindLambdaForTesting(
+          [quit = run_loop.QuitClosure()](bool complete) {
+            if (complete) {
+              quit.Run();
+            }
+          }));
   OnServersChanged(true, print_servers);
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 
   EXPECT_THAT(server_printers_provider_->GetPrinters(),
               UnorderedElementsAre(PrinterMatcher(Printer1()),
