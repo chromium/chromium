@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WEB_TEST_WEB_TEST_WEB_FRAME_WIDGET_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -52,6 +53,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   // FrameWidgetTestHelper overrides.
   void Reset() override;
   content::EventSender* GetEventSender() override;
+  void SetScreenSizeForTesting(int width, int height) override;
   void SynchronouslyCompositeAfterTest(base::OnceClosure callback) override;
   void UpdateAllLifecyclePhasesAndComposite(
       base::OnceClosure completion_callback) override;
@@ -74,6 +76,12 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                      const gfx::Vector2d& cursor_offset,
                      const gfx::Rect& drag_obj_rect) override;
   void DidAutoResize(const gfx::Size& size) override;
+
+  // WebWidget overrides.
+  const display::ScreenInfo& GetScreenInfo() override;
+  const display::ScreenInfos& GetScreenInfos() override;
+  const display::ScreenInfo& GetOriginalScreenInfo() override;
+  const display::ScreenInfos& GetOriginalScreenInfos() override;
 
   // WidgetBaseClient overrides:
   void ScheduleAnimation(cc::BeginMainFrameReason reason, bool urgent) override;
@@ -102,6 +110,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                           bool do_raster,
                           base::OnceClosure callback);
   std::unique_ptr<content::EventSender> event_sender_;
+  std::optional<display::ScreenInfos> screen_infos_for_testing_;
 
   const raw_ptr<content::TestRunner, UnprotectedInRelease | DanglingUntriaged>
       test_runner_;

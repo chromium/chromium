@@ -54,6 +54,10 @@ class FrameWidgetTestHelper {
   // Return a handle to content::EventSender.
   virtual content::EventSender* GetEventSender() = 0;
 
+  // Overrides the screen geometry exposed to the frame and any page popups
+  // created by it.
+  virtual void SetScreenSizeForTesting(int width, int height) = 0;
+
   // Called to composite when the test has ended, in order to ensure the test
   // produces up-to-date pixel output. This is a separate path as most
   // compositing paths stop running when the test ends, to avoid tests running

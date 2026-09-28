@@ -1715,12 +1715,6 @@ crbug.com/893480 [ Mac ] external/wpt/input-events/input-events-get-target-range
 crbug.com/1040611 [ Debug ] external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
 crbug.com/1040611 [ Release ] external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
 
-# crbug.com/1298321: "element click intercepted error" when <body style="zoom:2">.
-crbug.com/1298321 [ Win11 ] virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1298321 [ Win11 ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1298321 [ Win11-arm64 ] virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1298321 [ Win11-arm64 ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure ]
-
 # crbug.com/40215845: These need more work after the revamp of picker-common.js
 crbug.com/40215845 fast/forms/select-popup/popup-menu-appearance-coarse.html [ Failure Pass Timeout ]
 crbug.com/40215845 fast/forms/select-popup/popup-menu-position.html [ Failure Pass Timeout ]
@@ -7982,8 +7976,6 @@ crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-c
 crbug.com/333739617 fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Failure Pass Timeout ]
 crbug.com/329784394 external/wpt/html/browsers/browsing-the-web/history-traversal/persisted-user-state-restoration/scroll-restoration-fragment-scrolling-samedoc.html [ Failure Pass ]
 
-# Gardener 2024-05-13
-crbug.com/339835801 [ Win ] fast/forms/select-popup/popup-menu-appearance-tall.html [ Failure Pass ]
 
 # Flaky on multiple builds.
 crbug.com/340651310 external/wpt/uievents/mouse/mouse_boundary_events_after_reappending_last_over_target.tentative.html [ Failure Pass ]

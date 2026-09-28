@@ -367,6 +367,7 @@ class TestRunnerBindings final : public gin::Wrappable<TestRunnerBindings> {
                             v8::Local<v8::Value> security_origin,
                             v8::Local<v8::Value> content_security_policy);
   void SetJavaScriptCanAccessClipboard(bool can_access);
+  void SetMockScreenSize(int width, int height);
   void SetMockScreenOrientation(const std::string& orientation);
   void SetPOSIXLocale(const std::string& locale);
   void SetMainWindowHidden(bool hidden);
@@ -795,6 +796,7 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetJavaScriptCanAccessClipboard)
       .SetMethod("setMainFrameIsFirstResponder",
                  &TestRunnerBindings::NotImplemented)
+      .SetMethod("setMockScreenSize", &TestRunnerBindings::SetMockScreenSize)
       .SetMethod("setMockScreenOrientation",
                  &TestRunnerBindings::SetMockScreenOrientation)
       // Calls setlocale(LC_ALL, ...) for a specified locale.
@@ -1502,6 +1504,20 @@ void TestRunnerBindings::DisableAutoResizeMode(int new_width, int new_height) {
 
   gfx::Size new_size(new_width, new_height);
   frame_->GetWebTestControlHostRemote()->DisableAutoResize(new_size);
+}
+
+void TestRunnerBindings::SetMockScreenSize(int width, int height) {
+  if (!frame_) {
+    return;
+  }
+
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  frame_->GetLocalRootWebFrameWidget()
+      ->GetFrameWidgetTestHelperForTesting()
+      ->SetScreenSizeForTesting(width, height);
 }
 
 void TestRunnerBindings::SetMockScreenOrientation(
