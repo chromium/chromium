@@ -6489,7 +6489,6 @@ crbug.com/1362106 [ Linux ] media/video-source.html [ Failure Pass ]
 
 # Sheriff 2023-04-07
 crbug.com/1431236 external/wpt/long-animation-frame/loaf-user-callback.html [ Failure Pass ]
-crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash Failure Pass ]
 
 # Flake 2023-04-07
 crbug.com/1431272 crbug.com/449283206 external/wpt/cookies/attributes/domain.sub.html [ Pass Timeout ]
