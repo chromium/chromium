@@ -9,11 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/build_config.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
-#endif
 #include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
+#include "components/contextual_search/footprints/public/drive_disclaimer_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -51,11 +48,9 @@ class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
  private:
   // Called when the eligibility state changes.
   void OnEligibilityChanged();
-#if !BUILDFLAG(IS_ANDROID)
   // Called when the Drive disclaimer status is checked.
   void OnDisclaimerStatusChecked(
       drive_picker::DriveDisclaimerController::DisclaimerStatus status);
-#endif
   // Returns the current eligibility state from `AimEligibilityService`.
   aim_eligibility::mojom::EligibilityStatePtr QueryEligibilityState();
   // Returns the current Drive status.
@@ -65,11 +60,9 @@ class AimEligibilityPageHandler : public aim_eligibility::mojom::PageHandler {
   const raw_ptr<Profile> profile_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<AimEligibilityService> aim_eligibility_service_;
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<drive_picker::DriveDisclaimerController>
       drive_disclaimer_controller_;
   bool disclaimer_check_started_ = false;
-#endif
 
   mojo::Receiver<aim_eligibility::mojom::PageHandler> receiver_;
   const mojo::Remote<aim_eligibility::mojom::Page> page_;

@@ -40,14 +40,12 @@ AimEligibilityPageHandler::AimEligibilityPageHandler(
           base::BindRepeating(&AimEligibilityPageHandler::OnEligibilityChanged,
                               weak_ptr_factory_.GetWeakPtr()));
 
-#if !BUILDFLAG(IS_ANDROID)
   drive_disclaimer_controller_ =
       std::make_unique<drive_picker::DriveDisclaimerController>(
           contextual_search::FpopService::Create(
               IdentityManagerFactory::GetForProfile(profile_),
               profile_->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()));
-#endif
 }
 
 AimEligibilityPageHandler::~AimEligibilityPageHandler() = default;
@@ -73,7 +71,6 @@ void AimEligibilityPageHandler::OnEligibilityChanged() {
   page_->OnEligibilityStateChanged(QueryEligibilityState());
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void AimEligibilityPageHandler::OnDisclaimerStatusChecked(
     drive_picker::DriveDisclaimerController::DisclaimerStatus status) {
   aim_eligibility::mojom::DisclaimerState disclaimer_state;
@@ -92,7 +89,6 @@ void AimEligibilityPageHandler::OnDisclaimerStatusChecked(
   disclaimer_check_started_ = false;
   page_->OnDriveStatusChanged(QueryDriveStatus(disclaimer_state));
 }
-#endif
 
 aim_eligibility::mojom::EligibilityStatePtr
 AimEligibilityPageHandler::QueryEligibilityState() {
@@ -130,7 +126,6 @@ AimEligibilityPageHandler::QueryEligibilityState() {
     }
   }
 
-  #if !BUILDFLAG(IS_ANDROID)
   if (!disclaimer_check_started_) {
     disclaimer_check_started_ = true;
     if (base::FeatureList::IsEnabled(omnibox::kForceDriveDisclaimerAccepted)) {
@@ -146,7 +141,6 @@ AimEligibilityPageHandler::QueryEligibilityState() {
                          weak_ptr_factory_.GetWeakPtr()));
     }
   }
-  #endif
 
   // Drive status is populated asynchronously via OnDriveStatusChanged.
   state->drive_status = nullptr;
