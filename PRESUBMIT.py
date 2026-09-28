@@ -4877,7 +4877,28 @@ def _ChangeHasSecurityReviewer(input_api, owners_file):
         None,
         approval_needed=input_api.is_committing and not input_api.dry_run))
 
-    security_owners = input_api.owners_client.ListOwners(owners_file)
+    if not input_api.is_committing:
+        # When checking presubmits for upload, we value speed over correctness,
+        # so we avoid a remote query an do a local verification instead.
+        owners_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
+                                             owners_file)
+        owners_content = input_api.ReadFile(owners_path)
+        security_owners = set()
+        for line in owners_content.splitlines():
+            line = line.split('#')[0].strip()
+            if not line:
+                continue
+            if (line.startswith(('file://', 'file:', 'include '))
+                    or 'file://' in line):
+                raise ValueError(
+                    f'Unexpected recursive pattern "{line}" found in '
+                    f'{owners_file}. Recursive patterns are not expected in '
+                    'security owners files.')
+            if '@' in line:
+                security_owners.add(line)
+    else:
+        security_owners = input_api.owners_client.ListOwners(owners_file)
+
     return any(owner in reviewers for owner in security_owners)
 
 

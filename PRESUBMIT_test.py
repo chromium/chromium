@@ -2602,19 +2602,19 @@ class IpcSecurityOwnerTest(_SecurityOwnersTestCase):
             'per-file *.mojom=file://ipc/SECURITY_OWNERS'
         ]
 
-        def FakeReadFile(filename):
-            self.assertEqual(
-                mock_input_api.os_path.join('chromium', 'src',
-                                            new_owners_file_path), filename)
-            return '\n'.join(new_owners_file)
-
-        mock_input_api.ReadFile = FakeReadFile
+        repo_root = mock_input_api.change.RepositoryRoot()
         mock_input_api.files = [
-            MockAffectedFile(new_owners_file_path, new_owners_file),
+            MockAffectedFile(new_owners_file_path, new_owners_file,
+                             local_root=repo_root),
             MockAffectedFile(
                 mock_input_api.os_path.join('services', 'goat', 'public',
                                             'goat.mojom'),
-                ['// Scary contents.'])
+                ['// Scary contents.'],
+                local_root=repo_root),
+            MockAffectedFile(
+                mock_input_api.os_path.join('ipc', 'SECURITY_OWNERS'),
+                ['apple@chromium.org', 'orange@chromium.org'],
+                local_root=repo_root),
         ]
         self._setupFakeChange(mock_input_api)
         self._injectFakeChangeOwnerAndReviewers(mock_input_api,
@@ -2914,7 +2914,11 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
         mock_input_api.is_committing = False
         mock_input_api.files = [
             MockAffectedFile('file.cc',
-                             ['GetServiceSandboxType<Goat>(Sandbox)'])
+                             ['GetServiceSandboxType<Goat>(Sandbox)']),
+            MockAffectedFile(
+                mock_input_api.os_path.join('chromium', 'src', 'ipc',
+                                            'SECURITY_OWNERS'),
+                ['apple@chromium.org', 'orange@chromium.org']),
         ]
         mock_output_api = MockOutputApi()
         result = PRESUBMIT.CheckSecurityChanges(mock_input_api,
@@ -2972,7 +2976,11 @@ class SecurityChangeTest(_SecurityOwnersTestCase):
                                                 'orange@chromium.org',
                                                 ['pear@chromium.org'])
         mock_input_api.files = [
-            MockAffectedFile('file.cc', ['GetServiceSandboxType<T>(Sandbox)'])
+            MockAffectedFile('file.cc', ['GetServiceSandboxType<T>(Sandbox)']),
+            MockAffectedFile(
+                mock_input_api.os_path.join('chromium', 'src', 'ipc',
+                                            'SECURITY_OWNERS'),
+                ['apple@chromium.org', 'orange@chromium.org']),
         ]
         mock_output_api = MockOutputApi()
         result = PRESUBMIT.CheckSecurityChanges(mock_input_api,
