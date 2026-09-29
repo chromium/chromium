@@ -5,7 +5,6 @@
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 
 #import "base/check.h"
-#import "base/not_fatal_until.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -97,7 +96,7 @@
 // Returns a title label configured with the custom branded font and color.
 - (UILabel*)createBrandedTitleLabel {
   UILabel* label = [self createTitleLabel];
-  CHECK(_font, base::NotFatalUntil(base::NotFatalUntil::M150));
+  CHECK(_font);
   label.font = [[[UIFontMetrics alloc] initForTextStyle:UIFontTextStyleHeadline]
       scaledFontForFont:_font];
   label.textColor = [UIColor colorNamed:kGrey700Color];
