@@ -9,6 +9,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/browser/android/media_state_observer.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
@@ -404,6 +405,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           *tab, *tab, web_contents);
 
   task_manager::WebContentsTags::CreateForTabContents(web_contents);
+
+  media_state_observer_ = std::make_unique<MediaStateObserver>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

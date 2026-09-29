@@ -26,7 +26,6 @@
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
-#include "chrome/browser/android/media_state_observer.h"
 #include "chrome/browser/android/selection/chrome_selection_dropdown_menu_delegate.h"
 #include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
@@ -460,7 +459,6 @@ void TabAndroid::InitWebContents(
   // Shows a warning notification for dangerous flags in about:flags.
   ShowBadFlagsPrompt(web_contents_.get());
 
-  MediaStateObserver::CreateForWebContents(web_contents_.get());
   if (glic::GlicEnabling::IsProfileEligible(profile())) {
     glic_tab_indicator_helper_ =
         std::make_unique<glic::GlicTabIndicatorHelper>(this);

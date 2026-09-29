@@ -124,6 +124,7 @@ class ExternalProtocolObserver;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HistoryEmbeddingsTabHelper;
 class HttpAuthCacheStatus;
+class MediaStateObserver;
 class NavigationMetricsRecorder;
 class NavigationPredictorPreconnectClient;
 class OomInterventionTabHelper;
@@ -268,6 +269,7 @@ class TabFeatures {
       client_hints_web_contents_observer_;
   std::unique_ptr<ChainedBackNavigationTracker>
       chained_back_navigation_tracker_;
+  std::unique_ptr<MediaStateObserver> media_state_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

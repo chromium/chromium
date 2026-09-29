@@ -89,12 +89,30 @@ source_set("policy_auditor_bridge") {
   deps = [ "//chrome/android:chrome_jni_headers" ]
 }
 
+source_set("media_state_observer") {
+  sources = [
+    "media_state_observer.cc",
+    "media_state_observer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/tab",
+    "//content/public/browser",
+  ]
+  deps = [
+    ":tabs_public",
+    "//chrome/browser/ui:recently_audible_helper",
+  ]
+}
+
 source_set("tabs_impl") {
   # TODO(crbug.com/486820940): Split tab_android.cc into smaller build target
   # files.
   sources = [ "tab_features.cc" ]
 
   deps = [
+    ":media_state_observer",
     ":oom_intervention",
     ":policy_auditor_bridge",
     ":tabs_public",
@@ -391,8 +409,6 @@ if (is_android) {
       "initialize_feature_list_android.h",
       "intent_handler.cc",
       "media/media_capture_devices_dispatcher_android.cc",
-      "media_state_observer.cc",
-      "media_state_observer.h",
       "messages_resource_mapper_initializer.cc",
       "metrics/android_atoms_logger.cc",
       "metrics/android_atoms_logger.h",
@@ -555,6 +571,7 @@ if (is_android) {
     deps = [
       ":delta_file_proto",
       ":language_data_proto",
+      ":media_state_observer",
       ":oom_intervention",
       ":policy_auditor_bridge",
       ":profile_key_startup_accessor",
