@@ -669,8 +669,13 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
   // won't start if the page is loading. Note that we don't want to
   // ScheduleUIUpdate() because the tab may not have been inserted in the UI
   // yet if this function is called before TabStripModel::TabInsertedAt().
-  BrowserUiController::From(this)->UpdateWindowForLoadingStateChanged(contents,
-                                                                      true);
+  // A tab that is not loading cannot change whether the window needs loading
+  // UI, and the check scans every tab, so skip it for such tabs (e.g. the
+  // background tabs of a session restore, which are inserted unloaded).
+  if (contents->ShouldShowLoadingUI()) {
+    BrowserUiController::From(this)->UpdateWindowForLoadingStateChanged(
+        contents, true);
+  }
 }
 
 void Browser::OnTabClosing(tabs::TabInterface* tab,
@@ -864,9 +869,17 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
   if (was_active) {
     did_active_tab_change_callback_list_.Notify(this);
   }
+  // OnTabInsertedAt() refreshes the loading UI only for contents that are
+  // loading, so remember whether the old contents needed it.
+  const bool old_contents_needed_loading_ui =
+      old_contents->ShouldShowLoadingUI();
   TabDetachedAtImpl(old_contents, was_active, DetachType::kReplace);
   ExclusiveAccessManager::From(this)->OnTabClosing(old_contents);
   OnTabInsertedAt(new_contents, index);
+  if (old_contents_needed_loading_ui && !new_contents->ShouldShowLoadingUI()) {
+    BrowserUiController::From(this)->UpdateWindowForLoadingStateChanged(
+        new_contents, true);
+  }
 
   if (!new_contents->GetController().IsInitialBlankNavigation()) {
     // Send out notification so that observers are updated appropriately.
