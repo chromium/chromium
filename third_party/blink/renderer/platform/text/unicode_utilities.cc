@@ -35,6 +35,7 @@
 #include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/icubridge/normalizer.h"
 #include "base/strings/string_view_util.h"
+#include "third_party/blink/public/platform/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
@@ -309,6 +310,10 @@ bool ContainsKanaLetters(const String& pattern) {
   return false;
 }
 
+bool ContainsKanaLetters(std::u16string_view pattern) {
+  return ContainsKanaLetters(String(pattern));
+}
+
 Vector<UChar> NormalizeCharactersIntoNfc(base::span<const UChar> characters) {
   DCHECK(characters.size());
 
@@ -390,6 +395,13 @@ bool CheckOnlyKanaLettersInStrings(base::span<const UChar> first_data,
     a += offset;
     b += offset;
   }
+}
+
+bool CheckOnlyKanaLettersInStrings(std::u16string_view search_text,
+                                   std::u16string_view match) {
+  // Needs to explicitly construct spans to call the span overload.
+  return CheckOnlyKanaLettersInStrings(base::span(search_text),
+                                       base::span(match));
 }
 
 bool CheckKanaStringsEqual(base::span<const UChar> first_data,

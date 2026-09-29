@@ -139,22 +139,23 @@ TEST_P(FindTextTest, FindJapaneseKanaText) {
       InitializeEngine(&client, FILE_PATH_LITERAL("japanese_ga_ka.pdf"));
   ASSERT_TRUE(engine);
 
-  ExpectInitialSearchResults(client, 4);
+  ExpectInitialSearchResults(client, 2);
   engine->StartFind(kGa, /*case_sensitive=*/false);
-  // TODO(crbug.com/40707270): Ga and Ka should each return 2 results.
-  const auto kWrongExpectations = {
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/1, /*char_count=*/1, kKa),
+  const auto kExpectedGa = {
       PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/3, /*char_count=*/1, kGa),
-      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/5, /*char_count=*/1, kGa),
+      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/5, /*char_count=*/1,
+                    kGa)};
+  EXPECT_THAT(engine->find_results_for_testing(),
+              ElementsAreArray(kExpectedGa));
+
+  ExpectInitialSearchResults(client, 2);
+  engine->StartFind(kKa, /*case_sensitive=*/false);
+  const auto kExpectedKa = {
+      PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/1, /*char_count=*/1, kKa),
       PDFiumRangeEq(/*page_index=*/0u, /*char_index=*/7, /*char_count=*/1,
                     kKa)};
   EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAreArray(kWrongExpectations));
-
-  ExpectInitialSearchResults(client, 4);
-  engine->StartFind(kKa, /*case_sensitive=*/false);
-  EXPECT_THAT(engine->find_results_for_testing(),
-              ElementsAreArray(kWrongExpectations));
+              ElementsAreArray(kExpectedKa));
 
   // Also try finding ASCII characters in the same document.
   ExpectInitialSearchResults(client, 1);
