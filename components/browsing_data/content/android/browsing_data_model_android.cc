@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
 
+#include <cstddef>
+
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -26,7 +28,11 @@ BrowsingDataModelAndroid::BrowsingDataModelAndroid(
     std::unique_ptr<BrowsingDataModel> model)
     : browsing_data_model_(std::move(model)) {}
 
-BrowsingDataModelAndroid::~BrowsingDataModelAndroid() = default;
+BrowsingDataModelAndroid::~BrowsingDataModelAndroid() {
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Android.BrowsingDataModel.ModelDestructionTime");
+  browsing_data_model_.reset();
+}
 
 ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
     JNIEnv* env,
@@ -72,10 +78,8 @@ void BrowsingDataModelAndroid::RemoveBrowsingData(
   browsing_data_model_->RemoveBrowsingData(host, std::move(java_callback));
 }
 
-void BrowsingDataModelAndroid::Destroy() {
-  base::ScopedUmaHistogramTimer histogram_timer(
-      "Android.BrowsingDataModel.ModelDestructionTime");
-  delete this;
+void BrowsingDataModelAndroid::ReleaseModel() {
+  Release();
 }
 
 DEFINE_JNI(BrowsingDataModel)

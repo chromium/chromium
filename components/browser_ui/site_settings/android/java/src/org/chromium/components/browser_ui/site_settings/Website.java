@@ -507,6 +507,7 @@ public final class Website implements WebsiteEntry {
                                 () -> {
                                     callback.onStoredDataCleared();
                                     mStorageInfo.clear();
+                                    model.releaseModel();
                                 });
                     });
         } else {

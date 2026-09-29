@@ -785,6 +785,7 @@ public class WebsitePermissionsFetcher {
                                 website.setDomainImportant(info.isDomainImportant());
                             }
                             queue.next();
+                            model.releaseModel();
                         });
             }
         }

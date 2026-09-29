@@ -370,6 +370,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         } else if (siteAddress != null && extraSite == null) {
             // URL intents only provide the address string, so we must asynchronously fetch the site
             // permissions to reconstruct the full Website entry.
+            if (getSiteSettingsDelegate().isBrowsingDataModelFeatureEnabled()) {
+                getBrowsingDataModelRef();
+            }
             WebsitePermissionsFetcher fetcher =
                     new WebsitePermissionsFetcher(getSiteSettingsDelegate());
             fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(

@@ -278,6 +278,8 @@ if (is_android) {
       "browsing_data/browsing_data_bridge.cc",
       "browsing_data/browsing_data_counter_bridge.cc",
       "browsing_data/browsing_data_counter_bridge.h",
+      "browsing_data/browsing_data_model_android_holder.cc",
+      "browsing_data/browsing_data_model_android_holder.h",
       "browsing_data/url_filter_bridge.cc",
       "browsing_data/url_filter_bridge.h",
       "chrome_startup_flags.cc",

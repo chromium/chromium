@@ -54,6 +54,9 @@ public class LocationPermissionSubpageSettings extends BaseSiteSettingsFragment
             mSite = site;
             setUpPreferences();
         } else if (address != null && site == null) {
+            if (getSiteSettingsDelegate().isBrowsingDataModelFeatureEnabled()) {
+                getBrowsingDataModelRef();
+            }
             WebsitePermissionsFetcher fetcher =
                     new WebsitePermissionsFetcher(getSiteSettingsDelegate());
             fetcher.fetchAllPreferences(

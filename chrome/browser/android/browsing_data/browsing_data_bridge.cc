@@ -16,8 +16,11 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/supports_user_data.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "chrome/browser/android/browsing_data/browsing_data_model_android_holder.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -64,13 +67,48 @@ PrefService* GetPrefService(Profile* profile) {
   return profile->GetOriginalProfile()->GetPrefs();
 }
 
-void OnBrowsingDataModelBuilt(JNIEnv* env,
-                              const ScopedJavaGlobalRef<jobject>& java_callback,
-                              std::unique_ptr<BrowsingDataModel> model) {
-  Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
-      env, java_callback,
-      reinterpret_cast<intptr_t>(
-          new BrowsingDataModelAndroid(std::move(model))));
+class PendingCallbacksHolder : public base::SupportsUserData::Data {
+ public:
+  PendingCallbacksHolder() = default;
+  ~PendingCallbacksHolder() override = default;
+
+  void AddCallback(const JavaRef<jobject>& callback) {
+    callbacks_.emplace_back(callback);
+  }
+
+  const std::vector<ScopedJavaGlobalRef<jobject>>& callbacks() const {
+    return callbacks_;
+  }
+
+  static const void* UserDataKey() { return &kUserDataKey; }
+
+ private:
+  static inline const int kUserDataKey = 0;
+  std::vector<ScopedJavaGlobalRef<jobject>> callbacks_;
+};
+
+void OnBrowsingDataModelBuiltForAll(Profile* profile,
+                                    std::unique_ptr<BrowsingDataModel> model) {
+  scoped_refptr<BrowsingDataModelAndroid> model_android =
+      base::MakeRefCounted<BrowsingDataModelAndroid>(std::move(model));
+  profile->SetUserData(
+      BrowsingDataModelAndroidHolder::UserDataKey(),
+      std::make_unique<BrowsingDataModelAndroidHolder>(model_android.get()));
+
+  JNIEnv* env = AttachCurrentThread();
+  auto* pending_callbacks_holder = static_cast<PendingCallbacksHolder*>(
+      profile->GetUserData(PendingCallbacksHolder::UserDataKey()));
+  CHECK(pending_callbacks_holder);
+
+  for (const auto& callback : pending_callbacks_holder->callbacks()) {
+    // The Java object will hold a reference that should be released by calling
+    // releaseModel().
+    model_android->AddRef();
+    Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
+        env, callback, reinterpret_cast<intptr_t>(model_android.get()));
+  }
+
+  profile->RemoveUserData(PendingCallbacksHolder::UserDataKey());
 }
 
 }  // namespace
@@ -277,10 +315,39 @@ static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
     Profile* profile,
     const JavaRef<jobject>& java_callback) {
+  auto* holder = static_cast<BrowsingDataModelAndroidHolder*>(
+      profile->GetUserData(BrowsingDataModelAndroidHolder::UserDataKey()));
+  if (holder) {
+    if (holder->model()) {
+      // The Java object will hold a reference that should be released by
+      // calling releaseModel().
+      holder->model()->AddRef();
+      Java_BrowsingDataBridge_onBrowsingDataModelBuilt(
+          env, java_callback, reinterpret_cast<intptr_t>(holder->model()));
+      return;
+    }
+    // If the holder exists but the model is null that means the model has
+    // been built and destroyed yet the holder was not removed from user data,
+    // therefore we should remove the holder and rebuild the model from disk.
+    profile->RemoveUserData(BrowsingDataModelAndroidHolder::UserDataKey());
+  }
+
+  auto* pending_callbacks_holder = static_cast<PendingCallbacksHolder*>(
+      profile->GetUserData(PendingCallbacksHolder::UserDataKey()));
+
+  if (pending_callbacks_holder) {
+    pending_callbacks_holder->AddCallback(java_callback);
+    return;
+  }
+
+  auto new_holder = std::make_unique<PendingCallbacksHolder>();
+  new_holder->AddCallback(java_callback);
+  profile->SetUserData(PendingCallbacksHolder::UserDataKey(),
+                       std::move(new_holder));
+
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
-      base::BindOnce(&OnBrowsingDataModelBuilt, env,
-                     ScopedJavaGlobalRef<jobject>(java_callback)));
+      base::BindOnce(&OnBrowsingDataModelBuiltForAll, profile));
 }
 
 DEFINE_JNI(BrowsingDataBridge)

@@ -19,7 +19,7 @@ import java.util.Map;
 public class BrowsingDataModel {
 
     // A pointer to the C++ object for this model.
-    private final long mNativeBrowsingDataModel;
+    private long mNativeBrowsingDataModel;
 
     /**
      * Creates a `BrowsingDataModel` object.
@@ -27,6 +27,7 @@ public class BrowsingDataModel {
      * @param nativeBrowsingDataModel The reference to the C++ android model object.
      */
     public BrowsingDataModel(long nativeBrowsingDataModel) {
+        assert nativeBrowsingDataModel != 0;
         mNativeBrowsingDataModel = nativeBrowsingDataModel;
     }
 
@@ -37,6 +38,7 @@ public class BrowsingDataModel {
      */
     public Map<Origin, BrowsingDataInfo> getBrowsingDataInfo(
             BrowserContextHandle browserContext, boolean fetchImportant) {
+        assert mNativeBrowsingDataModel != 0;
         Map<Origin, BrowsingDataInfo> map = new HashMap<>();
         return BrowsingDataModelJni.get()
                 .getBrowsingDataInfo(mNativeBrowsingDataModel, browserContext, map, fetchImportant);
@@ -49,11 +51,14 @@ public class BrowsingDataModel {
      * @param completed Completion callback to be called when removal is completed.
      */
     public void removeBrowsingData(String host, Runnable completed) {
+        assert mNativeBrowsingDataModel != 0;
         BrowsingDataModelJni.get().removeBrowsingData(mNativeBrowsingDataModel, host, completed);
     }
 
-    public void destroy() {
-        BrowsingDataModelJni.get().destroy(mNativeBrowsingDataModel);
+    public void releaseModel() {
+        assert mNativeBrowsingDataModel != 0;
+        BrowsingDataModelJni.get().releaseModel(mNativeBrowsingDataModel);
+        mNativeBrowsingDataModel = 0;
     }
 
     @CalledByNative
@@ -79,6 +84,6 @@ public class BrowsingDataModel {
                 @JniType("std::string") String host,
                 @JniType("base::OnceClosure") Runnable completed);
 
-        void destroy(long nativeBrowsingDataModelAndroid);
+        void releaseModel(long nativeBrowsingDataModelAndroid);
     }
 }

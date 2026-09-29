@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.Website.StoredDataClearedCallback;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+import org.chromium.components.browsing_data.content.BrowsingDataModel;
 
 import java.util.Collection;
 
@@ -74,6 +75,8 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
     private static boolean sActivityNotExportedChecked;
 
     private boolean mIsNativeInitialized;
+    private @Nullable ChromeSiteSettingsDelegate mChromeSiteSettingsDelegate;
+    private @Nullable BrowsingDataModel mBrowsingDataModel;
 
     @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
     @Override
@@ -159,6 +162,23 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
         mManageSiteDataButton.setEnabled(true);
         mClearUnimportantButton.setEnabled(true);
         RecordUserAction.record("Android.ManageSpace");
+
+        // The BrowsingDataModel is fetched at the end of the native initialization to ensure all
+        // data is available for use in the UI. It is not explicitly used in this activity, but is
+        // used in the WebsitePermissionsFetcher to determine important domains and site storage
+        // numbers.
+        mChromeSiteSettingsDelegate =
+                new ChromeSiteSettingsDelegate(this, ProfileManager.getLastUsedRegularProfile());
+        if (mChromeSiteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+            mChromeSiteSettingsDelegate.getBrowsingDataModel(
+                    model -> {
+                        if (isDestroyed()) {
+                            model.releaseModel();
+                        } else {
+                            mBrowsingDataModel = model;
+                        }
+                    });
+        }
         refreshStorageNumbers();
     }
 
@@ -174,6 +194,15 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
 
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.SETTINGS_WEBSITE_FAILED_BUILD_VERSION, null);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mBrowsingDataModel != null) {
+            mBrowsingDataModel.releaseModel();
+            mBrowsingDataModel = null;
+        }
+        super.onDestroy();
     }
 
     @Override
@@ -195,8 +224,8 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
     /** This refreshes the storage numbers by fetching all site permissions. */
     private void refreshStorageNumbers() {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
-        var siteSettingsDelegate = new ChromeSiteSettingsDelegate(this, profile);
-        WebsitePermissionsFetcher fetcher = new WebsitePermissionsFetcher(siteSettingsDelegate);
+        WebsitePermissionsFetcher fetcher =
+                new WebsitePermissionsFetcher(assumeNonNull(mChromeSiteSettingsDelegate));
         fetcher.fetchPreferencesForCategory(
                 SiteSettingsCategory.createFromType(profile, SiteSettingsCategory.Type.USE_STORAGE),
                 new SizeCalculator());
@@ -311,10 +340,8 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
          */
         public void clearData() {
             Profile profile = ProfileManager.getLastUsedRegularProfile();
-            var siteSettingsDelegate =
-                    new ChromeSiteSettingsDelegate(getApplicationContext(), profile);
             WebsitePermissionsFetcher fetcher =
-                    new WebsitePermissionsFetcher(siteSettingsDelegate, true);
+                    new WebsitePermissionsFetcher(assumeNonNull(mChromeSiteSettingsDelegate), true);
             fetcher.fetchPreferencesForCategory(
                     SiteSettingsCategory.createFromType(
                             profile, SiteSettingsCategory.Type.USE_STORAGE),
@@ -331,15 +358,13 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
 
         @Override
         public void onWebsitePermissionsAvailable(Collection<Website> sites) {
+            ChromeSiteSettingsDelegate delegate = assumeNonNull(mChromeSiteSettingsDelegate);
             long siteStorageLeft = 0;
-            var siteSettingsDelegate =
-                    new ChromeSiteSettingsDelegate(
-                            getApplicationContext(), ProfileManager.getLastUsedRegularProfile());
             for (Website site : sites) {
-                if (siteSettingsDelegate.isBrowsingDataModelFeatureEnabled()) {
+                if (delegate.isBrowsingDataModelFeatureEnabled()) {
                     if (!site.isDomainImportant()) {
                         mNumSitesClearing++;
-                        site.clearAllStoredData(siteSettingsDelegate, this);
+                        site.clearAllStoredData(delegate, this);
                     } else {
                         siteStorageLeft += site.getTotalUsage();
                     }
@@ -347,7 +372,7 @@ public class ManageSpaceActivity extends ChromeBaseAppCompatActivity
                     if (site.getLocalStorageInfo() == null
                             || !site.getLocalStorageInfo().isDomainImportant()) {
                         mNumSitesClearing++;
-                        site.clearAllStoredData(siteSettingsDelegate, this);
+                        site.clearAllStoredData(delegate, this);
                     } else {
                         siteStorageLeft += site.getTotalUsage();
                     }

@@ -23,8 +23,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -77,7 +75,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     private final Context mContext;
     private final Profile mProfile;
     private final PrivacySandboxBridge mPrivacySandboxBridge;
-    private @Nullable BrowsingDataModel mBrowsingDataModel;
     private @Nullable ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private @Nullable SnackbarManager mSnackbarManager;
     private @Nullable LargeIconBridge mLargeIconBridge;
@@ -93,11 +90,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         if (mLargeIconBridge != null) {
             mLargeIconBridge.destroy();
             mLargeIconBridge = null;
-        }
-
-        if (mBrowsingDataModel != null) {
-            mBrowsingDataModel.destroy();
-            mBrowsingDataModel = null;
         }
     }
 
@@ -366,17 +358,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         BrowsingDataBridge.buildBrowsingDataModelFromDisk(
                 mProfile,
                 model -> {
-                    if (mBrowsingDataModel != null) {
-                        // Posting the task to destroy the model to avoid ANR hangs/crashes caused
-                        // by sometimes slow model building and JNI deadlock.
-                        // The old model reference needs to be captured before posting the destroy
-                        // task to avoid crashing caused by destroying the new model instead of the
-                        // old model.
-                        BrowsingDataModel oldModel = mBrowsingDataModel;
-                        PostTask.postTask(TaskTraits.UI_DEFAULT, oldModel::destroy);
-                    }
-                    mBrowsingDataModel = model;
-                    callback.onResult(mBrowsingDataModel);
+                    callback.onResult(model);
                 });
     }
 

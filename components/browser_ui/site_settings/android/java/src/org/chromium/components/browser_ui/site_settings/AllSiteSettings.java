@@ -141,6 +141,9 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     }
 
     private void getInfoForOrigins() {
+        if (getSiteSettingsDelegate().isBrowsingDataModelFeatureEnabled()) {
+            getBrowsingDataModelRef();
+        }
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(getSiteSettingsDelegate(), false);
         fetcher.fetchPreferencesForCategoryAndPopulateRwsInfo(mCategory, new ResultsPopulator());
