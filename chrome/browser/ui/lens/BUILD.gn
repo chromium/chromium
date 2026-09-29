@@ -436,6 +436,7 @@ if (!is_android) {
       "//ui/compositor",
       "//ui/events:events_base",
       "//ui/events:test_support",
+      "//ui/gfx",
       "//ui/shell_dialogs:test_support",
       "//ui/views",
       "//ui/views:test_support",

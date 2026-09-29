@@ -12,7 +12,6 @@
 
 #include "base/base64url.h"
 #include "base/check_deref.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -170,6 +169,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/test_event.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -1520,10 +1520,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       static_cast<lens::TestLensOverlayQueryController*>(
           GetLensOverlayQueryController());
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes());
-  UNSAFE_TODO(EXPECT_TRUE(
-      memcmp(fake_query_controller->last_queried_region_bytes()->getPixels(),
-             initial_bitmap.getPixels(),
-             initial_bitmap.computeByteSize()) == 0));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *fake_query_controller->last_queried_region_bytes(), initial_bitmap));
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->height(), 100);
   EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
@@ -4598,10 +4596,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region(), kTestRegion);
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes());
-  UNSAFE_TODO(EXPECT_TRUE(
-      memcmp(fake_query_controller->last_queried_region_bytes()->getPixels(),
-             initial_bitmap.getPixels(),
-             initial_bitmap.computeByteSize()) == 0));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *fake_query_controller->last_queried_region_bytes(), initial_bitmap));
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->height(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_text(), "green");
@@ -4619,10 +4615,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(controller->get_selected_text_for_region());
   EXPECT_EQ(fake_query_controller->last_queried_region(), kTestRegion);
   EXPECT_TRUE(fake_query_controller->last_queried_region_bytes());
-  UNSAFE_TODO(EXPECT_TRUE(
-      memcmp(fake_query_controller->last_queried_region_bytes()->getPixels(),
-             initial_bitmap.getPixels(),
-             initial_bitmap.computeByteSize()) == 0));
+  EXPECT_TRUE(gfx::BitmapsAreEqual(
+      *fake_query_controller->last_queried_region_bytes(), initial_bitmap));
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->width(), 100);
   EXPECT_EQ(fake_query_controller->last_queried_region_bytes()->height(), 100);
   EXPECT_TRUE(fake_query_controller->last_queried_text().empty());
