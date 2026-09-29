@@ -95,8 +95,9 @@ void DevToolsVideoConsumer::SetMinCapturePeriod(
 
 void DevToolsVideoConsumer::SetMinAndMaxFrameSize(gfx::Size min_frame_size,
                                                   gfx::Size max_frame_size) {
-  CHECK(IsValidMinAndMaxFrameSize(min_frame_size, max_frame_size),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/567037602): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(IsValidMinAndMaxFrameSize(min_frame_size, max_frame_size));
   min_frame_size_ = min_frame_size;
   max_frame_size_ = max_frame_size;
   if (capturer_) {
