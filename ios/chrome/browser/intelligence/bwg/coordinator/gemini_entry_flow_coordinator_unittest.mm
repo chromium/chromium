@@ -7,20 +7,33 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -31,6 +44,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -38,6 +52,11 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
+
+std::unique_ptr<KeyedService> CreateTestTracker(ProfileIOS* context) {
+  return std::make_unique<
+      testing::NiceMock<feature_engagement::test::MockTracker>>();
+}
 
 class GeminiEntryFlowCoordinatorTest : public PlatformTest {
  public:
@@ -54,6 +73,11 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(feature_engagement::TrackerFactory::GetInstance(),
+                              base::BindOnce(&CreateTestTracker));
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         GeminiServiceFactory::GetInstance(),
         base::BindRepeating(
@@ -61,26 +85,42 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
               return std::make_unique<FakeGeminiService>();
             }));
 
+    scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    gemini::UpdateUserConsentPrefs(true, profile_->GetPrefs());
     fake_gemini_service_ = static_cast<FakeGeminiService*>(
         GeminiServiceFactory::GetForProfile(profile_));
     auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_);
 
     browser_ = std::make_unique<TestBrowser>(profile_);
+    BrowserListFactory::GetForProfile(profile_)->AddBrowser(browser_.get());
+    TestFullscreenController::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(browser_.get());
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_key_window_.Get().rootViewController = root_view_controller_;
+    [scoped_key_window_.Get() makeKeyAndVisible];
 
+    CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_snackbar_handler_
-                     forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler_
+                             forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher
+        startDispatchingToTarget:OCMProtocolMock(@protocol(GeminiCommands))
+                     forProtocol:@protocol(GeminiCommands)];
+    [dispatcher
+        startDispatchingToTarget:OCMProtocolMock(@protocol(HelpCommands))
+                     forProtocol:@protocol(HelpCommands)];
+    [dispatcher
+        startDispatchingToTarget:OCMProtocolMock(@protocol(SceneCommands))
+                     forProtocol:@protocol(SceneCommands)];
 
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
     web_state_->SetBrowserState(profile_);
     web_state_->WasShown();
     web_state_->SetCurrentURL(GURL("https://www.google.com"));
+    web_state_->SetContentsMimeType("text/html");
     GeminiTabHelper::CreateForWebState(web_state_);
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
@@ -91,6 +131,7 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
     [coordinator_ stop];
     coordinator_ = nil;
     web_state_ = nullptr;
+    BrowserListFactory::GetForProfile(profile_)->RemoveBrowser(browser_.get());
     browser_.reset();
     auth_service_ = nullptr;
     fake_gemini_service_ = nullptr;
@@ -128,6 +169,7 @@ class GeminiEntryFlowCoordinatorTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  IOSChromeScopedTestingVariationsService scoped_variations_service_;
   base::test::ScopedFeatureList feature_list_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
@@ -175,6 +217,7 @@ TEST_F(GeminiEntryFlowCoordinatorTest, ColdStartPolicyCheckPending) {
   // Evaluation completes with success once policy check completes.
   EXPECT_TRUE(flow_completed_);
   EXPECT_EQ(kGeminiEntryFlowResultSuccess, flow_result_);
+  EXPECT_FALSE(startup_state.isFirstSession);
 }
 
 // Tests that intermediate capability updates while the policy check is
@@ -218,7 +261,7 @@ TEST_F(GeminiEntryFlowCoordinatorTest,
   EXPECT_EQ(kGeminiEntryFlowResultSuccess, flow_result_);
 }
 
-// Tests that a signed-in eligible user completes the entry flow successfully.
+// Test that a signed-in eligible user completes the entry flow successfully.
 TEST_F(GeminiEntryFlowCoordinatorTest, ColdStartSignedInEligible) {
   SignIn([FakeSystemIdentity fakeIdentity1]);
   fake_gemini_service_->SetIsEligible(true);
@@ -237,10 +280,73 @@ TEST_F(GeminiEntryFlowCoordinatorTest, ColdStartSignedInEligible) {
                         flow_completed_ = true;
                       }];
 
+  base::HistogramTester histogram_tester;
   [coordinator_ start];
 
   EXPECT_TRUE(flow_completed_);
   EXPECT_EQ(kGeminiEntryFlowResultSuccess, flow_result_);
+  EXPECT_FALSE(startup_state.isFirstSession);
+  histogram_tester.ExpectUniqueSample(
+      kGeminiInvocationPageTypeHistogram,
+      IOSGeminiInvocationPageType::kExtractableWebPage, 1);
+}
+
+// Test that invoking the entry flow with no active WebState completes with
+// kGeminiEntryFlowResultPageIneligible.
+TEST_F(GeminiEntryFlowCoordinatorTest, NoActiveWebState) {
+  SignIn([FakeSystemIdentity fakeIdentity1]);
+  fake_gemini_service_->SetIsEligible(true);
+  fake_gemini_service_->SetWorkspacePolicyCheckPending(false);
+
+  web_state_ = nullptr;
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
+
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
+
+  coordinator_ = [[GeminiEntryFlowCoordinator alloc]
+      initWithBaseViewController:root_view_controller_
+                         browser:browser_.get()
+                    startupState:startup_state
+        showSnackbarOnCompletion:YES
+                      completion:^(GeminiEntryFlowResult result) {
+                        flow_result_ = result;
+                        flow_completed_ = true;
+                      }];
+
+  [coordinator_ start];
+
+  EXPECT_TRUE(flow_completed_);
+  EXPECT_EQ(kGeminiEntryFlowResultPageIneligible, flow_result_);
+}
+
+// Tests that when the user has not consented to Gemini, the First Run
+// coordinator is started instead of immediately completing the entry flow.
+TEST_F(GeminiEntryFlowCoordinatorTest, FirstRunStartedWhenNoConsent) {
+  SignIn([FakeSystemIdentity fakeIdentity1]);
+  gemini::UpdateUserConsentPrefs(false, profile_->GetPrefs());
+  fake_gemini_service_->SetIsEligible(true);
+  fake_gemini_service_->SetWorkspacePolicyCheckPending(false);
+
+  GeminiStartupState* startup_state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
+
+  coordinator_ = [[GeminiEntryFlowCoordinator alloc]
+      initWithBaseViewController:root_view_controller_
+                         browser:browser_.get()
+                    startupState:startup_state
+        showSnackbarOnCompletion:YES
+                      completion:^(GeminiEntryFlowResult result) {
+                        flow_result_ = result;
+                        flow_completed_ = true;
+                      }];
+
+  [coordinator_ start];
+
+  EXPECT_FALSE(flow_completed_);
+  EXPECT_TRUE(startup_state.isFirstSession);
+  EXPECT_NE(nil, root_view_controller_.presentedViewController);
 }
 
 // Tests that an account ineligible due to enterprise policy completes with

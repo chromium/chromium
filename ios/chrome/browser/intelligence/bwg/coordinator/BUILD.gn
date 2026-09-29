@@ -83,6 +83,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/intelligence/actor/coordinator",
     "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/bwg/first_run/coordinator",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",

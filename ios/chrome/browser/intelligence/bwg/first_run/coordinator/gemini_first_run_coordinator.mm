@@ -255,14 +255,12 @@
   [self unscopeVoiceOverFromFirstRunSheet];
   if (_firstRunType == GeminiFirstRunType::kLive) {
     [self logLiveFREOutcome];
-    [_mediator disconnect];
-    if (_completion) {
-      void (^completion)(BOOL) = _completion;
-      _completion = nil;
-      completion(NO);
-    }
-  } else {
-    [_geminiHandler dismissGeminiFlowWithCompletion:nil];
+  }
+  [_mediator disconnect];
+  if (_completion) {
+    void (^completion)(BOOL) = _completion;
+    _completion = nil;
+    completion(NO);
   }
 }
 
@@ -402,6 +400,8 @@
   if (self.baseViewController.presentedViewController) {
     [self.baseViewController dismissViewControllerAnimated:YES
                                                 completion:completion];
+  } else if (completion) {
+    completion();
   }
 }
 
