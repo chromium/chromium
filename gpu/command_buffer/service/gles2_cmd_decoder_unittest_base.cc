@@ -2329,7 +2329,8 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
   // Ensure we're running with Null Backend.
   ASSERT_EQ(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kNull);
 
-  scoped_refptr<gles2::FeatureInfo> feature_info = new gles2::FeatureInfo();
+  scoped_refptr<gles2::FeatureInfo> feature_info =
+      new gles2::FeatureInfo(workarounds_for_test_, GpuFeatureInfo());
   group_ = MakeRefCounted<gles2::ContextGroup>(
       gpu_preferences_, /*memory_tracker=*/nullptr, &shader_translator_cache_,
       &framebuffer_completeness_cache_, feature_info,

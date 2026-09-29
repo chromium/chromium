@@ -337,5 +337,66 @@ TEST_F(GLES2DecoderPassthroughTest,
   shared_image.reset();
 }
 
+// With check_graphics_reset_status_after_readback enabled and no reset
+// reported, the shared-image readback path must behave exactly as without the
+// workaround: no context loss, no denial. The rejection leg requires a driver
+// that latches a reset and is exercised on-device; ANGLE's NULL backend cannot
+// forge one.
+class GLES2DecoderPassthroughReadbackResetCheckTest
+    : public GLES2DecoderPassthroughTest {
+ public:
+  GLES2DecoderPassthroughReadbackResetCheckTest() {
+    workarounds_for_test_.check_graphics_reset_status_after_readback = true;
+  }
+};
+
+// Tests that the shared-image ReadbackARGB path does not deny on a healthy
+// driver with the workaround enabled; the gate polls the lazy shared
+// context's reset status.
+TEST_F(GLES2DecoderPassthroughReadbackResetCheckTest,
+       ReadbackARGBImagePixelsWithResetCheckWorkaroundDoesNotDeny) {
+  MemoryTypeTracker memory_tracker(nullptr);
+  Mailbox mailbox = Mailbox::Generate();
+  auto shared_image = GetSharedImageManager()->Register(
+      AllocateTextureAndCreateSharedImage(
+          mailbox, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(4, 4),
+          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2_READ),
+      &memory_tracker);
+
+  // Shm layout at kSharedMemoryOffset: Result, then the mailbox, then the
+  // pixel destination. color_space_offset == mailbox_offset encodes "no
+  // color space".
+  using Cmd = cmds::ReadbackARGBImagePixelsINTERNAL;
+  constexpr uint32_t kMailboxOffset = 16;
+  constexpr uint32_t kPixelsOffset = 32;
+  constexpr GLuint kDstWidth = 2;
+  constexpr GLuint kDstHeight = 2;
+  constexpr GLuint kRowBytes = 8;
+
+  auto* result = GetSharedMemoryAs<Cmd::Result*>();
+  *result = 0;
+  // SAFETY: shared memory extends past kMailboxOffset by a full mailbox.
+  UNSAFE_BUFFERS(base::span(GetSharedMemoryAs<uint8_t*>() + kMailboxOffset,
+                            sizeof(mailbox.name)))
+      .copy_from(base::as_byte_span(mailbox.name));
+
+  Cmd cmd;
+  cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, kDstWidth, kDstHeight,
+           kRowBytes, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+           shared_memory_id_, kSharedMemoryOffset,
+           /*color_space_offset=*/kMailboxOffset, kPixelsOffset,
+           kMailboxOffset);
+
+  // The gate must not deny on a healthy (NULL-backend) driver: the command
+  // may fail for unrelated backend reasons, but never with kLostContext,
+  // and the context must survive.
+  error::Error err = ExecuteCmd(cmd);
+  EXPECT_NE(error::kLostContext, err);
+  EXPECT_FALSE(GetDecoder()->WasContextLost());
+
+  shared_image.reset();
+}
+
 }  // namespace gles2
 }  // namespace gpu

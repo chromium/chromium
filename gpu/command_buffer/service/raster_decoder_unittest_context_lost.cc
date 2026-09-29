@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/common/raster_cmd_format.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/raster_decoder_unittest_base.h"
+#include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_mock.h"
 
@@ -266,6 +270,154 @@ TEST_P(RasterDecoderLostContextTest, LoseInnocentFromGLError) {
 
 INSTANTIATE_TEST_SUITE_P(Service,
                          RasterDecoderLostContextTest,
+                         ::testing::Bool());
+
+// The readback delivery gate must refuse to publish results after a device
+// reset, and must stay silent otherwise. The shared image is registered with
+// can_access=false so the readback command reaches the delivery gate without
+// Skia touching the StrictMock GL interface; the gate runs after the copy
+// helper regardless of the helper's outcome.
+class RasterDecoderReadbackResetTest : public RasterDecoderManualInitTest {
+ protected:
+  // Shared client-visible tail for the healthy-path guards: the command
+  // completes without denial -- no Result, no byte delivered from the
+  // inaccessible backing, no context loss; the copy helper's INVALID_VALUE
+  // is read so the fixture's no-unread-errors teardown check holds.
+  void ExpectHealthyNonDelivery(const Mailbox& mailbox) {
+    EXPECT_EQ(error::kNoError, IssueReadback(mailbox));
+    EXPECT_EQ(0u, *Result());
+    for (uint32_t i = 0; i < kPixelBytes; ++i) {
+      EXPECT_EQ(0xAAu, Pixels()[i])
+          << "pixel byte " << i << " unexpectedly modified";
+    }
+    EXPECT_FALSE(decoder_->WasContextLost());
+    EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
+  }
+
+  static constexpr GLuint kDstWidth = 2;
+  static constexpr GLuint kDstHeight = 2;
+  static constexpr GLuint kRowBytes = 8;
+  static constexpr uint32_t kPixelBytes = kRowBytes * kDstHeight;
+  // Shm layout at the shared memory base: Result, then pixel destination.
+  static constexpr uint32_t kPixelsOffset = 16;
+
+  void Init(bool with_workaround) {
+    InitState init;
+    init.extensions.push_back("GL_KHR_robustness");
+    init.workarounds.check_graphics_reset_status_after_readback =
+        with_workaround;
+    InitDecoder(init);
+  }
+
+  Mailbox CreateInaccessibleSharedImage() {
+    Mailbox mailbox = Mailbox::Generate();
+    auto backing = std::make_unique<TestImageBacking>(
+        mailbox,
+        SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(4, 4),
+                        gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+                        kPremul_SkAlphaType, SHARED_IMAGE_USAGE_RASTER_READ,
+                        "TestLabel"),
+        /*estimated_size=*/64);
+    backing->SetCleared();
+    backing->set_can_access(false);
+    factory_ref_ =
+        shared_image_manager()->Register(std::move(backing), &memory_tracker_);
+    return mailbox;
+  }
+
+  error::Error IssueReadback(const Mailbox& mailbox) {
+    auto& cmd =
+        *GetImmediateAs<cmds::ReadbackARGBImagePixelsINTERNALImmediate>();
+    // color_space_offset == pixels_offset encodes "no color space".
+    cmd.Init(/*src_x=*/0, /*src_y=*/0, /*plane_index=*/0, kDstWidth, kDstHeight,
+             kRowBytes, kRGBA_8888_SkColorType, kPremul_SkAlphaType,
+             shared_memory_id_, shared_memory_offset_,
+             /*color_space_offset=*/kPixelsOffset,
+             /*pixels_offset=*/kPixelsOffset, mailbox.name);
+    return ExecuteImmediateCmd(cmd, sizeof(mailbox.name));
+  }
+
+  uint32_t* Result() { return GetSharedMemoryAs<uint32_t*>(); }
+  base::span<uint8_t> Pixels() {
+    // SAFETY: the fixture's shared memory extends past `kPixelsOffset` by at
+    // least `kPixelBytes`; every test addresses exactly that window.
+    return UNSAFE_BUFFERS(
+        base::span(GetSharedMemoryAs<uint8_t*>() + kPixelsOffset, kPixelBytes));
+  }
+
+  MemoryTypeTracker memory_tracker_{nullptr};
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref_;
+};
+
+// Tests that the raster decoder refuses ReadbackARGB delivery when the
+// robustness status reports a reset latched during the readback -- the
+// canvas-lane crossing of crbug.com/555394151 (ES 3.2 sec. 2.3.2). We
+// expect kLostContext, Result left at zero, a scrubbed destination,
+// INVALID_OPERATION, and a guilty loss via the SharedContextState observer
+// path.
+TEST_P(RasterDecoderReadbackResetTest,
+       ReadbackARGBImagePixelsGuiltyResetDeniesResultDelivery) {
+  Init(/*with_workaround=*/true);
+  Mailbox mailbox = CreateInaccessibleSharedImage();
+  *Result() = 0;
+  std::ranges::fill(Pixels(), 0xAA);
+
+  EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_NO_ERROR));
+  EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
+      .WillOnce(Return(GL_GUILTY_CONTEXT_RESET_KHR));
+
+  EXPECT_EQ(error::kLostContext, IssueReadback(mailbox));
+  EXPECT_EQ(0u, *Result());
+  for (uint32_t i = 0; i < kPixelBytes; ++i) {
+    EXPECT_EQ(0u, Pixels()[i]) << "pixel byte " << i << " not scrubbed";
+  }
+  EXPECT_TRUE(decoder_->WasContextLost());
+  EXPECT_TRUE(decoder_->WasContextLostByRobustnessExtension());
+  EXPECT_EQ(error::kGuilty, GetContextLostReason());
+  // The gate reports the denial as INVALID_OPERATION; read it so the
+  // fixture's no-unread-errors teardown check holds.
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
+// Tests that healthy raster readbacks are delivered unchanged with the
+// workaround enabled.
+TEST_P(RasterDecoderReadbackResetTest,
+       ReadbackARGBImagePixelsNoResetDoesNotDeny) {
+  Init(/*with_workaround=*/true);
+  Mailbox mailbox = CreateInaccessibleSharedImage();
+  *Result() = 0;
+  std::ranges::fill(Pixels(), 0xAA);
+
+  EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_NO_ERROR));
+  EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
+      .Times(::testing::AtMost(1))
+      .WillRepeatedly(Return(GL_NO_ERROR));
+
+  // The inaccessible test backing makes the copy helper fail with a GL
+  // error, but the gate must not fire.
+  ExpectHealthyNonDelivery(mailbox);
+}
+
+// Same as ReadbackARGBImagePixelsNoResetDoesNotDeny, but with the
+// workaround off: the readback path must issue no reset-status query at
+// all.
+TEST_P(RasterDecoderReadbackResetTest,
+       ReadbackARGBImagePixelsWithoutWorkaroundDoesNotQueryResetStatus) {
+  Init(/*with_workaround=*/false);
+  Mailbox mailbox = CreateInaccessibleSharedImage();
+  *Result() = 0;
+  std::ranges::fill(Pixels(), 0xAA);
+
+  EXPECT_CALL(*gl_, GetError()).WillRepeatedly(Return(GL_NO_ERROR));
+  EXPECT_CALL(*gl_, GetGraphicsResetStatusARB()).Times(0);
+
+  ExpectHealthyNonDelivery(mailbox);
+}
+
+// Note: The suite parameter is RasterDecoderTestBase's
+// ignore_cached_state_for_test_.
+INSTANTIATE_TEST_SUITE_P(Service,
+                         RasterDecoderReadbackResetTest,
                          ::testing::Bool());
 
 }  // namespace raster

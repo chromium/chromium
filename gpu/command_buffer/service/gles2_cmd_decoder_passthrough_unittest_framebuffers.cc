@@ -171,6 +171,55 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   }
 }
 
+// With check_graphics_reset_status_after_readback enabled and no reset
+// reported, the synchronous ReadPixels path must deliver results unchanged.
+// The rejection leg requires a driver that latches a reset while the read is
+// blocked and is exercised on-device; ANGLE's NULL backend cannot forge one.
+class GLES2DecoderPassthroughResetCheckTest
+    : public GLES2DecoderPassthroughTest {
+ public:
+  GLES2DecoderPassthroughResetCheckTest() {
+    workarounds_for_test_.check_graphics_reset_status_after_readback = true;
+  }
+};
+
+// Tests that the passthrough ReadPixels path delivers results normally with
+// `check_graphics_reset_status_after_readback` enabled on a healthy driver.
+TEST_F(GLES2DecoderPassthroughResetCheckTest,
+       ReadPixelsWithResetCheckWorkaroundDeliversResult) {
+  auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
+  uint32_t result_shm_id = shared_memory_id_;
+  uint32_t result_shm_offset = kSharedMemoryOffset;
+  uint32_t pixels_shm_id = shared_memory_id_;
+  uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
+  // SAFETY: shared memory extends past Result by at least the 4-byte pixel.
+  base::span<uint8_t> dest =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(result + 1), 4u));
+
+  cmds::ClearColor clear_color_cmd;
+  clear_color_cmd.Init(0.0f, 1.0f, 0.0f, 1.0f);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(clear_color_cmd));
+  cmds::Clear clear_cmd;
+  clear_cmd.Init(GL_COLOR_BUFFER_BIT);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(clear_cmd));
+
+  // Sentinel bytes; the NULL backend overwrites in-bounds readback bytes
+  // with a constant non-zero value (see FramebufferNULL::readPixels).
+  std::ranges::fill(dest, 1);
+
+  cmds::ReadPixels cmd;
+  cmd.Init(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels_shm_id,
+           pixels_shm_offset, result_shm_id, result_shm_offset, false);
+  result->success = 0;
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_TRUE(result->success);
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  EXPECT_FALSE(GetDecoder()->WasContextLost());
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_EQ(42u, dest[i]) << "readback byte " << i << " not delivered";
+  }
+}
+
 TEST_F(GLES3DecoderPassthroughTest, ReadPixelsAsync) {
   auto* result = GetSharedMemoryAs<cmds::ReadPixels::Result*>();
   const GLsizei kWidth = 4;

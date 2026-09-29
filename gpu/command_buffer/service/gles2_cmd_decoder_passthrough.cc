@@ -2603,6 +2603,18 @@ error::Error GLES2DecoderPassthroughImpl::ProcessReadPixels(bool did_finish) {
         break;
       }
 
+      // If the context was reset while this readback was queued, the pack
+      // buffer's backing store was never written; mapping it may deliver
+      // uninitialized driver memory on certain GPUs. The sync readback lane is
+      // covered inside ANGLE (checkGraphicsResetStatusAfterReadback).
+      if (feature_info_->workarounds()
+              .check_graphics_reset_status_after_readback &&
+          !WasContextLost() && CheckResetStatus()) {
+        pending_read_pixels_.pop_front();
+        group_->LoseContexts(error::kUnknown);
+        return error::kLostContext;
+      }
+
       api()->glBindBufferFn(GL_PIXEL_PACK_BUFFER,
                             pending_read_pixels.buffer_service_id);
       void* data = nullptr;

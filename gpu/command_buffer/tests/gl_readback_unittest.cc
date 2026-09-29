@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -414,5 +415,191 @@ TEST_F(GLReadbackTest, PackLargeRowLengthSeparatelyPackBuffer) {
   EXPECT_EQ(kExpectedColor[3], actualColorRow1[3]);
 #endif
 }
+
+// check_graphics_reset_status_after_readback must not change readback behavior
+// on a healthy context. The rejection leg requires a driver that
+// force-completes discarded work across a queue-group fatal and is exercised
+// on-device; conformant drivers never report a reset here.
+class GLReadbackResetCheckTest : public testing::TestWithParam<bool> {
+ protected:
+  void SetUp() override {
+    GpuDriverBugWorkarounds workarounds;
+    workarounds.check_graphics_reset_status_after_readback = GetParam();
+    gl_.InitializeWithWorkarounds(GLManager::Options(), workarounds);
+  }
+  void TearDown() override { gl_.Destroy(); }
+  GLManager gl_;
+};
+
+// Tests end to end that a healthy blocking ReadPixels into client memory is
+// byte-exact with the workaround both on and off via the suite parameter.
+// This ensures check_graphics_reset_status_after_readback changes nothing
+// outside its trigger (crbug.com/552550589).
+TEST_P(GLReadbackResetCheckTest, ReadPixelsClientMemoryUnaffected) {
+  glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  uint8_t pixels[4] = {1, 2, 3, 4};
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_EQ(0u, pixels[0]);
+  EXPECT_EQ(255u, pixels[1]);
+  EXPECT_EQ(0u, pixels[2]);
+  EXPECT_EQ(255u, pixels[3]);
+}
+
+// Same shape as ReadPixelsClientMemoryUnaffected, but with an explicit flush
+// between produce and read (delivery after a pipeline break).
+TEST_P(GLReadbackResetCheckTest,
+       ReadPixelsAfterClearAndFlushDeliversClearColor) {
+  // A full FBO clear + flush followed by a blocking readback is the sequence
+  // from crbug.com/550525698. With the reset-status check enabled and a
+  // healthy context, the readback must deliver the clear color unchanged.
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  const uint8_t kRed[4] = {255, 0, 0, 255};
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               kRed);
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
+  ASSERT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glFlush();
+
+  uint8_t pixel[4] = {1, 2, 3, 4};
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_EQ(0u, pixel[0]);
+  EXPECT_EQ(0u, pixel[1]);
+  EXPECT_EQ(255u, pixel[2]);
+  EXPECT_EQ(255u, pixel[3]);
+
+  glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &texture);
+}
+
+// Readbacks of freshly generated mip levels must deliver the generated content
+// on a healthy context with check_graphics_reset_status_after_readback enabled.
+// The rejection leg (the generation transfer discarded by a queue-group fatal
+// while the readback is blocked) requires affected hardware and is exercised
+// on-device. Level-1 framebuffer attachment requires ES3.
+INSTANTIATE_TEST_SUITE_P(Service, GLReadbackResetCheckTest, ::testing::Bool());
+
+class GLReadbackResetCheckES3Test : public testing::TestWithParam<bool> {
+ protected:
+  void SetUp() override {
+    GpuDriverBugWorkarounds workarounds;
+    workarounds.check_graphics_reset_status_after_readback = GetParam();
+    GLManager::Options options;
+    options.context_type = CONTEXT_TYPE_OPENGLES3;
+    gl_.InitializeWithWorkarounds(options, workarounds);
+  }
+  void TearDown() override { gl_.Destroy(); }
+  GLManager gl_;
+};
+
+// Tests that a generateMipmap-defined level (the crbug.com/550996500
+// producer) reads back correctly on ES3, with the workaround on and off
+// via the suite parameter.
+TEST_P(GLReadbackResetCheckES3Test, GenerateMipmapLevelReadbackUnaffected) {
+  if (!gl_.IsInitialized()) {
+    LOG(INFO) << "ES3 context unavailable, skipping.";
+    return;
+  }
+  constexpr GLsizei kSize = 8;
+  std::vector<uint8_t> blue(kSize * kSize * 4);
+  for (size_t i = 0; i < blue.size(); i += 4) {
+    blue[i + 0] = 0;
+    blue[i + 1] = 0;
+    blue[i + 2] = 255;
+    blue[i + 3] = 255;
+  }
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexStorage2DEXT(GL_TEXTURE_2D, /*levels=*/2, GL_RGBA8, kSize, kSize);
+  glTexSubImage2D(GL_TEXTURE_2D, /*level=*/0, /*xoffset=*/0, /*yoffset=*/0,
+                  kSize, kSize, GL_RGBA, GL_UNSIGNED_BYTE, blue.data());
+
+  glGenerateMipmap(GL_TEXTURE_2D);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, /*level=*/1);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  ASSERT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  uint8_t pixel[4] = {1, 2, 3, 4};
+  glReadPixels(0, 0, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+  EXPECT_EQ(0u, pixel[0]);
+  EXPECT_EQ(0u, pixel[1]);
+  EXPECT_EQ(255u, pixel[2]);
+  EXPECT_EQ(255u, pixel[3]);
+}
+
+// Tests end to end that a copyTexImage2D-defined level reads back exactly
+// with the workaround forced on, on both decoders (crbug.com/558111285).
+TEST_F(GLReadbackTest, ReadPixelsAfterCopyTexImage2DWithResetCheckWorkaround) {
+  const GLsizei kSize = 64;
+  GLManager::Options options;
+  options.size = gfx::Size(kSize, kSize);
+  GpuDriverBugWorkarounds workarounds;
+  workarounds.check_graphics_reset_status_after_readback = true;
+  gl_.Destroy();
+  gl_.InitializeWithWorkarounds(options, workarounds);
+  if (!gl_.IsInitialized()) {
+    return;
+  }
+
+  const uint8_t kExpectedColor[4] = {65, 128, 192, 255};
+
+  glClearColor(kExpectedColor[0] / 255.0f, kExpectedColor[1] / 255.0f,
+               kExpectedColor[2] / 255.0f, kExpectedColor[3] / 255.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  GLuint texture = 0;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, kSize, kSize, 0);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture, 0);
+  ASSERT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  uint8_t actual[4] = {0};
+  glReadPixels(kSize / 2, kSize / 2, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, actual);
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  EXPECT_EQ(kExpectedColor[0], actual[0]);
+  EXPECT_EQ(kExpectedColor[1], actual[1]);
+  EXPECT_EQ(kExpectedColor[2], actual[2]);
+  EXPECT_EQ(kExpectedColor[3], actual[3]);
+
+  glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &texture);
+}
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLReadbackResetCheckES3Test,
+                         ::testing::Bool());
 
 }  // namespace gpu

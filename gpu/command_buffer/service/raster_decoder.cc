@@ -2459,6 +2459,23 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
   auto helper_result =
       helper.ReadPixels(src_x, src_y, plane_index, row_bytes, dst_info,
                         pixel_address, std::move(source_shared_image));
+  // A device reset that occurs while the readback executes can complete it
+  // without error while the destination was never written on certain GPUs. If
+  // the robustness extension reports a reset, scrub the destination and refuse
+  // to publish the result instead of delivering unwritten allocation
+  // contents. CheckResetStatus() marks the context lost when it returns
+  // true.
+  if (workarounds().check_graphics_reset_status_after_readback &&
+      !WasContextLost() && CheckResetStatus()) {
+    // SAFETY: `pixel_address` was validated against shared memory for
+    // exactly `byte_size` bytes earlier in this function.
+    std::ranges::fill(UNSAFE_BUFFERS(base::span(
+                          static_cast<uint8_t*>(pixel_address), byte_size)),
+                      0);
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "readback aborted: device reset detected");
+    return;
+  }
   if (!helper_result.has_value()) {
     LOCAL_SET_GL_ERROR(helper_result.error().gl_error,
                        helper_result.error().function_name.c_str(),
@@ -2723,6 +2740,18 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   if (!yuv_result.async_result || is_context_lost) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
                        "Failed to read pixels from SkImage");
+    return;
+  }
+
+  // Refuse to deliver readback results after a device reset — a reset can fire
+  // the async-read completion over never-written buffers. The plane
+  // destinations have not been written yet on this path, so there is nothing to
+  // scrub; the shm result stays 0. CheckResetStatus() marks the context lost
+  // when it returns true.
+  if (workarounds().check_graphics_reset_status_after_readback &&
+      !WasContextLost() && CheckResetStatus()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackYUVImagePixels",
+                       "readback aborted: device reset detected");
     return;
   }
 
