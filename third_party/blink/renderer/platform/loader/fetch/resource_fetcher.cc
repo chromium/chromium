@@ -1990,6 +1990,9 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
       builder.Append(
           "because it is a cross-world service worker resource mismatch.");
       break;
+    case Resource::MatchStatus::kSkipServiceWorkerDoesNotMatch:
+      builder.Append("because the Service Worker skip policy does not match.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

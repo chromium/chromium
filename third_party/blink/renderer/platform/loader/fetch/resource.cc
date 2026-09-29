@@ -86,6 +86,11 @@ BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
 BASE_FEATURE(kPreventCrossWorldServiceWorkerResourceReuse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature that prevents resources from being reused if the Service Worker skip
+// policy differs between the existing and new requests.
+BASE_FEATURE(kPreventDifferentSkipServiceWorkerResourceReuse,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 String GetAsAttributeFromResourceType(ResourceType type) {
   switch (type) {
     case ResourceType::kImage:
@@ -919,6 +924,13 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
       !AreSameWorld(options_.world_for_csp.Get(),
                     new_options.world_for_csp.Get())) {
     return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kPreventDifferentSkipServiceWorkerResourceReuse) &&
+      current_request.GetSkipServiceWorker() !=
+          new_request.GetSkipServiceWorker()) {
+    return MatchStatus::kSkipServiceWorkerDoesNotMatch;
   }
 
   // If credentials mode is different from the the previous request, re-fetch
