@@ -101,7 +101,7 @@ bool ParseRepeatedValue(const JSONArray& arr,
       }
       values = Values::NewEntityValues({});
       break;
-    case JSONArray::ValueType::kTypeArray:
+    case JSONValue::ValueType::kTypeArray:
       // App Indexing doesn't support nested arrays.
       return false;
   }
@@ -243,10 +243,9 @@ void ExtractTopLevelEntity(const JSONObject& val, Vector<EntityPtr>& entities) {
 
 void ExtractEntitiesFromArray(const JSONArray& arr,
                               Vector<EntityPtr>& entities) {
-  for (wtf_size_t i = 0; i < arr.size(); ++i) {
-    const JSONValue* val = arr.at(i);
-    if (val->GetType() == JSONValue::ValueType::kTypeObject) {
-      ExtractTopLevelEntity(*(JSONObject::Cast(val)), entities);
+  for (const JSONValue& val : arr) {
+    if (const JSONObject* obj = JSONObject::Cast(&val)) {
+      ExtractTopLevelEntity(*obj, entities);
     }
   }
 }
