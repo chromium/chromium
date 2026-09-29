@@ -929,9 +929,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(find_tab_helper);
 
   // 4. Initiate a find request and wait for the IPC reply.
-  find_tab_helper->StartFinding(
-      u"findme", /*forward_direction=*/true, /*case_sensitive=*/false,
-      /*find_match=*/true, /*run_synchronously_for_testing=*/true);
+  find_tab_helper->StartFinding(u"findme", /*forward_direction=*/true,
+                                /*case_sensitive=*/false,
+                                /*find_match=*/true, /*scroll_to_match=*/true,
+                                /*run_synchronously_for_testing=*/true);
   ui_test_utils::FindResultWaiter observer(irm_contents);
   observer.Wait();
 

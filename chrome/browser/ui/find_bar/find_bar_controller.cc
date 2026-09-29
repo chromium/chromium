@@ -107,20 +107,26 @@ void FindBarController::Show(bool find_next, bool forward_direction) {
 
   std::u16string selected_text = GetSelectedText();
   auto selected_length = selected_text.length();
+  bool find_match = false;
   if (selected_length > 0 && selected_length <= 250 &&
       find_bar->CanPopulateFromSelectedText()) {
     find_bar->SetFindTextAndSelectedRange(
         selected_text, gfx::Range(0, selected_text.length()));
+    find_match = true;
   }
   // Since this isn't a find-next operation, we don't want to jump to any
   // matches. Doing so could cause the page to scroll when a user is just
   // trying to pull up the find bar — they might not even want to search for
   // whatever is prefilled (e.g. the selected text or the global pasteboard).
-  // So we set |find_match| to false, which will set up match counts and
-  // highlighting, but not jump to any matches.
+  //
+  // However, if the text was prefilled from selection, the selected word is
+  // already visible in the viewport. In this case, we can set |find_match| to
+  // true and |scroll_to_match| to false. This allows the selection to be
+  // designated as the active match (highlighted in orange, UI showing index)
+  // without triggering any scrolling.
   find_tab_helper->StartFinding(
-      std::u16string(find_bar->GetFindText()), true /* forward_direction */,
-      false /* case_sensitive */, false /* find_match */);
+      std::u16string(find_bar->GetFindText()), /*forward_direction=*/true,
+      /*case_sensitive=*/false, find_match, /*scroll_to_match=*/false);
 }
 
 void FindBarController::EndFindSession(

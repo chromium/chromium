@@ -238,6 +238,14 @@ bool TextFinder::FindInternal(int identifier,
   if (active_selection) {
     active_match_ = CreateRange(FirstEphemeralRangeOf(selection));
     OwnerFrame().GetFrame()->Selection().Clear();
+
+    // If scroll_to_match is false, the find-in-page session is initialized
+    // from the selection. Collapse the reference range using the search
+    // direction to prevent Editor::FindRangeOfString from skipping the
+    // selection itself.
+    if (!options.scroll_to_match) {
+      active_match_->collapse(options.forward);
+    }
   }
 
   DCHECK(OwnerFrame().GetFrame());
@@ -285,25 +293,28 @@ bool TextFinder::FindInternal(int identifier,
     }
   }
 
-  std::unique_ptr<AsyncScrollContext> scroll_context =
-      std::make_unique<AsyncScrollContext>();
-  scroll_context->identifier = identifier;
-  scroll_context->search_text = search_text;
-  scroll_context->options = options;
-  // Set new_session to false to make sure that subsequent searches are
-  // incremental instead of repeatedly finding the same match.
-  scroll_context->options.new_session = false;
-  scroll_context->wrap_within_frame = wrap_within_frame;
-  scroll_context->range = active_match_.Get();
-  scroll_context->first_match = first_match ? first_match : active_match_.Get();
-  scroll_context->wrapped_around = wrapped_around;
-  if (options.run_synchronously_for_testing) {
-    Scroll(std::move(scroll_context));
-  } else {
-    scroll_task_.Reset(BindOnce(&TextFinder::Scroll, WrapWeakPersistent(this),
-                                std::move(scroll_context)));
-    GetFrame()->GetDocument()->EnqueueAnimationFrameTask(
-        scroll_task_.callback());
+  if (options.scroll_to_match) {
+    std::unique_ptr<AsyncScrollContext> scroll_context =
+        std::make_unique<AsyncScrollContext>();
+    scroll_context->identifier = identifier;
+    scroll_context->search_text = search_text;
+    scroll_context->options = options;
+    // Set new_session to false to make sure that subsequent searches are
+    // incremental instead of repeatedly finding the same match.
+    scroll_context->options.new_session = false;
+    scroll_context->wrap_within_frame = wrap_within_frame;
+    scroll_context->range = active_match_.Get();
+    scroll_context->first_match =
+        first_match ? first_match : active_match_.Get();
+    scroll_context->wrapped_around = wrapped_around;
+    if (options.run_synchronously_for_testing) {
+      Scroll(std::move(scroll_context));
+    } else {
+      scroll_task_.Reset(BindOnce(&TextFinder::Scroll, WrapWeakPersistent(this),
+                                  std::move(scroll_context)));
+      GetFrame()->GetDocument()->EnqueueAnimationFrameTask(
+          scroll_task_.callback());
+    }
   }
 
   bool was_active_frame = current_active_match_frame_;

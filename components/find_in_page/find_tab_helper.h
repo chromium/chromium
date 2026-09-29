@@ -56,10 +56,13 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
   //
   // |find_match| controls whether to find the first match or to only do match
   // counts and highlighting.
+  // |scroll_to_match| controls whether the viewport should scroll to the
+  // activated match. Only applicable if |find_match| is true.
   void StartFinding(std::u16string search_string,
                     bool forward_direction,
                     bool case_sensitive,
                     bool find_match,
+                    bool scroll_to_match = true,
                     bool run_synchronously_for_testing = false);
 
   // Stops the current Find operation.

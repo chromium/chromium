@@ -122,4 +122,7 @@ struct FindOptions {
   // Signifies whether we should force text scoping to happen immediately
   // or not. Only used for testing purposes.
   bool run_synchronously_for_testing = false;
+
+  // Controls whether the viewport should scroll to the active match.
+  bool scroll_to_match = true;
 };

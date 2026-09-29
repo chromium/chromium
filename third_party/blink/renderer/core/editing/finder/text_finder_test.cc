@@ -18,15 +18,21 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_in_page_coordinates.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/set_selection_options.h"
+#include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -826,6 +832,286 @@ TEST_F(TextFinderTest, CommentAfterDoucmentElement) {
   GetTextFinder().StartScopingStringMatches(identifier, "a", *find_options);
   EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
   EXPECT_FALSE(GetTextFinder().ScopingInProgress());
+}
+
+TEST_F(TextFinderTest, FindWithScrollToMatchFalse) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span>abc</span> <span>abc</span> <span>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Set the DOM selection to the second "abc" span.
+  // childNodes are: 0:div (Spacer), 1:span (first abc), 2:#text whitespace,
+  // 3:span (second abc), 4:#text whitespace, 5:span (third abc), 6:div (Spacer)
+  Node* abc_node = GetDocument().body()->childNodes()->item(3)->firstChild();
+
+  // Make sure the frame has focus/active state so selection is visible and not
+  // cleared/ignored.
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(abc_node, 0))
+          .Extend(Position(abc_node, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  EXPECT_FALSE(GetDocument()
+                   .GetFrame()
+                   ->Selection()
+                   .ComputeVisibleSelectionInDomTree()
+                   .IsNone());
+
+  // Ensure scroll position is initialized to (0, 0).
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  viewport->SetScrollOffset(ScrollOffset(0, 0),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = false;
+  find_options->run_synchronously_for_testing = true;
+  bool wrap_within_frame = true;
+
+  // We find 'abc' with scroll_to_match set to false.
+  // It should successfully identify the second "abc" selection as the active
+  // match, set it as active_match_, and set should_locate_active_rect_ to true.
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   wrap_within_frame));
+
+  Range* active_match = GetTextFinder().ActiveMatch();
+  ASSERT_TRUE(active_match);
+  EXPECT_EQ(abc_node, active_match->startContainer());
+  EXPECT_EQ(0u, active_match->startOffset());
+  EXPECT_EQ(abc_node, active_match->endContainer());
+  EXPECT_EQ(3u, active_match->endOffset());
+
+  // Verify that NO scrolling happened since scroll_to_match is false.
+  EXPECT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  // Also verify that when we scope, the active match is correctly identified as
+  // index 1 (ordinal 2).
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(3, GetTextFinder().TotalMatchCount());
+
+  // Now perform another search with scroll_to_match set to true.
+  auto find_options_scroll = mojom::blink::FindOptions::New();
+  find_options_scroll->new_session = true;
+  find_options_scroll->find_match = true;
+  find_options_scroll->scroll_to_match = true;
+  find_options_scroll->run_synchronously_for_testing = true;
+
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text,
+                                   *find_options_scroll, wrap_within_frame));
+
+  // Verify that scrolling DID happen since scroll_to_match is true.
+  EXPECT_GT(viewport->GetScrollOffset().y(), 0);
+}
+
+TEST_F(TextFinderTest, FindWithScrollToMatchFalse_LeadingTrailingWhitespace) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span>  abc  </span>"
+      "<div style='height: 2000px;'>Spacer</div>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Set the DOM selection to the text node including its spaces.
+  Node* abc_node = GetDocument().body()->childNodes()->item(1)->firstChild();
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  // Select "  abc  " (length is 7: 2 spaces, "abc", 2 spaces).
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(abc_node, 0))
+          .Extend(Position(abc_node, 7))
+          .Build(),
+      SetSelectionOptions());
+
+  EXPECT_FALSE(GetDocument()
+                   .GetFrame()
+                   ->Selection()
+                   .ComputeVisibleSelectionInDomTree()
+                   .IsNone());
+
+  // Initialize scroll offset to (0, 0).
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  viewport->SetScrollOffset(ScrollOffset(0, 0),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");  // Trimmed search query
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = false;
+  find_options->run_synchronously_for_testing = true;
+  bool wrap_within_frame = true;
+
+  // Perform find. It should successfully identify the trimmed "abc" within the
+  // untrimmed active selection as the match, validating and correcting the
+  // range offsets.
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   wrap_within_frame));
+
+  Range* active_match = GetTextFinder().ActiveMatch();
+  ASSERT_TRUE(active_match);
+  EXPECT_EQ(abc_node, active_match->startContainer());
+  EXPECT_EQ(2u,
+            active_match
+                ->startOffset());  // Starts at index 2 (after 2 leading spaces)
+  EXPECT_EQ(abc_node, active_match->endContainer());
+  EXPECT_EQ(
+      5u,
+      active_match->endOffset());  // Ends at index 5 (before trailing spaces)
+
+  // Verify that NO scrolling happened.
+  EXPECT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  // Verify that scoping correctly identifies and matches the trimmed bounds.
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
+}
+
+TEST_F(TextFinderTest, FindWithScrollToMatchFalse_UnrelatedSelection) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span>xyz</span> <span>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Set the DOM selection to "xyz", while we are searching for "abc".
+  Node* xyz_node = GetDocument().body()->childNodes()->item(1)->firstChild();
+  Node* abc_node = GetDocument().body()->childNodes()->item(3)->firstChild();
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(xyz_node, 0))
+          .Extend(Position(xyz_node, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  EXPECT_FALSE(GetDocument()
+                   .GetFrame()
+                   ->Selection()
+                   .ComputeVisibleSelectionInDomTree()
+                   .IsNone());
+
+  // Initialize scroll offset to (0, 0).
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  viewport->SetScrollOffset(ScrollOffset(0, 0),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = false;
+  find_options->run_synchronously_for_testing = true;
+  bool wrap_within_frame = true;
+
+  // Perform find. Since the selection "xyz" is completely unrelated to "abc",
+  // TextFinder should correctly search forward and designate "abc" as the
+  // active match.
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   wrap_within_frame));
+
+  Range* active_match = GetTextFinder().ActiveMatch();
+  ASSERT_TRUE(active_match);
+  EXPECT_EQ(abc_node, active_match->startContainer());
+  EXPECT_EQ(0u, active_match->startOffset());
+  EXPECT_EQ(abc_node, active_match->endContainer());
+  EXPECT_EQ(3u, active_match->endOffset());
+
+  // Verify that NO scrolling happened.
+  EXPECT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  // Verify scoping.
+  GetTextFinder().ResetMatchCount();
+  GetTextFinder().StartScopingStringMatches(identifier, search_text,
+                                            *find_options);
+  EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
+}
+
+TEST_F(TextFinderTest, FindWithScrollToMatchFalse_BackwardSearch) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div style='height: 2000px;'>Spacer</div>"
+      "<span>abc</span> <span>abc</span> <span>abc</span>"
+      "<div style='height: 2000px;'>Spacer</div>");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Set the DOM selection to the second "abc" span.
+  // childNodes are: 0:div (Spacer), 1:span (first abc), 2:#text whitespace,
+  // 3:span (second abc), 4:#text whitespace, 5:span (third abc), 6:div (Spacer)
+  Node* abc_node = GetDocument().body()->childNodes()->item(3)->firstChild();
+
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDomTree::Builder()
+          .Collapse(Position(abc_node, 0))
+          .Extend(Position(abc_node, 3))
+          .Build(),
+      SetSelectionOptions());
+
+  EXPECT_FALSE(GetDocument()
+                   .GetFrame()
+                   ->Selection()
+                   .ComputeVisibleSelectionInDomTree()
+                   .IsNone());
+
+  // Initialize scroll offset to (0, 0).
+  ScrollableArea* viewport = GetDocument().View()->LayoutViewport();
+  viewport->SetScrollOffset(ScrollOffset(0, 0),
+                            mojom::blink::ScrollType::kProgrammatic,
+                            cc::ScrollSourceType::kNone);
+  ASSERT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
+
+  int identifier = 0;
+  String search_text("abc");
+  auto find_options = mojom::blink::FindOptions::New();
+  find_options->new_session = true;
+  find_options->find_match = true;
+  find_options->scroll_to_match = false;
+  find_options->forward = false;  // Backward search!
+  find_options->run_synchronously_for_testing = true;
+  bool wrap_within_frame = true;
+
+  // Perform find. It should successfully identify the second "abc" selection
+  // as the active match (without skipping it backward to the first "abc").
+  EXPECT_TRUE(GetTextFinder().Find(identifier, search_text, *find_options,
+                                   wrap_within_frame));
+
+  Range* active_match = GetTextFinder().ActiveMatch();
+  ASSERT_TRUE(active_match);
+  EXPECT_EQ(abc_node, active_match->startContainer());
+  EXPECT_EQ(0u, active_match->startOffset());
+  EXPECT_EQ(abc_node, active_match->endContainer());
+  EXPECT_EQ(3u, active_match->endOffset());
+
+  // Verify that NO scrolling happened.
+  EXPECT_EQ(ScrollOffset(0, 0), viewport->GetScrollOffset());
 }
 
 }  // namespace blink
