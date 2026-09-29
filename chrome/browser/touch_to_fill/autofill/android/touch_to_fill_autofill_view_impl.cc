@@ -52,6 +52,17 @@ bool TouchToFillAutofillViewImpl::ShowPersonalContextNotice(
   return true;
 }
 
+bool TouchToFillAutofillViewImpl::ShowPrivateInferenceNotice(
+    TouchToFillAutofillController* controller) {
+  if (!EnsureJavaBridge(controller)) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TouchToFillAutofillViewBridge_showPrivateInferenceNotice(env,
+                                                                java_object_);
+  return true;
+}
+
 void TouchToFillAutofillViewImpl::Hide() {
   if (java_object_) {
     JNIEnv* env = base::android::AttachCurrentThread();

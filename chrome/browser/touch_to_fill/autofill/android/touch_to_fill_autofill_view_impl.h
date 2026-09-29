@@ -32,6 +32,8 @@ class TouchToFillAutofillViewImpl : public TouchToFillAutofillView {
   // TouchToFillAutofillView:
   bool ShowPersonalContextNotice(
       TouchToFillAutofillController* controller) override;
+  bool ShowPrivateInferenceNotice(
+      TouchToFillAutofillController* controller) override;
   void Hide() override;
 
   // JNI methods.

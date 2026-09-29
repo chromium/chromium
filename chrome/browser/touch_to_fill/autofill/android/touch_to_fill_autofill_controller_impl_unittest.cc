@@ -33,11 +33,16 @@ class MockTouchToFillAutofillView : public TouchToFillAutofillView {
  public:
   MockTouchToFillAutofillView() {
     ON_CALL(*this, ShowPersonalContextNotice).WillByDefault(Return(true));
+    ON_CALL(*this, ShowPrivateInferenceNotice).WillByDefault(Return(true));
   }
   ~MockTouchToFillAutofillView() override = default;
 
   MOCK_METHOD(bool,
               ShowPersonalContextNotice,
+              (TouchToFillAutofillController * controller),
+              (override));
+  MOCK_METHOD(bool,
+              ShowPrivateInferenceNotice,
               (TouchToFillAutofillController * controller),
               (override));
   MOCK_METHOD(void, Hide, (), (override));
@@ -151,6 +156,13 @@ TEST_F(TouchToFillAutofillControllerImplTest, ShowNoticePassesToTheView) {
 
   EXPECT_CALL(*mock_view_, ShowPersonalContextNotice);
   EXPECT_TRUE(autofill_controller().ShowPersonalContextNotice(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer()));
+}
+
+TEST_F(TouchToFillAutofillControllerImplTest,
+       ShowPrivateInferenceNoticePassesToTheView) {
+  EXPECT_CALL(*mock_view_, ShowPrivateInferenceNotice);
+  EXPECT_TRUE(autofill_controller().ShowPrivateInferenceNotice(
       std::move(mock_view_), ttf_delegate().GetWeakPointer()));
 }
 

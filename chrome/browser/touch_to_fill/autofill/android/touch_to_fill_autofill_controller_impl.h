@@ -47,6 +47,9 @@ class TouchToFillAutofillControllerImpl
   bool ShowPersonalContextNotice(
       std::unique_ptr<TouchToFillAutofillView> view,
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
+  bool ShowPrivateInferenceNotice(
+      std::unique_ptr<TouchToFillAutofillView> view,
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate) override;
   void OnNoticeAcknowledged() override;
   void OnSettingsLinkClicked() override;
   void OnDismissed() override;

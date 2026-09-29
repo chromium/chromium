@@ -84,6 +84,15 @@ public class TouchToFillAutofillViewBridgeTest {
     }
 
     @Test
+    public void testShowPrivateInferenceNotice_RegistersObserver() {
+        mBridge.showPrivateInferenceNotice();
+        ArgumentCaptor<BottomSheetObserver> captor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController, atLeastOnce()).addObserver(captor.capture());
+        assertNotNull(captor.getAllValues().get(0));
+    }
+
+    @Test
     public void testDestroy_RemovesObserver() {
         mBridge.showPersonalContextNotice();
         ArgumentCaptor<BottomSheetObserver> captor =

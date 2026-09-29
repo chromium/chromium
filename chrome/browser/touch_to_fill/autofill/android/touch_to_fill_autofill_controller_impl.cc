@@ -83,6 +83,14 @@ bool TouchToFillAutofillControllerImpl::ShowPersonalContextNotice(
   return view_->ShowPersonalContextNotice(this);
 }
 
+bool TouchToFillAutofillControllerImpl::ShowPrivateInferenceNotice(
+    std::unique_ptr<TouchToFillAutofillView> view,
+    base::WeakPtr<TouchToFillAutofillDelegate> delegate) {
+  view_ = std::move(view);
+  delegate_ = delegate;
+  return view_->ShowPrivateInferenceNotice(this);
+}
+
 void TouchToFillAutofillControllerImpl::OnNoticeAcknowledged() {
   if (delegate_) {
     delegate_->OnNoticeAcknowledged();

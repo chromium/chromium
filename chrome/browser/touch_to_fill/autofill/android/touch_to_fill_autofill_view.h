@@ -18,6 +18,8 @@ class TouchToFillAutofillView {
 
   virtual bool ShowPersonalContextNotice(
       TouchToFillAutofillController* controller) = 0;
+  virtual bool ShowPrivateInferenceNotice(
+      TouchToFillAutofillController* controller) = 0;
   virtual void Hide() = 0;
 };
 

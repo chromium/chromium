@@ -85,11 +85,21 @@ class TouchToFillAutofillViewBridge implements TouchToFillAutofillComponent.Dele
 
     @CalledByNative
     void showPersonalContextNotice() {
+        registerBottomSheetObserver();
+        mComponent.showPersonalContextNotice();
+    }
+
+    @CalledByNative
+    void showPrivateInferenceNotice() {
+        registerBottomSheetObserver();
+        mComponent.showPrivateInferenceNotice();
+    }
+
+    private void registerBottomSheetObserver() {
         if (!mIsObserverRegistered) {
             mBottomSheetController.addObserver(mBottomSheetObserver);
             mIsObserverRegistered = true;
         }
-        mComponent.showPersonalContextNotice();
     }
 
     @CalledByNative

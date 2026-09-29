@@ -25,9 +25,15 @@ class TouchToFillAutofillController : public TouchToFillControllerBase {
 
   ~TouchToFillAutofillController() override = default;
 
-  // Shows the Touch To Fill notice screen. Returns whether the surface was
+  // Shows the Personal Context notice screen. Returns whether the surface was
   // successfully shown.
   virtual bool ShowPersonalContextNotice(
+      std::unique_ptr<TouchToFillAutofillView> view,
+      base::WeakPtr<TouchToFillAutofillDelegate> delegate) = 0;
+
+  // Shows the Autofill AI private inference notice screen. Returns whether the
+  // surface was successfully shown.
+  virtual bool ShowPrivateInferenceNotice(
       std::unique_ptr<TouchToFillAutofillView> view,
       base::WeakPtr<TouchToFillAutofillDelegate> delegate) = 0;
 
