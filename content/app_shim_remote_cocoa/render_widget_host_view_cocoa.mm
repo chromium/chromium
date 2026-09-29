@@ -2602,34 +2602,35 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 // Each RenderWidgetHostViewCocoa has its own input context, but we return
 // nil when the caret is in non-editable content or password box to avoid
 // making input methods do their work.
-//
-// We disable input method inside password field as it is normal for macOS
-// password input fields to not allow dead keys or non ASCII input methods.
-// There is also a privacy risk if the composition candidate window shows your
-// password when the user is "composing" inside a password field. See
-// https://crbug.com/40759416 for more info.
-//
-// If AutoFill support has been disabled and we're currently showing a native
-// context menu, then we return nil in order to ensure that macOS does NOT add
-// any "AutoFill" items (contact, passwords, etc.) to the menu. This logic
-// mirrors `ui/views/cocoa/text_input_host.mm`.
 - (NSTextInputContext*)inputContext {
   if (_textInputType == ui::TEXT_INPUT_TYPE_NONE ||
       _textInputType == ui::TEXT_INPUT_TYPE_PASSWORD) {
     return nil;
   }
 
-  if (_textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
-      _textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+  // Disable input method inside password field as it is normal for macOS
+  // password input fields to not allow dead keys or non ASCII input methods.
+  // There is also a privacy risk if the composition candidate window shows your
+  // password when the user is "composing" inside a password field. See
+  // https://crbug.com/40759416 for more info.
+  //
+  // Do not disable input methods for "custom password" fields
+  // (TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) as the heuristic is weak and has
+  // too many false positives; https://crbug.com/567321058.
+  if (_textInputFlags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
     return nil;
   }
 
+  // If AutoFill support is disabled and a native context menu is being shown,
+  // then return nil in order to ensure that macOS does NOT add any "AutoFill"
+  // items (contact, passwords, etc.) to the menu. This logic mirrors
+  // `ui/views/cocoa/text_input_host.mm`.
   if (!_supportsAutoFill &&
       ui::GetActiveCocoaMenuAnchorLocation().has_value()) {
     return nil;
   }
 
-  return [super inputContext];
+  return super.inputContext;
 }
 
 - (BOOL)hasMarkedText {

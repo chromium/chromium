@@ -1105,8 +1105,10 @@ TEST_F(BridgedNativeWidgetTest, InputContext) {
       InstallTextField(test_string, ui::TEXT_INPUT_TYPE_TEXT);
   EXPECT_TRUE(ns_view_.inputContext);
 
+  // TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD does not prevent an input context;
+  // https://crbug.com/567321058.
   text_field->SetTextInputFlags(ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD);
-  EXPECT_FALSE(ns_view_.inputContext);
+  EXPECT_TRUE(ns_view_.inputContext);
 
   GetNSWindowHost()->text_input_host()->SetTextInputClient(nullptr);
   EXPECT_FALSE(ns_view_.inputContext);

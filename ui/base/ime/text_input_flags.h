@@ -34,8 +34,9 @@ enum TextInputFlags {
   TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD = 1 << 12,
   TEXT_INPUT_FLAG_VERTICAL = 1 << 13,
   // Whether an input field is or has been a custom password field. This is a
-  // best effort heuristic to determine what a "password" is based on the
-  // field's behavior.
+  // weak heuristic to determine what a "password" is based on the field's
+  // behavior. Therefore, it is useful for masking in captures and selection
+  // behavior changes, but nothing more; see https://crbug.com/567321058.
   TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD = 1 << 14
 };
 // LINT.ThenChange(//third_party/blink/public/platform/web_text_input_type.h:WebTextInputFlags)

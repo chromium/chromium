@@ -244,13 +244,14 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
   // Returning nil prevents this view from getting messages defined as part of
   // the NSTextInputClient protocol.
   //
-  // Honor TEXT_INPUT_FLAG_HAS_BEEN_[CUSTOM_]PASSWORD: a revealed password/PIN
-  // field, or one used by a webpage as an unofficial password field, reports
-  // TEXT_INPUT_TYPE_TEXT but must still be hidden from IMEs. See
+  // Honor TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD: a revealed password/PIN field
+  // reports TEXT_INPUT_TYPE_TEXT but must still be hidden from IMEs. See
   // InputMethodBase::GetTextInputType().
+  //
+  // Do not honor TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD: the heuristic is
+  // weak and has too many false positives; https://crbug.com/567321058.
   int flags = pending_text_input_client_->GetTextInputFlags();
-  if (flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD ||
-      flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD) {
+  if (flags & ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD) {
     return true;
   }
   ui::TextInputType type = pending_text_input_client_->GetTextInputType();
