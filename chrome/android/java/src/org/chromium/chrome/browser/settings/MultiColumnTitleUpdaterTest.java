@@ -14,7 +14,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -476,40 +475,6 @@ public class MultiColumnTitleUpdaterTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testSearchViewProvider_addsSearchButtonAndSearchView() {
-        TestSearchViewProviderFragment searchViewProviderFragment =
-                new TestSearchViewProviderFragment();
-        mMultiColumnSettings
-                .getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences_detail, searchViewProviderFragment)
-                .commitNow();
-
-        List<MultiColumnSettings.Title> titles = new ArrayList<>();
-        titles.add(
-                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
-        mMultiColumnSettings.setFakeTitles(titles);
-
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
-
-        updater.onTitleUpdated();
-
-        // 1 DetailedTitle ("All Sites") + 1 search button + 1 search view = 3 views in
-        // mContainer.
-        assertEquals(3, mContainer.getChildCount());
-        SearchView searchView = searchViewProviderFragment.getSearchView();
-        assertNotNull(searchView);
-        assertNull(searchView.getBackground());
-        View searchPlate = searchView.findViewById(R.id.search_plate);
-        assertNotNull(searchPlate);
-        assertNull(searchPlate.getBackground());
-        assertEquals(mActivity.getString(R.string.search), searchView.getQueryHint());
-        var titleParams = (LinearLayout.LayoutParams) mContainer.getChildAt(0).getLayoutParams();
-        assertEquals(1f, titleParams.weight, 0.01f);
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testSearchViewProvider_openAndCloseWithBackButton() {
         TestSearchViewProviderFragment searchViewProviderFragment =
                 new TestSearchViewProviderFragment();
@@ -559,86 +524,6 @@ public class MultiColumnTitleUpdaterTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testSearchViewProvider_openAndCloseWithOnBackPressed() {
-        TestSearchViewProviderFragment searchViewProviderFragment =
-                new TestSearchViewProviderFragment();
-        mMultiColumnSettings
-                .getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences_detail, searchViewProviderFragment)
-                .commitNow();
-
-        List<MultiColumnSettings.Title> titles = new ArrayList<>();
-        titles.add(
-                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
-        mMultiColumnSettings.setFakeTitles(titles);
-
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
-        updater.onTitleUpdated();
-
-        View titleView = mContainer.getChildAt(0);
-        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
-        SearchView searchView = (SearchView) mContainer.getChildAt(2);
-
-        // Clicking search button opens search.
-        searchButton.performClick();
-        assertEquals(View.GONE, titleView.getVisibility());
-        assertEquals(View.GONE, searchButton.getVisibility());
-        assertEquals(View.VISIBLE, searchView.getVisibility());
-
-        // Pressing back dispatcher closes search.
-        mActivity.getOnBackPressedDispatcher().onBackPressed();
-        assertEquals(View.GONE, searchView.getVisibility());
-        assertEquals(View.VISIBLE, titleView.getVisibility());
-        assertEquals(View.VISIBLE, searchButton.getVisibility());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testSearchViewProvider_openAndCloseWithEscapeKey() {
-        TestSearchViewProviderFragment searchViewProviderFragment =
-                new TestSearchViewProviderFragment();
-        mMultiColumnSettings
-                .getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences_detail, searchViewProviderFragment)
-                .commitNow();
-
-        List<MultiColumnSettings.Title> titles = new ArrayList<>();
-        titles.add(
-                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
-        mMultiColumnSettings.setFakeTitles(titles);
-
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
-        updater.onTitleUpdated();
-        mActivity.setContentView(mContainer);
-
-        View titleView = mContainer.getChildAt(0);
-        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
-        SearchView searchView = (SearchView) mContainer.getChildAt(2);
-        View searchSrcTextView = searchView.findViewById(R.id.search_src_text);
-        assertNotNull(searchSrcTextView);
-
-        // Clicking search button opens search.
-        assertFalse(updater.isSearchOpen());
-        searchButton.performClick();
-        assertTrue(updater.isSearchOpen());
-        assertEquals(View.GONE, titleView.getVisibility());
-        assertEquals(View.GONE, searchButton.getVisibility());
-        assertEquals(View.VISIBLE, searchView.getVisibility());
-
-        // Pressing ESC on the search input field closes search and releases focus.
-        KeyEvent downEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE);
-        assertTrue(searchSrcTextView.dispatchKeyEvent(downEvent));
-        assertFalse(updater.isSearchOpen());
-        assertEquals(View.GONE, searchView.getVisibility());
-        assertEquals(View.VISIBLE, titleView.getVisibility());
-        assertEquals(View.VISIBLE, searchButton.getVisibility());
-        assertFalse(searchButton.isFocused());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testSearchViewProvider_handleBackAction() {
         TestSearchViewProviderFragment searchViewProviderFragment =
                 new TestSearchViewProviderFragment();
@@ -677,42 +562,6 @@ public class MultiColumnTitleUpdaterTest {
         assertTrue(updater.handleBackAction());
         assertFalse(updater.isSearchOpen());
         assertEquals(countAfterOpen + 1, visibilityChangeCount.get());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    public void testSearchViewProvider_openAndCloseWithObserver() {
-        TestSearchViewProviderFragment searchViewProviderFragment =
-                new TestSearchViewProviderFragment();
-        mMultiColumnSettings
-                .getChildFragmentManager()
-                .beginTransaction()
-                .replace(R.id.preferences_detail, searchViewProviderFragment)
-                .commitNow();
-
-        List<MultiColumnSettings.Title> titles = new ArrayList<>();
-        titles.add(
-                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
-        mMultiColumnSettings.setFakeTitles(titles);
-
-        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
-        updater.onTitleUpdated();
-
-        View titleView = mContainer.getChildAt(0);
-        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
-        SearchView searchView = (SearchView) mContainer.getChildAt(2);
-
-        assertNotNull(searchViewProviderFragment.getObserver());
-
-        // Clicking search button opens search.
-        searchButton.performClick();
-        assertEquals(View.VISIBLE, searchView.getVisibility());
-
-        // Notifying observer that search closed hides search view.
-        searchViewProviderFragment.getObserver().onUpdated(false);
-        assertEquals(View.GONE, searchView.getVisibility());
-        assertEquals(View.VISIBLE, titleView.getVisibility());
-        assertEquals(View.VISIBLE, searchButton.getVisibility());
     }
 
     @Test

@@ -1642,6 +1642,7 @@ if (is_android) {
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.settings") {
     sources = [
+      "//chrome/android/java/src/org/chromium/chrome/browser/settings/DetailedPaneSearchControllerTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/MultiColumnTitleUpdaterTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/settings/SettingsMenuHelperUnitTest.java",
       "src/org/chromium/chrome/browser/settings/ActivityUtilUnitTest.java",
