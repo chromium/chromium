@@ -41,6 +41,11 @@ build_webui("build") {
     "topics/topic_card.ts",
     "topics/topic_details.html.ts",
     "topics/topic_details.ts",
+    "topics/topic_hero.html.ts",
+    "topics/topic_hero.ts",
+    "topics/topic_summary_panel.html.ts",
+    "topics/topic_summary_panel.ts",
+    "topics/topic_utils.ts",
     "topics/topics_view.html.ts",
     "topics/topics_view.ts",
   ]
@@ -58,6 +63,8 @@ build_webui("build") {
     "taskbox/todo_item.css",
     "topics/topic_card.css",
     "topics/topic_details.css",
+    "topics/topic_hero.css",
+    "topics/topic_summary_panel.css",
     "topics/topics_view.css",
   ]
 
@@ -65,6 +72,7 @@ build_webui("build") {
       [ "//chrome/browser/ui/webui/context_hub:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/context_hub/context_hub.mojom-webui.ts" ]
 
+  ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",

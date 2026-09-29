@@ -4,196 +4,108 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
+ * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
   --topic-details-header-bg: rgba(255, 255, 255, 0.1);
   --topic-details-header-scrolled-bg: rgba(255, 255, 255, 0.85);
   --topic-details-header-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --topic-details-gradient-rgb: 255, 255, 255;
-  --topic-details-pattern-fill: rgba(255, 255, 255, 0.48);
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
-  background-color: var(--cr-fallback-color-surface1, #fff);
-  color: var(--cr-primary-text-color, #1f1f1f);
-  font-family: inherit;
+  background-color: var(--cr-fallback-color-surface1);
   box-sizing: border-box;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  height: 100%;
+  overflow: hidden;
   padding: 16px 20px;
+  width: 100%;
 }
 
-.details-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
+/* The scroll container. position: relative anchors topic-hero. */
+#wrapper {
+  background-color: var(--cr-fallback-color-surface1);
+  border: 1px solid var(--cr-separator-color);
   border-radius: 20px;
-  border: 1px solid var(--cr-separator-color, #e0e0e0);
-  background-color: var(--cr-fallback-color-surface1, #fff);
-  overflow-y: auto;
-  overflow-x: hidden;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  scrollbar-width: none;
-}
-
-.details-wrapper::-webkit-scrollbar {
-  display: none;
-}
-
-/* 1. Background Hero Banner (Layer 1: moves behind title on scroll) */
-.hero-banner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 320px;
-  background-color: var(--banner-bg, #c2dcff);
-  overflow: hidden;
-  z-index: 1;
-  border-top-left-radius: 19px;
-  border-top-right-radius: 19px;
-  pointer-events: none;
-}
-
-.hero-pattern-svg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  opacity: 0.95;
-  pointer-events: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: none;
+  width: 100%;
 }
 
-.hero-pattern-shape {
-  fill: var(--topic-details-pattern-fill);
+topic-hero {
+  z-index: 1;
 }
 
-.hero-pattern-icon {
-  fill: var(--cr-primary-text-color);
-  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji',
-      sans-serif;
-  user-select: none;
-}
-
-.hero-gradient-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-      to bottom,
-      rgba(var(--topic-details-gradient-rgb), 0) 0%,
-      rgba(var(--topic-details-gradient-rgb), 0.12) 12%,
-      rgba(var(--topic-details-gradient-rgb), 0.22) 30%,
-      rgba(var(--topic-details-gradient-rgb), 0.52) 50%,
-      rgba(var(--topic-details-gradient-rgb), 0.82) 70%,
-      rgba(var(--topic-details-gradient-rgb), 0.96) 90%,
-      var(--cr-fallback-color-surface1, #fff) 100%);
-  pointer-events: none;
-}
-
-/* 2. Sticky Header (Layer 3: sticks to top with fixed opaqueness) */
-.sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  margin-top: 180px;
-  padding: 16px 36px 0;
-  box-sizing: border-box;
-  background-color: var(--topic-details-header-bg);
+#header {
   backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background-color: var(--topic-details-header-bg);
+  box-sizing: border-box;
+  inset-block-start: 0;
+  margin-block-start: 180px;
+  padding: 16px 36px 0;
+  position: sticky;
   transition: background-color 200ms ease, box-shadow 200ms ease;
+  z-index: 3;
 }
 
-.sticky-header.scrolled {
+#header.scrolled {
   background-color: var(--topic-details-header-scrolled-bg);
   box-shadow: var(--topic-details-header-scrolled-shadow);
 }
 
 .title-row {
-  display: flex;
   align-items: center;
+  display: flex;
+  gap: 16px;
   justify-content: space-between;
-  padding-bottom: 12px;
+  padding-block-end: 12px;
 }
 
-.topic-title {
-  font-family: 'Google Sans', 'Segoe UI', Arial, sans-serif;
+#title {
+  color: var(--cr-primary-text-color);
   font-size: 32px;
   font-weight: 600;
   line-height: 40px;
-  color: var(--cr-primary-text-color, #1f1f1f);
   margin: 0;
-  letter-spacing: -0.2px;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
-/* Tabs Bar */
-.tabs-bar {
-  display: flex;
-  align-items: center;
+#openRelatedTabs {
+  flex-shrink: 0;
+}
+
+#tabs {
+  --cr-tabs-flex: none;
+  --cr-tabs-font-size: 15px;
+  --cr-tabs-height: 44px;
+  --cr-tabs-selected-color: var(--cr-link-color);
+  --cr-tabs-selection-bar-width: 3px;
+  border-block-end: 1px solid var(--cr-separator-color);
   gap: 28px;
-  border-bottom: 1px solid var(--cr-separator-color, #e0e0e0);
 }
 
-.tab-item {
-  background: none;
-  border: none;
-  padding: 10px 0 12px;
-  font-family: 'Google Sans', 'Segoe UI', Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--cr-secondary-text-color, #5f6368);
-  cursor: pointer;
-  position: relative;
-  outline: none;
-  transition: color 150ms ease;
-}
-
-.tab-item:focus {
-  outline: none;
-}
-
-.tab-item.active {
-  color: var(--cr-link-color, #1a73e8);
-  font-weight: 600;
-}
-
-.tab-item .tab-indicator {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: var(--cr-link-color, #1a73e8);
-  border-radius: 3px 3px 0 0;
-}
-
-/* 3. Details Page (Layer 2: above background, scrolls under header) */
-.content-area {
+#panels {
+  max-width: 820px;
+  padding: 24px 36px 64px;
   position: relative;
   z-index: 2;
-  padding: 24px 36px 64px;
-  max-width: 820px;
 }
 
-.long-description {
+.status-message {
+  color: var(--cr-secondary-text-color);
   font-size: 15px;
   line-height: 24px;
-  color: var(--cr-primary-text-color, #202124);
-  margin: 0 0 28px 0;
-  max-width: 820px;
-}
-
-.not-found-message {
   margin: auto;
   padding: 24px 36px;
-  font-size: 15px;
-  line-height: 24px;
-  color: var(--cr-secondary-text-color, #5f6368);
   text-align: center;
 }
 
@@ -202,15 +114,5 @@
     --topic-details-header-bg: rgba(31, 31, 31, 0.1);
     --topic-details-header-scrolled-bg: rgba(31, 31, 31, 0.85);
     --topic-details-header-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --topic-details-gradient-rgb: 31, 31, 31;
-    --topic-details-pattern-fill: rgba(255, 255, 255, 0.24);
-    background-color: var(--cr-fallback-color-surface1, #1f1f1f);
-  }
-
-  .details-wrapper {
-    background-color: var(--cr-fallback-color-surface1, #1f1f1f);
-    border-color: var(--cr-separator-color, #3c4043);
   }
 }
-
-

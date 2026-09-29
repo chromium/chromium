@@ -12,28 +12,10 @@ export function getHtml(this: TopicCardElement) {
 ${this.hasContent_() ? html`
     <!-- Left: Decorative Topic Badge -->
     <div class="topic-badge">
-      ${this.getBadgeShape_() === 'flower' ? html`
-        <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-          <path fill="${this.getBackgroundColor_()}" d="${this.getFlowerPath_()}"></path>
-        </svg>
-      ` : html`
-        ${this.getBadgeShape_() === 'diamond' ? html`
-          <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-            <rect x="9" y="9" width="38" height="38" rx="12"
-                fill="${this.getBackgroundColor_()}" transform="rotate(45 28 28)"></rect>
-          </svg>
-        ` : html`
-          ${this.getBadgeShape_() === 'circle' ? html`
-            <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-              <circle cx="28" cy="28" r="26" fill="${this.getBackgroundColor_()}"></circle>
-            </svg>
-          ` : html`
-            <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
-              <path fill="${this.getBackgroundColor_()}" d="${this.getCloudPath_()}"></path>
-            </svg>
-          `}
-        `}
-      `}
+      <svg viewBox="0 0 56 56" class="badge-svg-bg" aria-hidden="true">
+        <path fill="${this.getBackgroundColor_()}" d="${this.getBadgePath_()}">
+        </path>
+      </svg>
       <span class="badge-icon" aria-hidden="true">
         ${this.isCrIcon_() ? html`
           <cr-icon .icon="${this.getIcon_()}"></cr-icon>
@@ -43,10 +25,10 @@ ${this.hasContent_() ? html`
 
     <!-- Center: Topic Information -->
     <div class="topic-info">
-      ${this.topic?.title?.trim() ? html`
+      ${this.topic?.title.trim() ? html`
         <h2 class="topic-title">${this.topic.title}</h2>
       ` : ''}
-      ${this.topic?.description?.trim() ? html`
+      ${this.topic?.description.trim() ? html`
         <p class="topic-description">${this.topic.description}</p>
       ` : ''}
     </div>

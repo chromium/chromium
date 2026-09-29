@@ -1,0 +1,61 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+/* Positioned by the parent, which must be position: relative. The banner
+ * sits behind the page content and scrolls away with it. The background color
+ * is set per topic by the element. */
+:host {
+  --topic-hero-gradient-rgb: 255, 255, 255;
+  --topic-hero-pattern-fill: rgba(255, 255, 255, 0.48);
+  background-color: var(--topic-hero-background-color, var(--google-blue-100));
+  display: block;
+  height: 320px;
+  inset-block-start: 0;
+  inset-inline: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+}
+
+.pattern {
+  inset: 0;
+  opacity: 0.95;
+  position: absolute;
+}
+
+.pattern-shape {
+  fill: var(--topic-hero-pattern-fill);
+}
+
+.pattern-icon {
+  fill: var(--cr-primary-text-color);
+  user-select: none;
+}
+
+.gradient-overlay {
+  background: linear-gradient(
+      to bottom,
+      rgba(var(--topic-hero-gradient-rgb), 0) 0%,
+      rgba(var(--topic-hero-gradient-rgb), 0.12) 12%,
+      rgba(var(--topic-hero-gradient-rgb), 0.22) 30%,
+      rgba(var(--topic-hero-gradient-rgb), 0.52) 50%,
+      rgba(var(--topic-hero-gradient-rgb), 0.82) 70%,
+      rgba(var(--topic-hero-gradient-rgb), 0.96) 90%,
+      var(--cr-fallback-color-surface1, #fff) 100%);
+  inset: 0;
+  position: absolute;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --topic-hero-gradient-rgb: 31, 31, 31;
+    --topic-hero-pattern-fill: rgba(255, 255, 255, 0.24);
+  }
+}
