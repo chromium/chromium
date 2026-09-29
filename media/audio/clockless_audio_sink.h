@@ -31,7 +31,7 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
   void Start() override;
   void Stop() override;
   void Flush() override;
-  void Pause() override;
+  void Pause(PauseReason reason) override;
   void Play() override;
   bool SetVolume(double volume) override;
   OutputDeviceInfo GetOutputDeviceInfo() override;

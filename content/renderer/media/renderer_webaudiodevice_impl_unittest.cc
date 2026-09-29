@@ -44,7 +44,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
   }
   MOCK_METHOD(void, Start, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
-  MOCK_METHOD(void, Pause, (), (override));
+  MOCK_METHOD(void, Pause, (PauseReason reason), (override));
   MOCK_METHOD(void, Play, (), (override));
   MOCK_METHOD(void, Flush, (), (override));
   MOCK_METHOD(bool, SetVolume, (double volume), (override));

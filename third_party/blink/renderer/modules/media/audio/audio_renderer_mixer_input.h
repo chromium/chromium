@@ -59,7 +59,7 @@ class BLINK_MODULES_EXPORT AudioRendererMixerInput
   void Start() override;
   void Stop() override;
   void Play() override;
-  void Pause() override;
+  void Pause(PauseReason reason) override;
   void Flush() override;
   bool SetVolume(double volume) override;
   media::OutputDeviceInfo GetOutputDeviceInfo() override;

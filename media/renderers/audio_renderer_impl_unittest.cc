@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -1696,7 +1697,7 @@ TEST_F(AudioRendererImplTest, MutedPlaybackBadDeviceInfo) {
   Preroll();
   StartTicking();
 
-  EXPECT_CALL(*mock_sink_, Pause()).Times(0);
+  EXPECT_CALL(*mock_sink_, Pause(_)).Times(0);
   StopTicking();
   EXPECT_CALL(*mock_sink_, Play()).Times(0);
   StartTicking();
@@ -1707,7 +1708,7 @@ TEST_F(AudioRendererImplTest, MutedPlaybackBadDeviceInfo) {
   EXPECT_CALL(*mock_sink_, Play()).Times(0);
   renderer_->SetVolume(1);
 
-  EXPECT_CALL(*mock_sink_, Pause()).Times(0);
+  EXPECT_CALL(*mock_sink_, Pause(_)).Times(0);
   StopTicking();
   EXPECT_CALL(*mock_sink_, Stop()).Times(0);
 }
@@ -1725,7 +1726,7 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
   StartTicking();
 
   // Play pause should all function as normal on the muted sink.
-  EXPECT_CALL(*mock_sink_, Pause()).Times(0);
+  EXPECT_CALL(*mock_sink_, Pause(_)).Times(0);
   StopTicking();
   EXPECT_CALL(*mock_sink_, Play()).Times(0);
   StartTicking();
@@ -1738,7 +1739,8 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
   renderer_->SetVolume(1);
 
   // Play pause should all function as normal on the normal sink.
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kWaitingForData));
   StopTicking();
   EXPECT_CALL(*mock_sink_, Play());
   StartTicking();
@@ -1746,7 +1748,8 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
 
   // Muting again should pause the real sink.
   EXPECT_CALL(*mock_sink_, SetVolume(0));
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   renderer_->SetVolume(0);
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
@@ -1756,7 +1759,8 @@ TEST_F(AudioRendererImplTest, BasicMutedPlayback) {
   renderer_->SetVolume(0.5f);
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kWaitingForData));
   StopTicking();
   EXPECT_CALL(*mock_sink_, Stop());
 }
@@ -1781,13 +1785,14 @@ TEST_F(AudioRendererImplTest, RenderMutedAudio) {
   // Muting should not pause the sink.
   renderer_->SetRenderMutedAudio(true);
   EXPECT_CALL(*mock_sink_, SetVolume(0));
-  EXPECT_CALL(*mock_sink_, Pause()).Times(0);
+  EXPECT_CALL(*mock_sink_, Pause(_)).Times(0);
   renderer_->SetVolume(0);
   EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
   // Setting render muted audio to false should pause the sink.
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   renderer_->SetRenderMutedAudio(false);
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
@@ -1797,7 +1802,8 @@ TEST_F(AudioRendererImplTest, RenderMutedAudio) {
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
   // Setting render muted audio to false should pause the sink.
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   renderer_->SetRenderMutedAudio(false);
   testing::Mock::VerifyAndClearExpectations(mock_sink_.get());
 
@@ -2057,12 +2063,59 @@ TEST_F(AudioRendererImplTest, UnmuteWhilePlaying) {
 
   // Muting should pause the sink.
   EXPECT_CALL(*mock_sink_, SetVolume(0));
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   renderer_->SetVolume(0);
   EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
 
   StopTicking();
   EXPECT_CALL(*mock_sink_, Stop());
+}
+
+TEST_F(AudioRendererImplTest,
+       StopTickingPassesWaitingForDataAndExplicitPausePassesPlaybackPaused) {
+  Initialize();
+  Preroll();
+  StartTicking();
+
+  // `StopTicking()` while `playback_rate_ > 0` (e.g. underflow or seek flush)
+  // should pause the sink with `kWaitingForData`.
+  StopTicking();
+  EXPECT_EQ(sink_->state(), FakeAudioRendererSink::kPaused);
+  EXPECT_EQ(sink_->last_pause_reason(),
+            AudioRendererSink::PauseReason::kWaitingForData);
+
+  // Resume rendering and then explicitly pause via `SetPlaybackRate(0.0)` while
+  // actively rendering, which should also pause with `kPlaybackPaused`.
+  StartTicking();
+  EXPECT_EQ(sink_->state(), FakeAudioRendererSink::kPlaying);
+  renderer_->SetPlaybackRate(0.0);
+  EXPECT_EQ(sink_->state(), FakeAudioRendererSink::kPaused);
+  EXPECT_EQ(sink_->last_pause_reason(),
+            AudioRendererSink::PauseReason::kPlaybackPaused);
+}
+
+TEST_F(AudioRendererImplTest, StopTickingAtEndOfStreamPassesPlaybackPaused) {
+  Initialize();
+  Preroll();
+  StartTicking();
+
+  EXPECT_TRUE(ConsumeBufferedData(frames_buffered()));
+  WaitForPendingRead();
+  DeliverEndOfStream();
+  EXPECT_TRUE(ConsumeBufferedData(frames_buffered()));
+
+  // Trigger `rendered_end_of_stream_ = true`.
+  EXPECT_FALSE(ConsumeBufferedData(OutputFrames(1)));
+  ASSERT_TRUE(base::test::RunUntil([this]() { return ended(); }));
+
+  // When `RendererImpl::OnRendererEnded()` calls `StopTicking()` before
+  // `SetPlaybackRate(0.0)` arrives, `rendered_end_of_stream_` is true so the
+  // sink should be paused with `kPlaybackPaused`.
+  StopTicking();
+  EXPECT_EQ(sink_->state(), FakeAudioRendererSink::kPaused);
+  EXPECT_EQ(sink_->last_pause_reason(),
+            AudioRendererSink::PauseReason::kPlaybackPaused);
 }
 
 TEST_F(AudioRendererImplTest, DecodeAudioReadyPreemptsFlush) {

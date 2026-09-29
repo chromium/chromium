@@ -390,7 +390,7 @@ void CastAudioOutputDevice::Stop() {
   Flush();
 }
 
-void CastAudioOutputDevice::Pause() {
+void CastAudioOutputDevice::Pause(PauseReason /*reason*/) {
   internal_.AsyncCall(&Internal::Pause);
 }
 

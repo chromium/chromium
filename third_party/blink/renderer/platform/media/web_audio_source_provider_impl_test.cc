@@ -78,8 +78,10 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     EXPECT_CALL(*mock_sink_, Play()).Times(verify);
     wasp_impl_->Play();
 
-    EXPECT_CALL(*mock_sink_, Pause()).Times(verify);
-    wasp_impl_->Pause();
+    EXPECT_CALL(*mock_sink_,
+                Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
+        .Times(verify);
+    wasp_impl_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
 
     EXPECT_CALL(*mock_sink_, SetVolume(kTestVolume)).Times(verify);
     wasp_impl_->SetVolume(kTestVolume);
@@ -260,7 +262,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
 
   // Pause should return to silence.
-  wasp_impl_->Pause();
+  wasp_impl_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
   bus1->channel(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
@@ -464,5 +466,28 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   wasp_impl_->SetClient(this);
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(WebAudioSourceProviderImplTest, PauseForwardsReasonToSink) {
+  wasp_impl_->Initialize(params_, &fake_callback_);
+
+  EXPECT_CALL(*mock_sink_, Start());
+  wasp_impl_->Start();
+  EXPECT_CALL(*mock_sink_, Play());
+  wasp_impl_->Play();
+
+  EXPECT_CALL(*mock_sink_,
+              Pause(media::AudioRendererSink::PauseReason::kWaitingForData));
+  wasp_impl_->Pause(media::AudioRendererSink::PauseReason::kWaitingForData);
+
+  EXPECT_CALL(*mock_sink_, Play());
+  wasp_impl_->Play();
+
+  EXPECT_CALL(*mock_sink_,
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused));
+  wasp_impl_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
+
+  EXPECT_CALL(*mock_sink_, Stop());
+  wasp_impl_->Stop();
 }
 }  // namespace blink

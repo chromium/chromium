@@ -117,7 +117,7 @@ void ClocklessAudioSink::Start() {
 
 void ClocklessAudioSink::Stop() {
   if (initialized_) {
-    Pause();
+    Pause(PauseReason::kPlaybackPaused);
     thread_.reset();
     initialized_ = false;
   }
@@ -135,7 +135,7 @@ void ClocklessAudioSink::Play() {
   thread_->Start();
 }
 
-void ClocklessAudioSink::Pause() {
+void ClocklessAudioSink::Pause(PauseReason /*reason*/) {
   DCHECK(initialized_);
 
   if (!playing_)

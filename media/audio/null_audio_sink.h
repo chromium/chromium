@@ -32,7 +32,7 @@ class MEDIA_EXPORT NullAudioSink : public SwitchableAudioRendererSink {
                   RenderCallback* callback) override;
   void Start() override;
   void Stop() override;
-  void Pause() override;
+  void Pause(PauseReason reason) override;
   void Play() override;
   void Flush() override;
   bool SetVolume(double volume) override;

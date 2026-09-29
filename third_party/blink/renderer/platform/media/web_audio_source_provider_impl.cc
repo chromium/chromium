@@ -266,12 +266,12 @@ void WebAudioSourceProviderImpl::Play() {
     sink_->Play();
 }
 
-void WebAudioSourceProviderImpl::Pause() {
+void WebAudioSourceProviderImpl::Pause(PauseReason reason) {
   base::AutoLock auto_lock(sink_lock_);
   DCHECK(state_ == kPlaying || state_ == kStarted);
   state_ = kStarted;
   if (!client_ && sink_)
-    sink_->Pause();
+    sink_->Pause(reason);
 }
 
 void WebAudioSourceProviderImpl::Flush() {

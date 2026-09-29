@@ -85,7 +85,8 @@ TEST_F(SilentSinkSuspenderTest, SuspendResumeTriggered) {
   EXPECT_TRUE(temp_bus_->AreFramesZero());
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_sink_, Pause())
+    EXPECT_CALL(*mock_sink_,
+                Pause(AudioRendererSink::PauseReason::kPlaybackPaused))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());
@@ -130,7 +131,8 @@ TEST_F(SilentSinkSuspenderTest, MultipleSuspend) {
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
 
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());
 }
@@ -143,7 +145,8 @@ TEST_F(SilentSinkSuspenderTest, MultipleResume) {
             suspender_.Render(base::TimeDelta(), base::TimeTicks(), {},
                               temp_bus_.get()));
   EXPECT_TRUE(temp_bus_->AreFramesZero());
-  EXPECT_CALL(*mock_sink_, Pause());
+  EXPECT_CALL(*mock_sink_,
+              Pause(AudioRendererSink::PauseReason::kPlaybackPaused));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());
 
@@ -204,7 +207,8 @@ TEST_F(SilentSinkSuspenderTest, SetDetectSilence) {
   EXPECT_TRUE(temp_bus_->AreFramesZero());
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_sink_, Pause())
+    EXPECT_CALL(*mock_sink_,
+                Pause(AudioRendererSink::PauseReason::kPlaybackPaused))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());
@@ -245,7 +249,8 @@ TEST_F(SilentSinkSuspenderTest, SetDetectSilence) {
   EXPECT_TRUE(temp_bus_->AreFramesZero());
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_sink_, Pause())
+    EXPECT_CALL(*mock_sink_,
+                Pause(AudioRendererSink::PauseReason::kPlaybackPaused))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());
@@ -275,7 +280,8 @@ TEST_F(SilentSinkSuspenderTest, OnPaused) {
   EXPECT_TRUE(temp_bus_->AreFramesZero());
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(*mock_sink_, Pause())
+    EXPECT_CALL(*mock_sink_,
+                Pause(AudioRendererSink::PauseReason::kPlaybackPaused))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(suspender_.IsUsingFakeSinkForTesting());

@@ -124,7 +124,7 @@ void WebEngineAudioOutputDevice::Stop() {
       base::BindOnce(&WebEngineAudioOutputDevice::StopOnAudioThread, this));
 }
 
-void WebEngineAudioOutputDevice::Pause() {
+void WebEngineAudioOutputDevice::Pause(PauseReason /*reason*/) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebEngineAudioOutputDevice::PauseOnAudioThread, this));

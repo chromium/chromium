@@ -155,7 +155,7 @@ TEST_F(AudioRendererMixerInputTest, StartPlayPauseStopPlaying) {
   mixer_input_->Start();
   mixer_input_->Play();
   EXPECT_DOUBLE_EQ(ProvideInput(), 1);
-  mixer_input_->Pause();
+  mixer_input_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
   mixer_input_->Play();
   EXPECT_DOUBLE_EQ(ProvideInput(), 1);
   mixer_input_->Stop();

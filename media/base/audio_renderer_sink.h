@@ -58,8 +58,19 @@ class AudioRendererSink
   // destruction.
   virtual void Stop() = 0;
 
+  enum class PauseReason {
+    // Audio playback is intentionally paused or suspended (e.g. explicit
+    // pause, mute, or silence suspension) and will not resume until a future
+    // Play().
+    kPlaybackPaused,
+    // Audio playback is active, but rendering is temporarily halted waiting
+    // for data (e.g. buffer underflow or seek flush) and will resume as soon
+    // as data is available.
+    kWaitingForData,
+  };
+
   // Pauses playback.
-  virtual void Pause() = 0;
+  virtual void Pause(PauseReason reason) = 0;
 
   // Resumes playback after calling Pause().
   virtual void Play() = 0;

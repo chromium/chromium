@@ -135,7 +135,7 @@ void AudioOutputDevice::Play() {
       FROM_HERE, base::BindOnce(&AudioOutputDevice::PlayOnIOThread, this));
 }
 
-void AudioOutputDevice::Pause() {
+void AudioOutputDevice::Pause(PauseReason /*reason*/) {
   TRACE_EVENT0("audio", "AudioOutputDevice::Pause");
   io_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AudioOutputDevice::PauseOnIOThread, this));

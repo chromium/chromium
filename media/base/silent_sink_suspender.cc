@@ -178,7 +178,7 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
   }
 
   if (use_fake_sink) {
-    sink_->Pause();
+    sink_->Pause(AudioRendererSink::PauseReason::kPlaybackPaused);
 
     // |sink_| may still be executing Render() at this point or even sometime
     // after this point, so we must acquire the lock to make sure we don't have

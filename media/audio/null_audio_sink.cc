@@ -72,7 +72,7 @@ void NullAudioSink::Play() {
   playing_ = true;
 }
 
-void NullAudioSink::Pause() {
+void NullAudioSink::Pause(PauseReason /*reason*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(started_);
 

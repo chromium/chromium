@@ -183,7 +183,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void HandleAbortedReadOrDecodeError(PipelineStatus status);
 
   void StartRendering_Locked();
-  void StopRendering_Locked();
+  void StopRendering_Locked(AudioRendererSink::PauseReason pause_reason);
 
   // AudioRendererSink::RenderCallback implementation.
   //

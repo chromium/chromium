@@ -400,7 +400,7 @@ void RendererWebAudioDeviceImpl::Pause() {
                sink_descriptor_.SinkId().Utf8());
   SendLogMessage(base::StringPrintf("%s", __func__));
   if (sink_) {
-    sink_->Pause();
+    sink_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
   }
   if (silent_sink_suspender_) {
     silent_sink_suspender_->OnPaused();

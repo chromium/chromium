@@ -339,10 +339,18 @@ void AudioRendererImpl::StopTicking() {
     return;
   }
 
-  StopRendering_Locked();
+  // When `rendered_end_of_stream_` is true, playback has finished rather than
+  // temporarily halting for data. Otherwise, because `playback_rate_` is
+  // non-zero here, the media element is still logically playing and only
+  // temporarily halting rendering waiting for data (e.g. during a seek flush or
+  // buffer underflow).
+  StopRendering_Locked(rendered_end_of_stream_
+                           ? AudioRendererSink::PauseReason::kPlaybackPaused
+                           : AudioRendererSink::PauseReason::kWaitingForData);
 }
 
-void AudioRendererImpl::StopRendering_Locked() {
+void AudioRendererImpl::StopRendering_Locked(
+    AudioRendererSink::PauseReason pause_reason) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(state_ == kPlaying || state_ == kReinitializingSink);
   DCHECK(sink_playing_);
@@ -355,9 +363,9 @@ void AudioRendererImpl::StopRendering_Locked() {
 
   base::AutoUnlock auto_unlock(lock_);
   if (volume_ || render_muted_audio_) {
-    sink_->Pause();
+    sink_->Pause(pause_reason);
   } else {
-    null_sink_->Pause();
+    null_sink_->Pause(pause_reason);
   }
 
   stop_rendering_time_ = last_render_time_;
@@ -1339,7 +1347,7 @@ void AudioRendererImpl::SetPlaybackRate(double playback_rate) {
   }
 
   if (current_playback_rate != 0 && playback_rate == 0) {
-    StopRendering_Locked();
+    StopRendering_Locked(AudioRendererSink::PauseReason::kPlaybackPaused);
     return;
   }
 }
@@ -1708,13 +1716,14 @@ void AudioRendererImpl::TranscribeAudio(
 
 void AudioRendererImpl::MaybeStartRealSink() {
   // Suspend null audio sink (does nothing if unused).
-  null_sink_->Pause();
+  null_sink_->Pause(AudioRendererSink::PauseReason::kPlaybackPaused);
 
   // Complete startup for the real sink if needed.
   if (real_sink_needs_start_) {
     sink_->Start();
     if (!sink_playing_) {
-      sink_->Pause();  // Sinks play on start.
+      // Sinks play on start.
+      sink_->Pause(AudioRendererSink::PauseReason::kPlaybackPaused);
     }
     real_sink_needs_start_ = false;
   }
@@ -1727,7 +1736,7 @@ void AudioRendererImpl::MaybeStartRealSink() {
 
 void AudioRendererImpl::SuspendRealSink() {
   // Suspend the real sink (does nothing if unused).
-  sink_->Pause();
+  sink_->Pause(AudioRendererSink::PauseReason::kPlaybackPaused);
 
   // Start fake sink playback if needed.
   if (sink_playing_) {

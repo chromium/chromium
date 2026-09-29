@@ -175,7 +175,7 @@ TEST_F(WebEngineAudioOutputDeviceTest, Pause) {
   renderer_.reset_frames_rendered();
 
   // Render() should not be called while paused.
-  output_device_->Pause();
+  output_device_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
   task_environment_.FastForwardBy(base::Seconds(10));
   EXPECT_EQ(renderer_.frames_rendered(), 0);
 

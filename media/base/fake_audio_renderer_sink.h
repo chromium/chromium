@@ -37,7 +37,7 @@ class FakeAudioRendererSink : public AudioRendererSink {
   void Start() override;
   void Stop() override;
   void Flush() override;
-  void Pause() override;
+  void Pause(PauseReason reason) override;
   void Play() override;
   bool SetVolume(double volume) override;
   OutputDeviceInfo GetOutputDeviceInfo() override;
@@ -59,6 +59,9 @@ class FakeAudioRendererSink : public AudioRendererSink {
   void SetIsOptimizedForHardwareParameters(bool value);
 
   State state() const { return state_; }
+  std::optional<PauseReason> last_pause_reason() const {
+    return last_pause_reason_;
+  }
 
  private:
   ~FakeAudioRendererSink() override;
@@ -69,6 +72,7 @@ class FakeAudioRendererSink : public AudioRendererSink {
   raw_ptr<RenderCallback> callback_;
   OutputDeviceInfo output_device_info_;
   bool is_optimized_for_hw_params_;
+  std::optional<PauseReason> last_pause_reason_;
 };
 
 }  // namespace media

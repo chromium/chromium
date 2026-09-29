@@ -115,16 +115,16 @@ class NonSwitchableAudioRendererSink
     }
   }
 
-  void Pause() override {
+  void Pause(PauseReason reason) override {
     if (output_device_) {
-      output_device_->Pause();
+      output_device_->Pause(reason);
     } else {
-      pending_pause_ = true;
+      pending_pause_ = reason;
     }
   }
 
   void Play() override {
-    pending_pause_ = false;
+    pending_pause_ = std::nullopt;
     if (output_device_) {
       output_device_->Play();
     }
@@ -245,8 +245,8 @@ class NonSwitchableAudioRendererSink
     }
 
     if (pending_pause_) {
-      output_device_->Pause();
-      pending_pause_ = false;
+      output_device_->Pause(*pending_pause_);
+      pending_pause_ = std::nullopt;
     }
 
     if (pending_volume_) {
@@ -268,7 +268,7 @@ class NonSwitchableAudioRendererSink
   scoped_refptr<::media::AudioRendererSink> output_device_;
   bool is_initialized_ = false;
   bool pending_start_ = false;
-  bool pending_pause_ = false;
+  std::optional<PauseReason> pending_pause_;
   std::optional<double> pending_volume_;
 };
 

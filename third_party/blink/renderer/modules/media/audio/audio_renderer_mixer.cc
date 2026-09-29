@@ -139,7 +139,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
   if (!aggregate_converter_.empty()) {
     last_play_time_ = now;
   } else if (now - last_play_time_ >= pause_delay_ && playing_) {
-    audio_sink_->Pause();
+    audio_sink_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
     playing_ = false;
   }
 

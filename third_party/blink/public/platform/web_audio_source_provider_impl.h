@@ -75,7 +75,7 @@ class BLINK_PLATFORM_EXPORT WebAudioSourceProviderImpl
   void Start() override;
   void Stop() override;
   void Play() override;
-  void Pause() override;
+  void Pause(PauseReason reason) override;
   void Flush() override;
   bool SetVolume(double volume) override;
   media::OutputDeviceInfo GetOutputDeviceInfo() override;
