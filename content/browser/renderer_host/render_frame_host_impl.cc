@@ -14865,6 +14865,10 @@ void RenderFrameHostImpl::CreateWebSocketConnector(
     mojo::ReportBadMessage("WebSockets are not allowed in MHTML documents.");
     return;
   }
+  if (GetSiteInstance()->IsPdf()) {
+    mojo::ReportBadMessage("WebSockets are not allowed in PDF documents.");
+    return;
+  }
   net::StorageAccessApiStatus storage_access_api_status =
       GetStorageAccessApiStatus();
   mojo::MakeSelfOwnedReceiver(

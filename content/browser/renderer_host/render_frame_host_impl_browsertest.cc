@@ -11652,4 +11652,26 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ("test.mojom.NotServed", broker.requested_names()[0]);
 }
 
+// Verifies that a frame committed in a PDF-isolated process cannot bind
+// blink.mojom.WebSocketConnector.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       WebSocketBlockedForPdfProcess) {
+  const GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURLWithPdf(web_contents(), url));
+
+  RenderFrameHostImpl* const main_document = root_frame_host();
+  RenderProcessHostBadMojoMessageWaiter kill_waiter(
+      main_document->GetProcess());
+
+  // Attempting to open a WebSocket from a PDF frame triggers the renderer to
+  // request blink.mojom.WebSocketConnector from RenderFrameHost. The browser
+  // must reject this and terminate the process.
+  ExecuteScriptAsync(main_document, "new WebSocket('ws://127.0.0.1');");
+
+  EXPECT_EQ(
+      "Received bad user message: WebSockets are not allowed in PDF "
+      "documents.",
+      kill_waiter.Wait());
+}
+
 }  // namespace content
