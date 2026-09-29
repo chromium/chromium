@@ -376,8 +376,9 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   SetStoredFocusView(focused_view_);
   if (focused_view_) {
     // TODO(40763787): Remove this once reentrant callsites have been addressed.
-    CHECK(!view_observation_.IsObserving());
-    view_observation_.Observe(focused_view_);
+    if (!view_observation_.IsObserving()) {
+      view_observation_.Observe(focused_view_);
+    }
     focused_view_->Focus();
   }
 
