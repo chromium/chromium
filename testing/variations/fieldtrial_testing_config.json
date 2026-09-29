@@ -8272,7 +8272,6 @@
             "platforms": [
                 "android",
                 "chromeos",
-                "ios",
                 "linux",
                 "mac",
                 "windows"
@@ -8282,6 +8281,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FetchAccountCapabilitiesOnRestart"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FetchAccountCapabilitiesOnRestartIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FetchAccountCapabilitiesOnRestart",
+                        "SkipSsoAccountCapabilitiesCache"
                     ]
                 }
             ]
