@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -563,6 +564,78 @@ IN_PROC_BROWSER_TEST_F(
       }),
       WaitForContextualPanelAndLensToClose(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+// This tests the following CUJ:
+//  (1) User navigates to a webpage.
+//  (2) User right-clicks a blank area of the webpage.
+//  (3) User selects the Google Lens page search item from the context menu.
+//  (4) Lens overlay opens over a screenshot of the page.
+//  (5) User drags to select a region of the page.
+//  (6) Contextual Tasks side panel opens and the WebUI app initializes with
+//      the composebox.
+// Disabled on Mac because the Mac interaction test util implementation does
+// not support selecting an item in the native context menu.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WebpageContextMenuClick DISABLED_WebpageContextMenuClick
+#else
+#define MAYBE_WebpageContextMenuClick WebpageContextMenuClick
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       MAYBE_WebpageContextMenuClick) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+  const GURL page_url =
+      embedded_test_server()->GetURL(kDocumentWithNamedElement);
+  const DeepQuery kPathToBody{"body"};
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->GetContentsView()->bounds().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  RunTestSequence(
+      // Step 1: Navigate the active tab to a webpage.
+      InstrumentTab(kTabId, 0), NavigateWebContents(kTabId, page_url),
+      EnsurePresent(kTabId, kPathToBody), WaitForWebContentsPainted(kTabId),
+      WaitForWebContentsReady(kTabId, page_url),
+
+      // Steps 2-3: Right-click a blank area in the middle of the page (the
+      // test page only has content at the top-left) and select the Lens page
+      // search item from the context menu.
+      MoveMouseTo(kTabId), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(RenderViewContextMenu::kRegionSearchItem),
+      SelectMenuItem(RenderViewContextMenu::kRegionSearchItem,
+                     InputType::kMouse),
+
+      // Step 4: The Lens overlay opens from the page context menu.
+      InAnyContext(WaitForShow(LensOverlayController::kOverlayId)),
+      CheckResult(
+          [this]() {
+            return LensSearchController::FromTabWebContents(
+                       browser()->GetTabStripModel()->GetWebContentsAt(0))
+                ->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kContentAreaContextMenuPage),
+          "Lens overlay was opened from the page context menu"),
+
+      // Step 5: Once the overlay screenshot renders, drag to select a region
+      // of the page.
+      SelectRegionInLensOverlay(kOverlayId, std::move(off_center_point),
+                                /*tab_id_int=*/0),
+
+      // Step 6: The region query opens the Contextual Tasks side panel.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            return SidePanelUI::From(browser())->IsSidePanelShowing();
+          },
+          true));
 }
 
 enum class AimEligibilityTestState {
