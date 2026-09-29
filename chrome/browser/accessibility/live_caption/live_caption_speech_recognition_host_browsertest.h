@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_SPEECH_RECOGNITION_HOST_BROWSERTEST_H_
 
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -43,8 +45,14 @@ class MockLiveTranslateController : public LiveTranslateController {
   // Returns a collection of strings passed into `GetTranslation()`.
   std::vector<std::string> GetTranslationRequests();
 
+  void SetDeferCallbacks(bool defer) { defer_callbacks_ = defer; }
+  void CompletePendingTranslations();
+
  private:
   std::vector<std::string> translation_requests_;
+  bool defer_callbacks_ = false;
+  std::vector<std::pair<std::string, TranslateEventCallback>>
+      pending_callbacks_;
 };
 
 class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
@@ -75,9 +83,13 @@ class LiveCaptionSpeechRecognitionHostTest : public LiveCaptionBrowserTest {
       const media::mojom::ConfidenceLevel confidence_level,
       const media::mojom::AsrSwitchResult asr_switch_result);
   void OnSpeechRecognitionError(content::RenderFrameHost* frame_host);
+  void OnSpeechRecognitionStopped(content::RenderFrameHost* frame_host);
   bool HasBubbleController();
   void ExpectIsWidgetVisible(bool visible);
+  void ExpectBubbleLabelTextEquals(std::string_view text);
   std::vector<std::string> GetTranslationRequests();
+  void SetDeferTranslationCallbacks(bool defer);
+  void CompletePendingTranslations();
 
  private:
   void DispatchTranscriptionCallback(bool expected_success, bool success);

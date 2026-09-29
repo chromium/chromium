@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -77,7 +78,19 @@ void MockLiveTranslateController::GetTranslation(
     std::string target_language,
     TranslateEventCallback callback) {
   translation_requests_.push_back(result);
-  std::move(callback).Run(TranslateEvent(result));
+  if (defer_callbacks_) {
+    pending_callbacks_.emplace_back(result, std::move(callback));
+  } else {
+    std::move(callback).Run(TranslateEvent(result));
+  }
+}
+
+void MockLiveTranslateController::CompletePendingTranslations() {
+  std::vector<std::pair<std::string, TranslateEventCallback>> callbacks =
+      std::move(pending_callbacks_);
+  for (auto& [text, callback] : callbacks) {
+    std::move(callback).Run(TranslateEvent(text));
+  }
 }
 
 std::vector<std::string> MockLiveTranslateController::GetTranslationRequests() {
@@ -151,6 +164,11 @@ void LiveCaptionSpeechRecognitionHostTest::OnSpeechRecognitionError(
   remotes_[frame_host]->OnSpeechRecognitionError();
 }
 
+void LiveCaptionSpeechRecognitionHostTest::OnSpeechRecognitionStopped(
+    content::RenderFrameHost* frame_host) {
+  remotes_[frame_host]->OnSpeechRecognitionStopped();
+}
+
 bool LiveCaptionSpeechRecognitionHostTest::HasBubbleController() {
   return LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
              ->caption_bubble_controller_for_testing() != nullptr;
@@ -158,10 +176,21 @@ bool LiveCaptionSpeechRecognitionHostTest::HasBubbleController() {
 
 void LiveCaptionSpeechRecognitionHostTest::ExpectIsWidgetVisible(bool visible) {
 #if defined(TOOLKIT_VIEWS)
-    CaptionBubbleController* bubble_controller =
-        LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
-            ->caption_bubble_controller_for_testing();
-    EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
+  CaptionBubbleController* bubble_controller =
+      LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
+          ->caption_bubble_controller_for_testing();
+  EXPECT_EQ(visible, bubble_controller->IsWidgetVisibleForTesting());
+#endif
+}
+
+void LiveCaptionSpeechRecognitionHostTest::ExpectBubbleLabelTextEquals(
+    std::string_view text) {
+#if defined(TOOLKIT_VIEWS)
+  CaptionBubbleController* bubble_controller =
+      LiveCaptionControllerFactory::GetForProfile(browser()->GetProfile())
+          ->caption_bubble_controller_for_testing();
+  ASSERT_TRUE(bubble_controller);
+  EXPECT_EQ(text, bubble_controller->GetBubbleLabelTextForTesting());
 #endif
 }
 
@@ -171,6 +200,19 @@ LiveCaptionSpeechRecognitionHostTest::GetTranslationRequests() {
              LiveTranslateControllerFactory::GetForProfile(
                  browser()->GetProfile()))
       ->GetTranslationRequests();
+}
+
+void LiveCaptionSpeechRecognitionHostTest::SetDeferTranslationCallbacks(
+    bool defer) {
+  static_cast<MockLiveTranslateController*>(
+      LiveTranslateControllerFactory::GetForProfile(browser()->GetProfile()))
+      ->SetDeferCallbacks(defer);
+}
+
+void LiveCaptionSpeechRecognitionHostTest::CompletePendingTranslations() {
+  static_cast<MockLiveTranslateController*>(
+      LiveTranslateControllerFactory::GetForProfile(browser()->GetProfile()))
+      ->CompletePendingTranslations();
 }
 
 void LiveCaptionSpeechRecognitionHostTest::DispatchTranscriptionCallback(
@@ -472,6 +514,108 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
       "Tanuki are canids, similar to dogs but with larger ears and tails. So "
       "cool",
       GetTranslationRequests().back());
+}
+
+IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
+                       TranslationCoalescing) {
+  content::RenderFrameHost* frame_host = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  SetLiveCaptionEnabled(true);
+  SetLiveTranslateEnabled(true);
+  CreateLiveCaptionSpeechRecognitionHost(frame_host);
+
+  // Defer translation callbacks so requests remain in progress.
+  SetDeferTranslationCallbacks(true);
+
+  // Dispatch first partial result.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Dogs are domesticated animals. They",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(1u, GetTranslationRequests().size());
+  EXPECT_EQ("Dogs are domesticated animals. They",
+            GetTranslationRequests().back());
+
+  // Dispatch multiple subsequent partial results while the first is in
+  // progress.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Dogs are domesticated animals. They have",
+      /* expected_success= */ true, /* is_final= */ false);
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Dogs are domesticated animals. They have been bred",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+
+  // Subsequent partials should be merged, no new request dispatched yet.
+  ASSERT_EQ(1u, GetTranslationRequests().size());
+
+  // Complete the in-progress translation request.
+  CompletePendingTranslations();
+  base::RunLoop().RunUntilIdle();
+
+  // The latest partial should now be dispatched. The completed
+  // sentence was cached, so only the remainder is translated.
+  ASSERT_EQ(2u, GetTranslationRequests().size());
+  EXPECT_EQ("They have been bred", GetTranslationRequests().back());
+
+  // Complete the second in-progress translation request.
+  CompletePendingTranslations();
+  base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
+  ExpectBubbleLabelTextEquals(
+      "Dogs are domesticated animals. They have been bred");
+
+  // Dispatch a final result.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host,
+      "Dogs are domesticated animals. They have been bred for thousands of "
+      "years.",
+      /* expected_success= */ true, /* is_final= */ true);
+  base::RunLoop().RunUntilIdle();
+
+  // The completed sentence was cached, so only the remainder is translated.
+  ASSERT_EQ(3u, GetTranslationRequests().size());
+  EXPECT_EQ("They have been bred for thousands of years.",
+            GetTranslationRequests().back());
+
+  // Complete the final translation request and verify it reached the bubble.
+  CompletePendingTranslations();
+  base::RunLoop().RunUntilIdle();
+  ExpectIsWidgetVisible(true);
+  ExpectBubbleLabelTextEquals(
+      "Dogs are domesticated animals. They have been bred for thousands of "
+      "years.");
+
+  // Verify that pending results and in-flight requests are dropped when speech
+  // recognition stops.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Cats are independent creatures. They",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(4u, GetTranslationRequests().size());
+
+  // Dispatch another partial while the fourth request is in progress.
+  OnSpeechRecognitionRecognitionEvent(
+      frame_host, "Cats are independent creatures. They like",
+      /* expected_success= */ true, /* is_final= */ false);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(4u, GetTranslationRequests().size());
+
+  // Stop speech recognition.
+  OnSpeechRecognitionStopped(frame_host);
+  base::RunLoop().RunUntilIdle();
+  CompletePendingTranslations();
+  base::RunLoop().RunUntilIdle();
+
+  // Pending partial was dropped when speech recognition stopped, so no new
+  // request was dispatched.
+  ASSERT_EQ(4u, GetTranslationRequests().size());
+
+  // Because InvalidateWeakPtrs() dropped the in-flight translation callback,
+  // the bubble is closed and no trailing text was dispatched after stream end.
+  ExpectIsWidgetVisible(false);
 }
 
 }  // namespace captions

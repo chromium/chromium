@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 class PrefService;
@@ -99,11 +101,23 @@ class LiveCaptionSpeechRecognitionHost
   // Processes and returns the text to be dispatched.
   std::string GetTextForDispatch(const std::string& text, bool is_final);
 
+  // Dispatches a speech recognition result for translation.
+  void DispatchTranslation(const media::SpeechRecognitionResult& result);
+
   std::unique_ptr<CaptionBubbleContextBrowser> context_;
 
   // A flag used by the Live Translate feature indicating whether transcriptions
   // should stop.
   bool stop_transcriptions_ = false;
+
+  // Flag indicating whether a translation request is currently in-flight.
+  bool is_translating_ = false;
+
+  // Holds pending speech recognition results that arrived while a translation
+  // request was in-flight. Partial results are replaced with the latest
+  // partial result, while final results are queued to ensure no finalized
+  // transcriptions are lost.
+  base::circular_deque<media::SpeechRecognitionResult> pending_speech_results_;
 
   // Used to cache translations to avoid retranslating the same string. Cleared
   // after every Final to manage the size appropriately.
