@@ -11,7 +11,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -62,7 +61,7 @@ void OpenOSSyncSettings(Profile* profile) {
       profile, chromeos::settings::mojom::kSyncControlsSubpagePath);
 }
 
-void OpenSyncSettings(Profile* profile) {
+void OpenSyncSettings(Profile* profile, syncer::SyncService* sync_service) {
   LoginUIService* login_ui = LoginUIServiceFactory::GetForProfile(profile);
   if (login_ui->current_login_ui()) {
     // TODO(michaelpg): The LoginUI might be on an inactive desktop.
@@ -72,8 +71,7 @@ void OpenSyncSettings(Profile* profile) {
   }
 
   chrome::ShowSettingsSubPageForProfile(
-      profile, SyncErrorNotifier::GetDestinationSubpage(
-                   SyncServiceFactory::GetForProfile(profile)));
+      profile, SyncErrorNotifier::GetDestinationSubpage(sync_service));
 }
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
@@ -111,11 +109,12 @@ BubbleViewParameters GetBubbleViewParameters(
     params.message_id = IsNewSignInNonSyncingUser(sync_service)
                             ? IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE_2
                             : IDS_SYNC_PASSPHRASE_ERROR_BUBBLE_VIEW_MESSAGE;
-    // |profile| outlives the click callback since notifications are tied to the
-    // active user session and MessageCenter is torn down before profiles during
-    // shutdown.
+    // |profile| and its SyncService outlive the click callback since
+    // notifications are tied to the active user session and MessageCenter is
+    // torn down before profiles during shutdown.
     params.click_action =
-        base::BindRepeating(&OpenSyncSettings, base::Unretained(profile));
+        base::BindRepeating(&OpenSyncSettings, base::Unretained(profile),
+                            base::Unretained(sync_service));
     return params;
   }
 
