@@ -196,7 +196,7 @@ class Generator(generator.Generator):
     interface = None
     if is_pending_remote or is_pending_receiver:
       # TODO(crbug.com/522372048): add handling for non-associated interfaces
-      assert self._IsPendingAssociatedKind, (
+      assert self._IsPendingAssociatedKind(kind), (
         "Only pending associated interfaces are supported."
       )
       interface = kind.kind
