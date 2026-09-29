@@ -76,4 +76,32 @@ TEST_F(
   EXPECT_TRUE(IsGeminiContextualSuggestionsCuesServerModelExecutionEnabled());
 }
 
+TEST_F(ContextualCueingFeaturesTest, GetContextualCueUiMode) {
+  EXPECT_EQ(GetContextualCueUiMode(), ContextualCueUiMode::kInfobarThenChip);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCuesUiMode,
+        {{kGeminiContextualSuggestionsCuesUiModeParam, "infobar_then_chip"}});
+    EXPECT_EQ(GetContextualCueUiMode(), ContextualCueUiMode::kInfobarThenChip);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCuesUiMode,
+        {{kGeminiContextualSuggestionsCuesUiModeParam, "infobar_only"}});
+    EXPECT_EQ(GetContextualCueUiMode(), ContextualCueUiMode::kInfobarOnly);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCuesUiMode,
+        {{kGeminiContextualSuggestionsCuesUiModeParam, "omnibox_chip_only"}});
+    EXPECT_EQ(GetContextualCueUiMode(), ContextualCueUiMode::kOmniboxChipOnly);
+  }
+}
+
 }  // namespace contextual_cueing

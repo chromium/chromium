@@ -20,13 +20,36 @@ BASE_DECLARE_FEATURE(kGeminiContextualSuggestionsCues);
 bool IsGeminiContextualSuggestionsCuesEnabled();
 
 // Feature parameter that forces on-device page classification and server model
-// execution, bypasses all contextual cueing frequency caps, backoff cooldowns,
-// and Feature Engagement Tracker limits, and always presents the Message UI.
+// execution, and bypasses all contextual cueing frequency caps, backoff
+// cooldowns, and Feature Engagement Tracker limits.
 extern const char kGeminiContextualSuggestionsCuesIgnoreThresholdsParam[];
 
-// Returns true if contextual cueing thresholds/caps should be ignored,
-// on-device classification forced, and Message UI always returned.
+// Returns true if contextual cueing thresholds/caps should be ignored and
+// on-device classification forced.
 bool IsIgnoreContextualCueingThresholdsEnabled();
+
+// Feature flag controlling the UI presentation mode for Gemini contextual
+// suggestions cues.
+BASE_DECLARE_FEATURE(kGeminiContextualSuggestionsCuesUiMode);
+
+// UI presentation modes for Gemini contextual suggestions cues.
+enum class ContextualCueUiMode {
+  // Starts with Infobar Message UI and transitions to Omnibox Chip UI after
+  // dismissal or consecutive ignores, managed by
+  // `ContextualCueingCapTrackerService`.
+  kInfobarThenChip = 0,
+  // Forces contextual cues to always use Infobar Message UI.
+  kInfobarOnly = 1,
+  // Forces contextual cues to always use Omnibox Chip UI.
+  kOmniboxChipOnly = 2,
+};
+
+// Feature parameter for selecting the UI presentation mode in
+// `kGeminiContextualSuggestionsCuesUiMode`.
+extern const char kGeminiContextualSuggestionsCuesUiModeParam[];
+
+// Returns the configured UI presentation mode for contextual cues.
+ContextualCueUiMode GetContextualCueUiMode();
 
 // Feature parameter for enabling on-device category classifier in Gemini
 // contextual suggestions cues.
