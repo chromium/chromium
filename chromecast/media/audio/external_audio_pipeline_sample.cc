@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/external_audio_pipeline_shlib.h"
 #include "chromecast/public/media/mixer_output_stream.h"
@@ -26,7 +27,7 @@ class TestLoopBack {
               int channels) {
     auto delay = stream->GetRenderingDelay();
     int64_t delay_ms = delay.timestamp_microseconds + delay.delay_microseconds;
-    for (auto* observer : observers_) {
+    for (auto observer : observers_) {
       observer->OnLoopbackAudio(
           delay_ms, kSampleFormatF32, stream->GetSampleRate(), channels,
           reinterpret_cast<uint8_t*>(const_cast<float*>(data)),
@@ -49,7 +50,8 @@ class TestLoopBack {
   }
 
  private:
-  std::vector<ExternalAudioPipelineShlib::LoopbackAudioObserver*> observers_;
+  std::vector<raw_ptr<ExternalAudioPipelineShlib::LoopbackAudioObserver>>
+      observers_;
 };
 
 TestLoopBack g_test_loop_back;

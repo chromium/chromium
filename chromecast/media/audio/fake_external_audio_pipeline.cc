@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "chromecast/media/audio/fake_external_audio_pipeline_support.h"
 #include "chromecast/public/cast_media_shlib.h"
@@ -67,7 +68,7 @@ class TestLoopBack {
     auto delay = stream->GetRenderingDelay();
     int64_t delay_microseconds =
         delay.timestamp_microseconds + delay.delay_microseconds;
-    for (auto* observer : observers_) {
+    for (auto observer : observers_) {
       observer->OnLoopbackAudio(
           delay_microseconds, kSampleFormatF32, stream->GetSampleRate(),
           channels, reinterpret_cast<uint8_t*>(const_cast<float*>(data)),
@@ -91,7 +92,8 @@ class TestLoopBack {
 
  protected:
   // Used by derived class for FakeExternalAudioPipelineSupport.
-  std::vector<ExternalAudioPipelineShlib::LoopbackAudioObserver*> observers_;
+  std::vector<raw_ptr<ExternalAudioPipelineShlib::LoopbackAudioObserver>>
+      observers_;
 };
 
 class TestMediaMetadata {
