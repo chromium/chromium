@@ -91,12 +91,14 @@ TEST_F(TipsServiceTest, DetermineBestTip_NoDatabaseClient) {
       /*is_eligible=*/true));
 
   std::optional<notifications::NotificationData> result;
-  service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<notifications::NotificationData>* out,
-         std::optional<notifications::NotificationData> res) {
-        *out = std::move(res);
-      },
-      &result));
+  service_->DetermineBestTip(
+      /*custom_signals=*/{},
+      base::BindOnce(
+          [](std::optional<notifications::NotificationData>* out,
+             std::optional<notifications::NotificationData> res) {
+            *out = std::move(res);
+          },
+          &result));
   EXPECT_FALSE(result.has_value());
 }
 
@@ -130,14 +132,16 @@ TEST_F(TipsServiceTest, DetermineBestTip_DatabaseFailure) {
 
   std::optional<notifications::NotificationData> result;
   base::RunLoop run_loop;
-  service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<notifications::NotificationData>* out,
-         base::OnceClosure quit,
-         std::optional<notifications::NotificationData> res) {
-        *out = std::move(res);
-        std::move(quit).Run();
-      },
-      &result, run_loop.QuitClosure()));
+  service_->DetermineBestTip(
+      /*custom_signals=*/{},
+      base::BindOnce(
+          [](std::optional<notifications::NotificationData>* out,
+             base::OnceClosure quit,
+             std::optional<notifications::NotificationData> res) {
+            *out = std::move(res);
+            std::move(quit).Run();
+          },
+          &result, run_loop.QuitClosure()));
   run_loop.Run();
 
   EXPECT_FALSE(result.has_value());
@@ -185,14 +189,16 @@ TEST_F(TipsServiceTest, VerifyMetadataConstruction) {
 
   std::optional<notifications::NotificationData> result;
   base::RunLoop run_loop;
-  service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<notifications::NotificationData>* out,
-         base::OnceClosure quit,
-         std::optional<notifications::NotificationData> res) {
-        *out = std::move(res);
-        std::move(quit).Run();
-      },
-      &result, run_loop.QuitClosure()));
+  service_->DetermineBestTip(
+      /*custom_signals=*/{},
+      base::BindOnce(
+          [](std::optional<notifications::NotificationData>* out,
+             base::OnceClosure quit,
+             std::optional<notifications::NotificationData> res) {
+            *out = std::move(res);
+            std::move(quit).Run();
+          },
+          &result, run_loop.QuitClosure()));
   run_loop.Run();
 
   ASSERT_TRUE(test_segmentation_service_->test_database_client());
@@ -317,5 +323,32 @@ TEST_F(TipsServiceTest,
       /*mock_global_cooldown_shown_count=*/1.0f);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(TipsServiceTest, DetermineBestTip_CustomSignalsForwardedToFeature) {
+  auto feature = std::make_unique<MockTipsFeature>(
+      TipFeatureRank::kQuickDelete, TipsNotificationsFeatureType::kQuickDelete,
+      std::vector<SignalDefinition>{UserAction("Action1", 7)},
+      /*is_eligible=*/true);
+  MockTipsFeature* feature_ptr = feature.get();
+
+  std::vector<FeatureTestConfig> configs;
+  configs.push_back(FeatureTestConfig{
+      .feature = std::move(feature),
+      .mock_signal_values = std::map<std::string, float>{{"Action1", 10.0f}},
+  });
+
+  std::map<std::string, float> custom_signals = {
+      {"custom_signal_1", 1.0f},
+      {"custom_signal_2", 42.0f},
+  };
+
+  RunDetermineBestTipTestWithOverrides(
+      std::move(configs), TipsNotificationsFeatureType::kQuickDelete,
+      /*mock_global_cooldown_shown_count=*/0.0f, custom_signals);
+
+  EXPECT_EQ(feature_ptr->last_signal_values_["Action1"], 10.0f);
+  EXPECT_EQ(feature_ptr->last_signal_values_["custom_signal_1"], 1.0f);
+  EXPECT_EQ(feature_ptr->last_signal_values_["custom_signal_2"], 42.0f);
+}
 
 }  // namespace tips

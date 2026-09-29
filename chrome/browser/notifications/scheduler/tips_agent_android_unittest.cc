@@ -14,6 +14,7 @@
 #include "chrome/browser/tips/tips_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,7 +28,10 @@ class MockTipsService : public tips::TipsService {
   MockTipsService() : tips::TipsService(nullptr, nullptr) {}
   ~MockTipsService() override = default;
 
-  MOCK_METHOD(void, DetermineBestTip, (OnBestTipChosen), (override));
+  MOCK_METHOD(void,
+              DetermineBestTip,
+              ((std::map<std::string, float>), OnBestTipChosen),
+              (override));
 };
 
 class TipsAgentAndroidTest : public testing::Test {
@@ -73,7 +77,7 @@ TEST_F(TipsAgentAndroidTest, TestScheduleNewNotification) {
   // Verify that GetClassificationResult is called by default.
   EXPECT_CALL(*mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(1);
-  EXPECT_CALL(*mock_tips_service_, DetermineBestTip(_)).Times(0);
+  EXPECT_CALL(*mock_tips_service_, DetermineBestTip(_, _)).Times(0);
 
   TipsAgentAndroid::ScheduleNewNotification(
       profile_.get(), /*is_bottom_omnibox=*/false, &mock_service_);
@@ -90,8 +94,13 @@ TEST_F(TipsAgentAndroidTest,
 
   EXPECT_CALL(*mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(0);
-  EXPECT_CALL(*mock_tips_service_, DetermineBestTip(_))
-      .WillOnce([&](tips::TipsService::OnBestTipChosen callback) {
+  EXPECT_CALL(*mock_tips_service_,
+              DetermineBestTip(
+                  std::map<std::string, float>{
+                      {segmentation_platform::kBottomOmniboxStatus, 0.0f}},
+                  _))
+      .WillOnce([&](std::map<std::string, float> custom_signals,
+                    tips::TipsService::OnBestTipChosen callback) {
         std::move(callback).Run(test_data);
       });
   EXPECT_CALL(
@@ -111,14 +120,19 @@ TEST_F(TipsAgentAndroidTest,
 
   EXPECT_CALL(*mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(0);
-  EXPECT_CALL(*mock_tips_service_, DetermineBestTip(_))
-      .WillOnce([](tips::TipsService::OnBestTipChosen callback) {
+  EXPECT_CALL(*mock_tips_service_,
+              DetermineBestTip(
+                  std::map<std::string, float>{
+                      {segmentation_platform::kBottomOmniboxStatus, 1.0f}},
+                  _))
+      .WillOnce([](std::map<std::string, float> custom_signals,
+                   tips::TipsService::OnBestTipChosen callback) {
         std::move(callback).Run(std::nullopt);
       });
   EXPECT_CALL(mock_service_, Schedule(_)).Times(0);
 
   TipsAgentAndroid::ScheduleNewNotification(
-      profile_.get(), /*is_bottom_omnibox=*/false, &mock_service_);
+      profile_.get(), /*is_bottom_omnibox=*/true, &mock_service_);
 }
 
 TEST_F(TipsAgentAndroidTest, TestOnBestTipChosen) {

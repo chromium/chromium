@@ -6,6 +6,8 @@ assert(is_android)
 
 source_set("features") {
   sources = [
+    "bottom_omnibox_tip.cc",
+    "bottom_omnibox_tip.h",
     "enhanced_safe_browsing_tip.cc",
     "enhanced_safe_browsing_tip.h",
     "google_lens_tip.cc",
@@ -23,6 +25,7 @@ source_set("features") {
     "//base",
     "//chrome/app:generated_resources",
     "//components/browsing_data/core",
+    "//components/omnibox/browser",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/segmentation_platform/public",
@@ -32,6 +35,7 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "bottom_omnibox_tip_unittest.cc",
     "enhanced_safe_browsing_tip_unittest.cc",
     "google_lens_tip_unittest.cc",
     "quick_delete_tip_unittest.cc",
@@ -45,6 +49,7 @@ source_set("unit_tests") {
     "//chrome/browser/tips/core",
     "//chrome/browser/tips/core:test_support",
     "//components/browsing_data/core",
+    "//components/omnibox/browser",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/segmentation_platform/public",

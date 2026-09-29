@@ -63,7 +63,8 @@ void TipsService::RegisterFeature(std::unique_ptr<TipsFeature> feature) {
   registered_features_.push_back(std::move(feature));
 }
 
-void TipsService::DetermineBestTip(OnBestTipChosen callback) {
+void TipsService::DetermineBestTip(std::map<std::string, float> custom_signals,
+                                   OnBestTipChosen callback) {
   if (!segmentation_service_ || registered_features_.empty()) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -103,10 +104,12 @@ void TipsService::DetermineBestTip(OnBestTipChosen callback) {
   db_client->ProcessFeatures(
       metadata, base::Time::Now(),
       base::BindOnce(&TipsService::OnFeaturesProcessed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(custom_signals),
+                     std::move(callback)));
 }
 
 void TipsService::OnFeaturesProcessed(
+    std::map<std::string, float> custom_signals,
     OnBestTipChosen callback,
     ResultStatus status,
     const segmentation_platform::ModelProvider::Request& inputs) {
@@ -138,11 +141,19 @@ void TipsService::OnFeaturesProcessed(
   size_t input_index = 1;
 
   for (const std::unique_ptr<TipsFeature>& feature : registered_features_) {
+    // Ensure an entry exists for every registered feature even if it has no
+    // required or custom signals.
+    auto& signals_map = feature_signals_map[feature.get()];
     for (const SignalDefinition& signal : feature->GetRequiredSignals()) {
       if (input_index < inputs.size()) {
-        feature_signals_map[feature.get()][signal.name] = inputs[input_index];
+        signals_map[signal.name] = inputs[input_index];
         input_index++;
       }
+    }
+    // Merge all custom / runtime signals that need to be retrieved in Java
+    // into each feature's signal map.
+    for (const auto& [signal_name, signal_val] : custom_signals) {
+      signals_map[signal_name] = signal_val;
     }
   }
 

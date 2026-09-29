@@ -243,35 +243,40 @@ void TipsServiceTestBase::RecordHistogramEnum(
 }
 
 std::optional<TipsNotificationsFeatureType>
-TipsServiceTestBase::DetermineBestTipSync() {
+TipsServiceTestBase::DetermineBestTipSync(
+    std::map<std::string, float> custom_signals) {
   std::optional<notifications::NotificationData> actual_data;
   base::RunLoop run_loop;
-  service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<notifications::NotificationData>* out,
-         base::OnceClosure quit,
-         std::optional<notifications::NotificationData> res) {
-        *out = std::move(res);
-        std::move(quit).Run();
-      },
-      &actual_data, run_loop.QuitClosure()));
+  service_->DetermineBestTip(
+      std::move(custom_signals),
+      base::BindOnce(
+          [](std::optional<notifications::NotificationData>* out,
+             base::OnceClosure quit,
+             std::optional<notifications::NotificationData> res) {
+            *out = std::move(res);
+            std::move(quit).Run();
+          },
+          &actual_data, run_loop.QuitClosure()));
   run_loop.Run();
   return ExtractFeatureType(actual_data);
 }
 
 void TipsServiceTestBase::RunDetermineBestTipTest(
     std::vector<std::unique_ptr<TipsFeature>> features,
-    std::optional<TipsNotificationsFeatureType> expected_best_tip) {
+    std::optional<TipsNotificationsFeatureType> expected_best_tip,
+    std::map<std::string, float> custom_signals) {
   for (auto& feature : features) {
     service_->RegisterFeature(std::move(feature));
   }
 
-  EXPECT_EQ(DetermineBestTipSync(), expected_best_tip);
+  EXPECT_EQ(DetermineBestTipSync(std::move(custom_signals)), expected_best_tip);
 }
 
 void TipsServiceTestBase::RunDetermineBestTipTestWithOverrides(
     std::vector<FeatureTestConfig> configs,
     std::optional<TipsNotificationsFeatureType> expected_best_tip,
-    float mock_global_cooldown_shown_count) {
+    float mock_global_cooldown_shown_count,
+    std::map<std::string, float> custom_signals) {
   std::vector<float> flat_inputs;
   // Prepend the global cooldown signal value (index 0).
   flat_inputs.push_back(mock_global_cooldown_shown_count);
@@ -298,7 +303,8 @@ void TipsServiceTestBase::RunDetermineBestTipTestWithOverrides(
         flat_inputs);
   }
 
-  RunDetermineBestTipTest(std::move(features), expected_best_tip);
+  RunDetermineBestTipTest(std::move(features), expected_best_tip,
+                          std::move(custom_signals));
 }
 
 }  // namespace tips

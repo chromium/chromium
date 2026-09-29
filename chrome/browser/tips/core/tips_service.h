@@ -65,10 +65,15 @@ class TipsService : public KeyedService, public base::SupportsUserData {
 
   // Queries database signals for all registered features via the segmentation
   // platform and determines the best eligible tip to display.
-  virtual void DetermineBestTip(OnBestTipChosen callback);
+  // `custom_signals` provides any dynamic or runtime signals (signals that can
+  // only be retrieved in Java, e.g. from JNI/UI) that are merged into the
+  // signals map evaluated by each feature's `IsEligible` implementation.
+  virtual void DetermineBestTip(std::map<std::string, float> custom_signals,
+                                OnBestTipChosen callback);
 
  private:
   void OnFeaturesProcessed(
+      std::map<std::string, float> custom_signals,
       OnBestTipChosen callback,
       ResultStatus status,
       const segmentation_platform::ModelProvider::Request& inputs);

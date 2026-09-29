@@ -132,12 +132,21 @@ void TipsAgentAndroid::ScheduleNewNotification(
     if (!tips_service) {
       return;
     }
+    // TODO(crbug.com/567362616): Update the plumbing for Java-only signals to
+    // pass a generic signal map across JNI, avoiding hardcoded feature signals
+    // in tips_agent_android.cc.
+    std::map<std::string, float> custom_signals = {
+        {segmentation_platform::kBottomOmniboxStatus,
+         is_bottom_omnibox ? 1.0f : 0.0f},
+    };
     // `service` and `tips_service` are KeyedServices scoped to `profile`.
     // The callback is owned by `tips_service` and guarded by its WeakPtr, so
     // it will be dropped if the Profile or services are destroyed, ensuring
     // `service` is never called after destruction.
-    tips_service->DetermineBestTip(base::BindOnce(
-        &TipsAgentAndroid::OnBestTipChosen, base::Unretained(service)));
+    tips_service->DetermineBestTip(
+        std::move(custom_signals),
+        base::BindOnce(&TipsAgentAndroid::OnBestTipChosen,
+                       base::Unretained(service)));
     return;
   }
 

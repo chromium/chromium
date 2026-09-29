@@ -93,16 +93,19 @@ class TipsServiceTestBase : public ::testing::Test {
       const std::string& histogram_name,
       base::HistogramBase::Sample32 sample,
       base::HistogramBase::Sample32 enum_size = kDefaultEnumSize);
-  std::optional<TipsNotificationsFeatureType> DetermineBestTipSync();
+  std::optional<TipsNotificationsFeatureType> DetermineBestTipSync(
+      std::map<std::string, float> custom_signals = {});
 
   void RunDetermineBestTipTest(
       std::vector<std::unique_ptr<TipsFeature>> features,
-      std::optional<TipsNotificationsFeatureType> expected_best_tip);
+      std::optional<TipsNotificationsFeatureType> expected_best_tip,
+      std::map<std::string, float> custom_signals = {});
 
   void RunDetermineBestTipTestWithOverrides(
       std::vector<FeatureTestConfig> configs,
       std::optional<TipsNotificationsFeatureType> expected_best_tip,
-      float mock_global_cooldown_shown_count = 0.0f);
+      float mock_global_cooldown_shown_count = 0.0f,
+      std::map<std::string, float> custom_signals = {});
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<TestSegmentationPlatformService> test_segmentation_service_;
