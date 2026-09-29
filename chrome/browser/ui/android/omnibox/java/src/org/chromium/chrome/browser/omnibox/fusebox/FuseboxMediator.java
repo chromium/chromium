@@ -225,6 +225,9 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST, List.of());
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, List.of());
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE, false);
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE, false);
 
         mModel.set(
                 FuseboxProperties.POPUP_ATTACHMENTS_HEADER_VISIBLE,
@@ -728,6 +731,16 @@ import java.util.function.Supplier;
 
     private void onAddCurrentTab(Tab tab) {
         addTabAttachment(tab, FuseboxAttachmentButtonType.CURRENT_TAB);
+    }
+
+    /**
+     * Returns whether the popup has a pinned section between the attachments and the "More options"
+     * button, which holds the pinned current tab and pinned tools.
+     */
+    private boolean hasPinnedSection() {
+        return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
+                && !OmniboxFeatures.shouldUseScrollableCarousel()
+                && !mIsDesktopPlatform;
     }
 
     private void updateModelForRecentTabs() {
@@ -1374,8 +1387,13 @@ import java.util.function.Supplier;
                 inputState.getToolsSectionConfig().getHeader());
 
         List<PopupButtonData> toolButtonDataList = new ArrayList<>();
-        if (!OmniboxCapabilities.isDesktopPlatform()) {
-            toolButtonDataList.add(createAiModeToolButtonData());
+        List<PopupButtonData> pinnedToolButtonDataList = new ArrayList<>();
+        if (!mIsDesktopPlatform) {
+            if (hasPinnedSection()) {
+                pinnedToolButtonDataList.add(createAiModeToolButtonData());
+            } else {
+                toolButtonDataList.add(createAiModeToolButtonData());
+            }
         }
 
         for (ToolConfig toolConfig : inputState.getToolConfigs()) {
@@ -1423,6 +1441,12 @@ import java.util.function.Supplier;
                         && showSectionHeaders
                         && !TextUtils.isEmpty(inputState.getToolsSectionConfig().getHeader()));
         mModel.set(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST, toolButtonDataList);
+        mModel.set(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, pinnedToolButtonDataList);
+        boolean showPinnedSection = !pinnedToolButtonDataList.isEmpty();
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE, showPinnedSection);
+        mModel.set(
+                FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE,
+                showPinnedSection && !OmniboxFeatures.shouldShowBottomSheetPopup());
 
         // The InputState is always targeting an AI Mode request and what would be possible, but the
         // user might not have activate AI Mode yet, in which case we do not want to show any

@@ -72,6 +72,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
@@ -1190,6 +1191,83 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_contextMenu_showsBoth() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST).isEmpty());
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_noPinnedTools_hidesBoth() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
+        when(mComposeboxQueryControllerBridge.getInputStateSupplier())
+                .thenReturn(ObservableSuppliers.createMonotonic());
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST).isEmpty());
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_bottomSheet_hidesBottom() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
+        OmniboxFeatures.setUseCarouselForTesting(/* value= */ true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(/* value= */ false);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_scrollableCarousel_hidesBoth() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
+        OmniboxFeatures.setUseCarouselForTesting(/* value= */ true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(/* value= */ true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_variationsDisabled_hidesBoth() {
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void pinnedSectionDividers_desktop_hidesBoth() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE));
+    }
+
+    @Test
     public void onCameraClicked_permissionGranted_launchesCamera() {
         doReturn(true).when(mWindowAndroid).hasPermission(any());
 
@@ -1279,6 +1357,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void activateAiMode_fromToolMenu_recordsMetrics() {
         mMediator.onPlusButtonClicked();
 
@@ -1290,6 +1369,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void clickSelectedTool_transitionsToSearchMode() {
         mMediator.onPlusButtonClicked();
 
@@ -2503,6 +2583,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void testOnInputStateChange_unknownIconResourceIds() {
 
         int unknownIconId = 9999;
@@ -2702,27 +2783,67 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void popupHeaders_accordionEnabled_suppressed() {
         OmniboxFeatures.setUseAccordionForTesting(true);
         recreateMediator();
         mMediator.onPlusButtonClicked();
 
-        assertEquals(4, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertEquals(3, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
         assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void popupHeaders_accordionDisabled_visible() {
         OmniboxFeatures.setUseAccordionForTesting(false);
         recreateMediator();
         mMediator.onPlusButtonClicked();
 
-        assertEquals(4, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
+        assertEquals(3, mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST).size());
         assertEquals(2, mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST).size());
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void toolsList_scrollableCarousel_includesAiModeInToolsList() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
+        OmniboxFeatures.setUseCarouselForTesting(/* value= */ true);
+        OmniboxFeatures.setUseScrollableCarouselForTesting(/* value= */ true);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED, tools.get(0).protoId);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST).isEmpty());
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void toolsList_fixedCarouselOrVertical_pinsAiMode() {
+        OmniboxFeatures.setUseScrollableCarouselForTesting(/* value= */ false);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> pinnedTools =
+                mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST);
+        assertEquals(1, pinnedTools.size());
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED, pinnedTools.get(0).protoId);
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
+    public void toolsList_variationsDisabled_includesAiModeInToolsList() {
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        assertEquals(ToolMode.TOOL_MODE_UNSPECIFIED, tools.get(0).protoId);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST).isEmpty());
     }
 
     @Test
@@ -2805,6 +2926,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_FUSEBOX_POPUP_VARIATIONS)
     public void testPopupToolButton_hasColor() {
         setInputState(
                 createDefaultInputStateBuilder()

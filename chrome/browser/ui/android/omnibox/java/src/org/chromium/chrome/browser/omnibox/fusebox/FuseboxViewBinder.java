@@ -192,6 +192,18 @@ class FuseboxViewBinder {
                     FuseboxProperties.POPUP_MORE_OPTIONS_VISIBLE,
                     view.popup.mMoreOptionsButton);
             view.popup.setAccordionEnabled(visible);
+        } else if (propertyKey == FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE) {
+            view.popup.mPinnedSectionBottomDivider.setVisibility(
+                    model.get(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE) {
+            view.popup.mPinnedSectionTopDivider.setVisibility(
+                    model.get(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+        } else if (propertyKey == FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST) {
+            updatePinnedToolButtons(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_BUTTON_DATA_LIST) {
             updateRecentTabsButtons(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE) {
@@ -354,6 +366,21 @@ class FuseboxViewBinder {
         view.popup.mAddCurrentTab.setVisibility(visibility);
         View topDivider = view.popup.mCurrentTabTopDivider;
         if (topDivider != null) topDivider.setVisibility(visibility);
+    }
+
+    private static void updatePinnedToolButtons(PropertyModel model, FuseboxViewHolder view) {
+        ViewGroup container = view.popup.mPinnedToolsContainer;
+        List<PopupButtonData> buttonDataList =
+                model.get(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST);
+        container.setVisibility(buttonDataList.isEmpty() ? View.GONE : View.VISIBLE);
+
+        updateButtons(
+                model,
+                view,
+                container,
+                buttonDataList,
+                /* startIndex= */ 0,
+                container.getChildCount());
     }
 
     private static void updateRecentTabsButtons(PropertyModel model, FuseboxViewHolder view) {

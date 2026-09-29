@@ -215,6 +215,18 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MORE_OPTIONS_VISIBLE =
             new WritableBooleanPropertyKey();
 
+    /** Whether the divider below the pinned section (current tab and tools) is visible. */
+    public static final WritableBooleanPropertyKey POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the divider above the pinned section (current tab and tools) is visible. */
+    public static final WritableBooleanPropertyKey POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** Holds button data objects for each pinned tool that is to be shown. */
+    public static final WritableObjectPropertyKey<List<PopupButtonData>>
+            POPUP_PINNED_TOOL_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
+
     /** Holds button data objects for each recent tab that is to be shown. */
     public static final WritableObjectPropertyKey<List<PopupButtonData>>
             POPUP_RECENT_TABS_BUTTON_DATA_LIST = new WritableObjectPropertyKey<>();
@@ -319,6 +331,9 @@ class FuseboxProperties {
         POPUP_MODEL_HEADER_VISIBLE,
         POPUP_MORE_OPTIONS_CLICKED,
         POPUP_MORE_OPTIONS_VISIBLE,
+        POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE,
+        POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE,
+        POPUP_PINNED_TOOL_BUTTON_DATA_LIST,
         POPUP_RECENT_TABS_BUTTON_DATA_LIST,
         POPUP_RECENT_TABS_DIVIDER_VISIBLE,
         POPUP_RECENT_TABS_ENABLED,

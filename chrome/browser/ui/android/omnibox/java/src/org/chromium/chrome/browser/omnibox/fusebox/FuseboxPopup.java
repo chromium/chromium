@@ -61,6 +61,11 @@ class FuseboxPopup {
     /* package */ final View mToolsDivider;
     /* package */ final TextView mToolsHeader;
 
+    /** Container for tools pinned outside the accordion, below the pinned current tab. */
+    /* package */ final ViewGroup mPinnedToolsContainer;
+
+    /* package */ final View mPinnedSectionTopDivider;
+    /* package */ final View mPinnedSectionBottomDivider;
     /* package */ final View mModelsDivider;
     /* package */ final TextView mModelsHeader;
     /* package */ final TextView mAttachmentsHeader;
@@ -167,6 +172,11 @@ class FuseboxPopup {
         mAccordionContainer = contentView.findViewById(R.id.fusebox_accordion_container);
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);
         mToolsHeader = contentView.findViewById(R.id.fusebox_tools_header);
+        mPinnedToolsContainer = contentView.findViewById(R.id.fusebox_pinned_tools_container);
+        mPinnedSectionTopDivider =
+                contentView.findViewById(R.id.fusebox_pinned_section_top_divider);
+        mPinnedSectionBottomDivider =
+                contentView.findViewById(R.id.fusebox_pinned_section_bottom_divider);
 
         initializeItem(
                 mAddCurrentTab,
@@ -232,10 +242,17 @@ class FuseboxPopup {
                 mCurrentTabTopDivider != null
                         ? List.of(
                                 mCurrentTabTopDivider,
+                                mPinnedSectionTopDivider,
+                                mPinnedSectionBottomDivider,
                                 mRecentTabsDivider,
                                 mToolsDivider,
                                 mModelsDivider)
-                        : List.of(mRecentTabsDivider, mToolsDivider, mModelsDivider);
+                        : List.of(
+                                mPinnedSectionTopDivider,
+                                mPinnedSectionBottomDivider,
+                                mRecentTabsDivider,
+                                mToolsDivider,
+                                mModelsDivider);
         mHeaders = List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader);
     }
 

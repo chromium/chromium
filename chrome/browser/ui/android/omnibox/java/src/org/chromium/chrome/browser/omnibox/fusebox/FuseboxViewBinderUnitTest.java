@@ -528,6 +528,38 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void popupPinnedTools_rendersButtonsInContainer() {
+        PopupButtonData tool =
+                new PopupButtonData.Builder()
+                        .setType(PopupButtonType.TOOL)
+                        .setText("pinned tool")
+                        .build();
+
+        mModel.set(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, List.of(tool));
+        assertEquals(View.VISIBLE, mPopup.mPinnedToolsContainer.getVisibility());
+        assertEquals(1, mPopup.mPinnedToolsContainer.getChildCount());
+        TextView text = mPopup.mPinnedToolsContainer.getChildAt(0).findViewById(R.id.action_text);
+        assertEquals("pinned tool", text.getText());
+
+        mModel.set(FuseboxProperties.POPUP_PINNED_TOOL_BUTTON_DATA_LIST, List.of());
+        assertEquals(View.GONE, mPopup.mPinnedToolsContainer.getVisibility());
+        assertEquals(0, mPopup.mPinnedToolsContainer.getChildCount());
+    }
+
+    @Test
+    public void popupPinnedSectionDividersVisibility_setsVisibility() {
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mPinnedSectionTopDivider.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_TOP_DIVIDER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mPinnedSectionTopDivider.getVisibility());
+
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE, true);
+        assertEquals(View.VISIBLE, mPopup.mPinnedSectionBottomDivider.getVisibility());
+        mModel.set(FuseboxProperties.POPUP_PINNED_SECTION_BOTTOM_DIVIDER_VISIBLE, false);
+        assertEquals(View.GONE, mPopup.mPinnedSectionBottomDivider.getVisibility());
+    }
+
+    @Test
     public void testCurrentTabButtonEnabled() {
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, true);
         assertTrue(mViewHolder.popup.mAddCurrentTab.isEnabled());

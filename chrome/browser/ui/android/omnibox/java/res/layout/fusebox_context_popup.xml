@@ -65,11 +65,28 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_pinned_section_top_divider"
+            android:visibility="gone" />
+
         <include
             layout="@layout/fusebox_list_item"
             android:id="@+id/fusebox_add_current_tab_pinned"
             android:layout_width="match_parent"
             android:layout_height="?attr/listItemHeight"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/fusebox_pinned_tools_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
+        <View
+            style="@style/Fusebox.PopupMenu.Divider"
+            android:id="@+id/fusebox_pinned_section_bottom_divider"
             android:visibility="gone" />
 
         <include
