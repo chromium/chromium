@@ -1,4 +1,11 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.webkit.WebView on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [This is a link inside a contenteditable.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [This is a link inside a contenteditable.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [This is a link inside a contenteditable.] class_name=android.widget.EditText
 TYPE_VIEW_TEXT_CHANGED class_name=android.widget.EditText [0, 40, 0] text=[This is a link inside a contenteditable.] beforeText= on [This is a link inside a contenteditable.] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.webkit.WebView on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [This is a link inside a contenteditable.] class_name=android.widget.EditText

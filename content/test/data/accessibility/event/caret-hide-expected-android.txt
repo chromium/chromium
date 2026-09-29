@@ -1,3 +1,12 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [abcde] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [abcde] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [0, 0] on [abcde] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [abcde] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [3, 3] on [end] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [end] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [end] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [end] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
