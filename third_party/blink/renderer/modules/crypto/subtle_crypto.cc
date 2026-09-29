@@ -150,8 +150,9 @@ std::optional<WebCryptoOperation> StringToWebCryptoOperation(const String& op) {
   if (op == "deriveKey" || op == "deriveBits") {
     return kWebCryptoOperationDeriveBits;
   }
-  // TODO(crbug.com/41264071): Add "exportKey" here. It is listed as an
-  // operation for supports(), and should land together with its WPTs.
+  if (op == "exportKey") {
+    return kWebCryptoOperationExportKey;
+  }
   if (op == "wrapKey") {
     return kWebCryptoOperationWrapKey;
   }
@@ -1317,9 +1318,12 @@ bool SubtleCrypto::supports(ScriptState* script_state,
   //           additionalAlgorithm is false, return false.
   //
   // importKey is always supported, so that check is skipped.
-  //
-  // TODO(crbug.com/41264071): exportKey is no longer supported by every
-  // algorithm, so the wrapKey case needs a real check.
+  if (operation == "wrapKey") {
+    if (!supportsInternal(script_state, kWebCryptoOperationExportKey,
+                          additional_algorithm, length_bits)) {
+      return false;
+    }
+  }
 
   if (operation == "deriveKey") {
     // 3.2.6.4.1 If the result of checking support for an algorithm with op set
