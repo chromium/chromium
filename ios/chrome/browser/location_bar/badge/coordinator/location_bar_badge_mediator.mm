@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/metrics/location_bar_badge_metrics.h"
@@ -101,6 +102,8 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
       _activeContextualPanelObservationForwarder;
   // Boolean to track whether the FET promo is being displayed.
   BOOL _isFETPromoShowing;
+  // The current badge configuration being displayed or processed.
+  LocationBarBadgeConfiguration* _currentBadgeConfig;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -167,6 +170,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 
   _promoStartTimer = nullptr;
   _promoEndTimer = nullptr;
+  _currentBadgeConfig = nil;
   _tracker = nil;
   _prefService = nil;
   _geminiService = nil;
@@ -215,6 +219,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   if (!navigationContext->IsSameDocument()) {
     _promoStartTimer = nil;
     _promoEndTimer = nil;
+    _currentBadgeConfig = nil;
     [self.consumer hideBadge];
     [self ensureFETFeatureIsDismissed];
     [self preventContextualPanelEntryPoint:NO];
@@ -299,6 +304,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   }
 
   [self resetTimersAndUIStateAnimated:NO];
+  _currentBadgeConfig = config;
   [self.consumer setBadgeConfig:config];
   [self.consumer collapseBadgeContainer];
   [self.consumer showBadge];
@@ -327,6 +333,14 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   // No-op.
 }
 
+- (void)hideBadgeForType:(LocationBarBadgeType)type {
+  if (_currentBadgeConfig && _currentBadgeConfig.badgeType == type) {
+    _currentBadgeConfig = nil;
+    [self resetTimersAndUIStateAnimated:YES];
+    [self.consumer hideBadge];
+  }
+}
+
 #pragma mark - LocationBarBadgeMutator
 
 - (void)dismissIPHAnimated:(BOOL)animated {
@@ -335,19 +349,30 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 }
 
 - (void)badgeTapped:(LocationBarBadgeConfiguration*)badgeConfig {
+  if (_currentBadgeConfig && _currentBadgeConfig != badgeConfig) {
+    return;
+  }
+
   // Cancel any pending transition timers since user interacted with the badge.
   [self resetTimersAndUIStateAnimated:YES];
 
   switch (badgeConfig.badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip: {
-      NSString* prompt = nil;
+      auto* tabHelper =
+          _activeWebState
+              ? contextual_cueing::ContextualCueingTabHelper::FromWebState(
+                    _activeWebState)
+              : nullptr;
+      NSString* prompt = tabHelper ? tabHelper->GetContextualCuePrompt() : nil;
       GeminiStartupState* state = [[GeminiStartupState alloc]
-          initWithEntryPoint:gemini::EntryPoint::OmniboxChip];
+          initWithEntryPoint:gemini::EntryPoint::ContextualCueChip];
       state.prepopulatedPrompt = prompt;
+      state.shouldAutoSubmit = NO;
       [self.delegate locationBarBadgeMediator:self
           startGeminiEntryFlowWithStartupState:state];
-      _tracker->NotifyEvent(
-          feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+      if (tabHelper) {
+        tabHelper->RecordCueClicked();
+      }
 
       // Ensure badge is hidden after the user interacts with it.
       if ([self.consumer isBadgeVisible]) {
@@ -526,6 +551,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (void)resetTimersAndUIStateAnimated:(BOOL)animated {
   _promoStartTimer = nullptr;
   _promoEndTimer = nullptr;
+  _currentBadgeConfig = nil;
   [self dismissIPHAnimated:animated];
   [self cleanupAndTransitionToDefaultBadgeState];
 }

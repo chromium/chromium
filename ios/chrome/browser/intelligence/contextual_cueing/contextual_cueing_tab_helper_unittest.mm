@@ -41,10 +41,13 @@
 #import "ios/chrome/browser/intelligence/page_classification/features.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
+#import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
+#import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
 #import "ios/chrome/browser/optimization_guide/model/fake_optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -54,7 +57,10 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_id.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 namespace contextual_cueing {
@@ -284,11 +290,12 @@ class FakeContextualCueingDelegate
 
 optimization_guide::proto::ContextualCueingResponse CreateTestCueResponse(
     const std::string& anchored_message_text,
-    const std::string& action_text) {
+    const std::string& action_text,
+    const std::string& prompt = "Summarize this page") {
   optimization_guide::proto::ContextualCueingResponse response;
   optimization_guide::proto::ContextualCue* cue =
       response.add_contextual_cues();
-  cue->mutable_gemini_in_chrome_surface();
+  cue->mutable_gemini_in_chrome_surface()->set_prompt(prompt);
   cue->mutable_anchored_message_cue()->set_anchored_message_text(
       anchored_message_text);
   cue->mutable_anchored_message_cue()->set_action_text(action_text);
@@ -397,6 +404,12 @@ class ContextualCueingTabHelperTest : public PlatformTest {
     fake_page_classification_service_->SetCannedCategories(categories);
     tab_helper->PageLoaded(web_state_.get(),
                            web::PageLoadCompletionStatus::SUCCESS);
+  }
+
+  void NotifyContextualCueReceived(
+      ContextualCueingTabHelper* tab_helper,
+      const std::optional<optimization_guide::proto::ContextualCue>& cue) {
+    tab_helper->NotifyContextualCueReceived(cue);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -523,6 +536,39 @@ TEST_F(ContextualCueingTabHelperTest, ModelExecutionSuccessFlow) {
       tab_helper->GetContextualCue()->anchored_message_cue().action_text(),
       "Explore deals");
   EXPECT_EQ(observer.cue_call_count_, 1);
+
+  tab_helper->RemoveObserver(&observer);
+}
+
+// Tests that model execution response with an empty prompt does not present a
+// cue.
+TEST_F(ContextualCueingTabHelperTest,
+       ModelExecutionEmptyPromptDoesNotPresentCue) {
+  const GURL test_url("https://example.com/store/item123");
+  web_state_->SetCurrentURL(test_url);
+
+  auto response =
+      CreateTestCueResponse("Buy now", "Explore deals", /*prompt=*/"");
+  fake_opt_guide_service_->SetResponse(
+      optimization_guide::ModelBasedCapabilityKey::kContextualCueing, response,
+      "optimization_guide.proto.ContextualCueingResponse");
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  TestCueingObserver observer;
+  tab_helper->AddObserver(&observer);
+
+  std::vector<page_content_annotations::Category> categories = {
+      {page_content_annotations::CategoryType::kShopping, 0.85f}};
+
+  OnPageClassified(tab_helper, test_url, categories);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.cue_call_count_ == 1; }));
+
+  EXPECT_FALSE(tab_helper->GetContextualCue().has_value());
+  EXPECT_EQ(observer.cue_call_count_, 1);
+  EXPECT_FALSE(observer.notified_cue_.has_value());
 
   tab_helper->RemoveObserver(&observer);
 }
@@ -1870,6 +1916,57 @@ TEST_F(ContextualCueingTabHelperTest,
   EXPECT_EQ(observer.cue_call_count_, 2);
 
   tab_helper->RemoveObserver(&observer);
+}
+
+// Tests that ShowContextualCueChip successfully configures and shows the badge
+// on LocationBarBadgeCommands.
+TEST_F(ContextualCueingTabHelperTest, TestShowContextualCueChip_Success) {
+  const GURL test_url("https://example.com/article");
+  web_state_->SetCurrentURL(test_url);
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+
+  optimization_guide::proto::ContextualCue cue;
+  cue.mutable_gemini_in_chrome_surface()->set_prompt("Summarize this article");
+  auto* message_cue = cue.mutable_anchored_message_cue();
+  message_cue->set_anchored_message_text("Anchored message");
+  message_cue->set_action_text("Summarize");
+
+  NotifyContextualCueReceived(tab_helper, cue);
+  ASSERT_TRUE(tab_helper->GetContextualCue().has_value());
+
+  id mock_badge_handler = OCMProtocolMock(@protocol(LocationBarBadgeCommands));
+  OCMExpect([mock_badge_handler
+      updateBadgeConfig:[OCMArg checkWithBlock:^BOOL(
+                                    LocationBarBadgeConfiguration* config) {
+        return config.badgeType ==
+                   LocationBarBadgeType::kGeminiContextualCueChip &&
+               [config.badgeText isEqualToString:@"Summarize"] &&
+               config.shouldHideBadgeAfterChipCollapse;
+      }]]);
+
+  EXPECT_TRUE(tab_helper->ShowContextualCueChip(mock_badge_handler));
+  EXPECT_NSEQ(tab_helper->GetContextualCuePrompt(), @"Summarize this article");
+  EXPECT_OCMOCK_VERIFY(mock_badge_handler);
+}
+
+// Tests that ShowContextualCueChip fails and does not show badge if no cue is
+// available.
+TEST_F(ContextualCueingTabHelperTest, TestShowContextualCueChip_NoCue) {
+  const GURL test_url("https://example.com/article");
+  web_state_->SetCurrentURL(test_url);
+
+  ContextualCueingTabHelper::CreateForWebState(web_state_.get());
+  auto* tab_helper = ContextualCueingTabHelper::FromWebState(web_state_.get());
+  ASSERT_FALSE(tab_helper->GetContextualCue().has_value());
+
+  id mock_badge_handler = OCMProtocolMock(@protocol(LocationBarBadgeCommands));
+  [[mock_badge_handler reject] updateBadgeConfig:[OCMArg any]];
+
+  EXPECT_FALSE(tab_helper->ShowContextualCueChip(mock_badge_handler));
+  EXPECT_EQ(tab_helper->GetContextualCuePrompt(), nil);
+  EXPECT_OCMOCK_VERIFY(mock_badge_handler);
 }
 
 }  // namespace contextual_cueing

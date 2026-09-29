@@ -1116,6 +1116,11 @@ inline LayoutStateToolbarPassKey PassKey() {
   [_bottomLocationBarCoordinator updateColorForIPH];
 }
 
+- (void)hideBadgeForType:(LocationBarBadgeType)type {
+  [_topLocationBarCoordinator hideBadgeForType:type];
+  [_bottomLocationBarCoordinator hideBadgeForType:type];
+}
+
 - (void)markDisplayedBadgeAsUnread:(BOOL)read {
   CHECK(IsChromeNextIaEnabled());
   [_topLocationBarCoordinator markDisplayedBadgeAsUnread:read];
