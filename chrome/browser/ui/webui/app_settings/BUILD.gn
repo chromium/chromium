@@ -5,7 +5,7 @@
 assert(is_win || is_mac || is_linux)
 
 source_set("app_settings") {
-  sources = [
+  public = [
     "web_app_settings_navigation_throttle.h",
     "web_app_settings_ui.h",
   ]
@@ -21,18 +21,13 @@ source_set("app_settings") {
     "//ui/webui",
     "//ui/webui/resources/cr_components/app_management:mojo_bindings",
   ]
-}
 
-source_set("impl") {
   sources = [
     "web_app_settings_navigation_throttle.cc",
     "web_app_settings_ui.cc",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
-    ":app_settings",
     "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/app_settings:resources",

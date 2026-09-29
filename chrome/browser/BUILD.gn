@@ -3120,7 +3120,6 @@ source_set("browser") {
       "//chrome/browser/headless:metrics",
       "//chrome/browser/ui/views/session_restore_infobar",
       "//chrome/browser/ui/webui/app_settings",
-      "//chrome/browser/ui/webui/app_settings:impl",
       "//chrome/browser/ui/webui/updater:mojo_bindings",
       "//chrome/browser/updates:impl",
       "//chrome/browser/updates:update_metrics",
