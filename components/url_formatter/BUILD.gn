@@ -19,13 +19,43 @@ static_library("skeleton_generator") {
   ]
 }
 
+source_set("idn_spoof_checker_headers") {
+  visibility = [ ":*" ]
+  sources = [
+    "spoof_checks/idn_spoof_checker.h",
+    "spoof_checks/idn_spoof_checker_types.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/icu",
+    "//url",
+  ]
+}
+
+source_set("idn_spoof_checker_impl") {
+  visibility = [ ":*" ]
+  public = []
+  sources = [ "spoof_checks/idn_spoof_checker.cc" ]
+  deps = [
+    ":idn_spoof_checker_headers",
+    ":skeleton_generator",
+    "//base",
+    "//base:i18n",
+    "//components/url_formatter/spoof_checks/common_words:common",
+    "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
+    "//components/url_formatter/spoof_checks/top_domains:common",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_trie",
+    "//net",
+    "//net:preload_decoder",
+    "//third_party/icu",
+    "//url",
+  ]
+}
+
 static_library("url_formatter") {
   sources = [
     "elide_url.cc",
     "elide_url.h",
-    "spoof_checks/idn_spoof_checker.cc",
-    "spoof_checks/idn_spoof_checker.h",
-    "spoof_checks/idn_spoof_checker_types.h",
     "url_fixer.cc",
     "url_fixer.h",
     "url_formatter.cc",
@@ -33,20 +63,22 @@ static_library("url_formatter") {
   ]
 
   deps = [
+    ":idn_spoof_checker_impl",
     "//base",
     "//base:i18n",
     "//build:robolectric_buildflags",
     "//components/url_formatter:skeleton_generator",
     "//components/url_formatter/spoof_checks/common_words:common",
-    "//components/url_formatter/spoof_checks/common_words:common_words_dafsa",
     "//components/url_formatter/spoof_checks/top_domains:common",
-    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_trie",
     "//net",
     "//net:preload_decoder",
     "//url",
   ]
 
-  public_deps = [ "//third_party/icu" ]
+  public_deps = [
+    ":idn_spoof_checker_headers",
+    "//third_party/icu",
+  ]
 
   if (is_robolectric) {
     # Make jni.h available.
