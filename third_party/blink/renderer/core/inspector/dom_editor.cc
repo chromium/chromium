@@ -97,6 +97,9 @@ class DOMEditor::InsertBeforeAction final : public InspectorHistory::Action {
   InsertBeforeAction& operator=(const InsertBeforeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
+    if (!parent_node_) {
+      return false;
+    }
     if (node_->parentNode()) {
       remove_child_action_ = MakeGarbageCollected<RemoveChildAction>(
           node_->parentNode(), node_.Get());

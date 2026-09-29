@@ -130,6 +130,9 @@ Node* DOMPatchSupport::PatchNode(Node* node,
 
   // Compose the old list.
   ContainerNode* parent_node = node->parentNode();
+  if (!parent_node) {
+    return nullptr;
+  }
   HeapVector<Member<Digest>> old_list;
   for (Node* child = parent_node->firstChild(); child;
        child = child->nextSibling())

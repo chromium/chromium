@@ -1120,6 +1120,9 @@ int InspectorDOMAgent::PushNodePathToFrontend(Node* node_to_push) {
 }
 
 int InspectorDOMAgent::BoundNodeId(Node* node) const {
+  if (!node) {
+    return 0;
+  }
   auto it = document_node_to_id_map_->find(node);
   return it != document_node_to_id_map_->end() ? it->value : 0;
 }
