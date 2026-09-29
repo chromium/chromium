@@ -125,6 +125,7 @@ source_set("tabs_impl") {
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/enterprise",
     "//chrome/browser/external_protocol",
+    "//chrome/browser/file_system_access",
     "//chrome/browser/finds",
     "//chrome/browser/finds/core",
     "//chrome/browser/glic",

@@ -552,6 +552,7 @@ if (!is_android) {
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/external_protocol",
       "//chrome/browser/favicon",
+      "//chrome/browser/file_system_access",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",

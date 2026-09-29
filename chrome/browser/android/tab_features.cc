@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/external_protocol/external_protocol_observer.h"
+#include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_tab_helper.h"
 #include "chrome/browser/finds/finds_service_factory.h"
@@ -407,6 +408,9 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   task_manager::WebContentsTags::CreateForTabContents(web_contents);
 
   media_state_observer_ = std::make_unique<MediaStateObserver>(web_contents);
+
+  file_system_access_tab_helper_ =
+      std::make_unique<FileSystemAccessTabHelper>(web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

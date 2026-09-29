@@ -50,6 +50,7 @@ class ConnectionHelpTabHelper;
 class CookieControlsPageActionController;
 class ExternalProtocolObserver;
 class FileSystemAccessPageActionController;
+class FileSystemAccessTabHelper;
 class FocusTabAfterNavigationHelper;
 class FontPrewarmerTabHelper;
 class ChainedBackNavigationTracker;
@@ -925,6 +926,8 @@ class TabFeatures {
 
   std::unique_ptr<ChainedBackNavigationTracker>
       chained_back_navigation_tracker_;
+
+  std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

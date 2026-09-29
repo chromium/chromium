@@ -121,6 +121,7 @@ class AboutThisSiteTabHelper;
 class ChainedBackNavigationTracker;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
+class FileSystemAccessTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HistoryEmbeddingsTabHelper;
 class HttpAuthCacheStatus;
@@ -270,6 +271,7 @@ class TabFeatures {
   std::unique_ptr<ChainedBackNavigationTracker>
       chained_back_navigation_tracker_;
   std::unique_ptr<MediaStateObserver> media_state_observer_;
+  std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
