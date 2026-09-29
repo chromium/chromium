@@ -44,9 +44,13 @@ public class ExclusiveAccessBubble {
 
     @CalledByNative
     public void show() {
-        if (mText == null || mSnackbar != null) return;
+        if (mText == null || mSnackbar != null) {
+            return;
+        }
         SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
-        if (snackbarManager == null) return;
+        if (snackbarManager == null || !snackbarManager.canShowSnackbar()) {
+            return;
+        }
 
         mSnackbar =
                 Snackbar.make(
@@ -68,17 +72,25 @@ public class ExclusiveAccessBubble {
 
     @CalledByNative
     public void update(@JniType("std::u16string") String text) {
-        if (mText != null && mText.equals(text) && mSnackbar != null) return;
+        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
+        if (snackbarManager == null || !snackbarManager.canShowSnackbar()) {
+            mText = text;
+            hide();
+            return;
+        }
+
+        // Avoid re-triggering the view or resetting the display timer if the text has not changed.
+        if (mText != null && mText.equals(text) && mSnackbar != null) {
+            return;
+        }
         mText = text;
 
-        SnackbarManager snackbarManager = mParentContext.getSnackbarManager();
-        if (snackbarManager != null && mSnackbar != null) {
+        if (mSnackbar != null) {
             mSnackbar.setText(text);
             // This will trigger SnackbarManager.updateView() and update the existing view.
             snackbarManager.showSnackbar(mSnackbar);
             return;
         }
-        hide();
         show();
     }
 
