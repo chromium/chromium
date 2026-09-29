@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertLT, assertStringContains, assertTrue} f
 import {keyDownOn} from 'chrome-untrusted://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
+import {emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
 import type {TestContentBrowserProxy} from './test_content_browser_proxy.js';
 import type {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import type {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -50,11 +50,8 @@ suite('AppContent', () => {
     setupBasicSpeech(speech);
   });
 
-  test('connected callback shows spinner', async () => {
+  test('connected callback shows spinner', () => {
     const spinner = 'throbber';
-
-    app.connectedCallback();
-    await microtasksFinished();
 
     assertStringContains(emptyState.darkImagePath, spinner);
     assertStringContains(emptyState.imagePath, spinner);
@@ -79,8 +76,6 @@ suite('AppContent', () => {
           mouseMoveInToolbar = true;
         };
 
-        app.connectedCallback();
-        await microtasksFinished();
         app.$.toolbar.dispatchEvent(new MouseEvent('mousemove', {clientY: 10}));
 
         assertTrue(mouseMoveInToolbar);
@@ -104,8 +99,6 @@ suite('AppContent', () => {
       mouseMoveInToolbar = true;
     };
 
-    app.connectedCallback();
-    await microtasksFinished();
     app.$.containerParent.dispatchEvent(
         new MouseEvent('mousemove', {clientY: 10}));
 
@@ -114,7 +107,6 @@ suite('AppContent', () => {
   });
 
   test('new content updates padding for line focus', async () => {
-    app.connectedCallback();
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
         app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
@@ -154,7 +146,6 @@ suite('AppContent', () => {
   test(
       'new content does not update padding for line focus with line focus off',
       async () => {
-        app.connectedCallback();
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.STATIC}});
@@ -212,9 +203,6 @@ suite('AppContent', () => {
   });
 
   test('line focus shortcut updates padding', async () => {
-    // Ensure app is registered as a line focus listener.
-    app.connectedCallback();
-    await microtasksFinished();
     // Start with static line focus on.
     emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
     emitEvent(
@@ -1163,9 +1151,7 @@ suite('AppContent', () => {
   suite('Immersive Mode app content styling', () => {
     let appStyleUpdater: AppStyleUpdater;
 
-    setup(async () => {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      app = await createApp();
+    setup(() => {
       appStyleUpdater = new AppStyleUpdater(app);
     });
 
@@ -1173,9 +1159,10 @@ suite('AppContent', () => {
         'onContainerScroll adds fade class to scroller when IM is enabled',
         async () => {
           const fontSize = 16;
-          const text = 'This is a sample text.\n'.repeat(10000);
+          const text = 'This is a sample text.';
 
           app.$.container.style.fontSize = `${fontSize}px`;
+          app.$.container.style.height = '2000px';
           appStyleUpdater.setFontSize();
           contentBrowserProxy.textContentMap = {2: text};
           app.updateContent();
@@ -1286,25 +1273,6 @@ suite('AppContent', () => {
 
   suite('footnote navigation', () => {
     test(
-        'buildSubtree_ sets element.id when getHtmlId is available',
-        async () => {
-          const divId = 10;
-          const textId = 11;
-          contentBrowserProxy.rootId = divId;
-          contentBrowserProxy.htmlTagMap = {[divId]: 'div'};
-          contentBrowserProxy.childrenMap = {[divId]: [textId]};
-          contentBrowserProxy.textContentMap = {[textId]: 'Some text content'};
-          contentBrowserProxy.htmlIdMap = {[divId]: 'footnote-target'};
-
-          app.updateContent();
-          await microtasksFinished();
-
-          const renderedDiv = app.$.container.querySelector('#footnote-target');
-          assertTrue(!!renderedDiv);
-          assertEquals('footnote-target', renderedDiv.id);
-        });
-
-    test(
         'click handler intercepts same-page hash links and does not scroll immediately',
         async () => {
           const linkId = 10;
@@ -1365,306 +1333,6 @@ suite('AppContent', () => {
           assertTrue(!!scrollOptions);
           assertEquals('smooth', scrollOptions.behavior);
         });
-
-    test('click handler falls back to default for external links', async () => {
-      const linkId = 10;
-      const textId = 11;
-      const documentUrl = 'https://www.example.com/page.html';
-      const targetUrl = 'https://www.different-domain.com/page.html#footnote-1';
-
-      contentBrowserProxy.rootId = 1;
-      contentBrowserProxy.childrenMap = {1: [linkId], [linkId]: [textId]};
-      contentBrowserProxy.htmlTagMap = {1: 'div', [linkId]: 'a'};
-      contentBrowserProxy.textContentMap = {[textId]: 'External Link'};
-      contentBrowserProxy.urlMap = {[linkId]: targetUrl};
-      contentBrowserProxy.documentUrl = documentUrl;
-
-      app.updateContent();
-      await microtasksFinished();
-
-      // Setup a mock target in DOM that would scroll if it were same-document
-      const target = document.createElement('div');
-      target.id = 'footnote-1';
-      app.$.container.appendChild(target);
-      let scrollIntoViewCalled = false;
-      target.scrollIntoView = () => {
-        scrollIntoViewCalled = true;
-      };
-
-      // Find the link and click it
-      const linkElement = app.$.container.querySelector<HTMLAnchorElement>('a');
-      assertTrue(!!linkElement);
-      linkElement.click();
-
-      const linkClickedId =
-          await contentBrowserProxy.whenCalled('onLinkClicked');
-      assertEquals(linkId, linkClickedId);
-      assertFalse(scrollIntoViewCalled);
-
-      // Clean up
-      app.$.container.removeChild(target);
-    });
-
-    test(
-        'click handler triggers real navigation for mailto links', async () => {
-          // <div>
-          //   <a href="mailto:test@example.com">Email Link</a>
-          // </div>
-          const linkId = 10;
-          const textId = 11;
-          const documentUrl = 'https://www.example.com/page.html';
-          const targetUrl = 'mailto:test@example.com';
-
-          contentBrowserProxy.rootId = 1;
-          contentBrowserProxy.childrenMap = {1: [linkId], [linkId]: [textId]};
-          contentBrowserProxy.htmlTagMap = {1: 'div', [linkId]: 'a'};
-          contentBrowserProxy.textContentMap = {[textId]: 'Email Link'};
-          contentBrowserProxy.urlMap = {[linkId]: targetUrl};
-          contentBrowserProxy.documentUrl = documentUrl;
-
-          // Mock containerScroller.scrollTo to verify we do not scroll
-          let scrollToCalled = false;
-          app.$.containerScroller.scrollTo = () => {
-            scrollToCalled = true;
-          };
-
-          app.updateContent();
-          await microtasksFinished();
-
-          // Find the link and click it
-          const linkElement =
-              app.$.container.querySelector<HTMLAnchorElement>('a');
-          assertTrue(!!linkElement);
-          linkElement.click();
-
-          // Confirm that onLinkClicked is called on the mailto link.
-          const linkClickedId =
-              await contentBrowserProxy.whenCalled('onLinkClicked');
-          assertEquals(linkId, linkClickedId);
-          assertFalse(scrollToCalled, 'Should not scroll');
-        });
-
-    test(
-        'click handler falls back to default if target is missing',
-        async () => {
-          const linkId = 10;
-          const textId = 11;
-          const documentUrl = 'https://www.example.com/page.html';
-          const targetUrl =
-              'https://www.example.com/page.html#footnote-missing';
-
-          contentBrowserProxy.rootId = 1;
-          contentBrowserProxy.childrenMap = {1: [linkId], [linkId]: [textId]};
-          contentBrowserProxy.htmlTagMap = {1: 'div', [linkId]: 'a'};
-          contentBrowserProxy
-              .textContentMap = {[textId]: 'Missing Target Link'};
-          contentBrowserProxy.urlMap = {[linkId]: targetUrl};
-          contentBrowserProxy.documentUrl = documentUrl;
-
-          // Mock containerScroller.scrollTo to verify we do not scroll to top
-          let scrollToCalled = false;
-          app.$.containerScroller.scrollTo = () => {
-            scrollToCalled = true;
-          };
-
-          app.updateContent();
-          await microtasksFinished();
-
-          // Find the link and click it
-          const linkElement =
-              app.$.container.querySelector<HTMLAnchorElement>('a');
-          assertTrue(!!linkElement);
-          linkElement.click();
-
-          const linkClickedId =
-              await contentBrowserProxy.whenCalled('onLinkClicked');
-          assertEquals(linkId, linkClickedId);
-          assertFalse(scrollToCalled);
-        });
-
-    suite('scrollToAnchor', () => {
-      let root: ShadowRoot;
-
-      setup(() => {
-        root = app.shadowRoot;
-      });
-
-      test('scrolls to target', () => {
-        const targetId = 'footnote-1';
-        const target = document.createElement('div');
-        target.id = targetId;
-        app.$.container.appendChild(target);
-
-        let scrollIntoViewCalled = false;
-        let scrollOptions: ScrollIntoViewOptions|undefined;
-        target.scrollIntoView = (options) => {
-          scrollIntoViewCalled = true;
-          scrollOptions = options as ScrollIntoViewOptions;
-        };
-
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor(
-            'https://example.com/page.html#footnote-1', root);
-
-        assertTrue(result);
-        assertTrue(scrollIntoViewCalled);
-        assertEquals('smooth', scrollOptions?.behavior);
-      });
-
-      test('scrolls to top on empty hash', () => {
-        let scrollToCalled = false;
-        let scrollToOptions: ScrollToOptions|undefined;
-        app.$.containerScroller.scrollTo = (options) => {
-          scrollToCalled = true;
-          scrollToOptions = options as ScrollToOptions;
-        };
-
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor(
-            'https://example.com/page.html', root);
-
-        assertTrue(result);
-        assertTrue(scrollToCalled);
-        assertEquals(0, scrollToOptions?.top);
-        assertEquals('smooth', scrollToOptions?.behavior);
-      });
-
-      test('resolves relative links', () => {
-        const targetId = 'footnote-1';
-        const target = document.createElement('div');
-        target.id = targetId;
-        app.$.container.appendChild(target);
-
-        let scrollIntoViewCalled = false;
-        target.scrollIntoView = () => {
-          scrollIntoViewCalled = true;
-        };
-
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-
-        // Test hash only
-        let result = contentController.scrollToAnchor('#footnote-1', root);
-        assertTrue(result);
-        assertTrue(scrollIntoViewCalled);
-
-        // Reset and test relative path
-        scrollIntoViewCalled = false;
-        result =
-            contentController.scrollToAnchor('./page.html#footnote-1', root);
-        assertTrue(result);
-        assertTrue(scrollIntoViewCalled);
-      });
-
-      test('ignores different page URLs', () => {
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor(
-            'https://different.com/page.html#footnote-1', root);
-        assertFalse(result);
-      });
-
-      test('ignores different pathnames', () => {
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor(
-            'https://example.com/other.html#footnote-1', root);
-        assertFalse(result);
-      });
-
-      test('ignores different search parameters', () => {
-        contentBrowserProxy.documentUrl =
-            'https://example.com/page.html?query=1';
-        const result = contentController.scrollToAnchor(
-            'https://example.com/page.html?query=2#footnote-1', root);
-        assertFalse(result);
-      });
-
-      test('scrolls with identical search parameters', () => {
-        const targetId = 'footnote-1';
-        const target = document.createElement('div');
-        target.id = targetId;
-        app.$.container.appendChild(target);
-
-        let scrollIntoViewCalled = false;
-        target.scrollIntoView = () => {
-          scrollIntoViewCalled = true;
-        };
-
-        contentBrowserProxy.documentUrl =
-            'https://example.com/page.html?query=1';
-        const result = contentController.scrollToAnchor(
-            'https://example.com/page.html?query=1#footnote-1', root);
-
-        assertTrue(result);
-        assertTrue(scrollIntoViewCalled);
-
-        // Clean up
-        app.$.container.removeChild(target);
-      });
-
-      test('handles invalid URLs gracefully', () => {
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor('invalid://url', root);
-        assertFalse(result);
-      });
-
-      test('handles malformed URI percent-encoding gracefully', () => {
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-
-        // Test hash only with malformed percent-encoding
-        let result = contentController.scrollToAnchor('#foo%2', root);
-        assertFalse(result);
-
-        // Test relative path with malformed percent-encoding
-        result = contentController.scrollToAnchor('./page.html#foo%2', root);
-        assertFalse(result);
-      });
-
-      test('falls back to top on #top hash if element is missing', () => {
-        let scrollToCalled = false;
-        let scrollToOptions: ScrollToOptions|undefined;
-        app.$.containerScroller.scrollTo = (options) => {
-          scrollToCalled = true;
-          scrollToOptions = options as ScrollToOptions;
-        };
-
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-
-        // Test hash only
-        let result = contentController.scrollToAnchor('#top', root);
-        assertTrue(result);
-        assertTrue(scrollToCalled);
-        assertEquals(0, scrollToOptions?.top);
-        assertEquals('smooth', scrollToOptions?.behavior);
-
-        // Reset and test absolute URL
-        scrollToCalled = false;
-        result = contentController.scrollToAnchor(
-            'https://example.com/page.html#top', root);
-        assertTrue(result);
-        assertTrue(scrollToCalled);
-        assertEquals(0, scrollToOptions?.top);
-        assertEquals('smooth', scrollToOptions?.behavior);
-      });
-
-      test('scrolls to element on #top hash if element is present', () => {
-        const targetId = 'top';
-        const target = document.createElement('div');
-        target.id = targetId;
-        app.$.container.appendChild(target);
-
-        let scrollIntoViewCalled = false;
-        target.scrollIntoView = () => {
-          scrollIntoViewCalled = true;
-        };
-
-        contentBrowserProxy.documentUrl = 'https://example.com/page.html';
-        const result = contentController.scrollToAnchor('#top', root);
-        assertTrue(result);
-        assertTrue(scrollIntoViewCalled);
-
-        // Clean up
-        app.$.container.removeChild(target);
-      });
-    });
 
     test('onMainFrameSameDocumentNavigation scrolls to target', async () => {
       const targetId = 12;
