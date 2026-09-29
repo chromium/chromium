@@ -77,7 +77,7 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   // Indicates whether a discard request has been dispatched for the current
   // document.
   bool is_discarded() const { return is_discarded_; }
-  void MarkDiscarded() { is_discarded_ = true; }
+  void MarkDiscarded();
 
   // Prerender2:
   //
@@ -243,6 +243,8 @@ class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
   }
 
  private:
+  void ClearServicesAndUserData();
+
   const blink::DocumentToken token_;
   std::unique_ptr<PageImpl> owned_page_;
   bool dom_content_loaded_ = false;
