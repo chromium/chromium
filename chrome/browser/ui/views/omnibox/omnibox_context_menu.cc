@@ -122,8 +122,13 @@ void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
       }
 
       // Add elevation shadow based on variation option `kShadowOption`
-      // for both tabs submenu and context menu.
-      if (!view_shadows_.contains(scroll_container)) {
+      // for both tabs submenu and context menu on platforms that do not use a
+      // bubble border. When a bubble border is present (e.g. on Windows and
+      // Linux), `BubbleBorder` already renders the drop shadow within its
+      // outside border insets, and applying a `ViewShadow` to
+      // `scroll_container` erroneously casts an outer shadow around the insets.
+      if (!scroll_container->HasBubbleBorder() &&
+          !view_shadows_.contains(scroll_container)) {
         auto shadow = std::make_unique<views::ViewShadow>(scroll_container,
                                                           kShadowOption);
         int corner_radius = views::MenuConfig::instance().CornerRadiusForMenu(
