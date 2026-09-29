@@ -99,6 +99,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    ssd = None,
     gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android",
@@ -160,6 +161,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    ssd = None,
     gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|arm",
@@ -221,6 +223,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    ssd = None,
     gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
@@ -283,6 +286,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    ssd = None,
     gardener_rotations = args.ignore_default(gardener_rotations.ANDROID),
     console_view_entry = consoles.console_view_entry(
         category = "android|desktop",
@@ -581,6 +585,7 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     cores = 32,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
         short_name = "rel",

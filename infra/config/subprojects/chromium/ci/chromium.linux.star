@@ -279,6 +279,7 @@ ci.builder(
         ),
     },
     cores = 32,
+    ssd = None,
     # This builder uses almost as much disk space as is available on a standard
     # VM, which causes issues if there are any caches from other builders. So,
     # target higher disk space instances.

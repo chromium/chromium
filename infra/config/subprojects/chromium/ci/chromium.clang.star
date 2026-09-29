@@ -25,6 +25,7 @@ ci.defaults.set(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
+    ssd = None,
     gardener_rotations = gardener_rotations.CHROMIUM_CLANG,
     # Because these run ToT Clang, reclient is not used.
     # Naturally the runtime will be ~4-8h on average for basic builds.

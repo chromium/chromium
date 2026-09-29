@@ -1101,6 +1101,7 @@ ci.builder(
     ),
     cores = 32,
     os = os.LINUX_DEFAULT,
+    ssd = None,
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "misc",

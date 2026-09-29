@@ -29,6 +29,7 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
+    ssd = None,
     gardener_rotations = gardener_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",

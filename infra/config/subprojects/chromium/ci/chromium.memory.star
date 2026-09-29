@@ -1007,6 +1007,7 @@ linux_memory_builder(
     ),
     builderless = True,
     cores = 32,
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "linux|ubsan",
         short_name = "bld",
