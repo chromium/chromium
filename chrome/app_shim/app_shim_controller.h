@@ -5,10 +5,11 @@
 #ifndef CHROME_APP_SHIM_APP_SHIM_CONTROLLER_H_
 #define CHROME_APP_SHIM_APP_SHIM_CONTROLLER_H_
 
-#include <vector>
-
 #import <AppKit/AppKit.h>
 
+#include <vector>
+
+#include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
@@ -98,11 +99,14 @@ class AppShimController
   // `was_notification_action_launch` is set to true if this app shim was
   // launched by the OS in response to the user interacting with a
   // notification.
-  void OnAppFinishedLaunching(bool launched_by_notification_action);
+  // `is_default_launch` is set to false if the OS launched this app shim
+  // to open files, URLs, or other non-default actions.
+  void OnAppFinishedLaunching(bool launched_by_notification_action,
+                              bool is_default_launch = true);
 
-  // Called by AppShimDelegate in response a file being opened. If this occurs
-  // before OnDidFinishLaunching, then the argument is the files that triggered
-  // the launch of the app.
+  // Called by AppShimDelegate in response to a file being opened. If this
+  // occurs before SendBootstrapOnShimConnected, then the argument is the files
+  // that triggered the launch of the app.
   void OpenFiles(const std::vector<base::FilePath>& files);
 
   // Called when a profile is selected from the profiles NSMenu.
@@ -116,8 +120,8 @@ class AppShimController
   void CommandDispatch(int command_id);
 
   // Called by AppShimDelegate in response to an URL being opened. If this
-  // occurs before OnDidFinishLaunching, then the argument is the files that
-  // triggered the launch of the app.
+  // occurs before SendBootstrapOnShimConnected, then the argument is the URLs
+  // that triggered the launch of the app.
   void OpenUrls(const std::vector<GURL>& urls);
 
   NSMenu* GetApplicationDockMenu();
@@ -135,22 +139,52 @@ class AppShimController
   friend class apps::MachBootstrapAcceptorTest;
 
   // The state of initialization.
+  //
+  // State transitions:
+  //   kWaitingForAppToFinishLaunch
+  //     -> kWaitingForLaunchFilesOrUrls (in OnAppFinishedLaunching, if
+  //        !is_default_launch and no launch files/URLs have been received yet)
+  //     -> kWaitingForChromeReady (in OnAppFinishedLaunching via
+  //        StartChromeConnection, if is_default_launch or launch files/URLs
+  //        were already received before OnAppFinishedLaunching)
+  //   kWaitingForLaunchFilesOrUrls
+  //     -> kWaitingForChromeReady (when OpenFiles or OpenUrls is called, or
+  //        when kLaunchFilesOrUrlsTimeout expires and invokes
+  //        StartChromeConnection)
+  //   kWaitingForChromeReady
+  //     -> kHasSentOnShimConnected (in SendBootstrapOnShimConnected, once
+  //        PollForChromeReady connects to the browser's Mach bootstrap server)
+  //   kHasSentOnShimConnected
+  //     -> kHasReceivedOnShimConnectedResponse (in OnShimConnectedResponse,
+  //        when the browser replies to OnShimConnected)
+  //
+  // Note: While in any state prior to kHasSentOnShimConnected, incoming
+  // OpenFiles() and OpenUrls() calls append to `launch_files_` and
+  // `launch_urls_` so they are sent together in `OnShimConnected`. Once in
+  // kHasSentOnShimConnected or later, they are forwarded directly via `host_`.
   enum class InitState {
-    // Waiting for OnAppFinishedLaunching to be called.
+    // Initial state. Waiting for OnAppFinishedLaunching to be called.
     kWaitingForAppToFinishLaunch,
+    // Waiting for launch files or URLs to be delivered via AppleEvents if the
+    // app was launched for a non-default reason (e.g. opening files/URLs).
+    kWaitingForLaunchFilesOrUrls,
     // Waiting for PollForChromeReady to connect to the browser process.
     kWaitingForChromeReady,
     // Has sent OnShimConnected to the browser process, waiting for the
     // response.
     kHasSentOnShimConnected,
-    // Has received the OnShimConnected response from the browser,
-    // initialization is now complete.
+    // Terminal state. Has received the OnShimConnected response from the
+    // browser; initialization is now complete.
     kHasReceivedOnShimConnectedResponse,
   };
 
-  // Init step 1 after OnAppFinishedLaunching. Find a running instance of Chrome
-  // to connect to, or launch Chrome if none is found. Returns true if a
-  // running instance was found and polling for readiness is possible.
+  // Init step 1 after OnAppFinishedLaunching. Connects to Chrome once the app
+  // shim event loop has had a chance to process initial launch events.
+  void StartChromeConnection();
+
+  // Find a running instance of Chrome to connect to, or launch Chrome if none
+  // is found. Returns true if a running instance was found and polling for
+  // readiness is possible.
   bool FindOrLaunchChrome();
 
   // Init step 2: Poll for the mach server exposed by Chrome's AppShimListener
@@ -274,6 +308,10 @@ class AppShimController
   AppShimDelegate* __strong delegate_;
 
   InitState init_state_ = InitState::kWaitingForAppToFinishLaunch;
+
+  // Timer to wait for launch files or URLs if the app was launched to open
+  // them.
+  base::CancelableOnceClosure launch_files_or_urls_timeout_;
 
   // The target for NSMenuItems in the profile menu.
   ProfileMenuTarget* __strong profile_menu_target_;

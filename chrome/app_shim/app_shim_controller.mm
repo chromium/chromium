@@ -140,6 +140,11 @@ constexpr base::TimeDelta kPollTimeoutSeconds = base::Seconds(60);
 // ready.
 constexpr base::TimeDelta kPollPeriodMsec = base::Milliseconds(100);
 
+// The maximum amount of time to wait for launch files or URLs to be delivered
+// before connecting to Chrome, if the OS indicated this was not a default
+// launch.
+constexpr base::TimeDelta kLaunchFilesOrUrlsTimeout = base::Seconds(2);
+
 // Helper that keeps stops another sequence from executing any code while this
 // object is alive. The constructor waits for the other thread to be blocked,
 // while the destructor signals the other thread to continue running again.
@@ -345,11 +350,34 @@ void AppShimController::FinalizeFeatureState(
 }
 
 void AppShimController::OnAppFinishedLaunching(
-    bool launched_by_notification_action) {
+    bool launched_by_notification_action,
+    bool is_default_launch) {
   DCHECK_EQ(init_state_, InitState::kWaitingForAppToFinishLaunch);
-  init_state_ = InitState::kWaitingForChromeReady;
   launched_by_notification_action_ = launched_by_notification_action;
 
+  // If this launch was not a default launch (e.g. the app was launched by the
+  // OS to open files or URLs), but neither OpenFiles nor OpenUrls has been
+  // called yet, wait briefly for those events to be delivered via AppleEvents
+  // before connecting to Chrome.
+  if (!is_default_launch && launch_files_.empty() && launch_urls_.empty()) {
+    init_state_ = InitState::kWaitingForLaunchFilesOrUrls;
+    launch_files_or_urls_timeout_.Reset(base::BindOnce(
+        &AppShimController::StartChromeConnection, base::Unretained(this)));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, launch_files_or_urls_timeout_.callback(),
+        kLaunchFilesOrUrlsTimeout);
+    return;
+  }
+
+  StartChromeConnection();
+}
+
+void AppShimController::StartChromeConnection() {
+  DCHECK(init_state_ == InitState::kWaitingForAppToFinishLaunch ||
+         init_state_ == InitState::kWaitingForLaunchFilesOrUrls ||
+         init_state_ == InitState::kWaitingForChromeReady);
+  launch_files_or_urls_timeout_.Cancel();
+  init_state_ = InitState::kWaitingForChromeReady;
   if (FindOrLaunchChrome()) {
     // Start polling to see if Chrome is ready to connect.
     PollForChromeReady(kPollTimeoutSeconds);
@@ -925,8 +953,15 @@ void AppShimController::SetUserAttention(
 }
 
 void AppShimController::OpenFiles(const std::vector<base::FilePath>& files) {
-  if (init_state_ == InitState::kWaitingForAppToFinishLaunch) {
-    launch_files_ = files;
+  if (init_state_ < InitState::kHasSentOnShimConnected) {
+    launch_files_.insert(launch_files_.end(), files.begin(), files.end());
+    if (init_state_ == InitState::kWaitingForLaunchFilesOrUrls) {
+      launch_files_or_urls_timeout_.Cancel();
+      init_state_ = InitState::kWaitingForChromeReady;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&AppShimController::StartChromeConnection,
+                                    base::Unretained(this)));
+    }
   } else {
     host_->FilesOpened(files);
   }
@@ -942,8 +977,15 @@ void AppShimController::ProfileMenuItemSelected(uint32_t index) {
 }
 
 void AppShimController::OpenUrls(const std::vector<GURL>& urls) {
-  if (init_state_ == InitState::kWaitingForAppToFinishLaunch) {
-    launch_urls_ = urls;
+  if (init_state_ < InitState::kHasSentOnShimConnected) {
+    launch_urls_.insert(launch_urls_.end(), urls.begin(), urls.end());
+    if (init_state_ == InitState::kWaitingForLaunchFilesOrUrls) {
+      launch_files_or_urls_timeout_.Cancel();
+      init_state_ = InitState::kWaitingForChromeReady;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&AppShimController::StartChromeConnection,
+                                    base::Unretained(this)));
+    }
   } else {
     host_->UrlsOpened(urls);
   }
@@ -951,7 +993,8 @@ void AppShimController::OpenUrls(const std::vector<GURL>& urls) {
 
 void AppShimController::CommandFromDock(uint32_t index) {
   DCHECK(0 <= index && index < dock_menu_items_.size());
-  DCHECK(init_state_ != InitState::kWaitingForAppToFinishLaunch);
+  DCHECK(init_state_ != InitState::kWaitingForAppToFinishLaunch &&
+         init_state_ != InitState::kWaitingForLaunchFilesOrUrls);
 
   [NSApp activateIgnoringOtherApps:YES];
   host_->OpenAppWithOverrideUrl(dock_menu_items_[index]->url);
@@ -970,8 +1013,10 @@ void AppShimController::CommandDispatch(int command_id) {
 
 NSMenu* AppShimController::GetApplicationDockMenu() {
   if (init_state_ == InitState::kWaitingForAppToFinishLaunch ||
-      dock_menu_items_.size() == 0)
+      init_state_ == InitState::kWaitingForLaunchFilesOrUrls ||
+      dock_menu_items_.size() == 0) {
     return nullptr;
+  }
 
   NSMenu* dockMenu = [[NSMenu alloc] initWithTitle:@""];
 
