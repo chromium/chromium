@@ -153,7 +153,10 @@ CGFloat const kSheetCornerRadius = 30;
                                       imageFetcher:imageFetcher
                         homeBackgroundImageService:nil
                           userUploadedImageManager:userUploadedImageManager
-                                       prefService:self.profile->GetPrefs()];
+                                       prefService:self.profile->GetPrefs()
+                          featureEngagementTracker:
+                              feature_engagement::TrackerFactory::GetForProfile(
+                                  self.profile)];
   }
 
   // The Customization menu consists of a stack of presenting view controllers.

@@ -351,6 +351,9 @@ chromium-metrics-reviews@google.com.
       summary="showing the iOS address promo on desktop"/>
   <variant name="IPH_iOSAIHubNewBadge"
       summary="AI Hub entrypoint on the omnibox"/>
+  <variant name="IPH_iOSBackgroundNewBadge"
+      summary="showing the new badge on a background tile in the home
+               customization menu"/>
   <variant name="IPH_iOSBWGPromo" summary="shows users a promo for BWG"/>
   <variant name="IPH_iOSChoiceScreenFeature"
       summary="(obsolete) showing the Choice screen on iOS"/>

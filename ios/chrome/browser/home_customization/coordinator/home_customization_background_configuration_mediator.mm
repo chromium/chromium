@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/debug/dump_without_crashing.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
@@ -18,6 +20,8 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
 #import "components/crash/core/common/crash_key.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/request_metadata.h"
@@ -97,6 +101,11 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
   raw_ptr<UserUploadedImageManager> _userUploadedImageManager;
   raw_ptr<PrefService> _prefService;
+  // Feature engagement tracker used for the "New" badge on backgrounds.
+  raw_ptr<feature_engagement::Tracker> _tracker;
+  // Whether the "New" badge is showing on a background configuration during
+  // this mediator's lifetime.
+  BOOL _shouldShowNewBadge;
 
   // Observer for the customization service.
   std::unique_ptr<HomeBackgroundCustomizationServiceObserverBridge>
@@ -119,7 +128,9 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
                     (HomeBackgroundImageService*)homeBackgroundImageService
                   userUploadedImageManager:
                       (UserUploadedImageManager*)userUploadedImageManager
-                               prefService:(PrefService*)prefService {
+                               prefService:(PrefService*)prefService
+                  featureEngagementTracker:
+                      (feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     _backgroundCustomizationService = backgroundCustomizationService;
@@ -130,6 +141,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     _homeBackgroundImageService = homeBackgroundImageService;
     _userUploadedImageManager = userUploadedImageManager;
     _prefService = prefService;
+    _tracker = tracker;
   }
   return self;
 }
@@ -322,12 +334,17 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)disconnect {
+  if (_tracker && _shouldShowNewBadge) {
+    _tracker->Dismissed(feature_engagement::kIPHiOSBackgroundNewBadge);
+    _shouldShowNewBadge = NO;
+  }
   _backgroundCustomizationServiceObserverBridge.reset();
   _backgroundCustomizationService = nullptr;
   _imageFetcher = nullptr;
   _homeBackgroundImageService = nullptr;
   _userUploadedImageManager = nullptr;
   _prefService = nullptr;
+  _tracker = nullptr;
 }
 
 #pragma mark - HomeCustomizationBackgroundConfigurationMutator
@@ -520,12 +537,30 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   if (!backgroundColor || !imagePath) {
     return nil;
   }
-  return [[BackgroundCustomizationConfigurationItem alloc]
-      initWithEphemeralTheme:backgroundColor
-                   imagePath:imagePath
-      lightModeColorProvider:lightModeColorProvider
-       darkModeColorProvider:darkModeColorProvider
-           accessibilityName:nil];
+  BackgroundCustomizationConfigurationItem* item =
+      [[BackgroundCustomizationConfigurationItem alloc]
+          initWithEphemeralTheme:backgroundColor
+                       imagePath:imagePath
+          lightModeColorProvider:lightModeColorProvider
+           darkModeColorProvider:darkModeColorProvider
+               accessibilityName:nil];
+  item.showNewBadge = [self shouldShowNewBadge];
+  return item;
+}
+
+// Returns whether the "New" badge should be shown for a background
+// configuration, querying the Feature Engagement Tracker at most once per
+// mediator instance.
+- (BOOL)shouldShowNewBadge {
+  if (_shouldShowNewBadge) {
+    return YES;
+  }
+  if (!_tracker) {
+    return NO;
+  }
+  _shouldShowNewBadge = _tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSBackgroundNewBadge);
+  return _shouldShowNewBadge;
 }
 
 // Returns the local file path for the ephemeral theme animated background from

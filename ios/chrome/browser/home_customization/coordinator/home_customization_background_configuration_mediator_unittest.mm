@@ -11,6 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/mock_image_fetcher.h"
 #import "components/image_fetcher/core/request_metadata.h"
@@ -130,7 +132,8 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
                                   imageFetcher:mock_image_fetcher_.get()
                     homeBackgroundImageService:home_background_image_service
                       userUploadedImageManager:user_image_manager
-                                   prefService:profile_->GetPrefs()];
+                                   prefService:profile_->GetPrefs()
+                      featureEngagementTracker:&mock_tracker_];
 
     consumer_ =
         [[FakeHomeCustomizationBackgroundConfigurationConsumer alloc] init];
@@ -174,6 +177,8 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
   std::unique_ptr<TestProfileIOS> profile_;
 
   std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
+
+  testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker_;
 
   // Mediator being tested by these tests.
   HomeCustomizationBackgroundConfigurationMediator* mediator_;
@@ -763,6 +768,14 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   size_t initial_recent_count =
       CustomizationService()->GetRecentlyUsedBackgrounds().size();
 
+  EXPECT_CALL(mock_tracker_,
+              ShouldTriggerHelpUI(
+                  testing::Ref(feature_engagement::kIPHiOSBackgroundNewBadge)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      mock_tracker_,
+      Dismissed(testing::Ref(feature_engagement::kIPHiOSBackgroundNewBadge)));
+
   [mediator_ loadRecentlyUsedBackgroundConfigurations];
 
   ASSERT_EQ(1u, consumer_.configurations.count);
@@ -776,6 +789,7 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   ASSERT_TRUE(ephemeral_item);
   EXPECT_EQ(HomeCustomizationBackgroundStyle::kEphemeral,
             ephemeral_item.backgroundStyle);
+  EXPECT_TRUE(ephemeral_item.showNewBadge);
   EXPECT_NE(nil, ephemeral_item.colorPalette);
   EXPECT_NSEQ(@"/path/to/animation.json",
               ephemeral_item.animatedBackgroundPath);
@@ -797,4 +811,39 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   EXPECT_NSEQ(ephemeral_id, consumer_.selectedBackgroundId);
   EXPECT_EQ(initial_recent_count,
             CustomizationService()->GetRecentlyUsedBackgrounds().size());
+  [mediator_ disconnect];
+}
+
+// Test that the background does not show the "New" badge when the Feature
+// Engagement Tracker does not trigger.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       BackgroundNewBadgeNotShownWhenTrackerDoesNotTrigger) {
+  base::test::ScopedFeatureList feature_list(kNewTabPageEphemeralTheme);
+
+  base::DictValue theme_data;
+  theme_data.Set(kEphemeralThemeSeedColorKey, "FF8000");
+  theme_data.Set(kEphemeralThemeAnimationPathKey, "/path/to/animation.json");
+  profile_->GetPrefs()->SetDict(prefs::kIosNtpEphemeralThemeData,
+                                std::move(theme_data));
+
+  EXPECT_CALL(mock_tracker_,
+              ShouldTriggerHelpUI(
+                  testing::Ref(feature_engagement::kIPHiOSBackgroundNewBadge)))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(
+      mock_tracker_,
+      Dismissed(testing::Ref(feature_engagement::kIPHiOSBackgroundNewBadge)))
+      .Times(0);
+
+  [mediator_ loadRecentlyUsedBackgroundConfigurations];
+
+  ASSERT_EQ(1u, consumer_.configurations.count);
+  BackgroundCollectionConfiguration* section = consumer_.configurations[0];
+  ASSERT_GE(section.configurationOrder.count, 2u);
+
+  NSString* ephemeral_id = section.configurationOrder[1];
+  id<BackgroundCustomizationConfiguration> ephemeral_item =
+      section.configurations[ephemeral_id];
+  ASSERT_TRUE(ephemeral_item);
+  EXPECT_FALSE(ephemeral_item.showNewBadge);
 }
