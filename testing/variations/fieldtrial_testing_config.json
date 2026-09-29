@@ -10092,9 +10092,9 @@
             ],
             "experiments": [
                 {
-                    "name": "RemoveEverywhere",
+                    "name": "KeepOnNtp",
                     "params": {
-                        "remove_home_button_everywhere": "true"
+                        "keep_home_button_on_ntp": "true"
                     },
                     "enable_features": [
                         "HomeButtonRemoval"
@@ -10104,9 +10104,9 @@
                     ]
                 },
                 {
-                    "name": "KeepOnNtp",
+                    "name": "RemoveEverywhere",
                     "params": {
-                        "keep_home_button_on_ntp": "true"
+                        "remove_home_button_everywhere": "true"
                     },
                     "enable_features": [
                         "HomeButtonRemoval"
