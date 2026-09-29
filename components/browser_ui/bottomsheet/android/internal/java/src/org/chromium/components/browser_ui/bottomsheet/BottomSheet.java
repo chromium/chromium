@@ -111,9 +111,6 @@ class BottomSheet extends BottomSheetView
     /** The default peek height of the sheet. */
     private final @Px int mDefaultPeekHeight;
 
-    /** For detecting scroll and fling events on the bottom sheet. */
-    private final BottomSheetSwipeDetector mGestureDetector;
-
     /** The model managing presentation properties of the bottom sheet. */
     private final PropertyModel mModel;
 
@@ -151,9 +148,6 @@ class BottomSheet extends BottomSheetView
      * min and max values are provided at least once (0 and 1).
      */
     private float mLastOffsetRatioSent;
-
-    /** Whether the {@link BottomSheet} and its children should react to touch events. */
-    private boolean mIsTouchEnabled;
 
     /** Whether {@link #destroy()} has been called. */
     private boolean mIsDestroyed;
@@ -216,12 +210,13 @@ class BottomSheet extends BottomSheetView
         mNarrowWidth = res.getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
         mDefaultPeekHeight = res.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
         mSheetBgColor = getNonModalBottomSheetBgColor(context);
-        mGestureDetector = new BottomSheetSwipeDetector(context, this);
-        mIsTouchEnabled = true;
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
         mModel = buildModel();
         mMediator = new BottomSheetMediator(mModel);
+        mMediator.initSwipeDetector(context, this);
+        mMediator.setIsHidingSupplier(this::isHiding);
+        setTouchHandler(mMediator);
     }
 
     @Override
@@ -252,7 +247,6 @@ class BottomSheet extends BottomSheetView
     /** Called when the activity containing the {@link BottomSheet} is destroyed. */
     void destroy() {
         mIsDestroyed = true;
-        mIsTouchEnabled = false;
         mMediator.destroy();
         endAnimations();
     }
@@ -266,77 +260,6 @@ class BottomSheet extends BottomSheetView
     /** @return Whether the sheet is in the process of hiding. */
     boolean isHiding() {
         return mSettleAnimator != null && getTargetSheetState() == SheetState.HIDDEN;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent e) {
-        if (!isTouchEventInUsableArea(e) && e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            return false;
-        }
-
-        // If touch is disabled, act like a black hole and consume touch events without doing
-        // anything with them.
-        if (!mIsTouchEnabled) return true;
-
-        if (isHiding()) return false;
-
-        return mGestureDetector.onInterceptTouchEvent(e);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        if (!isTouchEventInUsableArea(e) && e.getActionMasked() == MotionEvent.ACTION_DOWN) {
-            return false;
-        }
-
-        // If touch is disabled, act like a black hole and consume touch events without doing
-        // anything with them.
-        if (!mIsTouchEnabled) return true;
-
-        mGestureDetector.onTouchEvent(e);
-
-        return true;
-    }
-
-    @Override
-    public boolean onHoverEvent(MotionEvent event) {
-        // https://crbug.com/1297267 Consume hover events to prevent talkback from reading items
-        // behind the bottom sheet, in particular when the client has its own scrim lifecycle.
-        super.onHoverEvent(event);
-        return true;
-    }
-
-    @Override
-    public boolean onGenericMotionEvent(MotionEvent event) {
-        // If the mouse event is in the transparent shadow area above the sheet, let it fall
-        // through.
-        if (!isTouchEventInUsableArea(event)) {
-            return super.onGenericMotionEvent(event);
-        }
-
-        // Like onTouchEvent, act as a black hole for unhandled generic motion events
-        // (e.g., hardware mouse clicks or scrolls) that land within the physical sheet.
-        // This prevents them from falling through to the background WebContents.
-        return true;
-    }
-
-    @Override
-    public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
-        // First, check if a child view inside the sheet (like a specific button or the
-        // drag handlebar) has explicitly requested a custom pointer icon (like a hand).
-        PointerIcon icon = super.onResolvePointerIcon(event, pointerIndex);
-        if (icon != null) {
-            return icon;
-        }
-
-        // If no child cares, and the pointer is sitting in the empty usable area of the
-        // bottom sheet, forcefully return the default arrow icon. This overwrites
-        // the "stuck" hand cursor state bleeding up from the WebContents behind it.
-        if (isTouchEventInUsableArea(event)) {
-            return PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_DEFAULT);
-        }
-
-        return super.onResolvePointerIcon(event, pointerIndex);
     }
 
     /**
@@ -430,7 +353,7 @@ class BottomSheet extends BottomSheetView
                             // If we are in the middle of a touch event stream (i.e. scrolling while
                             // keyboard is up) don't set the sheet state. Instead allow the gesture
                             // detector to position the sheet and make sure the keyboard hides.
-                            if (mGestureDetector.isScrolling() && keyboardDelegate != null) {
+                            if (mMediator.isScrolling()) {
                                 keyboardDelegate.hideKeyboard(BottomSheet.this);
                             } else {
                                 @SheetState int targetState = getTargetSheetState();
@@ -485,7 +408,7 @@ class BottomSheet extends BottomSheetView
                         return;
                     }
 
-                    if (!mGestureDetector.isScrolling() && isRunningSettleAnimation()) return;
+                    if (!mMediator.isScrolling() && isRunningSettleAnimation()) return;
 
                     setSheetState(getSheetState(), false);
                 });
@@ -563,18 +486,6 @@ class BottomSheet extends BottomSheetView
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-
-        // Trigger a relayout on window focus to correct any positioning issues when leaving Chrome
-        // previously.  This is required as a layout is not triggered when coming back to Chrome
-        // with the keyboard previously shown.
-        if (hasWindowFocus) {
-            ViewUtils.requestLayout(this, "BottomSheet.onWindowFocusChagned");
-        }
-    }
-
-    @Override
     public boolean isContentScrolledToTop() {
         BottomSheetContent content = getCurrentSheetContent();
         return content == null || content.getVerticalScrollOffset() <= 0;
@@ -588,17 +499,6 @@ class BottomSheet extends BottomSheetView
     @Override
     public float getMinOffsetPx() {
         return (swipeToDismissEnabled() ? getHiddenRatio() : getPeekRatio()) * getMaxSheetHeight();
-    }
-
-    /**
-     * Test whether a motion event is in the area of the sheet considered to be usable (i.e. not on
-     * the shadow shown above the sheet or some other decorative part of the view).
-     *
-     * @param event The motion event relative to the bottom sheet view.
-     * @return Whether the event is considered to be in the usable area of the sheet.
-     */
-    public boolean isTouchEventInUsableArea(MotionEvent event) {
-        return mMediator.isTouchEventInUsableArea(event.getY());
     }
 
     @Override
@@ -1436,7 +1336,7 @@ class BottomSheet extends BottomSheetView
 
         boolean shouldLongPressMoveSheet =
                 content == null ? false : content.shouldLongPressMoveSheet();
-        mGestureDetector.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
+        mMediator.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
         updateContentContainerHeight();
 

@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -100,6 +101,25 @@ public class BottomSheetView extends FrameLayout {
         }
     }
 
+    /** Interface for intercepting and handling touch events on the bottom sheet view. */
+    public interface TouchHandler {
+        /**
+         * Intercepts touch events directed at the bottom sheet view or its children.
+         *
+         * @param e The motion event.
+         * @return True if the event was intercepted, false otherwise.
+         */
+        boolean onInterceptTouchEvent(MotionEvent e);
+
+        /**
+         * Handles touch events directed at the bottom sheet view.
+         *
+         * @param e The motion event.
+         * @return True if the event was handled, false otherwise.
+         */
+        boolean onTouchEvent(MotionEvent e);
+    }
+
     /** An out-array for use with getLocationOnScreen to prevent constant allocations. */
     private final int[] mCachedLocation = new int[2];
 
@@ -152,6 +172,8 @@ public class BottomSheetView extends FrameLayout {
 
     /** The active glow specification for the sheet. */
     private @Nullable GlowSpec mGlowSpec;
+
+    private @Nullable TouchHandler mTouchHandler;
 
     /**
      * Constructor for inflating from XML.
@@ -471,6 +493,99 @@ public class BottomSheetView extends FrameLayout {
             params.height = height;
             mBottomSheetContentContainer.setLayoutParams(params);
         }
+    }
+
+    /**
+     * Sets the touch handler for this view.
+     *
+     * @param handler The touch handler to intercept and process touch events.
+     */
+    public void setTouchHandler(TouchHandler handler) {
+        mTouchHandler = handler;
+    }
+
+    /**
+     * @return Whether the UI is using large form factor configurations.
+     */
+    public boolean isLargeFormFactorUiEnabled() {
+        return mLayoutMode == SheetLayoutMode.DESKTOP_POPUP
+                || mLayoutMode == SheetLayoutMode.DESKTOP_FALLBACK;
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        if (mTouchHandler != null) {
+            return mTouchHandler.onInterceptTouchEvent(e);
+        }
+        return super.onInterceptTouchEvent(e);
+    }
+
+    // TODO(crbug.com/567600538): Evaluate ClickableViewAccessibility and consider
+    // implementing performClick() for BottomSheetView.
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (mTouchHandler != null) {
+            return mTouchHandler.onTouchEvent(e);
+        }
+        return super.onTouchEvent(e);
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        // https://crbug.com/1297267 Consume hover events to prevent talkback from reading items
+        // behind the bottom sheet, in particular when the client has its own scrim lifecycle.
+        super.onHoverEvent(event);
+        return true;
+    }
+
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        // If the mouse event is in the transparent shadow area above the sheet, let it fall
+        // through.
+        if (!isTouchEventInUsableArea(event)) {
+            return super.onGenericMotionEvent(event);
+        }
+
+        // Like onTouchEvent, act as a black hole for unhandled generic motion events
+        // (e.g., hardware mouse clicks or scrolls) that land within the physical sheet.
+        // This prevents them from falling through to the background WebContents.
+        return true;
+    }
+
+    @Override
+    public @Nullable PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        // First, check if a child view inside the sheet (like a specific button or the
+        // drag handlebar) has explicitly requested a custom pointer icon (like a hand).
+        PointerIcon icon = super.onResolvePointerIcon(event, pointerIndex);
+        if (icon != null) {
+            return icon;
+        }
+
+        // If no child cares, and the pointer is sitting in the empty usable area of the
+        // bottom sheet, forcefully return the default arrow icon. This overwrites
+        // the "stuck" hand cursor state bleeding up from the WebContents behind it.
+        if (isTouchEventInUsableArea(event)) {
+            return PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_DEFAULT);
+        }
+
+        return super.onResolvePointerIcon(event, pointerIndex);
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (hasWindowFocus) {
+            ViewUtils.requestLayout(this, "BottomSheetView.onWindowFocusChanged");
+        }
+    }
+
+    /**
+     * @param event The motion event relative to the bottom sheet view.
+     * @return Whether the event is considered to be in the usable area of the sheet.
+     */
+    public boolean isTouchEventInUsableArea(MotionEvent event) {
+        return event.getY() > 0;
     }
 
     @Override

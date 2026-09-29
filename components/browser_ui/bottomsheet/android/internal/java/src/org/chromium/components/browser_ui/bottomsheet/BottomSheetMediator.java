@@ -6,14 +6,15 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.view.MotionEvent;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.CallbackUtils;
@@ -32,9 +33,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.function.Supplier;
+
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
-class BottomSheetMediator {
+class BottomSheetMediator implements BottomSheetView.TouchHandler {
     private static final String TAG = "BottomSheet";
 
     /** Duration for transition to {@link SheetState#FULL}. */
@@ -69,6 +72,9 @@ class BottomSheetMediator {
     private @SheetState int mStateBeforeKeyboardShown = SheetState.NONE;
     private int mKeyboardToken = TokenHolder.INVALID_TOKEN;
     private boolean mIsSheetOpen;
+    private @Nullable BottomSheetSwipeDetector mSwipeDetector;
+    private boolean mIsTouchEnabled = true;
+    private @Nullable Supplier<Boolean> mIsHidingSupplier;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -110,6 +116,92 @@ class BottomSheetMediator {
     /** Clears all registered observers when destroying the mediator. */
     void destroy() {
         mObservers.clear();
+        mIsTouchEnabled = false;
+    }
+
+    /**
+     * Initializes the swipe detector for handling gesture navigation on the bottom sheet.
+     *
+     * @param context The Android context.
+     * @param delegate The delegate bottom sheet that receives swipe gestures.
+     */
+    void initSwipeDetector(
+            Context context, BottomSheetSwipeDetector.SwipeableBottomSheet delegate) {
+        mSwipeDetector = new BottomSheetSwipeDetector(context, delegate);
+    }
+
+    void setSwipeDetectorForTesting(BottomSheetSwipeDetector swipeDetector) {
+        mSwipeDetector = swipeDetector;
+    }
+
+    /**
+     * Sets a supplier to determine if the bottom sheet is currently hiding.
+     *
+     * @param isHidingSupplier The supplier returning whether the sheet is hiding.
+     */
+    void setIsHidingSupplier(Supplier<Boolean> isHidingSupplier) {
+        mIsHidingSupplier = isHidingSupplier;
+    }
+
+    /**
+     * Sets whether touch events are enabled on the bottom sheet.
+     *
+     * @param enabled Whether touch events are enabled.
+     */
+    void setTouchEnabled(boolean enabled) {
+        mIsTouchEnabled = enabled;
+    }
+
+    /**
+     * @return Whether the user is currently scrolling the bottom sheet.
+     */
+    boolean isScrolling() {
+        return mSwipeDetector != null && mSwipeDetector.isScrolling();
+    }
+
+    /**
+     * Sets whether long press should move the bottom sheet.
+     *
+     * @param shouldLongPressMoveSheet Whether long press moves the sheet.
+     */
+    void setShouldLongPressMoveSheet(boolean shouldLongPressMoveSheet) {
+        if (mSwipeDetector != null) {
+            mSwipeDetector.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
+        }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        if (!isTouchEventInUsableArea(e.getY()) && e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+
+        // If touch is disabled, act like a black hole and consume touch events without doing
+        // anything with them.
+        if (!mIsTouchEnabled) return true;
+
+        if (mIsHidingSupplier != null && mIsHidingSupplier.get()) return false;
+
+        if (mSwipeDetector == null) return false;
+
+        return mSwipeDetector.onInterceptTouchEvent(e);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        if (!isTouchEventInUsableArea(e.getY()) && e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            return false;
+        }
+
+        // If touch is disabled, act like a black hole and consume touch events without doing
+        // anything with them.
+        if (!mIsTouchEnabled) return true;
+
+        if (mSwipeDetector != null) {
+            mSwipeDetector.onTouchEvent(e);
+        }
+
+        return true;
     }
 
     /**
@@ -911,7 +1003,6 @@ class BottomSheetMediator {
         return currentX > startX && currentX < endX;
     }
 
-    @VisibleForTesting
     void setIsSheetOpenForTesting(boolean isSheetOpen) {
         mIsSheetOpen = isSheetOpen;
     }
