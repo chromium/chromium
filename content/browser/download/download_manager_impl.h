@@ -115,6 +115,7 @@ class CONTENT_EXPORT DownloadManagerImpl
                        blob_url_loader_factory) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  using DownloadManager::CreateDownloadItem;
   download::DownloadItem* CreateDownloadItem(
       const std::string& guid,
       uint32_t id,
@@ -141,8 +142,8 @@ class CONTENT_EXPORT DownloadManagerImpl
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const base::FilePath& display_name) override;
   void PostInitialization(DownloadInitializationDependency dependency) override;
   bool IsManagerInitialized() override;
   int InProgressCount() override;

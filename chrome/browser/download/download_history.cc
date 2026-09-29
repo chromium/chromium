@@ -354,15 +354,54 @@ void DownloadHistory::QueryCallback(std::vector<history::DownloadRow> rows) {
   if (!notifier_.GetManager())
     return;
 
-  notifier_.GetManager()->OnHistoryQueryComplete(
+#if BUILDFLAG(IS_ANDROID)
+  base::OnceClosure callback =
+      base::FeatureList::IsEnabled(
+          download::features::kRetrieveDisplayNamesForHistoryDownloads)
+          ? base::BindOnce(
+                &DownloadHistory::RetrieveDisplayNamesAndLoadHistoryDownloads,
+                weak_ptr_factory_.GetWeakPtr(), std::move(rows))
+          : base::BindOnce(&DownloadHistory::LoadHistoryDownloads,
+                           weak_ptr_factory_.GetWeakPtr(), std::move(rows),
+                           nullptr);
+#else
+  base::OnceClosure callback =
+      base::BindOnce(&DownloadHistory::LoadHistoryDownloads,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(rows));
+#endif
+  notifier_.GetManager()->OnHistoryQueryComplete(std::move(callback));
+}
+
+#if BUILDFLAG(IS_ANDROID)
+void DownloadHistory::RetrieveDisplayNamesAndLoadHistoryDownloads(
+    std::vector<history::DownloadRow> rows) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!notifier_.GetManager()) {
+    return;
+  }
+  std::vector<base::FilePath> content_uris;
+  for (const history::DownloadRow& row : rows) {
+    if (row.target_path.IsContentUri()) {
+      content_uris.push_back(row.target_path);
+    }
+  }
+  download::GetDisplayNamesForDownloads(
+      std::move(content_uris),
       base::BindOnce(&DownloadHistory::LoadHistoryDownloads,
                      weak_ptr_factory_.GetWeakPtr(), std::move(rows)));
 }
 
 void DownloadHistory::LoadHistoryDownloads(
+    const std::vector<history::DownloadRow>& rows,
+    download::DisplayNames display_names) {
+#else
+void DownloadHistory::LoadHistoryDownloads(
     const std::vector<history::DownloadRow>& rows) {
+#endif
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(notifier_.GetManager());
+  if (!notifier_.GetManager()) {
+    return;
+  }
 
   std::map<std::string, int> file_name_count;
   CountFilePathOccurences(rows, &file_name_count);
@@ -372,6 +411,18 @@ void DownloadHistory::LoadHistoryDownloads(
       ScheduleRemoveDownload(row.id);
       continue;
     }
+
+    base::FilePath display_name;
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            download::features::kRetrieveDisplayNamesForHistoryDownloads) &&
+        row.target_path.IsContentUri() && display_names) {
+      auto iter = display_names->find(row.target_path.value());
+      if (iter != display_names->end()) {
+        display_name = iter->second;
+      }
+    }
+#endif
 
     loading_id_ = history::ToContentDownloadId(row.id);
     download::DownloadItem::DownloadState history_download_state =
@@ -408,7 +459,8 @@ void DownloadHistory::LoadHistoryDownloads(
         history_download_state,
         history::ToContentDownloadDangerType(row.danger_type), history_reason,
         row.opened, row.last_access_time, row.transient,
-        history::ToContentReceivedSlices(row.download_slice_info));
+        history::ToContentReceivedSlices(row.download_slice_info),
+        display_name);
     // DownloadManager returns a nullptr if it decides to remove the download
     // permanently.
     if (item == nullptr) {
