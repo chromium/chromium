@@ -179,6 +179,8 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
+using ntp_tiles::AimButtonRefactorArm;
+
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
                                      AuthenticationServiceObserving,
                                      ContentSuggestionsDelegate,
@@ -2247,18 +2249,23 @@
   _aimBubblePresenter = presenter;
 }
 
-// Returns `YES` if conditions to focus on Composebox are met.
-- (BOOL)canFocusComposebox {
+// Returns `YES` if conditions to focus on Composebox for AI Mode are met.
+- (BOOL)canFocusComposeboxForAIM {
   if (!_aimEligibilityService->IsFuseboxEligible()) {
     return NO;
   }
 
-  if (ntp_tiles::GetAimButtonRefactorArm() !=
-      ntp_tiles::AimButtonRefactorArm::kFocusComposeboxAimQuickAction) {
-    return NO;
+  switch (ntp_tiles::GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kDisabled:
+      return NO;
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+      return YES;
   }
-
-  return YES;
 }
 
 #pragma mark - HomeCustomizationDelegate
@@ -2309,7 +2316,7 @@
   RecordHomeAction(IOSHomeActionType::kQuickActionAIM, [self isStartSurface]);
   [self.NTPMetricsRecorder recordAIMButtonTapped];
 
-  if ([self canFocusComposebox] &&
+  if ([self canFocusComposeboxForAIM] &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }
