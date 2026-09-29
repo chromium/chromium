@@ -1235,6 +1235,7 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     // Auto does not have actions to handle ACTION_CHANNEL_NOTIFICATION_SETTINGS
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisabledTest(message = "https://crbug.com/566215097")
     public void testEmbargoedNotificationSiteSettings() throws Exception {
         final String url =
                 mPermissionTestRule.getURLWithHostName(
