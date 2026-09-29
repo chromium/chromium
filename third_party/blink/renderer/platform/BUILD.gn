@@ -174,7 +174,6 @@ group("make_platform_generated") {
   ]
   public_deps = [
     ":bindings_buildflags",
-    ":character_data",
     ":color_data",
     ":font_family_names",
     ":runtime_enabled_features",
@@ -183,6 +182,79 @@ group("make_platform_generated") {
     "//third_party/blink/public/common:buildflags",
     "//third_party/blink/renderer/platform/heap:blink_heap_buildflags",
     "//third_party/blink/renderer/platform/network:make_generated",
+  ]
+}
+
+source_set("character_property_data") {
+  public = []
+  sources =
+      get_target_outputs(":character_data") + [ "text/text_break_iterator.cc" ]
+  configs += [
+    ":blink_platform_pch",
+    ":blink_platform_config",
+    ":blink_platform_implementation",
+    "//third_party/blink/renderer:non_test_config",
+  ]
+  deps = [
+    ":blink_platform_public_deps",
+    ":character_data",
+    ":platform_export",
+    "//third_party/blink/renderer/platform/heap",
+    "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/harfbuzz",
+    "//third_party/icu",
+  ]
+}
+
+source_set("font_rust_headers") {
+  visibility += [ "//third_party/blink/renderer/core:*" ]
+  public = [
+    "fonts/ift/ift_patcher.h",
+    "fonts/opentype/font_format_check.h",
+  ]
+  configs += [
+    ":blink_platform_pch",
+    ":blink_platform_config",
+    ":blink_platform_implementation",
+    "//third_party/blink/renderer:non_test_config",
+  ]
+  public_deps = [
+    ":platform_export",
+    "fonts:font_format_bindings",
+    "fonts:ift_patcher_bindings",
+    "//base",
+    "//build/rust/crubit",
+    "//skia",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}
+
+source_set("font_rust_support") {
+  public = []
+  sources = [
+    "fonts/font_custom_platform_data.cc",
+    "fonts/ift/ift_patcher.cc",
+    "fonts/opentype/font_format_check.cc",
+    "fonts/web_font_decoder.cc",
+    "fonts/web_font_typeface_factory.cc",
+  ]
+  configs += [
+    ":blink_platform_pch",
+    ":blink_platform_config",
+    ":blink_platform_implementation",
+    "//third_party/blink/renderer:non_test_config",
+  ]
+  deps = [
+    ":blink_platform_public_deps",
+    ":font_rust_headers",
+    ":platform_export",
+    "//third_party/blink/renderer/platform/heap",
+    "//third_party/blink/renderer/platform/instrumentation",
+    "//third_party/blink/renderer/platform/loader",
+    "//third_party/blink/renderer/platform/network",
+    "//third_party/blink/renderer/platform/scheduler",
+    "//third_party/harfbuzz",
+    "//third_party/icu",
   ]
 }
 
@@ -647,7 +719,6 @@ component("platform") {
     "fonts/font_cache.h",
     "fonts/font_cache_client.h",
     "fonts/font_cache_key.h",
-    "fonts/font_custom_platform_data.cc",
     "fonts/font_custom_platform_data.h",
     "fonts/font_data.h",
     "fonts/font_data_cache.cc",
@@ -713,12 +784,8 @@ component("platform") {
     "fonts/generic_font_family_settings.cc",
     "fonts/generic_font_family_settings.h",
     "fonts/glyph_metrics_map.h",
-    "fonts/ift/ift_patcher.cc",
-    "fonts/ift/ift_patcher.h",
     "fonts/opentype/color_table_lookup.cc",
     "fonts/opentype/color_table_lookup.h",
-    "fonts/opentype/font_format_check.cc",
-    "fonts/opentype/font_format_check.h",
     "fonts/opentype/font_settings.cc",
     "fonts/opentype/font_settings.h",
     "fonts/opentype/open_type_baseline_metrics.cc",
@@ -827,10 +894,8 @@ component("platform") {
     "fonts/utf16_text_iterator.h",
     "fonts/vdmx_parser.cc",
     "fonts/vdmx_parser.h",
-    "fonts/web_font_decoder.cc",
     "fonts/web_font_decoder.h",
     "fonts/web_font_render_style.cc",
-    "fonts/web_font_typeface_factory.cc",
     "fonts/web_font_typeface_factory.h",
     "geometry/blend.h",
     "geometry/calculation_expression_node.cc",
@@ -1544,7 +1609,6 @@ component("platform") {
     "text/segmented_string.h",
     "text/text_boundaries.cc",
     "text/text_boundaries.h",
-    "text/text_break_iterator.cc",
     "text/text_break_iterator.h",
     "text/text_break_iterator_icu.cc",
     "text/text_break_iterator_internal_icu.cc",
@@ -1699,8 +1763,7 @@ component("platform") {
   sources -= blink_platform_avx_files
 
   # Add in the generated files.
-  sources += get_target_outputs(":character_data") +
-             get_target_outputs(":color_data") +
+  sources += get_target_outputs(":color_data") +
              get_target_outputs(":font_family_names") +
              get_target_outputs(":runtime_feature_state_override_context")
 
@@ -1781,6 +1844,8 @@ component("platform") {
   include_dirs = []
 
   allow_circular_includes_from = [
+    ":character_property_data",
+    ":font_rust_support",
     "//third_party/blink/renderer/platform/blob",
     "//third_party/blink/renderer/platform/heap:heap",
     "//third_party/blink/renderer/platform/instrumentation",
@@ -1795,7 +1860,6 @@ component("platform") {
     ":allow_discouraged_type",
     ":blink_platform_public_deps",
     ":platform_export",
-    "//build/rust/crubit",
     "//components/language_detection/core",
     "//gpu/command_buffer/client:raster_interface",
     "//media/capture:capture_lib",
@@ -1822,9 +1886,9 @@ component("platform") {
     "//ui/native_theme/features",
   ]
   deps = [
+    ":character_property_data",
+    ":font_rust_support",
     ":rustfft_ffi",
-    "fonts:font_format_bindings",
-    "fonts:ift_patcher_bindings",
     "//base:base_static",
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
@@ -2544,7 +2608,11 @@ source_set("blink_platform_unittests_sources") {
 
   deps += [
     ":bridge_ice_controller_tests",
+    ":font_rust_headers",
     ":rustfft_ffi_unittests",
+    "fonts:font_format_bindings",
+    "fonts:ift_patcher_bindings",
+    "//build/rust/crubit",
   ]
 
   data_deps = [ ":blink_platform_unittests_data" ]
