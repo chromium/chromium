@@ -207,6 +207,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardenUrlProvisionFetcher);
 // config does not provide SPS/PPS. In that case, an IDR alone is not
 // sufficient, SPS+PPS must appear in-band to mark it as a keyframe.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kH264IDRKeyframeRequiresParameterSets);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kH264SkipUnspecifiedNalus);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareMediaKeyHandling);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryption);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryptionAv1);

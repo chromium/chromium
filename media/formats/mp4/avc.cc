@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
@@ -77,6 +78,25 @@ bool ShouldSkipDummyNALU(VideoCodec codec, base::span<const uint8_t> nalu) {
   NOTREACHED();
 }
 
+// Works around platform decoders that fail on H.264 NALUs of unspecified type
+// 31, e.g. the cros-codecs H.264 decoder (b/567236166). Per H.264 Section
+// 7.4.1, these NALUs do not affect decoding, and FFmpeg and H264Decoder
+// already ignore them.
+bool ShouldSkipUnspecifiedNALU(VideoCodec codec,
+                               base::span<const uint8_t> nalu) {
+  constexpr uint8_t kNalUnitTypeUnspecified31 = 31;
+  return codec == VideoCodec::kH264 && !nalu.empty() &&
+         (nalu[0] & 0x1F) == kNalUnitTypeUnspecified31 &&
+         base::FeatureList::IsEnabled(kH264SkipUnspecifiedNalus);
+}
+
+// Keep in sync with `ShouldSkipNalUnit()` in
+// media/filters/h264_to_annex_b_bitstream_converter.cc.
+bool ShouldSkipNALU(VideoCodec codec, base::span<const uint8_t> nalu) {
+  return ShouldSkipDummyNALU(codec, nalu) ||
+         ShouldSkipUnspecifiedNALU(codec, nalu);
+}
+
 bool IsRangeClear(const std::vector<SubsampleEntry>* subsamples,
                   size_t offset,
                   size_t size) {
@@ -139,7 +159,7 @@ bool ContainsSkippableNalu(VideoCodec codec,
     }
 
     auto nalu = base::span(buf).subspan(pos + kLengthSize, nal_length);
-    if (ShouldSkipDummyNALU(codec, nalu) &&
+    if (ShouldSkipNALU(codec, nalu) &&
         IsRangeClear(subsamples, pos, kLengthSize + nal_length)) {
       return true;
     }
@@ -184,7 +204,7 @@ bool AVC::ConvertFrameToAnnexB(size_t length_size,
     auto nalu = base::span(temp).subspan(pos, nal_length);
     const size_t bytes_to_remove = length_size + nal_length;
     const size_t output_offset = buffer->size();
-    if (ShouldSkipDummyNALU(codec, nalu) &&
+    if (ShouldSkipNALU(codec, nalu) &&
         IsRangeClear(subsamples, output_offset, bytes_to_remove)) {
       RemoveClearRange(subsamples, output_offset, bytes_to_remove);
       pos += nal_length;

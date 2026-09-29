@@ -650,6 +650,17 @@ BASE_FEATURE(kGlobalVaapiLock, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kH264IDRKeyframeRequiresParameterSets,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Skips H.264 NAL units with the unspecified nal_unit_type 31 during Annex B
+// conversion, to work around platform decoders that fail on them.
+// TODO(b/567236166): Remove once the cros-codecs fix has rolled out.
+BASE_FEATURE(kH264SkipUnspecifiedNalus,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Enables handling of hardware media keys for controlling media.
 BASE_FEATURE(kHardwareMediaKeyHandling,
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
