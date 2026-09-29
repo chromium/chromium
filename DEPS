@@ -3299,7 +3299,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + '3336938e565e991ae671b2e0a65a9708723bfd11',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'fe7ec2cdb9347a88efcd77db9e936b3f9f9a609c',
 
   'src/third_party/libei/src': {
       'url': Var('chromium_git') + '/external/gitlab.freedesktop.org/libinput/libei.git' + '@' + 'a9bf31da06f06bfce73702191c3db93aae289459',
