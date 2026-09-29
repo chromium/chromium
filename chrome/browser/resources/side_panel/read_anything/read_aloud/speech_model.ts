@@ -76,6 +76,8 @@ export class SpeechModel {
 
   // Used for logging play time.
   private playSessionStartTime_: number|null = null;
+  // Used to log the cumulative speech playback time on a given page.
+  private pagePlaybackTimeMs_: number = 0;
   // Used to log the number of words heard by a user via read aloud on a given
   // page.
   private wordsHeard_: number = 0;
@@ -144,6 +146,18 @@ export class SpeechModel {
 
   setPlaySessionStartTime(time: number|null): void {
     this.playSessionStartTime_ = time;
+  }
+
+  getPagePlaybackTime(): number {
+    return this.pagePlaybackTimeMs_;
+  }
+
+  addPagePlaybackTime(time: number): void {
+    this.pagePlaybackTimeMs_ += time;
+  }
+
+  resetPagePlaybackTime(): void {
+    this.pagePlaybackTimeMs_ = 0;
   }
 
   getLastPosition(): ReadingPosition|null {

@@ -357,6 +357,25 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
   });
 
+  test('logSpeechPlaybackSessionPerPage records time', async () => {
+    const playbackTime = 12345;
+    logger.logSpeechPlaybackSessionPerPage(playbackTime);
+    const args = await metrics.whenCalled('recordSpeechPlaybackLength');
+    assertEquals(
+        'Accessibility.ReadAnything.SpeechPlaybackSession.PerPage', args[0]);
+    assertEquals(playbackTime, args[1]);
+  });
+
+  test(
+      'logSpeechPlaybackSessionPerPage does not record when time is zero or negative',
+      () => {
+        logger.logSpeechPlaybackSessionPerPage(0);
+        assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+
+        logger.logSpeechPlaybackSessionPerPage(-100);
+        assertEquals(0, metrics.getCallCount('recordSpeechPlaybackLength'));
+      });
+
   test('logTimeFrom uses correct uma name', () => {
     assertTimeMetricIsCalled(
         TimeFrom.APP,

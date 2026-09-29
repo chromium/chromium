@@ -14,6 +14,8 @@ export enum UmaName {
       'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
   SPEECH_ERROR = 'Accessibility.ReadAnything.SpeechError',
   SPEECH_PLAYBACK = 'Accessibility.ReadAnything.SpeechPlaybackSession',
+  SPEECH_PLAYBACK_PER_PAGE =
+      'Accessibility.ReadAnything.SpeechPlaybackSession.PerPage',
   PDF_HEADING_TO_PARAGRAPH_RATIO =
       'Accessibility.ReadAnything.Pdf.HeadingToParagraphRatio',
   PDF_NUMBER_PARAGRAPHS = 'Accessibility.ReadAnything.Pdf.NumberParagraphs',

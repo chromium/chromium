@@ -238,6 +238,13 @@ export class ReadAnythingLogger {
     this.metrics.recordSpeechPlaybackLength(umaName, playbackTime);
   }
 
+  logSpeechPlaybackSessionPerPage(playbackTime: number) {
+    if (playbackTime > 0) {
+      this.metrics.recordSpeechPlaybackLength(
+          UmaName.SPEECH_PLAYBACK_PER_PAGE, playbackTime);
+    }
+  }
+
   logSpeechControlClick(control: SpeechControls) {
     this.metrics.incrementMetricCount(
         `Accessibility.ReadAnything.ReadAloud${control}SessionCount`);

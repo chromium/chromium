@@ -3911,6 +3911,17 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.SpeechPlaybackSession.PerPage"
+    units="ms" expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the total cumulative length of time of speech playback for a single
+    page from when content is loaded until the page changes or the panel is
+    closed. Only recorded if speech was played on the page.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.ReadAnything.SpeechPlaybackSession.{PageType}In{ViewMode}"
     units="ms" expires_after="2027-02-07">

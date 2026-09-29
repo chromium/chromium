@@ -143,4 +143,22 @@ suite('SpeechModel', () => {
     speechModel.incrementWordsHeard();
     assertEquals(13, speechModel.getWordsHeard());
   });
+
+  test('pagePlaybackTime starts at zero', () => {
+    assertEquals(0, speechModel.getPagePlaybackTime());
+  });
+
+  test('addPagePlaybackTime accumulates time', () => {
+    speechModel.addPagePlaybackTime(3000);
+    assertEquals(3000, speechModel.getPagePlaybackTime());
+    speechModel.addPagePlaybackTime(2000);
+    assertEquals(5000, speechModel.getPagePlaybackTime());
+  });
+
+  test('resetPagePlaybackTime resets to zero', () => {
+    speechModel.addPagePlaybackTime(5000);
+    assertEquals(5000, speechModel.getPagePlaybackTime());
+    speechModel.resetPagePlaybackTime();
+    assertEquals(0, speechModel.getPagePlaybackTime());
+  });
 });

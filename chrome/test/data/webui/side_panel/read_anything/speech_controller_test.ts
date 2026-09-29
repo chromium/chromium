@@ -1346,4 +1346,99 @@ suite('SpeechController', () => {
     speech.reset();
     audioBrowserProxy.onTabMuteStateChange.callListeners(false);
   });
+
+  suite('speech playback session per page logging', () => {
+    let originalDateNow: () => number;
+    let fakeTime: number;
+
+    const baseUma = 'Accessibility.ReadAnything.SpeechPlaybackSession.PerPage';
+
+    function getPerPageCallCount(): number {
+      const calls = metrics.getArgs('recordSpeechPlaybackLength');
+      return calls.filter(call => call[0] === baseUma).length;
+    }
+
+    function getLastPerPageDuration(): number|undefined {
+      const calls = metrics.getArgs('recordSpeechPlaybackLength');
+      const perPageCalls = calls.filter(call => call[0] === baseUma);
+      return perPageCalls.length > 0 ?
+          perPageCalls[perPageCalls.length - 1][1] :
+          undefined;
+    }
+
+    setup(() => {
+      originalDateNow = Date.now;
+      fakeTime = 1000;
+      Date.now = () => fakeTime;
+    });
+
+    teardown(() => {
+      Date.now = originalDateNow;
+    });
+
+    test(
+        'resetForNewContent logs cumulative playback across multiple play/pause episodes',
+        () => {
+          // Episode 1: play for 500ms and pause.
+          onPlayPauseToggle('First sentence to read aloud.');
+          fakeTime += 500;
+          onPlayPauseToggle('First sentence to read aloud.');
+
+          // Episode 2: resume for 300ms and pause.
+          fakeTime += 100;
+          onPlayPauseToggle('First sentence to read aloud.');
+          fakeTime += 300;
+          onPlayPauseToggle('First sentence to read aloud.');
+
+          // Per-page metric is not logged yet while still on the page.
+          assertEquals(0, getPerPageCallCount());
+
+          // User navigates away / new content is loaded.
+          speechController.resetForNewContent();
+
+          // Cumulative playback duration (500 + 300 = 800ms) should be logged.
+          assertEquals(1, getPerPageCallCount());
+          assertEquals(800, getLastPerPageDuration());
+
+          // Calling resetForNewContent again without new playback should not
+          // re-log.
+          speechController.resetForNewContent();
+          assertEquals(1, getPerPageCallCount());
+        });
+
+    test(
+        'resetForNewContent does not log when savedSpeechPlayingState is set',
+        () => {
+          onPlayPauseToggle('Style change test.');
+          fakeTime += 250;
+          onPlayPauseToggle('Style change test.');
+
+          // Save state as happens during visual/style settings changes.
+          speechController.saveReadAloudState();
+          speechController.resetForNewContent();
+
+          // Should not log per-page metric for an in-page redraw.
+          assertEquals(0, getPerPageCallCount());
+        });
+
+    test('onReadingModeWillClose logs cumulative playback duration', () => {
+      onPlayPauseToggle('Closing reading mode test.');
+      fakeTime += 350;
+      onPlayPauseToggle('Closing reading mode test.');
+
+      assertEquals(0, getPerPageCallCount());
+
+      speechController.onReadingModeWillClose();
+
+      assertEquals(1, getPerPageCallCount());
+      assertEquals(350, getLastPerPageDuration());
+    });
+
+    test('does not log per-page metric when speech was never played', () => {
+      speechController.resetForNewContent();
+      speechController.onReadingModeWillClose();
+
+      assertEquals(0, getPerPageCallCount());
+    });
+  });
 });

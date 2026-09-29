@@ -88,6 +88,10 @@ export class SpeechController {
   }
 
   resetForNewContent() {
+    if (!this.model_.getSavedSpeechPlayingState()) {
+      this.logSpeechPlaybackSessionPerPage_();
+    }
+
     if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
       // Reset the read aloud model because there's new content.
       this.readAloudModel_.resetModel?.();
@@ -240,6 +244,7 @@ export class SpeechController {
     // TODO: crbug.com/466967616 - Log when this is called when isSpeechActive
     // is false, as this is likely indicative of a bug.
     this.stopSpeech_(PauseActionSource.DEFAULT);
+    this.logSpeechPlaybackSessionPerPage_();
   }
 
   onTabMuteStateChange(muted: boolean) {
@@ -1234,9 +1239,21 @@ export class SpeechController {
   private logSpeechPlaySession_() {
     const startTime = this.model_.getPlaySessionStartTime();
     if (startTime) {
+      const sessionDuration = Date.now() - startTime;
+      if (sessionDuration > 0) {
+        this.model_.addPagePlaybackTime(sessionDuration);
+      }
       this.logger_.logSpeechPlaySession(
           startTime, this.voiceLanguageController_.getCurrentVoice());
       this.model_.setPlaySessionStartTime(null);
+    }
+  }
+
+  private logSpeechPlaybackSessionPerPage_() {
+    const pagePlaybackTime = this.model_.getPagePlaybackTime();
+    if (pagePlaybackTime > 0) {
+      this.logger_.logSpeechPlaybackSessionPerPage(pagePlaybackTime);
+      this.model_.resetPagePlaybackTime();
     }
   }
 
