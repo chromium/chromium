@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 
@@ -47,7 +48,7 @@ class AndroidBrowserWindowEnumerator : public BrowserCollectionObserver {
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
 
-  std::vector<BrowserWindowInterface*> browser_windows_;
+  std::vector<raw_ptr<BrowserWindowInterface>> browser_windows_;
   bool enumerate_new_browser_windows_;
 };
 
