@@ -50,6 +50,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "url/gurl.h"
 
 namespace translate {
@@ -191,12 +192,15 @@ std::vector<mojom::TranslateAgent*> ContentTranslateDriver::GetTranslateAgents(
       it->second.main_agent.is_bound()) {
     agents.push_back(it->second.main_agent.get());
   }
+#if !BUILDFLAG(IS_ANDROID)
   if (it->second.side_panel_agent.is_bound() &&
       (IsPdfTranslation() ||
        (translate_manager_ && translate_manager_->translate_client() &&
-        translate_manager_->translate_client()->IsReadingModeOpen()))) {
+        translate_manager_->translate_client()->IsReadingModeOpen() &&
+        features::IsImprovedReadAloudEnabled()))) {
     agents.push_back(it->second.side_panel_agent.get());
   }
+#endif
   return agents;
 }
 

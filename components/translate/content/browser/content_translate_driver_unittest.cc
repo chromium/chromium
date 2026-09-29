@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -280,10 +282,14 @@ TEST_F(ContentTranslateDriverTest, DestroyWithMultipleObservers) {
   // Should not crash.
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Side panel (Reading Mode) translate agents are not used on Android.
+
 // Test page registration with both main page and side panel agents.
 TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+  feature_list.InitWithFeatures(
+      {translate::kEnableTranslatePdf, features::kImprovedReadAloud}, {});
 
   MockTranslateAgent main_agent;
   MockTranslateAgent side_panel_agent;
@@ -348,7 +354,8 @@ TEST_F(ContentTranslateDriverTest, RegisterPageMainAndSidePanel) {
 // page agent.
 TEST_F(ContentTranslateDriverTest, SidePanelDisconnectDoesNotEraseMainAgent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
+  feature_list.InitWithFeatures(
+      {translate::kEnableTranslatePdf, features::kImprovedReadAloud}, {});
 
   EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
       .WillRepeatedly(::testing::Return(true));
@@ -431,6 +438,9 @@ TEST_F(ContentTranslateDriverTest, SidePanelDisconnectDoesNotEraseMainAgent) {
 // OnPageTranslated notification t
 TEST_F(ContentTranslateDriverTest,
        MultipleAgentsTranslateCoordinatesResponses) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImprovedReadAloud);
+
   EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
       .WillRepeatedly(::testing::Return(true));
 
@@ -542,6 +552,59 @@ TEST_F(ContentTranslateDriverTest, PageReloadPreservesSidePanelAgent) {
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return side_panel_agent.called_translate_; }));
 }
+
+// With kImprovedReadAloud disabled, an open Reading Mode side panel should not
+// receive translations for non-PDF pages, but should still receive them for
+// PDFs.
+TEST_F(ContentTranslateDriverTest,
+       SidePanelNotTranslatedForNonPdfWhenImprovedReadAloudDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({translate::kEnableTranslatePdf},
+                                {features::kImprovedReadAloud});
+
+  EXPECT_CALL(*mock_translate_client_, IsReadingModeOpen())
+      .WillRepeatedly(::testing::Return(true));
+
+  MockTranslateAgent main_agent;
+  MockTranslateAgent side_panel_agent;
+
+  translate::LanguageDetectionDetails main_details;
+  main_details.url = GURL("https://example.com");
+  main_details.adopted_language = "en";
+  main_details.is_model_reliable = true;
+  driver_->RegisterPage(main_agent.BindToNewPageRemote(), main_details, true);
+
+  translate::LanguageDetectionDetails side_panel_details;
+  side_panel_details.url =
+      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+  side_panel_details.adopted_language = "en";
+  side_panel_details.is_model_reliable = true;
+  driver_->RegisterPage(side_panel_agent.BindToNewPageRemote(),
+                        side_panel_details, true);
+
+  constexpr int kActiveSeqNo = 1;
+
+  // Non-PDF: only the main agent should be translated.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("text/html");
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return main_agent.called_translate_; }));
+  // Flush any remaining pending tasks so a side panel call would have landed.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(side_panel_agent.called_translate_);
+
+  main_agent.called_translate_ = false;
+
+  // PDF: the side panel agent is still used regardless of the feature.
+  content::WebContentsTester::For(web_contents())
+      ->SetMainFrameMimeType("application/pdf");
+  driver_->TranslatePage(kActiveSeqNo, "script", "en", "fr");
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return side_panel_agent.called_translate_; }));
+  EXPECT_FALSE(main_agent.called_translate_);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verifies that RegisterPage returns early and safely when web_contents() is null.
 TEST_F(ContentTranslateDriverTest, RegisterPageWithNullWebContents) {
@@ -726,6 +789,7 @@ TEST_F(ContentTranslateDriverPdfTest, RegisterPdfPageUntranslatable) {
       translate_manager_->GetLanguageState()->page_level_translation_criteria_met());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentTranslateDriverTest, MaybeTriggerPendingPdfTranslationTest) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(translate::kEnableTranslatePdf);
@@ -792,6 +856,7 @@ TEST_F(ContentTranslateDriverTest, MaybeTriggerPendingPdfTranslationTest) {
                    ->pending_target_language()
                    .has_value());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace translate

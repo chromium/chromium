@@ -43,6 +43,7 @@ static_library("browser") {
     "//net",
     "//pdf:buildflags",
     "//services/network/public/cpp",
+    "//ui/accessibility:ax_base",
   ]
 
   if (enable_pdf_translation) {
@@ -77,6 +78,7 @@ source_set("unit_tests") {
     "//pdf:buildflags",
     "//services/network:test_support",
     "//testing/gtest",
+    "//ui/accessibility:ax_base",
   ]
 
   if (enable_pdf_translation) {
