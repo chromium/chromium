@@ -21,6 +21,9 @@ suite('<bookmarks-item>', function() {
     const nodes = testTree(createFolder('1', [
       createItem('2', {url: 'http://example.com/'}),
       createItem('3'),
+      // The browser identifies bookmarks by their legacy id, which differs
+      // from the id used by the page.
+      createItem('item-uuid-4', {legacy: {id: BigInt(4)}}),
     ]));
     store = new TestStore({
       nodes: nodes,
@@ -103,11 +106,11 @@ suite('<bookmarks-item>', function() {
     testBrowserProxy.resetResolver('getCanUploadBookmarkToAccountStorage');
 
     // This triggers an update of the icon's visibility.
-    item.itemId = '3';
+    item.itemId = 'item-uuid-4';
 
     const [idRequested] = await testBrowserProxy.whenCalled(
         'getCanUploadBookmarkToAccountStorage');
-    assertEquals('3', idRequested);
+    assertEquals('4', idRequested);
     await microtasksFinished();
 
     assertTrue(isChildVisible(item, '#account-upload-button'));
@@ -128,7 +131,7 @@ suite('<bookmarks-item>', function() {
       async function() {
         // Show the cloud upload icon.
         testBrowserProxy.setCanUploadAsAccountBookmark(true);
-        item.itemId = '3';
+        item.itemId = 'item-uuid-4';
         await microtasksFinished();
         assertTrue(isChildVisible(item, '#account-upload-button'));
 
@@ -138,9 +141,9 @@ suite('<bookmarks-item>', function() {
         assertTrue(!!uploadIcon);
         uploadIcon.click();
 
-        // The call should be forwarded with the correct id.
+        // The call should be forwarded with the legacy id.
         const [idRequested] =
             await testBrowserProxy.whenCalled('onSingleBookmarkUploadClicked');
-        assertEquals('3', idRequested);
+        assertEquals('4', idRequested);
       });
 });

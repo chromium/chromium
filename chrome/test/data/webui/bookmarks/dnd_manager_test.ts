@@ -181,6 +181,53 @@ suite('drag and drop', function() {
     assertFalse(dragInfo.isDraggingFolderToDescendant('2', nodes));
   });
 
+  test('dragInfo translates legacy ids in native drag data', function() {
+    // The bookmarkManagerPrivate API identifies nodes by their legacy id,
+    // which differs from the id used by the page.
+    const nodes = testTree(createFolder(
+        '1',
+        [
+          createFolder(
+              'folder-uuid-11',
+              [
+                createFolder(
+                    'folder-uuid-111', [], {legacy: {id: BigInt(111)}}),
+              ],
+              {legacy: {id: BigInt(11)}}),
+          createItem('item-uuid-12', {legacy: {id: BigInt(12)}}),
+        ],
+        {permanentFolderType: PermanentFolderType.kBookmarkBar}));
+    new TestStore({nodes: nodes}).replaceSingleton();
+
+    function createNativeDragData(
+        elements: Array<{id: string, parentId: string, url?: string}>,
+        sameProfile: boolean = true) {
+      return {
+        elements: elements.map(
+            e => ({...e, title: ''}) as chrome.bookmarks.BookmarkTreeNode),
+        sameProfile: sameProfile,
+      };
+    }
+
+    const dragInfo = new DragInfo();
+    dragInfo.setNativeDragData(
+        createNativeDragData([{id: '11', parentId: '1'}]));
+    assertTrue(dragInfo.isDraggingBookmark('folder-uuid-11'));
+    assertTrue(dragInfo.isDraggingChildBookmark('1'));
+    assertTrue(dragInfo.isDraggingFolderToDescendant('folder-uuid-111', nodes));
+    assertFalse(dragInfo.isDraggingFolderToDescendant('item-uuid-12', nodes));
+
+    dragInfo.setNativeDragData(createNativeDragData(
+        [{id: '12', parentId: '1', url: 'http://www.google.com/'}]));
+    assertTrue(dragInfo.isDraggingBookmark('item-uuid-12'));
+    assertFalse(dragInfo.isDraggingFolders());
+
+    // Nodes from another profile are not translated.
+    dragInfo.setNativeDragData(
+        createNativeDragData([{id: '11', parentId: '1'}], false));
+    assertDeepEquals(['11'], dragInfo.dragData!.elements.map(x => x.id));
+  });
+
   test('drag in list', async function() {
     const dragElement = getListItem('13');
     let dragTarget = getListItem('12');
