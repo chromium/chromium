@@ -248,7 +248,7 @@ To launch Chromium via launch services, use the `open(1)` command:
 
 To pass command line arguments:
 
-    open ./out/debug/Chromium.app -- --enable-features=MyCoolFeature
+    open ./out/debug/Chromium.app --args --enable-features=MyCoolFeature
 
 ## Taking CPU Samples
 
