@@ -138,6 +138,12 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
     return value_future.Take();
   }
 
+  std::optional<base::DictValue> GetAllValues() {
+    base::test::TestFuture<std::optional<base::DictValue>> value_future;
+    api()->GetOriginPolicyConfiguration(origin_, value_future.GetCallback());
+    return value_future.Take();
+  }
+
   Profile* profile() { return browser()->GetProfile(); }
   const url::Origin& origin() const { return origin_; }
   ManagedConfigurationAPI* api() {
@@ -243,6 +249,49 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest,
   WaitForUpdate();
   ASSERT_TRUE(DictValueEquals(GetValues({kKey1, kKey2}),
                               {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, GetAllValues) {
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  WaitForUpdate();
+
+  ASSERT_TRUE(
+      DictValueEquals(GetAllValues(), {{kKey1, kValue1}, {kKey2, kValue2}}));
+}
+
+namespace {
+
+class TestAnyOriginObserver
+    : public ManagedConfigurationAPI::AnyOriginObserver {
+ public:
+  void OnAnyManagedConfigurationChanged(const url::Origin& origin) override {
+    last_origin_ = origin;
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  void WaitForChange() { run_loop_.Run(); }
+  const url::Origin& last_origin() const { return last_origin_; }
+
+ private:
+  url::Origin last_origin_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, AnyOriginObserverNotified) {
+  TestAnyOriginObserver observer;
+  api()->AddObserver(&observer);
+
+  EnableTestServer({{kConfigurationUrl1, {kConfigurationData1}}});
+  SetConfiguration(kConfigurationUrl1, kConfigurationHash1);
+  observer.WaitForChange();
+  EXPECT_EQ(observer.last_origin(), origin());
+
+  api()->RemoveObserver(&observer);
 }
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPITest, UnknownKeys) {

@@ -34,6 +34,7 @@ class ManagedConfigurationStore {
   // policy.
   bool SetCurrentPolicy(const base::DictValue& current_configuration);
   std::optional<base::DictValue> Get(const std::vector<std::string>& keys);
+  std::optional<base::DictValue> GetAll();
 
  private:
   // Initializes connection to the database.

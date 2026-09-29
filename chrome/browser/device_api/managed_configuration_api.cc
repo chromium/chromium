@@ -164,6 +164,20 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
       .Then(std::move(callback));
 }
 
+void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
+    const url::Origin& origin,
+    base::OnceCallback<void(std::optional<base::DictValue>)> callback) {
+  if (!CanHaveManagedStore(origin)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  MaybeCreateStoreForOrigin(origin);
+  store_map_[origin]
+      .AsyncCall(&ManagedConfigurationStore::GetAll)
+      .Then(std::move(callback));
+}
+
 void ManagedConfigurationAPI::AddObserver(Observer* observer) {
   url::Origin origin = observer->GetOrigin();
   if (CanHaveManagedStore(origin)) {
@@ -184,6 +198,14 @@ void ManagedConfigurationAPI::RemoveObserver(Observer* observer) {
   observers_[observer->GetOrigin()].RemoveObserver(observer);
 }
 
+void ManagedConfigurationAPI::AddObserver(AnyOriginObserver* observer) {
+  any_origin_observers_.AddObserver(observer);
+}
+
+void ManagedConfigurationAPI::RemoveObserver(AnyOriginObserver* observer) {
+  any_origin_observers_.RemoveObserver(observer);
+}
+
 bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
   return managed_origins_.contains(origin);
 }
@@ -191,6 +213,13 @@ bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
 const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
     const {
   return managed_origins_;
+}
+
+void ManagedConfigurationAPI::SetConfigurationForTesting(
+    const url::Origin& origin,
+    base::DictValue configuration) {
+  managed_origins_.insert(origin);
+  PostStoreConfiguration(origin, std::move(configuration));
 }
 
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
@@ -340,12 +369,18 @@ void ManagedConfigurationAPI::PostStoreConfiguration(
 void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(
     const url::Origin& origin,
     bool has_changed) {
-  if (!has_changed || !observers_.contains(origin)) {
+  if (!has_changed) {
     return;
   }
 
-  for (auto& observer : observers_[origin]) {
-    observer.OnManagedConfigurationChanged();
+  for (auto& observer : any_origin_observers_) {
+    observer.OnAnyManagedConfigurationChanged(origin);
+  }
+
+  if (observers_.contains(origin)) {
+    for (auto& observer : observers_[origin]) {
+      observer.OnManagedConfigurationChanged();
+    }
   }
 }
 

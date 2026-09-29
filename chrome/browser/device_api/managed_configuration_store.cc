@@ -82,3 +82,17 @@ std::optional<base::DictValue> ManagedConfigurationStore::Get(
 
   return result.PassSettings();
 }
+
+std::optional<base::DictValue> ManagedConfigurationStore::GetAll() {
+  if (!store_) {
+    Initialize();
+  }
+
+  auto result = store_->Get();
+
+  if (!result.status().ok()) {
+    return std::nullopt;
+  }
+
+  return result.PassSettings();
+}

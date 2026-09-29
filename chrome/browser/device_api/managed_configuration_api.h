@@ -30,10 +30,18 @@ class PrefRegistrySyncable;
 // administration per origin and provides it to the callers.
 class ManagedConfigurationAPI : public KeyedService {
  public:
+  // Observer interface for configuration changes for a specific origin.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnManagedConfigurationChanged() = 0;
     virtual const url::Origin& GetOrigin() const = 0;
+  };
+
+  // Observer interface for configuration changes across any origin.
+  class AnyOriginObserver : public base::CheckedObserver {
+   public:
+    virtual void OnAnyManagedConfigurationChanged(
+        const url::Origin& origin) = 0;
   };
 
   static const char kOriginKey[];
@@ -54,8 +62,17 @@ class ManagedConfigurationAPI : public KeyedService {
       const std::vector<std::string>& keys,
       base::OnceCallback<void(std::optional<base::DictValue>)> callback);
 
+  // Tries to retrieve the full managed configuration for the |origin|. Returns
+  // a dictionary containing all key-value pairs.
+  void GetOriginPolicyConfiguration(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::optional<base::DictValue>)> callback);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  void AddObserver(AnyOriginObserver* observer);
+  void RemoveObserver(AnyOriginObserver* observer);
 
   // Whether this application can have managed configuration set. essentially,
   // this checks whether the application is managed.
@@ -63,6 +80,11 @@ class ManagedConfigurationAPI : public KeyedService {
 
   // Returns the list of all origins that have a managed configuration set.
   const std::set<url::Origin>& GetManagedOrigins() const;
+
+  // Sets the managed configuration for testing purposes without network
+  // requests.
+  void SetConfigurationForTesting(const url::Origin& origin,
+                                  base::DictValue configuration);
 
  private:
   class ManagedConfigurationDownloader;
@@ -105,6 +127,7 @@ class ManagedConfigurationAPI : public KeyedService {
   std::map<url::Origin, std::unique_ptr<ManagedConfigurationDownloader>>
       downloaders_;
   std::map<url::Origin, base::ObserverList<Observer>> observers_;
+  base::ObserverList<AnyOriginObserver> any_origin_observers_;
 
   // Stores the list of orrigins which have a managed configuration(may not yet
   // loaded).
