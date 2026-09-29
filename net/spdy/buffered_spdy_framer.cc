@@ -183,9 +183,9 @@ bool BufferedSpdyFramer::OnGoAwayFrameData(const char* goaway_data,
     }
     return true;
   }
-  visitor_->OnGoAway(goaway_fields_->last_accepted_stream_id,
-                     goaway_fields_->error_code, goaway_fields_->debug_data);
-  goaway_fields_.reset();
+  std::unique_ptr<GoAwayFields> fields = std::move(goaway_fields_);
+  visitor_->OnGoAway(fields->last_accepted_stream_id, fields->error_code,
+                     fields->debug_data);
   return true;
 }
 
