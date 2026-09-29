@@ -193,7 +193,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
     auto* new_run = MakeGarbageCollected<ShapeResultRun>(
         part_run->font_data_.Get(), part_run->HbDirection(),
         part_run->canvas_rotation_, part_run->script_, part.start_index_,
-        part.NumGlyphs(), part.num_characters_);
+        /*num_glyphs=*/0, part.num_characters_);
     new_run->glyph_data_.CopyFromRange(part.range_);
     for (HarfBuzzRunGlyphData& glyph_data :
          new_run->glyph_data_.MutableGlyphs()) {

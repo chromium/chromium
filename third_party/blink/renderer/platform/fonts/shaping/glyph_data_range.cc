@@ -29,6 +29,14 @@ bool GlyphDataRange::HasOffsets() const {
   return run_ && run_->glyph_data_.HasNonZeroOffsets();
 }
 
+bool GlyphDataRange::IsCompactSource() const {
+  return run_ && run_->glyph_data_.IsCompact();
+}
+
+TextRunLayoutUnit GlyphDataRange::CompactSourceAdvance() const {
+  return run_->glyph_data_.CompactAdvance();
+}
+
 base::span<const GlyphOffset> GlyphDataRange::Offsets() const {
   if (HasOffsets()) [[unlikely]] {
     return run_->glyph_data_.Offsets().subspan(index_, size_);
@@ -41,17 +49,43 @@ void GlyphDataRange::ExpandInto(base::span<HarfBuzzRunGlyphData> dest) const {
   if (!size_) {
     return;
   }
-  dest.copy_from(base::span<const HarfBuzzRunGlyphData>(
-                     run_->glyph_data_.NonCompactGlyphs())
-                     .subspan(index_, size_));
+  run_->glyph_data_.ExpandInto(index_, dest);
 }
 
-// Find the range of HarfBuzzRunGlyphData for the specified character index
-// range. This function uses binary search twice, hence O(2 log n).
+GlyphDataRange GlyphDataRange::FindCompactGlyphDataRange(
+    unsigned start_character_index,
+    unsigned end_character_index) const {
+  // Identity character indices map the character range directly to glyphs.
+  const unsigned base = index_;
+  const wtf_size_t start =
+      start_character_index > base
+          ? std::min<wtf_size_t>(start_character_index - base, size_)
+          : 0;
+  const wtf_size_t end =
+      end_character_index > base
+          ? std::min<wtf_size_t>(end_character_index - base, size_)
+          : start;
+  return GlyphDataRange(run_.Get(), index_ + start,
+                        std::max(start, end) - start);
+}
+
 GlyphDataRange GlyphDataRange::FindGlyphDataRange(
     bool is_rtl,
     unsigned start_character_index,
     unsigned end_character_index) const {
+  if (!run_) [[unlikely]] {
+    return GlyphDataRange();
+  }
+  if (!size_) [[unlikely]] {
+    return GlyphDataRange(run_.Get(), index_, 0);
+  }
+
+  if (run_->glyph_data_.IsCompact()) [[unlikely]] {
+    CHECK(!is_rtl);
+    return FindCompactGlyphDataRange(start_character_index,
+                                     end_character_index);
+  }
+
   const auto comparer = [](const HarfBuzzRunGlyphData& glyph_data,
                            unsigned index) {
     return glyph_data.character_index < index;

@@ -124,13 +124,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
   // For memory reporting.
   size_t ByteSize() const { return sizeof(*this) + glyph_data_.ByteSize(); }
 
-  // Find the range of HarfBuzzRunGlyphData for the specified character index
-  // range. This function uses binary search twice, hence O(2 log n).
   GlyphDataRange FindGlyphDataRange(wtf_size_t start_character_index,
                                     wtf_size_t end_character_index) const {
-    GlyphDataRange range = GetGlyphDataRange().FindGlyphDataRange(
+    return GetGlyphDataRange().FindGlyphDataRange(
         IsRtl(), start_character_index, end_character_index);
-    return range;
   }
 
   // Creates a new ShapeResultRun instance representing a subset of the current
@@ -146,7 +143,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
     auto* run = MakeGarbageCollected<ShapeResultRun>(
         font_data_.Get(), HbDirection(), canvas_rotation_, script_,
-        start_index_ + start, number_of_glyphs, number_of_characters);
+        start_index_ + start, /*num_glyphs=*/0, number_of_characters);
 
     run->glyph_data_.CopyFromRange(glyphs);
 
@@ -171,7 +168,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     DCHECK_LT(start_index_, other.start_index_);
     auto* run = MakeGarbageCollected<ShapeResultRun>(
         font_data_.Get(), HbDirection(), canvas_rotation_, script_,
-        start_index_, glyph_data_.size() + other.glyph_data_.size(),
+        start_index_, /*num_glyphs=*/0,
         num_characters_ + other.num_characters_);
     // Note: We populate grapheme data on demand, e.g. hit testing.
     const int index_adjust = other.start_index_ - start_index_;
@@ -398,18 +395,20 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return GlyphOffsetIterator<kHasNonZeroGlyphOffsets>(Offsets());
     }
 
-    // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
+    // The caller must adjust `HarfBuzzRunGlyphData::character_index`.
     void CopyFrom(const GlyphDataCollection& other1,
                   const GlyphDataCollection& other2) {
       const wtf_size_t first_size = other1.size();
       const wtf_size_t second_size = other2.size();
-      SECURITY_CHECK(size() == first_size + second_size);
+      CHECK_LE(first_size, HarfBuzzRunGlyphData::kMaxGlyphs);
+      CHECK_LE(second_size, HarfBuzzRunGlyphData::kMaxGlyphs - first_size);
+      ResetToNonCompact(first_size + second_size);
       DCHECK(!other1.IsEmpty());
       DCHECK(!other2.IsEmpty());
       auto [first_glyphs, second_glyphs] =
           base::span<HarfBuzzRunGlyphData>(data_).split_at(first_size);
-      first_glyphs.copy_from(other1.data_);
-      second_glyphs.copy_from(other2.data_);
+      other1.ExpandInto(0, first_glyphs);
+      other2.ExpandInto(0, second_glyphs);
 
       if (other1.HasNonZeroOffsets()) {
         AllocateOffsetsIfNeeded();
@@ -421,14 +420,13 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    // Note: Caller should be adjust |HarfBuzzRunGlyphData.character_index|.
+    // The caller must adjust `HarfBuzzRunGlyphData::character_index`.
     void CopyFromRange(const GlyphDataRange& range) {
-      CHECK_EQ(range.size(), size());
-      range.ExpandInto(data_);
+      const unsigned num_glyphs = range.size();
+      ResetToNonCompact(num_glyphs);
+      range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
 
-      if (!range.HasOffsets() || range.IsEmpty()) {
-        ClearOffsets();
-      } else {
+      if (range.HasOffsets() && !range.IsEmpty()) {
         AllocateOffsets();
         Offsets().copy_from(range.Offsets());
       }
@@ -556,6 +554,20 @@ struct PLATFORM_EXPORT ShapeResultRun final
       });
     }
 
+    void ExpandInto(unsigned start,
+                    base::span<HarfBuzzRunGlyphData> dest) const {
+      CHECK_LE(start, size());
+      CHECK_LE(dest.size(), size() - start);
+      if (IsCompact()) [[unlikely]] {
+        ExpandCompactInto(start, dest);
+        return;
+      }
+      static_assert(std::is_trivially_copyable_v<HarfBuzzRunGlyphData>);
+      std::ranges::copy(base::span<const HarfBuzzRunGlyphData>(data_).subspan(
+                            start, dest.size()),
+                        dest.begin());
+    }
+
    private:
     FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                              CompactCopyMaterializesIndependently);
@@ -575,6 +587,12 @@ struct PLATFORM_EXPORT ShapeResultRun final
       compact_ = compact;
       data_.clear();
       ClearOffsets();
+    }
+
+    void ResetToNonCompact(unsigned num_glyphs) {
+      ClearCompact();
+      ClearOffsets();
+      ResizeDataExactly(num_glyphs);
     }
 
     // Avoid `resize()`'s geometric capacity growth for fixed-size runs.

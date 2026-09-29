@@ -125,8 +125,13 @@ class PLATFORM_EXPORT GlyphDataRange {
   };
 
   HarfBuzzRunGlyphData GlyphAtForTest(unsigned index) const;
+  bool IsCompactSource() const;
+  TextRunLayoutUnit CompactSourceAdvance() const;
 
  private:
+  GlyphDataRange FindCompactGlyphDataRange(unsigned start_character_index,
+                                           unsigned end_character_index) const;
+
   GlyphDataRange(const ShapeResultRun* run, wtf_size_t index, wtf_size_t size)
       : run_(run), index_(index), size_(size) {}
 

@@ -248,6 +248,95 @@ TEST_F(ShapeResultRunTest, CompactRejectsOversizedInputBeforeReading) {
   EXPECT_FALSE(run->glyph_data_.IsCompact());
 }
 
+TEST_F(ShapeResultRunTest, CompactReaderMatchesGlyphAtForSubRange) {
+  ShapeResultRun* full_run = CreateConstantAdvanceRun(8, 8);
+  ShapeResultRun* compact_run = MakeGarbageCollected<ShapeResultRun>(*full_run);
+  ASSERT_TRUE(compact_run->glyph_data_.TryMakeCompact());
+
+  for (ShapeResultRun* run : {full_run, compact_run}) {
+    const GlyphDataRange range = run->FindGlyphDataRange(3, 7);
+    ASSERT_EQ(4u, range.size());
+    const GlyphDataRange::Reader reader(range);
+    ASSERT_EQ(range.size(), reader.size());
+    for (unsigned i = 0; i < range.size(); ++i) {
+      const HarfBuzzRunGlyphData expected = range.GlyphAtForTest(i);
+      const HarfBuzzRunGlyphData actual = reader[i];
+      EXPECT_EQ(expected.glyph, actual.glyph);
+      EXPECT_EQ(expected.character_index, actual.character_index);
+      EXPECT_EQ(expected.advance, actual.advance);
+    }
+  }
+  EXPECT_TRUE(compact_run->glyph_data_.IsCompact());
+}
+
+TEST_F(ShapeResultRunTest, RangeSurvivesRepresentationChanges) {
+  ShapeResultRun* run = CreateConstantAdvanceRun(12, 12);
+  const GlyphDataRange range = run->FindGlyphDataRange(2, 10);
+
+  auto ExpectRange = [&] {
+    ASSERT_EQ(8u, range.size());
+    const GlyphDataRange::Reader reader(range);
+    for (unsigned i = 0; i < reader.size(); ++i) {
+      const HarfBuzzRunGlyphData glyph = reader[i];
+      EXPECT_EQ(44u + i, glyph.glyph);
+      EXPECT_EQ(2u + i, glyph.character_index);
+      EXPECT_EQ(TextRunLayoutUnit::FromFloatRound(10.0f), glyph.advance);
+    }
+  };
+
+  ExpectRange();
+  ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
+  ExpectRange();
+
+  run->glyph_data_.MutableGlyphs();
+  ExpectRange();
+
+  ASSERT_TRUE(run->glyph_data_.TryMakeCompact());
+  run->glyph_data_.SetOffsetAt(4, GlyphOffset(1, 2));
+  ASSERT_TRUE(range.HasOffsets());
+  EXPECT_EQ(GlyphOffset(1, 2), range.Offsets()[2]);
+  ExpectRange();
+
+  run->glyph_data_.MutableGlyphAt(4);
+  EXPECT_FALSE(range.IsCompactSource());
+  EXPECT_EQ(GlyphOffset(1, 2), range.Offsets()[2]);
+  ExpectRange();
+}
+
+TEST_F(ShapeResultRunTest, NestedCompactRangesMatchFullStorage) {
+  constexpr unsigned kNumGlyphs = 12;
+  ShapeResultRun* full_run = CreateConstantAdvanceRun(kNumGlyphs, kNumGlyphs);
+  ShapeResultRun* compact_run = MakeGarbageCollected<ShapeResultRun>(*full_run);
+  ASSERT_TRUE(compact_run->glyph_data_.TryMakeCompact());
+
+  for (unsigned outer_start = 0; outer_start <= kNumGlyphs; ++outer_start) {
+    for (unsigned outer_end = outer_start; outer_end <= kNumGlyphs;
+         ++outer_end) {
+      const GlyphDataRange full_outer =
+          full_run->FindGlyphDataRange(outer_start, outer_end);
+      const GlyphDataRange compact_outer =
+          compact_run->FindGlyphDataRange(outer_start, outer_end);
+      ASSERT_EQ(full_outer.size(), compact_outer.size());
+
+      for (unsigned inner_start = outer_start; inner_start <= outer_end;
+           ++inner_start) {
+        for (unsigned inner_end = inner_start; inner_end <= outer_end;
+             ++inner_end) {
+          const GlyphDataRange full_inner =
+              full_outer.FindGlyphDataRange(false, inner_start, inner_end);
+          const GlyphDataRange compact_inner =
+              compact_outer.FindGlyphDataRange(false, inner_start, inner_end);
+          ASSERT_EQ(full_inner.size(), compact_inner.size());
+          for (unsigned i = 0; i < full_inner.size(); ++i) {
+            EXPECT_EQ(full_inner.GlyphAtForTest(i),
+                      compact_inner.GlyphAtForTest(i));
+          }
+        }
+      }
+    }
+  }
+}
+
 TEST_F(ShapeResultRunTest, CompactCopyMaterializesIndependently) {
   ShapeResultRun* run = CreateCompactRun(8, 8);
   run->glyph_data_.SetOffsetAt(3, GlyphOffset(1, 2));
