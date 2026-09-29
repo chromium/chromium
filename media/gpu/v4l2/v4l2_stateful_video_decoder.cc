@@ -283,15 +283,21 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Verify there's still room for more decoders before querying whether
   // |config| is supported because some drivers (e.g. Qualcomm Venus on SC7180)
   // would not allow for opening the device fd and we'd think it an error.
-  static const auto decoder_instances_limit =
-      V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances();
-  const bool can_create_decoder =
-      num_decoder_instances_.Increment() < decoder_instances_limit;
-  if (!can_create_decoder) {
-    num_decoder_instances_.Decrement();
-    LOG(ERROR) << "Too many decoder instances, max=" << decoder_instances_limit;
-    std::move(init_cb).Run(DecoderStatus::Codes::kTooManyDecoders);
-    return;
+  // Only take a slot if this instance doesn't already hold one, e.g. when
+  // re-Initialize()d to change configuration.
+  if (!holds_decoder_instance_slot_) {
+    static const auto decoder_instances_limit =
+        V4L2StatefulVideoDecoder::GetMaxNumDecoderInstances();
+    const bool can_create_decoder =
+        num_decoder_instances_.Increment() < decoder_instances_limit;
+    if (!can_create_decoder) {
+      num_decoder_instances_.Decrement();
+      LOG(ERROR) << "Too many decoder instances, max="
+                 << decoder_instances_limit;
+      std::move(init_cb).Run(DecoderStatus::Codes::kTooManyDecoders);
+      return;
+    }
+    holds_decoder_instance_slot_ = true;
   }
 
   if (supported_configs_.empty()) {
@@ -580,7 +586,7 @@ void V4L2StatefulVideoDecoder::Reset(base::OnceClosure closure) {
   device_fd_.reset();
 
   event_task_runner_.reset();
-  num_decoder_instances_.Decrement();
+  ReleaseDecoderInstanceSlot();
   encoding_timestamps_.clear();
 
   if (flush_cb_) {
@@ -666,7 +672,7 @@ V4L2StatefulVideoDecoder::~V4L2StatefulVideoDecoder() {
 
   CAPTURE_queue_.reset();
   OUTPUT_queue_.reset();
-  num_decoder_instances_.Decrement();
+  ReleaseDecoderInstanceSlot();
 
   if (event_task_runner_) {
     // Destroy the two ScopedFDs (hence the PostTask business ISO DeleteSoon) on
@@ -1200,6 +1206,15 @@ void V4L2StatefulVideoDecoder::PrintAndTraceQueueStates(
                     (CAPTURE_queue_ ? base::checked_cast<int32_t>(
                                           CAPTURE_queue_->QueuedBuffersCount())
                                     : 0));
+}
+
+void V4L2StatefulVideoDecoder::ReleaseDecoderInstanceSlot() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!holds_decoder_instance_slot_) {
+    return;
+  }
+  num_decoder_instances_.Decrement();
+  holds_decoder_instance_slot_ = false;
 }
 
 bool V4L2StatefulVideoDecoder::IsInitialized() const {

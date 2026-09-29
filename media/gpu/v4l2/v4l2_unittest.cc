@@ -302,7 +302,8 @@ TEST_F(V4L2FlatVideoDecoderTest, UnsupportedVideoCodec) {
 }
 
 // Verifies that V4L2StatefulVideoDecoder::Initialize() fails after the limit of
-// created instances exceeds the threshold.
+// created instances exceeds the threshold, and that destroying the decoders
+// releases their slots so that the same limit is reached again.
 TEST_F(V4L2FlatVideoDecoderTest, TooManyDecoderInstances) {
   base::test::TaskEnvironment task_environment;
   ::testing::NiceMock<MockVideoDecoderMixinClient> mock_client;
@@ -311,43 +312,56 @@ TEST_F(V4L2FlatVideoDecoderTest, TooManyDecoderInstances) {
   const int kMaxNumOfInstances =
       V4L2StatefulVideoDecoder::GetMaxNumDecoderInstancesForTesting();
 
-  ::testing::InSequence s;
-  EXPECT_CALL(mock_client,
-              InitCallback(DecoderStatus(DecoderStatus::Codes::kOk)))
-      .Times(::testing::Exactly(kMaxNumOfInstances));
+  constexpr int kNumPasses = 2;
+  for (int pass = 0; pass < kNumPasses; ++pass) {
+    SCOPED_TRACE(::testing::Message() << "pass " << pass);
+    {
+      ::testing::InSequence s;
+      EXPECT_CALL(mock_client,
+                  InitCallback(DecoderStatus(DecoderStatus::Codes::kOk)))
+          .Times(::testing::Exactly(kMaxNumOfInstances));
 
-  std::vector<std::unique_ptr<VideoDecoderMixin>> decoders(kMaxNumOfInstances);
-  for (auto& decoder : decoders) {
-    decoder = V4L2StatefulVideoDecoder::Create(
-        std::make_unique<MockMediaLog>(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
-        mock_client.weak_ptr_factory_.GetWeakPtr());
+      std::vector<std::unique_ptr<VideoDecoderMixin>> decoders(
+          kMaxNumOfInstances);
+      for (auto& decoder : decoders) {
+        decoder = V4L2StatefulVideoDecoder::Create(
+            std::make_unique<MockMediaLog>(),
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            mock_client.weak_ptr_factory_.GetWeakPtr());
 
-    static_cast<V4L2StatefulVideoDecoder*>(decoder.get())
-        ->Initialize(supported_config,
-                     /*low_delay=*/false, /*cdm_context=*/nullptr,
-                     base::BindOnce(&MockVideoDecoderMixinClient::InitCallback,
-                                    mock_client.weak_ptr_factory_.GetWeakPtr()),
-                     /*output_cb=*/base::DoNothing(),
-                     /*waiting_cb*/ base::DoNothing());
+        static_cast<V4L2StatefulVideoDecoder*>(decoder.get())
+            ->Initialize(
+                supported_config,
+                /*low_delay=*/false, /*cdm_context=*/nullptr,
+                base::BindOnce(&MockVideoDecoderMixinClient::InitCallback,
+                               mock_client.weak_ptr_factory_.GetWeakPtr()),
+                /*output_cb=*/base::DoNothing(),
+                /*waiting_cb*/ base::DoNothing());
+      }
+      testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+      // Next one fails:
+      EXPECT_CALL(
+          mock_client,
+          InitCallback(DecoderStatus(DecoderStatus::Codes::kTooManyDecoders)));
+      auto decoder = V4L2StatefulVideoDecoder::Create(
+          std::make_unique<MockMediaLog>(),
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          mock_client.weak_ptr_factory_.GetWeakPtr());
+      static_cast<V4L2StatefulVideoDecoder*>(decoder.get())
+          ->Initialize(
+              supported_config,
+              /*low_delay=*/false, /*cdm_context=*/nullptr,
+              base::BindOnce(&MockVideoDecoderMixinClient::InitCallback,
+                             mock_client.weak_ptr_factory_.GetWeakPtr()),
+              /*output_cb=*/base::DoNothing(),
+              /*waiting_cb*/ base::DoNothing());
+      testing::Mock::VerifyAndClearExpectations(&mock_client);
+
+      // |decoder| and |decoders| are destroyed here; this synchronously frees
+      // all instance slots.
+    }
   }
-  testing::Mock::VerifyAndClearExpectations(&mock_client);
-
-  // Next one fails:
-  EXPECT_CALL(
-      mock_client,
-      InitCallback(DecoderStatus(DecoderStatus::Codes::kTooManyDecoders)));
-  auto decoder = V4L2StatefulVideoDecoder::Create(
-      std::make_unique<MockMediaLog>(),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      mock_client.weak_ptr_factory_.GetWeakPtr());
-  static_cast<V4L2StatefulVideoDecoder*>(decoder.get())
-      ->Initialize(supported_config,
-                   /*low_delay=*/false, /*cdm_context=*/nullptr,
-                   base::BindOnce(&MockVideoDecoderMixinClient::InitCallback,
-                                  mock_client.weak_ptr_factory_.GetWeakPtr()),
-                   /*output_cb=*/base::DoNothing(),
-                   /*waiting_cb*/ base::DoNothing());
 }
 
 }  // namespace media

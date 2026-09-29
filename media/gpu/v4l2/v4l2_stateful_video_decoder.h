@@ -133,12 +133,19 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   // Returns true if this class has successfully Initialize()d.
   bool IsInitialized() const;
 
+  // Gives back this instance's slot in |num_decoder_instances_|, if it holds
+  // one.
+  void ReleaseDecoderInstanceSlot();
+
   // Pages with multiple decoder instances might run out of memory (e.g.
   // b/170870476) or crash (e.g. crbug.com/1109312). this class method provides
   // that number to prevent that erroneous behaviour during Initialize().
   static int GetMaxNumDecoderInstances();
   // Tracks the number of decoder instances globally in the process.
   static base::AtomicRefCount num_decoder_instances_;
+  // True if this instance has been counted in |num_decoder_instances_|.
+  bool holds_decoder_instance_slot_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
   base::ScopedFD device_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   // This |wake_event_| is used to interrupt a blocking poll() call, such as the
