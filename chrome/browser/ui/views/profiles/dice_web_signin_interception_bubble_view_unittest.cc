@@ -122,11 +122,8 @@ TEST_P(DiceWebSigninInterceptionBubbleViewSyncParamTest, HistogramTests) {
   if (type == SigninInterceptionType::kEnterprise) {
     histogram_tester.ExpectUniqueSample("Signin.InterceptResult.Enterprise",
                                         result, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Signin.InterceptResult.Enterprise.NewIsEnterprise", result, 1);
     expected_counts["Signin.InterceptResult.Enterprise"] = 1;
     expected_counts["Signin.InterceptResult.Enterprise.NoSync"] = 1;
-    expected_counts["Signin.InterceptResult.Enterprise.NewIsEnterprise"] = 1;
   }
 
   // Check multi-user histograms.
@@ -209,40 +206,6 @@ TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, SyncHistograms) {
         "Signin.InterceptResult.Enterprise.NoSync", 0);
     histogram_tester.ExpectUniqueSample(
         "Signin.InterceptResult.Enterprise.Sync", result, 1);
-  }
-}
-
-TEST_F(DiceWebSigninInterceptionBubbleViewTestBase, EnterpriseHistograms) {
-  SigninInterceptionResult result = SigninInterceptionResult::kAccepted;
-
-  // New account is Enterprise.
-  {
-    base::HistogramTester histogram_tester;
-    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
-        SigninInterceptionType::kEnterprise, enterprise_account_,
-        personal_account_);
-    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
-        bubble_parameters, profile(), result);
-    histogram_tester.ExpectTotalCount(
-        "Signin.InterceptResult.Enterprise.PrimaryIsEnterprise", 0);
-    histogram_tester.ExpectUniqueSample(
-        "Signin.InterceptResult.Enterprise.NewIsEnterprise", result, 1);
-  }
-
-  // Primary account is Enterprise.
-  identity_test_env()->SetPrimaryAccount(
-      std::string(personal_account_.GetEmail()), signin::ConsentLevel::kSync);
-  {
-    base::HistogramTester histogram_tester;
-    WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
-        SigninInterceptionType::kEnterprise, personal_account_,
-        enterprise_account_);
-    DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
-        bubble_parameters, profile(), result);
-    histogram_tester.ExpectTotalCount(
-        "Signin.InterceptResult.Enterprise.NewIsEnterprise", 0);
-    histogram_tester.ExpectUniqueSample(
-        "Signin.InterceptResult.Enterprise.PrimaryIsEnterprise", result, 1);
   }
 }
 
