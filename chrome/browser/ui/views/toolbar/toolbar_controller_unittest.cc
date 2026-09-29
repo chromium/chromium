@@ -1272,6 +1272,54 @@ TEST_F(ToolbarControllerUnitTest,
   EXPECT_FALSE(elements[2].is_section_end);
 }
 
+// Section ends should be recomputed from scratch when pinned actions change,
+// rather than accumulating across changes.
+TEST_F(ToolbarControllerUnitTest, ActionSectionEndsUpdateOnPinnedStateChange) {
+  ToolbarController::ResponsiveElementInfo action0(0);
+  ToolbarController::ResponsiveElementInfo action1(1);
+  ToolbarController::ResponsiveElementInfo action2(2);
+
+  PinnedToolbarActionsModel* model = GetPinnedToolbarActionsModel();
+  auto delegate = std::make_unique<TestDelegateFromModel>(model);
+
+  auto controller = ToolbarController(
+      std::vector<ToolbarController::ResponsiveElementInfo>(
+          {action0, action1, action2}),
+      std::vector<ui::ElementIdentifier>({kDummyButton1}),
+      kElementFlexOrderStart, toolbar_container_view(),
+      /*webui_toolbar_controller_delegate=*/nullptr,
+      const_cast<OverflowButton*>(overflow_button()), delegate.get(), model);
+
+  // Pin the actions one at a time. Each change should notify the overflow menu
+  // and re-sort the actions.
+  for (int action_id = 0; action_id < 3; ++action_id) {
+    model->UpdatePinnedState(action_id, true);
+  }
+
+  const std::vector<ToolbarController::ResponsiveElementInfo>& elements =
+      GetResponsiveElements(&controller);
+  ASSERT_EQ(elements.size(), 3u);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[0].overflow_id), 0);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[1].overflow_id), 1);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[2].overflow_id), 2);
+
+  // Only the last pinned action should be a section end.
+  EXPECT_FALSE(elements[0].is_section_end);
+  EXPECT_FALSE(elements[1].is_section_end);
+  EXPECT_TRUE(elements[2].is_section_end);
+
+  // Unpin the last action. The new last pinned action should be the only
+  // pinned section end, and the unpinned action should end its own section.
+  model->UpdatePinnedState(2, false);
+  ASSERT_EQ(elements.size(), 3u);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[0].overflow_id), 0);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[1].overflow_id), 1);
+  EXPECT_EQ(std::get<actions::ActionId>(elements[2].overflow_id), 2);
+  EXPECT_FALSE(elements[0].is_section_end);
+  EXPECT_TRUE(elements[1].is_section_end);
+  EXPECT_TRUE(elements[2].is_section_end);
+}
+
 TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
   auto test_delegate = std::make_unique<TestDelegate>();
   auto test_controller = std::make_unique<ToolbarController>(

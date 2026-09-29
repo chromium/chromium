@@ -326,9 +326,13 @@ OverflowMenu::GetResponsiveElementsWithOrderedActions() const {
     std::optional<size_t> last_ephemeral_index;
 
     // Set the last pinned and last unpinned ActionItem elements as section
-    // ends.
+    // ends. Clear any section ends from previous calls, since the pinned
+    // actions may have changed. Only ActionId elements are cleared here - the
+    // section ends of other elements are hard-coded in
+    // GetDefaultResponsiveElements() and must be preserved.
     for (size_t i = element_index; i < next_non_action_element_index; ++i) {
-      const auto& element = ordered_responsive_elements[i];
+      auto& element = ordered_responsive_elements[i];
+      element.is_section_end = false;
       actions::ActionId action_id =
           std::get<actions::ActionId>(element.overflow_id);
       bool is_pinned = std::find(ordered_pinned_action_ids.begin(),
