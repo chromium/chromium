@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -16,9 +18,11 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -152,6 +156,38 @@ TEST(ClipboardCommandsPasteTest,
 TEST(ClipboardCommandsPasteTest,
      ForeignClipboardChangeDuringBeforeInputPreventsDefaultPaste) {
   ExpectDefaultPasteResult(&event_type_names::kBeforeinput, "");
+}
+
+TEST(ClipboardCommandsCopyTest, DomWriteRequiresFocusedDocument) {
+  test::TaskEnvironment task_environment;
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
+  LocalFrame& frame = page_holder->GetFrame();
+  FocusController& focus_controller =
+      page_holder->GetPage().GetFocusController();
+  focus_controller.SetActive(true);
+  focus_controller.SetFocused(true);
+  LocalFrame::NotifyUserActivation(
+      &frame, mojom::blink::UserActivationNotificationType::kTest);
+
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&frame));
+  EXPECT_TRUE(
+      ClipboardCommands::CanWriteClipboard(frame, EditorCommandSource::kDom));
+
+  focus_controller.SetFocused(false);
+
+  // Verify that a webpage can't write to the clipboard when the page is
+  // unfocused.
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(&frame));
+  EXPECT_FALSE(
+      ClipboardCommands::CanWriteClipboard(frame, EditorCommandSource::kDom));
+  EXPECT_TRUE(ClipboardCommands::CanWriteClipboard(
+      frame, EditorCommandSource::kMenuOrKeyBinding));
+
+  // Verify that a webpage can write to the clipboard if the page is unfocused
+  // but it is focus exempt.
+  frame.GetSettings()->SetClipboardFocusExempt(true);
+  EXPECT_TRUE(
+      ClipboardCommands::CanWriteClipboard(frame, EditorCommandSource::kDom));
 }
 
 }  // namespace blink
