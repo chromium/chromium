@@ -331,12 +331,14 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
           self, _templateURLService);
     }
 
-    __weak __typeof(self) weakSelf = self;
-    _aimEligibilitySubscription =
-        _aimEligibilityService->RegisterEligibilityChangedCallback(
-            base::BindRepeating(^{
-              [weakSelf onAimEligibilityChanged];
-            }));
+    if (_aimEligibilityService) {
+      __weak __typeof(self) weakSelf = self;
+      _aimEligibilitySubscription =
+          _aimEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^{
+                [weakSelf onAimEligibilityChanged];
+              }));
+    }
 
     [self updateSearchboxConfig];
   }

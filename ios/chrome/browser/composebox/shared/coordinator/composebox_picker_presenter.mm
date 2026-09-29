@@ -13,7 +13,6 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
-#import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
 #import "components/contextual_search/input_state_model.h"
@@ -511,7 +510,26 @@ constexpr int kChromeIOSProductId = 71720513;
 }
 
 - (void)dismissPickerWithCompletion:(ProceduralBlock)completion {
-  [_picker dismissViewControllerAnimated:YES completion:completion];
+  UIViewController* presentingVC = _picker.presentingViewController;
+  if (!presentingVC) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [_picker dismissViewControllerAnimated:YES
+                              completion:^{
+                                [weakSelf didDismissPicker];
+                                if (completion) {
+                                  completion();
+                                }
+                              }];
+}
+
+- (void)didDismissPicker {
+  _picker = nil;
 }
 
 @end

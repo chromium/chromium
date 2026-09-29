@@ -307,6 +307,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     lens_handler_mock_ = OCMProtocolMock(@protocol(LensCommands));
     browser_coordinator_handler_mock_ =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+    OCMStub([browser_coordinator_handler_mock_ dismissMultimodalActionsMenu]);
+
     popup_menu_commands_handler_mock_ =
         OCMProtocolMock(@protocol(PopupMenuCommands));
     [browser_.get()->GetCommandDispatcher()
@@ -796,7 +798,6 @@ TEST_F(NewTabPageCoordinatorTest, NTPShortcutsMetricLogging) {
   OCMStub([lens_handler_mock_ openLensInputSelection:[OCMArg any]]);
   OCMStub([browser_coordinator_handler_mock_ startVoiceSearch]);
   OCMStub([application_handler_mock_ openURLInNewTab:[OCMArg any]]);
-  OCMStub([browser_coordinator_handler_mock_ showMultimodalActionsMenu]);
 
   id<NewTabPageShortcutsHandler> shortcutsHandler =
       static_cast<id<NewTabPageShortcutsHandler>>(coordinator_);

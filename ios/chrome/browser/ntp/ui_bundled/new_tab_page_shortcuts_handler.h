@@ -37,6 +37,9 @@
 // Opens the multimodal actions menu.
 - (void)openMultimodalActionsMenu;
 
+// Called when opening the contextual menu.
+- (void)didOpenContextualMultimodalActionsMenu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_SHORTCUTS_HANDLER_H_

@@ -50,6 +50,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
+#import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -329,6 +331,8 @@
   // The Safari data import used by the content suggestions.
   SafariDataImportExportCoordinator* _safariDataImportExportCoordinator;
   ActivityReporterWithIncognito* _activityReporter;
+  // The coordinator showing the multimodal composebox menu.
+  ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -387,8 +391,8 @@
   [self initializeServices];
   [self initializeNTPComponents];
 
-  [self configureHeaderView];
   [self configureNTPMediator];
+  [self configureHeaderView];
   if ([self.NTPMediator isFeedHeaderVisible]) {
     [self configureFeedAndHeader];
   }
@@ -466,6 +470,8 @@
 
   [_tabGroupIndicatorCoordinator stop];
   _tabGroupIndicatorCoordinator = nil;
+
+  [self stopMenuCoordinator];
 
   [self.contentSuggestionsCoordinator stop];
   self.contentSuggestionsCoordinator = nil;
@@ -705,6 +711,7 @@
   [self stopAccountMenuCoordinator];
   [self stopSigninCoordinator];
   [self dismissCustomizationMenu];
+  [self dismissMultimodalActionsMenu];
 }
 
 - (void)setBlueDotVisible:(BOOL)visible {
@@ -795,6 +802,10 @@
     self.NTPViewController.headerView = self.headerView;
     self.NTPViewController.mutator = self.NTPMediator;
   }
+
+  if (IsPlusButtonInFakeboxEnabled()) {
+    [self createMenuCoordinator];
+  }
 }
 
 #pragma mark - Configurators
@@ -852,6 +863,12 @@
   } else {
     headerView.searchEngineLogoView = _searchEngineLogoMediator.view;
     _searchEngineLogoMediator.consumer = headerView;
+  }
+
+  if (!IsComposeboxPlusButtonBottomSheet() &&
+      IsPlusButtonMenuInFakeboxEnabled()) {
+    UIMenu* menu = [_composeboxMenuCoordinator createMenu];
+    [headerView setPlusButtonMenu:menu];
   }
 }
 
@@ -1181,6 +1198,11 @@
   id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   [popupMenuHandler showToolsMenuPopup];
+}
+
+// Dismisses the multimodal menu.
+- (void)dismissMultimodalActionsMenu {
+  [_composeboxMenuCoordinator dismissMenu];
 }
 
 #pragma mark - SigninPromoViewMediatorDelegate
@@ -1980,6 +2002,22 @@
   return feedTopSectionCoordinator;
 }
 
+// Creates the Composebox menu coordinator for the plus button.
+- (void)createMenuCoordinator {
+  [_composeboxMenuCoordinator stop];
+  _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                      entrypoint:ComposeboxEntrypoint::kNTPFakebox];
+  [_composeboxMenuCoordinator start];
+}
+
+// Stops and clears the menu coordinator.
+- (void)stopMenuCoordinator {
+  [_composeboxMenuCoordinator stop];
+  _composeboxMenuCoordinator = nil;
+}
+
 // Private setter for the `webState` property.
 - (void)setWebState:(web::WebState*)webState {
   if (_webState == webState) {
@@ -2337,8 +2375,21 @@
   if (!_aimEligibilityService->IsFuseboxEligible()) {
     [self openAIMWeb];
   }
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      BrowserCoordinatorCommands) showMultimodalActionsMenu];
+
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [_composeboxMenuCoordinator presentBottomSheetMenu];
+  } else {
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           BrowserCoordinatorCommands);
+    [browserCoordinatorHandler
+        showComposeboxFromEntrypoint:ComposeboxEntrypoint::kNTPPlusButton
+                           withQuery:nil];
+  }
+}
+
+- (void)didOpenContextualMultimodalActionsMenu {
+  [_composeboxMenuCoordinator recordAttachmentsMenuOpen];
 }
 
 #pragma mark - TabGridStateObserving

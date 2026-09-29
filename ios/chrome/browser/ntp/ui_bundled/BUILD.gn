@@ -168,6 +168,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/composebox/coordinator",
     "//ios/chrome/browser/composebox/menu/coordinator",
+    "//ios/chrome/browser/composebox/public",
     "//ios/chrome/browser/content_suggestions/coordinator",
     "//ios/chrome/browser/content_suggestions/coordinator:public",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui",

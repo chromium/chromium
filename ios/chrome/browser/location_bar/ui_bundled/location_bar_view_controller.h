@@ -90,6 +90,9 @@ class Tracker;
 // tapped.
 - (void)locationBarSendTabToSelfTapped;
 
+// Notifies the delegate that the plus button was pressed.
+- (void)locationBarDidTapPlusButton;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of
@@ -269,6 +272,9 @@ enum class CustomLeadingViewType;
 
 // Sets the type of custom leading view to display in the steady view.
 - (void)setCustomLeadingViewType:(CustomLeadingViewType)type;
+
+// Sets the menu to be shown by the plus button.
+- (void)setPlusButtonMenu:(UIMenu*)menu;
 
 @end
 

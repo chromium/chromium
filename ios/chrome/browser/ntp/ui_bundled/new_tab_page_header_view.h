@@ -143,6 +143,9 @@ enum class SearchEngineLogoState;
 // Sets the overflow menu blue dot visibility.
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot;
 
+// Sets the menu to be shown by the plus button.
+- (void)setPlusButtonMenu:(UIMenu*)menu;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_H_

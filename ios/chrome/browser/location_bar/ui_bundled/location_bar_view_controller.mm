@@ -953,6 +953,9 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)createAIMPlusButton {
+  if (_plusButton) {
+    return;
+  }
   _plusButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   [_plusButton setImage:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
                forState:UIControlStateNormal];
@@ -1344,7 +1347,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 - (void)handlePlusButtonPressed {
   RecordAction(UserMetricsAction("MobileToolbarPlusButtonTap"));
   TriggerHapticFeedbackForSelectionChange();
-  [self.dispatcher showMultimodalActionsMenu];
+  [self.delegate locationBarDidTapPlusButton];
 }
 
 - (void)handleLensEntrypointPressed {
@@ -1488,6 +1491,17 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   }
   _customLeadingViewType = type;
   [self updateCustomLeadingViewVisibilityAnimated:YES];
+}
+
+- (void)setPlusButtonMenu:(UIMenu*)menu {
+  [self createAIMPlusButton];
+  _plusButton.menu = menu;
+  _plusButton.showsMenuAsPrimaryAction = YES;
+  _plusButton.preferredMenuElementOrder =
+      UIContextMenuConfigurationElementOrderFixed;
+  [_plusButton addTarget:self.delegate
+                  action:@selector(locationBarDidTapPlusButton)
+        forControlEvents:UIControlEventMenuActionTriggered];
 }
 
 - (void)updateCustomLeadingViewVisibilityAnimated:(BOOL)animated {

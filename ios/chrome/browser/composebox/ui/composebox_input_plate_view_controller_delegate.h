@@ -86,7 +86,8 @@ enum class FuseboxAttachmentButtonType;
 /// Informs the delegate that a user did tap on the plus button.
 - (void)composeboxViewControllerDidTapPlusButton:
             (ComposeboxInputPlateViewController*)composeboxViewController
-                                withUIInputState:(ComposeboxUIInputState*)state;
+                                withUIInputState:(ComposeboxUIInputState*)state
+                                          button:(UIButton*)button;
 
 /// Informs the delegate that a user did tap on the lens button.
 - (void)composeboxViewController:

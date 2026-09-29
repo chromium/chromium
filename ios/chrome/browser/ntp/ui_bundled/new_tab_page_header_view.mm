@@ -1457,9 +1457,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
                                 : kSymbolActionPointSize;
   [self.plusButton setImage:SymbolWithPointSize(SymbolPlus, symbolPointSize)
                    forState:UIControlStateNormal];
-  [self.plusButton addTarget:self.NTPShortcutsHandler
+  [self.plusButton addTarget:self
                       action:@selector(openMultimodalActionsMenu)
             forControlEvents:UIControlEventTouchUpInside];
+  [self.plusButton addTarget:self.NTPShortcutsHandler
+                      action:@selector(didOpenContextualMultimodalActionsMenu)
+            forControlEvents:UIControlEventMenuActionTriggered];
 }
 
 // Sets the background based on the current NTP background, current color
@@ -2345,6 +2348,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
   _hasToolsMenuBlueDot = hasBlueDot;
   self.toolsMenuButton.blueDot = hasBlueDot;
+}
+
+- (void)setPlusButtonMenu:(UIMenu*)menu {
+  _plusButton.menu = menu;
+  _plusButton.showsMenuAsPrimaryAction = YES;
+  _plusButton.preferredMenuElementOrder =
+      UIContextMenuConfigurationElementOrderFixed;
 }
 
 @end

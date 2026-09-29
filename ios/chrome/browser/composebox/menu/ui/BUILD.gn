@@ -11,6 +11,8 @@ source_set("ui") {
     "composebox_menu_attachment_view.h",
     "composebox_menu_attachment_view.mm",
     "composebox_menu_consumer.h",
+    "composebox_menu_context_menu_builder.h",
+    "composebox_menu_context_menu_builder.mm",
     "composebox_menu_header_view.h",
     "composebox_menu_header_view.mm",
     "composebox_menu_item.h",

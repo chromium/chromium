@@ -31,6 +31,8 @@ enum class CustomLeadingViewType;
 - (void)cancelOmniboxEditWithCompletion:(ProceduralBlock)completion;
 // Sets the type of custom leading view to display in the location bar.
 - (void)setCustomLeadingViewType:(CustomLeadingViewType)type;
+// Dismisses the multimodal actions menu presented by the location bar.
+- (void)dismissOmniboxMultimodalActionsMenu;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_OMNIBOX_COMMANDS_H_

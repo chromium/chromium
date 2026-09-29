@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MENU_COORDINATOR_COMPOSEBOX_MENU_COORDINATOR_H_
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
@@ -85,6 +87,18 @@ class UnguessableToken;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Presents the bottom sheet menu.
+- (void)presentBottomSheetMenu;
+
+// Dismisses the presented menu.
+- (void)dismissMenu;
+
+// Creates the contextual menu to be displayed by the plus button.
+- (UIMenu*)createMenu;
+
+// Records the menu open with visible buttons.
+- (void)recordAttachmentsMenuOpen;
 
 @end
 

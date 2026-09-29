@@ -876,7 +876,8 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 - (void)plusButtonTapped {
   [self.delegate composeboxViewControllerDidTapPlusButton:self
-                                         withUIInputState:_state];
+                                         withUIInputState:_state
+                                                   button:_plusButton];
 }
 
 - (void)visualSearchButtonTapped {

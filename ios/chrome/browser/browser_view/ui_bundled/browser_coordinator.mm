@@ -514,9 +514,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   // The coordinator for the notifications opt-in screen.
   NotificationsOptInCoordinator* _notificationsOptInCoordinator;
 
-  // The coordinator showing the multimodal composebox menu.
-  ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
-
 }
 
 #pragma mark - SnackbarCoordinatorDelegate
@@ -1960,27 +1957,9 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   [_signinCoordinator start];
 }
 
-- (void)showMultimodalActionsMenu {
-  if (IsComposeboxPlusButtonBottomSheet()) {
-    [_composeboxMenuCoordinator stop];
-    _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser
-                        entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
-    [_composeboxMenuCoordinator start];
-  } else {
-    [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kNTPPlusButton
-                             withQuery:nil];
-  }
-}
-
 - (void)dismissMultimodalActionsMenu {
-  if (_composeboxMenuCoordinator) {
-    [_composeboxMenuCoordinator stop];
-    _composeboxMenuCoordinator = nil;
-  } else {
-    [_composeboxCoordinator hideComposeboxMenu];
-  }
+  [_composeboxCoordinator hideComposeboxMenu];
+  [_omniboxCommandsHandler dismissOmniboxMultimodalActionsMenu];
 }
 
 - (void)showComposebox {

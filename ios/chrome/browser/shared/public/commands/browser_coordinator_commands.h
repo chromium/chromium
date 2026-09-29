@@ -168,8 +168,7 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                        prefilledEmail:(NSString*)email;
 
-// Shows and dismisses the multimodal actions menu.
-- (void)showMultimodalActionsMenu;
+// Dismisses the multimodal actions menu.
 - (void)dismissMultimodalActionsMenu;
 
 // Forces fullscreen mode which means that toolbars are collapsed.
