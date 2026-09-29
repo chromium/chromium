@@ -43,6 +43,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
@@ -93,6 +94,15 @@ public class UrlBarUiTest {
                                             .getDimensionPixelSize(
                                                     R.dimen.control_container_height)));
                     sActivity.setContentView(sContentView);
+                    // Detach all child views and release static Activity/View references when the
+                    // suite finishes so the destroyed BlankUiTestActivity and its view hierarchy
+                    // are not retained in the test process across suites.
+                    ResettersForTesting.register(
+                            () -> {
+                                sContentView.removeAllViews();
+                                sContentView = null;
+                                sActivity = null;
+                            });
                 });
     }
 
@@ -108,6 +118,18 @@ public class UrlBarUiTest {
                     layoutParams.width = LayoutParams.MATCH_PARENT;
                     mUrlBar.setLayoutParams(layoutParams);
                     mUrlBar.onCreateInputConnection(new EditorInfo());
+                    // Clear UrlBar focus, destroy its GestureDetector/listeners, and detach it from
+                    // the window after each test (executed on the UI thread by
+                    // BaseJUnit4ClassRunner even if the test fails). Otherwise InputMethodManager
+                    // and active GestureDetector handlers keep the Activity in STOPPED state and
+                    // cause sActivityTestRule's finishActivity() to time out during class teardown.
+                    ResettersForTesting.register(
+                            () -> {
+                                mUrlBar.clearFocus();
+                                mUrlBar.destroy();
+                                mUrlBar = null;
+                                sContentView.removeAllViews();
+                            });
                 });
     }
 
