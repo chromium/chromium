@@ -1,0 +1,73 @@
+Tests that elements panel search is returning proper results.
+
+Running test: testSetUp
+
+Running test: testPlainText
+F o o B a r
+
+Running test: testPartialText
+F o o B a r
+
+Running test: testStartTag
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testEndTag
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testPartialTag
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testPartialAbsentTagStart
+Nothing found
+
+Running test: testPartialAbsentTagEnd
+Nothing found
+
+Running test: testFullTag
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testExactAttributeName
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testExactAttributeValue
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testExactAttributeValueOnRoot
+< h t m l   i d = " d o c u m e n t E l e m e n t " >
+
+Running test: testExactAttributeValueWithQuotes
+< d i v   a t t r = " f o o " > < / d i v >
+
+Running test: testPartialAttributeValue
+< i n p u t   v a l u e = " I n p u t V a l " >
+
+Running test: testXPathAttribute
+< d i v   a t t r = " f o o " > < / d i v >
+
+Running test: testSelector
+< s p a n > F o u n d   b y   s e l e c t o r < / s p a n >
+
+Running test: testCaseUpperFindsLower
+< s p a n   c l a s s = " f o o   k o o " > < / s p a n >
+
+Running test: testCaseLowerFindsUpper
+< s p a n   c l a s s = " C A S E L E S S " > < / s p a n >
+
+Running test: testCaseAttribute
+< s p a n   d a t a - c a m e l = " i n s e n s t i v e " > < / s p a n >
+
+Running test: testSearchShadowDOM
+< c o n t e n t > < / c o n t e n t >
+
+Running test: testSearchUAShadowDOM
+Searching UA shadow DOM with setting disabled:
+Nothing found
+Searching UA shadow DOM with setting enabled:
+< d i v   i d = " u a - s h a d o w - c o n t e n t " > < / d i v >
+
+Running test: testSearchShadowHostChildren
+< d i v   i d = " s h a d o w - h o s t - c o n t e n t " > < / d i v >
+
+Running test: testSearchClosingTag
+< t e x t a r e a > < / t e x t a r e a >
+

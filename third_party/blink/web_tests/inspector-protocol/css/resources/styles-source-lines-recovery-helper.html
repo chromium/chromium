@@ -1,0 +1,37 @@
+<!DOCTYPE html><html>
+<head>
+<style>
+@media all {
+    ::-moz-focus-inner {}
+}
+#main {
+    color: red;
+}
+</style>
+
+<style>
+@-webkit-region x {
+    x ? {}
+}
+#main {
+    color: blue;
+}
+</style>
+
+<style>
+@-webkit-region x {
+    ? {}
+}
+#main {
+    color: white;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="main"></div>
+
+</body>
+</html>

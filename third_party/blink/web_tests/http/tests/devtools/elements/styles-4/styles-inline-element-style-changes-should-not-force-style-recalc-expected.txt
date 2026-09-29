@@ -1,4 +1,0 @@
-Tests that inspector doesn't force styles recalc on operations with inline element styles that result in no changes.
-
-Found 0 UpdateLayoutTree events (expecting 0).
-

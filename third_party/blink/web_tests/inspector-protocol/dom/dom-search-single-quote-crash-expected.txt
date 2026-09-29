@@ -1,0 +1,6 @@
+Tests that elements panel search is not crashing when searching for double quote (").
+
+Running test: testSetUp
+
+Running test: testNoCrash
+

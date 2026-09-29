@@ -8827,9 +8827,6 @@ crbug.com/452662753 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/
 
 
 # Gardener 2026-05-04
-crbug.com/492114216 http/tests/devtools/elements/edit/set-outer-html.js [ Failure Pass ]
-crbug.com/492114216 http/tests/devtools/elements/edit/set-outer-html-for-xhtml.js [ Failure Pass ]
-crbug.com/492114216 http/tests/devtools/elements/edit/undo-set-outer-html.js [ Failure Pass Timeout ]
 crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Failure Pass ]
 crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-2.js [ Failure Pass ]
 crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Failure Pass ]
@@ -8939,9 +8936,6 @@ crbug.com/532703006 virtual/composite-clip-path-animation/external/wpt/css/css-m
 crbug.com/485657219 external/wpt/fetch/fetch-later/quota/max-payload.https.window.html [ Failure Pass ]
 crbug.com/507385957 [ Linux ] external/wpt/html/semantics/menu/tentative/menu-safe-triangle.optional.html [ Failure Pass ]
 crbug.com/534698830 external/wpt/worklets/audio-worklet-service-worker-interception.https.html [ Failure Pass ]
-
-# DevTools CL block unblock: Failing due to encoding changes
-crbug.com/529423495 http/tests/devtools/elements/styles/xsl-transformed.js [ Failure ]
 
 # Gardener 2026-07-17
 crbug.com/535696870 [ Linux ] external/wpt/html/semantics/permission-element/bounded-sizes-reftest.tentative.html [ Failure Pass ]

@@ -1,0 +1,2 @@
+Tests that styles in redirected css are editable.
+

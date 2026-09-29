@@ -1,3 +1,0 @@
-Tests that modifying stylesheet text with @import and :last-child selector does not crash (Bug 95324).
-
-
