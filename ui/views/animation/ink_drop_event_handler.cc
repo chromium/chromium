@@ -29,9 +29,6 @@ InkDropEventHandler::InkDropEventHandler(View* host_view, Delegate* delegate)
       host_view_(host_view),
       delegate_(delegate) {
   view_observation_.Observe(host_view_.get());
-  if (Widget* widget = host_view_->GetWidget()) {
-    widget_observation_.Observe(widget);
-  }
 }
 
 InkDropEventHandler::~InkDropEventHandler() = default;
@@ -142,6 +139,10 @@ void InkDropEventHandler::OnViewVisibilityChanged(View* observed_view,
                                                   View* starting_view,
                                                   bool visible) {
   DCHECK_EQ(host_view_, observed_view);
+  // Removal from the closed widget follows and cleans up the ink drop.
+  if (!CanUpdateInkDrop()) {
+    return;
+  }
   // A View is *actually* visible if its visible flag is set, all its ancestors'
   // visible flags are set, it's in a Widget, and the Widget is
   // visible. |View::IsDrawn()| captures the first two conditions.
@@ -169,7 +170,7 @@ void InkDropEventHandler::OnViewHierarchyChanged(
 
 void InkDropEventHandler::OnViewBoundsChanged(View* observed_view) {
   DCHECK_EQ(host_view_, observed_view);
-  if (delegate_->HasInkDrop()) {
+  if (delegate_->HasInkDrop() && CanUpdateInkDrop()) {
     delegate_->GetInkDrop()->HostSizeChanged(host_view_->size());
   }
 }
@@ -187,39 +188,44 @@ void InkDropEventHandler::OnViewBlurred(View* observed_view) {
 void InkDropEventHandler::OnViewThemeChanged(View* observed_view) {
   CHECK_EQ(host_view_, observed_view);
   // The call to GetInkDrop() will lazily create the ink drop when called. We do
-  // not want to create the ink drop when view theme changed.
-  if (delegate_->HasInkDrop()) {
+  // not want to create the ink drop when view theme changed. A closed widget
+  // may already have lost the parts the ink drop colors are derived from, so
+  // leave the ink drop alone then as well.
+  if (delegate_->HasInkDrop() && CanUpdateInkDrop()) {
     delegate_->GetInkDrop()->HostViewThemeChanged();
-  }
-}
-
-void InkDropEventHandler::OnViewAddedToWidget(View* observed_view) {
-  CHECK_EQ(host_view_, observed_view);
-  if (!widget_observation_.IsObserving()) {
-    widget_observation_.Observe(host_view_->GetWidget());
   }
 }
 
 void InkDropEventHandler::OnViewRemovedFromWidget(View* observed_view) {
   CHECK_EQ(host_view_, observed_view);
-  // Only clean up ink drop and widget observation. Keep observing the view
-  // since it may be added to another widget later.
+  // Only clean up the ink drop. Keep observing the view since it may be added
+  // to another widget later.
   CleanupInkDrop();
-  widget_observation_.Reset();
 }
 
-void InkDropEventHandler::OnWidgetDestroying(Widget* widget) {
-  // Clean up everything including both observations since the widget is being
-  // destroyed.
+void InkDropEventHandler::OnViewHierarchyWillBeDeleted(View* observed_view) {
+  CHECK_EQ(host_view_, observed_view);
   CleanupInkDrop();
-  widget_observation_.Reset();
   view_observation_.Reset();
 }
 
+bool InkDropEventHandler::CanUpdateInkDrop() const {
+  // A closed widget is being torn down: Widget::DestroyRootView() removes the
+  // root view's children one subtree at a time, so until
+  // OnViewRemovedFromWidget or OnViewHierarchyWillBeDeleted reaches this host,
+  // bounds and theme changes can still arrive while views of an earlier subtree
+  // (e.g. the frame view, crbug.com/452389552) are already gone, and recreating
+  // the ripple or the highlight would look up colors through the widget.
+  //
+  // A host without a widget is merely detached and may be added to a widget
+  // again. Its ink drop only touches its own layers, and it must keep tracking
+  // the host size: nothing resizes the ink drop's root layer when the host is
+  // added back.
+  const Widget* widget = host_view_->GetWidget();
+  return !widget || !widget->IsClosed();
+}
+
 void InkDropEventHandler::CleanupInkDrop() {
-  // Clean up ink drop state before the widget completes destruction. This
-  // prevents crashes when observer callbacks try to access widget components
-  // (like frame views) that have already been destroyed.
   if (delegate_->HasInkDrop()) {
     delegate_->GetInkDrop()->SnapToHidden();
     delegate_->GetInkDrop()->SetHovered(false);

@@ -5,6 +5,7 @@
 #include "ui/views/animation/ink_drop_host.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -387,13 +388,15 @@ class InkDropInWidgetTest : public ViewsTestBase {
   }
 
   InkDropHost& ink_drop() { return *InkDrop::Get(view_); }
+  Widget* widget() { return widget_.get(); }
+  BasicTestViewWithInkDrop* view() { return view_; }
   const ui::ColorProvider& color_provider() {
     return *widget_->GetColorProvider();
   }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<View> view_ = nullptr;
+  raw_ptr<BasicTestViewWithInkDrop> view_ = nullptr;
 };
 
 TEST_F(InkDropInWidgetTest, SetBaseColor) {
@@ -418,6 +421,48 @@ TEST_F(InkDropInWidgetTest, SetBaseColorCallback) {
 
   ink_drop().SetBaseColor(SK_ColorBLUE);
   EXPECT_EQ(ink_drop().GetBaseColor(), SK_ColorBLUE);
+}
+
+// The ink drop is hidden when its host view leaves the widget, and it is left
+// alone once the widget has been closed: at that point other parts of the
+// widget may already be destroyed and must not be reached through ink drop
+// updates (crbug.com/452389552).
+TEST_F(InkDropInWidgetTest, HiddenOnRemovalAndUntouchedAfterWidgetClose) {
+  ink_drop().SetMode(views::InkDropHost::InkDropMode::ON);
+  view()->SetSize(gfx::Size(20, 20));
+
+  base::MockRepeatingCallback<SkColor()> base_color;
+  EXPECT_CALL(base_color, Run).WillRepeatedly(testing::Return(SK_ColorCYAN));
+  ink_drop().SetBaseColorCallback(base_color.Get());
+
+  auto* ink_drop_impl = static_cast<InkDropImpl*>(ink_drop().GetInkDrop());
+  test::InkDropImplTestApi test_api(ink_drop_impl);
+  ink_drop_impl->SetHovered(true);
+  EXPECT_TRUE(test_api.IsHighlightFadingInOrVisible());
+
+  // Leaving the widget hides the highlight.
+  std::unique_ptr<View> owned_view =
+      widget()->GetRootView()->RemoveChildViewT(view());
+  EXPECT_FALSE(test_api.IsHighlightFadingInOrVisible());
+
+  // Back in the widget the ink drop works again.
+  BasicTestViewWithInkDrop* readded_view =
+      static_cast<BasicTestViewWithInkDrop*>(
+          widget()->SetContentsView(std::move(owned_view)));
+  ink_drop_impl->SetHovered(true);
+  EXPECT_TRUE(test_api.IsHighlightFadingInOrVisible());
+
+  // After Close() the widget still exists but is closed. Theme and bounds
+  // changes on the host must not consult the ink drop colors any more.
+  // ThemeChanged() propagates through the view tree, so the handler's
+  // OnViewThemeChanged() runs for the host.
+  widget()->Close();
+  ASSERT_TRUE(widget()->IsClosed());
+  testing::Mock::VerifyAndClearExpectations(&base_color);
+  EXPECT_CALL(base_color, Run).Times(0);
+  widget()->ThemeChanged();
+  readded_view->SetSize(gfx::Size(40, 40));
+  widget()->CloseNow();
 }
 
 // This fixture tests attention state.

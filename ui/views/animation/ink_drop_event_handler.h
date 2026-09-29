@@ -14,7 +14,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 class LocatedEvent;
@@ -28,8 +27,7 @@ struct ViewHierarchyChangedDetails;
 
 // This class handles ink-drop changes due to events on its host.
 class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
-                                         public ViewObserver,
-                                         public WidgetObserver {
+                                         public ViewObserver {
  public:
   // Delegate class that allows InkDropEventHandler to be used with InkDrops
   // that are hosted in multiple ways.
@@ -71,15 +69,18 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   void OnViewFocused(View* observed_view) override;
   void OnViewBlurred(View* observed_view) override;
   void OnViewThemeChanged(View* observed_view) override;
-  void OnViewAddedToWidget(View* observed_view) override;
   void OnViewRemovedFromWidget(View* observed_view) override;
-
-  // WidgetObserver:
-  void OnWidgetDestroying(Widget* widget) override;
+  void OnViewHierarchyWillBeDeleted(View* observed_view) override;
 
  private:
-  // Helper method to clean up ink drop state.
-  // Called when the view is removed from a widget or the widget is destroyed.
+  // Returns whether the ink drop may be updated. This is false once the host
+  // view's widget is closing or being destroyed: other parts of the widget
+  // (e.g. frame views) may already be gone, and ink drop updates can reach
+  // them (crbug.com/452389552). A host without a widget may be updated.
+  bool CanUpdateInkDrop() const;
+
+  // Hides the ink drop and drops its hover state. Called when the host view
+  // leaves its widget and when it is about to be deleted.
   void CleanupInkDrop();
 
   // Allows |this| to handle all GestureEvents on |host_view_|.
@@ -95,7 +96,6 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   std::unique_ptr<ui::LocatedEvent> last_ripple_triggering_event_;
 
   base::ScopedObservation<View, ViewObserver> view_observation_{this};
-  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace views
