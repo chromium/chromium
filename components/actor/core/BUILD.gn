@@ -40,10 +40,19 @@ source_set("journal") {
   ]
 }
 
-source_set("core") {
+source_set("features") {
   sources = [
     "actor_features.cc",
     "actor_features.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/page_content_annotations/core:features",
+  ]
+}
+
+source_set("core") {
+  sources = [
     "actor_metrics.cc",
     "actor_metrics.h",
     "actor_switches.cc",
@@ -67,6 +76,7 @@ source_set("core") {
   ]
 
   public_deps = [
+    ":features",
     "//base",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/content_settings/core/common",

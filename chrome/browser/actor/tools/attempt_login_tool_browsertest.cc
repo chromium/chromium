@@ -922,8 +922,8 @@ class ActorAttemptLoginToolFederatedShortDelayTest
  public:
   ActorAttemptLoginToolFederatedShortDelayTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor,
-          {{features::kActorObservationDelayTimeout.name, "1s"}}}},
+        {{kActorObservationDelay,
+          {{kActorObservationDelayTimeout.name, "1s"}}}},
         {});
   }
 

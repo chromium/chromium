@@ -62,7 +62,7 @@ using PageSettledMonitorState =
 // It's autofill's `FormPredictionsTracker`'s responsibility to respect this
 // timeout.
 base::TimeDelta GetAutofillPredictionsTimeout() {
-  return features::kActorObservationDelayAutofillPredictionsTimeout.Get();
+  return kActorObservationDelayAutofillPredictionsTimeout.Get();
 }
 
 // This should be similar to the number of redirects.
@@ -132,11 +132,11 @@ class PageSettledMonitorDelegate
   }
 
   base::TimeDelta GetLcpDelay() const override {
-    return features::kActorObservationDelayLcp.Get();
+    return kActorObservationDelayLcp.Get();
   }
 
   base::TimeDelta GetCompletionTimeout() const override {
-    return features::kActorObservationDelayTimeout.Get();
+    return kActorObservationDelayTimeout.Get();
   }
 
  private:

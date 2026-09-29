@@ -17,6 +17,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "chrome/renderer/actor/type_tool.h"
+#include "components/actor/core/actor_features.h"
 #include "components/actor/core/actor_logging.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -165,7 +166,7 @@ void KeyDispatcher::PrepareIncrementalTyping(base::TimeTicks start_time,
   // out, finish with an error.
   base::TimeDelta input_delay = 2 * last_input_delay;
   if (base::TimeTicks::Now() + input_delay - start_time >
-      features::kGlicActorPageStabilityTimeout.Get()) {
+      actor::kActorPageStabilityTimeout.Get()) {
     Finish(MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
                       /*requires_page_stabilization=*/false,
                       "No editable element found before incremental typing"));
