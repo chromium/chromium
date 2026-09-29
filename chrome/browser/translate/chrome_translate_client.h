@@ -127,7 +127,12 @@ class ChromeTranslateClient
   bool IsTranslatableURL(const GURL& url) override;
   void TriggerPdfTranslation() override;
   void RevertPdfTranslation() override;
+  void OnSidePanelClosed();
   bool IsReadingModeOpen() const override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  class ReadAnythingObserver;
+#endif
 
   // Performs a one-time undo of the translation and shows the translation
   // bubble.
@@ -186,6 +191,10 @@ class ChromeTranslateClient
 #endif
 
   bool opened_side_panel_for_pdf_translation_ = false;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<ReadAnythingObserver> read_anything_observer_;
+#endif
 
   base::WeakPtrFactory<ChromeTranslateClient> weak_factory_{this};
 

@@ -271,6 +271,29 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
         TranslateWaiter::WaitEvent::kLanguageDetermined);
   }
 
+  // Opens a French page in a new foreground tab, waits for its language to be
+  // determined, and returns the tab's ChromeTranslateClient.
+  ChromeTranslateClient* OpenFrenchPage() {
+    SetTranslateScript(kTestValidScript);
+    EXPECT_TRUE(AddTabAtIndex(
+        0, GURL(embedded_test_server()->GetURL("/french_page.html")),
+        ui::PAGE_TRANSITION_TYPED));
+    ResetObserver();
+    ChromeTranslateClient* client = GetChromeTranslateClient();
+    WaitUntilLanguageDetermined(client);
+    EXPECT_EQ("fr", client->GetLanguageState().source_language());
+    return client;
+  }
+
+  // Actually translates the active page from French to English, so that the
+  // renderer has the translate library injected and can later be reverted.
+  void TranslateActivePageToEnglish(TranslateManager* manager) {
+    manager->TranslatePage("fr", "en", /*triggered_from_menu=*/true);
+    WaitUntilPageTranslated();
+    EXPECT_EQ(TranslateErrors::NONE, GetPageTranslatedResult());
+    EXPECT_TRUE(manager->GetLanguageState()->IsPageTranslated());
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().GetPath() != "/mock_translate_script.js") {
@@ -1619,23 +1642,65 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     TranslateManagerBrowserTest,
     MAYBE_RevertTranslationClosesSidePanelViaTranslateManager) {
-  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
   chrome_translate_client->TriggerPdfTranslation();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
 
-  // Set language state to translated.
+  // Actually translate the page so the renderer can handle the revert.
   TranslateManager* manager = chrome_translate_client->GetTranslateManager();
   ASSERT_TRUE(manager);
-  manager->GetLanguageState()->LanguageDetermined("fr", true);
-  manager->GetLanguageState()->SetCurrentLanguage("en");
+  TranslateActivePageToEnglish(manager);
 
   // Revert translation via TranslateManager.
   manager->RevertTranslation();
   EXPECT_TRUE(base::test::RunUntil(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+                       ClosingSidePanelRevertsPdfTranslation) {
+  ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  // 1. Trigger PDF Translation (opens side panel and sets flag).
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
+
+  // 2. Actually translate the page so the renderer can handle the revert.
+  TranslateManager* manager = chrome_translate_client->GetTranslateManager();
+  ASSERT_TRUE(manager);
+  TranslateActivePageToEnglish(manager);
+
+  // 3. Closing the side panel manually should revert translation and reset
+  // state.
+  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
+  ASSERT_TRUE(side_panel_ui);
+  side_panel_ui->Close();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !manager->GetLanguageState()->IsPageTranslated();
+  }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+
+  // 4. Trigger PDF translation again, translate, then close the side panel.
+  chrome_translate_client->TriggerPdfTranslation();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return chrome_translate_client->IsReadingModeOpen(); }));
+  TranslateActivePageToEnglish(manager);
+
+  // Closing manually should revert translation regardless of
+  // opened_side_panel_for_pdf_translation_.
+  side_panel_ui->Close();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
+  EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !manager->GetLanguageState()->IsPageTranslated();
+  }));
 }
 #endif
 
