@@ -991,6 +991,13 @@ BASE_FEATURE(kAutofillReplaceFormElementObserver,
 BASE_FEATURE(kAutofillRequireFocusInFrameForSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If enabled, `AutofillPopupControllerImpl` and
+// `AutofillKeyboardAccessoryControllerImpl` reset `barrier_for_accepting_` when
+// datalist values are updated via `UpdateDataListValues()`.
+// TODO(crbug.com/514074839): Clean up after Nov 3, 2026.
+BASE_FEATURE(kAutofillResetAcceptanceBarrierOnDataListUpdate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // TODO(crbug.com/435646513) - Clean-up after feature lands at 100% Stable.
 // Enables the new experimental server-side signatures for evaluation purposes.
 BASE_FEATURE(kAutofillServerExperimentalSignatures,

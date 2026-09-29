@@ -8,6 +8,7 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
@@ -255,6 +256,42 @@ TEST_F(AutofillPopupControllerImplTest,
   client().suggestion_controller(manager()).AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
       /*was_obscured=*/false);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  check.Call();
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
+}
+
+// Tests that updating datalist values resets the accept threshold.
+TEST_F(AutofillPopupControllerImplTest,
+       AcceptSuggestionTimeoutIsUpdatedOnDataListUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillResetAcceptanceBarrierOnDataListUpdate};
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kDatalistEntry,
+                              SuggestionType::kAddressEntry});
+  client().suggestion_controller(manager()).OnPopupPainted();
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Mutating the datalist shifts the address entry to index 0 and must reset
+  // the acceptance barrier until the popup is painted and 500ms elapse.
+  client().suggestion_controller(manager()).UpdateDataListValues({});
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
+  client().suggestion_controller(manager()).OnPopupPainted();
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse,
+      /*was_obscured=*/false);
+
+  // After waiting 500ms again, suggestions become acceptable.
   task_environment()->FastForwardBy(base::Milliseconds(500));
   check.Call();
   client().suggestion_controller(manager()).AcceptSuggestion(

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
@@ -858,6 +859,11 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
       UpdateSuggestionsFromDataList(options, std::move(suggestions_));
   OrderSuggestionsAndCreateLabels();
   if (HasSuggestions()) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillResetAcceptanceBarrierOnDataListUpdate)) {
+      barrier_for_accepting_ = NextIdleBarrier::CreateNextIdleBarrierWithDelay(
+          kIgnoreEarlyClicksOnSuggestionsDuration);
+    }
     OnSuggestionsChanged();
   } else {
     Hide(SuggestionHidingReason::kNoSuggestions);

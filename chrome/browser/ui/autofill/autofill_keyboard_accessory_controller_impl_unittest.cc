@@ -235,6 +235,37 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
       /*was_obscured=*/false);
 }
 
+// Tests that updating datalist values resets the accept threshold.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       AcceptSuggestionTimeoutIsUpdatedOnDataListUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillResetAcceptanceBarrierOnDataListUpdate};
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
+  }
+
+  ShowSuggestions(manager(), {SuggestionType::kDatalistEntry,
+                              SuggestionType::kAddressEntry});
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // Mutating the datalist shifts the address entry to index 0 and must reset
+  // the acceptance barrier.
+  client().suggestion_controller(manager()).UpdateDataListValues({});
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
+
+  // After waiting 500ms again, suggestions become acceptable.
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  check.Call();
+  client().suggestion_controller(manager()).AcceptSuggestion(
+      /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kTap,
+      /*was_obscured=*/false);
+}
+
 // Tests that calling `Show()` on the controller shows the view.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {
   // Ensure that controller and view have been created.

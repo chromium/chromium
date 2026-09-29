@@ -462,6 +462,10 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   if (HasEmptySuggestionContent()) {
     Hide(SuggestionHidingReason::kNoSuggestions);
   } else {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillResetAcceptanceBarrierOnDataListUpdate)) {
+      barrier_for_accepting_.reset();
+    }
     OnSuggestionsChanged();
   }
 }
