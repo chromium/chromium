@@ -11,16 +11,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/view_type_utils.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
-
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#endif
 
 class MediaPickerUtilsTest : public InProcessBrowserTest {
  public:
@@ -35,21 +32,22 @@ IN_PROC_BROWSER_TEST_F(MediaPickerUtilsTest, CreateMediaPickerDialogWidget) {
   views::DialogDelegate delegate;
   delegate.SetModalType(ui::mojom::ModalType::kChild);
   gfx::NativeWindow context = web_contents->GetTopLevelNativeWindow();
-#if defined(USE_AURA)
-  gfx::NativeView web_contents_parent = web_contents->GetTopLevelNativeWindow();
-#else
-  gfx::NativeView web_contents_parent = web_contents->GetContentNativeView();
-#endif
 
-  // Open the picker with the web contents as the parent.
-  views::Widget* widget = CreateMediaPickerDialogWidget(
-      browser(), web_contents, &delegate, context, web_contents_parent);
+  // Open the picker for the tab. It should be shown web-modal regardless of
+  // parent.
+  views::Widget* widget =
+      CreateMediaPickerDialogWidget(browser(), web_contents, &delegate, context,
+                                    /*parent=*/gfx::NativeView());
 
-  // The picker is created and its parent is the tab web contents.
+  // The picker is created and is a modal of the web contents.
   ASSERT_TRUE(widget);
-#if defined(USE_AURA)
-  EXPECT_EQ(widget->GetNativeWindow()->parent(), web_contents_parent);
-#endif
+  EXPECT_EQ(widget->widget_delegate()->GetModalType(),
+            ui::mojom::ModalType::kChild);
+
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  ASSERT_TRUE(manager);
+  EXPECT_TRUE(manager->IsDialogActive());
 
   widget->CloseNow();
 }
