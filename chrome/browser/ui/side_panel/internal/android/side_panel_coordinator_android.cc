@@ -102,63 +102,7 @@ void SidePanelCoordinatorAndroid::ClosePanel(bool suppress_animations) {
 }
 
 bool SidePanelCoordinatorAndroid::HasContentToShow(TabAndroid* tab) {
-  CHECK(tab);
-
-  // A closing tab should never show the side panel.
-  //
-  // The check here prevents any calls to HasContentToShow() from incorrectly
-  // returning `true` when the given tab is closing.
-  //
-  // For example, Java `SideUiCoordinatorImpl#updateUiInternal()` calls this
-  // function, and `updateUiInternal()` can be triggered by top controls' height
-  // changes during tab closure. In this case, we may still have an active
-  // window-scoped `SidePanelEntry`, or a deferred entry for the given `tab`
-  // (to support undo "close all tabs" in Grid Tab Switcher).
-  if (tab->IsClosing()) {
-    SPLOG("HasContentToShow - tab is closing, returning false");
-    return false;
-  }
-
-  // Check if the tab has an active tab-scoped (contextual) entry.
-  if (auto* tab_scoped_registry = SidePanelRegistry::From(tab)) {
-    if (auto active_entry = tab_scoped_registry->GetActiveEntry()) {
-      SPLOG("HasContentToShow - tab-scoped (contextual) entry active for tab ("
-            << (*active_entry)->key().ToString() << "), returning true");
-      return true;
-    }
-  }
-
-  // Check if the window registry has an active window-scoped (global) entry.
-  if (auto* window_scoped_registry = SidePanelRegistry::From(browser())) {
-    if (auto active_entry = window_scoped_registry->GetActiveEntry()) {
-      SPLOG("HasContentToShow - window-scoped (global) entry active ("
-            << (*active_entry)->key().ToString() << "), returning true");
-      return true;
-    }
-  }
-
-  // We shouldn't check whether there is a deferred entry for `kClosing`
-  // (unlike `kClosed`).
-  //
-  // This is because a deferred entry is added before `Close()`, so by the
-  // time the state is `kClosing`, a deferred entry already exists.
-  // For the side panel to be closed, we have to return `false` without
-  // checking whether there is a deferred entry.
-  if (state_ == SidePanelState::kClosing) {
-    SPLOG("HasContentToShow - state is kClosing, returning false");
-    return false;
-  }
-
-  // Check if there is a deferred entry for this tab or window.
-  if (auto deferred_entry =
-          deferred_entry_tracker_.GetTabOrWindowScopedEntry(tab->GetHandle())) {
-    SPLOG("HasContentToShow - deferred entry exists for tab ("
-          << deferred_entry->key.ToString() << "), returning true");
-    return true;
-  }
-
-  SPLOG("HasContentToShow - no entry found, returning false");
-  return false;
+  return GetKeyToShow(tab).has_value();
 }
 
 void SidePanelCoordinatorAndroid::OnPanelContainerUpdated(int old_width,
@@ -277,21 +221,9 @@ void SidePanelCoordinatorAndroid::OnAllTabsWillClose() {
   // A common question might be: When the user creates a new tab after closing
   // all tabs, shouldn't OnTabSelected() fix the side panel states?
   //
-  // The answer:
-  //
-  // First of all, Chrome on Android has a stable 0-tab UI state, such as when
-  // the user has closed all tabs in GTS, but hasn't created any new tab.
-  // Side panel should reflect this state because GTS is an overlay of the
-  // main browser UI.
-  //
-  // Secondly, OnTabSelected() only closes the side panel if
-  // (1) the side panel is currently shown,
-  // (2) the new active tab doesn't have an active SidePanelEntry, and
-  // (3) the old tab hasn't been deleted.
-  //
-  // Relying on OnTabSelected() won't meet condition (3), and we shouldn't
-  // change (3) as it prevents holding/dereferencing an _invalid_ pointer to
-  // the SidePanelRegistry of the deleted tab.
+  // The answer: Chrome on Android has a stable 0-tab UI state, such as when the
+  // user has closed all tabs in GTS, but hasn't created any new tab. Side panel
+  // should reflect this state because GTS is an overlay of the main browser UI.
   //
   // TODO(crbug.com/561677370): Create a new SidePanelEntryHideReason for more
   // clarity. `kBackgrounded` can make side panel features work, but it's for
@@ -413,76 +345,21 @@ void SidePanelCoordinatorAndroid::OnTabReparented(TabAndroid* tab) {
   }
 }
 
-void SidePanelCoordinatorAndroid::OnTabSelected(TabAndroid* old_tab,
-                                                TabAndroid* new_tab) {
-  SPLOG("OnTabSelected - old_tab: " << old_tab << ", new_tab: " << new_tab);
+void SidePanelCoordinatorAndroid::OnTabSelected(TabAndroid* new_tab) {
+  SPLOG("OnTabSelected - new_tab: " << new_tab);
   CHECK(new_tab);
 
-  // If the side panel is showing, check if we should:
-  // (1) replace the current UI content by calling `Show()`, or
-  // (2) close the side panel by calling `Close()`.
-  //
-  // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
-  if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
-    std::optional<UniqueKey> new_active_key = GetNewActiveKeyOnTabChanged();
-
-    if (new_active_key) {
-      Show(*new_active_key, SidePanelOpenTrigger::kTabChanged,
-           /*suppress_animations=*/true);
-    } else {
-      UniqueKey key = GetCurrentKeyNonNull();
-
-      if (old_tab && old_tab->GetHandle() == key.tab_handle) {
-        Close(SidePanelEntryHideReason::kBackgrounded,
-              /*suppress_animations=*/true);
-      }
-
-      // If there is no active entry in the new tab's registry, check if there
-      // is a deferred entry saved in the tracker for this tab or this window.
-      // This handles cases where a side panel was hidden due to constraints
-      // like insufficient space.
-      //
-      // `Show()` handles `has_insufficient_space_ == true`, and adds the
-      // entry to `SidePanelDeferredEntryTracker` if needed.
-      std::optional<UniqueKey> key_to_show =
-          deferred_entry_tracker_.GetTabOrWindowScopedEntry(
-              new_tab->GetHandle());
-      if (key_to_show) {
-        // Suppress animations to avoid jarring UX during tab switches, and
-        // use SidePanelOpenTrigger::kWindowResized as the trigger to match
-        // the close reason that originally deferred this entry.
-        Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
-             /*suppress_animations=*/true);
-      }
-    }
-
+  // Check if we have an entry to show for the new tab.
+  if (std::optional<UniqueKey> key_to_show = GetKeyToShow(new_tab)) {
+    Show(*key_to_show, SidePanelOpenTrigger::kTabChanged,
+         /*suppress_animations=*/true);
     return;
   }
 
-  // If the side panel isn't showing, check if we should show it.
-  SidePanelRegistry* new_contextual_registry = SidePanelRegistry::From(new_tab);
-  std::optional<SidePanelEntry*> new_active_entry =
-      new_contextual_registry ? new_contextual_registry->GetActiveEntry()
-                              : std::nullopt;
-  if (new_active_entry) {
-    UniqueKey key{new_tab->GetHandle(), (*new_active_entry)->key()};
-    Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
-  } else {
-    // If there is no active entry in the new tab's registry, check if there
-    // is a deferred entry saved in the tracker for this tab or this window.
-    // This handles cases where a side panel was hidden due to constraints
-    // like insufficient space.
-    // `Show()` handles `has_insufficient_space_ == true`, and adds the entry
-    // to `SidePanelDeferredEntryTracker` if needed.
-    std::optional<UniqueKey> key_to_show =
-        deferred_entry_tracker_.GetTabOrWindowScopedEntry(new_tab->GetHandle());
-    if (key_to_show) {
-      // Suppress animations to avoid jarring UX during tab switches, and use
-      // SidePanelOpenTrigger::kWindowResized as the trigger to match the close
-      // reason that originally deferred this entry.
-      Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
-           /*suppress_animations=*/true);
-    }
+  // Otherwise, check if we need to close the side panel.
+  if (state_ == SidePanelState::kOpening || state_ == SidePanelState::kShown) {
+    Close(SidePanelEntryHideReason::kBackgrounded,
+          /*suppress_animations=*/true);
   }
 }
 
@@ -556,8 +433,7 @@ void SidePanelCoordinatorAndroid::Init() {
   // initialization to restore the side panel state for the active tab.
   if (tabs::TabInterface* active_tab =
           TabListInterface::From(browser())->GetActiveTab()) {
-    OnTabSelected(/*old_tab=*/nullptr,
-                  TabAndroid::FromTabInterface(active_tab));
+    OnTabSelected(TabAndroid::FromTabInterface(active_tab));
   }
 }
 
@@ -1012,22 +888,6 @@ ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
   return local_ref;
 }
 
-bool SidePanelCoordinatorAndroid::CanShowEntryForKey(
-    const UniqueKey& key) const {
-  if (!GetEntryForUniqueKey(key)) {
-    return false;
-  }
-
-  SidePanelRegistry* active_contextual_registry = GetActiveContextualRegistry();
-  if (active_contextual_registry &&
-      active_contextual_registry->GetTabInterface().GetHandle() ==
-          key.tab_handle) {
-    return true;
-  }
-
-  return !key.tab_handle.has_value();
-}
-
 SidePanelUIBase::UniqueKey SidePanelCoordinatorAndroid::GetCurrentKeyNonNull()
     const {
   std::optional<UniqueKey> key = current_key();
@@ -1040,6 +900,69 @@ SidePanelEntry* SidePanelCoordinatorAndroid::GetEntryForCurrentKeyNonNull()
   SidePanelEntry* entry = GetEntryForUniqueKey(GetCurrentKeyNonNull());
   CHECK(entry) << "SidePanelEntry is expected to exist.";
   return entry;
+}
+
+std::optional<SidePanelUIBase::UniqueKey>
+SidePanelCoordinatorAndroid::GetKeyToShow(TabAndroid* tab) const {
+  CHECK(tab);
+
+  // A closing tab should never show the side panel.
+  //
+  // The check here prevents any calls (such as `HasContentToShow()`) from
+  // incorrectly finding an entry when the given tab is closing.
+  //
+  // For example, Java `SideUiCoordinatorImpl#updateUiInternal()` calls
+  // `HasContentToShow()`, and `updateUiInternal()` can be triggered by top
+  // controls' height changes during tab closure. In this case, we may still
+  // have an active window-scoped `SidePanelEntry`, or a deferred entry for the
+  // given `tab` (to support undo "close all tabs" in Grid Tab Switcher).
+  if (tab->IsClosing()) {
+    SPLOG("GetKeyToShow - tab is closing, returning nullopt");
+    return std::nullopt;
+  }
+
+  // Check if the tab has an active tab-scoped entry.
+  if (auto* tab_scoped_registry = SidePanelRegistry::From(tab)) {
+    if (auto active_entry = tab_scoped_registry->GetActiveEntry()) {
+      SPLOG("GetKeyToShow - returning tab-scoped entry ("
+            << (*active_entry)->key().ToString() << ")");
+      return UniqueKey{tab->GetHandle(), (*active_entry)->key()};
+    }
+  }
+
+  // Check if there is an active window-scoped entry.
+  if (auto* window_scoped_registry = SidePanelRegistry::From(browser())) {
+    if (auto active_entry = window_scoped_registry->GetActiveEntry()) {
+      SPLOG("GetKeyToShow - returning window-scoped entry ("
+            << (*active_entry)->key().ToString() << ")");
+      return UniqueKey{/*tab_handle=*/std::nullopt, (*active_entry)->key()};
+    }
+  }
+
+  // We shouldn't check whether there is a deferred entry for `kClosing`
+  // (unlike `kClosed`).
+  //
+  // This is because a deferred entry is added before `Close()`, so by the
+  // time the state is `kClosing`, a deferred entry already exists.
+  // For the side panel to be closed, we have to return `std::nullopt` without
+  // checking whether there is a deferred entry.
+  if (state_ == SidePanelState::kClosing) {
+    SPLOG("GetKeyToShow - side panel is closing, returning nullopt");
+    return std::nullopt;
+  }
+
+  // Check if there is a deferred entry for this tab or window.
+  // This handles cases where a side panel was hidden due to constraints like
+  // insufficient space.
+  if (auto deferred_entry =
+          deferred_entry_tracker_.GetTabOrWindowScopedEntry(tab->GetHandle())) {
+    SPLOG("GetKeyToShow - returning deferred entry "
+          << deferred_entry->key.ToString());
+    return *deferred_entry;
+  }
+
+  SPLOG("GetKeyToShow - no entry found");
+  return std::nullopt;
 }
 
 // ----------------------------------------------------------------------------

@@ -30,20 +30,18 @@ SidePanelTabModelObserver::~SidePanelTabModelObserver() {
 void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab) {
   CHECK(tab) << "New active tab should never be null.";
 
-  TabAndroid* old_tab = TabAndroid::FromTabHandle(active_tab_handle_);
-
   // For some reason DidSelectTab() is triggered _twice_ when we call
   // `TabListInterface::ActivateTab` in tests, so here we check whether
   // `DidSelectTab` is called for the first time. If not, we should not
   // update the coordinator.
   //
   // TODO(crbug.com/497986571): Investigate.
-  if (old_tab == tab) {
+  if (active_tab_handle_ == tab->GetHandle()) {
     return;
   }
 
   active_tab_handle_ = tab->GetHandle();
-  coordinator_->OnTabSelected(old_tab, tab);
+  coordinator_->OnTabSelected(tab);
 }
 
 void SidePanelTabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {

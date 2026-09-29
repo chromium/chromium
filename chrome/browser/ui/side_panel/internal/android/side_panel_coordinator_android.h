@@ -93,7 +93,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void OnTabReparented(TabAndroid* tab);
 
   // Called when the active tab changes.
-  void OnTabSelected(TabAndroid* old_tab, TabAndroid* new_tab);
+  void OnTabSelected(TabAndroid* new_tab);
 
   // Called right before a tab is destroyed. This can't be undone.
   void OnTabWillBeDestroyed(TabAndroid* tab);
@@ -163,6 +163,9 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;
 
+  // Returns the key for the entry that can be shown for the given `tab`.
+  std::optional<UniqueKey> GetKeyToShow(TabAndroid* tab) const;
+
   jni_zero::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
   // Starts opening the side panel.
@@ -209,8 +212,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // Immediately completes any pending content replacement on the Java side if
   // the pending replaced entry belongs to `tab`.
   void CompletePendingContentReplacementForTab(TabAndroid* tab);
-
-  bool CanShowEntryForKey(const UniqueKey& key) const;
 
   // The current state of the Side Panel.
   //
