@@ -39,6 +39,7 @@
 #include "third_party/blink/public/web/web_plugin_document.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/editing/finder/text_finder.h"
+#include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -314,12 +315,12 @@ TextFinder& FindInPage::EnsureTextFinder() {
   return *text_finder_;
 }
 
-void FindInPage::SetPluginFindHandler(WebPluginContainer* plugin) {
+void FindInPage::SetPluginFindHandler(WebPluginContainerImpl* plugin) {
   plugin_find_handler_ = plugin;
 }
 
-WebPluginContainer* FindInPage::PluginFindHandler() const {
-  return plugin_find_handler_;
+WebPluginContainerImpl* FindInPage::PluginFindHandler() const {
+  return plugin_find_handler_.Get();
 }
 
 WebPlugin* FindInPage::GetWebPluginForFind() {
@@ -373,6 +374,14 @@ void FindInPage::ReportFindInPageSelection(
       request_id, selection_rect, active_match_ordinal,
       final_update ? mojom::blink::FindMatchUpdateType::kFinalUpdate
                    : mojom::blink::FindMatchUpdateType::kMoreUpdatesComing);
+}
+
+void FindInPage::Trace(Visitor* visitor) const {
+  visitor->Trace(text_finder_);
+  visitor->Trace(plugin_find_handler_);
+  visitor->Trace(frame_);
+  visitor->Trace(client_);
+  visitor->Trace(receiver_);
 }
 
 }  // namespace blink
