@@ -1070,7 +1070,7 @@ void OffscreenCanvas::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   CanvasRenderingContextHost::Trace(visitor);
   EventTarget::Trace(visitor);
-  CanvasRenderingContextHost::Trace(visitor);
+  CanvasResourceDispatcherClient::Trace(visitor);
 }
 
 }  // namespace blink

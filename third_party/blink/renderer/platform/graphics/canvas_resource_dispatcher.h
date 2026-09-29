@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -28,7 +30,7 @@ namespace blink {
 
 class ExportedCanvasResource;
 
-class CanvasResourceDispatcherClient {
+class CanvasResourceDispatcherClient : public GarbageCollectedMixin {
  public:
   virtual bool BeginFrame() = 0;
   virtual void SetParentVisibility(bool visible) {}
@@ -135,7 +137,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   viz::BeginFrameAck current_begin_frame_ack_;
 
-  raw_ptr<CanvasResourceDispatcherClient> client_;
+  WeakPersistent<CanvasResourceDispatcherClient> client_;
 
   TaskRunnerTimer<CanvasResourceDispatcher> fake_frame_timer_;
 };

@@ -47,10 +47,14 @@ struct TestParams {
   OffscreenCanvasPlaceholder::AnimationState animation_state;
 };
 
-class MockCanvasResourceDispatcherClient
-    : public CanvasResourceDispatcherClient {
+class MockCanvasResourceDispatcherClient final
+    : public GarbageCollected<MockCanvasResourceDispatcherClient>,
+      public CanvasResourceDispatcherClient {
  public:
   MOCK_METHOD(bool, BeginFrame, (), (override));
+  void Trace(Visitor* visitor) const override {
+    CanvasResourceDispatcherClient::Trace(visitor);
+  }
 };
 
 }  // namespace
@@ -82,8 +86,9 @@ class CanvasResourceDispatcherTest
     test_web_shared_image_interface_provider_ =
         TestWebGraphicsSharedImageInterfaceProvider::Create();
 
+    client_ = MakeGarbageCollected<MockCanvasResourceDispatcherClient>();
     dispatcher_ = std::make_unique<CanvasResourceDispatcher>(
-        &client_,
+        client_.Get(),
         /*task_runner=*/scheduler::GetSingleThreadTaskRunnerForTesting(),
         kClientId, kSinkId,
         /*canvas_size=*/gfx::Size(kWidth, kHeight));
@@ -96,18 +101,18 @@ class CanvasResourceDispatcherTest
   }
 
   CanvasResourceDispatcher* dispatcher() { return dispatcher_.get(); }
-  MockCanvasResourceDispatcherClient& MockClient() { return client_; }
+  MockCanvasResourceDispatcherClient& MockClient() { return *client_; }
 
   test::TaskEnvironment& TaskEnvironment() { return task_environment_; }
 
  private:
   test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  Persistent<MockCanvasResourceDispatcherClient> client_;
   std::unique_ptr<CanvasResourceDispatcher> dispatcher_;
   std::unique_ptr<CanvasNon2DResourceProvider> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
-  MockCanvasResourceDispatcherClient client_;
 };
 
 TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
