@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace media {
@@ -20,7 +21,7 @@ class KURL;
 
 // The interface between the HTMLMediaElement and its
 // HTMLMediaElementRemotePlayback supplement.
-class RemotePlaybackClient {
+class RemotePlaybackClient : public GarbageCollectedMixin {
  public:
   virtual ~RemotePlaybackClient() = default;
 

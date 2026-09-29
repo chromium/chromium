@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
@@ -167,8 +168,7 @@ class VideoWakeLockTestWebFrameClient
   }
 
  private:
-  raw_ptr<MediaPlayerClient, UnprotectedInRelease | DanglingUntriaged>
-      media_player_client_ = nullptr;
+  Persistent<MediaPlayerClient> media_player_client_ = nullptr;
   std::unique_ptr<WebMediaPlayer> web_media_player_;
 };
 

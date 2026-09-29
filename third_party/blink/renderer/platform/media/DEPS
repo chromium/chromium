@@ -39,6 +39,7 @@ include_rules = [
   "+third_party/blink/renderer/platform/scheduler/public",
   "+third_party/blink/renderer/platform/weborigin",
   "+third_party/blink/renderer/platform/wtf",
+  "+third_party/blink/renderer/platform/heap",
 ]
 
 specific_include_rules = {

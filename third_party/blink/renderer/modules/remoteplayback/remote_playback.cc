@@ -718,6 +718,7 @@ void RemotePlayback::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   RemotePlaybackController::Trace(visitor);
+  RemotePlaybackClient::Trace(visitor);
 }
 
 }  // namespace blink

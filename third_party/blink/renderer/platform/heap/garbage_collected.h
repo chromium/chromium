@@ -60,7 +60,7 @@ namespace base::internal {
 // v8 lives outside the Chromium repository and cannot rely on //base concepts
 // like `DISALLOW_UNRETAINED()`.
 template <typename T>
-  requires cppgc::IsGarbageCollectedOrMixinTypeV<T>
+  requires(!std::is_void_v<T> && cppgc::IsGarbageCollectedOrMixinTypeV<T>)
 inline constexpr bool kCustomizeSupportsUnretained<T> = false;
 
 }  // namespace base::internal

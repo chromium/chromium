@@ -53,6 +53,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/media/multi_buffer_data_source.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -839,7 +840,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // this flag is set, it may never be unset.
   bool is_origin_tainted_ = false;
 
-  raw_ptr<MediaPlayerClient> client_ = nullptr;
+  Persistent<MediaPlayerClient> client_ = nullptr;
   raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_ = nullptr;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using

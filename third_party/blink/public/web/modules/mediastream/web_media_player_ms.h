@@ -243,8 +243,10 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetNetworkState(WebMediaPlayer::NetworkState state);
   void SetReadyState(WebMediaPlayer::ReadyState state);
 
+#if INSIDE_BLINK
   // Getter method to |client_|.
-  MediaPlayerClient* get_client() { return client_; }
+  MediaPlayerClient* get_client() { return client_.Get(); }
+#endif  // INSIDE_BLINK
 
   // To be run when tracks are added or removed.
   void Reload();
@@ -281,7 +283,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   const WebTimeRanges buffered_;
 
-  raw_ptr<MediaPlayerClient> client_ = nullptr;
+  WebPrivatePtrForGC<MediaPlayerClient> client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The

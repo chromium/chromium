@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
@@ -90,7 +91,7 @@ class StubWebMediaPlayer : public EmptyWebMediaPlayer {
   ReadyState GetReadyState() const override { return ready_state_; }
 
  private:
-  MediaPlayerClient* client_;
+  Persistent<MediaPlayerClient> client_;
   scoped_refptr<cc::Layer> layer_;
   NetworkState network_state_ = kNetworkStateEmpty;
   ReadyState ready_state_ = kReadyStateHaveNothing;

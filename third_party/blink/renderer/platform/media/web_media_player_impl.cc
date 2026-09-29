@@ -92,6 +92,7 @@
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 #include "third_party/blink/renderer/platform/media/media_player_util.h"
 #include "third_party/blink/renderer/platform/media/player_id_generator.h"
@@ -595,9 +596,10 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
             if (!self) {
               return;
             }
+            CHECK(client);
             client->DidDisableAudioOutputSinkChanges();
           },
-          weak_this_, CrossThreadUnretained(client_)));
+          weak_this_, MakeUnwrappingCrossThreadWeakHandle(client_.Get())));
 
   // TODO(xhwang): When we use an external Renderer, many methods won't work,
   // e.g. GetCurrentFrameFromCompositor(). See http://crbug.com/41143892.
@@ -3553,7 +3555,8 @@ void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {
   // Idle timeout chosen arbitrarily.
   background_pause_timer_.Start(
       FROM_HERE, base::Seconds(5),
-      BindOnce(&MediaPlayerClient::PausePlayback, Unretained(client_),
+      BindOnce(&MediaPlayerClient::PausePlayback,
+               WrapWeakPersistent(client_.Get()),
                PauseReason::kSuspendedPlayerIdleTimeout));
 }
 
