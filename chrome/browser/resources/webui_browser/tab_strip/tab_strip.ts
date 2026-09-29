@@ -344,7 +344,7 @@ export class TabStripElement extends CrLitElement implements
 
     this.setActiveTab_(tabId);
     this.tabStripService_.activateTab(tabId);
-    this.fire<TabActivated>('tab-activated', item.tabData);
+    this.fire<TabActivated>('tab-activated', {...item.tabData, isActive: true});
   }
 
   // TODO(webium): implement this.
