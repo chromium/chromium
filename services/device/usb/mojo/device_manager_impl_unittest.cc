@@ -157,6 +157,17 @@ TEST_F(USBDeviceManagerImplTest, GetDevice) {
     loop.Run();
   }
 
+  {
+    base::RunLoop loop;
+    mojo::Remote<mojom::UsbDevice> device;
+    device_manager->GetUnrestrictedDevice(mock_device->guid(),
+                                          /*blocked_interface_classes=*/{},
+                                          device.BindNewPipeAndPassReceiver(),
+                                          /*device_client=*/mojo::NullRemote());
+    device->Close(loop.QuitClosure());
+    loop.Run();
+  }
+
   mojo::Remote<mojom::UsbDevice> bad_device;
   device_manager->GetDevice("not a real guid", /*blocked_interface_classes=*/{},
                             bad_device.BindNewPipeAndPassReceiver(),

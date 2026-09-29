@@ -69,7 +69,19 @@ void DeviceManagerImpl::GetDevice(
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
   return GetDeviceInternal(guid, std::move(device_receiver),
                            std::move(device_client), blocked_interface_classes,
-                           /*allow_security_key_requests=*/false);
+                           /*allow_security_key_requests=*/false,
+                           /*allow_unrestricted_control_transfers=*/false);
+}
+
+void DeviceManagerImpl::GetUnrestrictedDevice(
+    const std::string& guid,
+    const std::vector<uint8_t>& blocked_interface_classes,
+    mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
+  return GetDeviceInternal(guid, std::move(device_receiver),
+                           std::move(device_client), blocked_interface_classes,
+                           /*allow_security_key_requests=*/false,
+                           /*allow_unrestricted_control_transfers=*/true);
 }
 
 void DeviceManagerImpl::GetSecurityKeyDevice(
@@ -79,7 +91,8 @@ void DeviceManagerImpl::GetSecurityKeyDevice(
   return GetDeviceInternal(guid, std::move(device_receiver),
                            std::move(device_client),
                            /*blocked_interface_classes=*/{},
-                           /*allow_security_key_requests=*/true);
+                           /*allow_security_key_requests=*/true,
+                           /*allow_unrestricted_control_transfers=*/false);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -223,14 +236,16 @@ void DeviceManagerImpl::GetDeviceInternal(
     mojo::PendingReceiver<mojom::UsbDevice> device_receiver,
     mojo::PendingRemote<mojom::UsbDeviceClient> device_client,
     base::span<const uint8_t> blocked_interface_classes,
-    bool allow_security_key_requests) {
+    bool allow_security_key_requests,
+    bool allow_unrestricted_control_transfers) {
   scoped_refptr<UsbDevice> device = usb_service_->GetDevice(guid);
   if (!device)
     return;
 
   DeviceImpl::Create(std::move(device), std::move(device_receiver),
                      std::move(device_client), blocked_interface_classes,
-                     allow_security_key_requests);
+                     allow_security_key_requests,
+                     allow_unrestricted_control_transfers);
 }
 
 }  // namespace device::usb

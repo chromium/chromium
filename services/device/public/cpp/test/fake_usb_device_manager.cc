@@ -62,6 +62,15 @@ void FakeUsbDeviceManager::GetDevice(
                         std::move(device_receiver), std::move(device_client));
 }
 
+void FakeUsbDeviceManager::GetUnrestrictedDevice(
+    const std::string& guid,
+    const std::vector<uint8_t>& blocked_interface_classes,
+    mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,
+    mojo::PendingRemote<mojom::UsbDeviceClient> device_client) {
+  GetDevice(guid, blocked_interface_classes, std::move(device_receiver),
+            std::move(device_client));
+}
+
 void FakeUsbDeviceManager::GetSecurityKeyDevice(
     const std::string& guid,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver,

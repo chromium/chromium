@@ -9,9 +9,11 @@ import "services/device/public/mojom/usb_enumeration_options.mojom";
 import "services/device/public/mojom/usb_manager_client.mojom";
 import "mojo/public/mojom/base/file.mojom";
 
+// Interface for managing USB devices. This interface should only be exposed
+// to privileged processes like the browser process.
 interface UsbDeviceManager {
   // Retrieves information about all devices available to the DeviceManager
-  // implementation and set client for device added/*removed events.
+  // implementation and set client for device added/removed events.
   EnumerateDevicesAndSetClient(
       pending_associated_remote<UsbDeviceManagerClient> client)
           => (array<UsbDeviceInfo> results);
@@ -20,10 +22,17 @@ interface UsbDeviceManager {
   // implementation.
   GetDevices(UsbEnumerationOptions? options) => (array<UsbDeviceInfo> results);
 
-  // Requests a device by guid.
+  // Requests a device by guid. The returned device is subject to WebUSB request
+  // allowlist and control transfer restrictions.
   GetDevice(string guid, array<uint8> blocked_interface_classes,
             pending_receiver<UsbDevice> device_receiver,
             pending_remote<UsbDeviceClient>? device_client);
+
+  // Opens a device with unrestricted control transfer permissions (e.g. for
+  // Chrome Apps and Extensions).
+  GetUnrestrictedDevice(string guid, array<uint8> blocked_interface_classes,
+                        pending_receiver<UsbDevice> device_receiver,
+                        pending_remote<UsbDeviceClient>? device_client);
 
   // Requests a device by guid. The returned device will be permitted to send
   // control transfers that attempt to configure an AOA[1] version that
