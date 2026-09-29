@@ -134,12 +134,6 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
 // Whether the presenter should use the custom bottom sheet presentation.
 - (BOOL)useCustomBottomSheet {
-  if (_isLVF && ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
-      base::FeatureList::IsEnabled(kEnableLensOnIPad)) {
-    std::string style = base::GetFieldTrialParamValueByFeature(
-        kEnableLensOnIPad, kEnableLensOnIPadPresentationStyleParam);
-    return style == kEnableLensOnIPadPresentationStyleWideBottomSheet;
-  }
   return UseCustomLensOverlayBottomSheet();
 }
 
@@ -232,7 +226,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   };
 
   BOOL presentInSidePanel =
-      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
+      lens::ResultPagePresentationFor(_baseViewController) ==
       lens::ResultPagePresentationType::kSidePanel;
   if (presentInSidePanel) {
     [self presentSidePanelAnimated:animated completion:presentationComplete];
@@ -321,7 +315,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
 
   BOOL isAlreadySidePanel = _baseViewController.sidePanelPresented;
   BOOL presentInSidePanel =
-      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
+      lens::ResultPagePresentationFor(_baseViewController) ==
       lens::ResultPagePresentationType::kSidePanel;
   // Refrain from rebuilding the presentation there was no change in the
   // presentation type.
@@ -512,7 +506,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   _presentationNavigationController.view.backgroundColor =
       [UIColor colorNamed:kPrimaryBackgroundColor];
   BOOL presentedInBottomSheet =
-      lens::ResultPagePresentationFor(_baseViewController, _isLVF) ==
+      lens::ResultPagePresentationFor(_baseViewController) ==
       lens::ResultPagePresentationType::kEdgeAttachedBottomSheet;
   [_resultViewController setOmniboxEnabled:YES];
   [_resultViewController setBottomSheetGrabberVisible:presentedInBottomSheet];
