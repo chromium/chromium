@@ -25,7 +25,8 @@ enum class Error {
   CRX_NOT_FOUND = 6,
   INVALID_ARGUMENT = 7,
   BAD_CRX_DATA_CALLBACK = 8,
-  kMaxValue = BAD_CRX_DATA_CALLBACK,
+  UPDATE_DISABLED = 9,
+  kMaxValue = UPDATE_DISABLED,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:UpdateClientError)
 

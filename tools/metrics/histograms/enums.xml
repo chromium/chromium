@@ -27866,6 +27866,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Clear badge"/>
 </enum>
 
+<!-- LINT.IfChange(UpdateClientError) -->
+
 <enum name="UpdateClientErrors">
   <int value="0" label="(No Error)"/>
   <int value="1" label="Update in progress"/>
@@ -27876,7 +27878,10 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="CRX not found"/>
   <int value="7" label="Invalid argument"/>
   <int value="8" label="Bad CRX data callback"/>
+  <int value="9" label="Update disabled"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/update_client/update_client_errors.h:UpdateClientError) -->
 
 <enum name="UpdateEngineAttemptResult">
   <int value="0" label="Update Succeeded"/>

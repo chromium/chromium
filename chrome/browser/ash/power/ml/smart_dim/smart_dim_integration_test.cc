@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
@@ -54,6 +56,12 @@ IN_PROC_BROWSER_TEST_F(SmartDimIntegrationTest, SmartDim) {
 // updater.
 class SmartDimComponentIntegrationTest : public SmartDimIntegrationTest {
  public:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    SmartDimIntegrationTest::SetUpDefaultCommandLine(command_line);
+    // The test requests an update from the component update server.
+    command_line->RemoveSwitch(::switches::kDisableComponentUpdate);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     // The component updater requires host lookups for a wide variety of hosts
     // involved in edge caching/downloads.

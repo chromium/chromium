@@ -41,7 +41,8 @@ class CrxUpdateService : public ComponentUpdateService,
   CrxUpdateService(scoped_refptr<Configurator> config,
                    std::unique_ptr<UpdateScheduler> scheduler,
                    scoped_refptr<update_client::UpdateClient> update_client,
-                   const std::string& brand);
+                   const std::string& brand,
+                   bool update_checks_disabled);
 
   CrxUpdateService(const CrxUpdateService&) = delete;
   CrxUpdateService& operator=(const CrxUpdateService&) = delete;
@@ -110,6 +111,9 @@ class CrxUpdateService : public ComponentUpdateService,
   scoped_refptr<update_client::UpdateClient> update_client_;
 
   std::string brand_;
+
+  // If true, components are registered but never checked for updates.
+  const bool update_checks_disabled_;
 
   // A collection of every registered component.
   using Components = base::flat_map<std::string, ComponentRegistration>;

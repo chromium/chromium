@@ -108,6 +108,7 @@ UpdateService::Result ToResult(update_client::Error error) {
     case update_client::Error::RETRY_LATER:
       return UpdateService::Result::kRetryLater;
     case update_client::Error::SERVICE_ERROR:
+    case update_client::Error::UPDATE_DISABLED:
       return UpdateService::Result::kServiceFailed;
     case update_client::Error::UPDATE_CHECK_ERROR:
       return UpdateService::Result::kUpdateCheckFailed;

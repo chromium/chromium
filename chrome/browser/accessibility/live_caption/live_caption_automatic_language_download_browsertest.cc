@@ -4,11 +4,13 @@
 
 #include <set>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "media/base/media_switches.h"
@@ -31,6 +33,13 @@ class LiveCaptionAutomaticLanguageDownloadTest
   void SetUp() override {
     scoped_feature_list()->InitAndEnableFeature(media::kLiveCaptionAutomaticLanguageDownload);
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    LiveCaptionSpeechRecognitionHostTest::SetUpDefaultCommandLine(command_line);
+    // The test waits for language pack installs to fail, which requires update
+    // checks to be attempted.
+    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
   }
 
   // SodaInstaller::Observer:

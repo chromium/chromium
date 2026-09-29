@@ -263,7 +263,8 @@ ComponentInstallerTest::ComponentInstallerTest() {
   RegisterComponentUpdateServicePrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   component_updater_ = std::make_unique<CrxUpdateService>(
-      config_, std::move(scheduler), update_client_, "");
+      config_, std::move(scheduler), update_client_, "",
+      /*update_checks_disabled=*/false);
 }
 
 ComponentInstallerTest::~ComponentInstallerTest() {

@@ -22,6 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
@@ -245,7 +246,8 @@ std::unique_ptr<ComponentUpdateService> TestComponentUpdateServiceFactory(
   EXPECT_TRUE(config);
   return std::make_unique<CrxUpdateService>(
       config, std::make_unique<MockUpdateScheduler>(),
-      base::MakeRefCounted<MockUpdateClient>(), "");
+      base::MakeRefCounted<MockUpdateClient>(), "",
+      /*update_checks_disabled=*/false);
 }
 
 ComponentUpdaterTest::ComponentUpdaterTest() {
@@ -258,7 +260,8 @@ ComponentUpdaterTest::ComponentUpdaterTest() {
   update_client::RegisterPrefs(pref_->registry());
   config_ = base::MakeRefCounted<TestConfigurator>(pref_.get());
   component_updater_ = std::make_unique<CrxUpdateService>(
-      config_, std::move(scheduler), update_client_, "");
+      config_, std::move(scheduler), update_client_, "",
+      /*update_checks_disabled=*/false);
 }
 
 ComponentUpdaterTest::~ComponentUpdaterTest() {
@@ -452,6 +455,47 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   ht.ExpectUniqueSample("ComponentUpdater.Calls", 0, 2);
   ht.ExpectUniqueSample("ComponentUpdater.UpdateCompleteResult", 0, 2);
   ht.ExpectTotalCount("ComponentUpdater.UpdateCompleteTime", 2);
+}
+
+// Tests that with update checks disabled, components are registered but no
+// update checks are made, neither periodically nor on demand.
+TEST_F(ComponentUpdaterTest, UpdateChecksDisabled) {
+  auto update_client = base::MakeRefCounted<MockUpdateClient>();
+  auto scheduler = std::make_unique<MockUpdateScheduler>();
+  EXPECT_CALL(*update_client, AddObserver(_));
+  EXPECT_CALL(*update_client, RemoveObserver(_));
+  EXPECT_CALL(*update_client, Stop());
+  EXPECT_CALL(*update_client, Update).Times(0);
+  EXPECT_CALL(*scheduler, Schedule).Times(0);
+  EXPECT_CALL(*scheduler, Stop());
+  CrxUpdateService cus(configurator(), std::move(scheduler), update_client, "",
+                       /*update_checks_disabled=*/true);
+
+  const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
+  EXPECT_TRUE(cus.RegisterComponent(ComponentRegistration(
+      id, /*name=*/{}, base::ToVector(update_client::jebg_hash),
+      base::Version("0.9"), /*fingerprint=*/{}, /*installer_attributes=*/{},
+      /*action_handler=*/nullptr, base::MakeRefCounted<MockInstaller>(),
+      /*requires_network_encryption=*/false,
+      /*supports_group_policy_enable_component_updates=*/true,
+      /*allow_cached_copies=*/true,
+      /*allow_updates_on_metered_connection=*/true,
+      /*allow_updates=*/true)));
+  CrxUpdateItem item;
+  EXPECT_TRUE(cus.GetComponentDetails(id, &item));
+
+  base::test::TestFuture<update_client::Error> future;
+  cus.OnDemandUpdate(id, OnDemandUpdater::Priority::FOREGROUND,
+                     future.GetCallback());
+  EXPECT_EQ(future.Get(), update_client::Error::UPDATE_DISABLED);
+
+  // Throttled requests are unblocked right away instead of waiting on an
+  // update.
+  bool unblocked = false;
+  cus.MaybeThrottle(
+      id,
+      base::BindOnce([](bool* unblocked) { *unblocked = true; }, &unblocked));
+  EXPECT_TRUE(unblocked);
 }
 
 // Tests that throttling an update invokes UpdateClient::Update.

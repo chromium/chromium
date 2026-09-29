@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_switches.h"
 #include "components/policy/core/common/policy_map.h"
@@ -46,6 +47,7 @@ class ComponentUpdaterPolicyTest : public PolicyTest {
   ~ComponentUpdaterPolicyTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
  protected:
@@ -126,6 +128,13 @@ void ComponentUpdaterPolicyTest::SetUpCommandLine(
       "url-source=%s", https_server_.GetURL("/service/update2").spec().c_str());
   command_line->AppendSwitchASCII(switches::kComponentUpdater, val.c_str());
   PolicyTest::SetUpCommandLine(command_line);
+}
+
+void ComponentUpdaterPolicyTest::SetUpDefaultCommandLine(
+    base::CommandLine* command_line) {
+  PolicyTest::SetUpDefaultCommandLine(command_line);
+  // The test makes update checks against the mock server.
+  command_line->RemoveSwitch(::switches::kDisableComponentUpdate);
 }
 
 void ComponentUpdaterPolicyTest::SetUpOnMainThread() {
