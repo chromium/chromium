@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_BROWSER_ACTUATOR_INTERNALS_UI_MOJO_IMPL_H_
 #define CHROME_BROWSER_BROWSER_ACTUATOR_INTERNALS_BROWSER_ACTUATOR_INTERNALS_UI_MOJO_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
 
 namespace browser_actuator {
 
@@ -23,15 +26,21 @@ class BrowserActuatorInternalsUIMojoImpl
           browser_actuator_internals::mojom::BrowserActuatorInternalsUI>
           receiver,
       mojo::PendingRemote<
-          browser_actuator_internals::mojom::BrowserActuatorInternalsPage>
-          page);
+          browser_actuator_internals::mojom::BrowserActuatorInternalsPage> page,
+      Profile* profile);
   BrowserActuatorInternalsUIMojoImpl(
       const BrowserActuatorInternalsUIMojoImpl&) = delete;
   BrowserActuatorInternalsUIMojoImpl& operator=(
       const BrowserActuatorInternalsUIMojoImpl&) = delete;
   ~BrowserActuatorInternalsUIMojoImpl() override;
 
+  // browser_actuator_internals::mojom::BrowserActuatorInternalsUI:
+  void GetSessionHistory(GetSessionHistoryCallback callback) override;
+
  private:
+  // Outlives this object; the WebContents is destroyed before the Profile.
+  raw_ptr<Profile> profile_;
+
   mojo::Receiver<browser_actuator_internals::mojom::BrowserActuatorInternalsUI>
       receiver_;
   mojo::Remote<browser_actuator_internals::mojom::BrowserActuatorInternalsPage>

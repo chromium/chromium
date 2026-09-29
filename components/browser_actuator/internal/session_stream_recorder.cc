@@ -4,7 +4,9 @@
 
 #include "components/browser_actuator/internal/session_stream_recorder.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -19,8 +21,10 @@
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/browser_actuator/internal/metrics_utils.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
 #include "components/browser_actuator/internal/proto/transport_messages.to_value.h"
 #include "components/browser_actuator/public/common.h"
@@ -30,6 +34,117 @@
 #include "components/sharing_message/proto/actuator_downstream_message.to_value.h"
 
 namespace browser_actuator {
+
+SessionEventSnapshot::SessionEventSnapshot() = default;
+SessionEventSnapshot::SessionEventSnapshot(const SessionEventSnapshot&) =
+    default;
+SessionEventSnapshot::SessionEventSnapshot(SessionEventSnapshot&&) = default;
+SessionEventSnapshot& SessionEventSnapshot::operator=(
+    const SessionEventSnapshot&) = default;
+SessionEventSnapshot& SessionEventSnapshot::operator=(SessionEventSnapshot&&) =
+    default;
+SessionEventSnapshot::~SessionEventSnapshot() = default;
+
+SessionSnapshot::SessionSnapshot() = default;
+SessionSnapshot::SessionSnapshot(const SessionSnapshot&) = default;
+SessionSnapshot::SessionSnapshot(SessionSnapshot&&) = default;
+SessionSnapshot& SessionSnapshot::operator=(const SessionSnapshot&) = default;
+SessionSnapshot& SessionSnapshot::operator=(SessionSnapshot&&) = default;
+SessionSnapshot::~SessionSnapshot() = default;
+
+namespace {
+
+// The recorder stores monotonic TimeTicks, which have no absolute epoch. The
+// metadata carries both the TimeTicks and the wall time of the session start,
+// so an absolute time for any entry is start_wall_time plus the elapsed ticks.
+base::Time ToWallTime(const SessionMetadata& metadata, base::TimeTicks ticks) {
+  return metadata.start_wall_time + (ticks - metadata.start_time);
+}
+
+// LINT.IfChange(FromUpstreamProtoPayloadType)
+constexpr std::optional<PayloadType> FromUpstreamProtoPayloadType(
+    ActuatorUpstreamPayloadType proto_type) {
+  switch (proto_type) {
+    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND:
+      return PayloadType::kControl;
+    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING:
+      return PayloadType::kExperimentalTriggering;
+    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
+    default:
+      return std::nullopt;
+  }
+}
+// LINT.ThenChange(//components/browser_actuator/public/common.h:PayloadType)
+
+std::string_view PayloadTypeName(std::optional<PayloadType> type) {
+  return type.has_value() ? PayloadTypeToMetricSuffix(*type) : "Unspecified";
+}
+
+std::string_view PayloadTypeName(ActuatorDownstreamPayloadType type) {
+  return PayloadTypeName(FromDownstreamProtoPayloadType(type));
+}
+
+std::string_view PayloadTypeName(ActuatorUpstreamPayloadType type) {
+  return PayloadTypeName(FromUpstreamProtoPayloadType(type));
+}
+
+SessionEventSnapshot BuildEventSnapshot(
+    const SessionMetadata& metadata,
+    const SessionStreamRecorder::Entry& entry,
+    size_t max_message_bytes) {
+  SessionEventSnapshot event;
+  event.timestamp = ToWallTime(metadata, entry.timestamp);
+  event.is_downstream =
+      std::holds_alternative<ActuatorDownstreamMessage>(entry.message);
+
+  std::visit(
+      [&event](const auto& msg) {
+        for (const auto& payload : msg.typed_payloads()) {
+          event.payload_types.emplace_back(
+              PayloadTypeName(payload.payload_type()));
+        }
+        event.message =
+            base::WriteJson(browser_actuator::ToValue(msg)).value_or("");
+      },
+      entry.message);
+
+  if (event.message.size() > max_message_bytes) {
+    event.message = std::string(
+        base::TruncateUTF8ToByteSize(event.message, max_message_bytes));
+    event.message_truncated = true;
+  }
+
+  return event;
+}
+
+SessionSnapshot BuildSessionSnapshot(
+    const SessionMetadata& metadata,
+    const std::vector<SessionStreamRecorder::Entry>& entries,
+    size_t max_events,
+    size_t max_message_bytes) {
+  SessionSnapshot snapshot;
+  snapshot.session_id = metadata.session_id;
+  snapshot.start_wall_time = metadata.start_wall_time;
+  if (metadata.end_time.has_value()) {
+    snapshot.end_wall_time = ToWallTime(metadata, *metadata.end_time);
+  }
+  snapshot.total_downstream_messages = metadata.total_downstream_messages;
+  snapshot.total_upstream_messages = metadata.total_upstream_messages;
+  snapshot.total_events = entries.size();
+
+  size_t kept_count = std::min(max_events, entries.size());
+  size_t start_index = entries.size() - kept_count;
+  snapshot.events.reserve(kept_count);
+
+  for (size_t i = start_index; i < entries.size(); ++i) {
+    snapshot.events.push_back(
+        BuildEventSnapshot(metadata, entries[i], max_message_bytes));
+  }
+
+  return snapshot;
+}
+
+}  // namespace
 
 base::DictValue SessionMetadata::ToValue() const {
   base::DictValue dict;
@@ -182,6 +297,16 @@ SessionStreamRecorderFactory::~SessionStreamRecorderFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+// static
+SessionStreamRecorderFactory* SessionStreamRecorderFactory::FromFactory(
+    TransportHandlerFactory* factory) {
+  if (!factory ||
+      factory->GetFactoryId() != FactoryId::kSessionStreamRecorder) {
+    return nullptr;
+  }
+  return static_cast<SessionStreamRecorderFactory*>(factory);
+}
+
 FactoryId SessionStreamRecorderFactory::GetFactoryId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return FactoryId::kSessionStreamRecorder;
@@ -278,6 +403,33 @@ base::DictValue SessionStreamRecorderFactory::ExportAllSessionsAsValue() const {
 
   root_dict.Set("sessions", std::move(sessions_list));
   return root_dict;
+}
+
+std::vector<SessionSnapshot> SessionStreamRecorderFactory::GetAllSessions(
+    size_t max_events,
+    size_t max_message_bytes) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<SessionSnapshot> sessions;
+
+  for (const auto& weak_recorder : active_recorders_) {
+    if (weak_recorder) {
+      sessions.push_back(BuildSessionSnapshot(weak_recorder->metadata(),
+                                              weak_recorder->entries(),
+                                              max_events, max_message_bytes));
+    }
+  }
+
+  for (const auto& retained : retained_sessions_) {
+    sessions.push_back(BuildSessionSnapshot(retained.metadata, retained.entries,
+                                            max_events, max_message_bytes));
+  }
+
+  std::sort(sessions.begin(), sessions.end(),
+            [](const SessionSnapshot& a, const SessionSnapshot& b) {
+              return a.start_wall_time > b.start_wall_time;
+            });
+
+  return sessions;
 }
 
 std::string SessionStreamRecorderFactory::ExportAllSessionsAsJson() const {

@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/browser_actuator/internals/browser_actuator_internals_ui_mojo_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/browser_actuator_internals_resources.h"
 #include "chrome/grit/browser_actuator_internals_resources_map.h"
 #include "components/browser_actuator/public/features.h"
@@ -58,7 +59,7 @@ void BrowserActuatorInternalsUI::CreateUI(
     mojo::PendingReceiver<
         browser_actuator_internals::mojom::BrowserActuatorInternalsUI> ui) {
   mojo_impl_ = std::make_unique<BrowserActuatorInternalsUIMojoImpl>(
-      std::move(ui), std::move(page));
+      std::move(ui), std::move(page), Profile::FromWebUI(web_ui()));
 }
 
 }  // namespace browser_actuator

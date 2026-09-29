@@ -37,7 +37,10 @@ source_set("features") {
 }
 
 source_set("session_stream_recorder") {
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//chrome/browser/browser_actuator/internals:*",
+  ]
 
   sources = [
     "session_stream_recorder.cc",
@@ -54,6 +57,7 @@ source_set("session_stream_recorder") {
   ]
 
   deps = [
+    ":metrics_utils",
     "//components/browser_actuator/internal/proto:transport_messages_extras",
     "//components/sharing_message/proto:actuator_downstream_message_extras",
     "//third_party/protobuf:protobuf_lite",

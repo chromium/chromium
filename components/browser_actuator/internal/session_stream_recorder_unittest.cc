@@ -14,6 +14,8 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/browser_actuator/internal/proto/transport_messages.pb.h"
@@ -43,6 +45,18 @@ class FakeTransportSession : public TransportSession {
 
  private:
   std::string session_id_;
+};
+
+class FakeOtherFactory : public TransportHandlerFactory {
+ public:
+  FactoryId GetFactoryId() const override { return FactoryId::kControl; }
+  std::vector<PayloadType> GetSupportedPayloadTypes() const override {
+    return {};
+  }
+  std::unique_ptr<TransportHandler> OnNewSession(
+      TransportSession* session) override {
+    return nullptr;
+  }
 };
 
 class TestObserver : public SessionStreamRecorder::Observer {
@@ -628,6 +642,243 @@ TEST(SessionStreamRecorderFactoryTest,
   const base::ListValue* events = s1_dict->FindList("events");
   ASSERT_NE(events, nullptr);
   EXPECT_TRUE(events->empty());
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIsEmptyByDefault) {
+  SessionStreamRecorderFactory factory;
+  EXPECT_TRUE(factory
+                  .GetAllSessions(/*max_events=*/10,
+                                  /*max_message_bytes=*/1024)
+                  .empty());
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     GetAllSessionsIncludesActiveAndRetained) {
+  SessionStreamRecorderFactory factory;
+
+  FakeTransportSession session_active("session_active");
+  std::unique_ptr<TransportHandler> active_handler =
+      factory.OnNewSession(&session_active);
+
+  FakeTransportSession session_retained("session_retained");
+  std::unique_ptr<TransportHandler> retained_handler =
+      factory.OnNewSession(&session_retained);
+  retained_handler.reset();  // Moves session to retained_sessions_
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 2u);
+
+  bool found_active = false;
+  bool found_retained = false;
+  for (const auto& s : sessions) {
+    if (s.session_id == "session_active") {
+      found_active = true;
+      EXPECT_FALSE(s.end_wall_time.has_value());
+    } else if (s.session_id == "session_retained") {
+      found_retained = true;
+      EXPECT_TRUE(s.end_wall_time.has_value());
+    }
+  }
+  EXPECT_TRUE(found_active);
+  EXPECT_TRUE(found_retained);
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsCapsEvents) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  for (int i = 0; i < 10; ++i) {
+    ActuatorDownstreamMessage msg;
+    msg.set_session_id("session_1");
+    msg.set_sequence_number(i);
+    recorder->RecordDownstreamMessage(std::move(msg));
+  }
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/3, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_EQ(sessions[0].total_events, 10u);
+  EXPECT_EQ(sessions[0].events.size(), 3u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsKeepsNewestEvents) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  for (int i = 0; i < 10; ++i) {
+    ActuatorDownstreamMessage msg;
+    msg.set_session_id("session_1");
+    msg.set_sequence_number(i);
+    recorder->RecordDownstreamMessage(std::move(msg));
+  }
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/3, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_EQ(sessions[0].events.size(), 3u);
+
+  // The kept events should be the newest 3: sequence numbers 7, 8, 9, in order.
+  for (size_t i = 0; i < 3; ++i) {
+    int expected_seq = 7 + i;
+    std::optional<base::DictValue> parsed = base::JSONReader::ReadDict(
+        sessions[0].events[i].message, base::JSON_PARSE_RFC);
+    ASSERT_TRUE(parsed.has_value());
+    const std::string* seq = parsed->FindString("sequence_number");
+    ASSERT_NE(seq, nullptr);
+    EXPECT_EQ(*seq, base::NumberToString(expected_seq));
+  }
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsTruncatesLargeMessages) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  ActuatorDownstreamMessage msg;
+  msg.set_session_id("session_1");
+  auto* typed_payload = msg.add_typed_payloads();
+  typed_payload->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  typed_payload->mutable_proto_payload()->set_value(std::string(500, 'x'));
+  recorder->RecordDownstreamMessage(std::move(msg));
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/50);
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_EQ(sessions[0].events.size(), 1u);
+  EXPECT_TRUE(sessions[0].events[0].message_truncated);
+  EXPECT_EQ(sessions[0].events[0].message.size(), 50u);
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsSortsNewestFirst) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  SessionStreamRecorderFactory factory;
+
+  FakeTransportSession session_older("session_older");
+  std::unique_ptr<TransportHandler> older_handler =
+      factory.OnNewSession(&session_older);
+
+  task_environment.FastForwardBy(base::Seconds(10));
+
+  FakeTransportSession session_newer("session_newer");
+  std::unique_ptr<TransportHandler> newer_handler =
+      factory.OnNewSession(&session_newer);
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 2u);
+  EXPECT_EQ(sessions[0].session_id, "session_newer");
+  EXPECT_EQ(sessions[1].session_id, "session_older");
+  EXPECT_GT(sessions[0].start_wall_time, sessions[1].start_wall_time);
+}
+
+TEST(SessionStreamRecorderFactoryTest,
+     GetAllSessionsConvertsTimestampsToWallTime) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  task_environment.FastForwardBy(base::Seconds(5));
+
+  ActuatorDownstreamMessage msg;
+  msg.set_session_id("session_1");
+  recorder->RecordDownstreamMessage(std::move(msg));
+
+  task_environment.FastForwardBy(base::Seconds(5));
+  handler.reset();  // closes the session
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  const auto& s = sessions[0];
+  ASSERT_TRUE(s.end_wall_time.has_value());
+  ASSERT_EQ(s.events.size(), 1u);
+
+  EXPECT_EQ(s.events[0].timestamp, s.start_wall_time + base::Seconds(5));
+  EXPECT_EQ(*s.end_wall_time - s.start_wall_time, base::Seconds(10));
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+  auto* recorder = static_cast<SessionStreamRecorder*>(handler.get());
+
+  ActuatorDownstreamMessage downstream;
+  downstream.set_session_id("session_1");
+  auto* p1 = downstream.add_typed_payloads();
+  p1->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  auto* p2 = downstream.add_typed_payloads();
+  p2->set_payload_type(
+      ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  auto* p3 = downstream.add_typed_payloads();
+  p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  recorder->RecordDownstreamMessage(std::move(downstream));
+
+  ActuatorUpstreamMessage upstream;
+  upstream.set_session_id("session_1");
+  auto* up1 = upstream.add_typed_payloads();
+  up1->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND);
+  auto* up2 = upstream.add_typed_payloads();
+  up2->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
+  auto* up3 = upstream.add_typed_payloads();
+  up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  recorder->RecordUpstreamMessage(std::move(upstream));
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_EQ(sessions[0].events.size(), 2u);
+
+  EXPECT_TRUE(sessions[0].events[0].is_downstream);
+  EXPECT_THAT(sessions[0].events[0].payload_types,
+              ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
+                                     "Unspecified"));
+
+  EXPECT_FALSE(sessions[0].events[1].is_downstream);
+  EXPECT_THAT(sessions[0].events[1].payload_types,
+              ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
+                                     "Unspecified"));
+}
+
+TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {
+  SessionStreamRecorderFactory factory;
+  FakeTransportSession session("session_1");
+  std::unique_ptr<TransportHandler> handler = factory.OnNewSession(&session);
+
+  ActuatorUpstreamMessage upstream;
+  upstream.set_session_id("session_1");
+  upstream.set_client_sequence_number(42);
+  factory.OnUpstreamMessage("session_1", upstream);
+
+  std::vector<SessionSnapshot> sessions =
+      factory.GetAllSessions(/*max_events=*/10, /*max_message_bytes=*/1024);
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_EQ(sessions[0].total_upstream_messages, 1u);
+  ASSERT_EQ(sessions[0].events.size(), 1u);
+  EXPECT_FALSE(sessions[0].events[0].is_downstream);
+}
+
+TEST(SessionStreamRecorderFactoryTest, FromFactory) {
+  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(nullptr), nullptr);
+
+  SessionStreamRecorderFactory factory;
+  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(&factory), &factory);
+
+  FakeOtherFactory other_factory;
+  EXPECT_EQ(SessionStreamRecorderFactory::FromFactory(&other_factory), nullptr);
 }
 
 }  // namespace

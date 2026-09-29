@@ -7,6 +7,29 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "browser_actuator_internals.mojom" ]
   webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "browser_actuator_internals.mojom.RecordedEvent"
+          cpp = "::browser_actuator::SessionEventSnapshot"
+        },
+        {
+          mojom = "browser_actuator_internals.mojom.SessionSummary"
+          cpp = "::browser_actuator::SessionSnapshot"
+        },
+      ]
+      traits_headers = [ "browser_actuator_internals_mojom_traits.h" ]
+      traits_sources = [ "browser_actuator_internals_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//components/browser_actuator/internal:session_stream_recorder",
+        "//mojo/public/cpp/base",
+      ]
+    },
+  ]
 }
 
 source_set("internals") {
@@ -24,7 +47,10 @@ source_set("internals") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/browser_actuator:factory",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/browser_actuator_internals:resources",
+    "//components/browser_actuator/internal:session_stream_recorder",
     "//components/browser_actuator/public",
     "//content/public/common",
   ]
@@ -32,14 +58,25 @@ source_set("internals") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "browser_actuator_internals_ui_mojo_impl_unittest.cc" ]
+  sources = [
+    "browser_actuator_internals_mojom_traits_unittest.cc",
+    "browser_actuator_internals_ui_mojo_impl_unittest.cc",
+  ]
   deps = [
     ":internals",
     ":mojo_bindings",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/browser_actuator:factory",
+    "//chrome/test:test_support",
+    "//components/browser_actuator/internal:session_stream_recorder",
+    "//components/browser_actuator/internal/proto",
     "//components/browser_actuator/public",
+    "//content/test:test_support",
     "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]

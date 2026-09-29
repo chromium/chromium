@@ -4,12 +4,67 @@
 
 module browser_actuator_internals.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
+// Direction of a recorded transport message, using the transport layer's
+// terms.
+enum MessageDirection {
+  // Sent by the server to Chrome.
+  kDownstream,
+  // Sent by Chrome to the server.
+  kUpstream,
+};
+
+// One recorded transport message. Sent from the browser process to the
+// trusted chrome://browser-actuator-internals WebUI renderer.
+struct RecordedEvent {
+  // Absolute time of the record.
+  mojo_base.mojom.JSTime timestamp;
+  // Which side sent the message.
+  MessageDirection direction;
+  // One entry for each typed payload in the envelope.
+  array<string> payload_types;
+  // A partial or full JSON object for debug display only. The page must not
+  // parse it. The browser cuts it to at most 8 KB; see `message_truncated`.
+  string message;
+  // True when `message` was cut. The text is then incomplete and is not
+  // valid JSON. The page shows it as-is with a "truncated" marker.
+  bool message_truncated;
+};
+
+// One active or closed transport session.
+struct SessionSummary {
+  // Unique identifier of the transport session.
+  string session_id;
+  // Wall-clock time when the session started.
+  mojo_base.mojom.JSTime start_wall_time;
+  // Wall-clock time when the session closed. Null while the session is still
+  // active.
+  mojo_base.mojom.JSTime? end_wall_time;
+  // Uncapped lifetime count of downstream messages in this session.
+  uint32 total_downstream_messages;
+  // Uncapped lifetime count of upstream messages in this session.
+  uint32 total_upstream_messages;
+  // The newest events, oldest first. Capped by the browser.
+  array<RecordedEvent> events;
+  // The true number of events in the session. May be larger than
+  // `events.length` because of the cap.
+  uint32 total_events;
+};
+
 // Renderer-side interface for receiving diagnostic events from the browser.
 interface BrowserActuatorInternalsPage {};
 
 // Browser-side interface for handling requests from
 // chrome://browser-actuator-internals.
-interface BrowserActuatorInternalsUI {};
+// Implemented in the browser process and only bound for that trusted WebUI,
+// which is itself gated behind a feature flag.
+interface BrowserActuatorInternalsUI {
+  // Returns every recorded session, newest first. The browser caps both the
+  // number of events per session (500) and the byte length of each
+  // `message` (8 KB).
+  GetSessionHistory() => (array<SessionSummary> sessions);
+};
 
 // Factory interface for binding the BrowserActuatorInternalsUI and
 // BrowserActuatorInternalsPage interfaces.

@@ -52,6 +52,54 @@ struct SessionMetadata {
   base::DictValue ToValue() const;
 };
 
+// One recorded message, converted for diagnostic consumers. The proto body is
+// already serialized here so that callers do not need a dependency on the
+// transport protos.
+// LINT.IfChange(SessionEventSnapshot)
+struct SessionEventSnapshot {
+  SessionEventSnapshot();
+  SessionEventSnapshot(const SessionEventSnapshot&);
+  SessionEventSnapshot(SessionEventSnapshot&&);
+  SessionEventSnapshot& operator=(const SessionEventSnapshot&);
+  SessionEventSnapshot& operator=(SessionEventSnapshot&&);
+  ~SessionEventSnapshot();
+
+  // Absolute time, derived from the session start. See the note in
+  // GetAllSessions() about why the stored value is a TimeTicks.
+  base::Time timestamp;
+  bool is_downstream = false;
+  // One entry for each typed payload the envelope carries.
+  std::vector<std::string> payload_types;
+  // JSON of the whole envelope.
+  std::string message;
+  // True when `message` was cut to the byte limit.
+  bool message_truncated = false;
+};
+// LINT.ThenChange(//chrome/browser/browser_actuator/internals/browser_actuator_internals_mojom_traits.cc)
+
+// One active or closed session.
+// LINT.IfChange(SessionSnapshot)
+struct SessionSnapshot {
+  SessionSnapshot();
+  SessionSnapshot(const SessionSnapshot&);
+  SessionSnapshot(SessionSnapshot&&);
+  SessionSnapshot& operator=(const SessionSnapshot&);
+  SessionSnapshot& operator=(SessionSnapshot&&);
+  ~SessionSnapshot();
+
+  std::string session_id;
+  base::Time start_wall_time;
+  // Null while the session is still active.
+  std::optional<base::Time> end_wall_time;
+  size_t total_downstream_messages = 0;
+  size_t total_upstream_messages = 0;
+  // The true event count, before `max_events` is applied.
+  size_t total_events = 0;
+  // The newest `max_events` events, oldest first.
+  std::vector<SessionEventSnapshot> events;
+};
+// LINT.ThenChange(//chrome/browser/browser_actuator/internals/browser_actuator_internals_mojom_traits.cc)
+
 // Records canonical protobuf messages (ActuatorDownstreamMessage and
 // ActuatorUpstreamMessage) for a single TransportSession using an unbounded
 // std::vector. Observers can subscribe to receive live messages as they occur.
@@ -137,6 +185,11 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   SessionStreamRecorderFactory& operator=(const SessionStreamRecorderFactory&) =
       delete;
 
+  // Narrows a factory obtained from BrowserActuatorService::GetFactory().
+  // Returns nullptr if `factory` is null or is not a recorder factory.
+  static SessionStreamRecorderFactory* FromFactory(
+      TransportHandlerFactory* factory);
+
   // TransportHandlerFactory implementation:
   FactoryId GetFactoryId() const override;
   std::vector<PayloadType> GetSupportedPayloadTypes() const override;
@@ -150,6 +203,18 @@ class SessionStreamRecorderFactory : public TransportHandlerFactory,
   // Exports all tracked sessions' metadata and history as a structured
   // dictionary.
   base::DictValue ExportAllSessionsAsValue() const;
+
+  // Returns every active and retained session, newest session first.
+  //
+  // `max_events` caps the events carried for each session. The newest events
+  // are kept. `total_events` always reports the true count.
+  // `max_message_bytes` caps the size of one `message`.
+  //
+  // Unlike ExportAllSessionsAsValue(), this returns typed data with absolute
+  // timestamps, so callers do not need to parse a dictionary or resolve
+  // TimeTicks.
+  std::vector<SessionSnapshot> GetAllSessions(size_t max_events,
+                                              size_t max_message_bytes) const;
 
   // TODO(b/561566505): Support export as trace file.
   // Exports all tracked sessions' metadata and history as JSON.
