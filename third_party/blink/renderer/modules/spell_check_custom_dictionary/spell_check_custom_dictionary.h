@@ -24,6 +24,11 @@ class MODULES_EXPORT SpellCheckCustomDictionary final
   void removeWords(ScriptState* script_state, const Vector<String>& words);
 
   void Trace(Visitor*) const override;
+
+ private:
+  // Whether addWords() has already warned about words it ignored. This object
+  // is owned by a single Document, so the warning is logged once per document.
+  bool ignored_words_warned_ = false;
 };
 }  // namespace blink
 

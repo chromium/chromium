@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 
@@ -60,6 +61,7 @@ void SpellCheckCustomDictionary::addWords(ScriptState* script_state,
   }
   std::vector<std::string> custom_words;
   custom_words.reserve(words.size());
+  bool ignored_some = false;
   for (const auto& word : words) {
     // Reject ill-formed entries before they reach the spellchecker, matching
     // the browser custom dictionary's IsValidWord(): skip empty words and words
@@ -68,11 +70,25 @@ void SpellCheckCustomDictionary::addWords(ScriptState* script_state,
     // converting it to a U+FFFD-mangled entry.
     if (word.empty() || word.length() != word.LengthWithStrippedWhiteSpace() ||
         !IsWellFormed(word)) {
+      ignored_some = true;
       continue;
     }
     // Only well-formed UTF-16 reaches here.
     custom_words.push_back(
         word.Utf8(Utf8ConversionMode::kStrictReplacingErrors));
+  }
+
+  // Invalid words are ignored rather than rejected with an exception.
+  // The words themselves are left out of the message.
+  if (ignored_some && !ignored_words_warned_) {
+    ExecutionContext::From(script_state)
+        ->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "SpellCheckCustomDictionary: addWords() ignored one or more "
+            "words that were empty, had leading or trailing whitespace, or "
+            "contained unpaired surrogates."));
+    ignored_words_warned_ = true;
   }
   entry->client->SpellCheckCustomDictionaryChanged(/*words_added=*/custom_words,
                                                    /*words_removed=*/{});
