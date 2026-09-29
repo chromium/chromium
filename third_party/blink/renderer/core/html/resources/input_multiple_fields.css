@@ -28,6 +28,16 @@ input[type="week" i] {
     }
 }
 
+@supports blink-feature(AppearanceBase) {
+    input[type="date" i]:disabled,
+    input[type="datetime-local" i]:disabled,
+    input[type="month" i]:disabled,
+    input[type="time" i]:disabled,
+    input[type="week" i]:disabled {
+        cursor: -internal-auto-base(default, not-allowed);
+    }
+}
+
 input::-webkit-datetime-edit {
     flex: 1;
     min-width: 0;

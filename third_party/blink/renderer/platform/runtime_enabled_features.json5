@@ -2259,6 +2259,12 @@
       name: "CustomizableSelectMultiplePopup",
       status: "experimental",
     },
+    {
+      // Adds new UA styles for customizable select from CSSWG discussions.
+      // https://chromestatus.com/feature/6270612585709568
+      name: "CustomizableSelectNewUAStyles",
+      status: "experimental",
+    },
     // see crbug.com/341313078
     {
       name: "CustomScrollbarApplyMinimumThumbLength",

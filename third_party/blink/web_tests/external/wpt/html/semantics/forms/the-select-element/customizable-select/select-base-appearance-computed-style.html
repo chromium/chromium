@@ -110,7 +110,7 @@ test(() => {
     'gap': '0.5em',
     'border-radius': '0.5em',
     'text-indent': 'initial',
-    'cursor': 'initial',
+    'cursor': 'default',
     'white-space': 'initial',
     'align-items': 'initial',
     'text-transform': 'initial',
@@ -210,4 +210,12 @@ test(() => {
   };
   testProperties(getComputedStyle(optgroupOption), expectedProperties);
 }, 'UA styles of base appearance <option> in <optgroup>.');
+
+test((t) => {
+  select.disabled = true;
+  t.add_cleanup(() => {
+    select.disabled = false;
+  });
+  assert_equals(getComputedStyle(select).cursor, 'not-allowed', 'cursor');
+}, 'UA styles of disabled base appearance <select>.');
 </script>

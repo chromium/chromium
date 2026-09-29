@@ -776,17 +776,17 @@ input[type="image" i] {
 
 input[type="radio" i],
 input[type="checkbox" i] {
+    cursor: default;
+
     @supports not blink-feature(AppearanceBase) {
         padding: initial;
         background-color: initial;
         border: initial;
-        cursor: default;
     }
     @supports blink-feature(AppearanceBase) {
         padding: -internal-auto-base(initial, unset);
         background-color: -internal-auto-base(initial, transparent);
         border: -internal-auto-base(initial, 1px solid currentColor);
-        cursor: -internal-auto-base(default, unset);
 
         block-size: -internal-auto-base(unset, 1em);
         inline-size: -internal-auto-base(unset, 1em);
@@ -880,7 +880,6 @@ button {
 
     @supports not blink-feature(AppearanceBase) {
         text-align: center;
-        cursor: default;
         padding-block: 1px;
         padding-inline: 6px;
         border: 2px outset ButtonBorder;
@@ -981,6 +980,7 @@ button:disabled {
         background-color: -internal-auto-base(light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3)), revert-rule);
         border-color: -internal-auto-base(light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3)), revert-rule);
         color: -internal-auto-base(light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3)), color-mix(currentColor 50%, transparent));
+        cursor: -internal-auto-base(default, not-allowed);
     }
 }
 
@@ -989,6 +989,7 @@ input[type="color" i]:disabled {
         background-color: -internal-auto-base(light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3)), transparent);
         border-color: -internal-auto-base(light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3)), currentColor);
         color: -internal-auto-base(light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3)), color-mix(currentColor 50%, transparent));
+        cursor: -internal-auto-base(default, not-allowed);
     }
     @supports not blink-feature(AppearanceBase) {
         background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
@@ -1016,14 +1017,14 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 }
 
 input:disabled, textarea:disabled {
-    cursor: default;
-
     @supports not blink-feature(AppearanceBase) {
+        cursor: default;
         background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
         color: light-dark(#545454, #aaaaaa);
     }
 
     @supports blink-feature(AppearanceBase) {
+        cursor: -internal-auto-base(default, not-allowed);
         background-color: -internal-auto-base(light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3)), unset);
         color: -internal-auto-base(light-dark(#545454, #aaaaaa), color-mix(currentColor 50%, transparent));
     }
@@ -1082,6 +1083,7 @@ input[type="radio" i] {
 input[type="color" i] {
     appearance: auto;
     box-sizing: border-box;
+    cursor: default;
 
     @supports not blink-feature(AppearanceBase) {
         inline-size: 50px;
@@ -1089,7 +1091,6 @@ input[type="color" i] {
         /* Same as native_theme_base. */
         border: 1px solid ButtonBorder;
         padding: 1px 2px;
-        cursor: default;
         background-color: ButtonFace;
         color: ButtonText;
     }
@@ -1100,7 +1101,6 @@ input[type="color" i] {
         /* Same as native_theme_base when auto. */
         border: 1px solid -internal-auto-base(ButtonBorder, currentColor);
         padding: -internal-auto-base(1px 2px, 0);
-        cursor: -internal-auto-base(default, inherit);
         background-color: -internal-auto-base(ButtonFace, transparent);
         color: -internal-auto-base(ButtonText, inherit);
 
@@ -1380,6 +1380,9 @@ textarea:disabled {
 }
 select:disabled {
   border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), currentColor);
+  @supports blink-feature(CustomizableSelectNewUAStyles) {
+    cursor: -internal-auto-base(default, not-allowed);
+  }
 }
 
 select:disabled,
@@ -2155,7 +2158,9 @@ select:not(:-internal-list-box) {
   text-align: -internal-auto-base(start, initial);
   text-indent: -internal-auto-base(0px, initial);
   -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
-  cursor: -internal-auto-base(default, inherit);
+  @supports not blink-feature(CustomizableSelectNewUAStyles) {
+    cursor: -internal-auto-base(default, inherit);
+  }
   white-space: -internal-auto-base(pre, inherit);
   /* This text-autospace rule won't work because it is set with !important
    * earlier in the UA stylesheet. After merging with the rest of the UA
@@ -2195,7 +2200,9 @@ select {
   text-align: -internal-auto-base(start, initial);
   text-indent: -internal-auto-base(0px, initial);
   -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
-  cursor: -internal-auto-base(default, inherit);
+  @supports not blink-feature(CustomizableSelectNewUAStyles) {
+    cursor: -internal-auto-base(default, inherit);
+  }
   white-space: -internal-auto-base(pre, inherit);
   /* See note in CustomizableSelect feature block about text-autospace. */
   text-autospace: -internal-auto-base(no-autospace !important, inherit);
