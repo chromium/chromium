@@ -1114,6 +1114,7 @@ source_set("browser_tests") {
       "//components/variations/service",
       "//content/test:browsertest_support",
       "//content/test:test_support",
+      "//device/fido:test_support",
       "//extensions/browser",
       "//extensions/browser/api:extensions_api_client",
       "//net:test_support",

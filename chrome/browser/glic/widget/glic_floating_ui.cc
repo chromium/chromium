@@ -87,14 +87,15 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   tracker->OnPictureInPictureWidgetOpened(glic_widget_.get());
   browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
+  delegate_->host().AttachModalDialogManagerDelegate(
+      scoped_modal_dialog_delegate_);
   host_observation_.Observe(&delegate_->host());
 }
 
 GlicFloatingUi::~GlicFloatingUi() {
-  if (IsShowing()) {
-    modal_dialog_host_observers_.Notify(
-        &web_modal::ModalDialogHostObserver::OnHostDestroying);
-  }
+  scoped_modal_dialog_delegate_.Reset();
+  modal_dialog_host_observers_.Notify(
+      &web_modal::ModalDialogHostObserver::OnHostDestroying);
 
   // Only clear the current detached glic if this is being torn
   // down before the profile manager is torn down.
@@ -255,7 +256,9 @@ void GlicFloatingUi::ActiveWebContentsChanged(
   if (auto* glic_view = GetGlicView()) {
     glic_view->SetWebContents(new_contents);
   }
-  scoped_modal_dialog_delegate_.SetWebContents(new_contents);
+  if (new_contents) {
+    scoped_modal_dialog_delegate_.AddWebContents(new_contents);
+  }
 }
 
 void GlicFloatingUi::SetDragResizeEnabled(bool enabled) {
@@ -360,17 +363,17 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   GetGlicView()->UpdateBackgroundColor();
   panel_visibility_dependent_hotkey_manager_->InitializeAccelerators();
   panel_focus_dependent_hotkey_manager_->InitializeAccelerators();
-  scoped_modal_dialog_delegate_.SetWebContents(
-      delegate_->host().webui_contents());
+  delegate_->host().AttachModalDialogManagerDelegate(
+      scoped_modal_dialog_delegate_);
 }
 
 void GlicFloatingUi::Close(const CloseOptions& options) {
   instance_metrics_->OnFloatyClosed();
+  scoped_modal_dialog_delegate_.Reset();
   if (IsShowing()) {
     modal_dialog_host_observers_.Notify(
         &web_modal::ModalDialogHostObserver::OnHostDestroying);
   }
-  scoped_modal_dialog_delegate_.SetWebContents(nullptr);
   CloseSelectionOverlay();
   FloatingPanelCanAttachChanged(false);
   glic_window_animator_.reset();
@@ -385,10 +388,10 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
 
 void GlicFloatingUi::OnReload() {
   if (auto* glic_view = GetGlicView()) {
-    content::WebContents* web_contents = delegate_->host().webui_contents();
-    glic_view->SetWebContents(web_contents);
-    scoped_modal_dialog_delegate_.SetWebContents(web_contents);
+    glic_view->SetWebContents(delegate_->host().webui_contents());
   }
+  delegate_->host().AttachModalDialogManagerDelegate(
+      scoped_modal_dialog_delegate_);
 }
 
 void GlicFloatingUi::MaybeNotifyActivationChanged(bool window_active) {

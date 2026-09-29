@@ -18,6 +18,7 @@ class WebContents;
 namespace glic {
 class Host;
 class GlicWebClientManager;
+class ScopedModalDialogManagerDelegate;
 
 // Abstract interface managing the lifecycle, presentation, and client routing
 // of the WebContents backing a Glic panel instance.
@@ -39,6 +40,10 @@ class GlicWebContentsManager {
   // Attaches this manager's WebContents to the provided Host. This must be
   // called exactly once when the manager is connected to a live panel host.
   virtual void AttachToHost(Host* host) = 0;
+
+  // Attaches `delegate` to all WebContents managed by this manager.
+  virtual void AttachModalDialogManagerDelegate(
+      ScopedModalDialogManagerDelegate& delegate) = 0;
 
   // Sets the visibility state of the managed WebContents.
   virtual void SetVisibility(content::Visibility visibility) = 0;

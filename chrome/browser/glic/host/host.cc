@@ -476,6 +476,13 @@ content::WebContents* Host::webui_contents() const {
   return contents_ ? contents_->active_web_contents() : nullptr;
 }
 
+void Host::AttachModalDialogManagerDelegate(
+    ScopedModalDialogManagerDelegate& delegate) {
+  if (contents_) {
+    contents_->AttachModalDialogManagerDelegate(delegate);
+  }
+}
+
 void Host::SetWebContentsVisibilityOverride(
     std::optional<content::Visibility> visibility_override) {
   visibility_override_ = visibility_override;

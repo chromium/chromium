@@ -35,6 +35,8 @@ class FakeWebContentsManager : public GlicWebContentsManager {
   ~FakeWebContentsManager() override = default;
 
   void AttachToHost(Host* host) override {}
+  void AttachModalDialogManagerDelegate(
+      ScopedModalDialogManagerDelegate& delegate) override {}
   void SetVisibility(content::Visibility visibility) override {}
   void OnActuatingChanged(bool actuating) override {}
   void OnTaskTabsVisibilityChanged(bool has_visible_tab) override {}

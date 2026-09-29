@@ -43,6 +43,7 @@ class GlicPinCandidateProvider;
 class GlicSkillsManager;
 class GlicExperimentalTriggeringManager;
 class GlicWebClientAccess;
+class ScopedModalDialogManagerDelegate;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
 // TODO(crbug.com/409332639): Better encapsulate details here.
@@ -272,6 +273,10 @@ class Host : public GlicSharingManagerProvider {
   GlicWebContentsManager* contents_manager() { return contents_.get(); }
   // Returns the WebUI web contents. May be null.
   content::WebContents* webui_contents() const;
+
+  // Attaches `delegate` to all WebContents managed by this host.
+  void AttachModalDialogManagerDelegate(
+      ScopedModalDialogManagerDelegate& delegate);
 
   // Sets the visibility override of the WebUI web contents.
   void SetWebContentsVisibilityOverride(

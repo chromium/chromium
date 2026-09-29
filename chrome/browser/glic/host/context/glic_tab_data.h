@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
@@ -132,7 +133,7 @@ class TabDataObserver : public content::WebContentsObserver
   // Subscription to TabInterface detach callback.
   base::CallbackListSubscription tab_detach_subscription_;
 
-  raw_ptr<tabs::TabInterface> tab_ = nullptr;
+  base::WeakPtr<tabs::TabInterface> tab_;
 };
 
 // Either a focused tab, or an error string.

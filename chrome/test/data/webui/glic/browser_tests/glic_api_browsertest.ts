@@ -3503,6 +3503,29 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
   }
 }
 
+class WebAuthnWarmingTest extends ApiTestFixtureBase {
+  override async setUpClient() {
+    await super.setUpClient();
+    if (window.location.hostname !== 'localhost') {
+      const url = new URL(window.location.href);
+      url.hostname = 'localhost';
+      window.location.href = url.href;
+      return;
+    }
+    navigator.credentials
+        .get({
+          publicKey: {
+            challenge: new Uint8Array([1, 2, 3, 4]),
+            rpId: 'localhost',
+            allowCredentials: [],
+          },
+        })
+        .catch(() => {});
+  }
+
+  async testWebAuthnInWarmedGuestCrash() {}
+}
+
 const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTests,
   DaisyChainApiTests,
@@ -3516,6 +3539,7 @@ const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ConfirmationResponseTests,
   ConfirmationResponseDroppedTests,
   NotifyPanelWillOpenTest,
+  WebAuthnWarmingTest,
 ];
 
 // TODO(b/546606964): enable these tests on android.

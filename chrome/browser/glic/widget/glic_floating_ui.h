@@ -125,8 +125,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
  private:
-  ScopedModalDialogManagerDelegate scoped_modal_dialog_delegate_{this};
-
   GlicWidget* GetGlicWidget() const;
   GlicView* GetGlicView() const;
   void CreateAndSetupWidget(gfx::Rect initial_bounds);
@@ -170,6 +168,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
 
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
   ScopedProfileKeepAlive profile_keep_alive_;
+  ScopedModalDialogManagerDelegate scoped_modal_dialog_delegate_{this};
 
   base::WeakPtrFactory<GlicFloatingUi> weak_ptr_factory_{this};
 };

@@ -142,7 +142,11 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"  // nogncheck
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/scoped_authenticator_environment_for_testing.h"
+#include "device/fido/virtual_fido_device_factory.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget_delegate.h"
 #endif
@@ -497,6 +501,50 @@ class GlicApiTestWithWebContentsWarming : public GlicApiTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+// Test fixture for WebAuthn requests triggered in a background-warmed guest
+// WebContents.
+class GlicApiTestWebAuthnInWarmedGuest
+    : public GlicApiTestWithWebContentsWarming {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    GlicApiTestWithWebContentsWarming::SetUpCommandLine(command_line);
+    // The WebAuthn specification forbids requests from numeric IP addresses
+    // (such as 127.0.0.1). Therefore, the test guest navigates to localhost.
+    // 1. kGlicDev: Bypasses GlicNavigationThrottle origin restrictions so that
+    //    navigating to localhost is allowed.
+    command_line->AppendSwitch(::switches::kGlicDev);
+    // 2. ignore-certificate-errors: Accepts the embedded HTTPS test server's
+    //    certificate for localhost.
+    command_line->AppendSwitch("ignore-certificate-errors");
+    // 3. kGlicSkipReloadAfterNavigation: Prevents the host WebUI from reloading
+    //    the guest back to 127.0.0.1 after it navigates away from glicGuestURL.
+    command_line->AppendSwitch(::switches::kGlicSkipReloadAfterNavigation);
+  }
+};
+
+class WebAuthnDialogObserver
+    : public ChromeAuthenticatorRequestDelegate::TestObserver {
+ public:
+  explicit WebAuthnDialogObserver(base::RepeatingClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(this);
+  }
+  ~WebAuthnDialogObserver() {
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
+  }
+  void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
+    ui_shown_ = true;
+    quit_closure_.Run();
+  }
+  bool ui_shown() const { return ui_shown_; }
+
+ private:
+  base::RepeatingClosure quit_closure_;
+  bool ui_shown_ = false;
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class GlicApiTestWithPixelOutput : public GlicApiTest {
  public:
@@ -4338,6 +4386,38 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetPageMetadataUpdates) {
   ExecuteJsTest();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiTestWebAuthnInWarmedGuest,
+                       testWebAuthnInWarmedGuestCrash) {
+  // 1. Set up a virtual authenticator so WebAuthn discovery finds a security
+  // key.
+  auto virtual_device_factory =
+      std::make_unique<device::test::VirtualFidoDeviceFactory>();
+  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
+      std::move(virtual_device_factory));
+
+  base::RunLoop run_loop;
+  WebAuthnDialogObserver dialog_observer(run_loop.QuitClosure());
+
+  // 2. Take a container from the warming pool to start preloading.
+  // When the guest loads, WebAuthnWarmingTest::setUpClient navigates to
+  // localhost and invokes navigator.credentials.get. In unpatched code, this
+  // crashes in constrained_window::CreateWebModalDialogViews because the warmed
+  // guest has a WebContentsModalDialogManager but no delegate attached.
+  auto container =
+      coordinator().GetWebContentsWarmingPoolForTesting().TakeContainer();
+  ASSERT_TRUE(container);
+
+  // Spin the run loop until WebAuthn flow reaches the UI step (UIShown),
+  // verifying it handles the missing modal dialog delegate without crashing.
+  run_loop.Run();
+
+  EXPECT_TRUE(dialog_observer.ui_shown());
+  EXPECT_FALSE(web_modal::WebContentsModalDialogManager::FromWebContents(
+      container->web_client_manager().web_client_contents()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // TODO(crbug.com/449764057): Flakes/fails on all platforms except windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_testGetPageMetadataOnNavigation testGetPageMetadataOnNavigation
@@ -5333,6 +5413,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithWebContentsWarming,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(,
+                         GlicApiTestWebAuthnInWarmedGuest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+#endif
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithPixelOutput,

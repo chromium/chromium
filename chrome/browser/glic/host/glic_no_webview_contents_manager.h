@@ -144,6 +144,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   // GlicWebContentsManager implementation:
   void AttachToHost(Host* host) override;
+  void AttachModalDialogManagerDelegate(
+      ScopedModalDialogManagerDelegate& delegate) override;
   void SetVisibility(content::Visibility visibility) override;
   content::WebContents* active_web_contents() const override;
   content::WebContents* guest_contents() const override;

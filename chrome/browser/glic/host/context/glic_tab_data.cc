@@ -133,7 +133,7 @@ TabDataObserver::TabDataObserver(
     base::RepeatingCallback<void(TabDataChange)> tab_data_changed)
     : content::WebContentsObserver(web_contents),
       tab_data_changed_(std::move(tab_data_changed)),
-      tab_(tab) {
+      tab_(tab ? tab->GetWeakPtr() : nullptr) {
   if (web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
     auto* favicon_driver =
@@ -142,8 +142,10 @@ TabDataObserver::TabDataObserver(
       favicon_driver->AddObserver(this);
     }
 #endif
-    tab_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
-        &TabDataObserver::OnTabWillDetach, base::Unretained(this)));
+    if (tab) {
+      tab_detach_subscription_ = tab->RegisterWillDetach(base::BindRepeating(
+          &TabDataObserver::OnTabWillDetach, base::Unretained(this)));
+    }
   }
 }
 
@@ -170,7 +172,7 @@ void TabDataObserver::ClearObservation() {
   deferred_update_.Stop();
   updates_since_navigation_ = 0;
   tab_detach_subscription_ = {};
-  tab_ = nullptr;
+  tab_.reset();
 }
 
 void TabDataObserver::DidFinishNavigation(
@@ -213,7 +215,7 @@ void TabDataObserver::SendRateLimitedUpdate() {
 void TabDataObserver::SendUpdate() {
   deferred_update_.Stop();
   ++updates_since_navigation_;
-  tab_data_changed_.Run({change_causes_, CreateTabData(tab_)});
+  tab_data_changed_.Run({change_causes_, CreateTabData(tab_.get())});
   change_causes_ = {};
 }
 

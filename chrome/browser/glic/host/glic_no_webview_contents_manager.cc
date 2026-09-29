@@ -55,9 +55,11 @@
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "chrome/browser/glic/widget/scoped_modal_dialog_manager_delegate.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
-#else
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/android/glic_navigation_utils_android.h"
 #endif
 
@@ -204,10 +206,6 @@ GlicNoWebviewContentsManager::OverlayContentsManager::EnsureWebContents() {
 
   Observe(web_contents_.get());
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
-#if !BUILDFLAG(IS_ANDROID)
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      web_contents_.get());
-#endif
   CreateGlicOverlayData(web_contents_.get());
   web_contents_->SetSupportsDraggableRegions(true);
 
@@ -485,10 +483,6 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
   }
 
   PrepareGlicGuestWebContents(*guest, *this);
-#if !BUILDFLAG(IS_ANDROID)
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(guest);
-#endif
-
   web_client_manager_.AttachGuestContents(guest);
   web_client_manager_.SetDelegate(this);
 
@@ -553,6 +547,18 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
   overlay_manager_.ObservePanelState(host->instance().GetPanelState());
   // Move from warming pool state to attached-hidden state.
   UpdateDisplayState();
+}
+
+void GlicNoWebviewContentsManager::AttachModalDialogManagerDelegate(
+    ScopedModalDialogManagerDelegate& delegate) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* overlay = overlay_manager_.web_contents()) {
+    delegate.AddWebContents(overlay);
+  }
+  if (auto* guest = guest_contents()) {
+    delegate.AddWebContents(guest);
+  }
+#endif
 }
 
 base::CallbackListSubscription

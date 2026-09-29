@@ -20,58 +20,17 @@ class ScopedModalDialogManagerDelegateTest
   ~ScopedModalDialogManagerDelegateTest() override = default;
 };
 
-TEST_F(ScopedModalDialogManagerDelegateTest, SetWebContents_SetsDelegate) {
+TEST_F(ScopedModalDialogManagerDelegateTest, AddWebContents_SetsDelegate) {
   web_modal::TestWebContentsModalDialogManagerDelegate delegate;
   ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
 
   std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
-  scoped_delegate.SetWebContents(wc.get());
+  scoped_delegate.AddWebContents(wc.get());
 
   auto* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(wc.get());
   ASSERT_TRUE(manager);
   EXPECT_EQ(manager->delegate(), &delegate);
-}
-
-TEST_F(ScopedModalDialogManagerDelegateTest,
-       SetWebContents_ReplacesOldDelegate) {
-  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
-  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
-
-  std::unique_ptr<content::WebContents> wc1 = CreateTestWebContents();
-  std::unique_ptr<content::WebContents> wc2 = CreateTestWebContents();
-
-  scoped_delegate.SetWebContents(wc1.get());
-  auto* manager1 =
-      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get());
-  ASSERT_TRUE(manager1);
-  EXPECT_EQ(manager1->delegate(), &delegate);
-
-  // Switching to wc2 must clear delegate on wc1 and set it on wc2.
-  scoped_delegate.SetWebContents(wc2.get());
-  EXPECT_EQ(manager1->delegate(), nullptr);
-
-  auto* manager2 =
-      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get());
-  ASSERT_TRUE(manager2);
-  EXPECT_EQ(manager2->delegate(), &delegate);
-}
-
-TEST_F(ScopedModalDialogManagerDelegateTest,
-       SetWebContents_NullClearsDelegate) {
-  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
-  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
-
-  std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
-  scoped_delegate.SetWebContents(wc.get());
-
-  auto* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(wc.get());
-  ASSERT_TRUE(manager);
-  EXPECT_EQ(manager->delegate(), &delegate);
-
-  scoped_delegate.SetWebContents(nullptr);
-  EXPECT_EQ(manager->delegate(), nullptr);
 }
 
 TEST_F(ScopedModalDialogManagerDelegateTest, Destruction_ClearsDelegate) {
@@ -80,7 +39,7 @@ TEST_F(ScopedModalDialogManagerDelegateTest, Destruction_ClearsDelegate) {
 
   {
     ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
-    scoped_delegate.SetWebContents(wc.get());
+    scoped_delegate.AddWebContents(wc.get());
 
     auto* manager =
         web_modal::WebContentsModalDialogManager::FromWebContents(wc.get());
@@ -88,10 +47,8 @@ TEST_F(ScopedModalDialogManagerDelegateTest, Destruction_ClearsDelegate) {
     EXPECT_EQ(manager->delegate(), &delegate);
   }
 
-  auto* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(wc.get());
-  ASSERT_TRUE(manager);
-  EXPECT_EQ(manager->delegate(), nullptr);
+  EXPECT_EQ(web_modal::WebContentsModalDialogManager::FromWebContents(wc.get()),
+            nullptr);
 }
 
 TEST_F(ScopedModalDialogManagerDelegateTest,
@@ -100,13 +57,13 @@ TEST_F(ScopedModalDialogManagerDelegateTest,
   ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
 
   std::unique_ptr<content::WebContents> wc = CreateTestWebContents();
-  scoped_delegate.SetWebContents(wc.get());
+  scoped_delegate.AddWebContents(wc.get());
 
   // Destroying the WebContents should not cause a crash or UAF in
   // scoped_delegate.
   wc.reset();
-  // Safe to call SetWebContents again or destruct.
-  scoped_delegate.SetWebContents(nullptr);
+  // Safe to call Reset or destruct.
+  scoped_delegate.Reset();
 }
 
 TEST_F(ScopedModalDialogManagerDelegateTest, DoesNotClearDifferentDelegate) {
@@ -117,7 +74,7 @@ TEST_F(ScopedModalDialogManagerDelegateTest, DoesNotClearDifferentDelegate) {
 
   {
     ScopedModalDialogManagerDelegate scoped_delegate1(&delegate1);
-    scoped_delegate1.SetWebContents(wc.get());
+    scoped_delegate1.AddWebContents(wc.get());
 
     // If another delegate took over the manager:
     auto* manager =
@@ -132,6 +89,99 @@ TEST_F(ScopedModalDialogManagerDelegateTest, DoesNotClearDifferentDelegate) {
       web_modal::WebContentsModalDialogManager::FromWebContents(wc.get());
   ASSERT_TRUE(manager);
   EXPECT_EQ(manager->delegate(), &delegate2);
+}
+
+TEST_F(ScopedModalDialogManagerDelegateTest, AddWebContents_MultipleContents) {
+  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
+  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
+
+  std::unique_ptr<content::WebContents> wc1 = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> wc2 = CreateTestWebContents();
+
+  scoped_delegate.AddWebContents(wc1.get());
+  scoped_delegate.AddWebContents(wc2.get());
+
+  auto* manager1 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get());
+  auto* manager2 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get());
+  ASSERT_TRUE(manager1);
+  ASSERT_TRUE(manager2);
+  EXPECT_EQ(manager1->delegate(), &delegate);
+  EXPECT_EQ(manager2->delegate(), &delegate);
+}
+
+TEST_F(ScopedModalDialogManagerDelegateTest, RemoveWebContents_Single) {
+  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
+  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
+
+  std::unique_ptr<content::WebContents> wc1 = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> wc2 = CreateTestWebContents();
+
+  scoped_delegate.AddWebContents(wc1.get());
+  scoped_delegate.AddWebContents(wc2.get());
+
+  auto* manager1 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get());
+  auto* manager2 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get());
+  EXPECT_TRUE(manager1);
+  EXPECT_TRUE(manager2);
+
+  scoped_delegate.RemoveWebContents(wc1.get());
+  EXPECT_EQ(
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get()),
+      nullptr);
+  EXPECT_EQ(manager2->delegate(), &delegate);
+}
+
+TEST_F(ScopedModalDialogManagerDelegateTest, Reset_ClearsAll) {
+  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
+  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
+
+  std::unique_ptr<content::WebContents> wc1 = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> wc2 = CreateTestWebContents();
+
+  scoped_delegate.AddWebContents(wc1.get());
+  scoped_delegate.AddWebContents(wc2.get());
+
+  auto* manager1 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get());
+  auto* manager2 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get());
+  ASSERT_TRUE(manager1);
+  ASSERT_TRUE(manager2);
+
+  scoped_delegate.Reset();
+  EXPECT_EQ(
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc1.get()),
+      nullptr);
+  EXPECT_EQ(
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get()),
+      nullptr);
+}
+
+TEST_F(ScopedModalDialogManagerDelegateTest,
+       WebContentsDestroyed_MultipleHandledGracefully) {
+  web_modal::TestWebContentsModalDialogManagerDelegate delegate;
+  ScopedModalDialogManagerDelegate scoped_delegate(&delegate);
+
+  std::unique_ptr<content::WebContents> wc1 = CreateTestWebContents();
+  std::unique_ptr<content::WebContents> wc2 = CreateTestWebContents();
+
+  scoped_delegate.AddWebContents(wc1.get());
+  scoped_delegate.AddWebContents(wc2.get());
+
+  auto* manager2 =
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get());
+
+  wc1.reset();  // Destroy wc1 while wc2 is still observed.
+
+  EXPECT_EQ(manager2->delegate(), &delegate);
+  scoped_delegate.Reset();
+  EXPECT_EQ(
+      web_modal::WebContentsModalDialogManager::FromWebContents(wc2.get()),
+      nullptr);
 }
 
 }  // namespace glic
