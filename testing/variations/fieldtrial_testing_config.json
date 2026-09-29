@@ -5283,9 +5283,11 @@
                     },
                     "enable_features": [
                         "ContextualCueingV2",
+                        "ContextualCueingV2AllowOverridingUcbScoring",
                         "ContextualCueingV2MultiSource",
                         "GlicContextualCueV2ActiveUserBackoff",
                         "GlicContextualCueingV2AutoSubmit",
+                        "IndigoContextualCueingV2",
                         "PrivateInsightsFeature"
                     ]
                 }
