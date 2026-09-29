@@ -24,8 +24,8 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
-#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/suggest_inventory_fallback_utils.h"
@@ -52,88 +52,6 @@
 using testing::_;
 using CacheEntry = ZeroSuggestCacheService::CacheEntry;
 constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
-
-namespace {
-
-class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
- public:
-  FakeAutocompleteProviderClient() {
-    ZeroSuggestProvider::RegisterProfilePrefs(
-        search_engines_test_environment_.pref_service().registry());
-    AimEligibilityService::RegisterProfilePrefs(
-        search_engines_test_environment_.pref_service().registry());
-    zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
-        std::make_unique<TestSchemeClassifier>(),
-        &search_engines_test_environment_.pref_service());
-  }
-  FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
-      delete;
-  FakeAutocompleteProviderClient& operator=(
-      const FakeAutocompleteProviderClient&) = delete;
-
-  bool SearchSuggestEnabled() const override { return true; }
-
-  TemplateURLService* GetTemplateURLService() override {
-    return search_engines_test_environment_.template_url_service();
-  }
-
-  const TemplateURLService* GetTemplateURLService() const override {
-    return search_engines_test_environment_.template_url_service();
-  }
-
-  PrefService* GetPrefs() const override {
-    return &search_engines_test_environment_.pref_service();
-  }
-
-  ZeroSuggestCacheService* GetZeroSuggestCacheService() override {
-    return zero_suggest_cache_service_.get();
-  }
-
-  const ZeroSuggestCacheService* GetZeroSuggestCacheService() const override {
-    return zero_suggest_cache_service_.get();
-  }
-
-  bool IsUrlDataCollectionActive() const override {
-    return is_url_data_collection_active_;
-  }
-
-  void set_is_url_data_collection_active(bool is_url_data_collection_active) {
-    is_url_data_collection_active_ = is_url_data_collection_active;
-  }
-
-  void Classify(
-      const std::u16string& text,
-      bool in_keyword_mode,
-      bool allow_exact_keyword_match,
-      metrics::OmniboxEventProto::PageClassification page_classification,
-      AutocompleteMatch* match,
-      GURL* alternate_nav_url) override {
-    // Populate enough of |match| to keep the ZeroSuggestProvider happy.
-    match->type = omnibox::AutocompleteMatchType::kUrlWhatYouTyped;
-    match->destination_url = GURL(text);
-  }
-
-  const AutocompleteSchemeClassifier& GetSchemeClassifier() const override {
-    return scheme_classifier_;
-  }
-
-  AimEligibilityService* GetAimEligibilityService() const override {
-    return aim_eligibility_service_;
-  }
-
-  void set_aim_eligibility_service(AimEligibilityService* service) {
-    aim_eligibility_service_ = service;
-  }
-
- private:
-  search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  bool is_url_data_collection_active_;
-  std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
-  TestSchemeClassifier scheme_classifier_;
-  raw_ptr<AimEligibilityService> aim_eligibility_service_ = nullptr;
-};
-
-}  // namespace
 
 class ZeroSuggestProviderTest : public testing::Test,
                                 public AutocompleteProviderListener {
@@ -313,6 +231,8 @@ class ZeroSuggestProviderTest : public testing::Test,
 
 void ZeroSuggestProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
+  ON_CALL(*client_, SearchSuggestEnabled())
+      .WillByDefault(testing::Return(true));
 
   // Activate URL data collection.
   client_->set_is_url_data_collection_active(true);
@@ -2440,11 +2360,8 @@ TEST_F(ZeroSuggestProviderTest,
 
   base::HistogramTester histogram_tester;
 
-  MockAimEligibilityService aim_service(
-      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
-  EXPECT_CALL(aim_service, IsFuseboxEligible())
+  EXPECT_CALL(*client_->mock_aim_eligibility_service(), IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
-  client_->set_aim_eligibility_service(&aim_service);
 
   // Start a prefetch request.
   AutocompleteInput input = ZeroPrefixInputForNTP(/*is_prefetch = */ true);
@@ -2501,11 +2418,8 @@ TEST_F(ZeroSuggestProviderTest, TestComposeboxPrefetchWithSuggestInventory) {
 
   PrefService* prefs = client_->GetPrefs();
 
-  MockAimEligibilityService aim_service(
-      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
-  EXPECT_CALL(aim_service, IsFuseboxEligible())
+  EXPECT_CALL(*client_->mock_aim_eligibility_service(), IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
-  client_->set_aim_eligibility_service(&aim_service);
 
   // Start a prefetch request with non-default suggest inventory.
   AutocompleteInput input = ZeroPrefixInputForNTP(/*is_prefetch = */ true);
@@ -2551,11 +2465,8 @@ TEST_F(ZeroSuggestProviderTest,
   EXPECT_CALL(*client_, IsAuthenticated())
       .WillRepeatedly(testing::Return(true));
 
-  MockAimEligibilityService aim_service(
-      *client_->GetPrefs(), client_->GetTemplateURLService(), nullptr, nullptr);
-  EXPECT_CALL(aim_service, IsFuseboxEligible())
+  EXPECT_CALL(*client_->mock_aim_eligibility_service(), IsFuseboxEligible())
       .WillRepeatedly(testing::Return(true));
-  client_->set_aim_eligibility_service(&aim_service);
 
   AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_COMPOSEBOX,
                           TestSchemeClassifier());

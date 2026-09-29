@@ -38,6 +38,7 @@ class HistoryClustersService;
 
 class InMemoryURLIndex;
 class PrefService;
+class ZeroSuggestCacheService;
 
 // Fully operational AutocompleteProviderClient for usage in tests.
 // Note: The history index rebuild task is created from main thread, usually
@@ -70,13 +71,19 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
+  ZeroSuggestCacheService* GetZeroSuggestCacheService() override;
+  const ZeroSuggestCacheService* GetZeroSuggestCacheService() const override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
   const TabMatcher& GetTabMatcher() const override;
   scoped_refptr<history::TopSites> GetTopSites() override;
+  bool IsUrlDataCollectionActive() const override;
   std::string ProfileUserName() const override;
   AimEligibilityService* GetAimEligibilityService() const override;
+  MockAimEligibilityService* mock_aim_eligibility_service() {
+    return mock_aim_eligibility_service_.get();
+  }
 
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   FakeAutocompleteScoringModelService* GetAutocompleteScoringModelService()
@@ -125,9 +132,20 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
     shortcuts_backend_ = std::move(backend);
   }
 
+  void set_zero_suggest_cache_service(
+      std::unique_ptr<ZeroSuggestCacheService> service) {
+    zero_suggest_cache_service_ = std::move(service);
+  }
+
+  void set_is_url_data_collection_active(bool is_url_data_collection_active) {
+    is_url_data_collection_active_ = is_url_data_collection_active;
+  }
+
  private:
   search_engines::SearchEnginesTestEnvironment search_engines_test_enviroment_;
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
+  std::unique_ptr<ZeroSuggestCacheService> zero_suggest_cache_service_;
+  bool is_url_data_collection_active_ = false;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   TestSchemeClassifier scheme_classifier_;

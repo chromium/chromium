@@ -15,6 +15,8 @@
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
+#include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/browser/zero_suggest_provider.h"
 
 FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
   set_template_url_service(
@@ -31,6 +33,12 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient() {
 
   fake_tab_group_sync_service_ =
       std::make_unique<tab_groups::FakeTabGroupSyncService>();
+
+  ZeroSuggestProvider::RegisterProfilePrefs(
+      search_engines_test_enviroment_.pref_service().registry());
+  zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
+      std::make_unique<TestSchemeClassifier>(),
+      &search_engines_test_enviroment_.pref_service());
 
   AimEligibilityService::RegisterProfilePrefs(
       search_engines_test_enviroment_.pref_service().registry());
@@ -99,6 +107,16 @@ FakeAutocompleteProviderClient::GetDocumentSuggestionsService() const {
   return document_suggestions_service_.get();
 }
 
+ZeroSuggestCacheService*
+FakeAutocompleteProviderClient::GetZeroSuggestCacheService() {
+  return zero_suggest_cache_service_.get();
+}
+
+const ZeroSuggestCacheService*
+FakeAutocompleteProviderClient::GetZeroSuggestCacheService() const {
+  return zero_suggest_cache_service_.get();
+}
+
 scoped_refptr<ShortcutsBackend>
 FakeAutocompleteProviderClient::GetShortcutsBackend() {
   return shortcuts_backend_;
@@ -120,6 +138,10 @@ const TabMatcher& FakeAutocompleteProviderClient::GetTabMatcher() const {
 
 scoped_refptr<history::TopSites> FakeAutocompleteProviderClient::GetTopSites() {
   return top_sites_;
+}
+
+bool FakeAutocompleteProviderClient::IsUrlDataCollectionActive() const {
+  return is_url_data_collection_active_;
 }
 
 std::string FakeAutocompleteProviderClient::ProfileUserName() const {
