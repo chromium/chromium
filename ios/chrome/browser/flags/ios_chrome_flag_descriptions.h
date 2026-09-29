@@ -1323,6 +1323,11 @@ inline constexpr char kMVTInBottomSheetDescription[] =
     "Places the Most Visited Tiles inside the bottom sheet card for the NTP "
     "Redesign.";
 
+inline constexpr char kMagicStackTipsV2IosName[] = "Magic Stack Tips V2";
+inline constexpr char kMagicStackTipsV2IosDescription[] =
+    "Enables Magic Stack Tips V2 on iOS with Non-Actionable or Actionable "
+    "variations.";
+
 inline constexpr char kManualLogUploadsInFREName[] =
     "Manual log uploads in the FRE";
 inline constexpr char kManualLogUploadsInFREDescription[] =

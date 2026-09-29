@@ -271,4 +271,16 @@ constexpr base::FeatureParam<int>
         &kNewTabPageCustomizationV2, "iph_display_interval_days",
         /*default_value=*/7};
 
+BASE_FEATURE(kMagicStackTipsV2Ios, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kMagicStackTipsV2IosActionableParam[] = "actionable_variation";
+constexpr base::FeatureParam<bool> kMagicStackTipsV2IosActionable{
+    &kMagicStackTipsV2Ios, kMagicStackTipsV2IosActionableParam,
+    /*default_value=*/false};
+
+bool IsMagicStackTipsV2IosActionableEnabled() {
+  return base::FeatureList::IsEnabled(kMagicStackTipsV2Ios) &&
+         kMagicStackTipsV2IosActionable.Get();
+}
+
 }  // namespace segmentation_platform::features

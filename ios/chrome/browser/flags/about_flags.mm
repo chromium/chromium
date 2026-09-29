@@ -1347,6 +1347,17 @@ const FeatureEntry::FeatureVariation kPageClassificationVariations[] = {
     {"On-Device with Verticals Fallback",
      kPageClassificationOnDeviceWithFallback, nullptr}};
 
+const FeatureEntry::FeatureParam kMagicStackTipsV2IosNonActionableParams[] = {
+    {segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+     "false"}};
+const FeatureEntry::FeatureParam kMagicStackTipsV2IosActionableParams[] = {
+    {segmentation_platform::features::kMagicStackTipsV2IosActionableParam,
+     "true"}};
+const FeatureEntry::FeatureVariation kMagicStackTipsV2IosVariations[] = {
+    {"(Non-Actionable)", kMagicStackTipsV2IosNonActionableParams, nullptr},
+    {"(Actionable)", kMagicStackTipsV2IosActionableParams, nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2849,6 +2860,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kGeminiHostExperimentIDsName,
      flag_descriptions::kGeminiHostExperimentIDsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kGeminiHostExperimentIDs)},
+    {"magic-stack-tips-v2-ios", flag_descriptions::kMagicStackTipsV2IosName,
+     flag_descriptions::kMagicStackTipsV2IosDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::kMagicStackTipsV2Ios,
+         kMagicStackTipsV2IosVariations,
+         "MagicStackTipsV2Ios")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
