@@ -52,6 +52,7 @@ struct NigoriState {
 
   DataTypeSet GetEncryptedTypes() const;
   bool NeedsGenerateCrossUserSharingKeyPair() const;
+  bool NeedsImplicitPassphraseMigration() const;
 
   // TODO(crbug.com/40141634): Make this const unique_ptr to avoid the object
   // being destroyed after it's been injected to the DataTypeWorker-s.

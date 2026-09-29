@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
@@ -107,6 +109,23 @@ MATCHER(HasCustomPassphraseNigori, "") {
          specifics.encrypt_everything() && specifics.keybag_is_frozen() &&
          specifics.has_custom_passphrase_time() &&
          specifics.has_custom_passphrase_key_derivation_method();
+}
+
+MATCHER(HasCustomPassphraseNigoriWithoutTime, "") {
+  const std::unique_ptr<EntityData>& entity_data = arg;
+  if (!entity_data || !entity_data->specifics.has_nigori()) {
+    return false;
+  }
+  const sync_pb::NigoriSpecifics& specifics = entity_data->specifics.nigori();
+  return specifics.passphrase_type() ==
+             sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE &&
+         !specifics.encryption_keybag().blob().empty() &&
+         !specifics.has_keystore_decryptor_token() &&
+         specifics.encrypt_everything() && specifics.keybag_is_frozen() &&
+         !specifics.has_custom_passphrase_time() &&
+         !specifics.has_keystore_migration_time() &&
+         specifics.custom_passphrase_key_derivation_method() ==
+             sync_pb::NigoriSpecifics::PBKDF2_HMAC_SHA1_1003;
 }
 
 MATCHER_P(CanDecryptWith, key_params, "") {
@@ -2170,6 +2189,140 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(debugging_specifics.encryption_keybag().key_name(),
               Eq(remote_specifics.encryption_keybag().key_name()));
   EXPECT_TRUE(debugging_specifics.encrypt_everything());
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldMigrateFromImplicitPassphraseToKeystoreUponRestart) {
+  base::test::ScopedFeatureList feature_list(
+      kSyncMigrateFromImplicitPassphrase);
+
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+  std::unique_ptr<CryptographerImpl> temp_cryptographer =
+      CryptographerImpl::FromSingleKeyForTesting(kKeyParams.password,
+                                                 kKeyParams.derivation_params);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      sync_pb::NigoriSpecifics::default_instance();
+  *entity_data.specifics.mutable_nigori()->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
+
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  bridge()->SetDecryptionPassphrase(kKeyParams.password);
+  ASSERT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+
+  // Upon restart, the bridge should queue a pending local commit to migrate to
+  // KEYSTORE_PASSPHRASE.
+  EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_THAT(bridge()->GetDataForCommit(), HasKeystoreNigori());
+  EXPECT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+
+  // Mimic commit completion of the migration (followed by cross-user sharing
+  // key pair initialization).
+  testing::InSequence seq;
+  EXPECT_CALL(
+      *observer(),
+      OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase, NullTime()));
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/false));
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)));
+  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
+              Eq(std::nullopt));
+
+  EXPECT_THAT(bridge()->GetDataForDebugging(), HasKeystoreNigori());
+  EXPECT_EQ(PassphraseType::kKeystorePassphrase, bridge()->GetPassphraseType());
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeyParams));
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
+  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldMigrateFromImplicitPassphraseToCustomPassphraseUponRestart) {
+  base::test::ScopedFeatureList feature_list(
+      kSyncMigrateFromImplicitPassphrase);
+
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+  std::unique_ptr<CryptographerImpl> temp_cryptographer =
+      CryptographerImpl::FromSingleKeyForTesting(kKeyParams.password,
+                                                 kKeyParams.derivation_params);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      sync_pb::NigoriSpecifics::default_instance();
+  *entity_data.specifics.mutable_nigori()->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
+  entity_data.specifics.mutable_nigori()->set_encrypt_everything(true);
+
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  bridge()->SetDecryptionPassphrase(kKeyParams.password);
+  ASSERT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+
+  // Upon restart, the bridge should queue a pending local commit to migrate to
+  // CUSTOM_PASSPHRASE.
+  EXPECT_CALL(*processor(), Put(HasCustomPassphraseNigoriWithoutTime()));
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_THAT(bridge()->GetDataForCommit(),
+              HasCustomPassphraseNigoriWithoutTime());
+  EXPECT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+
+  // Mimic commit completion of the migration (followed by cross-user sharing
+  // key pair initialization).
+  testing::InSequence seq;
+  EXPECT_CALL(*observer(), OnPassphraseTypeChanged(
+                               PassphraseType::kCustomPassphrase, NullTime()));
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/false));
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)));
+  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
+              Eq(std::nullopt));
+
+  EXPECT_THAT(bridge()->GetDataForDebugging(),
+              HasCustomPassphraseNigoriWithoutTime());
+  EXPECT_EQ(PassphraseType::kCustomPassphrase, bridge()->GetPassphraseType());
+  EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), NullTime());
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeyParams));
+  EXPECT_THAT(*cryptographer(), Not(CanDecryptWith(kKeystoreKeyParams)));
+  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeyParams));
+}
+
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldNotMigrateFromImplicitPassphraseUponRestartWithPendingKeys) {
+  base::test::ScopedFeatureList feature_list(
+      kSyncMigrateFromImplicitPassphrase);
+
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("password");
+  std::unique_ptr<CryptographerImpl> temp_cryptographer =
+      CryptographerImpl::FromSingleKeyForTesting(kKeyParams.password,
+                                                 kKeyParams.derivation_params);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      sync_pb::NigoriSpecifics::default_instance();
+  *entity_data.specifics.mutable_nigori()->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
+
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  ASSERT_TRUE(bridge()->HasPendingKeysForTesting());
+
+  EXPECT_CALL(*processor(), Put).Times(0);
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_EQ(PassphraseType::kImplicitPassphrase, bridge()->GetPassphraseType());
+  EXPECT_TRUE(bridge()->HasPendingKeysForTesting());
 }
 
 }  // namespace

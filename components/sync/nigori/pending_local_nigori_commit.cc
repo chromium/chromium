@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -212,6 +214,72 @@ class CrossUserSharingPublicPrivateKeyInitializer
       cross_user_sharing_public_private_key_pair_;
 };
 
+class ImplicitPassphraseMigrator : public PendingLocalNigoriCommit {
+ public:
+  ImplicitPassphraseMigrator() = default;
+
+  ImplicitPassphraseMigrator(const ImplicitPassphraseMigrator&) = delete;
+  ImplicitPassphraseMigrator& operator=(const ImplicitPassphraseMigrator&) =
+      delete;
+
+  ~ImplicitPassphraseMigrator() override = default;
+
+  bool TryApply(NigoriState& state) const override {
+    if (!state.NeedsImplicitPassphraseMigration()) {
+      return false;
+    }
+
+    if (state.encrypt_everything) {
+      state.passphrase_type = NigoriSpecifics::CUSTOM_PASSPHRASE;
+      state.custom_passphrase_key_derivation_params =
+          KeyDerivationParams::CreateForPbkdf2();
+      // Leave `custom_passphrase_time` unset rather than `base::Time::Now()`
+      // because this is an automatic migration and the timestamp is surfaced in
+      // UI as when the user set their passphrase. Explicit assignment to
+      // `base::Time()` is needed because `NigoriState::CreateFromLocalProto()`
+      // converts unset proto fields (0) into `base::Time::UnixEpoch()`, which
+      // is non-null.
+      state.custom_passphrase_time = base::Time();
+      state.keystore_migration_time = base::Time();
+    } else {
+      CHECK(!state.keystore_keys_cryptographer->IsEmpty());
+      std::unique_ptr<CryptographerImpl> cryptographer =
+          state.keystore_keys_cryptographer->ToCryptographerImpl();
+      CHECK(!cryptographer->GetDefaultEncryptionKeyName().empty());
+      state.cryptographer->EmplaceAllNigoriKeysFrom(*cryptographer);
+      state.cryptographer->SelectDefaultEncryptionKey(
+          cryptographer->GetDefaultEncryptionKeyName());
+      state.passphrase_type = NigoriSpecifics::KEYSTORE_PASSPHRASE;
+      state.keystore_migration_time = base::Time::Now();
+      // Reset in case `NigoriState::CreateFromLocalProto()` populated
+      // `base::Time::UnixEpoch()` from an unset proto field.
+      state.custom_passphrase_time = base::Time();
+    }
+
+    return true;
+  }
+
+  void OnSuccess(const NigoriState& state,
+                 SyncEncryptionHandlerObserverList& observer_list) override {
+    DCHECK(!state.pending_keys.has_value());
+
+    if (state.passphrase_type == NigoriSpecifics::CUSTOM_PASSPHRASE) {
+      observer_list.NotifyPassphraseTypeChanged(
+          PassphraseType::kCustomPassphrase, state.custom_passphrase_time);
+    } else {
+      DCHECK_EQ(state.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
+      // Note: `passphrase_time` isn't populated for keystore passphrase.
+      observer_list.NotifyPassphraseTypeChanged(
+          PassphraseType::kKeystorePassphrase,
+          /*passphrase_time=*/base::Time());
+    }
+    observer_list.NotifyCryptographerStateChanged(state.cryptographer.get(),
+                                                  /*has_pending_keys=*/false);
+  }
+
+  void OnFailure(SyncEncryptionHandlerObserverList& observer_list) override {}
+};
+
 }  // namespace
 
 // static
@@ -232,6 +300,12 @@ PendingLocalNigoriCommit::ForKeystoreInitialization() {
 std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForCrossUserSharingPublicPrivateKeyInitializer() {
   return std::make_unique<CrossUserSharingPublicPrivateKeyInitializer>();
+}
+
+// static
+std::unique_ptr<PendingLocalNigoriCommit>
+PendingLocalNigoriCommit::ForImplicitPassphraseMigration() {
+  return std::make_unique<ImplicitPassphraseMigrator>();
 }
 
 }  // namespace syncer

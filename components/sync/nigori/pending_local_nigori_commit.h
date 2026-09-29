@@ -25,6 +25,8 @@ class PendingLocalNigoriCommit {
 
   static std::unique_ptr<PendingLocalNigoriCommit>
   ForCrossUserSharingPublicPrivateKeyInitializer();
+  static std::unique_ptr<PendingLocalNigoriCommit>
+  ForImplicitPassphraseMigration();
 
   PendingLocalNigoriCommit() = default;
 

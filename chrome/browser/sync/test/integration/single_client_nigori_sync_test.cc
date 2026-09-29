@@ -2456,4 +2456,101 @@ IN_PROC_BROWSER_TEST_P(
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+class SingleClientNigoriImplicitPassphraseMigrationSyncTest
+    : public SingleClientNigoriSyncTest {
+ public:
+  SingleClientNigoriImplicitPassphraseMigrationSyncTest() {
+    feature_list_.InitAndEnableFeature(
+        syncer::kSyncMigrateFromImplicitPassphrase);
+  }
+  ~SingleClientNigoriImplicitPassphraseMigrationSyncTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SingleClientNigoriImplicitPassphraseMigrationSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientNigoriImplicitPassphraseMigrationSyncTest,
+                       PRE_ShouldMigrateFromImplicitPassphraseToKeystore) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeyParams.password, kKeyParams.derivation_params);
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  const password_manager::PasswordForm password_form =
+      passwords_helper::CreateTestPasswordForm(0, GetPasswordStoreType());
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form, kKeyParams.password, kKeyParams.derivation_params,
+      GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  EXPECT_TRUE(WaitForPasswordForms({password_form}));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientNigoriImplicitPassphraseMigrationSyncTest,
+                       ShouldMigrateFromImplicitPassphraseToKeystore) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kKeystorePassphrase)
+          .Wait());
+  EXPECT_TRUE(PassphraseTypeChecker(GetSyncService(0),
+                                    syncer::PassphraseType::kKeystorePassphrase)
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    SingleClientNigoriImplicitPassphraseMigrationSyncTest,
+    PRE_ShouldMigrateFromImplicitPassphraseToCustomPassphrase) {
+  const KeyParamsForTesting kKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  sync_pb::NigoriSpecifics specifics;
+  std::unique_ptr<syncer::CryptographerImpl> cryptographer =
+      syncer::CryptographerImpl::FromSingleKeyForTesting(
+          kKeyParams.password, kKeyParams.derivation_params);
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
+  specifics.set_encrypt_everything(true);
+  SetNigoriInFakeServer(specifics, GetFakeServer());
+
+  const password_manager::PasswordForm password_form =
+      passwords_helper::CreateTestPasswordForm(0, GetPasswordStoreType());
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form, kKeyParams.password, kKeyParams.derivation_params,
+      GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  EXPECT_TRUE(WaitForPasswordForms({password_form}));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientNigoriImplicitPassphraseMigrationSyncTest,
+                       ShouldMigrateFromImplicitPassphraseToCustomPassphrase) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
+  EXPECT_TRUE(PassphraseTypeChecker(GetSyncService(0),
+                                    syncer::PassphraseType::kCustomPassphrase)
+                  .Wait());
+  EXPECT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->GetExplicitPassphraseTime()
+                  .is_null());
+}
+
 }  // namespace

@@ -318,6 +318,11 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
         PendingLocalNigoriCommit::ForKeystoreInitialization());
   }
 
+  if (state_.NeedsImplicitPassphraseMigration()) {
+    QueuePendingLocalCommit(
+        PendingLocalNigoriCommit::ForImplicitPassphraseMigration());
+  }
+
   if (state_.NeedsGenerateCrossUserSharingKeyPair()) {
     QueuePendingLocalCommit(
         PendingLocalNigoriCommit::
