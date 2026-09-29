@@ -23,16 +23,19 @@ Last updated for M128.
 |---|---|---|
 | Browser | all | **unsandboxed** |
 | Network | Android, Windows, Linux | **unsandboxed** |
-| GPU | Android | **unsandboxed** |
+| GPU | Android, Linux (X11) | **unsandboxed** |
 | On Device Model Execution | Android, non-ChromeOS Linux | **unsandboxed** |
 | Video Capture | non-Fuchsia | **unsandboxed** |
 | kNoSandbox | all | **unsandboxed** |
 | kNoSandboxAndElevatedPrivileges | Windows | **Elevated** |
 
+Note: On Linux, the GPU process is sandboxed except when using X11, since X11
+does not isolate clients. See the [X11 threat model](x11-threat-model.md).
+
 # Sandboxed on specific platforms
 
 * kNetwork (Fuchsia, Mac)
-* kGpu (Fuchsia, Mac, Windows, ChromeOS)
+* kGpu (Fuchsia, Mac, Windows, ChromeOS, Linux (non-X11))
 * kVideoCapture (Fuchsia)
 
 # Sandboxed

@@ -528,6 +528,17 @@ Security](https://web.archive.org/web/20160311224620/https://technet.microsoft.c
 Other cases covered by this section include leaving a debugger port open to
 the world, remote shells, and so forth.
 
+<a name="TOC-A-compromised-GPU-process-can-attack-the-browser-via-X11-"></a>
+### A compromised GPU process can attack the browser via X11. Is this a security bug?
+
+No. The X11 protocol does not isolate clients from each other. Any process with
+an X11 connection can already inject input, log keystrokes, capture the screen,
+and change desktop configuration (e.g. XSETTINGS) for every application on the
+display. Attacks that require an X11 connection, such as getting the browser
+process to load a GTK module via XSETTINGS, therefore grant nothing beyond what
+the attacker already has. See the [X11 threat model](x11-threat-model.md) for
+details.
+
 <a name="TOC-If-a-website-can-open-an-android-app-via-an-intent"></a>
 ### If a website can open an Android app via an intent is this a security bug?
 

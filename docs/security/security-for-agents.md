@@ -265,6 +265,9 @@ Chromium:
   in advance
 * Bugs that require physical access of any kind
 * Architectural weaknesses or missing layers of hardening / mitigation
+* Attacks on Linux that require control of a process with an X11 connection,
+  such as a compromised GPU process, and act through the X server (e.g. via
+  XSETTINGS). See the [X11 threat model](x11-threat-model.md).
 
 These are not security bugs, regardless of how easy they are to trigger. Under
 no circumstances is something matching an entry in this list a security bug.
