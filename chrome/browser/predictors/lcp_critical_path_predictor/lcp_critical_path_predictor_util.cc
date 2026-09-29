@@ -1135,25 +1135,9 @@ bool IsURLValidForLcpp(const GURL& url) {
              ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
-// TODO(crbug.com/380105415): Remove this kill switch after we confirmed that
-// this works fine.
-BASE_FEATURE(kMultipleLcppKeyInitiatorOriginFix,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
-  static const bool kMultipleLcppKeyInitiatorOriginFixEnabled =
-      base::FeatureList::IsEnabled(kMultipleLcppKeyInitiatorOriginFix);
-  if (kMultipleLcppKeyInitiatorOriginFixEnabled) {
-    GURL url = initiator_origin.GetURL();
-    return !initiator_origin.opaque() && url.is_valid() &&
-           !initiator_origin.host().empty() && !net::IsLocalhost(url) &&
-           url.SchemeIs(url::kHttpsScheme) &&
-           initiator_origin.host().size() <=
-               ResourcePrefetchPredictorTables::kMaxStringLength;
-  } else {
-    return initiator_origin.host().size() <=
-           ResourcePrefetchPredictorTables::kMaxStringLength;
-  }
+  return !initiator_origin.opaque() &&
+         IsURLValidForLcpp(initiator_origin.GetURL());
 }
 
 std::string GetFirstLevelPath(const GURL& url) {
