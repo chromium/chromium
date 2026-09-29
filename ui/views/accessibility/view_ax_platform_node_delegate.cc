@@ -1061,10 +1061,7 @@ bool ViewAXPlatformNodeDelegate::TableHasColumnOrRowHeaderNodeForTesting()
 
 ViewAXPlatformNodeDelegate::ChildWidgetsResult
 ViewAXPlatformNodeDelegate::GetChildWidgets() const {
-  // This method is used to create a parent / child relationship between the
-  // root view and any child widgets. Child widgets should only be exposed as
-  // the direct children of the root view. A root view should appear as the only
-  // child of a widget.
+  // Only root views expose owned widgets for navigation or hit testing.
   Widget* widget = view()->GetWidget();
   // Note that during window close, a Widget may exist in a state where it has
   // no NativeView, but hasn't yet torn down its view hierarchy.
@@ -1077,7 +1074,10 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
 
   std::vector<raw_ptr<Widget, VectorExperimental>> visible_widgets;
   std::ranges::copy_if(owned_widgets, std::back_inserter(visible_widgets),
-                       &Widget::IsVisible);
+                       [this](Widget* child_widget) {
+                         return child_widget->IsVisible() &&
+                                ShouldIncludeChildWidget(*child_widget);
+                       });
 
   // Focused child widgets should take the place of the web page they cover in
   // the accessibility tree.
@@ -1097,6 +1097,11 @@ ViewAXPlatformNodeDelegate::GetChildWidgets() const {
   }
 
   return ChildWidgetsResult(visible_widgets, false /* is_tab_modal_showing */);
+}
+
+bool ViewAXPlatformNodeDelegate::ShouldIncludeChildWidget(
+    const Widget& child_widget) const {
+  return true;
 }
 
 }  // namespace views

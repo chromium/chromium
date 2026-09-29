@@ -35,6 +35,7 @@ namespace views {
 class AtomicViewAXTreeManager;
 class TableView;
 class View;
+class Widget;
 
 // Shared base class for platforms that require an implementation of
 // |ViewAXPlatformNodeDelegate| to interface with the native accessibility
@@ -159,6 +160,13 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   // Whether this view belongs to a widget which is not visible.
   bool IsInHiddenWidget() const;
 
+  // Whether to consider a visible owned widget a child of this view. Called
+  // after visibility filtering; returns true by default. Platforms may return
+  // false to exclude a widget, for example when another widget exposes it as
+  // a child. This excludes it from child enumeration and owned-widget hit-test
+  // candidates.
+  virtual bool ShouldIncludeChildWidget(const Widget& child_widget) const;
+
   // Manager for the accessibility tree for this view. The tree will only have
   // one node, which contains the AXNodeData for this view. It's a temporary
   // solution to enable the ITextRangeProvider in Views: crbug.com/1468416.
@@ -176,15 +184,16 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
     ~ChildWidgetsResult();
     ChildWidgetsResult& operator=(const ChildWidgetsResult& other);
 
+    // Visible owned widgets accepted by ShouldIncludeChildWidget(). If
+    // IsFocusedChildWidget() matches the querying view's focused view, only the
+    // first matching widget is included.
+    //
+    // This focused-widget projection supports the "read title (NVDAKey+T)" and
+    // "read window (NVDAKey+B)" commands in the NVDA screen reader by hiding
+    // the rest of the UI from the accessibility tree.
     std::vector<raw_ptr<Widget, VectorExperimental>> child_widgets;
 
-    // When the focus is within a child widget, |child_widgets| contains only
-    // that widget. Otherwise, |child_widgets| contains all child widgets.
-    //
-    // The former arises when a modal dialog is showing. In order to support the
-    // "read title (NVDAKey+T)" and "read window (NVDAKey+B)" commands in the
-    // NVDA screen reader, we need to hide the rest of the UI from the
-    // accessibility tree for these commands to work properly.
+    // Whether child_widgets contains only the selected focused widget.
     bool is_tab_modal_showing = false;
   };
 
@@ -193,8 +202,8 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   void GetViewsInGroupForSet(
       std::vector<raw_ptr<View, VectorExperimental>>* views_in_group) const;
 
-  // If this delegate is attached to the root view, returns all the child
-  // widgets of this view's owning widget.
+  // Returns visible owned widgets accepted by ShouldIncludeChildWidget when
+  // attached to a root view, applying focused-child selection.
   ChildWidgetsResult GetChildWidgets() const;
 
   // Gets the real (non-virtual) TableView, otherwise nullptr.

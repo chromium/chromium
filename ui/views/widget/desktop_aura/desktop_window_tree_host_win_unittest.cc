@@ -7,7 +7,9 @@
 #include <windows.h>
 
 #include <oleacc.h>
+#include <wrl/client.h>
 
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -18,11 +20,17 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
+#include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
+#include "ui/aura/window.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/views_features.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/win/hwnd_message_handler.h"
 
@@ -789,6 +797,188 @@ TEST_F(DesktopWindowTreeHostWinTest, ExcludeContextWindowsFromCapture) {
 
   tooltip_widget.CloseNow();
   parent_widget.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, ContextTooltipAccessibilityTree) {
+  // HWND ownership: browser -> bubble -> tooltip. The context-created tooltip
+  // has no Widget parent and must not also appear directly under browser.
+  using Microsoft::WRL::ComPtr;
+  const auto root_delegate = [](Widget& widget) {
+    return ui::AXPlatformNode::FromNativeViewAccessible(
+               widget.GetRootView()->GetNativeViewAccessible())
+        ->GetDelegate();
+  };
+  const auto fragment = [](gfx::NativeViewAccessible accessible) {
+    ComPtr<IRawElementProviderFragment> result;
+    EXPECT_HRESULT_SUCCEEDED(accessible->QueryInterface(IID_PPV_ARGS(&result)));
+    return result;
+  };
+  const auto navigate = [](IRawElementProviderFragment* from,
+                           NavigateDirection direction) {
+    ComPtr<IRawElementProviderFragment> result;
+    EXPECT_HRESULT_SUCCEEDED(from->Navigate(direction, &result));
+    return result;
+  };
+
+  Widget browser;
+  HWND browser_hwnd = InitTestWidget(
+      browser, CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW));
+  auto* browser_root = root_delegate(browser);
+  const size_t browser_children = browser_root->GetChildCount();
+
+  Widget bubble;
+  auto bubble_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                    Widget::InitParams::TYPE_BUBBLE);
+  bubble_params.native_widget = new DesktopNativeWidgetAura(&bubble);
+  bubble_params.bounds = gfx::Rect(100, 100, 200, 100);
+  bubble_params.parent = browser.GetNativeWindow();
+  HWND bubble_hwnd = InitTestWidget(bubble, std::move(bubble_params));
+  ASSERT_EQ(browser_hwnd, ::GetWindow(bubble_hwnd, GW_OWNER));
+  auto* bubble_root = root_delegate(bubble);
+  const size_t bubble_children = bubble_root->GetChildCount();
+
+  auto* descendant =
+      new aura::Window(nullptr, aura::client::WINDOW_TYPE_CONTROL);
+  descendant->Init(ui::LAYER_NOT_DRAWN);
+  bubble.GetNativeWindow()->AddChild(descendant);
+
+  Widget tooltip;
+  auto tooltip_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_TOOLTIP);
+  tooltip_params.context = descendant;
+  tooltip_params.force_software_compositing = true;
+  HWND tooltip_hwnd = InitTestWidget(tooltip, std::move(tooltip_params));
+  ASSERT_EQ(bubble_hwnd, ::GetWindow(tooltip_hwnd, GW_OWNER));
+  ASSERT_EQ(nullptr, tooltip.parent());
+  ASSERT_TRUE(
+      Widget::GetAllOwnedWidgets(browser.GetNativeView()).contains(&tooltip));
+
+  EXPECT_EQ(browser_children + 1, browser_root->GetChildCount());
+  EXPECT_EQ(bubble.GetRootView()->GetNativeViewAccessible(),
+            browser_root->ChildAtIndex(browser_children));
+  ASSERT_EQ(bubble_children + 1, bubble_root->GetChildCount());
+  EXPECT_EQ(tooltip.GetRootView()->GetNativeViewAccessible(),
+            bubble_root->ChildAtIndex(bubble_children));
+
+  auto browser_provider =
+      fragment(browser.GetRootView()->GetNativeViewAccessible());
+  auto bubble_provider =
+      fragment(bubble.GetRootView()->GetNativeViewAccessible());
+  auto* bubble_fragment_root =
+      ui::AXFragmentRootWin::GetForAcceleratedWidget(bubble_hwnd);
+  auto* tooltip_fragment_root =
+      ui::AXFragmentRootWin::GetForAcceleratedWidget(tooltip_hwnd);
+  ASSERT_NE(nullptr, bubble_fragment_root);
+  ASSERT_NE(nullptr, tooltip_fragment_root);
+  auto bubble_fragment =
+      fragment(bubble_fragment_root->GetNativeViewAccessible());
+  auto tooltip_fragment =
+      fragment(tooltip_fragment_root->GetNativeViewAccessible());
+  // Expected UIA path (ordinary view children omitted):
+  //   browser root view
+  //     bubble fragment root
+  //       bubble root view
+  //         tooltip fragment root
+  //           tooltip root view
+  EXPECT_EQ(
+      bubble_fragment.Get(),
+      navigate(browser_provider.Get(), NavigateDirection_LastChild).Get());
+  EXPECT_EQ(tooltip_fragment.Get(),
+            navigate(bubble_provider.Get(), NavigateDirection_LastChild).Get());
+  EXPECT_EQ(browser_provider.Get(),
+            navigate(bubble_fragment.Get(), NavigateDirection_Parent).Get());
+  EXPECT_EQ(bubble_provider.Get(),
+            navigate(tooltip_fragment.Get(), NavigateDirection_Parent).Get());
+  EXPECT_EQ(
+      nullptr,
+      navigate(bubble_fragment.Get(), NavigateDirection_NextSibling).Get());
+  EXPECT_EQ(
+      nullptr,
+      navigate(tooltip_fragment.Get(), NavigateDirection_NextSibling).Get());
+  auto previous =
+      navigate(tooltip_fragment.Get(), NavigateDirection_PreviousSibling);
+  ASSERT_NE(nullptr, previous.Get());
+  EXPECT_NE(tooltip_fragment.Get(), previous.Get());
+  EXPECT_EQ(tooltip_fragment.Get(),
+            navigate(previous.Get(), NavigateDirection_NextSibling).Get());
+
+  ASSERT_NE(browser.GetFocusManager(), bubble.GetFocusManager());
+  bubble.GetContentsView()->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  bubble.GetFocusManager()->SetFocusedView(bubble.GetContentsView());
+  EXPECT_EQ(browser_children + 1, browser_root->GetChildCount());
+  EXPECT_EQ(bubble_children + 1, bubble_root->GetChildCount());
+  EXPECT_EQ(browser_provider.Get(),
+            navigate(bubble_fragment.Get(), NavigateDirection_Parent).Get());
+  EXPECT_EQ(bubble_provider.Get(),
+            navigate(tooltip_fragment.Get(), NavigateDirection_Parent).Get());
+  bubble.GetFocusManager()->SetFocusedView(nullptr);
+
+  Widget sibling;
+  auto sibling_params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                     Widget::InitParams::TYPE_TOOLTIP);
+  sibling_params.context = descendant;
+  sibling_params.force_software_compositing = true;
+  InitTestWidget(sibling, std::move(sibling_params));
+  EXPECT_EQ(bubble_children + 2, bubble_root->GetChildCount());
+
+  // bubble -> sibling remains exposed; the cached hidden tooltip fragment
+  // must not claim a parent or navigate through that parent's child list.
+  tooltip.Hide();
+  EXPECT_EQ(bubble_children + 1, bubble_root->GetChildCount());
+  EXPECT_EQ(browser_children + 1, browser_root->GetChildCount());
+  EXPECT_EQ(nullptr,
+            navigate(tooltip_fragment.Get(), NavigateDirection_Parent).Get());
+  EXPECT_EQ(nullptr,
+            navigate(tooltip_fragment.Get(), NavigateDirection_PreviousSibling)
+                .Get());
+  EXPECT_EQ(
+      nullptr,
+      navigate(tooltip_fragment.Get(), NavigateDirection_NextSibling).Get());
+  sibling.CloseNow();
+  tooltip.Show();
+  EXPECT_EQ(bubble_children + 1, bubble_root->GetChildCount());
+  EXPECT_EQ(bubble_provider.Get(),
+            navigate(tooltip_fragment.Get(), NavigateDirection_Parent).Get());
+  tooltip.CloseNow();
+  EXPECT_EQ(bubble_children, bubble_root->GetChildCount());
+  bubble.CloseNow();
+  EXPECT_EQ(browser_children, browser_root->GetChildCount());
+  browser.CloseNow();
+}
+
+TEST_F(DesktopWindowTreeHostWinTest, NativeChildPopupAccessibilityPreserved) {
+  // Widget parenting: browser -> native_child -> tooltip.
+  // HWND ownership: browser -> tooltip; native_child shares browser's HWND.
+  Widget browser;
+  HWND browser_hwnd = InitTestWidget(
+      browser, CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                            Widget::InitParams::TYPE_WINDOW));
+  auto* browser_root = ui::AXPlatformNode::FromNativeViewAccessible(
+                           browser.GetRootView()->GetNativeViewAccessible())
+                           ->GetDelegate();
+  const size_t initial_children = browser_root->GetChildCount();
+  auto native_child = std::unique_ptr<Widget>(CreateChildNativeWidgetWithParent(
+      &browser, Widget::InitParams::CLIENT_OWNS_WIDGET));
+  native_child->Show();
+
+  Widget tooltip;
+  auto params = CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                             Widget::InitParams::TYPE_TOOLTIP);
+  params.parent = native_child->GetNativeWindow();
+  params.force_software_compositing = true;
+  HWND tooltip_hwnd = InitTestWidget(tooltip, std::move(params));
+  ASSERT_EQ(browser_hwnd, ::GetWindow(tooltip_hwnd, GW_OWNER));
+  ASSERT_EQ(native_child.get(), tooltip.parent());
+  ASSERT_FALSE(Widget::GetAllOwnedWidgets(native_child->GetNativeView())
+                   .contains(&tooltip));
+  // Preserve both native_child and tooltip in browser's root-view child list.
+  EXPECT_EQ(initial_children + 2, browser_root->GetChildCount());
+
+  tooltip.CloseNow();
+  native_child->CloseNow();
+  EXPECT_EQ(initial_children, browser_root->GetChildCount());
+  browser.CloseNow();
 }
 
 namespace {

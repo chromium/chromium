@@ -15,10 +15,23 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/views_utilities_aura.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_win.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/win/hwnd_message_handler_delegate.h"
 #include "ui/views/win/hwnd_util.h"
 
 namespace views {
+
+namespace {
+
+bool IsDesktopHWNDContentWidget(const Widget& widget) {
+  aura::Window* window = widget.GetNativeView();
+  HWND hwnd = HWNDForNativeView(window);
+  return hwnd &&
+         DesktopWindowTreeHostWin::GetContentWindowForHWND(hwnd) == window;
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ViewAccessibility>
@@ -128,6 +141,30 @@ gfx::Point ViewAXPlatformNodeDelegateWin::ScreenToDIPPoint(
   // coordinates adjusted for multiple displays of different resolutions.
   return ToRoundedPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
       gfx::PointF(screen_point)));
+}
+
+bool ViewAXPlatformNodeDelegateWin::ShouldIncludeChildWidget(
+    const Widget& child_widget) const {
+  // Preserve native children sharing another widget's HWND.
+  if (!IsDesktopHWNDContentWidget(child_widget)) {
+    return true;
+  }
+
+  // Preserve the existing hierarchy for desktop popups parented to native
+  // child widgets. Desktop parents fall through to the accessible-parent
+  // comparison below.
+  if (const Widget* parent = child_widget.parent();
+      parent && !IsDesktopHWNDContentWidget(*parent)) {
+    return true;
+  }
+
+  // Ownership enumeration is transitive. Include this desktop widget only
+  // under its host-provided accessible parent.
+  HWNDMessageHandlerDelegate* const host =
+      static_cast<DesktopWindowTreeHostWin*>(
+          child_widget.GetNativeView()->GetHost());
+  return host->GetParentNativeViewAccessible() ==
+         view()->GetNativeViewAccessible();
 }
 
 }  // namespace views
