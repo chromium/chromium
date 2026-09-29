@@ -2763,23 +2763,15 @@ if (!is_android) {
       "../app/chrome_main_delegate_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/ui/views/autofill/payments/offer_notification_icon_view_browsertest.cc",
-      "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
-      "../browser/ui/views/bluetooth_device_pair_confirm_view_browsertest.cc",
-      "../browser/ui/views/confirm_bubble_views_browsertest.cc",
-      "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
-      "../browser/ui/views/device_chooser_browsertest.cc",
       "../browser/ui/views/frame/horizontal_tab_strip_region_view_browsertest.cc",
       "../browser/ui/views/frame/multi_contents_view_browsertest.cc",
       "../browser/ui/views/frame/multi_contents_view_drop_target_controller_browsertest.cc",
       "../browser/ui/views/frame/system_menu_model_builder_browsertest.cc",
       "../browser/ui/views/frame/vertical_tab_strip_region_view_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
-      "../browser/ui/views/incognito_clear_browsing_data_dialog_browsertest.cc",
       "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
-      "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
-      "../browser/ui/views/intent_picker_dialog_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
@@ -2788,7 +2780,6 @@ if (!is_android) {
       "../browser/ui/views/side_panel/side_panel_web_ui_view_browsertest.cc",
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_browsertest.cc",
       "../browser/ui/views/storage/storage_pressure_bubble_view_browsertest.cc",
-      "../browser/ui/views/tab_search_bubble_host_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_menu_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
@@ -2801,7 +2792,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_launch_dialog_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
       "../browser/ui/views/web_apps/web_ui_web_app_browsertest.cc",
-      "../browser/ui/views/webview_accessibility_browsertest.cc",
       "../common/chrome_paths_browsertest.cc",
       "../common/time_format_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
@@ -3040,7 +3030,6 @@ if (!is_android) {
     if (is_win) {
       sources += [
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
-        "../browser/ui/views/tab_search_bubble_ui_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
 
@@ -3119,7 +3108,6 @@ if (!is_android) {
     if (is_win) {
       sources += [
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
-        "../browser/ui/views/uninstall_view_browsertest.cc",
         "../test/delayload/delayload_hook_browsertest.cc",
       ]
 
@@ -3151,7 +3139,6 @@ if (!is_android) {
     if (is_mac) {
       sources += [
         "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
-        "../browser/ui/views/fullscreen_mac_browsertest.cc",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
@@ -3185,12 +3172,6 @@ if (!is_android) {
         "//ui/accelerated_widget_mac",
       ]
     } else {
-      # !is_mac
-      sources += [
-        "../browser/ui/views/create_application_shortcut_view_browsertest.cc",
-      ]
-      deps += [ "//chrome/browser/ui/views:create_application_shortcut_view" ]
-
       data_deps += [ "//chrome:packed_resources" ]
     }
 
@@ -3251,10 +3232,6 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
-      sources += [
-        # chromeos does not support machine level user cloud policies
-        "../browser/ui/views/enable_link_capturing_infobar_browsertest.cc",
-      ]
       deps += [
         "//chrome/browser/apps/link_capturing",
         "//chrome/browser/external_protocol:browser_tests",
@@ -3352,12 +3329,6 @@ if (!is_android) {
         "//chrome/browser/ui/aura/accessibility",
         "//chrome/browser/ui/views/renderer_context_menu:browser_tests",
       ]
-
-      if (use_nss_certs) {
-        sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
-        deps +=
-            [ "//chrome/browser/ui/views:crypto_module_password_dialog_view" ]
-      }
     }
     if (use_aura || toolkit_views) {
       deps += [ "//ui/events:test_support" ]
@@ -3452,25 +3423,16 @@ if (!is_android) {
         "../browser/ui/views/autofill/popup/popup_view_views_browsertest.cc",
         "../browser/ui/views/bubble/bubble_frame_view_browsertest.cc",
         "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
-        "../browser/ui/views/certificate_selector_dialog_browsertest.cc",
-        "../browser/ui/views/external_protocol_dialog_browsertest.cc",
         "../browser/ui/views/frame/browser_frame_view_browsertest.cc",
         "../browser/ui/views/frame/browser_root_view_browsertest.cc",
         "../browser/ui/views/frame/browser_view_browsertest.cc",
         "../browser/ui/views/frame/browser_widget_browsertest.cc",
         "../browser/ui/views/frame/layout/browser_view_layout_delegate_impl_browsertest.cc",
         "../browser/ui/views/frame/widget_accessibility_browsertest.cc",
-        "../browser/ui/views/hung_renderer_view_browsertest.cc",
-        "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest.cc",
-        "../browser/ui/views/media_picker_utils_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
-        "../browser/ui/views/simple_web_view_dialog_browsertest.cc",
-        "../browser/ui/views/status_bubble_views_browsertest.cc",
-        "../browser/ui/views/ui_devtools_browsertest.cc",
-        "../browser/ui/views/upgrade_notification_controller_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
       ]
 
@@ -3520,17 +3482,6 @@ if (!is_android) {
           "//chrome/browser/ui/views/frame:browser_frame_view_win",
           "//chrome/browser/ui/views/frame:windows_caption_button",
         ]
-      }
-      if (is_mac) {
-        sources += [
-          "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest_mac.mm",
-          "../browser/ui/views/status_bubble_views_browsertest_mac.h",
-          "../browser/ui/views/status_bubble_views_browsertest_mac.mm",
-        ]
-      } else {
-        # TaskManagerView is not used or built on Mac.
-        sources += [ "../browser/ui/views/task_manager_view_browsertest.cc" ]
-        deps += [ "//chrome/browser/ui/views:task_manager_view" ]
       }
       if (is_win || is_mac || is_linux) {
         sources += [
@@ -3727,9 +3678,6 @@ if (!is_android) {
       }
 
       sources -= [
-        # chromeos does not support profile list avatar menu
-        "../browser/ui/views/external_protocol_dialog_browsertest.cc",
-
         # chromeos does not use the profile chooser view
         "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
       ]
@@ -4207,14 +4155,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/captive_portal:browser_tests" ]
     }
 
-    if (is_linux || is_mac) {
-      sources += [ "../browser/ui/views/first_run_dialog_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/views:first_run_dialog" ]
-    }
-    if (is_linux) {
-      sources += [ "../browser/ui/views/eula_dialog_linux_browsertest.cc" ]
-      deps += [ "//chrome/browser/ui/views:eula_dialog_linux" ]
-    }
     if (!is_posix || is_chromeos) {
       sources -= [ "../common/time_format_browsertest.cc" ]
     }
