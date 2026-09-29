@@ -1959,20 +1959,13 @@ ManifestParser::ParseScopeExtensions(const JSONObject* from) {
       continue;
     }
 
-    JSONValue::ValueType entry_type = extensions_entry->GetType();
-    if (entry_type != JSONValue::kTypeObject) {
-      AddErrorInfo("scope_extensions entry ignored, type object expected.");
-      continue;
-    }
-
-    std::optional<mojom::blink::ManifestScopeExtensionPtr> scope_extension =
-        std::nullopt;
     const JSONObject* extension_object = JSONObject::Cast(extensions_entry);
     if (!extension_object) {
       AddErrorInfo("scope_extensions entry ignored, type object expected.");
       continue;
     }
-    scope_extension = ParseScopeExtension(extension_object);
+    std::optional<mojom::blink::ManifestScopeExtensionPtr> scope_extension =
+        ParseScopeExtension(extension_object);
 
     if (!scope_extension) {
       continue;
@@ -2528,8 +2521,7 @@ mojom::blink::ManifestTabStripPtr ManifestParser::ParseTabStrip(
   auto result = mojom::blink::ManifestTabStrip::New();
 
   JSONValue* home_tab_value = tab_strip_object->Get("home_tab");
-  if (home_tab_value && home_tab_value->GetType() == JSONValue::kTypeObject) {
-    JSONObject* home_tab_object = tab_strip_object->GetJSONObject("home_tab");
+  if (JSONObject* home_tab_object = JSONObject::Cast(home_tab_value)) {
     auto home_tab_params = mojom::blink::HomeTabParams::New();
 
     JSONValue* home_tab_icons = home_tab_object->Get("icons");
