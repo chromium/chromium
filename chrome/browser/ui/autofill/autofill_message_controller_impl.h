@@ -10,6 +10,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -27,6 +28,7 @@ class AutofillMessageControllerImpl : public AutofillMessageController {
 
   // AutofillMessageController:
   void Show(std::unique_ptr<AutofillMessageModel> message_model) override;
+  void Dismiss(messages::DismissReason reason) override;
 
  private:
   friend class AutofillMessageControllerTestApi;
@@ -37,8 +39,6 @@ class AutofillMessageControllerImpl : public AutofillMessageController {
   // Callback for when the message is dismissed.
   void OnDismissed(AutofillMessageModel* message_model_ptr,
                    messages::DismissReason reason);
-
-  void Dismiss();
 
   const raw_ref<content::WebContents> web_contents_;
   std::set<std::unique_ptr<AutofillMessageModel>, base::UniquePtrComparator>

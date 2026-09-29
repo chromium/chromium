@@ -43,7 +43,7 @@ AutofillMessageControllerImpl::AutofillMessageControllerImpl(
     : web_contents_(*web_contents) {}
 
 AutofillMessageControllerImpl::~AutofillMessageControllerImpl() {
-  Dismiss();
+  Dismiss(messages::DismissReason::UNKNOWN);
 }
 
 void AutofillMessageControllerImpl::Show(
@@ -105,11 +105,10 @@ void AutofillMessageControllerImpl::OnDismissed(
   message_models_.erase(message_model_it);
 }
 
-void AutofillMessageControllerImpl::Dismiss() {
+void AutofillMessageControllerImpl::Dismiss(messages::DismissReason reason) {
   for (auto it = message_models_.begin(); it != message_models_.end();) {
     messages::MessageDispatcherBridge::Get()->DismissMessage(
-        &(*it++)->GetMessage(/*pass_key=*/{}),
-        messages::DismissReason::UNKNOWN);
+        &(*it++)->GetMessage(/*pass_key=*/{}), reason);
   }
 }
 

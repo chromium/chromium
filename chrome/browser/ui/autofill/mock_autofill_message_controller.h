@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "components/messages/android/message_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -19,6 +20,7 @@ class MockAutofillMessageController : public AutofillMessageController {
   ~MockAutofillMessageController() override;
 
   MOCK_METHOD(void, Show, (std::unique_ptr<AutofillMessageModel>), (override));
+  MOCK_METHOD(void, Dismiss, (messages::DismissReason), (override));
 };
 
 }  // namespace autofill

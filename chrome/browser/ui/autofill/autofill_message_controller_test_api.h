@@ -37,8 +37,6 @@ class AutofillMessageControllerTestApi {
     controller_->OnDismissed(message_model_ptr, reason);
   }
 
-  void Dismiss() { controller_->Dismiss(); }
-
  private:
   const raw_ref<AutofillMessageControllerImpl> controller_;
 };

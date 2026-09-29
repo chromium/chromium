@@ -9,6 +9,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "components/messages/android/message_enums.h"
 
 namespace autofill {
 
@@ -19,6 +20,10 @@ class AutofillMessageController {
   // Show a new message. If an existing message is already showing, dismiss that
   // message and show the new one.
   virtual void Show(std::unique_ptr<AutofillMessageModel> message_model) = 0;
+
+  // Dismisses all currently active messages owned by the controller with the
+  // given `reason`.
+  virtual void Dismiss(messages::DismissReason reason) = 0;
 };
 
 }  // namespace autofill

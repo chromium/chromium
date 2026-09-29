@@ -135,17 +135,19 @@ TEST_F(AutofillMessageControllerImplTest, Dismiss) {
   CreateAndShowSaveCardFailureMessage();
   CreateAndShowSaveCardFailureMessage();
 
-  ExpectDismissMessageCallWithReason(messages::DismissReason::UNKNOWN,
-                                     /*times=*/2);
+  ExpectDismissMessageCallWithReason(
+      messages::DismissReason::DISMISSED_BY_FEATURE,
+      /*times=*/2);
 
-  test_api(controller()).Dismiss();
+  controller().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
 }
 
 TEST_F(AutofillMessageControllerImplTest, DismissWithoutMessages) {
-  ExpectDismissMessageCallWithReason(messages::DismissReason::UNKNOWN,
-                                     /*times=*/0);
+  ExpectDismissMessageCallWithReason(
+      messages::DismissReason::DISMISSED_BY_FEATURE,
+      /*times=*/0);
 
-  test_api(controller()).Dismiss();
+  controller().Dismiss(messages::DismissReason::DISMISSED_BY_FEATURE);
 }
 
 TEST_F(AutofillMessageControllerImplTest, Metrics_Show_EntitySaveUpdateFlow) {
