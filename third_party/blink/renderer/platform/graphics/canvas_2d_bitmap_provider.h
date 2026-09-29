@@ -91,8 +91,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
 
-  void RestoreBackBuffer(const cc::PaintImage&);
-
  private:
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
                          gfx::Size size,

@@ -241,7 +241,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   virtual void RasterRecord(cc::PaintRecord last_recording);
   gpu::raster::RasterInterface* RasterInterface() const;
-  void RestoreBackBuffer(const cc::PaintImage&);
   bool IsGraphite() const;
   void RecordingCleared();
 

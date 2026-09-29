@@ -316,6 +316,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   // This method should be called only when both providers are null.
   void RecreateResourceProvider();
 
+  void RestoreBackBuffer(const cc::PaintImage&);
+
   void WakeUpFromHibernation();
 
   FilterOperations filter_operations_;
