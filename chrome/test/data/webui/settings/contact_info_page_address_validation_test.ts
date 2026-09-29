@@ -231,9 +231,10 @@ suite('ContactInfoPageAddressValidationTests', () => {
     assertGT(requiredElements.length, 1);
 
     for (const required of requiredElements) {
+      // Imitate typing and clearing in the input.
+      required.value = 'something typed';
+      await microtasksFinished();
       await expectEvent(dialog, 'on-update-can-save', () => {
-        // Imitate typing and clearing in the input.
-        required.value = 'something typed';
         required.value = '';
       });
       assertFalse(

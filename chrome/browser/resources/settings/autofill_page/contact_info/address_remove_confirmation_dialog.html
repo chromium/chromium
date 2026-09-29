@@ -1,14 +1,14 @@
 <cr-dialog show-on-attach id="dialog" close-text="$i18n{close}">
-  <div slot="title" id="title">[[confirmationTitle_]]</div>
+  <div slot="title" id="title">${this.getConfirmationTitle_()}</div>
   <div slot="body" id="description"
-      inner-h-t-m-l="[[confirmationDescription_]]">
+      .innerHTML="${this.getConfirmationDescription_()}">
   </div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelClick" id="cancel">
+    <cr-button class="cancel-button" @click="${this.onCancelClick}" id="cancel">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" on-click="onRemoveClick" id="remove">
-      [[removeButtonLabel_]]
+    <cr-button class="action-button" @click="${this.onRemoveClick}" id="remove">
+      ${this.getRemoveButtonLabel_()}
     </cr-button>
   </div>
 </cr-dialog>

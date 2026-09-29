@@ -577,6 +577,7 @@ build_webui("build") {
     "appearance_page/home_url_input.css",
     "autofill_page/autofill_shared.css",
     "autofill_page/autofill_shared_lit.css",
+    "autofill_page/contact_info/address_edit_dialog.css",
     "autofill_page/passwords/passwords_shared.css",
     "autofill_page/payments/credit_card_edit_dialog.css",
     "autofill_page/payments/credit_card_list_entry.css",

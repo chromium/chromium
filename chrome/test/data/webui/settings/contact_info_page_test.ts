@@ -595,18 +595,15 @@ suite('ContactInfoPageUiTest', function() {
           dialog.$.description.innerHTML, expectedDescription,
           'Name email delete confirmation view description is incorrect.');
 
-      const title = dialog.shadowRoot!.querySelector<HTMLElement>('#title');
+      const title = dialog.shadowRoot.querySelector<HTMLElement>('#title');
       assertTrue(!!title);
       assertEquals(
-          title.innerHTML,
+          title.textContent,
           loadTimeData.getString('removeNameEmailAddressConfirmationTitle'),
           'Name email delete confirmation view title is incorrect.');
 
-      const removeButton =
-          dialog.shadowRoot!.querySelector<HTMLElement>('#remove');
-      assertTrue(!!removeButton);
       assertEquals(
-          removeButton.innerText,
+          dialog.$.remove.textContent.trim(),
           loadTimeData.getString('removeAddressFromChrome'),
           'Name email delete confirmation remove button label is incorrect.');
       dialog.$.dialog.close();
@@ -2431,7 +2428,7 @@ suite('ContactInfoPageAddressTests', function() {
   test('verifyAddAddressDialog', async function() {
     const address = createEmptyAddressEntry();
     const dialog = await createAddressDialog(address);
-    const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
+    const title = dialog.shadowRoot.querySelector('[slot=title]')!;
     assertEquals(loadTimeData.getString('addAddressTitle'), title.textContent);
     // A country is preselected.
     const countrySelect = dialog.$.country;
@@ -2441,7 +2438,7 @@ suite('ContactInfoPageAddressTests', function() {
 
   test('verifyEditAddressDialog', async function() {
     const dialog = await createAddressDialog(createAddressEntry());
-    const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
+    const title = dialog.shadowRoot.querySelector('[slot=title]')!;
     assertEquals(loadTimeData.getString('editAddressTitle'), title.textContent);
     // Should be possible to save when editing because fields are
     // populated.
@@ -2451,7 +2448,7 @@ suite('ContactInfoPageAddressTests', function() {
   // The first editable element should be focused by default.
   test('verifyFirstFieldFocused', async function() {
     const dialog = await createAddressDialog(createEmptyAddressEntry());
-    const currentFocus = dialog.shadowRoot!.activeElement;
+    const currentFocus = dialog.shadowRoot.activeElement;
     const editableElements =
         dialog.$.dialog.querySelectorAll('cr-input, select');
     assertEquals(editableElements[0], currentFocus);
@@ -2590,11 +2587,11 @@ suite('ContactInfoPageAddressTests', function() {
     assertTrue(!!phoneInput, 'phone element should be the first cr-input');
     assertTrue(!!emailInput, 'email element should be the second cr-input');
 
-    assertEquals(undefined, phoneInput.value);
+    assertEquals('', phoneInput.value);
     assertFalse(
         !!getAddressFieldValue(address, FieldType.PHONE_HOME_WHOLE_NUMBER));
 
-    assertEquals(undefined, emailInput.value);
+    assertEquals('', emailInput.value);
     assertFalse(!!getAddressFieldValue(address, FieldType.EMAIL_ADDRESS));
 
     const phoneNumber = '(555) 555-5555';

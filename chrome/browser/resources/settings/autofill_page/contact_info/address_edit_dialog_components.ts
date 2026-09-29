@@ -75,11 +75,11 @@ export class AddressComponentUi {
     return !this.isRequired || !!this.value;
   }
 
-  get value(): string|undefined {
-    return this.addressFields_.get(this.fieldType_);
+  get value(): string {
+    return this.addressFields_.get(this.fieldType_) || '';
   }
 
-  set value(value: string|undefined) {
+  set value(value: string) {
     const changed = value !== this.value;
     this.addressFields_.set(this.fieldType_, value);
     if (changed) {

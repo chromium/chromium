@@ -9,23 +9,21 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {flush, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './address_edit_dialog.html.js';
-import * as uiComponents from './address_edit_dialog_components.js';
 import type {CountryDetailManagerProxy} from '../country_detail_manager_proxy.js';
 import {CountryDetailManagerProxyImpl} from '../country_detail_manager_proxy.js';
+
+import {getCss} from './address_edit_dialog.css.js';
+import {getHtml} from './address_edit_dialog.html.js';
+import * as uiComponents from './address_edit_dialog_components.js';
 
 export interface SettingsAddressEditDialogElement {
   $: {
@@ -40,11 +38,9 @@ export interface SettingsAddressEditDialogElement {
 type CountryEntry = chrome.autofillPrivate.CountryEntry;
 type AddressEntry = chrome.autofillPrivate.AddressEntry;
 type AccountInfo = chrome.autofillPrivate.AccountInfo;
-type AddressComponent = chrome.autofillPrivate.AddressComponent;
-type AddressComponentRow = chrome.autofillPrivate.AddressComponentRow;
 const AddressRecordType = chrome.autofillPrivate.AddressRecordType;
 const FieldType = chrome.autofillPrivate.FieldType;
-const SettingsAddressEditDialogElementBase = I18nMixin(PolymerElement);
+const SettingsAddressEditDialogElementBase = I18nMixinLit(CrLitElement);
 
 export class SettingsAddressEditDialogElement extends
     SettingsAddressEditDialogElementBase {
@@ -52,68 +48,60 @@ export class SettingsAddressEditDialogElement extends
     return 'settings-address-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      address: Object,
-      accountInfo: Object,
+      address: {type: Object},
+      accountInfo: {type: Object},
 
-      title_: String,
-      validationError_: String,
+      title_: {type: String},
+      validationError_: {type: String},
 
-      countries_: Array,
+      countries_: {type: Array},
 
       /**
        * Updates the address wrapper.
        */
-      countryCode_: {
-        type: String,
-        observer: 'onCountryCodeChanged_',
-      },
+      countryCode_: {type: String},
 
-      components_: {
-        type: Array,
-        value: () => [],
-      },
+      components_: {type: Array},
 
-      canSave_: Boolean,
+      canSave_: {type: Boolean},
 
-      isAccountAddress_: {
-        type: Boolean,
-        computed: 'isAddressStoredInAccount_(address, accountInfo)',
-        value: false,
-      },
+      isAccountAddress_: {type: Boolean},
 
-      accountAddressRecordTypeNotice_: {
-        type: String,
-        computed: 'getAccountAddressRecordTypeNotice_(address, accountInfo)',
-      },
+      accountAddressRecordTypeNotice_: {type: String},
     };
   }
 
-  declare address: AddressEntry;
-  declare accountInfo?: AccountInfo;
+  accessor address: AddressEntry = {fields: []};
+  accessor accountInfo: AccountInfo|undefined;
 
   /**
    * Original address is a snapshot of the address made at initialization,
    * it is a referce for soft (or "dont make it worse") validation, which
    * basically means skipping validation for fields that are already invalid.
    */
-  declare private title_: string;
-  declare private validationError_?: string;
-  declare private countries_: CountryEntry[];
+  protected accessor title_: string = '';
+  protected accessor validationError_: string|undefined;
+  protected accessor countries_: CountryEntry[] = [];
+  protected accessor countryCode_: string = '';
+  protected accessor components_: uiComponents.AddressComponentUi[][] = [];
+  protected accessor canSave_: boolean = false;
+  protected accessor isAccountAddress_: boolean = false;
+  protected accessor accountAddressRecordTypeNotice_: string = '';
+
   private addressFields_:
       Map<chrome.autofillPrivate.FieldType, string|undefined> = new Map();
   private originalAddressFields_?:
       Map<chrome.autofillPrivate.FieldType, string|undefined>;
-  declare private countryCode_: string|undefined;
-  declare private components_: uiComponents.AddressComponentUi[][];
-  declare private canSave_: boolean;
-  declare private isAccountAddress_: boolean;
-  declare private accountAddressRecordTypeNotice_: string;
   private countryDetailManager_: CountryDetailManagerProxy =
       CountryDetailManagerProxyImpl.getInstance();
 
@@ -140,7 +128,7 @@ export class SettingsAddressEditDialogElement extends
               new Map(this.addressFields_) :
               undefined;
 
-          microTask.run(() => {
+          queueMicrotask(() => {
             const countryField =
                 this.addressFields_.get(FieldType.ADDRESS_HOME_COUNTRY);
             if (!countryField) {
@@ -152,7 +140,7 @@ export class SettingsAddressEditDialogElement extends
                   FieldType.ADDRESS_HOME_COUNTRY, countryList[0].countryCode);
             }
             this.countryCode_ =
-                this.addressFields_.get(FieldType.ADDRESS_HOME_COUNTRY);
+                this.addressFields_.get(FieldType.ADDRESS_HOME_COUNTRY) || '';
           });
         });
 
@@ -160,9 +148,29 @@ export class SettingsAddressEditDialogElement extends
     // updated.
   }
 
-  private fire_(eventName: string, detail?: unknown): void {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('address') ||
+        changedProperties.has('accountInfo')) {
+      this.isAccountAddress_ = this.isAddressStoredInAccount_();
+      this.accountAddressRecordTypeNotice_ =
+          this.getAccountAddressRecordTypeNotice_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('countries_')) {
+      this.$.country.value = this.countryCode_;
+    }
+    if (changedPrivateProperties.has('countryCode_') &&
+        changedPrivateProperties.get('countryCode_') !== undefined) {
+      this.onCountryCodeChanged_();
+    }
   }
 
   /**
@@ -179,25 +187,22 @@ export class SettingsAddressEditDialogElement extends
     // becomes the only type of addresses
     const skipValidation = !this.isAccountAddress_;
 
-    this.components_ = format.components.map(
-        (componentRow: AddressComponentRow, rowIndex: number) => {
-          return componentRow.row.map(
-              (component: AddressComponent, colIndex: number) => {
-                return new uiComponents.AddressComponentUi(
-                    this.addressFields_, this.originalAddressFields_,
-                    component.field, component.fieldName,
-                    this.notifyComponentValidity_.bind(
-                        this, rowIndex, colIndex),
-                    component.isLongField ? 'long' : '',
-                    component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
-                    skipValidation, component.isRequired);
-              });
-        });
+    const components = format.components.map((componentRow, rowIndex) => {
+      return componentRow.row.map((component, columnIndex) => {
+        return new uiComponents.AddressComponentUi(
+            this.addressFields_, this.originalAddressFields_, component.field,
+            component.fieldName,
+            this.notifyComponentValidity_.bind(this, rowIndex, columnIndex),
+            component.isLongField ? 'long' : '',
+            component.field === FieldType.ADDRESS_HOME_STREET_ADDRESS,
+            skipValidation, component.isRequired);
+      });
+    });
 
     // Phone and email do not come in the address format as fields, but
     // should be editable and saveable in the resulting address.
-    const contactsRowIndex = this.components_.length;
-    this.components_.push([
+    const contactsRowIndex = components.length;
+    components.push([
       new uiComponents.AddressComponentUi(
           this.addressFields_, this.originalAddressFields_,
           FieldType.PHONE_HOME_WHOLE_NUMBER, this.i18n('addressPhone'),
@@ -209,13 +214,14 @@ export class SettingsAddressEditDialogElement extends
           this.notifyComponentValidity_.bind(this, contactsRowIndex, 1),
           'long last-row'),
     ]);
+    this.components_ = components;
 
-    // Flush dom before resize and savability updates.
-    flush();
+    // Wait for dom update before resize and savability updates.
+    await this.updateComplete;
 
-    this.updateCanSave_();
+    await this.updateCanSave_();
 
-    this.fire_('on-update-address-wrapper');  // For easier testing.
+    this.fire('on-update-address-wrapper');  // For easier testing.
 
     if (!this.$.dialog.open) {
       this.$.dialog.showModal();
@@ -226,7 +232,7 @@ export class SettingsAddressEditDialogElement extends
    * Determines whether component with specified validation property
    * should be rendered as invalid in the template.
    */
-  private isVisuallyInvalid_(isValidatable: boolean, isValid: boolean):
+  protected isVisuallyInvalid_(isValidatable: boolean, isValid: boolean):
       boolean {
     return isValidatable && !isValid;
   }
@@ -234,15 +240,11 @@ export class SettingsAddressEditDialogElement extends
   /**
    * Makes component's potentially invalid state visible, it makes
    * the component validatable and notifies the template engine.
-   * The component is addressed by row/col to leverage Polymer's notifications.
+   * The component is addressed by row/col to leverage notifications.
    */
   private notifyComponentValidity_(row: number, col: number): void {
     this.components_[row][col].makeValidatable();
-
-    const componentReference = `components_.${row}.${col}`;
-    this.notifyPath(componentReference + '.isValidatable');
-    this.notifyPath(componentReference + '.isValid');
-
+    this.requestUpdate();
     this.updateCanSave_();
   }
 
@@ -255,7 +257,7 @@ export class SettingsAddressEditDialogElement extends
     });
   }
 
-  private updateCanSave_(): void {
+  private async updateCanSave_(): Promise<void> {
     this.validationError_ = '';
 
     if ((!this.countryCode_ && this.hasAnyValue_()) ||
@@ -263,7 +265,8 @@ export class SettingsAddressEditDialogElement extends
          (!this.hasInvalidComponent_() ||
           this.hasUncoveredInvalidComponent_()))) {
       this.canSave_ = true;
-      this.fire_('on-update-can-save');  // For easier testing.
+      await this.updateComplete;
+      this.fire('on-update-can-save');  // For easier testing.
       return;
     }
 
@@ -277,29 +280,39 @@ export class SettingsAddressEditDialogElement extends
     }
 
     this.canSave_ = false;
-    this.fire_('on-update-can-save');  // For easier testing.
+    await this.updateComplete;
+    this.fire('on-update-can-save');  // For easier testing.
   }
 
-  private getCode_(country: CountryEntry): string {
+  protected onValueChanged_(e: CustomEvent<{value: string}>): void {
+    const target = e.currentTarget as HTMLElement;
+    const row = Number(target.dataset['row']);
+    const column = Number(target.dataset['column']);
+    const component = this.components_[row][column];
+    assert(component);
+    component.value = e.detail.value;
+  }
+
+  protected getCode_(country: CountryEntry): string {
     return country.countryCode || 'SPACER';
   }
 
-  private getName_(country: CountryEntry): string {
+  protected getName_(country: CountryEntry): string {
     return country.name || '------';
   }
 
-  private isDivision_(country: CountryEntry): boolean {
+  protected isDivision_(country: CountryEntry): boolean {
     return !country.countryCode;
   }
 
-  private getPhoneNumberInputClass_(
-    fieldType: chrome.autofillPrivate.FieldType): string {
-  if (fieldType ===
-      chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER) {
-    return 'phone-number-input';
+  protected getPhoneNumberInputClass_(
+      fieldType: chrome.autofillPrivate.FieldType): string {
+    if (fieldType ===
+        chrome.autofillPrivate.FieldType.PHONE_HOME_WHOLE_NUMBER) {
+      return 'phone-number-input';
+    }
+    return '';
   }
-  return '';
-}
 
   private isAddressStoredInAccount_(): boolean {
     if (this.address.guid) {
@@ -355,7 +368,7 @@ export class SettingsAddressEditDialogElement extends
         component => !component.isValid && !component.isValidatable);
   }
 
-  private onCancelClick_(): void {
+  protected onCancelClick_(): void {
     chrome.metricsPrivate.recordBoolean(
         'Autofill.Settings.EditAddress',
         /*confirmed=*/ false);
@@ -365,7 +378,7 @@ export class SettingsAddressEditDialogElement extends
   /**
    * Handler for tapping the save button.
    */
-  private onSaveButtonClick_(): void {
+  protected onSaveButtonClick_(): void {
     this.notifyValidity_();
 
     this.updateCanSave_();
@@ -381,24 +394,26 @@ export class SettingsAddressEditDialogElement extends
     chrome.metricsPrivate.recordBoolean(
         'Autofill.Settings.EditAddress',
         /*confirmed=*/ true);
-    this.fire_('save-address', this.address);
+    this.fire('save-address', this.address);
     this.$.dialog.close();
   }
 
-  private async onCountryCodeChanged_(): Promise<void> {
-    await this.updateAddressComponents_();
+  private onCountryCodeChanged_(): void {
+    this.updateAddressComponents_();
   }
 
   /**
    * Syncs the country code back to the address and rebuilds the address
    * components for the new location.
    */
-  private onCountryCodeSelectChange_(): void {
+  protected onCountryCodeSelectChange_(): void {
     this.addressFields_.set(
         FieldType.ADDRESS_HOME_COUNTRY, this.$.country.value);
     this.countryCode_ = this.$.country.value;
   }
 }
+
+export type AddressEditDialogElement = SettingsAddressEditDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {
