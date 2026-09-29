@@ -168,7 +168,7 @@
         Add current tab
       </message>
       <message name="IDS_FUSEBOX_ADD_TAB" desc="The text displayed in the omnibox attachments popup for the Current tab option." formatter_data="android_java">
-        Add tab
+        Ask about this page
       </message>
       <message name="IDS_FUSEBOX_UPLOAD_FAILED" desc="The text displayed in a snackbar when an attachment fails to upload" formatter_data="android_java">
         Unable to add attachments
@@ -438,13 +438,13 @@
     Add to your search
   </message>
   <message name="IDS_FUSEBOX_AI_MODE_SUBTEXT" desc="Subtext displayed under the AI Mode button in the Fusebox popup." formatter_data="android_java">
-    Smarter, faster answers
+    Brainstorm and summarize
   </message>
   <message name="IDS_FUSEBOX_CREATE_IMAGE_SUBTEXT" desc="Subtext displayed under the Create images button in the Fusebox popup." formatter_data="android_java">
     Visualize and edit
   </message>
   <message name="IDS_FUSEBOX_CANVAS_SUBTEXT" desc="Subtext displayed under the Canvas button in the Fusebox popup." formatter_data="android_java">
-    Code, write, or make slides
+    Build and code
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
