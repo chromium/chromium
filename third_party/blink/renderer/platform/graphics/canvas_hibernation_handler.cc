@@ -123,7 +123,7 @@ HibernatedCanvasMemoryDumpProvider::HibernatedCanvasMemoryDumpProvider() {
 }
 
 CanvasHibernationHandler::CanvasHibernationHandler(Delegate& delegate)
-    : delegate_(delegate) {}
+    : delegate_(&delegate) {}
 
 CanvasHibernationHandler::~CanvasHibernationHandler() {
   DCheckInvariant();
@@ -407,6 +407,7 @@ void CanvasHibernationHandler::Hibernate(
     base::TimeDelta delay) {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
   DCHECK(!IsHibernating());
+  CHECK(delegate_);
 
   Canvas2DResourceProvider* provider = delegate_->GetSharedImageProvider();
   if (!provider) {
@@ -481,6 +482,7 @@ void CanvasHibernationHandler::Hibernate(
 }
 
 void CanvasHibernationHandler::InitiateHibernationIfNecessary() {
+  CHECK(delegate_);
   delegate_->ClearCanvas2DLayerTexture();
   ReportHibernationEvent(HibernationEvent::kHibernationScheduled);
   ++epoch_;

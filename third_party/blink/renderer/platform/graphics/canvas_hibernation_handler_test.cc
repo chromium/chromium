@@ -40,11 +40,16 @@ using ::testing::Combine;
 using ::testing::Test;
 using ::testing::Values;
 
-class TestHibernationHandlerDelegate
-    : public CanvasHibernationHandler::Delegate {
+class TestHibernationHandlerDelegate final
+    : public GarbageCollected<TestHibernationHandlerDelegate>,
+      public CanvasHibernationHandler::Delegate {
  public:
   explicit TestHibernationHandlerDelegate(gfx::Size size) : size_(size) {}
   ~TestHibernationHandlerDelegate() override = default;
+
+  void Trace(Visitor* visitor) const override {
+    CanvasHibernationHandler::Delegate::Trace(visitor);
+  }
   bool IsContextLost() const override { return false; }
   void SetNeedsCompositingUpdate() override {}
   bool IsPageVisible() const override { return page_visible_; }
@@ -244,12 +249,13 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
 
-  delegate.CreateResourceProvider();
-  SetPageVisible(&delegate, &handler, platform, false);
+  delegate->CreateResourceProvider();
+  SetPageVisible(delegate.Get(), &handler, platform, false);
 
   auto delay = WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
@@ -289,22 +295,23 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 1);
 
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   EXPECT_FALSE(handler.is_encoded());
 
   EXPECT_FALSE(handler.IsHibernating());
-  EXPECT_TRUE(delegate.GetSharedImageProvider()->IsValid());
+  EXPECT_TRUE(delegate->GetSharedImageProvider()->IsValid());
 }
 
 TEST_P(CanvasHibernationHandlerTest, ForegroundBeforeHibernation) {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
-  SetPageVisible(&delegate, &handler, platform, false);
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   WaitForHibernation();
   EXPECT_FALSE(handler.IsHibernating());
   // No further task posted, for instance no compression task.
@@ -315,16 +322,17 @@ TEST_P(CanvasHibernationHandlerTest,
        ForegroundAfterHibernationBeforeCompression) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   auto delay = WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
 
   task_environment_.FastForwardBy(
       CanvasHibernationHandler::kBeforeCompressionDelay - delay);
@@ -337,13 +345,14 @@ TEST_P(CanvasHibernationHandlerTest,
        ForegroundAfterHibernationAfterCompressionBeforeCallback) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   auto delay = WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
   task_environment_.FastForwardBy(
@@ -352,7 +361,7 @@ TEST_P(CanvasHibernationHandlerTest,
   EXPECT_EQ(1u, task_runner->RunAll());
   // The order of the next two lines does not matter, as the background thread
   // compression task is stateless.
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   EXPECT_EQ(
       1u, task_environment_.GetPendingMainThreadTaskCount());  // Callback task.
   blink::test::RunPendingTasks();
@@ -363,13 +372,14 @@ TEST_P(CanvasHibernationHandlerTest,
 TEST_P(CanvasHibernationHandlerTest, ForegroundBackgroundWithDelay) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   const unsigned int iterations = 3;
   ASSERT_LT(iterations * base::Seconds(10),
             CanvasHibernationHandler::kBeforeCompressionDelay / 2);
@@ -378,8 +388,8 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundBackgroundWithDelay) {
     base::TimeDelta delta = base::Seconds(10);
     total_delta += delta;
     task_environment_.FastForwardBy(delta);
-    SetPageVisible(&delegate, &handler, platform, true);
-    SetPageVisible(&delegate, &handler, platform, false);
+    SetPageVisible(delegate.Get(), &handler, platform, true);
+    SetPageVisible(delegate.Get(), &handler, platform, false);
   }
 
   // One task for each time it was backgrounded.
@@ -404,17 +414,18 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundBackgroundWithDelay) {
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopBeforeHibernation) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   task_environment_.FastForwardBy(base::Seconds(1));
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   task_environment_.FastForwardBy(base::Seconds(1));
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
 
   auto delay = WaitForHibernation();
   task_environment_.FastForwardBy(
@@ -425,9 +436,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopBeforeHibernation) {
   EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
   // Come back to foreground after (or during) compression, but before the
   // callback.
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   // And back to background.
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
 
   // The callback is still pending.
   EXPECT_FALSE(handler.is_encoded());
@@ -450,13 +461,14 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopBeforeHibernation) {
 TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopDuringCompression) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
 
   auto delay = WaitForHibernation();
   task_environment_.FastForwardBy(
@@ -467,9 +479,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopDuringCompression) {
   EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
   // Come back to foreground after (or during) compression, but before the
   // callback.
-  SetPageVisible(&delegate, &handler, platform, true);
+  SetPageVisible(delegate.Get(), &handler, platform, true);
   // And back to background.
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
 
   // The callback is still pending.
   EXPECT_FALSE(handler.is_encoded());
@@ -491,12 +503,13 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipFlopDuringCompression) {
 
 TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   WaitForHibernation();
   // Wait for the canvas to be encoded.
   task_environment_.FastForwardBy(
@@ -517,14 +530,15 @@ TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
 TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  CanvasHibernationHandler handler(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  CanvasHibernationHandler handler(*delegate);
   handler.SetBackgroundTaskRunnerForTesting(task_runner);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
   // Set the page to hidden to kick off hibernation.
-  SetPageVisible(&delegate, &handler, platform, false);
+  SetPageVisible(delegate.Get(), &handler, platform, false);
   WaitForHibernation();
   EXPECT_TRUE(handler.IsHibernating());
   EXPECT_FALSE(handler.is_encoded());
@@ -551,12 +565,13 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
 
 TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
-  TestHibernationHandlerDelegate delegate(gfx::Size(300, 200));
-  auto handler = std::make_unique<CanvasHibernationHandler>(delegate);
+  Persistent<TestHibernationHandlerDelegate> delegate =
+      MakeGarbageCollected<TestHibernationHandlerDelegate>(gfx::Size(300, 200));
+  auto handler = std::make_unique<CanvasHibernationHandler>(*delegate);
 
-  delegate.CreateResourceProvider();
+  delegate->CreateResourceProvider();
 
-  SetPageVisible(&delegate, handler.get(), platform, false);
+  SetPageVisible(delegate.Get(), handler.get(), platform, false);
   auto delay = WaitForHibernation();
 
   base::trace_event::MemoryDumpArgs args = {
@@ -595,7 +610,7 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
 
   // End hibernation to be able to verify that hibernation dumps will no longer
   // occur.
-  SetPageVisible(&delegate, handler.get(), platform, true);
+  SetPageVisible(delegate.Get(), handler.get(), platform, true);
   EXPECT_FALSE(handler->IsHibernating());
 
   {
@@ -606,7 +621,7 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
     EXPECT_FALSE(pmd.GetAllocatorDump("canvas/hibernated/canvas_0"));
   }
 
-  SetPageVisible(&delegate, handler.get(), platform, false);
+  SetPageVisible(delegate.Get(), handler.get(), platform, false);
   delay = WaitForHibernation();
   // Wait for the canvas to be encoded.
   task_environment_.FastForwardBy(

@@ -15,6 +15,8 @@
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -32,7 +34,7 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT CanvasHibernationHandler {
  public:
-  class Delegate {
+  class Delegate : public GarbageCollectedMixin {
    public:
     virtual ~Delegate() = default;
 
@@ -178,7 +180,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int height_;
   int bytes_per_pixel_;
 
-  const base::raw_ref<Delegate> delegate_;
+  const WeakPersistent<Delegate> delegate_;
   base::WeakPtrFactory<CanvasHibernationHandler> weak_ptr_factory_{this};
 };
 

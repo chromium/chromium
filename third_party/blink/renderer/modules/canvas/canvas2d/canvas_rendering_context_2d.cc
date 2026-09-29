@@ -323,6 +323,7 @@ void CanvasRenderingContext2D::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   BaseRenderingContext2D::Trace(visitor);
   SVGResourceClient::Trace(visitor);
+  CanvasHibernationHandler::Delegate::Trace(visitor);
 }
 
 void CanvasRenderingContext2D::WillDrawImage(CanvasImageSource* source,
