@@ -588,7 +588,7 @@ class OrganizerPanelPixelTest : public OrganizerPanelUiTest {
   // consistency. Remember to add any tests which use this to the file
   // `pixel_tests.filter`.
   auto ScreenshotPanel() {
-    constexpr std::string kBaselineCL = "8451947";
+    constexpr std::string kBaselineCL = "8477611";
     auto steps = Steps(
         WaitForPanelLoad(),
         SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
@@ -642,4 +642,10 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, VerticalTabsWithTray) {
   RunTestSequence(SetVerticalTabsEnabled(true),
                   ResizeVerticalTabsRegionToWidth(kVerticalTabsRegionWidth),
                   OpenOrganizerPanel(), ScreenshotPanel());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPixelTest, VerticalTabsCollapsedWithTray) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/false),
+      OpenOrganizerPanel(), ScreenshotPanel());
 }
