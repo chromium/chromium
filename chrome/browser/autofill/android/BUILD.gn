@@ -192,7 +192,7 @@ android_library("java") {
   srcjar_deps = [
     ":autofill_generated_enums",
     ":jni_headers",
-    "//chrome/browser/ui/autofill:autofill_ai_ui_java_enums",
+    "//chrome/browser/ui/autofill/autofill_ai:autofill_ai_ui_java_enums",
   ]
 }
 

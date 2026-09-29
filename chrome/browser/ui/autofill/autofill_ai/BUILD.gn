@@ -1,0 +1,82 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+if (is_android) {
+  java_cpp_enum("autofill_ai_ui_java_enums") {
+    sources = [ "entity_attribute_update_details.h" ]
+  }
+}
+
+source_set("autofill_ai_ui_utils") {
+  sources = [
+    "autofill_ai_import_string_utils.h",
+    "entity_attribute_update_details.h",
+  ]
+  public_deps = [
+    "//components/autofill/core/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("autofill_ai_ui_utils_impl") {
+  sources = [
+    "autofill_ai_import_string_utils.cc",
+    "entity_attribute_update_details.cc",
+  ]
+  public_deps = [
+    ":autofill_ai_ui_utils",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings_grit",
+    "//ui/base",
+  ]
+}
+
+if (!is_android) {
+  source_set("autofill_ai") {
+    public = [ "autofill_ai_import_data_controller.h" ]
+    public_deps = [
+      ":autofill_ai_ui_utils",
+      "//base",
+      "//components/autofill/core/browser",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("impl") {
+    sources = [
+      "autofill_ai_import_data_controller_impl.cc",
+      "autofill_ai_import_data_controller_impl.h",
+    ]
+    public_deps = [
+      ":autofill_ai",
+      "//chrome/browser:browser_public_dependencies",
+    ]
+    deps = [
+      ":autofill_ai_ui_utils_impl",
+      "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/signin",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui:singleton_tabs",
+      "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/autofill:bubble_controller_base",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/page_action:icon_type",
+      "//chrome/common:constants",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/signin/public/identity_manager",
+      "//components/strings:components_strings_grit",
+      "//ui/base",
+    ]
+  }
+}

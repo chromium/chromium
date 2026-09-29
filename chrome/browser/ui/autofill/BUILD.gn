@@ -14,39 +14,21 @@ if (is_android) {
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
-if (is_android) {
-  java_cpp_enum("autofill_ai_ui_java_enums") {
-    sources = [ "autofill_ai/entity_attribute_update_details.h" ]
-  }
-}
-
 source_set("bubble_controller_base") {
   public = [ "bubble_controller_base.h" ]
   public_deps = [ "//base" ]
 }
 
+# TODO(crbug.com/353332589): Remove these forwarding targets after updating
+# callers.
 source_set("autofill_ai_ui_utils") {
-  sources = [
-    "autofill_ai/autofill_ai_import_string_utils.h",
-    "autofill_ai/entity_attribute_update_details.h",
-  ]
-  public_deps = [
-    "//components/autofill/core/browser",
-    "//ui/base",
-  ]
+  public_deps =
+      [ "//chrome/browser/ui/autofill/autofill_ai:autofill_ai_ui_utils" ]
 }
 
 source_set("autofill_ai_ui_utils_impl") {
-  sources = [
-    "autofill_ai/autofill_ai_import_string_utils.cc",
-    "autofill_ai/entity_attribute_update_details.cc",
-  ]
-  public_deps = [
-    ":autofill_ai_ui_utils",
-    "//components/autofill/core/browser",
-    "//components/strings:components_strings_grit",
-    "//ui/base",
-  ]
+  public_deps =
+      [ "//chrome/browser/ui/autofill/autofill_ai:autofill_ai_ui_utils_impl" ]
 }
 
 source_set("autofill") {
@@ -126,8 +108,6 @@ source_set("autofill") {
       "address_bubbles_controller.h",
       "address_bubbles_icon_controller.h",
       "address_editor_controller.h",
-      "autofill_ai/autofill_ai_import_data_controller.h",
-      "autofill_ai/autofill_ai_import_data_controller_impl.h",
       "autofill_context_menu_manager.h",
       "autofill_field_promo_controller.h",
       "autofill_field_promo_controller_impl.h",
@@ -145,6 +125,7 @@ source_set("autofill") {
       "update_address_bubble_controller.h",
     ]
     public_deps += [
+      "//chrome/browser/ui/autofill/autofill_ai",
       "//components/autofill/core/browser",
       "//components/password_manager/core/browser",
       "//components/password_manager/core/browser:password_form",
@@ -283,7 +264,6 @@ source_set("impl") {
       "address_bubbles_controller.cc",
       "address_bubbles_icon_controller.cc",
       "address_editor_controller.cc",
-      "autofill_ai/autofill_ai_import_data_controller_impl.cc",
       "autofill_context_menu_manager.cc",
       "autofill_field_promo_controller_impl.cc",
       "autofill_popup_controller_impl.cc",
@@ -305,6 +285,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
+      "//chrome/browser/ui/autofill/autofill_ai:impl",
       "//chrome/browser/ui/autofill/email_verifier",
       "//chrome/browser/ui/autofill/email_verifier:impl",
       "//chrome/browser/ui/browser_window",
@@ -501,6 +482,7 @@ source_set("test_support") {
       sources += [ "autofill_popup_controller_impl_mac_test_api.h" ]
     }
     public_deps += [
+      "//chrome/browser/ui/autofill/autofill_ai",
       "//chrome/browser/ui/autofill/email_verifier",
       "//ui/gfx:test_support",
     ]
@@ -648,6 +630,8 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui/autofill/autofill_ai",
+      "//chrome/browser/ui/autofill/autofill_ai:impl",
       "//chrome/browser/ui/autofill/email_verifier",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
