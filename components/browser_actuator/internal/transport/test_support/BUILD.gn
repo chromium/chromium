@@ -6,6 +6,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_proto_stream_server.cc",
+    "fake_proto_stream_server.h",
     "mock_message_stream_client.cc",
     "mock_message_stream_client.h",
     "mock_stream_connection_delegate.cc",
@@ -17,8 +19,18 @@ source_set("test_support") {
   ]
 
   public_deps = [
+    "//base",
+    "//components/browser_actuator/internal/proto",
     "//components/browser_actuator/internal/transport",
+    "//components/sharing_message/proto",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//services/network:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
   ]
 }
