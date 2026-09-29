@@ -730,28 +730,44 @@ TEST_F(WebSocketDeflateStreamTest, SplitToMultipleFramesInReadFrames) {
         .WillOnce(Invoke(&stub, &ReadFramesStub::Call));
   }
 
+  std::string received_data;
+
   ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
               IsOk());
-  ASSERT_EQ(3u, frames.size());
+  ASSERT_EQ(1u, frames.size());
   EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frames[0]->header.opcode);
   EXPECT_FALSE(frames[0]->header.final);
   EXPECT_FALSE(frames[0]->header.reserved1);
   EXPECT_EQ(WebSocketDeflateStream::kChunkSize,
             static_cast<size_t>(frames[0]->header.payload_length));
+  received_data += ToString(frames[0]);
+  frames.clear();
+
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
   EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
-            frames[1]->header.opcode);
-  EXPECT_FALSE(frames[1]->header.final);
-  EXPECT_FALSE(frames[1]->header.reserved1);
+            frames[0]->header.opcode);
+  EXPECT_FALSE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
   EXPECT_EQ(WebSocketDeflateStream::kChunkSize,
-            static_cast<size_t>(frames[1]->header.payload_length));
+            static_cast<size_t>(frames[0]->header.payload_length));
+  received_data += ToString(frames[0]);
+  frames.clear();
+
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
   EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
-            frames[2]->header.opcode);
-  EXPECT_TRUE(frames[2]->header.final);
-  EXPECT_FALSE(frames[2]->header.reserved1);
+            frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
   EXPECT_EQ(WebSocketDeflateStream::kChunkSize,
-            static_cast<size_t>(frames[2]->header.payload_length));
-  EXPECT_EQ(original_data,
-            ToString(frames[0]) + ToString(frames[1]) + ToString(frames[2]));
+            static_cast<size_t>(frames[0]->header.payload_length));
+  received_data += ToString(frames[0]);
+  frames.clear();
+
+  EXPECT_EQ(original_data, received_data);
 }
 
 TEST_F(WebSocketDeflateStreamTest, InflaterInternalDataCanBeEmpty) {
@@ -1398,6 +1414,364 @@ TEST_F(WebSocketDeflateStreamWithClientWindowBitsTest, WindowBits10) {
   EXPECT_EQ(
       std::string("r\xce(\xca\xcf\xcd,\xcdM\x1c\xe1\xc0\x19\x1a\x0e\0\0", 17),
       ToString(frames_passed[0]));
+}
+
+TEST_F(WebSocketDeflateStreamTest,
+       DecompressedFrameExactlyChunkSizeContinuesReading) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+
+  const std::string exact_chunk_data(WebSocketDeflateStream::kChunkSize, 'a');
+  deflater.AddBytes(base::as_byte_span(exact_chunk_data));
+  deflater.Finish();
+  const std::string compressed_chunk =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  const std::string follow_up_same_batch = "FollowUpSameBatch";
+  deflater.AddBytes(base::as_byte_span(follow_up_same_batch));
+  deflater.Finish();
+  const std::string compressed_follow_up_1 =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  const std::string follow_up_next_read = "FollowUpNextRead";
+  deflater.AddBytes(base::as_byte_span(follow_up_next_read));
+  deflater.Finish();
+  const std::string compressed_follow_up_2 =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  std::vector<std::unique_ptr<WebSocketFrame>> batch1;
+  AppendTo(&batch1, WebSocketFrameHeader::kOpCodeBinary, kFinal | kReserved1,
+           compressed_chunk);
+  AppendTo(&batch1, WebSocketFrameHeader::kOpCodeText, kFinal | kReserved1,
+           compressed_follow_up_1);
+
+  std::vector<std::unique_ptr<WebSocketFrame>> batch2;
+  AppendTo(&batch2, WebSocketFrameHeader::kOpCodeText, kFinal | kReserved1,
+           compressed_follow_up_2);
+
+  ReadFramesStub stub1(OK, &batch1);
+  ReadFramesStub stub2(OK, &batch2);
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  {
+    InSequence s;
+    EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+        .WillOnce(Invoke(&stub1, &ReadFramesStub::Call));
+    EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+        .WillOnce(Invoke(&stub2, &ReadFramesStub::Call));
+  }
+
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(2u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
+  EXPECT_EQ(exact_chunk_data, ToString(frames[0]));
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, frames[1]->header.opcode);
+  EXPECT_TRUE(frames[1]->header.final);
+  EXPECT_FALSE(frames[1]->header.reserved1);
+  EXPECT_EQ(follow_up_same_batch, ToString(frames[1]));
+  frames.clear();
+
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
+  EXPECT_EQ(follow_up_next_read, ToString(frames[0]));
+}
+
+TEST_F(WebSocketDeflateStreamTest,
+       DecompressedFrameExactlyTwoChunkSizesContinuesReading) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+
+  const std::string two_chunks_data(WebSocketDeflateStream::kChunkSize * 2,
+                                    'b');
+  deflater.AddBytes(base::as_byte_span(two_chunks_data));
+  deflater.Finish();
+  const std::string compressed_two_chunks =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  const std::string follow_up_same_batch = "FollowUpSameBatch";
+  deflater.AddBytes(base::as_byte_span(follow_up_same_batch));
+  deflater.Finish();
+  const std::string compressed_follow_up_1 =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  const std::string follow_up_next_read = "FollowUpNextRead";
+  deflater.AddBytes(base::as_byte_span(follow_up_next_read));
+  deflater.Finish();
+  const std::string compressed_follow_up_2 =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  std::vector<std::unique_ptr<WebSocketFrame>> batch1;
+  AppendTo(&batch1, WebSocketFrameHeader::kOpCodeBinary, kFinal | kReserved1,
+           compressed_two_chunks);
+  AppendTo(&batch1, WebSocketFrameHeader::kOpCodeText, kFinal | kReserved1,
+           compressed_follow_up_1);
+
+  std::vector<std::unique_ptr<WebSocketFrame>> batch2;
+  AppendTo(&batch2, WebSocketFrameHeader::kOpCodeText, kFinal | kReserved1,
+           compressed_follow_up_2);
+
+  ReadFramesStub stub1(OK, &batch1);
+  ReadFramesStub stub2(OK, &batch2);
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  {
+    InSequence s;
+    EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+        .WillOnce(Invoke(&stub1, &ReadFramesStub::Call));
+    EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+        .WillOnce(Invoke(&stub2, &ReadFramesStub::Call));
+  }
+
+  std::string received_binary;
+
+  // First ReadFrames() emits the first kChunkSize chunk and yields because the
+  // inflater output buffer is full again with the second chunk.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frames[0]->header.opcode);
+  EXPECT_FALSE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
+  EXPECT_EQ(WebSocketDeflateStream::kChunkSize,
+            static_cast<size_t>(frames[0]->header.payload_length));
+  received_binary += ToString(frames[0]);
+  frames.clear();
+
+  // Second ReadFrames() resumes without reading from mock_stream_, emits the
+  // second kChunkSize chunk (with final=true), and then processes the
+  // remaining frame from batch1.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(2u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
+  EXPECT_EQ(WebSocketDeflateStream::kChunkSize,
+            static_cast<size_t>(frames[0]->header.payload_length));
+  received_binary += ToString(frames[0]);
+  EXPECT_EQ(two_chunks_data, received_binary);
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, frames[1]->header.opcode);
+  EXPECT_TRUE(frames[1]->header.final);
+  EXPECT_FALSE(frames[1]->header.reserved1);
+  EXPECT_EQ(follow_up_same_batch, ToString(frames[1]));
+  frames.clear();
+
+  // Third ReadFrames() reads batch2 from mock_stream_.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  EXPECT_FALSE(frames[0]->header.reserved1);
+  EXPECT_EQ(follow_up_next_read, ToString(frames[0]));
+}
+
+TEST_F(WebSocketDeflateStreamTest,
+       HighlyCompressibleFrameBoundsOutputPerReadFramesCall) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+  constexpr size_t kNumChunks = 128;  // 4 MiB decompressed
+  constexpr size_t kSize = WebSocketDeflateStream::kChunkSize * kNumChunks;
+  const std::string original_data(kSize, 'x');
+  deflater.AddBytes(base::as_byte_span(original_data));
+  deflater.Finish();
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
+  AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodeBinary,
+           kFinal | kReserved1,
+           ToString(deflater.GetOutput(deflater.CurrentOutputSize())));
+
+  ReadFramesStub stub(OK, &frames_to_output);
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+      .WillOnce(Invoke(&stub, &ReadFramesStub::Call));
+
+  std::string reassembled;
+  reassembled.reserve(kSize);
+  size_t total_frames = 0;
+  bool saw_final = false;
+
+  while (!saw_final) {
+    ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+                IsOk());
+    ASSERT_GE(frames.size(), 1u);
+    EXPECT_LE(frames.size(), 2u);
+    for (const auto& frame : frames) {
+      EXPECT_FALSE(saw_final);
+      if (total_frames == 0) {
+        EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frame->header.opcode);
+      } else {
+        EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+                  frame->header.opcode);
+      }
+      EXPECT_FALSE(frame->header.reserved1);
+      reassembled.append(ToString(frame));
+      saw_final = frame->header.final;
+      ++total_frames;
+    }
+    frames.clear();
+  }
+
+  EXPECT_EQ(kNumChunks, total_frames);
+  EXPECT_EQ(original_data, reassembled);
+}
+
+TEST_F(WebSocketDeflateStreamTest,
+       LargeCompressedFramePreservesOrderWithSubsequentControlAndDataFrames) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+
+  const std::string first_message(WebSocketDeflateStream::kChunkSize * 3, 'm');
+  deflater.AddBytes(base::as_byte_span(first_message));
+  deflater.Finish();
+  const std::string compressed_first =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  const std::string second_message = "SecondMessage";
+  deflater.AddBytes(base::as_byte_span(second_message));
+  deflater.Finish();
+  const std::string compressed_second =
+      ToString(deflater.GetOutput(deflater.CurrentOutputSize()));
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
+  AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodeBinary,
+           kFinal | kReserved1, compressed_first);
+  AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodePing, kFinal,
+           "ping");
+  AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodeText,
+           kFinal | kReserved1, compressed_second);
+
+  ReadFramesStub stub(OK, &frames_to_output);
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+      .WillOnce(Invoke(&stub, &ReadFramesStub::Call));
+
+  // Call 1: Chunk 0 of first_message.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frames[0]->header.opcode);
+  EXPECT_FALSE(frames[0]->header.final);
+  frames.clear();
+
+  // Call 2: Chunk 1 of first_message.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames[0]->header.opcode);
+  EXPECT_FALSE(frames[0]->header.final);
+  frames.clear();
+
+  // Call 3: Chunk 2 (final) of first_message, followed by Ping and
+  // second_message in order.
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(3u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodePing, frames[1]->header.opcode);
+  EXPECT_TRUE(frames[1]->header.final);
+  EXPECT_EQ("ping", ToString(frames[1]));
+
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeText, frames[2]->header.opcode);
+  EXPECT_TRUE(frames[2]->header.final);
+  EXPECT_EQ(second_message, ToString(frames[2]));
+}
+
+TEST_F(WebSocketDeflateStreamTest, LargeCompressedFrameAsyncReadAndResume) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+  const std::string original_data(WebSocketDeflateStream::kChunkSize * 2, 'z');
+  deflater.AddBytes(base::as_byte_span(original_data));
+  deflater.Finish();
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
+  AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodeBinary,
+           kFinal | kReserved1,
+           ToString(deflater.GetOutput(deflater.CurrentOutputSize())));
+
+  CompletionOnceCallback read_callback;
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+      .WillOnce([&](std::vector<std::unique_ptr<WebSocketFrame>>* caller_frames,
+                    CompletionOnceCallback callback) {
+        read_callback = std::move(callback);
+        return ERR_IO_PENDING;
+      });
+
+  base::MockOnceCallback<void(int)> mock_callback;
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, mock_callback.Get()),
+              IsError(ERR_IO_PENDING));
+
+  frames.swap(frames_to_output);
+  EXPECT_CALL(mock_callback, Run(OK));
+  std::move(read_callback).Run(OK);
+
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frames[0]->header.opcode);
+  EXPECT_FALSE(frames[0]->header.final);
+  std::string received = ToString(frames[0]);
+  frames.clear();
+
+  ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+              IsOk());
+  ASSERT_EQ(1u, frames.size());
+  EXPECT_EQ(WebSocketFrameHeader::kOpCodeContinuation,
+            frames[0]->header.opcode);
+  EXPECT_TRUE(frames[0]->header.final);
+  received += ToString(frames[0]);
+  EXPECT_EQ(original_data, received);
+}
+
+TEST_F(WebSocketDeflateStreamTest,
+       BatchOfCompressedFramesBoundsOutputPerReadFramesCall) {
+  WebSocketDeflater deflater(WebSocketDeflater::TAKE_OVER_CONTEXT);
+  deflater.Initialize(WebSocketDeflateStream::kWindowBits);
+  constexpr size_t kNumMessages = 10;
+  const std::string message_data(WebSocketDeflateStream::kChunkSize, 'c');
+
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
+  for (size_t i = 0; i < kNumMessages; ++i) {
+    deflater.AddBytes(base::as_byte_span(message_data));
+    deflater.Finish();
+    AppendTo(&frames_to_output, WebSocketFrameHeader::kOpCodeBinary,
+             kFinal | kReserved1,
+             ToString(deflater.GetOutput(deflater.CurrentOutputSize())));
+  }
+
+  ReadFramesStub stub(OK, &frames_to_output);
+  std::vector<std::unique_ptr<WebSocketFrame>> frames;
+  EXPECT_CALL(*mock_stream_, ReadFrames(&frames, _))
+      .WillOnce(Invoke(&stub, &ReadFramesStub::Call));
+
+  size_t messages_received = 0;
+  while (messages_received < kNumMessages) {
+    ASSERT_THAT(deflate_stream_->ReadFrames(&frames, CompletionOnceCallback()),
+                IsOk());
+    ASSERT_GE(frames.size(), 1u);
+    EXPECT_LE(frames.size(), 2u);
+    for (const auto& frame : frames) {
+      EXPECT_EQ(WebSocketFrameHeader::kOpCodeBinary, frame->header.opcode);
+      EXPECT_TRUE(frame->header.final);
+      EXPECT_FALSE(frame->header.reserved1);
+      EXPECT_EQ(message_data, ToString(frame));
+      ++messages_received;
+    }
+    frames.clear();
+  }
+
+  EXPECT_EQ(kNumMessages, messages_received);
 }
 
 }  // namespace

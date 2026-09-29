@@ -57,16 +57,9 @@ WebSocketDeflateStream::~WebSocketDeflateStream() = default;
 int WebSocketDeflateStream::ReadFrames(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
     CompletionOnceCallback callback) {
+  CHECK(frames->empty());
   read_callback_ = std::move(callback);
   inflater_outputs_.clear();
-  int result = stream_->ReadFrames(
-      frames, base::BindOnce(&WebSocketDeflateStream::OnReadComplete,
-                             base::Unretained(this), base::Unretained(frames)));
-  if (result < 0)
-    return result;
-  DCHECK_EQ(OK, result);
-  DCHECK(!frames->empty());
-
   return InflateAndReadIfNecessary(frames);
 }
 
@@ -82,7 +75,11 @@ int WebSocketDeflateStream::WriteFrames(
   return stream_->WriteFrames(frames, std::move(callback));
 }
 
-void WebSocketDeflateStream::Close() { stream_->Close(); }
+void WebSocketDeflateStream::Close() {
+  inflating_frame_.reset();
+  pending_input_frames_.clear();
+  stream_->Close();
+}
 
 std::string WebSocketDeflateStream::GetSubProtocol() const {
   return stream_->GetSubProtocol();
@@ -277,43 +274,58 @@ int WebSocketDeflateStream::AppendPossiblyCompressedMessage(
 
 int WebSocketDeflateStream::Inflate(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
+  for (auto& frame : *frames) {
+    pending_input_frames_.push_back(std::move(frame));
+  }
+  frames->clear();
+
   std::vector<std::unique_ptr<WebSocketFrame>> frames_to_output;
-  std::vector<std::unique_ptr<WebSocketFrame>> frames_passed;
-  frames->swap(frames_passed);
-  for (auto& frame_passed : frames_passed) {
-    std::unique_ptr<WebSocketFrame> frame(std::move(frame_passed));
-    frame_passed = nullptr;
-    DVLOG(3) << "Input frame: opcode=" << frame->header.opcode
-             << " final=" << frame->header.final
-             << " reserved1=" << frame->header.reserved1
-             << " payload_length=" << frame->header.payload_length;
-
-    if (!WebSocketFrameHeader::IsKnownDataOpCode(frame->header.opcode)) {
-      frames_to_output.push_back(std::move(frame));
-      continue;
-    }
-
-    if (reading_state_ == NOT_READING) {
-      if (frame->header.reserved1)
-        reading_state_ = READING_COMPRESSED_MESSAGE;
-      else
-        reading_state_ = READING_UNCOMPRESSED_MESSAGE;
-      current_reading_opcode_ = frame->header.opcode;
+  size_t total_inflated_bytes = 0;
+  while (inflating_frame_ || !pending_input_frames_.empty()) {
+    std::unique_ptr<WebSocketFrame> frame;
+    if (inflating_frame_) {
+      // Resume emitting the output of a frame from a previous call. Its
+      // payload has already been passed to `inflater_`.
+      frame = std::move(inflating_frame_);
+      CHECK_EQ(reading_state_, READING_COMPRESSED_MESSAGE);
     } else {
-      if (frame->header.reserved1) {
-        DVLOG(1) << "WebSocket protocol error. "
-                 << "Receiving a non-first frame with RSV1 flag set.";
-        return ERR_WS_PROTOCOL_ERROR;
+      frame = std::move(pending_input_frames_.front());
+      pending_input_frames_.pop_front();
+      DVLOG(3) << "Input frame: opcode=" << frame->header.opcode
+               << " final=" << frame->header.final
+               << " reserved1=" << frame->header.reserved1
+               << " payload_length=" << frame->header.payload_length;
+
+      if (!WebSocketFrameHeader::IsKnownDataOpCode(frame->header.opcode)) {
+        frames_to_output.push_back(std::move(frame));
+        continue;
       }
-    }
 
-    if (reading_state_ == READING_UNCOMPRESSED_MESSAGE) {
-      if (frame->header.final)
-        reading_state_ = NOT_READING;
-      current_reading_opcode_ = WebSocketFrameHeader::kOpCodeContinuation;
-      frames_to_output.push_back(std::move(frame));
-    } else {
-      DCHECK_EQ(reading_state_, READING_COMPRESSED_MESSAGE);
+      if (reading_state_ == NOT_READING) {
+        if (frame->header.reserved1) {
+          reading_state_ = READING_COMPRESSED_MESSAGE;
+        } else {
+          reading_state_ = READING_UNCOMPRESSED_MESSAGE;
+        }
+        current_reading_opcode_ = frame->header.opcode;
+      } else {
+        if (frame->header.reserved1) {
+          DVLOG(1) << "WebSocket protocol error. "
+                   << "Receiving a non-first frame with RSV1 flag set.";
+          return ERR_WS_PROTOCOL_ERROR;
+        }
+      }
+
+      if (reading_state_ == READING_UNCOMPRESSED_MESSAGE) {
+        if (frame->header.final) {
+          reading_state_ = NOT_READING;
+        }
+        current_reading_opcode_ = WebSocketFrameHeader::kOpCodeContinuation;
+        frames_to_output.push_back(std::move(frame));
+        continue;
+      }
+
+      CHECK_EQ(reading_state_, READING_COMPRESSED_MESSAGE);
       if (!frame->payload.empty() && !inflater_.AddBytes(frame->payload)) {
         DVLOG(1) << "WebSocket protocol error. "
                  << "inflater_.AddBytes() returns an error.";
@@ -326,40 +338,56 @@ int WebSocketDeflateStream::Inflate(
           return ERR_WS_PROTOCOL_ERROR;
         }
       }
-      // TODO(yhirano): Many frames can be generated by the inflater and
-      // memory consumption can grow.
-      // We could avoid it, but avoiding it makes this class much more
-      // complicated.
-      while (inflater_.CurrentOutputSize() >= kChunkSize ||
-             frame->header.final) {
-        size_t size = std::min(kChunkSize, inflater_.CurrentOutputSize());
-        auto inflated =
-            std::make_unique<WebSocketFrame>(WebSocketFrameHeader::kOpCodeText);
-        scoped_refptr<IOBufferWithSize> data = inflater_.GetOutput(size);
-        inflater_outputs_.push_back(data);
-        bool is_final = !inflater_.CurrentOutputSize() && frame->header.final;
-        if (!data.get()) {
-          DVLOG(1) << "WebSocket protocol error. "
-                   << "inflater_.GetOutput() returns an error.";
-          return ERR_WS_PROTOCOL_ERROR;
-        }
-        inflated->header.CopyFrom(frame->header);
-        inflated->header.opcode = current_reading_opcode_;
-        inflated->header.final = is_final;
-        inflated->header.reserved1 = false;
-        inflated->payload = data->span();
-        inflated->header.payload_length = data->size();
-        DVLOG(3) << "Inflated frame: opcode=" << inflated->header.opcode
-                 << " final=" << inflated->header.final
-                 << " reserved1=" << inflated->header.reserved1
-                 << " payload_length=" << inflated->header.payload_length;
-        frames_to_output.push_back(std::move(inflated));
-        current_reading_opcode_ = WebSocketFrameHeader::kOpCodeContinuation;
-        if (is_final)
-          break;
+    }
+
+    while (inflater_.CurrentOutputSize() >= kChunkSize || frame->header.final) {
+      size_t size = std::min(kChunkSize, inflater_.CurrentOutputSize());
+      auto inflated =
+          std::make_unique<WebSocketFrame>(WebSocketFrameHeader::kOpCodeText);
+      scoped_refptr<IOBufferWithSize> data = inflater_.GetOutput(size);
+      inflater_outputs_.push_back(data);
+      bool is_final = !inflater_.CurrentOutputSize() && frame->header.final;
+      if (!data.get()) {
+        DVLOG(1) << "WebSocket protocol error. "
+                 << "inflater_.GetOutput() returns an error.";
+        return ERR_WS_PROTOCOL_ERROR;
       }
-      if (frame->header.final)
-        reading_state_ = NOT_READING;
+      total_inflated_bytes += data->size();
+      inflated->header.CopyFrom(frame->header);
+      inflated->header.opcode = current_reading_opcode_;
+      inflated->header.final = is_final;
+      inflated->header.reserved1 = false;
+      inflated->payload = data->span();
+      inflated->header.payload_length = data->size();
+      DVLOG(3) << "Inflated frame: opcode=" << inflated->header.opcode
+               << " final=" << inflated->header.final
+               << " reserved1=" << inflated->header.reserved1
+               << " payload_length=" << inflated->header.payload_length;
+      frames_to_output.push_back(std::move(inflated));
+      current_reading_opcode_ = WebSocketFrameHeader::kOpCodeContinuation;
+      if (is_final) {
+        break;
+      }
+      if (total_inflated_bytes + inflater_.CurrentOutputSize() >=
+          2 * kChunkSize) {
+        // The output buffer is full again, so `inflater_` still holds choked
+        // input from this frame. Return what has been emitted so far; the
+        // next ReadFrames() call resumes here without reading from `stream_`.
+        // This bounds the inflated data held in memory per ReadFrames() call
+        // and lets the caller's backpressure engage.
+        frame->payload = base::span<const uint8_t>();
+        inflating_frame_ = std::move(frame);
+        frames->swap(frames_to_output);
+        return OK;
+      }
+    }
+    if (frame->header.final) {
+      reading_state_ = NOT_READING;
+    }
+    if (total_inflated_bytes >= 2 * kChunkSize &&
+        !pending_input_frames_.empty()) {
+      frames->swap(frames_to_output);
+      return OK;
     }
   }
   frames->swap(frames_to_output);
@@ -370,7 +398,11 @@ int WebSocketDeflateStream::InflateAndReadIfNecessary(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames) {
   int result = Inflate(frames);
   while (result == ERR_IO_PENDING) {
-    DCHECK(frames->empty());
+    CHECK(frames->empty());
+    // Reading from `stream_` invalidates the payloads of any frames we are
+    // still holding, so this must only happen once they are all consumed.
+    CHECK(!inflating_frame_);
+    CHECK(pending_input_frames_.empty());
 
     result = stream_->ReadFrames(
         frames,
@@ -378,13 +410,16 @@ int WebSocketDeflateStream::InflateAndReadIfNecessary(
                        base::Unretained(this), base::Unretained(frames)));
     if (result < 0)
       break;
-    DCHECK_EQ(OK, result);
-    DCHECK(!frames->empty());
+    CHECK_EQ(OK, result);
+    CHECK(!frames->empty());
 
     result = Inflate(frames);
   }
-  if (result < 0)
+  if (result < 0) {
     frames->clear();
+    inflating_frame_.reset();
+    pending_input_frames_.clear();
+  }
   return result;
 }
 
