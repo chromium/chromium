@@ -5,16 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_H_
 #define IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_H_
 
-#import <memory>
+#import <Foundation/Foundation.h>
 
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/sequence_checker.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
 class ProfileIOS;
+@class TTCSessionController;
 
 // Profile-keyed service that manages the active TalkToChrome voice session
 // lifecycle, state transitions, and coordination for a Profile.
@@ -38,6 +40,10 @@ class TTCKeyedService : public KeyedService {
   // Returns the current `TTCServiceState` for this profile.
   TTCServiceState GetState() const;
 
+  // Returns the current `TTCSessionLifecycle` for the active session, or
+  // `kFinished` if no session is active.
+  TTCSessionLifecycle GetSessionLifecycle() const;
+
   // Starts an active voice session. Crashes if a session is already active
   // or if TTC is disabled.
   void StartSession();
@@ -46,7 +52,11 @@ class TTCKeyedService : public KeyedService {
   void EndSession();
 
   // Returns true if a voice session is currently active.
-  bool is_session_active() const { return is_session_active_; }
+  bool is_session_active() const;
+
+  // Returns the active `TTCSessionController`, or nil if no session is
+  // active.
+  TTCSessionController* session_controller() const;
 
   // Registers a callback to be notified whenever `TTCServiceState` changes.
   base::CallbackListSubscription RegisterStateChangedCallback(
@@ -59,13 +69,13 @@ class TTCKeyedService : public KeyedService {
   base::WeakPtr<TTCKeyedService> GetWeakPtr();
 
  private:
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // The profile this service belongs to.
   raw_ptr<ProfileIOS> profile_ = nullptr;
 
-  // Whether a session is currently active.
-  // Note: In subsequent CLs, this will be represented by ownership of a
-  // `TTCSessionController`.
-  bool is_session_active_ = false;
+  // Active session coordinator, or nil when no session is in progress.
+  TTCSessionController* session_controller_ = nil;
 
   // List of callbacks notified when `TTCServiceState` changes.
   base::RepeatingCallbackList<void(TTCServiceState)> state_changed_callbacks_;

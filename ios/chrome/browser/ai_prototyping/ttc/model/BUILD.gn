@@ -22,6 +22,9 @@ source_set("model") {
     "ttc_keyed_service.mm",
     "ttc_keyed_service_factory.h",
     "ttc_keyed_service_factory.mm",
+    "ttc_session_controller.h",
+    "ttc_session_controller.mm",
+    "ttc_session_controller_observer.h",
     "ttc_states.h",
   ]
   deps = [
@@ -36,6 +39,7 @@ source_set("model") {
     "AVFAudio.framework",
     "Accelerate.framework",
     "Foundation.framework",
+    "UIKit.framework",
   ]
 }
 
@@ -48,6 +52,7 @@ source_set("unit_tests") {
     "ttc_audio_recorder_unittest.mm",
     "ttc_audio_session_manager_unittest.mm",
     "ttc_keyed_service_unittest.mm",
+    "ttc_session_controller_unittest.mm",
   ]
   deps = [
     ":model",
@@ -62,5 +67,6 @@ source_set("unit_tests") {
   frameworks = [
     "AVFAudio.framework",
     "Foundation.framework",
+    "UIKit.framework",
   ]
 }

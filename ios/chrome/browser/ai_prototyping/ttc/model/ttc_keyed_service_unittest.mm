@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 #import <vector>
 
 #import "base/functional/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -76,25 +79,32 @@ TEST_F(TTCKeyedServiceTest, TestServiceNotCreatedForIncognitoProfile) {
   EXPECT_EQ(service, nullptr);
 }
 
-// Test that initial service state is inactive.
+// Test that initial service state is inactive and controller is null.
 TEST_F(TTCKeyedServiceTest, TestInitialStateIsSessionInactive) {
   TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
 }
 
-// Test that starting and ending a session transitions service state.
+// Test that starting and ending a session transitions service state and
+// lifecycle.
 TEST_F(TTCKeyedServiceTest, TestStartAndEndSessionTransitionsState) {
   TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
   ASSERT_TRUE(service != nullptr);
 
   service->StartSession();
   EXPECT_TRUE(service->is_session_active());
+  ASSERT_TRUE(service->session_controller() != nil);
+  EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kInitializing);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionActive);
 
   service->EndSession();
   EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->session_controller(), nil);
+  EXPECT_EQ(service->GetSessionLifecycle(), TTCSessionLifecycle::kFinished);
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
 }
 
@@ -103,9 +113,11 @@ TEST_F(TTCKeyedServiceTest, TestEndSessionWhenInactiveIsNoOp) {
   TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
   ASSERT_TRUE(service != nullptr);
   EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->session_controller(), nil);
 
   service->EndSession();
   EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->session_controller(), nil);
 }
 
 // Test that state change callbacks are invoked on start and end.
@@ -140,6 +152,40 @@ TEST_F(TTCKeyedServiceTest, TestShutdownEndsActiveSession) {
   service->Shutdown();
   EXPECT_FALSE(service->is_session_active());
   EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
+}
+
+// Test that controller disconnect ends the session in TTCKeyedService.
+TEST_F(TTCKeyedServiceTest, TestControllerDisconnectEndsSessionInService) {
+  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  ASSERT_NE(service, nullptr);
+
+  service->StartSession();
+  EXPECT_TRUE(service->is_session_active());
+  TTCSessionController* controller = service->session_controller();
+  ASSERT_NE(controller, nil);
+
+  [controller disconnect];
+  EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
+  EXPECT_EQ(service->session_controller(), nil);
+}
+
+// Test that background notification ends the session in TTCKeyedService.
+TEST_F(TTCKeyedServiceTest, TestBackgroundNotificationEndsSessionInService) {
+  TTCKeyedService* service = TTCKeyedService::Get(profile_.get());
+  ASSERT_NE(service, nullptr);
+
+  service->StartSession();
+  EXPECT_TRUE(service->is_session_active());
+  EXPECT_NE(service->session_controller(), nil);
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+
+  EXPECT_FALSE(service->is_session_active());
+  EXPECT_EQ(service->GetState(), TTCServiceState::kSessionInactive);
+  EXPECT_EQ(service->session_controller(), nil);
 }
 
 // Test that starting an already active session asserts/crashes.
