@@ -13,6 +13,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -29,8 +30,9 @@ using error_page::DnsProbeStatus;
 
 class TestNetErrorTabHelper : public NetErrorTabHelper {
  public:
-  explicit TestNetErrorTabHelper(content::WebContents* web_contents)
-      : NetErrorTabHelper(web_contents),
+  TestNetErrorTabHelper(tabs::TabInterface& tab,
+                        content::WebContents* web_contents)
+      : NetErrorTabHelper(tab, web_contents),
         mock_probe_running_(false),
         last_status_sent_(error_page::DNS_PROBE_MAX),
         mock_sent_count_(0),
@@ -140,7 +142,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
 
-    tab_helper_ = std::make_unique<TestNetErrorTabHelper>(web_contents());
+    tab_helper_ = std::make_unique<TestNetErrorTabHelper>(tab_, web_contents());
     NetErrorTabHelper::set_state_for_testing(
         NetErrorTabHelper::TESTING_FORCE_ENABLED);
   }
@@ -198,6 +200,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  private:
   raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_;
+  tabs::MockTabInterface tab_;
   std::unique_ptr<TestNetErrorTabHelper> tab_helper_;
   GURL bogus_url_;
 };

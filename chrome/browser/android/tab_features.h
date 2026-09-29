@@ -33,6 +33,10 @@ namespace actor::ui {
 class ActorUiTabControllerInterface;
 }  // namespace actor::ui
 
+namespace chrome_browser_net {
+class NetErrorTabHelper;
+}  // namespace chrome_browser_net
+
 namespace client_hints {
 class ClientHintsWebContentsObserver;
 }  // namespace client_hints
@@ -274,6 +278,7 @@ class TabFeatures {
   std::unique_ptr<MediaStateObserver> media_state_observer_;
   std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
   std::unique_ptr<SearchEngineTabHelper> search_engine_tab_helper_;
+  std::unique_ptr<chrome_browser_net::NetErrorTabHelper> net_error_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

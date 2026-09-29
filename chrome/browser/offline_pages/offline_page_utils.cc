@@ -29,6 +29,7 @@
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -175,8 +176,10 @@ bool OfflinePageUtils::IsShowingOfflinePreview(
 // static
 bool OfflinePageUtils::IsShowingDownloadButtonInErrorPage(
     content::WebContents* web_contents) {
+  tabs::TabInterface* const tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
   chrome_browser_net::NetErrorTabHelper* tab_helper =
-      chrome_browser_net::NetErrorTabHelper::FromWebContents(web_contents);
+      tab ? chrome_browser_net::NetErrorTabHelper::From(tab) : nullptr;
   return tab_helper && tab_helper->is_showing_download_button_in_error_page();
 }
 

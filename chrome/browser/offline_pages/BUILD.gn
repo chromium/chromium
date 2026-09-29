@@ -81,6 +81,7 @@ source_set("impl") {
     "//components/offline_pages/content/background_loader",
     "//components/offline_pages/core/downloads:offline_pages_ui_adapter",
     "//components/offline_pages/core/request_header",
+    "//components/tabs:public",
     "//services/service_manager/public/cpp",
   ]
 

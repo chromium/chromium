@@ -20,7 +20,11 @@
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -31,13 +35,13 @@ namespace chrome_browser_net {
 // A TabHelper that monitors loads for certain types of network errors and
 // does interesting things with them.  Currently, starts DNS probes using the
 // DnsProbeService whenever a page fails to load with a DNS-related error.
-class NetErrorTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<NetErrorTabHelper>,
-      public chrome::mojom::NetErrorPageSupport,
-      public chrome::mojom::NetworkDiagnostics,
-      public chrome::mojom::NetworkEasterEgg {
+class NetErrorTabHelper : public content::WebContentsObserver,
+                          public chrome::mojom::NetErrorPageSupport,
+                          public chrome::mojom::NetworkDiagnostics,
+                          public chrome::mojom::NetworkEasterEgg {
  public:
+  DECLARE_USER_DATA(NetErrorTabHelper);
+
   enum TestingState {
     TESTING_DEFAULT,
     TESTING_FORCE_DISABLED,
@@ -47,10 +51,16 @@ class NetErrorTabHelper
   using DnsProbeStatusSnoopCallback =
       base::RepeatingCallback<void(error_page::DnsProbeStatus)>;
 
+  // |contents| is the WebContents of the tab this NetErrorTabHelper is
+  // attached to.
+  NetErrorTabHelper(tabs::TabInterface& tab, content::WebContents* contents);
   NetErrorTabHelper(const NetErrorTabHelper&) = delete;
   NetErrorTabHelper& operator=(const NetErrorTabHelper&) = delete;
 
   ~NetErrorTabHelper() override;
+
+  // Returns the NetErrorTabHelper for the given tab.
+  static NetErrorTabHelper* From(tabs::TabInterface* tab);
 
   static void BindNetErrorPageSupport(
       mojo::PendingAssociatedReceiver<chrome::mojom::NetErrorPageSupport>
@@ -98,9 +108,6 @@ class NetErrorTabHelper
 #endif
 
  protected:
-  // |contents| is the WebContents of the tab this NetErrorTabHelper is
-  // attached to.
-  explicit NetErrorTabHelper(content::WebContents* contents);
   virtual void StartDnsProbe();
   virtual void SendInfo();
   void OnDnsProbeFinished(error_page::DnsProbeStatus result);
@@ -125,8 +132,6 @@ class NetErrorTabHelper
   }
 
  private:
-  friend class content::WebContentsUserData<NetErrorTabHelper>;
-
   void OnMainFrameDnsError();
 
   void InitializePref(content::WebContents* contents);
@@ -156,9 +161,6 @@ class NetErrorTabHelper
   content::RenderFrameHostReceiverSet<chrome::mojom::NetErrorPageSupport>
       net_error_page_support_;
 
-  // True if the last provisional load that started was for an error page.
-  bool is_error_page_;
-
   // True if the helper has seen a main frame page load fail with a DNS error,
   // but has not yet seen a new page commit successfully afterwards.
   bool dns_error_active_;
@@ -187,9 +189,9 @@ class NetErrorTabHelper
   // Preference storing the user's current easter egg game high score.
   IntegerPrefMember easter_egg_high_score_;
 
-  base::WeakPtrFactory<NetErrorTabHelper> weak_factory_{this};
+  ui::ScopedUnownedUserData<NetErrorTabHelper> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<NetErrorTabHelper> weak_factory_{this};
 };
 
 }  // namespace chrome_browser_net

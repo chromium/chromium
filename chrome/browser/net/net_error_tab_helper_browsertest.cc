@@ -63,8 +63,8 @@ class NetErrorTabHelperTest : public InProcessBrowserTest {
     host_resolver()->AddRule("mock.http", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    tab_helper_ = chrome_browser_net::NetErrorTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    tab_helper_ = chrome_browser_net::NetErrorTabHelper::From(
+        browser()->GetTabStripModel()->GetActiveTab());
   }
 
   WebContents* GetWebContents() {
