@@ -1378,8 +1378,8 @@
   },
   {
     "name": "biometric-reauth-password-filling",
-    "owners": [ "ioanap@chromium.org", "izuzic@google.com"],
-    "expiry_milestone": 125
+    "owners": [ "salmaabdelaziz@google.com", "ioanap@chromium.org"],
+    "expiry_milestone": 158
   },
   {
     "name": "block-cross-partition-blob-url-fetching",
