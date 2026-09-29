@@ -136,6 +136,9 @@ class CORE_EXPORT LineBreaker {
  private:
   Document& GetDocument() const { return node_.GetDocument(); }
 
+  // Returns true if this LineBreaker is computing min/max content size.
+  bool IsComputingContentSize() const;
+
   // True if `this` is for a part of an IFC. Used by Ruby.
   bool IsSubLineBreaker() const { return end_item_index_ != Items().size(); }
 

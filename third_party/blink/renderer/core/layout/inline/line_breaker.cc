@@ -416,6 +416,10 @@ class FastMinTextContext {
 
 }  // namespace
 
+bool LineBreaker::IsComputingContentSize() const {
+  return constraint_space_.AvailableSize().inline_size == kIndefiniteSize;
+}
+
 inline bool LineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   if (disallow_auto_wrap_) [[unlikely]] {
     return false;
@@ -3109,7 +3113,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
   // layout we need to do the full layout and get the layout result.
   // Doing a full layout for min/max content can also have undesirable
   // side effects when that falls back to legacy layout.
-  if (mode == LineBreakerMode::kContent || [&] {
+  if ((!IsComputingContentSize() && mode == LineBreakerMode::kContent) || [&] {
         if (is_initial_letter_box) [[unlikely]] {
           return true;
         }
@@ -3157,7 +3161,7 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
 
     item_result->inline_size += inline_margins;
   } else {
-    DCHECK(mode == LineBreakerMode::kMaxContent ||
+    DCHECK(IsComputingContentSize() || mode == LineBreakerMode::kMaxContent ||
            mode == LineBreakerMode::kMinContent);
     ComputeMinMaxContentSizeForBlockChild(item, item_result, root_breaker);
   }
@@ -3178,7 +3182,7 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   const LineBreakerMode mode = root_breaker->mode_;
   MaxSizeCache* size_cache = root_breaker->max_size_cache_;
 
-  DCHECK(mode == LineBreakerMode::kMaxContent ||
+  DCHECK(IsComputingContentSize() || mode == LineBreakerMode::kMaxContent ||
          mode == LineBreakerMode::kMinContent);
   if (mode == LineBreakerMode::kMaxContent && size_cache) {
     const unsigned item_index = item.Index();
@@ -3186,7 +3190,8 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
     return;
   }
 
-  DCHECK(mode == LineBreakerMode::kMinContent || !size_cache);
+  DCHECK(IsComputingContentSize() || mode == LineBreakerMode::kMinContent ||
+         !size_cache);
   BlockNode child(To<LayoutBox>(item.GetLayoutObject()));
 
   MinMaxConstraintSpaceBuilder builder(constraint_space_, node_.Style(), child,
@@ -3199,7 +3204,9 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
   const auto space = builder.ToConstraintSpace();
 
   const MinMaxSizesResult result = ComputeMinAndMaxContentContribution(
-      node_.Style(), child, space, MinMaxSizesInput::UnconstrainedUntriaged());
+      node_.Style(), child, space,
+      MinMaxSizesInput::Constrained(
+          root_breaker->line_opportunity_.AvailableInlineSize()));
   // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
   CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
   const LayoutUnit inline_margins = item_result->margins.InlineSum();
@@ -3220,7 +3227,8 @@ void LineBreaker::ComputeMinMaxContentSizeForBlockChild(
     return;
   }
 
-  DCHECK(mode == LineBreakerMode::kMaxContent && !size_cache);
+  DCHECK(mode == LineBreakerMode::kContent ||
+         (mode == LineBreakerMode::kMaxContent && !size_cache));
   item_result->inline_size = result.sizes.max_size + inline_margins;
 }
 

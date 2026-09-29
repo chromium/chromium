@@ -215,14 +215,15 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
   if (node.GetLayoutBox()->IntrinsicLogicalWidthsDirty())
     return false;
 
-  // We don't store the float inline sizes for comparison, always skip the
-  // cache in this case.
-  if (input.float_left_inline_size || input.float_right_inline_size) {
+  // We don't store the float inline sizes or constrained inline size for
+  // comparison, always skip the cache in this case.
+  const auto& style = node.Style();
+  if (input.float_left_inline_size || input.float_right_inline_size ||
+      style.IsInShrinkToFitSubtree()) {
     return false;
   }
 
   // Check if we have any percentage padding.
-  const auto& style = node.Style();
   if (style.MayHavePadding() &&
       (style.PaddingTop().HasPercent() || style.PaddingRight().HasPercent() ||
        style.PaddingBottom().HasPercent() ||
