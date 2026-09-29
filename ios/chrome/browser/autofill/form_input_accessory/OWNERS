@@ -1,2 +1,5 @@
 sugoi@chromium.org
 vincb@google.com
+
+# For SuggestionType changes only.
+per-file ui/form_suggestion_label.mm=file://components/autofill/OWNERS
