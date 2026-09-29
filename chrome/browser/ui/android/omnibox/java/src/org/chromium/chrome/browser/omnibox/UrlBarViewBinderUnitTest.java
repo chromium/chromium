@@ -15,9 +15,9 @@ import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
-import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 
@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,14 +48,12 @@ public class UrlBarViewBinderUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private Editable mEditable;
     @Mock private View.OnKeyListener mOnKeyListener;
     @Mock private OnLongClickListener mOnLongClickListener;
     @Mock private Runnable mRunnable;
-    @Mock private UrlBar mMockView;
-    private Activity mActivity;
+
+    private Context mContext;
     private PropertyModel mModel;
-    private UrlBarMediator mMediator;
     private UrlBar mUrlBar;
     private final ConstraintLayout.LayoutParams mUrlBarLayoutParams = new LayoutParams(0, 100);
 
@@ -64,17 +61,16 @@ public class UrlBarViewBinderUnitTest {
     public void setUp() {
         OmniboxResourceProvider.setUrlBarPrimaryTextColorForTesting(Color.LTGRAY);
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext = ContextUtils.getApplicationContext();
 
-        mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
-        mModel.set(UrlBarProperties.USE_SMALL_TEXT, false);
-        mMediator =
-                new UrlBarMediator(
-                        ContextUtils.getApplicationContext(),
-                        mModel,
-                        /* textChangeListener= */ null,
-                        /* richTextChangeListener= */ null);
-        mUrlBar = new UrlBarApi26(mActivity, null);
+        mModel =
+                new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
+                        .with(UrlBarProperties.USE_SMALL_TEXT, false)
+                        .with(UrlBarProperties.SHOW_HINT_TEXT, true)
+                        .with(UrlBarProperties.LONG_CLICK_LISTENER, mOnLongClickListener)
+                        .with(UrlBarProperties.KEY_DOWN_LISTENER, mOnKeyListener)
+                        .build();
+        mUrlBar = new UrlBarApi26(mContext, null);
         mUrlBar.setLayoutParams(mUrlBarLayoutParams);
         PropertyModelChangeProcessor.create(mModel, mUrlBar, UrlBarViewBinder::bind);
     }
@@ -101,22 +97,16 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     public void testOnLongClick() {
-        PropertyModel model =
-                new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
-                        .with(UrlBarProperties.LONG_CLICK_LISTENER, mOnLongClickListener)
-                        .build();
-        UrlBarViewBinder.bind(model, mMockView, UrlBarProperties.LONG_CLICK_LISTENER);
-        verify(mMockView).setOnLongClickListener(mOnLongClickListener);
+        doReturn(true).when(mOnLongClickListener).onLongClick(mUrlBar);
+        assertTrue(mUrlBar.performLongClick());
+        verify(mOnLongClickListener).onLongClick(mUrlBar);
     }
 
     @Test
     public void testKeyDownListener() {
-        PropertyModel model =
-                new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
-                        .with(UrlBarProperties.KEY_DOWN_LISTENER, mOnKeyListener)
-                        .build();
-        UrlBarViewBinder.bind(model, mMockView, UrlBarProperties.KEY_DOWN_LISTENER);
-        verify(mMockView).setKeyDownListener(mOnKeyListener);
+        KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
+        mUrlBar.onKeyDown(KeyEvent.KEYCODE_ENTER, event);
+        verify(mOnKeyListener).onKey(mUrlBar, KeyEvent.KEYCODE_ENTER, event);
     }
 
     @Test
@@ -141,7 +131,7 @@ public class UrlBarViewBinderUnitTest {
     public void testTextSize() {
         mUrlBar.setPaddingRelative(13, 0, 17, 0);
         int normalPadding =
-                mActivity.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
+                mContext.getResources().getDimensionPixelSize(R.dimen.url_bar_vertical_padding);
         int smallPadding = 0;
 
         mModel.set(UrlBarProperties.USE_SMALL_TEXT, true);
@@ -182,9 +172,8 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     public void testTextState_reverseSelection() {
-        doReturn(10).when(mEditable).length();
-        doReturn(mEditable).when(mMockView).getText();
-        doReturn(true).when(mMockView).hasFocus();
+        mUrlBar.setAllowFocus(true);
+        mUrlBar.requestFocus();
 
         UrlBarTextState state =
                 new UrlBarTextState(
@@ -196,8 +185,8 @@ public class UrlBarViewBinderUnitTest {
                         /* originChanged= */ false);
 
         mModel.set(UrlBarProperties.TEXT_STATE, state);
-        UrlBarViewBinder.bind(mModel, mMockView, UrlBarProperties.TEXT_STATE);
 
-        verify(mMockView).setSelection(10, 0);
+        assertEquals(10, mUrlBar.getSelectionStart());
+        assertEquals(0, mUrlBar.getSelectionEnd());
     }
 }

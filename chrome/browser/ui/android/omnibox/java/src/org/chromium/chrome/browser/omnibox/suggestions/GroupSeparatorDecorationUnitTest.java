@@ -46,11 +46,12 @@ public class GroupSeparatorDecorationUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private RecyclerView mRecyclerView;
-    @Mock private View mChildViewWithLineSeparator;
-    @Mock private View mChildViewWithGapSeparator;
-    @Mock private View mChildViewWithNoSeparator;
     @Mock private RecyclerView.State mState;
     @Mock private Canvas mCanvas;
+
+    private View mChildViewWithLineSeparator;
+    private View mChildViewWithGapSeparator;
+    private View mChildViewWithNoSeparator;
 
     private SimpleRecyclerViewAdapter.ViewHolder mLineSeparatorViewHolder;
     private SimpleRecyclerViewAdapter.ViewHolder mGapSeparatorViewHolder;
@@ -89,6 +90,10 @@ public class GroupSeparatorDecorationUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mDecoration = new GroupSeparatorDecoration(mContext);
+
+        mChildViewWithLineSeparator = new View(mContext);
+        mChildViewWithGapSeparator = new View(mContext);
+        mChildViewWithNoSeparator = new View(mContext);
 
         Resources res = mContext.getResources();
         mExpectedHeight =
@@ -159,8 +164,8 @@ public class GroupSeparatorDecorationUnitTest {
                         RecyclerView.LayoutParams.WRAP_CONTENT,
                         RecyclerView.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 10;
-        doReturn(lp).when(mChildViewWithLineSeparator).getLayoutParams();
-        doReturn(100).when(mChildViewWithLineSeparator).getTop();
+        mChildViewWithLineSeparator.setLayoutParams(lp);
+        mChildViewWithLineSeparator.setTop(100);
 
         doReturn(10).when(mRecyclerView).getPaddingLeft();
         doReturn(200).when(mRecyclerView).getWidth();
@@ -194,6 +199,7 @@ public class GroupSeparatorDecorationUnitTest {
                         RecyclerView.LayoutParams.WRAP_CONTENT,
                         RecyclerView.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 10;
+        mChildViewWithGapSeparator.setLayoutParams(lp);
 
         doReturn(10).when(mRecyclerView).getPaddingLeft();
         doReturn(200).when(mRecyclerView).getWidth();
@@ -215,6 +221,7 @@ public class GroupSeparatorDecorationUnitTest {
                         RecyclerView.LayoutParams.WRAP_CONTENT,
                         RecyclerView.LayoutParams.WRAP_CONTENT);
         lp.topMargin = 10;
+        mChildViewWithNoSeparator.setLayoutParams(lp);
 
         doReturn(10).when(mRecyclerView).getPaddingLeft();
         doReturn(200).when(mRecyclerView).getWidth();
