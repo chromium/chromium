@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
@@ -67,6 +68,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/567353272")
     public void testEnterAndExitHub() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
@@ -78,6 +80,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/567353272")
     public void testEnterHubAndLeaveViaAppMenuNewTab() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
@@ -91,6 +94,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/562154748
+    @DisabledTest(message = "crbug.com/567353272")
     public void testEnterHubAndLeaveViaAppMenuNewIncognitoTab() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularTabSwitcherStation tabSwitcher = firstPage.openRegularTabSwitcher();
@@ -125,6 +129,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/567353272")
     public void testTabGroupPane_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         int firstTabId = firstPage.loadedTabElement.value().getId();
@@ -151,6 +156,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/567353272")
     public void testRegularTabSwitcher_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         RegularNewTabPageStation finalPage =
@@ -168,6 +174,7 @@ public class HubLayoutPublicTransitTest {
     @Test
     @LargeTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511286726
+    @DisabledTest(message = "crbug.com/567353272")
     public void testIncognitoTabSwitcherStation_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         IncognitoNewTabPageStation incognitoNewTabPageStation =
