@@ -101,7 +101,7 @@ void ConversationImpl::OnApplicationClosed() {
 }
 
 void ConversationImpl::OnApplicationError(ErrorCode error) {
-  // TODO(b/561677132): Show the error in some way.
+  session_controller_->OnError(error);
   session_controller_->SetSessionLifecycle(SessionLifecycle::kFinished);
 }
 

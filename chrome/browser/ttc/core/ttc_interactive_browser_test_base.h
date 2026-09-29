@@ -16,6 +16,7 @@ class BrowserContext;
 
 namespace ttc {
 
+class SessionController;
 class TtcKeyedService;
 
 class TtcInteractiveBrowserTestBase : public InteractiveBrowserTest {
@@ -30,6 +31,7 @@ class TtcInteractiveBrowserTestBase : public InteractiveBrowserTest {
  protected:
   Profile* profile();
   TtcKeyedService& ttc_service();
+  SessionController& session_controller();
   StepBuilder CheckHasSession(bool expected_has_session);
 
  private:

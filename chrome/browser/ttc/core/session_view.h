@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_VIEW_H_
 
+#include "chrome/browser/ttc/app/public/error_codes.h"
+
 namespace ttc {
 
 // Interface for the object holding and implementing all UI interaction for a
@@ -19,6 +21,9 @@ class SessionView {
   // Called when the session has finished initializing and audio capture is
   // live.
   virtual void OnSessionInitialized() = 0;
+
+  // Called when the session encounters an error.
+  virtual void OnError(ErrorCode error) = 0;
 };
 
 }  // namespace ttc

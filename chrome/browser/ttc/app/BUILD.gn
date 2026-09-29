@@ -7,6 +7,7 @@
 source_set("public") {
   public = [
     "public/conversation.h",
+    "public/error_codes.h",
     "public/make_conversation.h",
     "public/tool_types.h",
   ]
@@ -21,7 +22,6 @@ source_set("public") {
 source_set("app") {
   public = [
     "audio_controller.h",
-    "error_codes.h",
     "ttc_backend.h",
     "ttc_mes_client.h",
   ]

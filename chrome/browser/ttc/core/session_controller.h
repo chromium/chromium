@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -26,6 +27,9 @@ class SessionController {
 
   // Called when the backend is connected and the session is interactive.
   virtual void OnSessionInitialized() = 0;
+
+  // Called when the session encounters an error.
+  virtual void OnError(ErrorCode error) = 0;
 
   // Fetches the context of the page this session is operating on, invoking
   // `callback` with the result.

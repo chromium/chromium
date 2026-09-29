@@ -5,6 +5,7 @@
 #include "chrome/browser/ttc/app/conversation_impl.h"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -61,8 +62,10 @@ class FakeSessionController : public SessionController {
   }
   void UserAudioLevelUpdate(float audio_level) override {}
   void OnSessionInitialized() override {}
+  void OnError(ErrorCode error) override { last_error_ = error; }
 
   const ToolRequest& last_request() const { return last_request_; }
+  std::optional<ErrorCode> last_error() const { return last_error_; }
 
   void AddToolDefinition(const std::string& name) {
     ToolDefinition tool;
@@ -73,6 +76,7 @@ class FakeSessionController : public SessionController {
  private:
   raw_ptr<Profile> profile_;
   ToolRequest last_request_;
+  std::optional<ErrorCode> last_error_;
   std::vector<ToolDefinition> tools_;
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
 };
@@ -186,6 +190,15 @@ TEST_F(ConversationImplTest, ApplicationErrorFinishesSession) {
   conversation.OnApplicationError(ErrorCode::kUnknown);
   EXPECT_EQ(session_controller_.GetSessionLifecycle(),
             SessionLifecycle::kFinished);
+}
+
+TEST_F(ConversationImplTest, ApplicationErrorIsReportedToSessionController) {
+  ConversationImpl& conversation = CreateConversation();
+
+  EXPECT_EQ(session_controller_.last_error(), std::nullopt);
+
+  conversation.OnApplicationError(ErrorCode::kRateLimited);
+  EXPECT_EQ(session_controller_.last_error(), ErrorCode::kRateLimited);
 }
 
 TEST_F(ConversationImplTest, ApplicationClosedFinishesSession) {

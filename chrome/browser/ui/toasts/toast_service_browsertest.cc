@@ -7,6 +7,7 @@
 #include "base/containers/enum_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -62,7 +63,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {autofill::features::kAutofillAmbientAutofill, {}},
          {autofill::features::kAutofillAmbientAutofillSuppression, {}},
          {autofill::features::kAutofillAtMemory, {}},
-         {dictation::kDictation, {}}},
+         {dictation::kDictation, {}},
+         {ttc::kTtc, {}}},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }

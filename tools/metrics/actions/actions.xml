@@ -1077,6 +1077,7 @@ should be able to be added at any place in this file.
   <variant name=".SyncEsbOn"
       summary="Enhanced Protection setting has been synced to On"/>
   <variant name=".Translate" summary="Translate"/>
+  <variant name=".TtcGenericError" summary="TTC generic error"/>
 </variants>
 
 <variants name="UserEducation_WhatsNew_Module_Type">

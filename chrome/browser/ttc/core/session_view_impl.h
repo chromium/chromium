@@ -25,6 +25,7 @@ class SessionViewImpl : public SessionView {
   // SessionView implementation:
   void UpdateAudioLevel(float audio_level) override;
   void OnSessionInitialized() override;
+  void OnError(ErrorCode error) override;
 
  private:
   // Invoked when the user clicks the voice plate's close button.

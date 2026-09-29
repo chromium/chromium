@@ -39,6 +39,7 @@ class SessionControllerImpl : public SessionController,
 
   // SessionController implementation:
   void OnSessionInitialized() override;
+  void OnError(ErrorCode error) override;
   void GetPageContext(FetchCompleteCallback callback) override;
   SessionLifecycle GetSessionLifecycle() const override;
   void SetSessionLifecycle(SessionLifecycle lifecycle) override;
@@ -48,6 +49,7 @@ class SessionControllerImpl : public SessionController,
   void UserAudioLevelUpdate(float audio_level) override;
 
   // SessionViewDelegate implementation:
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
   void EndSessionAsync() override;
 
   // TODO(bokan): Android doesn't yet have a session_view so calling
@@ -56,10 +58,6 @@ class SessionControllerImpl : public SessionController,
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:
-  // Returns the last active browser window for this session's profile. May be
-  // null if there is no suitable window.
-  BrowserWindowInterface* GetBrowserWindowInterface();
-
   // Returns the WebContents that the session is currently focused on and
   // observing.
   content::WebContents* GetObservedWebContents();

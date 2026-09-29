@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/features.h"
+#include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service_factory.h"
@@ -20,8 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ttc {
-
-class SessionController;
 
 TtcInteractiveBrowserTestBase::TtcInteractiveBrowserTestBase() {
   scoped_feature_list_.InitAndEnableFeature(kTtc);
@@ -51,6 +50,10 @@ Profile* TtcInteractiveBrowserTestBase::profile() {
 
 TtcKeyedService& TtcInteractiveBrowserTestBase::ttc_service() {
   return CHECK_DEREF(TtcKeyedService::Get(profile()));
+}
+
+SessionController& TtcInteractiveBrowserTestBase::session_controller() {
+  return CHECK_DEREF(ttc_service().session_controller());
 }
 
 TtcInteractiveBrowserTestBase::StepBuilder

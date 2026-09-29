@@ -15828,8 +15828,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
 
       <!-- TTC -->
-      <message name="IDS_TTC_ENTRYPOINT_LABEL" desc="The text label of the TTC menu item" translateable="false">
+      <message name="IDS_TTC_ENTRYPOINT_LABEL" desc="Text label of the TTC menu item." translateable="false">
         TTC
+      </message>
+      <message name="IDS_TTC_GENERIC_ERROR_TOAST" desc="Generic text of an error during a TTC session." translateable="false">
+        Something went wrong. Try again later
       </message>
 
       <!-- Web and message center notifications -->

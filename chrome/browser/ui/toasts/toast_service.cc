@@ -19,6 +19,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -816,4 +817,15 @@ void ToastService::RegisterToasts(
                                base::Unretained(browser_window_interface)))
           .AddCloseButton()
           .Build());
+  if (base::FeatureList::IsEnabled(ttc::kTtc)) {
+    toast_registry_->RegisterToast(
+        ToastId::kTtcGenericError,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOldIcon,
+                                    IDS_TTC_GENERIC_ERROR_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
+  }
 }  // RegisterToasts() end.

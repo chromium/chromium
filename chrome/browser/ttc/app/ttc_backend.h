@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/ttc/app/error_codes.h"
+#include "chrome/browser/ttc/app/public/error_codes.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "url/gurl.h"
 

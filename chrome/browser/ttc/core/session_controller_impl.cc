@@ -144,6 +144,15 @@ void SessionControllerImpl::OnSessionInitialized() {
   session_view_->OnSessionInitialized();
 }
 
+void SessionControllerImpl::OnError(ErrorCode error) {
+  if (!session_view_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  session_view_->OnError(error);
+}
+
 void SessionControllerImpl::EndSessionAsync() {
   // Ending the session destroys this object so it must be done asynchronously.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

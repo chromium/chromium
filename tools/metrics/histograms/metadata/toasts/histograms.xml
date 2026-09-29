@@ -75,6 +75,7 @@ found in the LICENSE file.
     <variant name="SendTabToSelfTabsOpenedInBackground"
         summary="send tab to self tab opened in background"/>
     <variant name="Translate" summary="translate"/>
+    <variant name="TtcGenericError" summary="TTC generic error"/>
   </token>
 </histogram>
 
