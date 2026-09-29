@@ -3397,6 +3397,7 @@ crbug.com/384549263 [ Mac15-arm64 ] external/wpt/webrtc/RTCPeerConnection-remote
 crbug.com/384549263 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-remote-track-currentTime.https.html [ Skip Timeout ]
 [ Mac13 ] external/wpt/webrtc/RTCConfiguration-bundlePolicy.html [ Timeout ]
 [ Mac14 ] external/wpt/webrtc/RTCConfiguration-bundlePolicy.html [ Timeout ]
+crbug.com/567175141 [ Linux ] external/wpt/webrtc/RTCConfiguration-bundlePolicy.html [ Failure Pass ]
 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-addTrack.https.html [ Timeout ]
 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-addTrack.https.html [ Timeout ]
 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-ontrack.https.html [ Timeout ]

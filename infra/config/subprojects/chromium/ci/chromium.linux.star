@@ -690,6 +690,14 @@ ci.thin_tester(
                     "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
                 ],
                 swarming = targets.swarming(
+                    # Move to faster machine types to reduce capacity impact.
+                    # TODO(crbug.com/541675870): Can remove this if/when
+                    # everything's been migrated.
+                    optional_dimensions = {
+                        30: {
+                            "cpu": "x86-64-e4",
+                        },
+                    },
                     shards = 8,
                 ),
             ),
@@ -717,6 +725,18 @@ ci.thin_tester(
             ),
             "content_browsertests": targets.mixin(
                 ci_only = True,
+            ),
+            "headless_shell_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # Move to faster machine types to reduce capacity impact.
+                    # TODO(crbug.com/541675870): Can remove this if/when
+                    # everything's been migrated.
+                    optional_dimensions = {
+                        30: {
+                            "cpu": "x86-64-e4",
+                        },
+                    },
+                ),
             ),
             "interactive_ui_tests": targets.mixin(
                 args = [
@@ -747,6 +767,18 @@ ci.thin_tester(
             ),
             "not_site_per_process_blink_wpt_tests": targets.mixin(
                 ci_only = True,
+            ),
+            "not_site_per_process_headless_shell_wpt_tests": targets.mixin(
+                swarming = targets.swarming(
+                    # Move to faster machine types to reduce capacity impact.
+                    # TODO(crbug.com/541675870): Can remove this if/when
+                    # everything's been migrated.
+                    optional_dimensions = {
+                        30: {
+                            "cpu": "x86-64-e4",
+                        },
+                    },
+                ),
             ),
             "telemetry_perf_unittests": targets.mixin(
                 args = [
