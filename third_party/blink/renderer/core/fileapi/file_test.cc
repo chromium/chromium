@@ -21,7 +21,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
+#include "third_party/blink/renderer/platform/blob/testing/fake_blob_registry.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -356,8 +358,9 @@ TEST(FileTest, fileSystemFileWithoutNativeSnapshot) {
   EXPECT_EQ(url, file->FileSystemURL());
 }
 
-TEST(FileTest, hsaSameSource) {
+TEST(FileTest, HasSameSource) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   ScopedNullExecutionContext context;
   auto* const native_file_a1 = MakeGarbageCollected<File>(
       &context.GetExecutionContext(), "/native/pathA");
@@ -406,6 +409,7 @@ TEST(FileTest, hsaSameSource) {
 
 TEST(FileTest, createForFileSystem) {
   test::TaskEnvironment task_environment;
+  ScopedFakeBlobRegistry blob_registry;
   V8TestingScope scope(KURL("http://example.com"));
   Document& document = scope.GetDocument();
   base::RunLoop run_loop;

@@ -216,19 +216,12 @@ class FormDataBytesConsumerTest : public PageTestBase {
         .SetBinderForTesting(mojom::FileUtilitiesHost::Name_,
                              base::BindRepeating(&FileUtilitiesHostImpl::Bind));
 
-    auto fake_blob_registry = std::make_unique<FakeBlobRegistry>(
+    blob_registry_ = std::make_unique<ScopedFakeBlobRegistry>(
         /*support_binary_blob_bodies=*/true);
-    mojo::MakeSelfOwnedReceiver(
-        std::move(fake_blob_registry),
-        blob_registry_remote_.BindNewPipeAndPassReceiver(),
-        Platform::Current()->GetIOTaskRunner());
-    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
 
     CHECK(scoped_temp_dir_.CreateUniqueTempDir());
   }
-  void TearDown() override {
-    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
-  }
+  void TearDown() override { blob_registry_.reset(); }
 
   void AppendFile(scoped_refptr<EncodedFormData> data, String content) {
     base::FilePath file_path;
@@ -267,7 +260,7 @@ class FormDataBytesConsumerTest : public PageTestBase {
 
  private:
   std::unique_ptr<FileBackedBlobFactoryTestHelper> file_factory_helper_;
-  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
+  std::unique_ptr<ScopedFakeBlobRegistry> blob_registry_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
