@@ -445,7 +445,7 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "chromium_mac_gtests_no_nacl_mac14_arm",
+            "chromium_mac_gtests_no_nacl",
             "chromium_mac_rel_isolated_scripts",
         ],
         mixins = [
@@ -511,67 +511,19 @@ ci.thin_tester(
             "chromium_mac_rel_isolated_scripts",
         ],
         mixins = [
-            "mac_26_vm_optional",
+            "mac_15_arm64",
         ],
         per_test_modifications = {
-            # TODO(crbug.com/436628295): test fails on VM
-            "blink_web_tests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # TODO(crbug.com/436628295): test fails on VM
-            "blink_wpt_tests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
             "browser_tests": targets.remove(
                 reason = "https://crbug.com/1406364",
             ),
-            # TODO(crbug.com/436628295): test fails on VM
-            "chromedriver_py_tests_headless_shell": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
             ),
-            # TODO(crbug.com/436628295): test fails on VM
-            "chromedriver_py_tests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # https://crbug.com/514242886: Perf tests should not run in VMs
-            "components_perftests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # TODO(crbug.com/436628295): tests are <3x slower on VM
-            "content_browsertests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # TODO(crbug.com/436628295): test fails on VM
-            "headless_shell_wpt_tests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # TODO(crbug.com/436628295): tests fails on VM when host OS
-            # is 26.4 while VM OS is 15.6.1
-            "interactive_ui_tests": targets.per_test_modification(
-                mixins = [
-                    targets.mixin(
-                        swarming = targets.swarming(
-                            shards = 8,
-                        ),
-                    ),
-                    "mac_15_arm64",
-                ],
-                remove_mixins = "mac_26_vm_optional",
-            ),
-            # TODO(crbug.com/500901289): tests are flaky on VM when host OS is 26+ while VM OS is 15.6.1
-            "sync_integration_tests": targets.per_test_modification(
-                mixins = [
-                    "mac_15_arm64",
-                    "ci_only",
-                ],
-                remove_mixins = "mac_26_vm_optional",
+            "sync_integration_tests": targets.mixin(
+                ci_only = True,
             ),
             "telemetry_perf_unittests": targets.mixin(
                 ci_only = True,
