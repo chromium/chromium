@@ -5410,6 +5410,7 @@ void InspectorCSSAgent::Trace(Visitor* visitor) const {
   visitor->Trace(weak_factory_);
   visitor->Trace(default_inspector_stylesheets_);
   InspectorBaseAgent::Trace(visitor);
+  InspectorStyleSheetBase::Listener::Trace(visitor);
 }
 
 void InspectorCSSAgent::LocalFontsEnabled(bool* result) {

@@ -110,14 +110,14 @@ class InspectorStyle final : public GarbageCollected<InspectorStyle> {
 class InspectorStyleSheetBase
     : public GarbageCollected<InspectorStyleSheetBase> {
  public:
-  class CORE_EXPORT Listener {
+  class CORE_EXPORT Listener : public GarbageCollectedMixin {
    public:
     Listener() = default;
     virtual ~Listener() = default;
     virtual void StyleSheetChanged(InspectorStyleSheetBase*) = 0;
   };
   virtual ~InspectorStyleSheetBase() = default;
-  virtual void Trace(Visitor* visitor) const {}
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(listener_); }
 
   String Id() { return id_; }
 
@@ -152,7 +152,7 @@ class InspectorStyleSheetBase
   friend class InspectorStyle;
 
   String id_;
-  raw_ptr<Listener, UnprotectedInRelease | DanglingUntriaged> listener_;
+  Member<Listener> listener_;
   std::unique_ptr<LineEndings> line_endings_;
 };
 
