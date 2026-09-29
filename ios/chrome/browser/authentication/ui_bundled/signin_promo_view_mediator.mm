@@ -990,6 +990,9 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (void)signinPromoViewIsHidden {
+  if (![self isUsable]) {
+    return;
+  }
   CHECK(![self isClosedOrDisconnected], base::NotFatalUntil::M156)
       << base::SysNSStringToUTF8([self description]);
   self.signinPromoViewVisible = NO;
@@ -1036,6 +1039,8 @@ id<SystemIdentity> GetDisplayedIdentity(
          self.initialSyncInProgress;
 }
 
+// Returns YES if the sign-in promo view is in a state where its buttons may be
+// used.
 - (BOOL)isUsable {
   switch (self.signinPromoViewState) {
     case SigninPromoViewState::kClosed:

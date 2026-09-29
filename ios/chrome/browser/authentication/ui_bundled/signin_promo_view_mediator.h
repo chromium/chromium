@@ -116,10 +116,6 @@ enum class SigninPromoAction {
 // disappeared silently. See crbug.com/395959814.
 @property(nonatomic, assign, readonly) signin::Tribool signinInProgress;
 
-// Returns YES if the sign-in promo view is in a state where its buttons may be
-// used.
-@property(nonatomic, assign, readonly, getter=isUsable) BOOL usable;
-
 // The action performed when accepting the promo. kInstantSignin by default.
 @property(nonatomic, assign) SigninPromoAction signinPromoAction;
 

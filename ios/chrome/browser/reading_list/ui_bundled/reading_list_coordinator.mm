@@ -689,9 +689,7 @@
   if (shouldShowSignInPromo) {
     [_signinPromoViewMediator signingPromoDidBecomeVisible];
   } else {
-    if (_signinPromoViewMediator.isUsable) {
-      [_signinPromoViewMediator signinPromoViewIsHidden];
-    }
+    [_signinPromoViewMediator signinPromoViewIsHidden];
   }
 }
 
