@@ -91,7 +91,10 @@ source_set("impl") {
   }
 
   if (is_win || is_mac) {
-    deps += [ "//chrome/browser/ui/pdf/infobar" ]
+    deps += [
+      "//chrome/browser/ui/pdf/infobar",
+      "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",
+    ]
   }
 
   if (is_win) {

@@ -76,6 +76,10 @@ enum InfoBarType {
   [EnableIf=is_win|is_mac]
   kPdf,
 
+  // Pin to taskbar infobar. Can only be triggered on Windows or Mac.
+  [EnableIf=is_win|is_mac]
+  kPinToTaskbar,
+
   // Session restore infobar. Can only be triggered on Win, Mac and Linux.
   [EnableIf=is_win|is_mac|is_linux]
   kSessionRestore,

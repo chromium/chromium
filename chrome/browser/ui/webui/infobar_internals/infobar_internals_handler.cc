@@ -103,6 +103,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/pdf/infobar/pdf_infobar_controller.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -140,6 +141,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kPageInfo:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case InfoBarType::kPdf:
+    case InfoBarType::kPinToTaskbar:
 #endif
       return {.web_contents = true};
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -329,6 +331,12 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "it's not already. This trigger resets any browser state that "
             "prevents the infobar from being shown, then shows the infobar. "
             "This can only be triggered on Windows or Mac.");
+  add_entry(InfoBarType::kPinToTaskbar, "Pin to Taskbar",
+            "The Pin to Taskbar infobar offers to pin Chrome to the taskbar "
+            "(Windows) or keep it in the Dock (Mac). This trigger shows the "
+            "infobar without checking whether Chrome is the default browser "
+            "or already pinned. This can only be triggered on Windows or "
+            "Mac.");
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -792,6 +800,24 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       controller->MaybeShowInfoBarCallback(
           shell_integration::DefaultWebClientState::NOT_DEFAULT);
       return true;
+    }
+
+    case InfoBarType::kPinToTaskbar: {
+      if (infobars::IsInfoBarMigrated(
+              infobars::InfoBarDelegate::PIN_INFOBAR_DELEGATE)) {
+        if (!browser_infobar_manager) {
+          return false;
+        }
+        return browser_infobar_manager->ShowGlobally(
+            infobars::InfoBarDelegate::PIN_INFOBAR_DELEGATE);
+      }
+      auto* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents);
+      if (!infobar_manager) {
+        return false;
+      }
+      return default_browser::PinInfoBarDelegate::Create(infobar_manager) !=
+             nullptr;
     }
 #endif
 
