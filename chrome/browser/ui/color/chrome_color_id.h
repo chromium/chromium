@@ -383,6 +383,8 @@
   E_CPONLY(kColorComposeboxLink) \
   E_CPONLY(kColorComposeboxToolChipBackground) \
   E_CPONLY(kColorComposeboxVoiceButtonHoverBackground) \
+  E_CPONLY(kColorComposeboxAimChipHoverBackground) \
+  E_CPONLY(kColorComposeboxAimChipHoverText) \
   E_CPONLY(kColorNewTabPageCommonInputPlaceholder) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \

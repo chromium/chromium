@@ -331,6 +331,26 @@
   }
 }
 
+.aim-chip {
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  padding-inline: 2px;
+  white-space: nowrap;
+}
+
+.aim-chip:hover {
+  background-color: var(--color-composebox-aim-chip-hover-background);
+  color: var(--color-composebox-aim-chip-hover-text);
+  cursor: pointer;
+}
+
+#mirror .aim-chip {
+  background-color: transparent;
+  color: transparent;
+}
+
 :host-context([webui-rounded-icons]) {
   #aimIcon {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);

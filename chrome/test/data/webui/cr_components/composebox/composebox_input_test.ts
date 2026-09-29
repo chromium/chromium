@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_components/composebox/composebox_input.js';
 
+import {CHIP_CLASS, createChipElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import type {ComposeboxInputElement} from 'chrome://resources/cr_components/composebox/composebox_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -747,4 +748,150 @@ suite('ComposeboxCaretGeometry', () => {
     // The last space span should wrap to a line below the first span.
     assertTrue(lastSpanRect.top > firstSpanRect.top);
   });
+
+  test('MirrorReplicatesChips', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const inputDiv = inputElement.$.input;
+    const chipEl = createChipElement({id: 'chip1', text: '/Search'});
+    inputDiv.appendChild(chipEl);
+    inputElement.input = '/Search';
+    await inputElement.updateComplete;
+
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+
+    const mirrorChip = mirror.querySelector(`.${CHIP_CLASS}`);
+    assertTrue(!!mirrorChip);
+
+    // Mirror chip contains character spans for '/Search'.
+    const charSpans = mirrorChip.querySelectorAll('span');
+    assertEquals(7, charSpans.length);
+    assertEquals('/', charSpans[0]!.textContent);
+    assertEquals('S', charSpans[1]!.textContent);
+  });
+
+  test('CaretAnchorsToLastCharacterSpanWithChip', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const inputDiv = inputElement.$.input;
+    const chipEl = createChipElement({id: 'chip1', text: '/Translate'});
+    inputDiv.appendChild(chipEl);
+    inputElement.input = '/Translate';
+    await inputElement.updateComplete;
+
+    inputDiv.focus();
+    const range = document.createRange();
+    range.selectNodeContents(inputDiv);
+    range.collapse(/*toStart=*/ false);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+
+    inputDiv.dispatchEvent(new Event('keyup', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!mirror);
+
+    const charSpans = mirror.querySelectorAll(`span:not(.${CHIP_CLASS})`);
+    assertEquals(10, charSpans.length);
+
+    // The last character span is 'e' (offset 10), which should have the anchor.
+    const lastCharSpan = charSpans[9] as HTMLElement;
+    assertEquals('e', lastCharSpan.textContent);
+    assertEquals('--cursor-char', lastCharSpan.style.anchorName);
+
+    // The second-to-last span ('t') should NOT have the anchor.
+    const secondToLastCharSpan = charSpans[8] as HTMLElement;
+    assertEquals('t', secondToLastCharSpan.textContent);
+    assertEquals('', secondToLastCharSpan.style.anchorName);
+  });
+
+  test('InputWithNewlinePreservedWhenSkillsEnabled', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const inputDiv = inputElement.$.input;
+    inputDiv.textContent = '\n';
+    inputDiv.dispatchEvent(new Event('input', {bubbles: true}));
+    await inputElement.updateComplete;
+
+    assertEquals('\n', inputElement.input);
+    assertEquals(1, inputDiv.childNodes.length);
+  });
+
+  test('ResetCaretAnchorsToFirstSpanWithChipWhenSkillsEnabled', async () => {
+    inputElement.composeboxSkillsEnabled = true;
+    await inputElement.updateComplete;
+
+    const inputDiv = inputElement.$.input;
+    const chipEl = createChipElement({id: 'chip1', text: '/Search'});
+    inputDiv.appendChild(chipEl);
+    inputElement.input = '/Search';
+    await inputElement.updateComplete;
+
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+    const mirror =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#mirror');
+    assertTrue(!!caret);
+    assertTrue(!!mirror);
+
+    inputElement.resetCaret();
+
+    const firstCharSpan =
+        mirror.querySelector<HTMLElement>(`span:not(.${CHIP_CLASS})`);
+    assertTrue(!!firstCharSpan);
+    assertEquals('/', firstCharSpan.textContent);
+    assertEquals('--cursor-char', firstCharSpan.style.anchorName);
+    assertTrue(caret.classList.contains('at-start'));
+  });
+
+  test(
+      'InputPropertyChangeOverwritesExistingChipsWhenSkillsEnabled',
+      async () => {
+        inputElement.composeboxSkillsEnabled = true;
+        await inputElement.updateComplete;
+
+        const inputDiv = inputElement.$.input;
+        const chipEl = createChipElement({id: 'chip1', text: '/Search'});
+        inputDiv.appendChild(chipEl);
+        inputElement.input = '/Search';
+        await inputElement.updateComplete;
+        assertEquals(1, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+
+        inputDiv.focus();
+        inputElement.input = 'new query';
+        await inputElement.updateComplete;
+        await microtasksFinished();
+
+        assertEquals(0, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+        assertEquals('new query', inputDiv.innerText);
+        assertEquals(9, inputElement.getSelectionEnd());
+      });
+
+  test(
+      'InputPropertyClearedRemovesExistingChipsWhenSkillsEnabled',
+      async () => {
+        inputElement.composeboxSkillsEnabled = true;
+        await inputElement.updateComplete;
+
+        const inputDiv = inputElement.$.input;
+        const chipEl = createChipElement({id: 'chip1', text: '/Search'});
+        inputDiv.appendChild(chipEl);
+        inputElement.input = '/Search';
+        await inputElement.updateComplete;
+        assertEquals(1, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+
+        inputElement.input = '';
+        await inputElement.updateComplete;
+
+        assertEquals(0, inputDiv.querySelectorAll(`.${CHIP_CLASS}`).length);
+        assertEquals(0, inputDiv.childNodes.length);
+      });
 });
+
