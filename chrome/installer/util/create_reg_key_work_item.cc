@@ -58,9 +58,10 @@ bool CreateRegKeyWorkItem::DoImpl() {
     DWORD disposition;
     key_path.assign(key_list_[i - 1]);
 
-    if (key.CreateWithDisposition(predefined_root_, key_path.c_str(),
-                                  &disposition,
-                                  KEY_READ | wow64_access_) == ERROR_SUCCESS) {
+    if (LONG result =
+            key.CreateWithDisposition(predefined_root_, key_path.c_str(),
+                                      &disposition, KEY_READ | wow64_access_);
+        result == ERROR_SUCCESS) {
       if (disposition == REG_OPENED_EXISTING_KEY) {
         if (key_created_) {
           // This should not happen. Someone created a subkey under the key
@@ -78,7 +79,8 @@ bool CreateRegKeyWorkItem::DoImpl() {
         return false;
       }
     } else {
-      LOG(ERROR) << "Failed to create " << key_path;
+      ::SetLastError(result);
+      PLOG(ERROR) << "Failed to create " << key_path;
       return false;
     }
   }

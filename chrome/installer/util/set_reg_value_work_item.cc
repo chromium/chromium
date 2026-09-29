@@ -135,7 +135,8 @@ bool SetRegValueWorkItem::DoImpl() {
   LONG result = key.Open(predefined_root_, key_path_.c_str(),
                          KEY_READ | KEY_SET_VALUE | wow64_access_);
   if (result != ERROR_SUCCESS) {
-    VLOG(1) << "can not open " << key_path_ << " error: " << result;
+    ::SetLastError(result);
+    PLOG(ERROR) << "can not open " << key_path_ << " error: " << result;
     return false;
   }
 
@@ -158,7 +159,8 @@ bool SetRegValueWorkItem::DoImpl() {
                              &previous_type_);
       if (result != ERROR_SUCCESS) {
         previous_value_.clear();
-        VLOG(1) << "Failed to save original value. Error: " << result;
+        ::SetLastError(result);
+        VPLOG(1) << "Failed to save original value";
       }
     }
   }
@@ -182,7 +184,8 @@ bool SetRegValueWorkItem::DoImpl() {
   result = key.WriteValue(value_name_.c_str(), &value_[0],
                           static_cast<DWORD>(value_.size()), type_);
   if (result != ERROR_SUCCESS) {
-    VLOG(1) << "Failed to write value " << key_path_ << " error: " << result;
+    ::SetLastError(result);
+    PLOG(ERROR) << "Failed to write value " << key_path_;
     return false;
   }
 
@@ -216,7 +219,7 @@ void SetRegValueWorkItem::RollbackImpl() {
   LONG result = key.Open(predefined_root_, key_path_.c_str(),
                          KEY_SET_VALUE | wow64_access_);
   if (result != ERROR_SUCCESS) {
-    VLOG(1) << "rollback: can not open " << key_path_ << " error: " << result;
+    VPLOG(1) << "rollback: can not open " << key_path_;
     return;
   }
 
