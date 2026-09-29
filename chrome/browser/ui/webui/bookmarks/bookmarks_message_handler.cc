@@ -85,8 +85,7 @@ void BookmarksMessageHandler::RegisterMessages() {
 
 void BookmarksMessageHandler::OnJavascriptAllowed() {
   Profile* profile = Profile::FromWebUI(web_ui());
-  CHECK(!profile->IsGuestSession(),
-        base::NotFatalUntil(base::NotFatalUntil::M140));
+  CHECK(!profile->IsGuestSession());
   EnsurePromoDelegatesInitialized();
 
   pref_change_registrar_.Init(profile->GetPrefs());
