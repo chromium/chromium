@@ -132,26 +132,30 @@ CSSPseudoElement* CSSPseudoElement::From(PseudoElement* pseudo_element) {
   if (!pseudo_element || !pseudo_element->isConnected()) {
     return nullptr;
   }
-  // Build the pseudo-id chain from innermost to outermost by walking
-  // parentElement(). e.g. for ::after::marker: [kPseudoIdMarker,
-  // kPseudoIdAfter]
-  HeapVector<PseudoId> chain;
+  // Build the pseudo-id and argument chain from innermost to outermost by
+  // walking parentElement().
+  const bool keep_argument =
+      RuntimeEnabledFeatures::EventPseudoTargetViewTransitionNameEnabled();
+  Vector<std::pair<PseudoId, AtomicString>> chain;
   for (auto* p = pseudo_element; p;
        p = DynamicTo<PseudoElement>(p->parentElement())) {
     if (!p->isConnected() ||
         !IsSupportedTypeForCSSPseudoElement(p->GetPseudoId())) {
       return nullptr;
     }
-    chain.push_back(p->GetPseudoId());
+    chain.emplace_back(p->GetPseudoId(),
+                       keep_argument ? p->GetPseudoArgument() : g_null_atom);
   }
   // Start from the outermost pseudo on the originating element.
+  const auto& [outer_id, outer_argument] = chain.back();
   CSSPseudoElement* css_pseudo =
       pseudo_element->UltimateOriginatingElement().EnsureCSSPseudoElement(
-          chain.back());
-  // Walk inward through each nested level using PseudoId directly.
+          outer_id, outer_argument);
+  // Walk inward through each nested level.
   if (chain.size() > 1) {
     for (wtf_size_t i = chain.size() - 1; i; --i) {
-      css_pseudo = css_pseudo->pseudo(chain[i - 1]);
+      const auto& [id, argument] = chain[i - 1];
+      css_pseudo = css_pseudo->pseudo(id, argument);
       if (!css_pseudo) {
         return nullptr;
       }

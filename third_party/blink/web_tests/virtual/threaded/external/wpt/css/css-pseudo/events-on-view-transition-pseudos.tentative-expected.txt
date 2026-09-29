@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Clicking on view transition pseudo elements sets event.pseudoTarget correctly
+  assert_equals: pseudoTarget.selectorText expected (string) "::view-transition" but got (undefined) undefined
+[FAIL] Clicking on ::view-transition-new(name) sets event.pseudoTarget to the same CSSPseudoElement as pseudo()
+  assert_equals: pseudoTarget.selectorText expected (string) "::view-transition-new(target)" but got (undefined) undefined
+Harness: the test ran to completion.
+
