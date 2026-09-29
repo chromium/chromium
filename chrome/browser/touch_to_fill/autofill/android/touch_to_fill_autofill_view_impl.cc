@@ -25,22 +25,28 @@ TouchToFillAutofillViewImpl::~TouchToFillAutofillViewImpl() {
   }
 }
 
-bool TouchToFillAutofillViewImpl::ShowPersonalContextNotice(
+bool TouchToFillAutofillViewImpl::EnsureJavaBridge(
     TouchToFillAutofillController* controller) {
   if (!web_contents_ || !web_contents_->GetTopLevelNativeWindow()) {
     return false;
   }
   controller_ = controller;
-  JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_) {
+    JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ = Java_TouchToFillAutofillViewBridge_create(
         env, reinterpret_cast<intptr_t>(this),
         web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
         web_contents_->GetJavaWebContents());
-    if (!java_object_) {
-      return false;
-    }
   }
+  return !!java_object_;
+}
+
+bool TouchToFillAutofillViewImpl::ShowPersonalContextNotice(
+    TouchToFillAutofillController* controller) {
+  if (!EnsureJavaBridge(controller)) {
+    return false;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
   Java_TouchToFillAutofillViewBridge_showPersonalContextNotice(env,
                                                                java_object_);
   return true;

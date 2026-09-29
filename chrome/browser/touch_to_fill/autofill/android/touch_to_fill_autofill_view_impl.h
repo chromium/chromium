@@ -40,6 +40,10 @@ class TouchToFillAutofillViewImpl : public TouchToFillAutofillView {
   void OnDismissed(JNIEnv* env);
 
  private:
+  // Creates the Java counterpart if it does not exist yet and sets the
+  // `controller_`. Returns whether the Java counterpart is available.
+  bool EnsureJavaBridge(TouchToFillAutofillController* controller);
+
   // The corresponding Java TouchToFillAutofillViewBridge.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   raw_ptr<TouchToFillAutofillController> controller_ = nullptr;
