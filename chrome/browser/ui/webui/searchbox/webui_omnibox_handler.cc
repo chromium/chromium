@@ -628,6 +628,7 @@ void WebuiOmniboxHandler::OnContentSharingPolicyChanged() {
 
 void WebuiOmniboxHandler::OnAimPopupEligibilityChanged() {
   InitializeInputStateModel();
+  UpdateAimButtonVisibility();
 
   page_->UpdateAimPopupEligibility(
       omnibox::IsAimPopupEnabled(profile_) &&
