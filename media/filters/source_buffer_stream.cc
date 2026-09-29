@@ -1007,7 +1007,11 @@ size_t SourceBufferStream::FreeBuffers(size_t total_bytes_to_free,
 
     // Check to see if we've just deleted the GOP that was last appended.
     base::TimeDelta end_timestamp = buffers.back()->timestamp();
-    if (end_timestamp == last_appended_buffer_timestamp_) {
+    if (range_for_next_append_ != ranges_.end() &&
+        current_range == range_for_next_append_->get() &&
+        end_timestamp == last_appended_buffer_timestamp_ &&
+        buffers.back()->GetDecodeTimestamp() ==
+            last_appended_buffer_decode_timestamp_) {
       DCHECK(last_appended_buffer_timestamp_ != kNoTimestamp);
       DCHECK(!new_range_for_append);
 
