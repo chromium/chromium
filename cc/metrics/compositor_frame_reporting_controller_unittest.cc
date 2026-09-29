@@ -51,10 +51,12 @@ class TestCompositorFrameReportingController
  public:
   explicit TestCompositorFrameReportingController(
       bool should_report_histograms = true,
+      bool report_event_latency_to_custom_recorder = false,
       bool is_trees_in_viz_client = false,
       bool should_report_scroll_timing = false)
       : CompositorFrameReportingController(
             should_report_histograms,
+            report_event_latency_to_custom_recorder,
             should_report_scroll_timing,
             /*layer_tree_host_id=*/1,
             /*is_trees_in_viz_client=*/is_trees_in_viz_client) {}
@@ -159,6 +161,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
       : current_id_(1, 1),
         tracker_collection_(false),
         reporting_controller_(/*should_report_histograms=*/true,
+                              /*report_event_latency_to_custom_recorder=*/false,
                               /*is_trees_in_viz_client=*/false,
                               should_report_scroll_timing) {
     test_tick_clock_.SetNowTicks(base::TimeTicks::Now());
@@ -3446,6 +3449,7 @@ TEST_F(CompositorFrameReportingControllerTest,
     // Simulate single-threaded mode by disabling histograms.
     TestCompositorFrameReportingController reporting_controller_no_histograms(
         /*should_report_histograms=*/false,
+        /*report_event_latency_to_custom_recorder=*/false,
         /*is_trees_in_viz_client=*/false,
         /*should_report_scroll_timing=*/true);
     reporting_controller_no_histograms.set_tick_clock(&test_tick_clock_);

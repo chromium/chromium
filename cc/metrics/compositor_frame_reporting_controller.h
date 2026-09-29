@@ -32,7 +32,6 @@ class FrameTimingDetails;
 }
 
 namespace cc {
-class EventLatencyTracker;
 struct BeginMainFrameMetrics;
 struct FrameInfo;
 
@@ -54,10 +53,12 @@ class CC_EXPORT CompositorFrameReportingController {
     kNumPipelineStages
   };
 
-  CompositorFrameReportingController(bool should_report_histograms,
-                                     bool should_report_scroll_timing,
-                                     int layer_tree_host_id,
-                                     bool is_trees_in_viz_client);
+  CompositorFrameReportingController(
+      bool should_report_histograms,
+      bool report_event_latency_to_custom_recorder,
+      bool should_report_scroll_timing,
+      int layer_tree_host_id,
+      bool is_trees_in_viz_client);
   virtual ~CompositorFrameReportingController();
 
   CompositorFrameReportingController(
@@ -123,10 +124,6 @@ class CC_EXPORT CompositorFrameReportingController {
       global_trackers_.frame_sorter->RemoveObserver(frame_sequence_trackers_);
     }
     frame_sequence_trackers_ = nullptr;
-  }
-
-  void set_event_latency_tracker(EventLatencyTracker* event_latency_tracker) {
-    global_trackers_.event_latency_tracker = event_latency_tracker;
   }
 
   void BeginMainFrameStarted(base::TimeTicks begin_main_frame_start_time) {
@@ -206,6 +203,7 @@ class CC_EXPORT CompositorFrameReportingController {
   void MaybeFlushAndDrainScrollTiming();
 
   const bool should_report_histograms_;
+  const bool report_event_latency_to_custom_recorder_;  // UI LatencyData
   const bool should_report_scroll_timing_;
   const int layer_tree_host_id_;
   bool is_trees_in_viz_client_;

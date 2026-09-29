@@ -209,11 +209,11 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
-    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, nullptr,
-                                   &frame_sorter_};
+    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, &frame_sorter_};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), viz::BeginFrameArgs(),
         /*should_report_metrics=*/true,
+        /*report_event_latency_to_custom_metrics_recorder=*/false,
         CompositorFrameReporter::SmoothThread::kSmoothBoth,
         FrameInfo::SmoothEffectDrivingThread::kUnknown,
         /*layer_tree_host_id=*/1, trackers);
@@ -228,11 +228,12 @@ class CompositorFrameReporterTest : public testing::Test {
           FrameInfo::SmoothThread::kSmoothNone,
       FrameInfo::SmoothEffectDrivingThread scrolling_thread =
           FrameInfo::SmoothEffectDrivingThread::kUnknown) {
-    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, nullptr,
-                                   mock_sorter_ptr};
+    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, mock_sorter_ptr};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), args,
-        /*should_report_metrics=*/true, smooth_thread, scrolling_thread,
+        /*should_report_metrics=*/true,
+        /*report_event_latency_to_custom_recorder=*/false, smooth_thread,
+        scrolling_thread,
         /*layer_tree_host_id=*/1, trackers);
     reporter->set_tick_clock(&test_tick_clock_);
     return reporter;

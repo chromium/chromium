@@ -144,7 +144,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public MutatorHostDelegate,
                                     public ImageAnimationController::Delegate,
                                     public CompositorDelegateForInput,
-                                    public EventLatencyTracker,
                                     public ScrollJankOsReporter {
  public:
   // A struct of data for a single UIResource, including the backing
@@ -539,11 +538,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override;
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override;
-
-  // EventLatencyTracker implementation.
-  void ReportEventLatency(
-      const viz::BeginFrameArgs& args,
-      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // ScrollJankOsReporter implementation.
   void ReportScrollJankStats(uint32_t total_frames,

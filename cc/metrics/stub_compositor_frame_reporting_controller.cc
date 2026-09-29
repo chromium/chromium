@@ -9,10 +9,12 @@
 namespace cc {
 
 StubCompositorFrameReportingController::StubCompositorFrameReportingController()
-    : CompositorFrameReportingController(/*should_report_histograms=*/false,
-                                         /*should_report_scroll_timing=*/false,
-                                         /*layer_tree_host_id=*/1,
-                                         /*is_trees_in_viz_client=*/false) {}
+    : CompositorFrameReportingController(
+          /*should_report_histograms=*/false,
+          /*report_event_latency_to_custom_recorder=*/false,
+          /*should_report_scroll_timing=*/false,
+          /*layer_tree_host_id=*/1,
+          /*is_trees_in_viz_client=*/false) {}
 
 void StubCompositorFrameReportingController::NotifyReadyToCommit(
     std::unique_ptr<BeginMainFrameMetrics> details) {}

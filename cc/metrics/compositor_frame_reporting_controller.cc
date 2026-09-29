@@ -27,10 +27,13 @@ using FrameTerminationStatus = CompositorFrameReporter::FrameTerminationStatus;
 
 CompositorFrameReportingController::CompositorFrameReportingController(
     bool should_report_histograms,
+    bool report_event_latency_to_custom_recorder,
     bool should_report_scroll_timing,
     int layer_tree_host_id,
     bool is_trees_in_viz_client)
     : should_report_histograms_(should_report_histograms),
+      report_event_latency_to_custom_recorder_(
+          report_event_latency_to_custom_recorder),
       should_report_scroll_timing_(should_report_scroll_timing),
       layer_tree_host_id_(layer_tree_host_id),
       is_trees_in_viz_client_(is_trees_in_viz_client) {
@@ -171,8 +174,9 @@ void CompositorFrameReportingController::WillBeginImplFrame(
     smooth_thread = frame_sequence_trackers_->GetSmoothThread();
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers, args, should_report_histograms_, smooth_thread,
-      scrolling_thread, layer_tree_host_id_, global_trackers_);
+      active_trackers, args, should_report_histograms_,
+      report_event_latency_to_custom_recorder_, smooth_thread, scrolling_thread,
+      layer_tree_host_id_, global_trackers_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
@@ -217,7 +221,8 @@ void CompositorFrameReportingController::WillBeginMainFrame(
       smooth_thread = frame_sequence_trackers_->GetSmoothThread();
     }
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers, args, should_report_histograms_, smooth_thread,
+        active_trackers, args, should_report_histograms_,
+        report_event_latency_to_custom_recorder_, smooth_thread,
         scrolling_thread, layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
@@ -952,7 +957,8 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
           frame_sequence_trackers_->GetSmoothThreadAtTime(timestamp);
     }
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers, args, should_report_histograms_, smooth_thread,
+        active_trackers, args, should_report_histograms_,
+        report_event_latency_to_custom_recorder_, smooth_thread,
         scrolling_thread, layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,

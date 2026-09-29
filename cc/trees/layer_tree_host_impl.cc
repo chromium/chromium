@@ -646,6 +646,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
         std::make_unique<CompositorFrameReportingController>(
             /*should_report_histograms=*/!settings
                 .single_thread_proxy_scheduler,
+            /*report_event_latency_to_custom_recorder=*/
+            settings.is_layer_tree_for_ui,
             /*should_report_scroll_timing=*/
             settings.enable_scroll_performance_timing,
             /*layer_tree_host_id=*/id,
@@ -702,15 +704,12 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
       &frame_trackers_);
 
-  const bool is_ui = settings.is_layer_tree_for_ui;
-  if (is_ui) {
-    compositor_frame_reporting_controller_->set_event_latency_tracker(this);
-
 #if BUILDFLAG(IS_CHROMEOS)
+  if (settings.is_layer_tree_for_ui) {
     frame_trackers_.UpdateSmoothThreadHistory(
         FrameInfo::SmoothEffectDrivingThread::kMain, /*modifier-*/ 1);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
       &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
@@ -757,13 +756,6 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   mutator_host_->ClearMutators();
   mutator_host_->SetMutatorHostDelegate(nullptr);
 
-  // The `compositor_frame_reporting_controller_`
-  // was given a `this` pointer for the event_latency_tracker and thus needs
-  // to be nulled to prevent it dangling. Members will be destroyed in reverse
-  // order of their declaration, so since event latency tracker is destroyed
-  // first, we need to clar the pointer that
-  // `compositor_frame_reporting_controller_` holds.
-  compositor_frame_reporting_controller_->set_event_latency_tracker(nullptr);
   // CFRC needs to unregister the frame trackers from the frame_sorter
   // observer set before being cleaned up.
   compositor_frame_reporting_controller_->ClearFrameSequenceTrackerCollection();
@@ -2370,14 +2362,6 @@ void LayerTreeHostImpl::OnSurfaceEvicted(
   evicted_local_surface_id_ = local_surface_id;
   resource_provider_->SetEvicted(true);
   delegate_->OnCanDrawStateChanged(CanDraw());
-}
-
-void LayerTreeHostImpl::ReportEventLatency(
-    const viz::BeginFrameArgs& args,
-    std::vector<EventLatencyTracker::LatencyData> latencies) {
-  if (auto* recorder = CustomMetricRecorder::Get()) {
-    recorder->ReportEventLatency(args, std::move(latencies));
-  }
 }
 
 void LayerTreeHostImpl::ReportScrollJankStats(uint32_t total_frames,

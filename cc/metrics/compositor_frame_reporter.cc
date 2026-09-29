@@ -625,11 +625,14 @@ CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
     const viz::BeginFrameArgs& args,
     bool should_report_histograms,
+    bool report_event_latency_to_custom_recorder,
     SmoothThread smooth_thread,
     FrameInfo::SmoothEffectDrivingThread scrolling_thread,
     int layer_tree_host_id,
     const GlobalMetricsTrackers& trackers)
     : should_report_histograms_(should_report_histograms),
+      report_event_latency_to_custom_recorder_(
+          report_event_latency_to_custom_recorder),
       args_(args),
       active_trackers_(active_trackers),
       scrolling_thread_(scrolling_thread),
@@ -900,7 +903,8 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
     return nullptr;
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args_, should_report_histograms_, smooth_thread_,
+      active_trackers_, args_, should_report_histograms_,
+      report_event_latency_to_custom_recorder_, smooth_thread_,
       scrolling_thread_, layer_tree_host_id_, global_trackers_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
@@ -1179,7 +1183,7 @@ void CompositorFrameReporter::TerminateReporter() {
 
   // Only report compositor latency metrics if the frame was produced.
   if (report_types_.any() &&
-      (should_report_histograms_ || global_trackers_.event_latency_tracker)) {
+      (should_report_histograms_ || report_event_latency_to_custom_recorder_)) {
     DCHECK(stage_history_.size());
     DCHECK_EQ(SumOfStageHistory(), stage_history_.back().end_time -
                                        stage_history_.front().start_time);
@@ -1591,7 +1595,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
           kEventLatencyHistogramBucketCount);
     }
 
-    if (global_trackers_.event_latency_tracker) {
+    if (report_event_latency_to_custom_recorder_) {
       EventLatencyTracker::LatencyData& latency_data =
           latencies.emplace_back(event_metrics->type(), total_latency);
 
@@ -1603,9 +1607,10 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   }
 
   if (!latencies.empty()) {
-    DCHECK(global_trackers_.event_latency_tracker);
-    global_trackers_.event_latency_tracker->ReportEventLatency(
-        args_, std::move(latencies));
+    DCHECK(report_event_latency_to_custom_recorder_);
+    if (auto* recorder = CustomMetricRecorder::Get()) {
+      recorder->ReportEventLatency(args_, std::move(latencies));
+    }
   }
 }
 

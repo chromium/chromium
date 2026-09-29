@@ -37,13 +37,11 @@ class FrameTimingDetails;
 }
 
 namespace cc {
-class EventLatencyTracker;
 class FrameSorter;
 
 struct GlobalMetricsTrackers {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
-  RAW_PTR_EXCLUSION EventLatencyTracker* event_latency_tracker = nullptr;
   RAW_PTR_EXCLUSION PredictorJankTracker* predictor_jank_tracker = nullptr;
   RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
       scroll_jank_dropped_frame_tracker = nullptr;
@@ -327,6 +325,7 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
                           bool should_report_histograms,
+                          bool report_event_latency_to_custom_recorder,
                           SmoothThread smooth_thread,
                           FrameInfo::SmoothEffectDrivingThread scrolling_thread,
                           int layer_tree_host_id,
@@ -562,6 +561,8 @@ class CC_EXPORT CompositorFrameReporter {
 
   // Whether UMA histograms should be reported or not.
   const bool should_report_histograms_;
+  // Whether custom UI LatencyData should be reported or not.
+  const bool report_event_latency_to_custom_recorder_;
 
   const viz::BeginFrameArgs args_;
 

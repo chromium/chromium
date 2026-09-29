@@ -60,6 +60,7 @@ class FrameSequenceTrackerTest : public testing::Test,
         compositor_frame_reporting_controller_(
             std::make_unique<CompositorFrameReportingController>(
                 /*should_report_histograms=*/true,
+                /*report_event_latency_to_custom_metrics_recorder=*/false,
                 /*should_report_scroll_timing=*/false,
                 /*layer_tree_host_id=*/1,
                 /*is_trees_in_viz_client=*/false)) {
