@@ -627,4 +627,19 @@ void AudioNode::SendLogMessage(const String& function_name,
   WebRtcLogMessage(StrCat({"[WA]AN::", function_name, " ", message}).Utf8());
 }
 
+bool AudioNode::HasOutputsConnected() const {
+  DCHECK(IsMainThread());
+  for (const auto& output : connected_nodes_) {
+    if (output && !output->empty()) {
+      return true;
+    }
+  }
+  for (const auto& output : connected_params_) {
+    if (output && !output->empty()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace blink

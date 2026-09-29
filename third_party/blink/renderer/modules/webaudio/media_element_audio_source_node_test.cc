@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -139,6 +140,57 @@ TEST_F(MediaElementAudioSourceNodeTest, WouldTaintOriginWithoutPlayer) {
   // player), the element does not taint origin by default. This aligns with
   // HTMLMediaElement::IsMediaDataCorsSameOrigin().
   EXPECT_FALSE(handler.WouldTaintOriginForTesting());
+}
+
+TEST_F(MediaElementAudioSourceNodeTest, HasPendingActivity) {
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(context_->ContextState(), V8AudioContextState::Enum::kRunning);
+
+  // Initially, the media element is paused and unconnected.
+  EXPECT_TRUE(media_element_->paused());
+  EXPECT_FALSE(node_->HasPendingActivity());
+
+  // Connect to the destination node. When paused, HasPendingActivity() remains
+  // false so that an inactive source does not keep itself alive.
+  node_->connect(context_->destinationNode(), 0, 0, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(node_->HasPendingActivity());
+
+  // Once playing, the connected source has pending activity to stream audio.
+  media_element_->Play();
+  EXPECT_FALSE(media_element_->paused());
+  EXPECT_TRUE(node_->HasPendingActivity());
+
+  // When paused again, pending activity drops to false.
+  media_element_->pause();
+  EXPECT_TRUE(media_element_->paused());
+  EXPECT_FALSE(node_->HasPendingActivity());
+
+  // Playing while disconnected also has no pending activity.
+  media_element_->Play();
+  EXPECT_FALSE(media_element_->paused());
+  node_->disconnect();
+  EXPECT_FALSE(node_->HasPendingActivity());
+}
+
+TEST_F(MediaElementAudioSourceNodeTest,
+       DisposeRemovesFromActiveSourceHandlers) {
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(context_->ContextState(), V8AudioContextState::Enum::kRunning);
+
+  MediaElementAudioSourceHandler& handler =
+      node_->GetMediaElementAudioSourceHandler();
+  EXPECT_TRUE(
+      context_->GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(
+          &handler));
+
+  // Clear references to allow garbage collection.
+  node_ = nullptr;
+  media_element_ = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_FALSE(
+      context_->GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(
+          &handler));
 }
 
 }  // namespace blink

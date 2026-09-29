@@ -72,6 +72,10 @@ MediaElementAudioSourceHandler::MediaElement() const {
 }
 
 void MediaElementAudioSourceHandler::Dispose() {
+  if (GetDeferredTaskHandler().GetActiveSourceHandlers()->Contains(this)) {
+    GetDeferredTaskHandler().GetActiveSourceHandlers()->erase(this);
+    BreakConnectionWithLock();
+  }
   AudioHandler::Dispose();
 }
 

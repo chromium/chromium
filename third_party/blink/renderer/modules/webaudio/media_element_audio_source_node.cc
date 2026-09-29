@@ -125,8 +125,13 @@ void MediaElementAudioSourceNode::ReportWillBeDestroyed() {
 }
 
 bool MediaElementAudioSourceNode::HasPendingActivity() const {
-  // The node stays alive as long as the context is running.
-  return context()->ContextState() == V8AudioContextState::Enum::kRunning;
+  if (context()->ContextState() != V8AudioContextState::Enum::kRunning) {
+    return false;
+  }
+  if (media_element_->paused()) {
+    return false;
+  }
+  return HasOutputsConnected();
 }
 
 void MediaElementAudioSourceNode::Trace(Visitor* visitor) const {
