@@ -253,8 +253,11 @@ class ReadAloudService
       media::mojom::ReadWriteAudioDataPipePtr data_pipe);
   void OnUtilityDisconnect();
   void ResetUtilityConnection();
-  read_aloud::mojom::PlaybackState GetCurrentPlaybackState() const;
   void HandlePlaybackError(std::string_view error_message);
+  void NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState state);
+  // Releases the media session, distillation and utility resources without
+  // notifying the delegate.
+  void ResetPlayback();
 
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;

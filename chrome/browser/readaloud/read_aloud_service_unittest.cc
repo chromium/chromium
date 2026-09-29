@@ -156,6 +156,15 @@ class FakePlaybackController
     last_data_pipe_.reset();
   }
 
+  void FlushForTesting() {
+    if (receiver_.is_bound()) {
+      receiver_.FlushForTesting();
+    }
+    if (client_.is_bound()) {
+      client_.FlushForTesting();
+    }
+  }
+
   void InitializeAudio(
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
       media::mojom::ReadWriteAudioDataPipePtr data_pipe,
@@ -293,6 +302,16 @@ class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
                       base::Unretained(test)));
             },
             this));
+  }
+
+  void TearDown() override {
+    if (service() && service()->delegate()) {
+      EXPECT_CALL(
+          *static_cast<MockDelegate*>(service()->delegate()),
+          OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped))
+          .Times(testing::AnyNumber());
+    }
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockDomDistillerService* mock_distiller_service() {
@@ -555,6 +574,11 @@ TEST_F(ReadAloudServiceTest,
 
   service()->Initialize(test_contents.get());
 
+  // Destruction of test_contents triggers WebContentsDestroyed(), which stops
+  // playback.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
@@ -740,6 +764,9 @@ TEST_F(ReadAloudServiceTest,
       });
 
   ExpectInitializeCallbacks(delegate_ptr);
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(testing::AtMost(1));
   EXPECT_CALL(*delegate_ptr, OnPlaybackError("Utility process disconnected"))
       .Times(testing::AtMost(1));
   service()->Initialize(web_contents());
@@ -772,6 +799,10 @@ TEST_F(ReadAloudServiceTest, UtilityDisconnectTriggersErrorAndStop) {
   SetFakeController(std::make_unique<FakePlaybackController>());
 
   ExpectInitializeCallbacks(delegate_ptr_mock);
+  EXPECT_CALL(
+      *delegate_ptr_mock,
+      OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr_mock,
               OnPlaybackError("Utility process disconnected"))
       .Times(1);
@@ -816,6 +847,10 @@ TEST_F(ReadAloudServiceTest, DistillPageAndArticleFailure) {
   EXPECT_NE(GetViewerHandle(), nullptr);
   ASSERT_NE(delegate_ptr, nullptr);
 
+  EXPECT_CALL(
+      *delegate_ptr_mock,
+      OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
   EXPECT_CALL(*delegate_ptr_mock, OnPlaybackError("Distillation failed")).Times(1);
   EXPECT_CALL(*delegate_ptr_mock, OnNativeDestroyed()).Times(1);
 
@@ -1129,10 +1164,8 @@ TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
   service()->SetDelegate(std::move(delegate));
 
   testing::InSequence s;
-  // Starting article playback again resumes article playback.
-  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
-                                 read_aloud::mojom::PlaybackState::kPlaying))
-      .Times(1);
+  // Starting article playback again resumes article playback, but delegates
+  // state notification to the utility process.
   service()->Play(test_contents.get());
 
   // Explicitly stopping playback returns article state to stopped before
@@ -1250,6 +1283,231 @@ TEST_F(ReadAloudServiceTest, OnTextChunkedExceedsLimit) {
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "Received invalid chunk payload");
+}
+
+TEST_F(ReadAloudServiceTest, PlayDoesNotEmitPlayingDirectly) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  // The utility process is authoritative for kPlaying. With no utility
+  // response wired up, Play() must not fabricate the state on its own.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(0);
+
+  service()->Play(web_contents());
+  fake_controller()->FlushForTesting();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, UtilityPlayingResponseToPlayReachesDelegate) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  // Play() reaches the utility controller, which answers with kPlaying.
+  fake_controller()->set_play_callback(base::BindLambdaForTesting([&]() {
+    fake_controller()->client()->OnPlaybackStateChanged(
+        read_aloud::mojom::PlaybackState::kPlaying);
+  }));
+
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+
+  service()->Play(web_contents());
+  fake_controller()->FlushForTesting();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, UtilityPlaybackStatesReachDelegate) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  testing::InSequence s;
+
+  // Simulate utility process sending states.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kBuffering))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kBuffering);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
+      .Times(1);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPaused);
+
+  fake_controller()->FlushForTesting();
+
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  service()->Stop();
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, UtilityErrorRoutesToOnPlaybackError) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  // An error state from utility should call OnPlaybackError and NOT emit a
+  // UI state.
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kError))
+      .Times(0);
+
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackError("Playback error reported by utility process"))
+      .Times(1);
+
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kError);
+
+  fake_controller()->FlushForTesting();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, UtilityStatesAreForwardedWithoutFiltering) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  // The browser forwards every utility state; duplicates are handled by the
+  // utility process and the Java UI.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kPlaying))
+      .Times(2);
+
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+  fake_controller()->client()->OnPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaying);
+
+  fake_controller()->FlushForTesting();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, ShutdownDoesNotEmitStopped) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  ExpectInitializeCallbacks(delegate_ptr);
+  service()->Initialize(web_contents());
+
+  // Shutdown() tears down via OnNativeDestroyed() rather than kStopped.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(0);
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, ReinitializeDoesNotEmitStopped) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  // Initializing twice resets the previous session and goes straight to
+  // kPlaybackCreation, without an intermediate kStopped.
+  EXPECT_CALL(*delegate_ptr, OnPlaybackStateChanged(
+                                 read_aloud::mojom::PlaybackState::kStopped))
+      .Times(0);
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(
+                  read_aloud::mojom::PlaybackState::kPlaybackCreation))
+      .Times(2);
+
+  service()->Initialize(web_contents());
+  service()->Initialize(web_contents());
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, NewDelegateReceivesStoppedAfterPreviousStop) {
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+
+  auto first_delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* first_delegate_ptr = first_delegate.get();
+  service()->SetDelegate(std::move(first_delegate));
+
+  ExpectInitializeCallbacks(first_delegate_ptr);
+  service()->Initialize(web_contents());
+
+  EXPECT_CALL(
+      *first_delegate_ptr,
+      OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  service()->Stop();
+
+  // A newly attached delegate must not be suppressed by state that was only
+  // delivered to the previous delegate.
+  auto second_delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+  MockDelegate* second_delegate_ptr = second_delegate.get();
+  service()->SetDelegate(std::move(second_delegate));
+
+  EXPECT_CALL(
+      *second_delegate_ptr,
+      OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped))
+      .Times(1);
+  service()->Stop();
+
+  EXPECT_CALL(*second_delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
 TEST_F(ReadAloudServiceTest, OnPlaybackStateChangedRejectsStopped) {

@@ -48,6 +48,13 @@ void ReadAloudService::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
 }
 
+void ReadAloudService::NotifyPlaybackStateChanged(
+    read_aloud::mojom::PlaybackState state) {
+  if (delegate_) {
+    delegate_->OnPlaybackStateChanged(state);
+  }
+}
+
 void ReadAloudService::Play(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
     return;
@@ -57,8 +64,6 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
     Initialize(new_web_contents);
   }
 
-  read_aloud::mojom::PlaybackState previous_state = GetCurrentPlaybackState();
-
   // Start or resume audio playback.
   CHECK(active_session_);
   active_session_->NotifyPlaybackStarted();
@@ -66,17 +71,9 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
   if (utility_player_.is_bound()) {
     utility_player_->Play();
   }
-
-  // TODO(b/562011435): Defer notifying kPlaying until playback is ready.
-  // Notify the UI/client delegate if the playback state transitioned.
-  read_aloud::mojom::PlaybackState current_state = GetCurrentPlaybackState();
-  if (current_state != previous_state && delegate_) {
-    delegate_->OnPlaybackStateChanged(current_state);
-  }
 }
 
 void ReadAloudService::Pause() {
-  read_aloud::mojom::PlaybackState previous_state = GetCurrentPlaybackState();
   if (active_session_) {
     active_session_->NotifyPlaybackPaused();
   }
@@ -85,19 +82,23 @@ void ReadAloudService::Pause() {
     utility_player_->Pause();
   }
 
-  // Notify the UI/client delegate if the playback state transitioned.
-  read_aloud::mojom::PlaybackState current_state = GetCurrentPlaybackState();
-  if (current_state != previous_state && delegate_) {
-    delegate_->OnPlaybackStateChanged(current_state);
+  // TODO(b/562011435): Handle late kPlaying updates arriving from utility
+  // after Pause() is called.
+  if (active_session_ && active_session_->is_playback_in_progress()) {
+    NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
   }
 }
 
 void ReadAloudService::Stop() {
+  ResetPlayback();
+  NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState::kStopped);
+}
+
+void ReadAloudService::ResetPlayback() {
   // Detach observer since tracking is only needed during active playback.
   Observe(nullptr);
 
   // Stop active audio playback and release media session resources.
-  read_aloud::mojom::PlaybackState previous_state = GetCurrentPlaybackState();
   if (active_session_) {
     active_session_->NotifyPlaybackStopped();
     active_session_.reset();
@@ -112,12 +113,6 @@ void ReadAloudService::Stop() {
 
   // Stopping the Utility Process and any of their connections.
   ResetUtilityConnection();
-
-  // Notify the UI/client delegate if the playback state transitioned.
-  read_aloud::mojom::PlaybackState current_state = GetCurrentPlaybackState();
-  if (current_state != previous_state && delegate_) {
-    delegate_->OnPlaybackStateChanged(current_state);
-  }
 }
 
 void ReadAloudService::SeekToWordIndex(int word_index) {}
@@ -199,21 +194,9 @@ bool ReadAloudService::IsPlaybackPaused() const {
   return !active_session_ || active_session_->is_paused();
 }
 
-read_aloud::mojom::PlaybackState ReadAloudService::GetCurrentPlaybackState()
-    const {
-  if (!active_session_) {
-    return read_aloud::mojom::PlaybackState::kStopped;
-  }
-  if (!active_session_->is_playback_in_progress()) {
-    return read_aloud::mojom::PlaybackState::kStopped;
-  }
-  return active_session_->is_paused()
-             ? read_aloud::mojom::PlaybackState::kPaused
-             : read_aloud::mojom::PlaybackState::kPlaying;
-}
 
 void ReadAloudService::Shutdown() {
-  Stop();
+  ResetPlayback();
   weak_factory_.InvalidateWeakPtrs();
   if (delegate_) {
     delegate_->OnNativeDestroyed();
@@ -311,7 +294,7 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   if (!new_web_contents) {
     return;
   }
-  Stop();
+  ResetPlayback();
   Observe(new_web_contents);
   active_session_ =
       std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
@@ -319,9 +302,9 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   current_duration_ = base::Seconds(0);
 
   ProvideInitialMetadata();
+  NotifyPlaybackStateChanged(
+      read_aloud::mojom::PlaybackState::kPlaybackCreation);
   if (delegate_) {
-    delegate_->OnPlaybackStateChanged(
-        read_aloud::mojom::PlaybackState::kPlaybackCreation);
     delegate_->OnPlaybackProgressUpdated(base::Seconds(0), current_duration_);
   }
 
@@ -457,18 +440,24 @@ void ReadAloudService::OnDistillationFailed(
 
 void ReadAloudService::OnPlaybackStateChanged(
     read_aloud::mojom::PlaybackState state) {
-  // Browser-only lifecycle states. The utility process is never permitted to
-  // send these, so receiving one is a protocol violation.
-  if (state == read_aloud::mojom::PlaybackState::kStopped ||
-      state == read_aloud::mojom::PlaybackState::kPlaybackCreation) {
-    utility_observer_receiver_.ReportBadMessage(
-        "ReadAloudService: browser-only PlaybackState received from utility");
-    return;
+  switch (state) {
+    case read_aloud::mojom::PlaybackState::kPaused:
+      // TODO(b/562011435): Utility-initiated pauses do not reach MediaSession.
+      // active_session_->NotifyPlaybackPaused() should be called so the OS
+      // notification reflects the paused state.
+    case read_aloud::mojom::PlaybackState::kBuffering:
+    case read_aloud::mojom::PlaybackState::kPlaying:
+      NotifyPlaybackStateChanged(state);
+      return;
+    case read_aloud::mojom::PlaybackState::kError:
+      HandlePlaybackError("Playback error reported by utility process");
+      return;
+    case read_aloud::mojom::PlaybackState::kStopped:
+    case read_aloud::mojom::PlaybackState::kPlaybackCreation:
+      utility_observer_receiver_.ReportBadMessage(
+          "ReadAloudService: browser-only PlaybackState received from utility");
+      return;
   }
-
-  // TODO(b/562011435): Forward the remaining states to `delegate_` so the UI
-  // reflects the playback state actually reported by the utility process, and
-  // route kError through HandlePlaybackError().
 }
 
 void ReadAloudService::OnPlaybackDurationChanged(base::TimeDelta duration) {
