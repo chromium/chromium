@@ -63,7 +63,7 @@ StatusOr<std::unique_ptr<TextSearcher>> TextSearcher::CreateFromOptions(
     const TextSearcherOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
-  auto options_copy = absl::make_unique<TextSearcherOptions>(options);
+  auto options_copy = std::make_unique<TextSearcherOptions>(options);
 
   TFLITE_ASSIGN_OR_RETURN(auto text_searcher,
                    TaskAPIFactory::CreateFromBaseOptions<TextSearcher>(

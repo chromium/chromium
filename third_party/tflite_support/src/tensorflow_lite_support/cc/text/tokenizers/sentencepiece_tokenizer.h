@@ -20,6 +20,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
+#include "absl/log/check.h"  // from @com_google_absl
 #include "src/sentencepiece_processor.h"  // from @com_google_sentencepiece
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
 

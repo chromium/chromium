@@ -106,7 +106,7 @@ absl::Status Index::InitFromBuffer(const char* buffer_data,
     return absl::InvalidArgumentError("Buffer cannot be null");
   }
   // Create file from buffer.
-  file_ = absl::make_unique<MemRandomAccessFile>(buffer_data, buffer_size);
+  file_ = std::make_unique<MemRandomAccessFile>(buffer_data, buffer_size);
   // Create options with cache disabled, as this saves memory and has negligible
   // impact on performance in this setup as any key can be accessed anytime.
   leveldb::Options options;

@@ -126,7 +126,7 @@ class Helper {
  public:
   // Move type-agnostic error handling to the .cc.
   static void HandleInvalidStatusCtorArg(absl::Status*);
-  ABSL_ATTRIBUTE_NORETURN static void Crash(const absl::Status& status);
+  [[noreturn]] static void Crash(const absl::Status& status);
 };
 
 // Construct an instance of T in `p` through placement new, passing Args... to

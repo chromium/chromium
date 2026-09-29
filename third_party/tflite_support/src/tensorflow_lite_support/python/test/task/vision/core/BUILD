@@ -1,4 +1,4 @@
-# Placeholder for internal Python strict test compatibility macro.
+# Placeholder: load py_test
 
 package(
     licenses = ["notice"],  # Apache 2.0

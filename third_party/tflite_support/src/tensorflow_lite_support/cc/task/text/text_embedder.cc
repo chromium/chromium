@@ -68,7 +68,7 @@ TextEmbedder::CreateFromOptions(const TextEmbedderOptions& options,
                                 std::unique_ptr<tflite::OpResolver> resolver) {
   TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
-  auto options_copy = absl::make_unique<TextEmbedderOptions>(options);
+  auto options_copy = std::make_unique<TextEmbedderOptions>(options);
 
   TFLITE_ASSIGN_OR_RETURN(auto text_embedder,
                    TaskAPIFactory::CreateFromBaseOptions<TextEmbedder>(

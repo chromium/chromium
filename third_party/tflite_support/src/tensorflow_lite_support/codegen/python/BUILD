@@ -32,6 +32,7 @@ py_binary(
     srcs = [
         "codegen.py",
     ],
+    strict_deps = False,
     deps = [
         ":_pywrap_codegen",
         "@absl_py//absl:app",

@@ -149,10 +149,10 @@ def get_tokenizer_associated_files(
 
   if isinstance(tokenizer_options, (_metadata_fb.BertTokenizerOptionsT,
                                     _metadata_fb.RegexTokenizerOptionsT)):
-    return _get_file_path(tokenizer_options.vocabFile)
+    return _get_file_path(tokenizer_options.vocabFile)  # pyrefly: ignore[bad-return]
   elif isinstance(tokenizer_options,
                   _metadata_fb.SentencePieceTokenizerOptionsT):
-    return _get_file_path(tokenizer_options.vocabFile) + _get_file_path(
+    return _get_file_path(tokenizer_options.vocabFile) + _get_file_path(  # pyrefly: ignore[bad-return]
         tokenizer_options.sentencePieceModel)
   else:
     return []

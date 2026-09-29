@@ -48,7 +48,7 @@ class SegmentationOptions:
     """Generates a protobuf object to pass to the C++ layer."""
     return _SegmentationOptionsProto(
         display_names_locale=self.display_names_locale,
-        output_type=self.output_type.value)
+        output_type=self.output_type.value)  # pyrefly: ignore[missing-attribute]
 
   @classmethod
   @doc_controls.do_not_generate_docs

@@ -54,7 +54,7 @@ StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
   TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
-  auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
+  auto options_copy = std::make_unique<ImageClassifierOptions>(options);
 
   std::unique_ptr<ImageClassifier> image_classifier;
   if (options_copy->has_model_file_with_metadata()) {
@@ -357,7 +357,7 @@ absl::Status ImageClassifier::InitScoreCalibrations() {
       continue;
     }
 
-    score_calibrations_[i] = absl::make_unique<ScoreCalibration>();
+    score_calibrations_[i] = std::make_unique<ScoreCalibration>();
     if (score_calibrations_[i] == nullptr) {
       return CreateStatusWithPayload(
           StatusCode::kInternal, "Could not create score calibration object.");

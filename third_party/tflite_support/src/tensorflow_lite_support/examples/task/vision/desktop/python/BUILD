@@ -14,6 +14,7 @@ py_binary(
     name = "image_classifier_demo",
     srcs = ["image_classifier_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/vision/desktop:image_classifier_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",
@@ -32,6 +33,7 @@ py_binary(
     name = "object_detector_demo",
     srcs = ["object_detector_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/vision/desktop:object_detector_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",
@@ -49,6 +51,7 @@ py_binary(
     name = "image_segmenter_demo",
     srcs = ["image_segmenter_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/vision/desktop:image_segmenter_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",
@@ -59,6 +62,7 @@ py_binary(
 py_binary(
     name = "image_embedder_demo",
     srcs = ["image_embedder_demo.py"],
+    strict_deps = False,
     deps = [
         "//tensorflow_lite_support/python/task/core/proto:base_options_py_pb2",
         "//tensorflow_lite_support/python/task/processor/proto:embedding_options_pb2",

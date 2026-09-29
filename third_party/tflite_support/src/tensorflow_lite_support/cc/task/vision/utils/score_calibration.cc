@@ -159,7 +159,7 @@ absl::Status ScoreCalibration::InitializeFromParameters(
 
 float ScoreCalibration::ComputeCalibratedScore(const std::string& label,
                                                float uncalibrated_score) const {
-  absl::optional<Sigmoid> sigmoid = FindSigmoidParameters(label);
+  std::optional<Sigmoid> sigmoid = FindSigmoidParameters(label);
   if (!sigmoid.has_value() ||
       (sigmoid.value().min_uncalibrated_score.has_value() &&
        uncalibrated_score < sigmoid.value().min_uncalibrated_score.value())) {
@@ -189,7 +189,7 @@ float ScoreCalibration::ComputeCalibratedScore(const std::string& label,
   return std::max(std::min(calibrated_score, sigmoid.value().scale), 0.0f);
 }
 
-absl::optional<Sigmoid> ScoreCalibration::FindSigmoidParameters(
+std::optional<Sigmoid> ScoreCalibration::FindSigmoidParameters(
     const std::string& label) const {
   auto it = sigmoid_parameters_map_.find(label);
   if (it != sigmoid_parameters_map_.end()) {
@@ -197,7 +197,7 @@ absl::optional<Sigmoid> ScoreCalibration::FindSigmoidParameters(
   } else if (sigmoid_parameters_.default_sigmoid.has_value()) {
     return sigmoid_parameters_.default_sigmoid.value();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StatusOr<SigmoidCalibrationParameters> BuildSigmoidCalibrationParams(

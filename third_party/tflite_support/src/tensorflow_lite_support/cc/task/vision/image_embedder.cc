@@ -60,7 +60,7 @@ tflite::support::StatusOr<std::unique_ptr<ImageEmbedder>>
 ImageEmbedder::CreateFromOptions(const ImageEmbedderOptions& options,
                                  std::unique_ptr<tflite::OpResolver> resolver) {
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
-  auto options_copy = absl::make_unique<ImageEmbedderOptions>(options);
+  auto options_copy = std::make_unique<ImageEmbedderOptions>(options);
 
   TFLITE_ASSIGN_OR_RETURN(
       auto image_embedder,

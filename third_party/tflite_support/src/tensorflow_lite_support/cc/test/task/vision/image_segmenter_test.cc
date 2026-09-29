@@ -145,7 +145,7 @@ TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
       "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   SUPPORT_ASSERT_OK(ImageSegmenter::CreateFromOptions(
-      options, absl::make_unique<DeepLabOpResolver>()));
+      options, std::make_unique<DeepLabOpResolver>()));
 }
 
 class DeepLabOpResolverMissingOps : public ::tflite::MutableOpResolver {
@@ -164,7 +164,7 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
       "./" /*test src dir*/, kTestDataDirectory, kDeepLabV3));
 
   auto image_segmenter_or = ImageSegmenter::CreateFromOptions(
-      options, absl::make_unique<DeepLabOpResolverMissingOps>());
+      options, std::make_unique<DeepLabOpResolverMissingOps>());
 
   EXPECT_EQ(image_segmenter_or.status().code(),
             absl::StatusCode::kInvalidArgument);
@@ -388,7 +388,7 @@ class PostprocessTest : public tflite::testing::Test {
         const ImageSegmenterOptions& options) {
       TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
-      auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
+      auto options_copy = std::make_unique<ImageSegmenterOptions>(options);
 
       TFLITE_ASSIGN_OR_RETURN(
           auto image_segmenter,

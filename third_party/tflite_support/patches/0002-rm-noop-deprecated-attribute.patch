@@ -1,26 +1,27 @@
-From 53aab13c337173ba0378e57ed464e04080437327 Mon Sep 17 00:00:00 2001
+From b548b33cc7f0deab2ab1c530391fe360e7589038 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:06 -0800
 Subject: [PATCH 02/11] rm noop deprecated attribute
 
 ---
- .../cc/task/text/nlclassifier/nl_classifier.h                  | 3 ---
- 1 file changed, 3 deletions(-)
+ .../cc/task/text/nlclassifier/nl_classifier.h                 | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-index 42989daed506f..554eb306c5e0a 100644
+index 25d806aa4de1f..554eb306c5e0a 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h
-@@ -43,9 +43,6 @@ namespace text {
+@@ -43,9 +43,7 @@ namespace text {
  namespace nlclassifier {
  
  // Options to identify input and output tensors of the model
--ABSL_DEPRECATED(
+-struct [[deprecated(
 -    "Prefer using `tflite::task::text::NLClassifierOptions` and "
--    "`CreateFromOptions`")
- struct NLClassifierOptions {
+-    "`CreateFromOptions`")]] NLClassifierOptions {
++struct NLClassifierOptions {
    int input_tensor_index = 0;
    int output_score_tensor_index = 0;
+   // By default there is no output label tensor. The label file can be attached
 -- 
-2.49.0.777.g153de2bbd5-goog
+2.56.0.rc1.315.gc6ed9934b7-goog
 

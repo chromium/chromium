@@ -1,3 +1,6 @@
+load("//third_party/bazel_rules/rules_cc/cc:cc_binary.bzl", "cc_binary")
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
+
 package(
     default_visibility = [
         "//tensorflow_lite_support:internal",

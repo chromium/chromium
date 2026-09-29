@@ -17,6 +17,7 @@ limitations under the License.
 #define TENSORFLOW_LITE_SUPPORT_METADATA_CC_UTILS_ZIP_MEM_FILE_H_
 
 #include <cstdlib>
+#include <string>
 
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "third_party/zlib/contrib/minizip/ioapi.h"

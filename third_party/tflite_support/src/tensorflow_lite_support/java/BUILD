@@ -2,10 +2,14 @@
 # TensorFlow Lite Support API in Java.
 
 load("@build_bazel_rules_android//android:rules.bzl", "android_library")
+load(
+    "//tensorflow_lite_support:api_visibility.bzl",
+    "TFLITE_SUPPORT_JAVA_VISIBILITY",
+)
 load("//third_party/bazel_rules/rules_java/java:defs.bzl", "java_library")
 
 package(
-    default_visibility = ["//visibility:public"],
+    default_visibility = TFLITE_SUPPORT_JAVA_VISIBILITY,
     licenses = ["notice"],  # Apache 2.0
 )
 

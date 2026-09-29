@@ -97,7 +97,7 @@ TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
       "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
 
   SUPPORT_ASSERT_OK(ImageEmbedder::CreateFromOptions(
-      options, absl::make_unique<MobileNetV3OpResolver>()));
+      options, std::make_unique<MobileNetV3OpResolver>()));
 }
 
 class MobileNetV3OpResolverMissingOps : public ::tflite::MutableOpResolver {
@@ -117,7 +117,7 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
       "./" /*test src dir*/, kTestDataDirectory, kMobileNetV3));
 
   auto image_embedder_or = ImageEmbedder::CreateFromOptions(
-      options, absl::make_unique<MobileNetV3OpResolverMissingOps>());
+      options, std::make_unique<MobileNetV3OpResolverMissingOps>());
   EXPECT_EQ(image_embedder_or.status().code(),
             absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(image_embedder_or.status().message(),

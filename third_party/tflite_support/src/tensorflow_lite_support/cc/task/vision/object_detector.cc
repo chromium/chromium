@@ -315,7 +315,7 @@ StatusOr<std::unique_ptr<ObjectDetector>> ObjectDetector::CreateFromOptions(
   TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
-  auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
+  auto options_copy = std::make_unique<ObjectDetectorOptions>(options);
 
   std::unique_ptr<ObjectDetector> object_detector;
   if (options_copy->has_model_file_with_metadata()) {
@@ -431,7 +431,7 @@ absl::Status ObjectDetector::InitScoreCalibrations() {
     return absl::OkStatus();
   }
 
-  score_calibration_ = absl::make_unique<ScoreCalibration>();
+  score_calibration_ = std::make_unique<ScoreCalibration>();
   if (score_calibration_ == nullptr) {
     return CreateStatusWithPayload(
         StatusCode::kInternal, "Could not create score calibration object.");

@@ -266,7 +266,7 @@ UniversalSentenceEncoderQA::CreateFromOption(
 
   // Copy options to ensure the ExternalFile outlives the duration of this
   // created object.
-  auto options_copy = absl::make_unique<RetrievalOptions>(options);
+  auto options_copy = std::make_unique<RetrievalOptions>(options);
 
   TFLITE_ASSIGN_OR_RETURN(
       auto encoder,

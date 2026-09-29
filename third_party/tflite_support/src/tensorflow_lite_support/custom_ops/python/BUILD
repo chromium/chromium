@@ -20,6 +20,7 @@ py_library(
 py_test(
     name = "ragged_tensor_to_tensor_test",
     srcs = ["ragged_tensor_to_tensor_test.py"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: google/protobuf:use_fast_cpp_protos dep,  # Automatically added go/proto_python_upb_flip
         # build rule placeholder: tensorflow dep,

@@ -1,6 +1,7 @@
 """BUILD rules for generating flatbuffer files."""
 
 load("@build_bazel_rules_android//android:rules.bzl", "android_library")
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
 load("//third_party/bazel_rules/rules_java/java:java_library.bzl", "java_library")
 
 flatc_path = "@flatbuffers//:flatc"
@@ -213,7 +214,7 @@ def flatbuffer_cc_library(
         reflection_name = reflection_name,
         reflection_visibility = visibility,
     )
-    native.cc_library(
+    cc_library(
         name = name,
         hdrs = output_headers,
         srcs = output_headers,
@@ -305,6 +306,7 @@ def _gen_flatbuffer_srcs_impl(ctx):
 
     for src in ctx.files.srcs:
         ctx.actions.run(
+            mnemonic = "GenFlatbufferSrcs",
             inputs = deps,
             outputs = outputs,
             executable = ctx.executable._flatc,
@@ -393,6 +395,7 @@ def _concat_flatbuffer_py_srcs_impl(ctx):
     command = "echo 'import flatbuffers\n' > %s; "
     command += "for f in $(find %s -name '*.py'); do cat $f | sed '/import flatbuffers/d' >> %s; done "
     ctx.actions.run_shell(
+        mnemonic = "ConcatFlatbufferPySrcs",
         inputs = ctx.attr.deps[0].files,
         outputs = [ctx.outputs.out],
         command = command % (

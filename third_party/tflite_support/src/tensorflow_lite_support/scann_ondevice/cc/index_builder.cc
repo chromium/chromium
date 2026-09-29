@@ -55,7 +55,7 @@ absl::Status LevelDBStatusToAbsl(leveldb::Status leveldb_status) {
 template <typename T>
 absl::StatusOr<std::string> CreateIndexBufferImpl(
     absl::Span<const T> database,
-    absl::optional<absl::Span<const uint32_t>> partition_assignment,
+    std::optional<absl::Span<const uint32_t>> partition_assignment,
     absl::Span<const std::string> metadata, const std::string& userinfo,
     IndexConfig index_config, bool compression) {
   size_t num_partitions = 1;

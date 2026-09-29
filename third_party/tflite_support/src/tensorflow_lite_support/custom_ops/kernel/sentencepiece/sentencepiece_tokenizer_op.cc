@@ -77,8 +77,8 @@ class TFSentencepieceOp : public tensorflow::OpKernel {
     const auto& reverse_tensor = ctx->input(kReverseInput);
     const bool reverse = reverse_tensor.scalar<bool>()();
 
-    std::vector<int32> encoded;
-    std::vector<int32> splits;
+    std::vector<int32_t> encoded;
+    std::vector<int32_t> splits;
     for (int i = 0; i < num_of_input_values; ++i) {
       const auto res = ::tflite::ops::custom::sentencepiece::EncodeString(
           input_values_flat(i), model_tensor.data(), add_bos, add_eos, reverse);
@@ -101,8 +101,8 @@ class TFSentencepieceOp : public tensorflow::OpKernel {
     OP_REQUIRES_OK(ctx, ctx->allocate_output(1, {splits.size() + 1},
                                              &output_splits_tensor));
 
-    auto values_tensor_flat = output_values_tensor->vec<int32>();
-    auto splits_tensor_flat = output_splits_tensor->vec<int32>();
+    auto values_tensor_flat = output_values_tensor->vec<int32_t>();
+    auto splits_tensor_flat = output_splits_tensor->vec<int32_t>();
     for (int i = 0; i < encoded.size(); ++i) {
       values_tensor_flat(i) = encoded[i];
     }

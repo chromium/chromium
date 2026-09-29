@@ -2,11 +2,13 @@ load(
     "@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl",
     "cc_library_with_tflite",
 )
+load(
+    "//tensorflow_lite_support:api_visibility.bzl",
+    "TFLITE_SUPPORT_FRAMEWORK_VISIBILITY",
+)
 
 package(
-    default_visibility = [
-        "//visibility:public",
-    ],
+    default_visibility = TFLITE_SUPPORT_FRAMEWORK_VISIBILITY,
     licenses = ["notice"],  # Apache 2.0
 )
 

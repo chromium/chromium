@@ -13,6 +13,7 @@ py_binary(
     name = "nl_classifier_demo",
     srcs = ["nl_classifier_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/text/desktop:nl_classifier_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",
@@ -29,6 +30,7 @@ py_binary(
     name = "bert_nl_classifier_demo",
     srcs = ["bert_nl_classifier_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/text/desktop:bert_nl_classifier_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",
@@ -50,6 +52,7 @@ py_binary(
     name = "bert_question_answerer_demo",
     srcs = ["bert_question_answerer_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/text/desktop:bert_question_answerer_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",

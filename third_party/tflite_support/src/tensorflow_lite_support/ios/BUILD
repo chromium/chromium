@@ -14,6 +14,7 @@ load(
     "TFL_TASK_MINIMUM_OS_VERSION",
     "strip_api_include_path_prefix",
 )
+load("//third_party/bazel_rules/rules_cc/cc:objc_library.bzl", "objc_library")
 
 package(
     default_visibility = ["//tensorflow_lite_support:users"],

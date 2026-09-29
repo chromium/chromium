@@ -166,7 +166,7 @@ StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
   TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
   // Copy options to ensure the ExternalFile outlives the constructed object.
-  auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
+  auto options_copy = std::make_unique<ImageSegmenterOptions>(options);
 
   std::unique_ptr<ImageSegmenter> image_segmenter;
   if (options_copy->has_model_file_with_metadata()) {

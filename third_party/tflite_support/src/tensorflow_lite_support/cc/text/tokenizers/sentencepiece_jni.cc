@@ -60,5 +60,36 @@ Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeCo
   return nativeConvertTokensToIds(env, handle, jtokens);
 }
 
+// LiteRT Support uses the same implementation under its rebranded Java
+// package. Keep both JNI entry points while the original TFLite Support API
+// remains available.
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_google_ai_edge_litert_support_text_tokenizers_SentencePieceTokenizer_nativeLoadResource(  // NOLINT
+    JNIEnv* env, jobject obj, jobject model_buffer) {
+  return Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeLoadResource(
+      env, obj, model_buffer);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_com_google_ai_edge_litert_support_text_tokenizers_SentencePieceTokenizer_nativeUnloadResource(  // NOLINT
+    JNIEnv* env, jobject obj, jlong handle) {
+  return Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeUnloadResource(
+      env, obj, handle);
+}
+
+extern "C" JNIEXPORT jobjectArray JNICALL
+Java_com_google_ai_edge_litert_support_text_tokenizers_SentencePieceTokenizer_nativeTokenize(  // NOLINT
+    JNIEnv* env, jobject thiz, jlong handle, jstring jtext) {
+  return Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeTokenize(
+      env, thiz, handle, jtext);
+}
+
+extern "C" JNIEXPORT jintArray JNICALL
+Java_com_google_ai_edge_litert_support_text_tokenizers_SentencePieceTokenizer_nativeConvertTokensToIds(  // NOLINT
+    JNIEnv* env, jobject thiz, jlong handle, jobjectArray jtokens) {
+  return Java_org_tensorflow_lite_support_text_tokenizers_SentencePieceTokenizer_nativeConvertTokensToIds(
+      env, thiz, handle, jtokens);
+}
+
 }  // namespace support
 }  // namespace tflite

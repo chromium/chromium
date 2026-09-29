@@ -121,7 +121,7 @@ TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
                kMobileNetQuantizedWithMetadata));
 
   SUPPORT_ASSERT_OK(ImageClassifier::CreateFromOptions(
-      options, absl::make_unique<MobileNetQuantizedOpResolver>()));
+      options, std::make_unique<MobileNetQuantizedOpResolver>()));
 }
 
 class MobileNetQuantizedOpResolverMissingOps
@@ -144,7 +144,7 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
                kMobileNetQuantizedWithMetadata));
 
   auto image_classifier_or = ImageClassifier::CreateFromOptions(
-      options, absl::make_unique<MobileNetQuantizedOpResolverMissingOps>());
+      options, std::make_unique<MobileNetQuantizedOpResolverMissingOps>());
   EXPECT_EQ(image_classifier_or.status().code(),
             absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(image_classifier_or.status().message(),
@@ -558,7 +558,7 @@ class PostprocessTest : public tflite::testing::Test {
         const ImageClassifierOptions& options) {
       TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
-      auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
+      auto options_copy = std::make_unique<ImageClassifierOptions>(options);
 
       TFLITE_ASSIGN_OR_RETURN(
           auto image_classifier,

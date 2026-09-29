@@ -57,7 +57,9 @@ class ConfidenceMask:
   def create_from_pb2(cls, pb2_obj: _ConfidenceMaskProto, height: int,
                       width: int) -> "ConfidenceMask":
     """Creates a `ConfidenceMask` object from the given protobuf and size."""
-    return ConfidenceMask(value=np.array(pb2_obj.value).reshape(height, width))
+    return ConfidenceMask(
+        value=np.array(pb2_obj.value, np.float32).reshape(height, width)
+    )
 
   def __eq__(self, other: Any) -> bool:
     """Checks if this object is equal to the given object.

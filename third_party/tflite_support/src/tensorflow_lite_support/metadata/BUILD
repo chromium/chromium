@@ -1,9 +1,11 @@
 load("@flatbuffers//:build_defs.bzl", "flatbuffer_android_library", "flatbuffer_cc_library", "flatbuffer_java_library", "flatbuffer_py_library")
+load(
+    "//tensorflow_lite_support:api_visibility.bzl",
+    "TFLITE_SUPPORT_FRAMEWORK_VISIBILITY",
+)
 
 package(
-    default_visibility = [
-        "//visibility:public",
-    ],
+    default_visibility = TFLITE_SUPPORT_FRAMEWORK_VISIBILITY,
     licenses = ["notice"],  # Apache 2.0
 )
 

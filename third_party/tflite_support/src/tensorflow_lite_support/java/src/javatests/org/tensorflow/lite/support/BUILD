@@ -442,9 +442,6 @@ android_library(
 android_library_instrumentation_tests(
     name = "instrumented_unittests",
     srcs = INSTRUMENTED_TESTS,
-    binary_args = {
-        "multidex": "legacy",
-    },
     device_list = DEFAULT_INSTRUMENTED_DEVICES,
     tags = [
         "no_oss",
@@ -459,7 +456,6 @@ android_library_instrumentation_tests(
         ":test_image_creator",
         ":test_lib",
         "//tensorflow_lite_support/java:tensorflowlite_support",
-        "@maven//:androidx_multidex_multidex",
         "@maven//:androidx_test_core",
         "@maven//:androidx_test_ext_junit",
         "@maven//:androidx_test_runner",

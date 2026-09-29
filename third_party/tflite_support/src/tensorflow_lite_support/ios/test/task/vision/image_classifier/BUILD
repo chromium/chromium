@@ -6,6 +6,7 @@ load(
     "//tensorflow_lite_support/ios:ios.bzl",
     "TFL_TASK_MINIMUM_OS_VERSION",
 )
+load("//third_party/bazel_rules/rules_cc/cc:objc_library.bzl", "objc_library")
 
 package(
     default_visibility = ["//visibility:private"],

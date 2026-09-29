@@ -77,7 +77,6 @@ std::vector<std::string> LoadVocabFromBuffer(const char* vocab_buffer_data,
 
 absl::node_hash_map<std::string, int> LoadVocabAndIndexFromFile(
     const std::string& path_to_vocab) {
-  absl::node_hash_map<std::string, int> vocab_index_map;
   std::ifstream in(path_to_vocab.c_str());
   return ReadIStreamLineSplits(&in);
 }
@@ -86,7 +85,6 @@ absl::node_hash_map<std::string, int> LoadVocabAndIndexFromBuffer(
     const char* vocab_buffer_data, const size_t vocab_buffer_size) {
   membuf sbuf(const_cast<char*>(vocab_buffer_data),
               const_cast<char*>(vocab_buffer_data + vocab_buffer_size));
-  absl::node_hash_map<std::string, int> vocab_index_map;
   std::istream in(&sbuf);
   return ReadIStreamLineSplits(&in);
 }

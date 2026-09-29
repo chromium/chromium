@@ -54,7 +54,7 @@ StatusOr<std::unique_ptr<ImageSearcher>> ImageSearcher::CreateFromOptions(
     const ImageSearcherOptions& options,
     std::unique_ptr<tflite::OpResolver> resolver) {
   // Copy options to ensure the ExternalFile-s outlive the constructed object.
-  auto options_copy = absl::make_unique<ImageSearcherOptions>(options);
+  auto options_copy = std::make_unique<ImageSearcherOptions>(options);
 
   TFLITE_ASSIGN_OR_RETURN(auto image_searcher,
                    TaskAPIFactory::CreateFromBaseOptions<ImageSearcher>(

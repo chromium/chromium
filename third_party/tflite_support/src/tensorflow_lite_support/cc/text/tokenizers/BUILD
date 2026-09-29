@@ -5,6 +5,7 @@ load(
     "tflite_copts",
     "tflite_jni_binary",
 )
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
 
 package(
     default_visibility = ["//tensorflow_lite_support:users"],
@@ -104,6 +105,7 @@ cc_library(
     ],
     deps = [
         ":tokenizer",
+        "@com_google_absl//absl/log:check",
         "@com_google_sentencepiece//src:sentencepiece_processor",
     ],
 )

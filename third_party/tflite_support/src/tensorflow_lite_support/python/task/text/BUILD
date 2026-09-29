@@ -52,7 +52,7 @@ py_library(
     srcs = [
         "bert_nl_classifier.py",
     ],
-    visibility = ["//tensorflow_lite_support:users"],
+    visibility = ["//visibility:private"],
     deps = [
         "//tensorflow_lite_support/python/task/core:base_options",
         "//tensorflow_lite_support/python/task/processor/proto:classifications_pb2",

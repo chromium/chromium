@@ -1,4 +1,5 @@
 load("//tensorflow_lite_support/metadata:build_defs.bzl", "stamp_metadata_parser_version")
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
 
 package(
     default_visibility = ["//tensorflow_lite_support:internal"],

@@ -99,7 +99,7 @@ class GpuDelegateProxy implements Delegate, Closeable {
           message =
               String.format(
                   "You should declare a build dependency on"
-                      + " org.tensorflow.lite:tensorflow-lite-gpu,"
+                      + " com.google.ai.edge.litert:litert-gpu,"
                       + " or call .%s with a value other than TfLiteRuntime.FROM_APPLICATION_ONLY"
                       + " (see docs for %s#%s(TfLiteRuntime)).",
                   methodName, className, methodName);
@@ -116,7 +116,7 @@ class GpuDelegateProxy implements Delegate, Closeable {
         default:
           message =
               "You should declare a build dependency on"
-                  + " org.tensorflow.lite:tensorflow-lite-gpu or"
+                  + " com.google.ai.edge.litert:litert-gpu or"
                   + " com.google.android.gms:play-services-tflite-gpu";
           break;
       }

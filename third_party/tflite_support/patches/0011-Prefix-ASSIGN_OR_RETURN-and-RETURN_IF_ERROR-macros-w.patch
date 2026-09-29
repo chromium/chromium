@@ -1,4 +1,4 @@
-From aef095ae84b8e6bdaee279a56d2695ce0293bc3a Mon Sep 17 00:00:00 2001
+From 9828809b6c26b1841544b1e05d9f2bc7442c62d4 Mon Sep 17 00:00:00 2001
 From: Mike Wittman <wittman@chromium.org>
 Date: Wed, 16 Apr 2025 15:43:55 -0700
 Subject: [PATCH 11/11] Prefix ASSIGN_OR_RETURN and RETURN_IF_ERROR macros with
@@ -1735,7 +1735,7 @@ index c08abda57401f..181ed79e8a4bd 100644
  }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_embedder.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_embedder.cc
-index 7363540797cf2..dc908baeb4026 100644
+index cb6612271105d..1baa4d15df922 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_embedder.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_embedder.cc
 @@ -66,15 +66,15 @@ tflite::support::StatusOr<double> TextEmbedder::CosineSimilarity(
@@ -1745,7 +1745,7 @@ index 7363540797cf2..dc908baeb4026 100644
 -  RETURN_IF_ERROR(SanityCheckOptions(options));
 +  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
    // Copy options to ensure the ExternalFile-s outlive the constructed object.
-   auto options_copy = absl::make_unique<TextEmbedderOptions>(options);
+   auto options_copy = std::make_unique<TextEmbedderOptions>(options);
  
 -  ASSIGN_OR_RETURN(auto text_embedder,
 +  TFLITE_ASSIGN_OR_RETURN(auto text_embedder,
@@ -1814,12 +1814,12 @@ index 7363540797cf2..dc908baeb4026 100644
    }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_searcher.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_searcher.cc
-index fd9cbcb29adfd..9b8de0bb025d4 100644
+index 7364490b29ce8..bee8411e09958 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_searcher.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/text_searcher.cc
 @@ -65,10 +65,10 @@ StatusOr<std::unique_ptr<TextSearcher>> TextSearcher::CreateFromOptions(
    // Copy options to ensure the ExternalFile-s outlive the constructed object.
-   auto options_copy = absl::make_unique<TextSearcherOptions>(options);
+   auto options_copy = std::make_unique<TextSearcherOptions>(options);
  
 -  ASSIGN_OR_RETURN(auto text_searcher,
 +  TFLITE_ASSIGN_OR_RETURN(auto text_searcher,
@@ -1877,7 +1877,7 @@ index fd9cbcb29adfd..9b8de0bb025d4 100644
        SearchPostprocessor::Create(
            GetTfLiteEngine(), output_tensor_index,
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.cc
-index 52b0041039acf..439dfa4873459 100644
+index 34136f60e59fd..943362cfea6af 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/universal_sentence_encoder_qa.cc
 @@ -119,13 +119,13 @@ StatusOr<RetrievalOutput> UniversalSentenceEncoderQA::Retrieve(
@@ -1951,7 +1951,7 @@ index 52b0041039acf..439dfa4873459 100644
  
    // Copy options to ensure the ExternalFile outlives the duration of this
    // created object.
-   auto options_copy = absl::make_unique<RetrievalOptions>(options);
+   auto options_copy = std::make_unique<RetrievalOptions>(options);
  
 -  ASSIGN_OR_RETURN(
 +  TFLITE_ASSIGN_OR_RETURN(
@@ -2032,7 +2032,7 @@ index b5b57f21e939f..1bcaee2b86ddc 100644
                           *score_calibration_process_unit
                                ->options_as_ScoreCalibrationOptions(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
-index 75d7a8813e1df..ab14c748f6e53 100644
+index d440951a6aed0..3195f6fc5ebfc 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
 @@ -51,20 +51,20 @@ using ::tflite::task::core::TfLiteEngine;
@@ -2043,7 +2043,7 @@ index 75d7a8813e1df..ab14c748f6e53 100644
 +  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
    // Copy options to ensure the ExternalFile outlives the constructed object.
-   auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
+   auto options_copy = std::make_unique<ImageClassifierOptions>(options);
  
    std::unique_ptr<ImageClassifier> image_classifier;
    if (options_copy->has_model_file_with_metadata()) {
@@ -2138,12 +2138,12 @@ index 75d7a8813e1df..ab14c748f6e53 100644
    return result;
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.cc
-index 0ce46fb9f9806..d24daeac9b61d 100644
+index 399caacaf3034..c1e40d473a8a4 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.cc
 @@ -62,13 +62,13 @@ ImageEmbedder::CreateFromOptions(const ImageEmbedderOptions& options,
    // Copy options to ensure the ExternalFile-s outlive the constructed object.
-   auto options_copy = absl::make_unique<ImageEmbedderOptions>(options);
+   auto options_copy = std::make_unique<ImageEmbedderOptions>(options);
  
 -  ASSIGN_OR_RETURN(
 +  TFLITE_ASSIGN_OR_RETURN(
@@ -2191,12 +2191,12 @@ index 0ce46fb9f9806..d24daeac9b61d 100644
    }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_searcher.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_searcher.cc
-index fb8bdf4f36446..6b577cd961f61 100644
+index 36e0bf6fbbe31..5338ea0a1fe3c 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_searcher.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_searcher.cc
 @@ -56,11 +56,11 @@ StatusOr<std::unique_ptr<ImageSearcher>> ImageSearcher::CreateFromOptions(
    // Copy options to ensure the ExternalFile-s outlive the constructed object.
-   auto options_copy = absl::make_unique<ImageSearcherOptions>(options);
+   auto options_copy = std::make_unique<ImageSearcherOptions>(options);
  
 -  ASSIGN_OR_RETURN(auto image_searcher,
 +  TFLITE_ASSIGN_OR_RETURN(auto image_searcher,
@@ -2226,7 +2226,7 @@ index fb8bdf4f36446..6b577cd961f61 100644
        SearchPostprocessor::Create(GetTfLiteEngine(), 0,
                                    std::make_unique<processor::SearchOptions>(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
-index 4fba50ac1dd5f..d44d64c7e92b2 100644
+index ef59b0457575b..475319c90b71f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
 @@ -116,7 +116,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
@@ -2255,7 +2255,7 @@ index 4fba50ac1dd5f..d44d64c7e92b2 100644
 +  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
    // Copy options to ensure the ExternalFile outlives the constructed object.
-   auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
+   auto options_copy = std::make_unique<ImageSegmenterOptions>(options);
  
    std::unique_ptr<ImageSegmenter> image_segmenter;
    if (options_copy->has_model_file_with_metadata()) {
@@ -2342,7 +2342,7 @@ index 4fba50ac1dd5f..d44d64c7e92b2 100644
      return data[index];
    }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
-index 0a4d5f7553ee9..a8c221a6dac64 100644
+index 605b13e35950f..9fd24d2a511da 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/object_detector.cc
 @@ -148,7 +148,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
@@ -2389,7 +2389,7 @@ index 0a4d5f7553ee9..a8c221a6dac64 100644
 +  TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
    // Copy options to ensure the ExternalFile outlives the constructed object.
-   auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
+   auto options_copy = std::make_unique<ObjectDetectorOptions>(options);
  
    std::unique_ptr<ObjectDetector> object_detector;
    if (options_copy->has_model_file_with_metadata()) {
@@ -2589,7 +2589,7 @@ index f99099ae7b474..dd668eaf359c1 100644
        return CreateFromYuvRawBuffer(
            /*y_plane=*/buffer, /*u_plane=*/buffer + dimension.Size(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
-index ce7a293662f6a..9a6adf4aa7623 100644
+index d6e05e5ac63bb..65cac9d08bc1a 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 @@ -398,22 +398,22 @@ absl::Status FrameBufferUtils::Execute(const FrameBuffer& buffer,
@@ -2650,19 +2650,19 @@ index ce7a293662f6a..9a6adf4aa7623 100644
    return absl::OkStatus();
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
-index de846dda7fd1d..c573dfc35c270 100644
+index eb27be02232fc..a079e5924ef7d 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
 @@ -91,7 +91,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
  
- StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
+ StatusOr<std::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
      const TensorMetadata& tensor_metadata) {
 -  ASSIGN_OR_RETURN(
 +  TFLITE_ASSIGN_OR_RETURN(
        const tflite::ProcessUnit* normalization_process_unit,
        ModelMetadataExtractor::FindFirstProcessUnit(
            tensor_metadata, tflite::ProcessUnitOptions_NormalizationOptions));
-@@ -141,14 +141,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
+@@ -141,14 +141,14 @@ StatusOr<std::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
  StatusOr<ImageTensorSpecs> BuildInputImageTensorSpecs(
      const TfLiteEngine::Interpreter& interpreter,
      const tflite::metadata::ModelMetadataExtractor& metadata_extractor) {
@@ -2671,7 +2671,7 @@ index de846dda7fd1d..c573dfc35c270 100644
                     GetInputTensorMetadataIfAny(metadata_extractor));
  
    const ImageProperties* props = nullptr;
-   absl::optional<NormalizationOptions> normalization_options;
+   std::optional<NormalizationOptions> normalization_options;
    if (metadata != nullptr) {
 -    ASSIGN_OR_RETURN(props, GetImagePropertiesIfAny(*metadata));
 -    ASSIGN_OR_RETURN(normalization_options,
@@ -2703,7 +2703,7 @@ index 0a0b1b93423fe..c9910c0073d05 100644
  }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-index 162fad5a8796b..074c089715508 100644
+index 81d788f03bc34..49802731106fb 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 @@ -46,7 +46,7 @@ namespace {
@@ -2866,7 +2866,7 @@ index 162fad5a8796b..074c089715508 100644
          StatusCode::kInternal, "RGBA input format is expected.",
 @@ -528,15 +528,15 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
          output_buffer->format() == FrameBuffer::Format::kNV21) {
-       tmp_yuv_buffer = absl::make_unique<uint8_t[]>(
+       tmp_yuv_buffer = std::make_unique<uint8_t[]>(
            GetFrameBufferByteSize(buffer.dimension(), output_buffer->format()));
 -      ASSIGN_OR_RETURN(
 +      TFLITE_ASSIGN_OR_RETURN(
@@ -2885,7 +2885,7 @@ index 162fad5a8796b..074c089715508 100644
      int ret = libyuv::RAWToI420(
 @@ -591,7 +591,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                                                      FrameBuffer::Format::kRGBA);
-       auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+       auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
        const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -      RETURN_IF_ERROR(
 +      TFLITE_RETURN_IF_ERROR(
@@ -2921,13 +2921,13 @@ index 162fad5a8796b..074c089715508 100644
            buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
 @@ -728,7 +728,7 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
        GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-   auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+   auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
    const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 +  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
  
    // Rotate ARGB
-   auto argb_rotated_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+   auto argb_rotated_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
 @@ -775,9 +775,9 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
  // Rotates YV12/YV21 frame buffer.
  absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
@@ -2953,7 +2953,7 @@ index 162fad5a8796b..074c089715508 100644
    const int rotated_buffer_size = GetFrameBufferByteSize(
        output_buffer->dimension(), FrameBuffer::Format::kYV21);
    auto rotated_yuv_raw_buffer =
-       absl::make_unique<uint8_t[]>(rotated_buffer_size);
+       std::make_unique<uint8_t[]>(rotated_buffer_size);
 -  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
 +  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
                     CreateFromRawBuffer(
@@ -3038,7 +3038,7 @@ index 162fad5a8796b..074c089715508 100644
    // TODO(b/152629712): Investigate the impact of color shifting caused by the
 @@ -1119,7 +1119,7 @@ absl::Status ResizeRgb(
        GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-   auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+   auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
    const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 +  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
@@ -3211,7 +3211,7 @@ index 162fad5a8796b..074c089715508 100644
    switch (buffer.format()) {
      case FrameBuffer::Format::kNV12:
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
-index f3cfc495ceb10..9e8bd33934867 100644
+index 87da6d2da248d..b77fdc4d78011 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/score_calibration.cc
 @@ -231,7 +231,7 @@ StatusOr<SigmoidCalibrationParameters> BuildSigmoidCalibrationParams(
@@ -3253,7 +3253,7 @@ index 720cc00f60323..a70b5100a2ff3 100644
        core::ExternalFileHandler::CreateFromExternalFile(&external_file));
    absl::string_view file_content = handler->GetFileContent();
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_classifier_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_classifier_test.cc
-index 2ea2c578f0d40..8cc04ca191fdc 100644
+index 0b18165dd7bbb..129fa4a3354ba 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_classifier_test.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_classifier_test.cc
 @@ -556,16 +556,16 @@ class PostprocessTest : public tflite::testing::Test {
@@ -3263,7 +3263,7 @@ index 2ea2c578f0d40..8cc04ca191fdc 100644
 -      RETURN_IF_ERROR(SanityCheckOptions(options));
 +      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
-       auto options_copy = absl::make_unique<ImageClassifierOptions>(options);
+       auto options_copy = std::make_unique<ImageClassifierOptions>(options);
  
 -      ASSIGN_OR_RETURN(
 +      TFLITE_ASSIGN_OR_RETURN(
@@ -3277,7 +3277,7 @@ index 2ea2c578f0d40..8cc04ca191fdc 100644
        return image_classifier;
      }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
-index d025dd62f695c..c6dff4b845e8f 100644
+index 7e24f33345dff..7bc17a272f62b 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
 @@ -386,16 +386,16 @@ class PostprocessTest : public tflite::testing::Test {
@@ -3287,7 +3287,7 @@ index d025dd62f695c..c6dff4b845e8f 100644
 -      RETURN_IF_ERROR(SanityCheckOptions(options));
 +      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
-       auto options_copy = absl::make_unique<ImageSegmenterOptions>(options);
+       auto options_copy = std::make_unique<ImageSegmenterOptions>(options);
  
 -      ASSIGN_OR_RETURN(
 +      TFLITE_ASSIGN_OR_RETURN(
@@ -3310,7 +3310,7 @@ index d025dd62f695c..c6dff4b845e8f 100644
      return output_tensor;
    }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/object_detector_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/object_detector_test.cc
-index 5bae0eefb4341..511b4ba338774 100644
+index 48285f22359a0..6960fac6f08e0 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/object_detector_test.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/object_detector_test.cc
 @@ -399,16 +399,16 @@ class PostprocessTest : public tflite::testing::Test {
@@ -3320,7 +3320,7 @@ index 5bae0eefb4341..511b4ba338774 100644
 -      RETURN_IF_ERROR(SanityCheckOptions(options));
 +      TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
  
-       auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
+       auto options_copy = std::make_unique<ObjectDetectorOptions>(options);
  
 -      ASSIGN_OR_RETURN(
 +      TFLITE_ASSIGN_OR_RETURN(
@@ -3803,7 +3803,7 @@ index bb42c6140dcd8..c0c43bafe2c43 100644
        associated_files_[zip_file_info.name] = absl::string_view(
            buffer_data + zip_file_info.position, zip_file_info.size);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index.cc b/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index.cc
-index 8e45119d7364d..2c2006725ec25 100644
+index e3f90e639e28b..fdc924a912b07 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index.cc
 @@ -64,13 +64,13 @@ absl::StatusOr<std::unique_ptr<Index>> Index::CreateFromIndexBuffer(
@@ -3823,7 +3823,7 @@ index 8e45119d7364d..2c2006725ec25 100644
    IndexConfig config;
    if (!config.ParseFromString(std::string(value))) {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index_builder.cc b/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index_builder.cc
-index fe5d1ef1175e4..94c85334f0574 100644
+index 2b4c88a067d21..3ff444885c4a5 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index_builder.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/scann_ondevice/cc/index_builder.cc
 @@ -104,7 +104,7 @@ absl::StatusOr<std::string> CreateIndexBufferImpl(
@@ -3836,5 +3836,5 @@ index fe5d1ef1175e4..94c85334f0574 100644
    leveldb::Options options;
    options.compression =
 -- 
-2.49.0.777.g153de2bbd5-goog
+2.56.0.rc1.315.gc6ed9934b7-goog
 

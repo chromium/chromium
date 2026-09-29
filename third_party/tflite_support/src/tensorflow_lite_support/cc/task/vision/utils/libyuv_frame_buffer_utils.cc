@@ -526,7 +526,7 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
     std::unique_ptr<FrameBuffer> yuv_frame_buffer;
     if (output_buffer->format() == FrameBuffer::Format::kNV12 ||
         output_buffer->format() == FrameBuffer::Format::kNV21) {
-      tmp_yuv_buffer = absl::make_unique<uint8_t[]>(
+      tmp_yuv_buffer = std::make_unique<uint8_t[]>(
           GetFrameBufferByteSize(buffer.dimension(), output_buffer->format()));
       TFLITE_ASSIGN_OR_RETURN(
           yuv_frame_buffer,
@@ -589,7 +589,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
       // Convert kRGBA to ARGB
       int argb_buffer_size = GetFrameBufferByteSize(buffer.dimension(),
                                                     FrameBuffer::Format::kRGBA);
-      auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+      auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
       const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
       TFLITE_RETURN_IF_ERROR(
           ConvertRgbaToArgb(buffer, argb_buffer.get(), argb_row_bytes));
@@ -726,12 +726,12 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
   // Convert RGB to ARGB
   int argb_buffer_size =
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-  auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+  auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
   TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
   // Rotate ARGB
-  auto argb_rotated_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+  auto argb_rotated_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
   int rotated_row_bytes = output_buffer->dimension().width * kRgbaPixelBytes;
   // TODO(b/151954340): Optimize the current implementation by utilizing
   // ARGBMirror for 180 degree rotation.
@@ -813,7 +813,7 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
   const int rotated_buffer_size = GetFrameBufferByteSize(
       output_buffer->dimension(), FrameBuffer::Format::kYV21);
   auto rotated_yuv_raw_buffer =
-      absl::make_unique<uint8_t[]>(rotated_buffer_size);
+      std::make_unique<uint8_t[]>(rotated_buffer_size);
   TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
                    CreateFromRawBuffer(
                        rotated_yuv_raw_buffer.get(), output_buffer->dimension(),
@@ -1117,7 +1117,7 @@ absl::Status ResizeRgb(
   // Convert RGB to ARGB
   int argb_buffer_size =
       GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-  auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+  auto argb_buffer = std::make_unique<uint8_t[]>(argb_buffer_size);
   const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
   TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 
@@ -1125,7 +1125,7 @@ absl::Status ResizeRgb(
   int resized_argb_buffer_size = GetFrameBufferByteSize(
       output_buffer->dimension(), FrameBuffer::Format::kRGBA);
   auto resized_argb_buffer =
-      absl::make_unique<uint8_t[]>(resized_argb_buffer_size);
+      std::make_unique<uint8_t[]>(resized_argb_buffer_size);
   int resized_argb_row_bytes =
       output_buffer->dimension().width * kRgbaPixelBytes;
   int ret = libyuv::ARGBScale(

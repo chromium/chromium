@@ -1,5 +1,7 @@
 load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
-# Placeholder for internal Python strict test compatibility macro.
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
+load("//third_party/bazel_rules/rules_cc/cc:cc_test.bzl", "cc_test")
+# Placeholder: load py_test
 
 package(
     licenses = ["notice"],  # Apache 2.0

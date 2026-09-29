@@ -390,7 +390,7 @@ class TensorMd:
     # Create associated files
     if self.associated_files:
       tensor_metadata.associatedFiles = [
-          file.create_metadata() for file in self.associated_files
+          file.create_metadata() for file in self.associated_files  # pyrefly: ignore[missing-argument]
       ]
     return tensor_metadata
 
@@ -463,7 +463,7 @@ class InputImageTensorMd(TensorMd):
       min_values = None
       max_values = None
 
-    super().__init__(name, description, min_values, max_values,
+    super().__init__(name, description, min_values, max_values,  # pyrefly: ignore[bad-argument-type]
                      _metadata_fb.ContentProperties.ImageProperties)
     self.norm_mean = norm_mean
     self.norm_std = norm_std
@@ -658,11 +658,11 @@ class ClassificationTensorMd(TensorMd):
     associated_files = label_files or []
     if self.score_calibration_md:
       associated_files.append(
-          score_calibration_md.create_score_calibration_file_md())
+          score_calibration_md.create_score_calibration_file_md())  # pyrefly: ignore[missing-attribute]
 
-    super().__init__(name, description, min_values, max_values,
+    super().__init__(name, description, min_values, max_values,  # pyrefly: ignore[bad-argument-type]
                      _metadata_fb.ContentProperties.FeatureProperties,
-                     associated_files, tensor_name)
+                     associated_files, tensor_name)  # pyrefly: ignore[bad-argument-type]
 
   def create_metadata(self) -> _metadata_fb.TensorMetadataT:
     """Creates the classification tensor metadata based on the information."""
@@ -697,7 +697,7 @@ class CategoryTensorMd(TensorMd):
         file.file_type = _metadata_fb.AssociatedFileType.TENSOR_VALUE_LABELS
 
     super().__init__(
-        name=name, description=description, associated_files=value_label_files)
+        name=name, description=description, associated_files=value_label_files)  # pyrefly: ignore[bad-argument-type]
 
 
 class BertInputTensorsMd:

@@ -191,7 +191,7 @@ class MetadataWriter:
     Returns:
       The generated JSON metadata string before populated into model.
     """
-    return _metadata.convert_to_json(bytes(self._metadata_buffer))
+    return _metadata.convert_to_json(bytes(self._metadata_buffer))  # pyrefly: ignore[bad-argument-type]
 
   def get_populated_metadata_json(self) -> str:
     """Gets the generated JSON metadata string after populated into model.

@@ -13,6 +13,7 @@ py_binary(
     name = "audio_classifier_demo",
     srcs = ["audio_classifier_demo.py"],
     data = ["//tensorflow_lite_support/examples/task/audio/desktop:audio_classifier_demo"],
+    strict_deps = False,
     deps = [
         # build rule placeholder: tensorflow dep,
         "@absl_py//absl:app",

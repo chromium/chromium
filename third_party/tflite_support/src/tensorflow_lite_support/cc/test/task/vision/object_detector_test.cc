@@ -165,7 +165,7 @@ TEST_F(CreateFromOptionsTest, SucceedsWithSelectiveOpResolver) {
                kMobileSsdWithMetadata));
 
   SUPPORT_ASSERT_OK(ObjectDetector::CreateFromOptions(
-      options, absl::make_unique<MobileSsdQuantizedOpResolver>()));
+      options, std::make_unique<MobileSsdQuantizedOpResolver>()));
 }
 
 // OpResolver missing the Detection_PostProcess op.
@@ -198,7 +198,7 @@ TEST_F(CreateFromOptionsTest, FailsWithSelectiveOpResolverMissingOps) {
                kMobileSsdWithMetadata));
 
   auto object_detector_or = ObjectDetector::CreateFromOptions(
-      options, absl::make_unique<MobileSsdQuantizedOpResolverMissingOps>());
+      options, std::make_unique<MobileSsdQuantizedOpResolverMissingOps>());
   EXPECT_EQ(object_detector_or.status().code(),
             absl::StatusCode::kInvalidArgument);
   EXPECT_THAT(object_detector_or.status().message(),
@@ -401,7 +401,7 @@ class PostprocessTest : public tflite::testing::Test {
         const ObjectDetectorOptions& options) {
       TFLITE_RETURN_IF_ERROR(SanityCheckOptions(options));
 
-      auto options_copy = absl::make_unique<ObjectDetectorOptions>(options);
+      auto options_copy = std::make_unique<ObjectDetectorOptions>(options);
 
       TFLITE_ASSIGN_OR_RETURN(
           auto object_detector,

@@ -1,5 +1,7 @@
 # Description: some utilitiy function for audio processing.
 
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
+
 package(
     licenses = ["notice"],  # Apache 2.0
 )

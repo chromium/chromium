@@ -1,3 +1,5 @@
+load("//third_party/bazel_rules/rules_cc/cc:objc_library.bzl", "objc_library")
+
 package(
     default_visibility = ["//tensorflow_lite_support:__subpackages__"],
     licenses = ["notice"],  # Apache 2.0

@@ -1,5 +1,6 @@
 # Placeholder: load proto_library
 load("//tensorflow_lite_support/cc/port:build_defs.bzl", "support_py_proto_library")
+load("//third_party/bazel_rules/rules_cc/cc:cc_library.bzl", "cc_library")
 
 package(
     default_visibility = ["//tensorflow_lite_support:users"],
