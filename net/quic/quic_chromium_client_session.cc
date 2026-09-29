@@ -71,6 +71,7 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_path_validator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream_priority.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
@@ -3936,6 +3937,10 @@ void QuicChromiumClientSession::LogPathValidationFailure(
   QuicMigrationAttemptContext* migration_context = context->migration_context();
 
   switch (context->failure_reason().value_or(kUnknown)) {
+    // TODO(crbug.com/557126867): Correctly report kNoAvailableConnectionId and
+    // kWriterError separately.
+    case kNoAvailableConnectionId:
+    case kWriterError:
     case kUnknown:
       status = MIGRATION_STATUS_INTERNAL_ERROR;
       reason = "Unknown";
@@ -3948,6 +3953,18 @@ void QuicChromiumClientSession::LogPathValidationFailure(
       migration_context->SetFailure(
           QuicMigrationAttemptFailureReason::kStatelessReset);
       break;
+    // TODO(crbug.com/557126867): Correctly report the new kNewerValidation*
+    // variants separately.
+    case kNewerValidationOnNetworkConnected:
+    case kNewerValidationOnNetworkDisconnected:
+    case kNewerValidationOnWriteError:
+    case kNewerValidationOnNetworkMadeDefault:
+    case kNewerValidationOnMigrateBackToDefaultNetwork:
+    case kNewerValidationOnChangeNetworkOnPathDegrading:
+    case kNewerValidationOnChangePortOnPathDegrading:
+    case kNewerValidationOnNewNetworkConnectedPostPathDegrading:
+    case kNewerValidationOnServerPreferredAddressAvailable:
+    case kNewerValidationOnMultiPortPath:
     case kNewerValidation:
       status = MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION;
       reason = "New migration, canceling old validation";
