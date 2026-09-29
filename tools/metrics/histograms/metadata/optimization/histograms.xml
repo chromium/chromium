@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.GeneralizedSafetyChecker.ExecutionTime"
-    units="ms" expires_after="2026-09-03">
+    units="ms" expires_after="2027-09-26">
   <owner>zekunjiang@google.com</owner>
   <owner>robertogden@chromium.org</owner>
   <summary>
