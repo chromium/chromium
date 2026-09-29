@@ -169,6 +169,8 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
   // off-the-record tabs for incognito CCTs, etc.).
   if (GetProfile()->IsIncognitoProfile()) {
     UMA_HISTOGRAM_COUNTS_100("Tab.Count.Incognito", GetTabCount());
+  } else if (GetProfile()->IsEnterpriseIsolatedModeProfile()) {
+    UMA_HISTOGRAM_COUNTS_100("Tab.Count.Isolated", GetTabCount());
   }
 }
 

@@ -505,6 +505,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Count.Isolated" units="units" expires_after="2027-03-21">
+  <owner>szpotekagata@chromium.org</owner>
+  <owner>cec-growth@google.com</owner>
+  <summary>
+    Number of open isolated tabs in each window. Recorded once a new isolated
+    tab is opened in a window and adds one to the bucket of number of isolated
+    tabs in that particular window (it does not count the total number of
+    isolated tabs in all open windows). Please note that this metric double
+    counts the lower numbers, meaning that if user opens three tabs (without
+    closing any in between), then buckets 1, 2, and 3 will all be incremented in
+    turn. The metric also overcounts the tabs that are moved from one window to
+    another as they are recorded both when they are created in the first window
+    and when they are added to the second window.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Discarding.Reload.CausedByFocus" enum="Boolean"
     expires_after="2027-03-14">
   <owner>aattar@google.com</owner>
