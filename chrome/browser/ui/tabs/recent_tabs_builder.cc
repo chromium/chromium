@@ -127,7 +127,7 @@ RecentTabItem BuildWindowItem(const sessions::tab_restore::Window& window) {
   window_item.set_icon(CreateFavicon(
       features::IsRoundedIconsEnabled() ? kTabIcon : kTabOldIcon));
 
-  RecentTabItem restore_cmd(RecentTabItem::Type::kCommand,
+  RecentTabItem restore_cmd(RecentTabItem::Type::kWindow,
                             l10n_util::GetStringUTF16(IDS_RESTORE_WINDOW));
   restore_cmd.set_session_id(window.id);
   restore_cmd.set_icon(ui::ImageModel::FromVectorIcon(
@@ -157,7 +157,7 @@ RecentTabItem BuildGroupItem(const sessions::tab_restore::Group& group) {
   group_item.set_session_id(group.id);
   group_item.set_icon(group_icon);
 
-  RecentTabItem restore_cmd(RecentTabItem::Type::kCommand,
+  RecentTabItem restore_cmd(RecentTabItem::Type::kGroup,
                             l10n_util::GetStringUTF16(IDS_RESTORE_GROUP));
   restore_cmd.set_session_id(group.id);
   restore_cmd.set_icon(ui::ImageModel::FromVectorIcon(
@@ -191,7 +191,7 @@ RecentTabItem BuildSplitItem(const sessions::tab_restore::Split& split) {
   split_item.set_session_id(split.id);
   split_item.set_icon(CreateFavicon(*icon));
 
-  RecentTabItem restore_cmd(RecentTabItem::Type::kCommand,
+  RecentTabItem restore_cmd(RecentTabItem::Type::kSplit,
                             l10n_util::GetStringUTF16(IDS_RESTORE_SPLIT));
   restore_cmd.set_session_id(split.id);
   restore_cmd.set_icon(ui::ImageModel::FromVectorIcon(

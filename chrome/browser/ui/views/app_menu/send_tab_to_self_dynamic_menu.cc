@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -135,10 +134,6 @@ void SendTabToSelfDynamicMenu::BuildSendTabToSelfActions(
   if (devices.size() > kMaxDevices) {
     devices.erase(devices.begin() + kMaxDevices, devices.end());
   }
-
-  send_tab_to_self::RecordTargetDeviceCount(
-      send_tab_to_self::ShareEntryPoint::kShareMenu,
-      send_tab_to_self::EntryPointDisplayReason::kOfferFeature, devices.size());
 
   for (const auto& device : devices) {
     std::u16string label = GetDeviceItemLabel(device);

@@ -12,17 +12,22 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -117,20 +122,33 @@ void BookmarksDynamicMenu::AddBookmarkNodeAction(
     builder.SetProperty(AppMenuActionItem::kContainerColorKey,
                         ui::kColorMenuBackground);
 
-    GURL url = node->url();
+    int64_t node_id = node->id();
     builder.SetInvokeActionCallback(base::BindRepeating(
-        [](BrowserWindowInterface* browser, GURL url, actions::ActionItem* item,
+        [](BrowserWindowInterface* browser, int64_t node_id,
+           actions::ActionItem* item,
            actions::ActionInvocationContext context) {
           if (browser) {
+            RecordBookmarkLaunch(
+                BookmarkLaunchLocation::kAppMenu,
+                profile_metrics::GetBrowserProfileType(browser->GetProfile()));
             WindowOpenDisposition disposition =
                 context.GetProperty(chrome::kDispositionKey);
             if (disposition == WindowOpenDisposition::UNKNOWN) {
               disposition = WindowOpenDisposition::CURRENT_TAB;
             }
-            browser->OpenGURL(url, disposition);
+            bookmarks::BookmarkModel* model =
+                BookmarkModelFactory::GetForBrowserContext(
+                    browser->GetProfile());
+            const bookmarks::BookmarkNode* bookmark_node =
+                model ? bookmarks::GetBookmarkNodeByID(model, node_id)
+                      : nullptr;
+            if (bookmark_node) {
+              bookmarks::OpenAllIfAllowed(browser, {bookmark_node},
+                                          disposition);
+            }
           }
         },
-        browser_window_interface_, url));
+        browser_window_interface_, node_id));
 
     parent_item->AddChild(std::move(builder).Build());
   }

@@ -382,6 +382,7 @@ if (!is_android) {
       "//components/commerce/core:metrics",
       "//components/multistep_filter/core:features",
       "//components/omnibox/common:features",
+      "//components/profile_metrics",
       "//components/spellcheck/browser",
       "//components/undo",
     ]

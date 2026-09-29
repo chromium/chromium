@@ -16,6 +16,7 @@ enum class ActionInvocationSource {
   kViewButton,
   kContextMenu,
   kOmniboxChip,
+  kAppMenu,
 };
 
 // The disposition (e.g., current tab, new tab, new window) to use.

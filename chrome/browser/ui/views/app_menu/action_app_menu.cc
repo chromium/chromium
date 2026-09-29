@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
@@ -116,6 +118,22 @@ bool ShouldRoundTopCorners(size_t index,
   return true;
 }
 
+actions::ActionInvocationContext BuildActionInvocationContext(
+    const actions::BaseAction* base_action,
+    int mouse_event_flags) {
+  return actions::ActionInvocationContext::Builder()
+      .SetProperty(chrome::kDispositionKey,
+                   ui::DispositionFromEventFlags(mouse_event_flags))
+      .SetProperty(chrome::kActionInvocationSourceKey,
+                   chrome::ActionInvocationSource::kAppMenu)
+      .SetProperty(AppMenuActionItem::kActionParamKey,
+                   base_action->GetProperty(AppMenuActionItem::kActionParamKey))
+      .SetProperty(kSidePanelOpenTriggerKey,
+                   static_cast<std::underlying_type_t<SidePanelOpenTrigger>>(
+                       SidePanelOpenTrigger::kAppMenu))
+      .Build();
+}
+
 }  // namespace
 
 ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
@@ -183,13 +201,7 @@ void ActionAppMenu::ExecuteCommand(int id, int mouse_event_flags) {
   metrics_.LogMenuAction(base_action);
 
   action_ptr->InvokeAction(
-      actions::ActionInvocationContext::Builder()
-          .SetProperty(chrome::kDispositionKey,
-                       ui::DispositionFromEventFlags(mouse_event_flags))
-          .SetProperty(
-              AppMenuActionItem::kActionParamKey,
-              base_action->GetProperty(AppMenuActionItem::kActionParamKey))
-          .Build());
+      BuildActionInvocationContext(base_action, mouse_event_flags));
 }
 
 void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
@@ -219,11 +231,15 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
 }
 
 void ActionAppMenu::WillShowMenu(views::MenuItemView* menu) {
-  if (!menu->HasSubmenu() || !menu->GetSubmenu()->GetMenuItems().empty()) {
+  if (!menu->HasSubmenu()) {
     return;
   }
 
   metrics_.OnWillShowSubMenu(menu->GetCommand());
+
+  if (!menu->GetSubmenu()->GetMenuItems().empty()) {
+    return;
+  }
 
   auto action_iterator = command_to_action_map_.find(menu->GetCommand());
   if (action_iterator != command_to_action_map_.end() &&
@@ -292,16 +308,9 @@ void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
     CHECK(action_iterator != command_to_action_map_.end());
     actions::BaseAction* base_action = action_iterator->second;
     metrics_.LogMenuAction(base_action);
-    action_to_execute_on_close_ = {
-        .action_id = action_id,
-        .context =
-            actions::ActionInvocationContext::Builder()
-                .SetProperty(chrome::kDispositionKey,
-                             ui::DispositionFromEventFlags(mouse_event_flags))
-                .SetProperty(AppMenuActionItem::kActionParamKey,
-                             base_action->GetProperty(
-                                 AppMenuActionItem::kActionParamKey))
-                .Build()};
+    action_to_execute_on_close_ = {.action_id = action_id,
+                                   .context = BuildActionInvocationContext(
+                                       base_action, mouse_event_flags)};
     CloseMenu();
   }
 }

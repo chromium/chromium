@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -149,6 +150,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_util.h"
@@ -214,6 +216,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/search_engines/template_url.h"
@@ -409,6 +412,24 @@ void BrowserActions::InitializeSidePanelActions() {
                           ? kHotelClassIcon
                           : kBookmarksSidePanelRefreshOldIcon,
                       kActionSidePanelShowBookmarks, bwi, true)
+          .SetInvokeActionCallback(base::BindRepeating(
+              [](BrowserWindowInterface* bwi,
+                 actions::ActionItem::InvokeActionCallback toggle_callback,
+                 actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kAppMenu) {
+                  BrowserUserEducationInterface::From(bwi)
+                      ->NotifyFeaturePromoFeatureUsed(
+                          feature_engagement::
+                              kIPHPowerBookmarksSidePanelFeature,
+                          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
+                }
+                toggle_callback.Run(item, std::move(context));
+              },
+              bwi,
+              CreateToggleSidePanelActionCallback(
+                  SidePanelEntryKey(SidePanelEntryId::kBookmarks), bwi)))
           .Build());
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kReadingList, IDS_READ_LATER_TITLE,
@@ -541,20 +562,22 @@ void BrowserActions::InitializeSidePanelActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                std::underlying_type_t<SidePanelOpenTrigger>
-                    side_panel_trigger =
-                        context.GetProperty(kSidePanelOpenTriggerKey);
-                read_anything::mojom::ReadAnythingOpenTrigger open_trigger =
-                    read_anything::mojom::ReadAnythingOpenTrigger::kAppMenu;
-                if (side_panel_trigger != -1) {
-                  std::optional<read_anything::mojom::ReadAnythingOpenTrigger>
-                      mapped_trigger =
-                          read_anything::SidePanelToReadAnythingOpenTrigger(
-                              static_cast<SidePanelOpenTrigger>(
-                                  side_panel_trigger));
-                  if (mapped_trigger.has_value()) {
-                    open_trigger = mapped_trigger.value();
-                  }
+                const SidePanelOpenTrigger side_panel_trigger =
+                    static_cast<SidePanelOpenTrigger>(
+                        context.GetProperty(kSidePanelOpenTriggerKey));
+                const read_anything::mojom::ReadAnythingOpenTrigger
+                    open_trigger =
+                        side_panel_trigger == SidePanelOpenTrigger::kUnknown
+                            ? read_anything::mojom::ReadAnythingOpenTrigger::
+                                  kAppMenu
+                            : read_anything::SidePanelToReadAnythingOpenTrigger(
+                                  side_panel_trigger);
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kAppMenu) {
+                  BrowserUserEducationInterface::From(bwi)
+                      ->NotifyFeaturePromoFeatureUsed(
+                          feature_engagement::kIPHReadingModeSidePanelFeature,
+                          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
                 }
                 read_anything::ReadAnythingEntryPointController::ShowUI(
                     bwi, open_trigger);
@@ -1087,6 +1110,13 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kAppMenu) {
+                  tabs::RecordVerticalTabStripModeChanged(
+                      !tabs::VerticalTabStripStateController::From(bwi)
+                           ->ShouldDisplayVerticalTabs(),
+                      tabs::VerticalTabStripEntryPoint::kAppMenu);
+                }
                 chrome::ToggleVerticalTabs(bwi);
               },
               bwi))
@@ -1373,9 +1403,21 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ToggleDevToolsWindow(
-                    bwi, DevToolsToggleAction::Show(),
-                    DevToolsOpenedByAction::kPinnedToolbarButton);
+                const auto trigger = static_cast<SidePanelOpenTrigger>(
+                    context.GetProperty(kSidePanelOpenTriggerKey));
+                const auto source =
+                    context.GetProperty(chrome::kActionInvocationSourceKey);
+                const bool from_toolbar_button =
+                    trigger ==
+                        SidePanelOpenTrigger::kPinnedEntryToolbarButton ||
+                    trigger == SidePanelOpenTrigger::kOverflowMenu ||
+                    source == chrome::ActionInvocationSource::kViewButton;
+                const DevToolsOpenedByAction opened_by =
+                    from_toolbar_button
+                        ? DevToolsOpenedByAction::kPinnedToolbarButton
+                        : DevToolsOpenedByAction::kMainMenuOrMainShortcut;
+                chrome::ToggleDevToolsWindow(bwi, DevToolsToggleAction::Show(),
+                                             opened_by);
               },
               bwi),
           kActionDevTools, IDS_DEV_TOOLS, IDS_DEV_TOOLS,
@@ -1392,6 +1434,11 @@ void BrowserActions::InitializeChromeMenuActions() {
                 [](BrowserWindowInterface* bwi, TabStripModel* tab_strip_model,
                    actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
+                  if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                      chrome::ActionInvocationSource::kAppMenu) {
+                    chrome::SendTabToSelf(bwi);
+                    return;
+                  }
                   auto* const bubble_controller = send_tab_to_self::
                       SendTabToSelfToolbarBubbleController::From(bwi);
                   if (bubble_controller->IsBubbleShowing()) {
@@ -2839,9 +2886,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
       actions::ActionItem::Builder(
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::AttemptUserExit();
-              },
+                 actions::ActionInvocationContext context) { chrome::Exit(); },
               bwi))
           .SetActionId(kActionExit)
           .SetText(BrowserActions::GetCleanTitleAndTooltipText(
@@ -3953,6 +3998,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kAppMenu) {
+                  base::UmaHistogramEnumeration(
+                      "Settings.OpenSettingsFromMenu.PerProfileType",
+                      profile_metrics::GetBrowserProfileType(
+                          bwi->GetProfile()));
+                }
                 chrome::ShowSettings(bwi);
               },
               bwi))
@@ -4470,9 +4522,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ShowFeedbackPage(
-                    bwi, feedback::kFeedbackSourceBrowserCommand, std::string(),
-                    std::string(), std::string(), std::string());
+                chrome::OpenFeedbackDialog(
+                    bwi, feedback::kFeedbackSourceBrowserCommand);
               },
               bwi))
           .SetActionId(kActionFeedback)
@@ -4529,6 +4580,13 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
+                if (context.GetProperty(chrome::kActionInvocationSourceKey) ==
+                    chrome::ActionInvocationSource::kAppMenu) {
+                  base::UmaHistogramEnumeration(
+                      "Download.OpenDownloadsFromMenu.PerProfileType",
+                      profile_metrics::GetBrowserProfileType(
+                          bwi->GetProfile()));
+                }
                 chrome::ShowDownloads(webui::GetBrowserForOpeningWebUi(bwi));
               },
               bwi))

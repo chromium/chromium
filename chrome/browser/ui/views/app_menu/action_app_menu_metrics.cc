@@ -73,6 +73,12 @@ void ActionAppMenuMetrics::LogMenuAction(actions::BaseAction* base_action) {
                    "SwitchToAnotherProfile");
       return;
     }
+    if (parent_id == kActionSavedTabGroupsSubmenu) {
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
+      RecordTimeToAction();
+      return;
+    }
   }
 }
 
@@ -417,20 +423,30 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
       RecordTimeToAction();
       LogMenuActionHistogram(MENU_ACTION_NEW_ISOLATED_WINDOW);
       break;
+    case kActionCreateNewTabGroup:
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_"
+          "CreateNewGroupTriggeredFromTabGroupsAppMenu"));
+      RecordTimeToAction();
+      break;
+    case kActionTabGroupDelete:
+    case kActionTabGroupOpenInBrowser:
+    case kActionTabGroupOpenInNewWindow:
+    case kActionTabGroupPin:
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
+      RecordTimeToAction();
+      break;
     case kActionBookmarkBarSubmenuAlwaysHide:
     case kActionBookmarkBarSubmenuAlwaysShow:
     case kActionBookmarkBarSubmenuOnlyOnNtp:
-    case kActionCreateNewTabGroup:
     case kActionGlobalError:
     case kActionNameWindow:
     case kActionReportUnsafeSite:
     case kActionSharingHubScreenshot:
     case kActionShowManagementPage:
     case kActionShowSyncPassphraseDialog:
-    case kActionTabGroupDelete:
-    case kActionTabGroupOpenInBrowser:
-    case kActionTabGroupOpenInNewWindow:
-    case kActionTabGroupPin:
+    case kActionSidePanelShowTabsFromOtherDevices:
     case kActionTabSearch:
     case kActionTakeScreenshot:
     case kActionToggleVerticalTabs:

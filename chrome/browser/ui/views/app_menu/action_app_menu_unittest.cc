@@ -28,20 +28,26 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_test_base.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
@@ -451,21 +457,39 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   }
   ASSERT_NE(other_child_item, nullptr);
 
-  // Verify click disposition for bookmarks.
-  EXPECT_CALL(mock_window_interface_,
-              OpenGURL(GURL("https://www.google.com"),
-                       WindowOpenDisposition::CURRENT_TAB));
+  // Verify click disposition and launch metrics for bookmarks.
+  class TestBookmarkNavigationWrapper
+      : public bookmarks::BookmarkNavigationWrapper {
+   public:
+    base::WeakPtr<content::NavigationHandle> NavigateTo(
+        NavigateParams* params) override {
+      last_url = params->url;
+      last_disposition = params->disposition;
+      return nullptr;
+    }
+    GURL last_url;
+    WindowOpenDisposition last_disposition = WindowOpenDisposition::UNKNOWN;
+  } nav_wrapper;
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&nav_wrapper);
+
+  base::HistogramTester histogram_tester;
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_NONE);
+  EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
+  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::CURRENT_TAB);
+  histogram_tester.ExpectUniqueSample("Bookmarks.LaunchLocation",
+                                      BookmarkLaunchLocation::kAppMenu, 1);
+  histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 1);
 
-  EXPECT_CALL(mock_window_interface_,
-              OpenGURL(GURL("https://www.google.com"),
-                       WindowOpenDisposition::NEW_BACKGROUND_TAB));
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
+  EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
+  EXPECT_EQ(nav_wrapper.last_disposition,
+            WindowOpenDisposition::NEW_BACKGROUND_TAB);
 
-  EXPECT_CALL(mock_window_interface_,
-              OpenGURL(GURL("https://www.google.com"),
-                       WindowOpenDisposition::NEW_WINDOW));
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
+  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::NEW_WINDOW);
+
+  bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(nullptr);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2436,6 +2460,13 @@ TEST_F(ActionAppMenuTest, MenuOpenAndCommandExecutionMetrics) {
   histogram_tester.ExpectTotalCount(
       "WrenchMenu.TimeToAction.ShowSavedTabGroups", 1);
 
+  menu.WillShowMenu(tab_groups_item);
+
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SHOW_SAVED_TAB_GROUPS, 2);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ShowSavedTabGroups", 2);
+
   EXPECT_CALL(mock_action_invoked_, Call(kActionPrint, testing::_, testing::_))
       .Times(1);
   menu.ExecuteCommand(kActionPrint, /*mouse_event_flags=*/0);
@@ -2572,6 +2603,114 @@ TEST_F(ActionAppMenuTest, SafetyHubNotificationMetrics) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, RecentTabsDynamicMenuMetrics) {
+  base::UserActionTester user_action_tester;
+  RecentTabsDynamicMenu dynamic_menu(&mock_window_interface_);
+  auto parent = actions::ActionItem::Builder().Build();
+
+  RecentTabItem local_tab(RecentTabItem::Type::kTab, u"Local Tab");
+  local_tab.set_is_local(true);
+  local_tab.set_session_id(SessionID::FromSerializedValue(1));
+
+  RecentTabItem window_item(RecentTabItem::Type::kWindow, u"Restore Window");
+  window_item.set_session_id(SessionID::FromSerializedValue(2));
+
+  RecentTabItem group_item(RecentTabItem::Type::kGroup, u"Restore Group");
+  group_item.set_session_id(SessionID::FromSerializedValue(3));
+
+  RecentTabItem split_item(RecentTabItem::Type::kSplit, u"Restore Split");
+  split_item.set_session_id(SessionID::FromSerializedValue(4));
+
+  dynamic_menu.CreateRecentTabsActionForTesting(
+      parent.get(), {local_tab, window_item, group_item, split_item});
+
+  const auto& children = parent->GetChildren().children();
+  ASSERT_EQ(children.size(), 4u);
+
+  children[0]->GetActionItem()->InvokeAction();
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("WrenchMenu_OpenRecentTabFromLocal"),
+      1);
+
+  children[1]->GetActionItem()->InvokeAction();
+  EXPECT_EQ(user_action_tester.GetActionCount("WrenchMenu_OpenRecentWindow"),
+            1);
+
+  children[2]->GetActionItem()->InvokeAction();
+  EXPECT_EQ(user_action_tester.GetActionCount("WrenchMenu_OpenRecentGroup"), 1);
+
+  children[3]->GetActionItem()->InvokeAction();
+  EXPECT_EQ(user_action_tester.GetActionCount("WrenchMenu_OpenRecentSplit"), 1);
+}
+
+TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
+  base::UserActionTester user_action_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* tab_groups_item =
+      root->GetMenuItemByID(kActionSavedTabGroupsSubmenu);
+  ASSERT_TRUE(tab_groups_item);
+  menu.WillShowMenu(tab_groups_item);
+
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionCreateNewTabGroup, testing::_, testing::_))
+      .Times(1);
+  menu.ExecuteCommand(kActionCreateNewTabGroup, /*mouse_event_flags=*/0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "TabGroups_SavedTabGroups_"
+                "CreateNewGroupTriggeredFromTabGroupsAppMenu"),
+            1);
+
+  actions::ActionInvocationContext captured_context;
+  EXPECT_CALL(mock_action_invoked_,
+              Call(kActionShowReadingModeSidePanel, testing::_, testing::_))
+      .WillOnce([&captured_context](actions::ActionId id,
+                                    actions::ActionItem* item,
+                                    actions::ActionInvocationContext context) {
+        captured_context = std::move(context);
+      });
+  menu.ExecuteCommand(kActionShowReadingModeSidePanel, /*mouse_event_flags=*/0);
+  EXPECT_EQ(static_cast<SidePanelOpenTrigger>(
+                captured_context.GetProperty(kSidePanelOpenTriggerKey)),
+            SidePanelOpenTrigger::kAppMenu);
+  EXPECT_EQ(captured_context.GetProperty(chrome::kActionInvocationSourceKey),
+            chrome::ActionInvocationSource::kAppMenu);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
+  base::HistogramTester histogram_tester;
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_);
+  menu_manager.CreateMenuHierarchy();
+
+  // TargetDeviceCount should not be logged when the menu hierarchy is
+  // constructed.
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.TargetDeviceCount.ShareMenu", 0);
+  menu_manager.OnMenuClosed();
+
+  // Logging kActionSidePanelShowTabsFromOtherDevices should record
+  // WrenchMenu.TimeToAction without hitting NOTREACHED().
+  ActionAppMenuMetrics metrics;
+  metrics.OnMenuOpened();
+  auto tabs_from_other_devices =
+      actions::ActionItem::Builder()
+          .SetActionId(kActionSidePanelShowTabsFromOtherDevices)
+          .Build();
+  metrics.LogMenuAction(tabs_from_other_devices.get());
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
 }
 
 }  // namespace
