@@ -10,7 +10,9 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -32,12 +34,14 @@
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
@@ -47,6 +51,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -56,7 +61,12 @@
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/task_observer_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
@@ -70,6 +80,8 @@
 namespace autofill {
 
 namespace {
+
+using ::testing::HasSubstr;
 
 class TestAutofillManager : public BrowserAutofillManager {
  public:
@@ -148,6 +160,8 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [browser_->GetCommandDispatcher()
+        stopDispatchingToTarget:mock_snackbar_handler_];
     web::test::WaitForBackgroundTasks();
     PlatformTest::TearDown();
   }
@@ -661,6 +675,190 @@ TEST_F(ChromeAutofillClientIOSTest, IsGlicEnabled) {
 
   fake_gemini_service->SetIsEligible(true);
   EXPECT_TRUE(client().IsGlicEnabled());
+}
+
+// Tests that `GetAiPageContent` extracts page content in default mode when
+// `kAutofillActionableAIPageContent` is disabled.
+TEST_F(ChromeAutofillClientIOSTest, GetAiPageContent_Default) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillActionableAIPageContent);
+
+  // Note: attributeType 1 = CONTENT_ATTRIBUTE_ROOT,
+  //       attributeType 8 = CONTENT_ATTRIBUTE_FORM,
+  //       attributeType 24 = CONTENT_ATTRIBUTE_FORM_CONTROL.
+  base::Value js_result = base::test::ParseJson(R"json({
+    "currentNodeInnerText": "Example text",
+    "title": "Example",
+    "rootNode": {
+      "contentAttributes": {
+        "attributeType": 1
+      },
+      "childrenNodes": [{
+        "contentAttributes": {
+          "attributeType": 8,
+          "formData": {}
+        },
+        "childrenNodes": [{
+          "contentAttributes": {
+            "attributeType": 24,
+            "formControlData": {
+              "fieldName": "username"
+            }
+          }
+        }]
+      }]
+    }
+  })json");
+
+  web::test::OverrideJavaScriptFeatures(
+      profile(), {PageContextExtractorJavaScriptFeature::GetInstance(),
+                  AutofillJavaScriptFeature::GetInstance()});
+
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(profile());
+  fake_web_state.SetVisibleURL(GURL("https://example.com/"));
+  fake_web_state.SetContentsMimeType("text/html");
+
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  fake_web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                     std::move(frames_manager));
+  fake_web_state.SetWebFramesManager(
+      web::ContentWorld::kPageContentWorld,
+      std::make_unique<web::FakeWebFramesManager>());
+
+  std::unique_ptr<web::FakeWebFrame> main_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com/"));
+  main_frame->set_browser_state(profile());
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  frames_manager_ptr->AddWebFrame(std::move(main_frame));
+  main_frame_ptr->AddJsResultForFunctionCall(
+      &js_result, "pageContextExtractor.extractPageContext");
+
+  ActorTabHelper::CreateForWebState(&fake_web_state);
+  InfoBarManagerImpl::CreateForWebState(&fake_web_state);
+  WithFakedFromWebState<ChromeAutofillClientIOS> fake_client(
+      profile(), &fake_web_state,
+      InfoBarManagerImpl::FromWebState(&fake_web_state), nil);
+
+  base::test::TestFuture<
+      std::optional<optimization_guide::proto::AnnotatedPageContent>>
+      future;
+  fake_client.GetAiPageContent(future.GetCallback());
+
+  std::optional<optimization_guide::proto::AnnotatedPageContent> result =
+      future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->mode(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_MODE_DEFAULT);
+  EXPECT_THAT(
+      base::UTF16ToUTF8(main_frame_ptr->GetLastJavaScriptCall()),
+      HasSubstr(", true, true, false, true, false, false, false, false]);"));
+  ASSERT_EQ(result->root_node().children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& form_node =
+      result->root_node().children_nodes(0);
+  EXPECT_EQ(form_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM);
+  ASSERT_EQ(form_node.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& input_node =
+      form_node.children_nodes(0);
+  EXPECT_EQ(input_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_EQ(input_node.content_attributes().form_control_data().field_name(),
+            "username");
+}
+
+// Tests that `GetAiPageContent` extracts page content in actionable mode when
+// `kAutofillActionableAIPageContent` is enabled.
+TEST_F(ChromeAutofillClientIOSTest, GetAiPageContent_Actionable) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillActionableAIPageContent);
+
+  // Note: attributeType 1 = CONTENT_ATTRIBUTE_ROOT,
+  //       attributeType 8 = CONTENT_ATTRIBUTE_FORM,
+  //       attributeType 24 = CONTENT_ATTRIBUTE_FORM_CONTROL.
+  base::Value js_result = base::test::ParseJson(R"json({
+    "currentNodeInnerText": "Example text",
+    "title": "Example",
+    "rootNode": {
+      "contentAttributes": {
+        "attributeType": 1
+      },
+      "childrenNodes": [{
+        "contentAttributes": {
+          "attributeType": 8,
+          "formData": {}
+        },
+        "childrenNodes": [{
+          "contentAttributes": {
+            "attributeType": 24,
+            "formControlData": {
+              "fieldName": "username"
+            }
+          }
+        }]
+      }]
+    }
+  })json");
+
+  web::test::OverrideJavaScriptFeatures(
+      profile(), {PageContextExtractorJavaScriptFeature::GetInstance(),
+                  AutofillJavaScriptFeature::GetInstance()});
+
+  web::FakeWebState fake_web_state;
+  fake_web_state.SetBrowserState(profile());
+  fake_web_state.SetVisibleURL(GURL("https://example.com/"));
+  fake_web_state.SetContentsMimeType("text/html");
+
+  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+  web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();
+  fake_web_state.SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+                                     std::move(frames_manager));
+  fake_web_state.SetWebFramesManager(
+      web::ContentWorld::kPageContentWorld,
+      std::make_unique<web::FakeWebFramesManager>());
+
+  std::unique_ptr<web::FakeWebFrame> main_frame =
+      web::FakeWebFrame::CreateMainWebFrame(GURL("https://example.com/"));
+  main_frame->set_browser_state(profile());
+  web::FakeWebFrame* main_frame_ptr = main_frame.get();
+  frames_manager_ptr->AddWebFrame(std::move(main_frame));
+  main_frame_ptr->AddJsResultForFunctionCall(
+      &js_result, "pageContextExtractor.extractPageContext");
+
+  ActorTabHelper::CreateForWebState(&fake_web_state);
+  InfoBarManagerImpl::CreateForWebState(&fake_web_state);
+  WithFakedFromWebState<ChromeAutofillClientIOS> fake_client(
+      profile(), &fake_web_state,
+      InfoBarManagerImpl::FromWebState(&fake_web_state), nil);
+
+  base::test::TestFuture<
+      std::optional<optimization_guide::proto::AnnotatedPageContent>>
+      future;
+  fake_client.GetAiPageContent(future.GetCallback());
+
+  std::optional<optimization_guide::proto::AnnotatedPageContent> result =
+      future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->mode(),
+            optimization_guide::proto::
+                ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS);
+  EXPECT_THAT(
+      base::UTF16ToUTF8(main_frame_ptr->GetLastJavaScriptCall()),
+      HasSubstr(", true, true, true, true, false, false, false, false]);"));
+  ASSERT_EQ(result->root_node().children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& form_node =
+      result->root_node().children_nodes(0);
+  EXPECT_EQ(form_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM);
+  ASSERT_EQ(form_node.children_nodes_size(), 1);
+  const optimization_guide::proto::ContentNode& input_node =
+      form_node.children_nodes(0);
+  EXPECT_EQ(input_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  EXPECT_EQ(input_node.content_attributes().form_control_data().field_name(),
+            "username");
 }
 
 }  // namespace autofill
