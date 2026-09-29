@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -59,6 +63,8 @@ public class OmniboxPedalsRenderTest {
                     new ParameterSet().value(false).name("LiteMode_RegularTab"),
                     new ParameterSet().value(true).name("NightMode_RegularTab"));
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -69,6 +75,8 @@ public class OmniboxPedalsRenderTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Mock private AutocompleteController mAutocompleteController;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
@@ -87,9 +95,18 @@ public class OmniboxPedalsRenderTest {
     @Before
     public void setUp() throws InterruptedException {
         OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
+        AutocompleteController.setInstanceForTesting(mAutocompleteController);
         mStartingPage = mActivityTestRule.startOnBlankPage();
         mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
         mOmniboxUtils.requestFocus();
+        mOmniboxUtils.waitAnimationsComplete();
+    }
+
+    @After
+    public void tearDown() {
+        if (mOmniboxUtils != null && mOmniboxUtils.getFocus()) {
+            mOmniboxUtils.clearFocus();
+        }
     }
 
     @AfterClass
@@ -115,7 +132,8 @@ public class OmniboxPedalsRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testRunChromeSafetyCheckPedal() throws IOException, InterruptedException {
+    public void testRunChromeSafetyCheckPedal()
+            throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
                 createFakePedalSuggestion("pedal", OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
