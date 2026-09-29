@@ -1959,139 +1959,146 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('test', inputEl.value);
  });
 
- test('CmdCtrlL_SelectsTextWhenUserInputInProgress', async () => {
-   const draftQuery = 'chrome query';
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     text: draftQuery,
-     userInputInProgress: true,
-     isFocused: true,
-     queryZps: false,
-   }));
-   await microtasksFinished();
+ const focusLocationShortcuts:
+     Array<{name: string, eventInit: KeyboardEventInit}> = [
+       {
+         name: 'CmdCtrlL',
+         eventInit: {key: 'l', ctrlKey: !isMac, metaKey: isMac},
+       },
+       ...(!isMac ? [{
+         name: 'AltD',
+         eventInit: {key: 'd', code: 'KeyD', altKey: true},
+       }] :
+                    []),
+     ];
 
-   const inputEl = searchbox.getInputElement().inputElement;
-   inputEl.setSelectionRange(2, 2);
-   testProxy.handler.resetResolver('queryAutocomplete');
+ focusLocationShortcuts.forEach(({name, eventInit}) => {
+   test(`${name}_SelectsTextWhenUserInputInProgress`, async () => {
+     const draftQuery = 'chrome query';
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: draftQuery,
+       userInputInProgress: true,
+       isFocused: true,
+       queryZps: false,
+     }));
+     await microtasksFinished();
 
-   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
-     key: 'l',
-     ctrlKey: !isMac,
-     metaKey: isMac,
-     bubbles: true,
-     composed: true,
-   }));
-   await microtasksFinished();
+     const inputEl = searchbox.getInputElement().inputElement;
+     inputEl.setSelectionRange(2, 2);
+     testProxy.handler.resetResolver('queryAutocomplete');
 
-   assertEquals(0, inputEl.selectionStart);
-   assertEquals(draftQuery.length, inputEl.selectionEnd);
-   assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
- });
+     inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+       ...eventInit,
+       bubbles: true,
+       composed: true,
+     }));
+     await microtasksFinished();
 
- test(
-     'CmdCtrlL_SelectsTextAndQueriesZpsWhenUserInputNotInProgress',
-     async () => {
-       const testUrl = 'https://example.com';
-       callbackRouter.setInputState(createDefaultOmniboxInputState({
-         text: testUrl,
-         userInputInProgress: false,
-         isFocused: true,
-         queryZps: false,
-       }));
-       await microtasksFinished();
+     assertEquals(0, inputEl.selectionStart);
+     assertEquals(draftQuery.length, inputEl.selectionEnd);
+     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+   });
 
-       searchbox.clearAutocompleteMatches();
-       assertFalse(searchbox.dropdownIsVisible);
-       testProxy.handler.resetResolver('queryAutocomplete');
+   test(
+       `${name}_SelectsTextAndQueriesZpsWhenUserInputNotInProgress`,
+       async () => {
+         const testUrl = 'https://example.com';
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           text: testUrl,
+           userInputInProgress: false,
+           isFocused: true,
+           queryZps: false,
+         }));
+         await microtasksFinished();
 
-       const inputEl = searchbox.getInputElement().inputElement;
-       inputEl.setSelectionRange(3, 3);
+         searchbox.clearAutocompleteMatches();
+         assertFalse(searchbox.dropdownIsVisible);
+         testProxy.handler.resetResolver('queryAutocomplete');
 
-       inputEl.dispatchEvent(new KeyboardEvent('keydown', {
-         key: 'l',
-         ctrlKey: !isMac,
-         metaKey: isMac,
-         bubbles: true,
-         composed: true,
-       }));
-       await microtasksFinished();
+         const inputEl = searchbox.getInputElement().inputElement;
+         inputEl.setSelectionRange(3, 3);
 
-       assertEquals(0, inputEl.selectionStart);
-       assertEquals(testUrl.length, inputEl.selectionEnd);
-       assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-       const [, , queryText, , , , isOnFocus] =
-           testProxy.handler.getArgs('queryAutocomplete')[0];
-       assertEquals(testUrl, queryText);
-       assertTrue(isOnFocus);
-     });
+         inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+           ...eventInit,
+           bubbles: true,
+           composed: true,
+         }));
+         await microtasksFinished();
 
- test('CmdCtrlL_DoesNotRequeryZpsWhenDropdownAlreadyOpen', async () => {
-   const testUrl = 'https://example.com';
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     text: testUrl,
-     userInputInProgress: false,
-     isFocused: true,
-     queryZps: false,
-   }));
-   await microtasksFinished();
+         assertEquals(0, inputEl.selectionStart);
+         assertEquals(testUrl.length, inputEl.selectionEnd);
+         assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+         const [, , queryText, , , , isOnFocus] =
+             testProxy.handler.getArgs('queryAutocomplete')[0];
+         assertEquals(testUrl, queryText);
+         assertTrue(isOnFocus);
+       });
 
-   searchbox.dropdownIsVisible = true;
-   testProxy.handler.resetResolver('queryAutocomplete');
+   test(`${name}_DoesNotRequeryZpsWhenDropdownAlreadyOpen`, async () => {
+     const testUrl = 'https://example.com';
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: testUrl,
+       userInputInProgress: false,
+       isFocused: true,
+       queryZps: false,
+     }));
+     await microtasksFinished();
 
-   const inputEl = searchbox.getInputElement().inputElement;
-   inputEl.setSelectionRange(3, 3);
+     searchbox.dropdownIsVisible = true;
+     testProxy.handler.resetResolver('queryAutocomplete');
 
-   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
-     key: 'l',
-     ctrlKey: !isMac,
-     metaKey: isMac,
-     bubbles: true,
-     composed: true,
-   }));
-   await microtasksFinished();
+     const inputEl = searchbox.getInputElement().inputElement;
+     inputEl.setSelectionRange(3, 3);
 
-   assertEquals(0, inputEl.selectionStart);
-   assertEquals(testUrl.length, inputEl.selectionEnd);
-   assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
- });
+     inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+       ...eventInit,
+       bubbles: true,
+       composed: true,
+     }));
+     await microtasksFinished();
 
- test('CmdCtrlL_ClearsKeywordModeAndSelectsRestoredText', async () => {
-   callbackRouter.setInputState(createDefaultOmniboxInputState({
-     text: '',
-     userInputInProgress: true,
-     isFocused: true,
-     queryZps: false,
-   }));
-   await microtasksFinished();
+     assertEquals(0, inputEl.selectionStart);
+     assertEquals(testUrl.length, inputEl.selectionEnd);
+     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+   });
 
-   // Enter keyword mode with some text.
-   searchbox.keywordModeManager.enter(
-       'google.com', 'Search Google', KeywordModeEntryMethod.TAB,
-       'Search Google');
-   searchbox.getInputElement().setInputText('flowers');
-   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   test(`${name}_ClearsKeywordModeAndSelectsRestoredText`, async () => {
+     callbackRouter.setInputState(createDefaultOmniboxInputState({
+       text: '',
+       userInputInProgress: true,
+       isFocused: true,
+       queryZps: false,
+     }));
+     await microtasksFinished();
 
-   testProxy.handler.resetResolver('queryAutocomplete');
-   const inputEl = searchbox.getInputElement().inputElement;
+     // Enter keyword mode with some text.
+     searchbox.keywordModeManager.enter(
+         'google.com', 'Search Google', KeywordModeEntryMethod.TAB,
+         'Search Google');
+     searchbox.getInputElement().setInputText('flowers');
+     assertTrue(searchbox.keywordModeManager.isInKeywordMode);
 
-   // Dispatch Cmd/Ctrl + L.
-   inputEl.dispatchEvent(new KeyboardEvent('keydown', {
-     key: 'l',
-     ctrlKey: !isMac,
-     metaKey: isMac,
-     bubbles: true,
-     composed: true,
-   }));
-   await microtasksFinished();
+     testProxy.handler.resetResolver('queryAutocomplete');
+     const inputEl = searchbox.getInputElement().inputElement;
 
-   // Keyword mode should be cleared, text restored with keyword prefix, and all
-   // text selected.
-   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
-   assertEquals('google.com flowers', inputEl.value);
-   assertEquals(0, inputEl.selectionStart);
-   assertEquals('google.com flowers'.length, inputEl.selectionEnd);
-   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-   const [, , queryText] = testProxy.handler.getArgs('queryAutocomplete')[0];
-   assertEquals('google.com flowers', queryText);
+     // Dispatch focus location shortcut (Cmd/Ctrl + L or Alt + D).
+     inputEl.dispatchEvent(new KeyboardEvent('keydown', {
+       ...eventInit,
+       bubbles: true,
+       composed: true,
+     }));
+     await microtasksFinished();
+
+     // Keyword mode should be cleared, text restored with keyword prefix, and
+     // all text selected.
+     assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+     assertEquals('google.com flowers', inputEl.value);
+     assertEquals(0, inputEl.selectionStart);
+     assertEquals('google.com flowers'.length, inputEl.selectionEnd);
+     assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+     const [, , queryText] = testProxy.handler.getArgs('queryAutocomplete')[0];
+     assertEquals('google.com flowers', queryText);
+   });
  });
 
  test('FocusSearch_ClearsPermanentUrlWhenUserInputNotInProgress', async () => {
