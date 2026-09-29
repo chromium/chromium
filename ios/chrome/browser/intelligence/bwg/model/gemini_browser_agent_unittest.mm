@@ -485,6 +485,8 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
+  base::HistogramTester histogram_tester;
+
   gemini_browser_agent_->StartGeminiFlow(
       base_view_controller, [[GeminiStartupState alloc]
                                 initWithEntryPoint:gemini::EntryPoint::Promo]);
@@ -493,6 +495,9 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   ASSERT_TRUE(
       base::test::RunUntil([snapshot_called]() { return *snapshot_called; }));
 
+  histogram_tester.ExpectUniqueSample(
+      kGeminiInvocationPageTypeHistogram,
+      IOSGeminiInvocationPageType::kExtractableWebPage, 1);
   EXPECT_EQ(gemini_browser_agent_->GetEntryPoint(), gemini::EntryPoint::Promo);
 }
 
@@ -931,6 +936,35 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
   EXPECT_FALSE(observer.available_);
 
   gemini_browser_agent_->RemoveObserver(&observer);
+}
+
+// Tests that kNoWebState is recorded when StartGeminiFlow is invoked with no
+// active WebState.
+TEST_F(GeminiBrowserAgentTest, TestStartGeminiFlowNoActiveWebState) {
+  UIViewController* base_view_controller = [[UIViewController alloc] init];
+
+  // Initialize browser agent on a browser with no active WebStates.
+  std::unique_ptr<TestBrowser> empty_browser =
+      std::make_unique<TestBrowser>(profile_);
+  id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
+  [empty_browser->GetCommandDispatcher()
+      startDispatchingToTarget:mock_gemini_handler
+                   forProtocol:@protocol(GeminiCommands)];
+  if (IsFullscreenRefactoringEnabled()) {
+    FullscreenBrowserAgent::CreateForBrowser(empty_browser.get());
+  }
+  GeminiBrowserAgent::CreateForBrowser(empty_browser.get());
+  GeminiBrowserAgent* empty_agent =
+      GeminiBrowserAgent::FromBrowser(empty_browser.get());
+
+  base::HistogramTester histogram_tester;
+  empty_agent->StartGeminiFlow(
+      base_view_controller, [[GeminiStartupState alloc]
+                                initWithEntryPoint:gemini::EntryPoint::Promo]);
+
+  histogram_tester.ExpectUniqueSample(kGeminiInvocationPageTypeHistogram,
+                                      IOSGeminiInvocationPageType::kNoWebState,
+                                      1);
 }
 
 // Tests that OnLiveButtonTapped triggers the feature engagement event.

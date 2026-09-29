@@ -132,8 +132,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void OnPageContextUpdated(web::WebState* web_state) override;
   void OnGeminiTabHelperDestroyed(GeminiTabHelper* tab_helper) override;
 
-  // Starts the Gemini flow for the given `base_view_controller` and
-  // `startup_state`.
+  // Checks if the FRE needs to be shown and start the Gemini flow
+  // accordingly.
   void StartGeminiFlow(UIViewController* base_view_controller,
                        GeminiStartupState* startup_state);
 
@@ -230,6 +230,13 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void UpdateSharedTabContexts(
       const std::vector<web::WebStateID>& tabs_to_fetch);
 
+  // Starts the Gemini session (prepares context and shows overlay).
+  void PresentFloaty(UIViewController* base_view_controller,
+                     GeminiStartupState* startup_state);
+
+  // Records the page type when Gemini is invoked.
+  void RecordInvocationPageType();
+
   // Configures Gemini with startup parameters.
   void ConfigureGemini();
 
@@ -265,6 +272,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // TabGridStateObserver:
   void WillEnterTabGrid() override;
   void WillExitTabGrid() override;
+
+  // Returns true if the user has completed the FRE.
+  bool HasCompletedFirstRun();
+
+  // Shows a snackbar message informing the user that sign-in is required.
+  void ShowSignInRequiredSnackbar(gemini::EntryPoint entry_point);
 
   // Shows a snackbar message with the given message ID.
   void ShowLiveSessionDormantSnackbar(int message_id);

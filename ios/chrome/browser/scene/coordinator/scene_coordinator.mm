@@ -239,9 +239,7 @@ inline LayoutStateScenePassKey PassKey() {
   SafariDataImportMainCoordinator* _safariDataImportCoordinator;
   // The coordinators for Gemini related logic.
   GeminiContainerCoordinator* _geminiContainerCoordinator;
-  // TODO(crbug.com/560114059): Move Live first run coordinator to Gemini
-  // container coordinator.
-  GeminiFirstRunCoordinator* _geminiLiveFirstRunCoordinator;
+  GeminiFirstRunCoordinator* _geminiFirstRunCoordinator;
   GeminiEntryFlowCoordinator* _geminiEntryFlowCoordinator;
   // Coordinator for display of the Password Checkup.
   PasswordCheckupCoordinator* _passwordCheckupCoordinator;
@@ -412,8 +410,8 @@ inline LayoutStateScenePassKey PassKey() {
   [self hideGuidedTourNTPStep];
   [_geminiContainerCoordinator stop];
   _geminiContainerCoordinator = nil;
-  [_geminiLiveFirstRunCoordinator stopWithCompletion:nil];
-  _geminiLiveFirstRunCoordinator = nil;
+  [_geminiFirstRunCoordinator stopWithCompletion:nil];
+  _geminiFirstRunCoordinator = nil;
   [_geminiEntryFlowCoordinator stop];
   _geminiEntryFlowCoordinator = nil;
 
@@ -616,6 +614,8 @@ inline LayoutStateScenePassKey PassKey() {
   [self closePresentedViews:NO completion:closePresentedViewsCompletion];
 
   if (dismissGemini) {
+    [_geminiEntryFlowCoordinator stop];
+    _geminiEntryFlowCoordinator = nil;
     id<GeminiCommands> geminiHandler = HandlerForProtocol(
         _regularBrowser->GetCommandDispatcher(), GeminiCommands);
     [geminiHandler dismissGeminiFlowWithCompletion:nil];
@@ -2691,16 +2691,10 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion {
-  if (_geminiEntryFlowCoordinator) {
-    [_geminiEntryFlowCoordinator stop];
-    _geminiEntryFlowCoordinator = nil;
-    return;
-  }
-
   // If the user is still in the FRE, dismiss it.
-  if (_geminiLiveFirstRunCoordinator) {
-    [_geminiLiveFirstRunCoordinator stopWithCompletion:completion];
-    _geminiLiveFirstRunCoordinator = nil;
+  if (_geminiFirstRunCoordinator) {
+    [_geminiFirstRunCoordinator stopWithCompletion:completion];
+    _geminiFirstRunCoordinator = nil;
     return;
   }
 
@@ -2758,6 +2752,36 @@ inline LayoutStateScenePassKey PassKey() {
   }
 }
 
+- (void)startGeminiFirstRunWithCompletion:(void (^)(BOOL success))completion
+                           fromEntryPoint:(gemini::EntryPoint)entryPoint {
+  __weak SceneCoordinator* weakSelf = self;
+  void (^completionWrapper)(BOOL) =
+      [self geminiCompletionWrapperForCompletion:completion];
+
+  ProceduralBlock startCoordinatorBlock = ^{
+    [weakSelf startGeminiFirstRunCoordinatorWithCompletion:completionWrapper
+                                            fromEntryPoint:entryPoint];
+  };
+
+  [self stopGeminiFirstRunCoordinatorAndStartBlock:startCoordinatorBlock];
+}
+
+- (void)startGeminiFirstRunCoordinatorWithCompletion:
+            (void (^)(BOOL success))completion
+                                      fromEntryPoint:
+                                          (gemini::EntryPoint)entryPoint {
+  UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
+                                             ? _viewController
+                                             : self.activeViewController;
+  _geminiFirstRunCoordinator = [[GeminiFirstRunCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:_regularBrowser.get()
+                  fromEntryPoint:entryPoint
+                    firstRunType:GeminiFirstRunType::kNewUser
+               completionHandler:completion];
+  [_geminiFirstRunCoordinator start];
+}
+
 - (void)startGeminiLiveFirstRunWithBaseViewController:
             (UIViewController*)baseViewController
                                            completion:(void (^)(BOOL success))
@@ -2774,7 +2798,7 @@ inline LayoutStateScenePassKey PassKey() {
                                                           completionWrapper];
   };
 
-  [self stopGeminiLiveFirstRunCoordinatorAndStartBlock:startCoordinatorBlock];
+  [self stopGeminiFirstRunCoordinatorAndStartBlock:startCoordinatorBlock];
 }
 
 - (void)showGeminiLiveMicrophoneAlertWithBaseViewController:
@@ -2885,6 +2909,7 @@ inline LayoutStateScenePassKey PassKey() {
                                              ? _viewController
                                              : self.activeViewController;
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    // TODO(crbug.com/522834015): Start the First Run coordinator if needed.
     if (_geminiContainerCoordinator) {
       return;
     }
@@ -2907,20 +2932,18 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 // Stops the existing first run coordinator (if any) and runs `startBlock`.
-- (void)stopGeminiLiveFirstRunCoordinatorAndStartBlock:
-    (ProceduralBlock)startBlock {
-  if (_geminiLiveFirstRunCoordinator) {
-    GeminiFirstRunCoordinator* coordinatorToStop =
-        _geminiLiveFirstRunCoordinator;
-    _geminiLiveFirstRunCoordinator = nil;
+- (void)stopGeminiFirstRunCoordinatorAndStartBlock:(ProceduralBlock)startBlock {
+  if (_geminiFirstRunCoordinator) {
+    GeminiFirstRunCoordinator* coordinatorToStop = _geminiFirstRunCoordinator;
+    _geminiFirstRunCoordinator = nil;
     [coordinatorToStop stopWithCompletion:startBlock];
   } else {
     startBlock();
   }
 }
 
-// Returns a completion block wrapper that resets
-// `_geminiLiveFirstRunCoordinator` when executed.
+// Returns a completion block wrapper that resets `_geminiFirstRunCoordinator`
+// when executed.
 - (void (^)(BOOL))geminiCompletionWrapperForCompletion:
     (void (^)(BOOL))completion {
   __weak SceneCoordinator* weakSelf = self;
@@ -2930,7 +2953,7 @@ inline LayoutStateScenePassKey PassKey() {
     }
     SceneCoordinator* strongSelf = weakSelf;
     if (strongSelf) {
-      strongSelf->_geminiLiveFirstRunCoordinator = nil;
+      strongSelf->_geminiFirstRunCoordinator = nil;
     }
   };
 }
@@ -2948,13 +2971,13 @@ inline LayoutStateScenePassKey PassKey() {
   if (geminiBrowserAgent) {
     entryPoint = geminiBrowserAgent->GetEntryPoint();
   }
-  _geminiLiveFirstRunCoordinator = [[GeminiFirstRunCoordinator alloc]
+  _geminiFirstRunCoordinator = [[GeminiFirstRunCoordinator alloc]
       initWithBaseViewController:baseViewController
                          browser:_regularBrowser.get()
                   fromEntryPoint:entryPoint
                     firstRunType:GeminiFirstRunType::kLive
                completionHandler:completion];
-  [_geminiLiveFirstRunCoordinator start];
+  [_geminiFirstRunCoordinator start];
 }
 
 @end

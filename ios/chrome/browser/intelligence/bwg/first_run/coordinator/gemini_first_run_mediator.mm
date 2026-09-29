@@ -248,7 +248,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
   if (IsGeminiNavigationPromoEnabled()) {
     _tracker->NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven);
   }
-  [self handleFRECompletion:YES];
+  __weak __typeof(self) weakSelf = self;
+  [_delegate dismissGeminiConsentUIWithCompletion:^{
+    [weakSelf handleFRECompletion:YES];
+  }];
 }
 
 // Did consent to Live Gemini.
@@ -262,13 +265,19 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Did refuse Gemini consent.
 - (void)didRefuseGeminiConsent {
+  // Retain self to survive synchronous teardown from the delegate.
+  __strong __typeof(self) strongSelf = self;
   gemini::UpdateUserConsentPrefs(NO, _prefService);
-  [self handleFRECompletion:NO];
+  [_delegate dismissGeminiFlow];
+  [strongSelf handleFRECompletion:NO];
 }
 
 // Did close Gemini Promo UI.
 - (void)didCloseGeminiPromo {
-  [self handleFRECompletion:NO];
+  // Retain self to survive synchronous teardown from the delegate.
+  __strong __typeof(self) strongSelf = self;
+  [_delegate dismissGeminiFlow];
+  [strongSelf handleFRECompletion:NO];
 }
 
 // Did refuse Live onboarding.
@@ -335,9 +344,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Open a new tab page given a URL.
 - (void)openNewTabWithURL:(const GURL&)URL {
+  [_delegate dismissGeminiFlow];
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   [self.sceneHandler openURLInNewTab:command];
-  [_delegate dismissGeminiFlow];
 }
 
 // Returns the currently active WebState's Gemini tab helper.

@@ -115,11 +115,7 @@ const CGFloat kHeaderIconSizeMultiplier = 0.55;
 
 - (void)didTapSecondaryButton {
   RecordFirstRunConsentAction(IOSGeminiFirstRunAction::kDismiss);
-  if (_firstRunType == GeminiFirstRunType::kLive) {
-    [self.mutator didRefuseLiveOnboarding];
-  } else {
-    [self.mutator didRefuseGeminiConsent];
-  }
+  [self.mutator didRefuseGeminiConsent];
 }
 
 #pragma mark - Private

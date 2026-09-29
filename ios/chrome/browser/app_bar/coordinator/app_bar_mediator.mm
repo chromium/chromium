@@ -1247,7 +1247,6 @@ inline LayoutStateAssistantPassKey PassKey() {
     case kGeminiEntryFlowResultCancelled:
     case kGeminiEntryFlowResultPageIneligible:
     case kGeminiEntryFlowResultUnknown:
-    case kGeminiEntryFlowResultNoConsent:
       break;
   }
 }

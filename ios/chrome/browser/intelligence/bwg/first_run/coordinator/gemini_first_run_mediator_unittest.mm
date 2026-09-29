@@ -242,7 +242,7 @@ TEST_F(GeminiFirstRunMediatorTest, TestShouldShowAIHubIPH_ChromeNextIaEnabled) {
 }
 
 // Tests didConsentGemini sets consent pref, notifies tracker when
-// kGeminiNavigationPromo is enabled, and calls completion with YES.
+// kGeminiNavigationPromo is enabled, and dismisses UI with completion(YES).
 TEST_F(GeminiFirstRunMediatorTest, TestDidConsentGemini) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -255,26 +255,34 @@ TEST_F(GeminiFirstRunMediatorTest, TestDidConsentGemini) {
   EXPECT_CALL(*tracker,
               NotifyEvent(feature_engagement::events::kIOSGeminiConsentGiven));
 
+  OCMExpect([mock_delegate_
+      dismissGeminiConsentUIWithCompletion:[OCMArg invokeBlock]]);
+
   [mediator_ didConsentGemini];
 
   EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));
   EXPECT_TRUE(completion_called_);
   EXPECT_TRUE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests didRefuseGeminiConsent calls completion with NO.
+// Tests didRefuseGeminiConsent dismisses the flow and calls completion with NO.
 TEST_F(GeminiFirstRunMediatorTest, TestDidRefuseGeminiConsent) {
+  OCMExpect([mock_delegate_ dismissGeminiFlow]);
   [mediator_ didRefuseGeminiConsent];
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));
   EXPECT_TRUE(completion_called_);
   EXPECT_FALSE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
-// Tests didCloseGeminiPromo calls completion with NO.
+// Tests didCloseGeminiPromo dismisses the flow and calls completion with NO.
 TEST_F(GeminiFirstRunMediatorTest, TestDidCloseGeminiPromo) {
+  OCMExpect([mock_delegate_ dismissGeminiFlow]);
   [mediator_ didCloseGeminiPromo];
   EXPECT_TRUE(completion_called_);
   EXPECT_FALSE(completion_success_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests didRefuseLiveOnboarding dismisses consent UI and calls completion with

@@ -249,8 +249,7 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
       [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
       break;
     case kGeminiEntryFlowResultCancelled:
-    case kGeminiEntryFlowResultNoConsent:
-      // User cancelled sign-in/consent — PAM stays open.
+      // User cancelled sign-in — PAM stays open.
       break;
     case kGeminiEntryFlowResultAccountIneligibleByGemini:
     case kGeminiEntryFlowResultAccountIneligibleByEnterprise:
