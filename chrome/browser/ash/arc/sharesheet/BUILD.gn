@@ -14,7 +14,6 @@ static_library("sharesheet") {
 
   deps = [
     "//base",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",

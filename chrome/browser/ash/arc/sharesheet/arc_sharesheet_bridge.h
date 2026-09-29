@@ -10,8 +10,6 @@
 #include "chromeos/ash/experiences/arc/mojom/sharesheet.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -46,8 +44,6 @@ class ArcSharesheetBridge : public KeyedService, public mojom::SharesheetHost {
  private:
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  const raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ArcSharesheetBridge> weak_ptr_factory_{this};
 };

@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -56,8 +55,7 @@ ArcSharesheetBridge* ArcSharesheetBridge::GetForBrowserContextForTesting(
 
 ArcSharesheetBridge::ArcSharesheetBridge(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      profile_(Profile::FromBrowserContext(context)) {
+    : arc_bridge_service_(bridge_service) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
   arc_bridge_service_->sharesheet()->SetHost(this);
   VLOG(1) << "ArcSharesheetBridge created";
