@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
-namespace blink {
+namespace blink::Character {
 
 // Codepoints pair from unicode standardized variation sequences spec, compare:
 // https://www.unicode.org/Public/UNIDATA/StandardizedVariants.txt
@@ -444,7 +444,7 @@ static const char kStandardizedVariationSequences[] =
     R"([{\U00002A105\U0000FE00}][{\U00002A20E\U0000FE00}][{\U00002A291\U0000FE00}])"
     R"([{\U00002A392\U0000FE00}][{\U00002A600\U0000FE00}]])";
 
-bool Character::IsStandardizedVariationSequence(UChar32 ch, UChar32 vs) {
+bool IsStandardizedVariationSequence(UChar32 ch, UChar32 vs) {
   // Avoid making extra calls if no variation selector is provided or if
   // provided variation selector is emoji/text (VS15/VS16) variation
   // selector.
@@ -452,15 +452,15 @@ bool Character::IsStandardizedVariationSequence(UChar32 ch, UChar32 vs) {
     return false;
   }
   DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet,
-                                  standardizedVariationSequencesSet, ());
-  ApplyPatternAndFreezeIfEmpty(&standardizedVariationSequencesSet,
-                               kStandardizedVariationSequences);
+                                  standardized_variation_sequences_set, ());
+  internal::ApplyPatternAndFreezeIfEmpty(&standardized_variation_sequences_set,
+                                         kStandardizedVariationSequences);
   icu::UnicodeString variation_sequence =
       (icu::UnicodeString)ch + (icu::UnicodeString)vs;
-  return standardizedVariationSequencesSet.contains(variation_sequence);
+  return standardized_variation_sequences_set.contains(variation_sequence);
 }
 
-bool Character::IsEmojiVariationSequence(UChar32 ch, UChar32 vs) {
+bool IsEmojiVariationSequence(UChar32 ch, UChar32 vs) {
   return IsUnicodeEmojiVariationSelector(vs) && IsEmoji(ch);
 }
 
@@ -469,7 +469,7 @@ bool Character::IsEmojiVariationSequence(UChar32 ch, UChar32 vs) {
 // character with the Ideographic property that is not canonically nor
 // compatibly decomposable, the second being a variation selector character in
 // the range U+E0100 to U+E01EF.
-bool Character::IsIdeographicVariationSequence(UChar32 ch, UChar32 vs) {
+bool IsIdeographicVariationSequence(UChar32 ch, UChar32 vs) {
   // Check variation selector fist to avoid making extra icu calls.
   if (!IsInRange(vs, 0xE0100, 0xE01EF)) {
     return false;
@@ -480,10 +480,10 @@ bool Character::IsIdeographicVariationSequence(UChar32 ch, UChar32 vs) {
          decomp_type != unicode::kDecompositionCompat;
 }
 
-bool Character::IsVariationSequence(UChar32 ch, UChar32 vs) {
+bool IsVariationSequence(UChar32 ch, UChar32 vs) {
   return IsEmojiVariationSequence(ch, vs) ||
          IsStandardizedVariationSequence(ch, vs) ||
          IsIdeographicVariationSequence(ch, vs);
 }
 
-}  // namespace blink
+}  // namespace blink::Character

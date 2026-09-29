@@ -6,7 +6,7 @@
 
 #include <unicode/uvernum.h>
 
-namespace blink {
+namespace blink::Character {
 
 // ICU 78 will support Unicode 17. If using an earlier release of ICU,
 // use our own Emoji data compiled from emoji-data.txt.
@@ -293,48 +293,47 @@ static const char kEmojiModifierBasePattern[] =
     R"([\U0001F9CD-\U0001F9CF][\U0001F9D1-\U0001F9DD][\U0001FAC3-\U0001FAC5])"
     R"([\U0001FAF0-\U0001FAF6][\U0001FAF7-\U0001FAF8]])";
 
-bool Character::IsEmoji(UChar32 ch) {
-  return Character::IsEmojiTextDefault(ch) ||
-         Character::IsEmojiEmojiDefault(ch);
+bool IsEmoji(UChar32 ch) {
+  return IsEmojiTextDefault(ch) || IsEmojiEmojiDefault(ch);
 }
 
-bool Character::IsEmojiTextDefault(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emojiTextSet, ());
-  ApplyPatternAndFreezeIfEmpty(&emojiTextSet, kEmojiTextPattern);
-  return emojiTextSet.contains(ch) && !IsEmojiEmojiDefault(ch);
+bool IsEmojiTextDefault(UChar32 ch) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_text_set, ());
+  internal::ApplyPatternAndFreezeIfEmpty(&emoji_text_set, kEmojiTextPattern);
+  return emoji_text_set.contains(ch) && !IsEmojiEmojiDefault(ch);
 }
 
-bool Character::IsEmojiEmojiDefault(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emojiEmojiSet, ());
-  ApplyPatternAndFreezeIfEmpty(&emojiEmojiSet, kEmojiEmojiPattern);
-  return emojiEmojiSet.contains(ch);
+bool IsEmojiEmojiDefault(UChar32 ch) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_emoji_set, ());
+  internal::ApplyPatternAndFreezeIfEmpty(&emoji_emoji_set, kEmojiEmojiPattern);
+  return emoji_emoji_set.contains(ch);
 }
 
-bool Character::IsEmojiModifierBase(UChar32 ch) {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emojieModifierBaseSet, ());
-  ApplyPatternAndFreezeIfEmpty(&emojieModifierBaseSet,
-                               kEmojiModifierBasePattern);
-  return emojieModifierBaseSet.contains(ch);
+bool IsEmojiModifierBase(UChar32 ch) {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(icu::UnicodeSet, emoji_modifier_base_set, ());
+  internal::ApplyPatternAndFreezeIfEmpty(&emoji_modifier_base_set,
+                                         kEmojiModifierBasePattern);
+  return emoji_modifier_base_set.contains(ch);
 }
 #else
-bool Character::IsEmoji(UChar32 ch) {
+bool IsEmoji(UChar32 ch) {
   return u_hasBinaryProperty(ch, UCHAR_EMOJI);
 }
-bool Character::IsEmojiTextDefault(UChar32 ch) {
+bool IsEmojiTextDefault(UChar32 ch) {
   return u_hasBinaryProperty(ch, UCHAR_EMOJI) &&
          !u_hasBinaryProperty(ch, UCHAR_EMOJI_PRESENTATION);
 }
 
-bool Character::IsEmojiEmojiDefault(UChar32 ch) {
+bool IsEmojiEmojiDefault(UChar32 ch) {
   return u_hasBinaryProperty(ch, UCHAR_EMOJI_PRESENTATION);
 }
 
-bool Character::IsEmojiModifierBase(UChar32 ch) {
+bool IsEmojiModifierBase(UChar32 ch) {
   return u_hasBinaryProperty(ch, UCHAR_EMOJI_MODIFIER_BASE);
 }
 #endif  // U_ICU_VERSION_MAJOR_NUM < 78
 
-bool Character::IsEmojiReserved(UChar32 ch) {
+bool IsEmojiReserved(UChar32 ch) {
   // `Extended_Pictographic` is for pictographic symbols, as well as reserved
   // ranges in blocks largely associated with emoji characters. Intersect with
   // `GC=Cn` (Unassigned) to get the reserved ranges.
@@ -342,12 +341,12 @@ bool Character::IsEmojiReserved(UChar32 ch) {
   return u_charType(ch) == U_UNASSIGNED && IsExtendedPictographic(ch);
 }
 
-bool Character::IsEmojiIncludingReserved(UChar32 ch) {
+bool IsEmojiIncludingReserved(UChar32 ch) {
   return IsEmoji(ch) || IsEmojiReserved(ch);
 }
 
-bool Character::IsRegionalIndicator(UChar32 ch) {
+bool IsRegionalIndicator(UChar32 ch) {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }
 
-}  // namespace blink
+}  // namespace blink::Character

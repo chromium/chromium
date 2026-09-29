@@ -80,8 +80,8 @@ TEST(CharacterTest, Derived) {
     }
 
     if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
-      DCHECK(!Character::MaybeHanKerningOpenSlow(ch));
-      DCHECK(!Character::MaybeHanKerningCloseSlow(ch));
+      DCHECK(!Character::internal::MaybeHanKerningOpenSlow(ch));
+      DCHECK(!Character::internal::MaybeHanKerningCloseSlow(ch));
     }
 
     // Test UTF-16 functions.
