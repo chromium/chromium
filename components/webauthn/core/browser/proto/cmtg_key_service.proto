@@ -1,0 +1,49 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package webauthn_pb;
+
+option optimize_for = LITE_RUNTIME;
+
+import "google/protobuf/timestamp.proto";
+
+// Metadata and raw key material for a server-managed CMTG wrapper key.
+message CmtgWrapperKeyInfo {
+  // The raw 256-bit symmetric key material.
+  bytes key_material = 1;
+
+  // Supported cryptographic algorithms for wrapping CMTG keys.
+  enum KeyAlgorithm {
+    // Unspecified algorithm.
+    KEY_ALGORITHM_UNSPECIFIED = 0;
+    // Symmetric AES-256 in GCM mode.
+    AES256_GCM = 1;
+  }
+
+  // Key algorithm used for this CMTG wrapper key.
+  KeyAlgorithm key_algorithm = 2;
+
+  // Timestamp when the key was created on the server.
+  google.protobuf.Timestamp create_time = 3;
+}
+
+// Request for GetCmtgWrapperKeys.
+message GetCmtgWrapperKeysRequest {}
+
+// Response for GetCmtgWrapperKeys.
+message GetCmtgWrapperKeysResponse {
+  // Caller's own key and keys of all connected devices in the trust component.
+  repeated CmtgWrapperKeyInfo cmtg_wrapper_keys = 1;
+}
+
+// Request for GetOrCreateCmtgWrapperKey.
+message GetOrCreateCmtgWrapperKeyRequest {}
+
+// Response for GetOrCreateCmtgWrapperKey.
+message GetOrCreateCmtgWrapperKeyResponse {
+  // The caller device's CMTG wrapper key.
+  CmtgWrapperKeyInfo cmtg_wrapper_key_info = 1;
+}
