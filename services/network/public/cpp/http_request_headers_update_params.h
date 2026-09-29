@@ -22,7 +22,8 @@ namespace network {
 //    `headers` and `cors_exempt_headers`.
 // 2. Then, `modified_headers` and `modified_cors_exempt_headers` should be
 //    added to `headers` and `cors_exempt_headers`, respectively.
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE) HttpRequestHeadersUpdateParams final {
+struct COMPONENT_EXPORT(NETWORK_CPP_HTTP_REQUEST_HEADERS)
+    HttpRequestHeadersUpdateParams final {
   HttpRequestHeadersUpdateParams();
   ~HttpRequestHeadersUpdateParams();
 

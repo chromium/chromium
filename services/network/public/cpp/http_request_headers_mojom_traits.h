@@ -13,7 +13,7 @@
 namespace mojo {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_HTTP_REQUEST_HEADERS)
     StructTraits<network::mojom::HttpRequestHeaderKeyValuePairDataView,
                  net::HttpRequestHeaders::HeaderKeyValuePair> {
   static const std::string& key(
@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_HTTP_REQUEST_HEADERS)
     StructTraits<network::mojom::HttpRequestHeadersDataView,
                  net::HttpRequestHeaders> {
   static net::HttpRequestHeaders::HeaderVector headers(
@@ -41,7 +41,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 };
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+struct COMPONENT_EXPORT(NETWORK_CPP_HTTP_REQUEST_HEADERS)
     StructTraits<network::mojom::HttpRequestHeadersUpdateParamsDataView,
                  network::HttpRequestHeadersUpdateParams> {
   static const std::vector<std::string>& removed_headers(

@@ -607,6 +607,28 @@ component("storage_access_api_mojom_support") {
   defines = [ "IS_STORAGE_ACCESS_API_MOJOM_TRAITS_IMPL" ]
 }
 
+# This component is separate from cpp_base as it is a dependency of
+# //services/network/public/mojom:mojom_http_request_headers.
+component("http_request_headers_mojom_support") {
+  sources = [
+    "http_request_headers_mojom_traits.cc",
+    "http_request_headers_mojom_traits.h",
+    "http_request_headers_update_params.cc",
+    "http_request_headers_update_params.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//services/network/public/mojom:mojom_http_request_headers_shared",
+  ]
+  deps = [
+    ":crash_keys",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_CPP_HTTP_REQUEST_HEADERS_IMPL" ]
+}
+
 component("cpp_base") {
   output_name = "network_cpp_base"
 
@@ -623,10 +645,6 @@ component("cpp_base") {
     "cross_origin_opener_policy_mojom_traits.h",
     "data_element.cc",
     "data_element.h",
-    "http_request_headers_mojom_traits.cc",
-    "http_request_headers_mojom_traits.h",
-    "http_request_headers_update_params.cc",
-    "http_request_headers_update_params.h",
     "isolation_info_mojom_traits.cc",
     "isolation_info_mojom_traits.h",
     "load_timing_info_mojom_traits.cc",
@@ -682,6 +700,7 @@ component("cpp_base") {
     ":cross_origin_embedder_policy",
     ":document_isolation_policy",
     ":fetch_retry_options",
+    ":http_request_headers_mojom_support",
     ":integrity_metadata_mojom_support",
     ":integrity_policy",
     ":ip_address_mojom_support",

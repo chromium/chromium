@@ -587,7 +587,10 @@ mojom("mojom_http_request_headers") {
       traits_headers = [
         "//services/network/public/cpp/http_request_headers_mojom_traits.h",
       ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:http_request_headers_mojom_support",
+      ]
     },
     {
       types = [
@@ -600,7 +603,10 @@ mojom("mojom_http_request_headers") {
       traits_headers = [
         "//services/network/public/cpp/http_request_headers_mojom_traits.h",
       ]
-      traits_public_deps = [ "//net" ]
+      traits_public_deps = [
+        "//net",
+        "//services/network/public/cpp:http_request_headers_mojom_support",
+      ]
     },
   ]
   blink_cpp_typemaps = cpp_typemaps
