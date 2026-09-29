@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.feature_engagement.TriggerState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     true,
                                     10,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     true,
                                     100,
@@ -56,19 +55,19 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     true,
                                     10,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     false,
                                     100,
                                     100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
                                     false));
-            // Don't trigger the IPH because the state is not set to has been displayed.
+            // Don't trigger the IPH because wouldTriggerHelpUi returns false.
             parameters.add(
                     new ParameterSet()
                             .value(
                                     false,
                                     10,
-                                    TriggerState.HAS_BEEN_DISPLAYED,
+                                    false,
                                     true,
                                     true,
                                     100,
@@ -80,7 +79,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     false,
                                     10,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     false,
                                     true,
                                     100,
@@ -92,7 +91,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     false,
                                     0,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     true,
                                     100,
@@ -104,7 +103,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     false,
                                     10,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     true,
                                     0,
@@ -116,7 +115,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     false,
                                     10,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     true,
                                     100,
@@ -128,7 +127,7 @@ public final class RefreshIphScrollListenerTest {
                             .value(
                                     false,
                                     0,
-                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
                                     true,
                                     true,
                                     100,
@@ -149,15 +148,16 @@ public final class RefreshIphScrollListenerTest {
     public void triggerIph(
             boolean expectEnabled,
             int scrollY,
-            int triggerState,
+            boolean wouldTriggerHelpUi,
             boolean isFeedExpanded,
             boolean isSignedIn,
             long lastFetchTimeMs,
             long currentTimeMs,
             boolean canScrollUp) {
         // Set Tracker mock.
-        when(mTracker.getTriggerState(FeatureConstants.FEED_SWIPE_REFRESH_FEATURE))
-                .thenReturn(triggerState);
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.FEED_SWIPE_REFRESH_FEATURE))
+                .thenReturn(wouldTriggerHelpUi);
 
         FeedBubbleDelegate delegate =
                 new FeedBubbleDelegate() {
@@ -237,5 +237,175 @@ public final class RefreshIphScrollListenerTest {
         } else {
             Assert.assertFalse(mHasShownIph);
         }
+    }
+
+    @Test
+    @Feature({"Feed"})
+    public void testNotInitialized_doesNotTriggerNorRemoveListener() {
+        when(mTracker.isInitialized()).thenReturn(false);
+        boolean[] listenerRemoved = new boolean[1];
+
+        FeedBubbleDelegate delegate =
+                new FeedBubbleDelegate() {
+                    @Override
+                    public Tracker getFeatureEngagementTracker() {
+                        return mTracker;
+                    }
+
+                    @Override
+                    public boolean isFeedExpanded() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isSignedIn() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isFeedHeaderPositionInContainerSuitableForIph(
+                            float headerMaxPosFraction) {
+                        return false;
+                    }
+
+                    @Override
+                    public long getCurrentTimeMs() {
+                        return 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS;
+                    }
+
+                    @Override
+                    public long getLastFetchTimeMs() {
+                        return 100;
+                    }
+
+                    @Override
+                    public boolean canScrollUp() {
+                        return false;
+                    }
+                };
+
+        ScrollableContainerDelegate scrollableContainerDelegate =
+                new ScrollableContainerDelegate() {
+                    @Override
+                    public void addScrollListener(ScrollListener listener) {}
+
+                    @Override
+                    public void removeScrollListener(ScrollListener listener) {
+                        listenerRemoved[0] = true;
+                    }
+
+                    @Override
+                    public int getVerticalScrollOffset() {
+                        return 10;
+                    }
+
+                    @Override
+                    public int getRootViewHeight() {
+                        return 100;
+                    }
+
+                    @Override
+                    public int getTopPositionRelativeToContainerView(View childView) {
+                        return 0;
+                    }
+                };
+
+        RefreshIphScrollListener listener =
+                new RefreshIphScrollListener(
+                        delegate,
+                        scrollableContainerDelegate,
+                        () -> {
+                            mHasShownIph = true;
+                        });
+        listener.onScrolled(0, 10);
+
+        Assert.assertFalse(mHasShownIph);
+        Assert.assertFalse(listenerRemoved[0]);
+    }
+
+    @Test
+    @Feature({"Feed"})
+    public void testAlreadyTriggered_removesListener() {
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.hasEverTriggered(FeatureConstants.FEED_SWIPE_REFRESH_FEATURE, true))
+                .thenReturn(true);
+        boolean[] listenerRemoved = new boolean[1];
+
+        FeedBubbleDelegate delegate =
+                new FeedBubbleDelegate() {
+                    @Override
+                    public Tracker getFeatureEngagementTracker() {
+                        return mTracker;
+                    }
+
+                    @Override
+                    public boolean isFeedExpanded() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isSignedIn() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean isFeedHeaderPositionInContainerSuitableForIph(
+                            float headerMaxPosFraction) {
+                        return false;
+                    }
+
+                    @Override
+                    public long getCurrentTimeMs() {
+                        return 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS;
+                    }
+
+                    @Override
+                    public long getLastFetchTimeMs() {
+                        return 100;
+                    }
+
+                    @Override
+                    public boolean canScrollUp() {
+                        return false;
+                    }
+                };
+
+        ScrollableContainerDelegate scrollableContainerDelegate =
+                new ScrollableContainerDelegate() {
+                    @Override
+                    public void addScrollListener(ScrollListener listener) {}
+
+                    @Override
+                    public void removeScrollListener(ScrollListener listener) {
+                        listenerRemoved[0] = true;
+                    }
+
+                    @Override
+                    public int getVerticalScrollOffset() {
+                        return 10;
+                    }
+
+                    @Override
+                    public int getRootViewHeight() {
+                        return 100;
+                    }
+
+                    @Override
+                    public int getTopPositionRelativeToContainerView(View childView) {
+                        return 0;
+                    }
+                };
+
+        RefreshIphScrollListener listener =
+                new RefreshIphScrollListener(
+                        delegate,
+                        scrollableContainerDelegate,
+                        () -> {
+                            mHasShownIph = true;
+                        });
+        listener.onScrolled(0, 10);
+
+        Assert.assertFalse(mHasShownIph);
+        Assert.assertTrue(listenerRemoved[0]);
     }
 }

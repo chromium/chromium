@@ -11,7 +11,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.feature_engagement.TriggerState;
 
 /**
  * Creates a ScrollListener that triggers the IPH for swipe refresh. The listener removes itself
@@ -56,10 +55,13 @@ public class RefreshIphScrollListener implements ScrollListener {
 
     private void maybeTriggerIph() {
         try (TraceEvent e = TraceEvent.scoped("RefreshIphScrollListener.maybeTriggerIph")) {
-            final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
             final Tracker tracker = mDelegate.getFeatureEngagementTracker();
 
-            if (tracker.getTriggerState(featureForIph) == TriggerState.HAS_BEEN_DISPLAYED) {
+            if (!tracker.isInitialized()) return;
+
+            final String featureForIph = FeatureConstants.FEED_SWIPE_REFRESH_FEATURE;
+
+            if (tracker.hasEverTriggered(featureForIph, /* fromWindow= */ true)) {
                 mScrollableContainerDelegate.removeScrollListener(this);
                 return;
             }
@@ -74,6 +76,8 @@ public class RefreshIphScrollListener implements ScrollListener {
             if (mDelegate.getCurrentTimeMs() - lastFetchTimeMs < FETCH_TIME_AGE_THREASHOLD_MS) {
                 return;
             }
+
+            if (!tracker.wouldTriggerHelpUi(featureForIph)) return;
 
             mShowIPHRunnable.run();
         }
