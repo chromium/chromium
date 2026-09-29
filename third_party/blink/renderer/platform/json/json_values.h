@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -148,13 +149,13 @@ class PLATFORM_EXPORT JSONObject : public JSONValue {
 
   JSONObject();
 
-  static JSONObject* Cast(JSONValue* value) {
+  static JSONObject* Cast(JSONValue* value LIFETIME_BOUND) {
     if (!value || value->GetType() != kTypeObject)
       return nullptr;
     return static_cast<JSONObject*>(value);
   }
 
-  static const JSONObject* Cast(const JSONValue* value) {
+  static const JSONObject* Cast(const JSONValue* value LIFETIME_BOUND) {
     if (!value || value->GetType() != kTypeObject)
       return nullptr;
     return static_cast<const JSONObject*>(value);
@@ -191,10 +192,10 @@ class PLATFORM_EXPORT JSONObject : public JSONValue {
 
   // This function is not "GetObject" in order to avoid replacement by
   // windows.h.
-  JSONObject* GetJSONObject(const String& name) const;
-  JSONArray* GetArray(const String& name) const;
-  JSONValue* Get(const String& name) const;
-  Entry at(wtf_size_t index) const;
+  JSONObject* GetJSONObject(const String& name) const LIFETIME_BOUND;
+  JSONArray* GetArray(const String& name) const LIFETIME_BOUND;
+  JSONValue* Get(const String& name) const LIFETIME_BOUND;
+  Entry at(wtf_size_t index) const LIFETIME_BOUND;
 
   bool BooleanProperty(const String& name, bool default_value) const;
   int IntegerProperty(const String& name, int default_value) const;
@@ -224,13 +225,13 @@ class PLATFORM_EXPORT JSONObject : public JSONValue {
 
 class PLATFORM_EXPORT JSONArray : public JSONValue {
  public:
-  static JSONArray* Cast(JSONValue* value) {
+  static JSONArray* Cast(JSONValue* value LIFETIME_BOUND) {
     if (!value || value->GetType() != kTypeArray)
       return nullptr;
     return static_cast<JSONArray*>(value);
   }
 
-  static const JSONArray* Cast(const JSONValue* value) {
+  static const JSONArray* Cast(const JSONValue* value LIFETIME_BOUND) {
     if (!value || value->GetType() != kTypeArray)
       return nullptr;
     return static_cast<const JSONArray*>(value);
@@ -260,7 +261,7 @@ class PLATFORM_EXPORT JSONArray : public JSONValue {
   void PushObject(std::unique_ptr<JSONObject>);
   void PushArray(std::unique_ptr<JSONArray>);
 
-  JSONValue* at(wtf_size_t index) const;
+  JSONValue* at(wtf_size_t index) const LIFETIME_BOUND;
   wtf_size_t size() const { return data_.size(); }
 
   class ConstIterator {
