@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -130,9 +131,8 @@ std::unique_ptr<KeyedService> BuildTestDriveIntegrationService(
       fake_drivefs_helper->CreateFakeDriveFsListenerFactory());
 
   // Wait until the DriveIntegrationService is initialized.
-  while (!service->IsMounted() || !service->GetDriveFsInterface()) {
-    base::RunLoop().RunUntilIdle();
-  }
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return service->IsMounted() && service->GetDriveFsInterface(); }));
   return service;
 }
 
