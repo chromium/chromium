@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -149,6 +150,11 @@ public class UrlBar extends AutocompleteEditText {
     /** True while an unfocused press is in progress on desktop experience devices. */
     private boolean mPointerDragActive;
 
+    private int mTapCount;
+    private long mLastUpTime;
+    private float mLastDownX;
+    private float mLastDownY;
+
     private boolean mPendingScroll;
 
     // Whether an origin change was reported for a scroll request that had to be deferred until
@@ -188,6 +194,8 @@ public class UrlBar extends AutocompleteEditText {
 
     private boolean mUseSmallTextHeight;
     private boolean mTextIsWrapped;
+    private final int mDoubleTapSlopSquared;
+    private final long mDoubleTapTimeout;
 
     /** What scrolling action should be taken after the URL bar text changes. */
     @IntDef({ScrollType.NO_SCROLL, ScrollType.SCROLL_TO_TLD, ScrollType.SCROLL_TO_BEGINNING})
@@ -351,6 +359,10 @@ public class UrlBar extends AutocompleteEditText {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setIsHandwritingDelegate(true);
         }
+
+        int doubleTapSlop = ViewConfiguration.get(getContext()).getScaledDoubleTapSlop();
+        mDoubleTapSlopSquared = doubleTapSlop * doubleTapSlop;
+        mDoubleTapTimeout = ViewConfiguration.getDoubleTapTimeout();
     }
 
     @Override
@@ -775,17 +787,49 @@ public class UrlBar extends AutocompleteEditText {
                 mUrlBarDelegate.onUrlBarTouchDown();
             }
             if ((event.getButtonState() & MotionEvent.BUTTON_SECONDARY) != 0) {
+                mTapCount = 0;
                 if (isFocused()) {
                     selectWordAt(event.getX(), event.getY());
                 } else {
                     performClick();
+                }
+            } else {
+                long timeSinceLastUp = event.getEventTime() - mLastUpTime;
+                float dx = event.getX() - mLastDownX;
+                float dy = event.getY() - mLastDownY;
+                boolean isConsecutive =
+                        timeSinceLastUp <= mDoubleTapTimeout
+                                && (dx * dx + dy * dy) <= mDoubleTapSlopSquared;
+
+                mLastDownX = event.getX();
+                mLastDownY = event.getY();
+
+                if (isConsecutive) {
+                    mTapCount++;
+                    if (mTapCount > 3) {
+                        mTapCount = 1;
+                    }
+                } else {
+                    mTapCount = 1;
+                }
+
+                if (mTapCount == 2) {
+                    if (!isFocused()) {
+                        performClick();
+                    }
+                    selectWordAt(event.getX(), event.getY());
+                } else if (mTapCount == 3) {
+                    if (!isFocused()) {
+                        performClick();
+                    }
+                    selectAllText();
                 }
             }
 
             mLongPressPerformed = false;
             // Reveal the full URL when an unfocused bar is pressed with desktop experience.
             mPointerDragActive =
-                    !mFocused && OmniboxCapabilities.hasDesktopExperience(getContext());
+                    !isFocused() && OmniboxCapabilities.hasDesktopExperience(getContext());
             if (mPointerDragActive) {
                 Editable text = getText();
                 if (text != null) {
@@ -796,6 +840,11 @@ public class UrlBar extends AutocompleteEditText {
             }
         } else if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
             mPointerDragActive = false;
+            if (action == MotionEvent.ACTION_CANCEL) {
+                mTapCount = 0;
+            } else {
+                mLastUpTime = event.getEventTime();
+            }
         }
 
         // We need to suppress the OS from taking ownership of initial focus.
@@ -804,13 +853,37 @@ public class UrlBar extends AutocompleteEditText {
         // This overrides any information we persisted in AutocompleteInput; if we
         // persist user selection ahead of suspending input, we cannot resume from where the
         // user left off.
-        if (!isFocused() && action == MotionEvent.ACTION_UP && !mLongPressPerformed) {
-            performClick();
-            event = MotionEvent.obtain(event);
-            event.setAction(MotionEvent.ACTION_CANCEL);
+        // We also need to prevent the OS from handling ACTION_UP events for double or triple
+        // clicks, since we're handling text selection in those cases manually and the ACTION_UP
+        // handling will override our manually set selection.
+        MotionEvent eventToDispatch = event;
+        boolean eventObtained = false;
+        if ((!isFocused() || mTapCount >= 2)
+                && action == MotionEvent.ACTION_UP
+                && !mLongPressPerformed) {
+            if (!isFocused() && mTapCount <= 1) {
+                performClick();
+            }
+            eventToDispatch = MotionEvent.obtain(event);
+            eventToDispatch.setAction(MotionEvent.ACTION_CANCEL);
+            eventObtained = true;
         }
 
-        return super.onTouchEvent(event);
+        try {
+            return super.onTouchEvent(eventToDispatch);
+        } finally {
+            if (eventObtained) {
+                eventToDispatch.recycle();
+            }
+        }
+    }
+
+    @VisibleForTesting
+    /* package */ void selectAllText() {
+        CharSequence text = getText();
+        if (text != null && text.length() > 0) {
+            setSelection(0, text.length());
+        }
     }
 
     /**
@@ -828,15 +901,6 @@ public class UrlBar extends AutocompleteEditText {
             return;
         }
 
-        // Within existing selection.
-        int selectionStart = getSelectionStart();
-        int selectionEnd = getSelectionEnd();
-        int minSel = Math.min(selectionStart, selectionEnd);
-        int maxSel = Math.max(selectionStart, selectionEnd);
-        if (minSel != maxSel && offset >= minSel && offset < maxSel) {
-            return;
-        }
-
         BreakIterator iterator = BreakIterator.getWordInstance(getTextLocale());
         iterator.setText(text.toString());
 
@@ -845,6 +909,19 @@ public class UrlBar extends AutocompleteEditText {
 
         if (start == BreakIterator.DONE || end == BreakIterator.DONE || start >= end) {
             return;
+        }
+
+        if (Character.isLetterOrDigit(text.charAt(offset))) {
+            int wordStart = offset;
+            while (wordStart > start && Character.isLetterOrDigit(text.charAt(wordStart - 1))) {
+                wordStart--;
+            }
+            int wordEnd = offset;
+            while (wordEnd < end && Character.isLetterOrDigit(text.charAt(wordEnd))) {
+                wordEnd++;
+            }
+            start = wordStart;
+            end = wordEnd;
         }
 
         setSelection(start, end);

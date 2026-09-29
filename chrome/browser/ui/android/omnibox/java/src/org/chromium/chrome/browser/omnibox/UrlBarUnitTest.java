@@ -2593,6 +2593,96 @@ public class UrlBarUnitTest {
         assertEquals(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX, mUrlBar.getTextWidth());
     }
 
+    @Test
+    public void testDoubleTap_highlightsWord() {
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        mUrlBar.setText("https://www.google.com/search");
+        doReturn(14).when(mUrlBar).getOffsetForPosition(100f, 10f);
+
+        tap(2);
+
+        assertEquals(12, mUrlBar.getSelectionStart());
+        assertEquals(18, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void testDoubleTap_unfocused_focusesAndHighlightsWord() {
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        String url = "https://www.google.com/search";
+        mUrlBar.setText(url);
+        doReturn(14).when(mUrlBar).getOffsetForPosition(100f, 10f);
+
+        tap(2);
+
+        verify(mUrlBarDelegate).onFocusByTouch();
+        assertEquals(12, mUrlBar.getSelectionStart());
+        assertEquals(18, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void testDoubleTap_withinExistingSelection_highlightsWord() {
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        String url = "https://www.google.com/search";
+        mUrlBar.setText(url);
+        mUrlBar.setSelection(0, url.length());
+        doReturn(14).when(mUrlBar).getOffsetForPosition(100f, 10f);
+
+        tap(2);
+
+        assertEquals(12, mUrlBar.getSelectionStart());
+        assertEquals(18, mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void testTripleTap_focused_selectsAll() {
+        mUrlBar.onFocusChanged(
+                /* focused= */ true, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        String url = "https://www.google.com/search";
+        mUrlBar.setText(url);
+        doReturn(14).when(mUrlBar).getOffsetForPosition(100f, 10f);
+
+        tap(3);
+
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(url.length(), mUrlBar.getSelectionEnd());
+    }
+
+    @Test
+    public void testTripleTap_unfocused_focusesAndSelectsAll() {
+        mUrlBar.onFocusChanged(
+                /* focused= */ false, /* direction= */ 0, /* previouslyFocusedRect= */ null);
+        String url = "https://www.google.com/search";
+        mUrlBar.setText(url);
+        doReturn(14).when(mUrlBar).getOffsetForPosition(100f, 10f);
+
+        tap(3);
+
+        verify(mUrlBarDelegate).onFocusByTouch();
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(url.length(), mUrlBar.getSelectionEnd());
+    }
+
+    private void tap(int n) {
+        tap(n, 100f, 10f);
+    }
+
+    private void tap(int n, float x, float y) {
+        long eventTime = 0;
+        for (int i = 0; i < n; i++) {
+            MotionEvent down = MotionEvent.obtain(0, eventTime, MotionEvent.ACTION_DOWN, x, y, 0);
+            mUrlBar.onTouchEvent(down);
+            down.recycle();
+            eventTime += 10;
+            MotionEvent up = MotionEvent.obtain(0, eventTime, MotionEvent.ACTION_UP, x, y, 0);
+            mUrlBar.onTouchEvent(up);
+            up.recycle();
+            eventTime += 40;
+        }
+    }
+
     private static String sampledPrefixOfSuperLongUrl() {
         return SUPER_LONG_URL.substring(0, UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT);
     }
