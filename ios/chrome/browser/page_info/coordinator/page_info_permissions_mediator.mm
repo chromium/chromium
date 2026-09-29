@@ -4,31 +4,65 @@
 
 #import "ios/chrome/browser/page_info/coordinator/page_info_permissions_mediator.h"
 
+#import "base/memory/raw_ptr.h"
+#import "components/content_settings/core/browser/host_content_settings_map.h"
+#import "components/content_settings/core/common/content_settings.h"
+#import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_metrics_util.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_consumer.h"
-#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
-@interface PageInfoPermissionsMediator () <CRWWebStateObserver> {
+namespace {
+
+// Returns the ContentSetting corresponding to `setting`.
+ContentSetting ContentSettingForSitePermissionSetting(
+    SitePermissionSetting setting) {
+  switch (setting) {
+    case SitePermissionSetting::kAlwaysAllow:
+      return CONTENT_SETTING_ALLOW;
+    case SitePermissionSetting::kNeverAllow:
+      return CONTENT_SETTING_BLOCK;
+    case SitePermissionSetting::kAllowOnce:
+      return CONTENT_SETTING_DEFAULT;
+  }
+}
+
+// Returns the SitePermissionSetting corresponding to `content_setting`.
+SitePermissionSetting SitePermissionSettingForContentSetting(
+    ContentSetting content_setting) {
+  switch (content_setting) {
+    case CONTENT_SETTING_ALLOW:
+      return SitePermissionSetting::kAlwaysAllow;
+    case CONTENT_SETTING_BLOCK:
+      return SitePermissionSetting::kNeverAllow;
+    default:
+      return SitePermissionSetting::kAllowOnce;
+  }
+}
+
+}  // namespace
+
+@interface PageInfoPermissionsMediator () <CRWWebStateObserver>
+@end
+
+@implementation PageInfoPermissionsMediator {
+  raw_ptr<web::WebState> _webState;
+  raw_ptr<HostContentSettingsMap> _hostContentSettingsMap;
   std::unique_ptr<web::WebStateObserverBridge> _observer;
 }
 
-@property(nonatomic, assign) web::WebState* webState;
-@property(nonatomic, strong)
-    NSMutableDictionary<NSNumber*, NSNumber*>* accessiblePermissionStates;
-
-@end
-
-@implementation PageInfoPermissionsMediator
-
-- (instancetype)initWithWebState:(web::WebState*)webState {
+- (instancetype)initWithWebState:(web::WebState*)webState
+          hostContentSettingsMap:
+              (HostContentSettingsMap*)hostContentSettingsMap {
   self = [super init];
   if (self) {
     _webState = webState;
+    _hostContentSettingsMap = hostContentSettingsMap;
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_observer.get());
   }
@@ -50,6 +84,7 @@
     _observer.reset();
     _webState = nullptr;
   }
+  _hostContentSettingsMap = nullptr;
 }
 
 #pragma mark - CRWWebStateObserver
@@ -58,8 +93,10 @@
     didChangeStateForPermission:(web::Permission)permission {
   PermissionInfo* permissionsDescription = [[PermissionInfo alloc] init];
   permissionsDescription.permission = permission;
-  permissionsDescription.state =
-      self.webState->GetStateForPermission(permission);
+  permissionsDescription.state = _webState->GetStateForPermission(permission);
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    permissionsDescription.setting = [self permissionSettingFor:permission];
+  }
   [self.consumer permissionStateChanged:permissionsDescription];
 }
 
@@ -73,33 +110,87 @@
 
 #pragma mark - PermissionsDelegate
 
-- (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
-  RecordPermissionToogled();
-  self.webState->SetStateForPermission(permissionDescription.state,
-                                       permissionDescription.permission);
+- (void)updatePermissionInfo:(PermissionInfo*)permissionInfo {
+  if (!_webState) {
+    return;
+  }
+  if (IsDomainLevelSitePermissionsEnabled()) {
+    SitePermissionSetting setting = permissionInfo.setting;
+    [self persistSetting:setting forPermission:permissionInfo.permission];
+    permissionInfo.state = (setting == SitePermissionSetting::kNeverAllow)
+                               ? web::PermissionStateBlocked
+                               : web::PermissionStateAllowed;
+    // TODO(crbug.com/552563362): Record domain-level permission dropdown
+    // selection histogram.
+  } else {
+    RecordPermissionToogled();
+  }
+  _webState->SetStateForPermission(permissionInfo.state,
+                                   permissionInfo.permission);
   RecordPermissionEventFromOrigin(
-      permissionDescription,
-      PermissionEventOrigin::PermissionEventOriginPageInfo);
+      permissionInfo, PermissionEventOrigin::PermissionEventOriginPageInfo);
 }
 
 #pragma mark - Private
 
 // Helper that creates and dispatches initial permissions information to the
-// InfobarModal.
+// consumer.
 - (void)dispatchInitialPermissionsInfo {
-  NSMutableDictionary<NSNumber*, NSNumber*>* permissionsInfo =
-      [[NSMutableDictionary alloc] init];
+  NSMutableArray<PermissionInfo*>* permissionsInfo =
+      [[NSMutableArray alloc] init];
 
   NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
-      self.webState->GetStatesForAllPermissions();
+      _webState->GetStatesForAllPermissions();
   for (NSNumber* key in statesForAllPermissions) {
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
     if (state != web::PermissionStateNotAccessible) {
-      [permissionsInfo setObject:statesForAllPermissions[key] forKey:key];
+      web::Permission permission =
+          static_cast<web::Permission>(key.unsignedIntValue);
+      PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
+      permissionInfo.permission = permission;
+      permissionInfo.state = state;
+      if (IsDomainLevelSitePermissionsEnabled()) {
+        permissionInfo.setting = [self permissionSettingFor:permission];
+      }
+      [permissionsInfo addObject:permissionInfo];
     }
   }
   [self.consumer setPermissionsInfo:permissionsInfo];
+}
+
+// Resolves the current domain-level permission setting for `permission`.
+- (SitePermissionSetting)permissionSettingFor:(web::Permission)permission {
+  if (!_webState || !_hostContentSettingsMap) {
+    return SitePermissionSetting::kAllowOnce;
+  }
+  const GURL& url = _webState->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return SitePermissionSetting::kAllowOnce;
+  }
+  ContentSettingsType contentType =
+      ContentSettingsTypeForPermission(permission);
+  ContentSetting setting =
+      _hostContentSettingsMap->GetContentSetting(url, url, contentType);
+  return SitePermissionSettingForContentSetting(setting);
+}
+
+// Persists `setting` for `permission` to `HostContentSettingsMap`.
+- (void)persistSetting:(SitePermissionSetting)setting
+         forPermission:(web::Permission)permission {
+  if (!_hostContentSettingsMap || !_webState) {
+    return;
+  }
+  const GURL& url = _webState->GetLastCommittedURL();
+  if (!url.is_valid()) {
+    return;
+  }
+  ContentSettingsType contentType =
+      ContentSettingsTypeForPermission(permission);
+  ContentSetting contentSetting =
+      ContentSettingForSitePermissionSetting(setting);
+  _hostContentSettingsMap->SetContentSettingDefaultScope(url, url, contentType,
+                                                         contentSetting);
 }
 
 @end

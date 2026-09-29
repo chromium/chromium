@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
 
 @protocol PermissionsConsumer;
+class HostContentSettingsMap;
 
 namespace web {
 class WebState;
@@ -16,14 +17,16 @@ class WebState;
 // Mediator for the page info permissions.
 @interface PageInfoPermissionsMediator : NSObject <PermissionsDelegate>
 
-- (instancetype)init NS_UNAVAILABLE;
-
-// Designated initializer that reads information from `webState` to establish
-// the property.
-- (instancetype)initWithWebState:(web::WebState*)webState;
-
 // Consumer that is configured by this mediator.
 @property(nonatomic, weak) id<PermissionsConsumer> consumer;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Designated initializer that reads information from `webState` and
+// `hostContentSettingsMap` to establish the permissions state.
+- (instancetype)initWithWebState:(web::WebState*)webState
+          hostContentSettingsMap:(HostContentSettingsMap*)hostContentSettingsMap
+    NS_DESIGNATED_INITIALIZER;
 
 // Disconnects the mediator.
 - (void)disconnect;

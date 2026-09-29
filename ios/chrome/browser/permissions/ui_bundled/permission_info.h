@@ -12,11 +12,22 @@ enum Permission : NSUInteger;
 enum PermissionState : NSUInteger;
 }  // namespace web
 
+// Represents the site permission setting for a domain.
+enum class SitePermissionSetting {
+  kNeverAllow = 0,
+  kAllowOnce,
+  kAlwaysAllow,
+};
+
 // Object that stores permission information.
 @interface PermissionInfo : NSObject
 
+// The permission type.
 @property(nonatomic, assign) web::Permission permission;
+// The session permission state.
 @property(nonatomic, assign) web::PermissionState state;
+// The domain-level permission setting.
+@property(nonatomic, assign) SitePermissionSetting setting;
 
 @end
 

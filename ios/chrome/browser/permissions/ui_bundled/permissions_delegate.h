@@ -12,8 +12,8 @@
 // Delegate to handle permissions actions.
 @protocol PermissionsDelegate <NSObject>
 
-// Method invoked when the user taps a switch.
-- (void)updateStateForPermission:(PermissionInfo*)permissionDescription;
+// Method invoked when the user updates a permission's state or setting.
+- (void)updatePermissionInfo:(PermissionInfo*)permissionInfo;
 
 @end
 

@@ -22,6 +22,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
     "//components/page_info/core",
@@ -40,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/page_info/last_visited",
     "//ios/chrome/browser/page_info/model",
     "//ios/chrome/browser/page_info/ui",
+    "//ios/chrome/browser/permissions/model:tab_helper",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/browser/reading_list/model",
@@ -67,6 +69,7 @@ source_set("coordinator") {
     "//ios/web/public/permissions",
     "//ios/web/public/security",
     "//ui/base",
+    "//url",
   ]
   frameworks = [ "UIKit.framework" ]
 }
@@ -80,14 +83,20 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/page_info/ui",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/navigation",
     "//ios/web/public/permissions",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",

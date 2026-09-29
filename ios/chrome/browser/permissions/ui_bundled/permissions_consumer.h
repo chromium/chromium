@@ -9,18 +9,11 @@
 
 @class PermissionInfo;
 
-namespace web {
-enum Permission : NSUInteger;
-enum PermissionState : NSUInteger;
-}  // namespace web
-
 // Consumer for model to push configurations to the permissions UI.
 @protocol PermissionsConsumer <NSObject>
 
-// The list of permissions being displayed. The first NSNumber represents the
-// `web::Permission` int value and the second its associated
-// `web::PermissionState`.
-- (void)setPermissionsInfo:(NSDictionary<NSNumber*, NSNumber*>*)permissionsInfo;
+// The list of permissions being displayed.
+- (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo;
 
 // Called when the state of given permission changed.
 - (void)permissionStateChanged:(PermissionInfo*)info;

@@ -108,7 +108,7 @@
 
 #pragma mark - PermissionsDelegate
 
-- (void)updateStateForPermission:(PermissionInfo*)permissionDescription {
+- (void)updatePermissionInfo:(PermissionInfo*)permissionDescription {
   RecordPermissionToogled();
   self.webState->SetStateForPermission(permissionDescription.state,
                                        permissionDescription.permission);
@@ -122,8 +122,8 @@
 // Helper that creates and dispatches initial permissions information to the
 // InfobarModal.
 - (void)dispatchInitialPermissionsInfo {
-  NSMutableDictionary<NSNumber*, NSNumber*>* permissionsInfo =
-      [[NSMutableDictionary alloc] init];
+  NSMutableArray<PermissionInfo*>* permissionsInfo =
+      [[NSMutableArray alloc] init];
 
   NSDictionary<NSNumber*, NSNumber*>* statesForAllPermissions =
       self.webState->GetStatesForAllPermissions();
@@ -131,7 +131,10 @@
     web::PermissionState state =
         (web::PermissionState)statesForAllPermissions[key].unsignedIntValue;
     if (state != web::PermissionStateNotAccessible) {
-      [permissionsInfo setObject:statesForAllPermissions[key] forKey:key];
+      PermissionInfo* permissionInfo = [[PermissionInfo alloc] init];
+      permissionInfo.permission = (web::Permission)key.unsignedIntValue;
+      permissionInfo.state = state;
+      [permissionsInfo addObject:permissionInfo];
     }
   }
   [self.consumer setPermissionsInfo:permissionsInfo];

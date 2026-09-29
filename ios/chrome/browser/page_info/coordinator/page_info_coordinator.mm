@@ -90,8 +90,10 @@
   self.viewController.pageInfoCommandsHandler =
       HandlerForProtocol(self.dispatcher, PageInfoCommands);
 
-  self.permissionsMediator =
-      [[PageInfoPermissionsMediator alloc] initWithWebState:webState];
+  self.permissionsMediator = [[PageInfoPermissionsMediator alloc]
+            initWithWebState:webState
+      hostContentSettingsMap:ios::HostContentSettingsMapFactory::GetForProfile(
+                                 self.profile)];
   self.viewController.permissionsDelegate = self.permissionsMediator;
   self.permissionsMediator.consumer = self.viewController;
 

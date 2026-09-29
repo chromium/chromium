@@ -121,7 +121,7 @@ TEST_F(PermissionsInfobarModalOverlayMediatorTest, PermissionStatesUpdate) {
   EXPECT_EQ(web::PermissionStateBlocked, consumer.microphoneInfo.state);
 }
 
-// Tests that calling `updateStateForPermission:` updates both the consumer and
+// Tests that calling `updatePermissionInfo:` updates both the consumer and
 // web state permissions.
 TEST_F(PermissionsInfobarModalOverlayMediatorTest,
        UpdatePermissionStatesThroughInfobarModal) {
@@ -138,7 +138,7 @@ TEST_F(PermissionsInfobarModalOverlayMediatorTest,
   PermissionInfo* permission_info_1 = [[PermissionInfo alloc] init];
   permission_info_1.permission = web::PermissionMicrophone;
   permission_info_1.state = web::PermissionStateAllowed;
-  [mediator_ updateStateForPermission:permission_info_1];
+  [mediator_ updatePermissionInfo:permission_info_1];
   EXPECT_EQ(web::PermissionStateAllowed,
             web_state_.GetStateForPermission(web::PermissionCamera));
   EXPECT_EQ(web::PermissionStateAllowed, consumer.cameraInfo.state);
@@ -149,7 +149,7 @@ TEST_F(PermissionsInfobarModalOverlayMediatorTest,
   PermissionInfo* permission_info_2 = [[PermissionInfo alloc] init];
   permission_info_2.permission = web::PermissionCamera;
   permission_info_2.state = web::PermissionStateBlocked;
-  [mediator_ updateStateForPermission:permission_info_2];
+  [mediator_ updatePermissionInfo:permission_info_2];
   EXPECT_EQ(web::PermissionStateBlocked,
             web_state_.GetStateForPermission(web::PermissionCamera));
   EXPECT_EQ(web::PermissionStateBlocked, consumer.cameraInfo.state);
