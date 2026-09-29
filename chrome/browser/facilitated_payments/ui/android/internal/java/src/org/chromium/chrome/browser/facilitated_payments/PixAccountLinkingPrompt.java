@@ -89,7 +89,7 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
         } else if (propertyKey == SETTINGS_LINK_CALLBACK) {
             updateSettingsLink(model, view);
         } else if (propertyKey == VIDEO_LINK_CALLBACK) {
-            TextView valueProp1 = view.findViewById(R.id.value_prop_message_1);
+            TextView valueProp1 = view.findViewById(R.id.prompt_b_value_prop_message_1);
             if (valueProp1 != null) {
                 valueProp1.setText(
                         SpanApplier.applySpans(

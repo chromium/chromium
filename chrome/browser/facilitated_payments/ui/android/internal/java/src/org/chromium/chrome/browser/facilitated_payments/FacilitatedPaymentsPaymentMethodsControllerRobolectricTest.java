@@ -67,6 +67,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -84,6 +85,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -1541,6 +1543,91 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         .get(SCREEN_VIEW_MODEL)
                         .get(DECLINE_BUTTON_TEXT_ID),
                 is(R.string.pix_account_linking_prompt_decline));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE})
+    public void testPixAccountLinkingPrompt_DefaultPromptNotOverriddenWithVideoLink() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        org.mockito.ArgumentCaptor<BottomSheetContent> contentCaptor =
+                org.mockito.ArgumentCaptor.forClass(BottomSheetContent.class);
+        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), anyBoolean());
+        android.view.View contentView = contentCaptor.getValue().getContentView();
+
+        android.widget.TextView valueProp1 =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id.value_prop_message_1);
+        assertNotNull(valueProp1);
+        assertThat(
+                valueProp1.getText().toString(),
+                is(mContext.getString(R.string.pix_account_linking_prompt_value_prop_message_1)));
+        assertNull(
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .prompt_b_value_prop_message_1));
+    }
+
+    @Test
+    @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationB"})
+    public void testPixAccountLinkingPrompt_VariantBShowsVideoLink() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        org.mockito.ArgumentCaptor<BottomSheetContent> contentCaptor =
+                org.mockito.ArgumentCaptor.forClass(BottomSheetContent.class);
+        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), anyBoolean());
+        android.view.View contentView = contentCaptor.getValue().getContentView();
+
+        android.widget.TextView promptBValueProp1 =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .prompt_b_value_prop_message_1);
+        assertNotNull(promptBValueProp1);
+        assertThat(
+                promptBValueProp1.getText().toString(),
+                is("Pay without copying and pasting Pix code. See how it works"));
+        assertNull(
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .value_prop_message_1));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE})
+    public void testPixAccountLinkingPrompt_VideoLinkCallbackOpensDefaultUrlWhenParamUnset() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(VIDEO_LINK_CALLBACK)
+                .onClick(null);
+
+        Intent startedIntent = Shadows.shadowOf((Activity) mContext).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertThat(startedIntent.getAction(), is(Intent.ACTION_VIEW));
+        assertThat(
+                startedIntent.getDataString(),
+                is(
+                        FacilitatedPaymentsPaymentMethodsMediator
+                                .DEFAULT_PIX_ACCOUNT_LINKING_VIDEO_URL));
+    }
+
+    @Test
+    @EnableFeatures({
+        "EnablePixAccountLinkingNative:video_url_on_prompt/https%3A%2F%2Fexample.com%2Fpix"
+    })
+    public void testPixAccountLinkingPrompt_VideoLinkCallbackOpensCustomUrlWhenParamSet() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(VIDEO_LINK_CALLBACK)
+                .onClick(null);
+
+        Intent startedIntent = Shadows.shadowOf((Activity) mContext).getNextStartedActivity();
+        assertNotNull(startedIntent);
+        assertThat(startedIntent.getAction(), is(Intent.ACTION_VIEW));
+        assertThat(startedIntent.getDataString(), is("https://example.com/pix"));
     }
 
     @Test
