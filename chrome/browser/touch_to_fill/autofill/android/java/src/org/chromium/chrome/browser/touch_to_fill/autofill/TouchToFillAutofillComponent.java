@@ -27,6 +27,9 @@ public interface TouchToFillAutofillComponent {
     /** Displays the Personal Context Notice bottom sheet. */
     void showPersonalContextNotice();
 
+    /** Displays the Autofill AI private inference notice bottom sheet. */
+    void showPrivateInferenceNotice();
+
     /** Hides the bottom sheet if shown. */
     void hide();
 

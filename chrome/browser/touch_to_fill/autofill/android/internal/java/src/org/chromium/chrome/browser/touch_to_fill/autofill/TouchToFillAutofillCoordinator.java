@@ -80,6 +80,11 @@ public class TouchToFillAutofillCoordinator implements TouchToFillAutofillCompon
     }
 
     @Override
+    public void showPrivateInferenceNotice() {
+        mMediator.showPrivateInferenceNotice();
+    }
+
+    @Override
     public void hide() {
         mMediator.hide();
     }

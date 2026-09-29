@@ -2150,4 +2150,26 @@ You can remove this suggestion from Chrome. Your original source won't be delete
       Choose which apps Gemini connects to
     </message>
   </if>
+
+  <!-- Private Inference Notice in Autofill Bottomsheet -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_TITLE" desc="Headline of an informational notice explaining that page content may be processed in a private space in the cloud to improve autofill." formatter_data="android_java">
+      Smarter autofill, kept private
+    </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_DESCRIPTION" desc="Body text of an informational notice explaining that page content may be processed in a private space in the cloud to improve autofill. 'Chrome' is a Google product name and must remain unlocalized." formatter_data="android_java">
+      Chrome can now detect and fill more forms with smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.
+    </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_OK_BUTTON" desc="Acknowledgment button label to dismiss the informational notice." formatter_data="android_java">
+      Got it
+    </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_SETTINGS_LINK" desc="Standard navigation button label to open the Chrome settings menu." formatter_data="android_java">
+      Settings
+    </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_FULL_HEIGHT" is_accessibility_with_no_ui="true" desc="Accessibility string read upon opening the autofill private inference notice sheet." formatter_data="android_java">
+      Smarter autofill, kept private notice opened at full height
+    </message>
+    <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_SHEET_CLOSED" is_accessibility_with_no_ui="true" desc="Accessibility string read upon closing the autofill private inference notice sheet." formatter_data="android_java">
+      Smarter autofill, kept private notice closed
+    </message>
+  </if>
 </grit-part>
