@@ -6,13 +6,19 @@
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -109,6 +115,51 @@ TEST_F(EmailVerifierNetworkRequestManagerTest, RequestAbortedOnInvalidFrame) {
   run_loop.Run();
 
   EXPECT_EQ(0, test_url_loader_factory.NumPending());
+}
+
+// EVP-COMPLIANCE: EVP-3.3-01
+// The metadata document's `issuer` must be byte-for-byte the issuer
+// identifier it was fetched under. A missing `issuer` is still accepted for
+// now (see the TODO in OnWellKnownParsed).
+TEST_F(EmailVerifierNetworkRequestManagerTest, FetchWellKnownChecksIssuer) {
+  constexpr char kWellKnownUrl[] =
+      "https://idp.example/.well-known/email-verification";
+  struct {
+    const char* issuer_member;  // Raw JSON, or nullptr to omit `issuer`.
+    ParseStatus expected;
+  } kCases[] = {
+      {R"("https://idp.example")", ParseStatus::kSuccess},
+      {nullptr, ParseStatus::kSuccess},
+      {R"("https://evil.example")", ParseStatus::kInvalidResponseError},
+      // No normalization is applied: these all name the same origin, but none
+      // is the identifier byte-for-byte.
+      {R"("https://idp.example/")", ParseStatus::kInvalidResponseError},
+      {R"("https://idp.example:443")", ParseStatus::kInvalidResponseError},
+      {R"("idp.example")", ParseStatus::kInvalidResponseError},
+      {R"("")", ParseStatus::kInvalidResponseError},
+      {"1", ParseStatus::kInvalidResponseError},
+  };
+
+  for (const auto& test : kCases) {
+    SCOPED_TRACE(test.issuer_member ? test.issuer_member : "(absent)");
+    std::string body = R"({"issuance_endpoint": "https://idp.example/token")";
+    if (test.issuer_member) {
+      body += base::StrCat({R"(, "issuer": )", test.issuer_member});
+    }
+    body += "}";
+
+    auto head = network::CreateURLResponseHead(net::HTTP_OK);
+    head->headers->SetHeader("Content-Type", "application/json");
+    test_url_loader_factory_.AddResponse(
+        GURL(kWellKnownUrl), std::move(head), body,
+        network::URLLoaderCompletionStatus(net::OK));
+
+    base::test::TestFuture<FetchStatus,
+                           EmailVerifierNetworkRequestManager::WellKnown>
+        future;
+    manager_->FetchWellKnown(GURL("https://idp.example"), future.GetCallback());
+    EXPECT_EQ(test.expected, future.Get<0>().parse_status);
+  }
 }
 
 }  // namespace content::webid
