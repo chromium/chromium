@@ -211,6 +211,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     private @Nullable SparseIntArray mNormalTabsRestored;
     private @Nullable SparseIntArray mIncognitoTabsRestored;
     private Set<@TabId Integer> mBackgroundTabIds = Collections.emptySet();
+    private Set<@TabId Integer> mRemainingBackgroundTabIds = Collections.emptySet();
     private @Nullable AsyncTask<@Nullable DataInputStream> mPrefetchTabListTask;
     private @Nullable TabModelSelectorMetadata mLastSavedMetadata;
     // Tracks whether this TabPersistentStore's tabs are being loaded.
@@ -538,6 +539,9 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mBackgroundTabIds =
                 BackgroundTabRestorationHelper.fetchBackgroundTabIds(
                         mOrchestratorType, mTabModelSelector, ignoreRegularFiles, mIsAuthoritative);
+        mRemainingBackgroundTabIds =
+                BackgroundTabRestorationHelper.claimRemainingBackgroundTabIds(
+                        mOrchestratorType, mTabModelSelector, ignoreRegularFiles, mIsAuthoritative);
 
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
@@ -645,6 +649,13 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mBackgroundTabIds.isEmpty()) {
             mBackgroundTabIds =
                     BackgroundTabRestorationHelper.fetchBackgroundTabIds(
+                            mOrchestratorType,
+                            mTabModelSelector,
+                            mCancelNormalTabLoads,
+                            mIsAuthoritative);
+            assert mRemainingBackgroundTabIds.isEmpty();
+            mRemainingBackgroundTabIds =
+                    BackgroundTabRestorationHelper.claimRemainingBackgroundTabIds(
                             mOrchestratorType,
                             mTabModelSelector,
                             mCancelNormalTabLoads,
@@ -1125,6 +1136,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     public void destroy() {
         mDestroyed = true;
         mBackgroundTabIds = Collections.emptySet();
+        mRemainingBackgroundTabIds = Collections.emptySet();
         if (mTabModelObserver != null) {
             mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
             mTabModelSelector.getModel(true).removeObserver(mTabModelObserver);
@@ -1594,6 +1606,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         if (mTabBatchLoader != null) return;
 
         if (mTabsToRestore.isEmpty()) {
+            restoreRemainingBackgroundTabs();
             mNormalTabsRestored = null;
             mIncognitoTabsRestored = null;
             mLoadInProgress = false;
@@ -1639,6 +1652,19 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             mTabBatchLoader = new TabBatchLoader(details);
             mTabBatchLoader.load();
         }
+    }
+
+    private void restoreRemainingBackgroundTabs() {
+        List<Tab> remainingTabs =
+                BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
+                        mOrchestratorType,
+                        mTabModelSelector,
+                        mRemainingBackgroundTabIds,
+                        mIsAuthoritative);
+        for (Tab tab : remainingTabs) {
+            mSeenTabIds.add(tab.getId());
+        }
+        mRemainingBackgroundTabIds = Collections.emptySet();
     }
 
     private void recordDuplicateTabIdMetrics() {
