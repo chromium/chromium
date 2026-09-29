@@ -2767,11 +2767,6 @@ if (!is_android) {
       "../browser/ui/views/autofill/payments/offer_notification_icon_view_browsertest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
-      "../browser/ui/views/frame/horizontal_tab_strip_region_view_browsertest.cc",
-      "../browser/ui/views/frame/multi_contents_view_browsertest.cc",
-      "../browser/ui/views/frame/multi_contents_view_drop_target_controller_browsertest.cc",
-      "../browser/ui/views/frame/system_menu_model_builder_browsertest.cc",
-      "../browser/ui/views/frame/vertical_tab_strip_region_view_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
@@ -3143,7 +3138,6 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
-        "../browser/ui/views/frame/browser_frame_view_mac_browsertest.mm",
         "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
         "../common/mac/app_mode_chrome_locator_browsertest.mm",
@@ -3428,12 +3422,6 @@ if (!is_android) {
         "../browser/ui/views/autofill/popup/popup_view_views_browsertest.cc",
         "../browser/ui/views/bubble/bubble_frame_view_browsertest.cc",
         "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
-        "../browser/ui/views/frame/browser_frame_view_browsertest.cc",
-        "../browser/ui/views/frame/browser_root_view_browsertest.cc",
-        "../browser/ui/views/frame/browser_view_browsertest.cc",
-        "../browser/ui/views/frame/browser_widget_browsertest.cc",
-        "../browser/ui/views/frame/layout/browser_view_layout_delegate_impl_browsertest.cc",
-        "../browser/ui/views/frame/widget_accessibility_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/profiles/profile_menu_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
@@ -3478,16 +3466,6 @@ if (!is_android) {
           "//components/sync_bookmarks",
         ]
       }
-      if (is_win) {
-        sources += [
-          "../browser/ui/views/frame/browser_frame_view_browsertest_win.cc",
-        ]
-        deps += [
-          "//chrome/browser/ui/views/frame:browser_caption_button_container_win",
-          "//chrome/browser/ui/views/frame:browser_frame_view_win",
-          "//chrome/browser/ui/views/frame:windows_caption_button",
-        ]
-      }
       if (is_win || is_mac || is_linux) {
         sources += [
           "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
@@ -3497,17 +3475,12 @@ if (!is_android) {
         deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
       if (is_chromeos) {
-        sources += [
-          "../browser/ui/views/frame/system_web_app_frame_view_browsertest.cc",
-        ]
         deps += [
-          "//chrome/browser/ash/fileapi",
           "//chrome/browser/ui/views/frame:browser_frame_view_chromeos",
           "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",
         ]
       } else {
         sources += [
-          "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/policy/enterprise_startup_dialog_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_browsertest.cc",
           "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_pixel_browsertest.cc",
@@ -5549,7 +5522,6 @@ test("unit_tests") {
   if (is_win) {
     assert(toolkit_views)
     sources += [
-      "../browser/ui/views/frame/windows_caption_button_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
       "../common/chrome_constants_win_unittest.cc",
       "../common/conflicts/module_watcher_win_unittest.cc",
@@ -5934,7 +5906,6 @@ test("unit_tests") {
       "../browser/ui/views/autofill/save_address_profile_view_unittest.cc",
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/context_hub/save_to_memory_bank_bubble_view_unittest.cc",
-      "../browser/ui/views/frame/safe_invoke/safe_invoke_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
     ]
@@ -7330,10 +7301,6 @@ test("unit_tests") {
       "../browser/ui/views/content_setting_site_row_view_unittest.cc",
       "../browser/ui/views/device_chooser_content_view_unittest.cc",
       "../browser/ui/views/download/download_in_progress_dialog_view_unittest.cc",
-      "../browser/ui/views/frame/layout/browser_view_layout_params_unittest.cc",
-      "../browser/ui/views/frame/multi_contents_drop_target_view_unittest.cc",
-      "../browser/ui/views/frame/multi_contents_view_drop_target_controller_unittest.cc",
-      "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
       "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",
       "../browser/ui/views/intent_picker_bubble_view_unittest.cc",
@@ -7390,17 +7357,6 @@ test("unit_tests") {
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/test:test_support" ]
     }
-    if (is_linux) {
-      sources += [
-        "../browser/ui/views/frame/browser_frame_view_layout_linux_native_unittest.cc",
-        "../browser/ui/views/frame/browser_frame_view_layout_linux_unittest.cc",
-      ]
-      deps += [
-        "//chrome/browser/ui/views/frame:browser_frame_view_layout_linux_native",
-        "//chrome/browser/ui/views/frame:browser_frame_view_linux",
-        "//ui/linux:linux_ui",
-      ]
-    }
     if (is_win || (is_linux && use_dbus)) {
       deps += [ "//chrome/browser/ui/views/status_icons:unit_tests" ]
     }
@@ -7411,10 +7367,7 @@ test("unit_tests") {
       ]
     }
     if (!is_chromeos) {
-      sources += [
-        "../browser/ui/views/frame/opaque_browser_frame_view_layout_unittest.cc",
-        "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
-      ]
+      sources += [ "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc" ]
       deps += [
         "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout",
         "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",

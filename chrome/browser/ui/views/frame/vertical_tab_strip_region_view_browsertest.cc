@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 
   auto* pinned_tabs = root_node()->children()[0]->view();
   EXPECT_TRUE(views::IsViewClass<PinnedTabContainerView>(pinned_tabs));
-  EXPECT_EQ(pinned_tabs->children().size(), 1);
+  EXPECT_EQ(pinned_tabs->children().size(), 1u);
   auto* unpinned_tabs = root_node()->children()[1]->view();
   EXPECT_TRUE(views::IsViewClass<UnpinnedTabContainerView>(unpinned_tabs));
   ASSERT_TRUE(base::test::RunUntil(
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Expect pinned tabs to have equal width.
   auto pinned_split_tab = pinned_tabs->children()[0];
   EXPECT_TRUE(views::IsViewClass<SplitTabView>(pinned_split_tab));
-  EXPECT_EQ(pinned_split_tab->children().size(), 2);
+  EXPECT_EQ(pinned_split_tab->children().size(), 2u);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return pinned_split_tab->children()[0]->size().width() ==
            pinned_split_tab->children()[1]->size().width();
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   // Expect unpinned tabs to have equal width.
   auto unpinned_split_tab = unpinned_tabs->children()[1];
   EXPECT_TRUE(views::IsViewClass<SplitTabView>(unpinned_split_tab));
-  EXPECT_EQ(unpinned_split_tab->children().size(), 2);
+  EXPECT_EQ(unpinned_split_tab->children().size(), 2u);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return unpinned_split_tab->children()[0]->size().width() ==
            unpinned_split_tab->children()[1]->size().width();
