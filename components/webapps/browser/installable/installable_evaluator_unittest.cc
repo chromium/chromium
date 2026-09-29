@@ -403,6 +403,17 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresIconSize) {
             GetCheckInstallabilityErrorCode(
                 InstallableCriteria::kValidManifestWithIcons));
 
+  // Non-square icons are not considered installable, regardless of orientation.
+  manifest()->icons[0].sizes[1] = gfx::Size(144, 200);
+  EXPECT_EQ(InstallableStatusCode::MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+
+  manifest()->icons[0].sizes[1] = gfx::Size(192, 144);
+  EXPECT_EQ(InstallableStatusCode::MANIFEST_MISSING_SUITABLE_ICON,
+            GetCheckInstallabilityErrorCode(
+                InstallableCriteria::kValidManifestWithIcons));
+
   // Higher than the required size is okay.
   manifest()->icons[0].sizes[1] = gfx::Size(200, 200);
   EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
@@ -427,12 +438,6 @@ TEST_F(InstallableEvaluatorUnitTest, ManifestRequiresIconSize) {
             GetCheckInstallabilityErrorCode(
                 InstallableCriteria::kValidManifestWithIcons));
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // Non-square is okay.
-  manifest()->icons[0].sizes[1] = gfx::Size(144, 200);
-  EXPECT_EQ(InstallableStatusCode::NO_ERROR_DETECTED,
-            GetCheckInstallabilityErrorCode(
-                InstallableCriteria::kValidManifestWithIcons));
 
   // The representation of the keyword 'any' should be recognized.
   manifest()->icons[0].sizes[1] = gfx::Size(0, 0);

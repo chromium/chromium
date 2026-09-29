@@ -817,7 +817,11 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
       GetLocalizedIconsFromManifest(*manifest_, application_locale);
   UpdateWebAppInstallInfoIconsFromManifestIfNeeded(icons, &install_info());
   if (options_.use_manifest_icons_as_trusted) {
-    install_info().trusted_icons = install_info().manifest_icons;
+    for (const apps::IconInfo& icon_info : install_info().manifest_icons) {
+      if (icon_info.purpose != apps::IconInfo::Purpose::kMonochrome) {
+        install_info().trusted_icons.push_back(icon_info);
+      }
+    }
   } else {
     std::optional<apps::IconInfo> primary_icon_metadata =
         GetTrustedIconsFromManifest(icons);
@@ -927,7 +931,9 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
     debug_data_->Set("is_generated_icon", true);
   }
   if (options_.use_manifest_icons_as_trusted) {
-    install_info().trusted_icon_bitmaps = install_info().icon_bitmaps;
+    install_info().trusted_icon_bitmaps.any = install_info().icon_bitmaps.any;
+    install_info().trusted_icon_bitmaps.maskable =
+        install_info().icon_bitmaps.maskable;
   } else {
     PopulateTrustedIconBitmaps(install_info(), icons_map);
   }

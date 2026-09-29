@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/manifest_update_job.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -296,12 +297,6 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
       (is_trusted_install || can_fix_generated_icons ||
        options_.force_silent_update_identity || is_migration_suggestion);
 
-  if (can_fix_generated_icons) {
-    ScopedRegistryUpdate update = lock_resources_->sync_bridge().BeginUpdate();
-    generated_icon_fix_util::EnsureFixTimeWindowStarted(
-        *lock_resources_, update, app_id_,
-        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
-  }
   debug_value_->Set("is_trusted_install", is_trusted_install);
   debug_value_->Set("can_fix_generated_icons", can_fix_generated_icons);
   debug_value_->Set("silently_update_identity", silently_update_app_identity_);
@@ -316,6 +311,33 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
       Complete(Result::kNoUpdateNeeded);
       return;
     }
+  }
+
+  // The new trusted icons are only applied to the app if its identity is
+  // silently updated, or if its primary icons changed. In those cases, fail if
+  // the manifest yields no usable trusted icons (e.g. it only has non-square
+  // icons, or only MONOCHROME icons when manifest icons are used as trusted).
+  // Some callers, like `FetchManifestAndUpdateCommand`, do not run
+  // `InstallableEvaluator`, so this can happen.
+  //
+  // Apps whose existing and new trusted icons are both empty (e.g. apps
+  // installed before trusted icons were supported) still receive non-icon
+  // updates on the non-silent path, since their existing icons are preserved
+  // in `FinalizeUpdateIfSilentChangesExist()`. On the silent identity path,
+  // the whole update is rejected, including the generated icon fix.
+  bool should_update_icons = silently_update_app_identity_ ||
+                             !web_app_comparison_.primary_icons_equality();
+  if (should_update_icons && new_install_info_->trusted_icons.empty()) {
+    debug_value_->Set("error", "no_trusted_icons_in_manifest");
+    Complete(Result::kManifestConversionFailed);
+    return;
+  }
+
+  if (can_fix_generated_icons) {
+    ScopedRegistryUpdate update = lock_resources_->sync_bridge().BeginUpdate();
+    generated_icon_fix_util::EnsureFixTimeWindowStarted(
+        *lock_resources_, update, app_id_,
+        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
   }
 
   if (web_app_comparison_.IsNameChangeOnly() &&
@@ -420,6 +442,23 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
         existing_shortcuts_menu_icon_bitmaps_;
   }
 
+  // Even with trusted icon metadata, the trusted icon bitmaps can be empty,
+  // e.g. if all downloaded bitmaps were non-square and got filtered out, or if
+  // icon downloading failed. Do not apply new icons in that case.
+  bool should_update_icons = silently_update_app_identity_ ||
+                             !web_app_comparison_.primary_icons_equality();
+  bool manifest_trusted_icons_are_generated =
+      options_.use_manifest_icons_as_trusted &&
+      new_install_info_->is_generated_icon;
+  bool no_trusted_icon_bitmaps =
+      new_install_info_->trusted_icon_bitmaps.empty() ||
+      manifest_trusted_icons_are_generated;
+  if (should_update_icons && no_trusted_icon_bitmaps) {
+    debug_value_->Set("error", "no_trusted_icon_bitmaps");
+    Complete(Result::kManifestConversionFailed);
+    return;
+  }
+
   // Exit early to finalize the update if we know that we are silently updating
   // the app identity.
   if (silently_update_app_identity_) {
@@ -465,12 +504,6 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
         /*silent_icon_update_happened=*/false));
     return;
   }
-  CHECK(!new_install_info_->trusted_icons.empty());
-
-  if (new_install_info_->trusted_icon_bitmaps.empty()) {
-    Complete(Result::kManifestConversionFailed);
-    return;
-  }
 
   static constexpr int kLogoSizeInDialog = 96;
   SkBitmap old_trusted_icon = [&]() {
@@ -501,6 +534,7 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
     return old_icon_it->second;
   }();
 
+  CHECK(!new_install_info_->trusted_icons.empty());
   apps::IconInfo::Purpose purpose = new_install_info_->trusted_icons[0].purpose;
   SkBitmap new_trusted_icon = [&]() {
     const OrderedSizeToBitmap& icons =

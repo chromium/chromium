@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
+#include <vector>
+
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -74,12 +77,13 @@ class FetchManifestAndUpdateTest : public WebAppTest {
                                       : std::nullopt;
   }
 
-  std::optional<FetchManifestAndUpdateResult> RunUpdate() {
+  std::optional<FetchManifestAndUpdateResult> RunUpdate(
+      bool force_trusted_silent_update = true) {
     base::test::TestFuture<FetchManifestAndUpdateCompletionInfo> future;
     provider().scheduler().FetchManifestAndUpdate(
         GURL(kInstallUrl), GenerateManifestIdFromStartUrlOnly(GURL(kStartUrl)),
         /*previous_time_for_silent_icon_update=*/std::nullopt,
-        /*force_trusted_silent_update=*/true, future.GetCallback());
+        force_trusted_silent_update, future.GetCallback());
     EXPECT_TRUE(future.Wait());
     if (!future.IsReady()) {
       return std::nullopt;
@@ -88,6 +92,60 @@ class FetchManifestAndUpdateTest : public WebAppTest {
   }
 
  protected:
+  static constexpr std::string_view kNonSquareIconUrl =
+      "https://example.com/path/non_square.png";
+  static constexpr std::string_view kMonochromeIconUrl =
+      "https://example.com/path/monochrome.png";
+
+  // Replaces the manifest icons with a single non-square "any" icon. If
+  // `add_square_monochrome_icon` is true, also adds a square monochrome icon.
+  void SetNonSquareAnyIconInManifest(bool add_square_monochrome_icon) {
+    blink::Manifest::ImageResource non_square_icon;
+    non_square_icon.src = GURL(kNonSquareIconUrl);
+    non_square_icon.sizes = {{192, 144}};
+    non_square_icon.purpose = {
+        blink::mojom::ManifestImageResource_Purpose::ANY};
+    GetPageManifest()->icons = {non_square_icon};
+    web_contents_manager()
+        .GetOrCreateIconState(GURL(kNonSquareIconUrl))
+        .bitmaps = {gfx::test::CreateBitmap(192, 144, SK_ColorRED)};
+    if (!add_square_monochrome_icon) {
+      return;
+    }
+    blink::Manifest::ImageResource monochrome_icon;
+    monochrome_icon.src = GURL(kMonochromeIconUrl);
+    monochrome_icon.sizes = {{192, 192}};
+    monochrome_icon.purpose = {
+        blink::mojom::ManifestImageResource_Purpose::MONOCHROME};
+    GetPageManifest()->icons.push_back(monochrome_icon);
+    web_contents_manager()
+        .GetOrCreateIconState(GURL(kMonochromeIconUrl))
+        .bitmaps = {gfx::test::CreateBitmap(192, SK_ColorBLACK)};
+  }
+
+  // Verifies the app still has the icon from
+  // FakeWebContentsManager::CreateBasicInstallPageState(), both in the
+  // registry and on disk, and that nothing was queued.
+  void ExpectInstalledIconsUnchanged(const webapps::AppId& app_id) {
+    const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+    ASSERT_TRUE(app);
+    ASSERT_EQ(app->trusted_icons().size(), 1u);
+    EXPECT_EQ(app->trusted_icons()[0].url,
+              GURL(FakeWebContentsManager::kBasicInstallIconUrl));
+    EXPECT_EQ(app->trusted_icons()[0].purpose, apps::IconInfo::Purpose::kAny);
+    EXPECT_FALSE(app->is_generated_icon());
+    EXPECT_FALSE(app->pending_update_info().has_value());
+
+    base::test::TestFuture<WebAppIconManager::WebAppBitmaps> future;
+    provider().icon_manager().ReadAllIcons(app_id, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_THAT(future.Get().trusted_icons.any,
+                Contains(Pair(FakeWebContentsManager::kBasicInstallIconSize,
+                              gfx::test::EqualsBitmap(gfx::test::CreateBitmap(
+                                  FakeWebContentsManager::kBasicInstallIconSize,
+                                  SK_ColorBLUE)))));
+  }
+
   base::HistogramTester histogram_tester_;
 };
 
@@ -260,6 +318,53 @@ TEST_F(FetchManifestAndUpdateTest, InstallationError) {
   histogram_tester_.ExpectUniqueSample(
       "WebApp.FetchManifestAndUpdate.Result",
       FetchManifestAndUpdateResult::kInstallationError, 1);
+}
+
+// Regression test for https://crbug.com/553479924. This command doesn't run
+// the InstallableEvaluator. The only "any" icon is non-square, so no trusted
+// icon can be found and the update fails before any icon is downloaded.
+TEST_F(FetchManifestAndUpdateTest, NonSquareAnyIconOnly_UntrustedUpdate_Fails) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+  SetNonSquareAnyIconInManifest(/*add_square_monochrome_icon=*/false);
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result,
+                       RunUpdate(/*force_trusted_silent_update=*/false));
+  EXPECT_EQ(result,
+            FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed, 1);
+  ExpectInstalledIconsUnchanged(app_id);
+}
+
+// Same as above, but for the trusted update path used by preinstalled apps,
+// which silently updates the app identity.
+TEST_F(FetchManifestAndUpdateTest, NonSquareAnyIconOnly_TrustedUpdate_Fails) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+  SetNonSquareAnyIconInManifest(/*add_square_monochrome_icon=*/false);
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result,
+                       RunUpdate(/*force_trusted_silent_update=*/true));
+  EXPECT_EQ(result,
+            FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed);
+  histogram_tester_.ExpectUniqueSample(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed, 1);
+  ExpectInstalledIconsUnchanged(app_id);
+}
+
+// A monochrome icon can never be a trusted icon, so it must not replace the
+// app's existing icons, even on the trusted update path.
+TEST_F(FetchManifestAndUpdateTest,
+       NonSquareAnyIconWithMonochrome_TrustedUpdate_Fails) {
+  ASSERT_OK_AND_ASSIGN(webapps::AppId app_id, InstallApp());
+  SetNonSquareAnyIconInManifest(/*add_square_monochrome_icon=*/true);
+
+  ASSERT_OK_AND_ASSIGN(FetchManifestAndUpdateResult result,
+                       RunUpdate(/*force_trusted_silent_update=*/true));
+  EXPECT_EQ(result,
+            FetchManifestAndUpdateResult::kManifestToWebAppInstallInfoFailed);
+  ExpectInstalledIconsUnchanged(app_id);
 }
 
 }  // namespace

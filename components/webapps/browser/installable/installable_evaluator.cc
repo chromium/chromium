@@ -115,14 +115,15 @@ bool HasValidName(const blink::mojom::Manifest& manifest,
 }
 
 // Returns whether |manifest| specifies a supported icon that has
-// IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any").
+// IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any"),
+// and is square.
 bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
   blink::ManifestIconSelectorParams params;
   params.purpose = IconPurpose::ANY;
   params.minimum_icon_size_in_px =
       InstallableEvaluator::GetMinimumIconSizeInPx();
   params.maximum_icon_size_in_px = InstallableEvaluator::kMaximumIconSizeInPx;
-  params.max_width_to_height_ratio = std::numeric_limits<float>::max();
+  params.max_width_to_height_ratio = 1.0f;
   params.limited_image_types_for_installable_icon = true;
   return blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons,
                                                            params)
