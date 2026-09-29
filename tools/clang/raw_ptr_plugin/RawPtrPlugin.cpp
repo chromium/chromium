@@ -178,6 +178,8 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
       options_.enable_match_profiling = true;
     } else if (arg == "no-special-treatment-for-oilpanized-paths") {
       options_.explicitly_ignore_oilpanized_paths = false;
+    } else if (arg == "check-raw-ptr-in-blink") {
+      options_.check_raw_ptr_in_blink = true;
     } else if (arg == "check-containers") {
       check_containers = true;
     } else {

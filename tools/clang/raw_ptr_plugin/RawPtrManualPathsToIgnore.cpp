@@ -75,19 +75,14 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
     // Exclude dir that should hold C headers.
     "mojo/public/c/",
 
-    // Renderer-only code is generally allowed to use MiraclePtr. These
-    // directories, however, are specifically disallowed, for perf reasons.
-    //
-    // Note that some renderer-only directories are already excluded
-    // elsewhere - for example "v8/" is excluded, because it's in another
-    // repository.
-    //
-    // Also, note that isInThirdPartyLocation AST matcher in
-    // RewriteRawPtrFields.cpp explicitly allows third_party/blink
-    "third_party/blink/renderer/core/",
+    // xpath_grammar_generated.h/cc are generated from xpath_grammar.y using
+    // Bison.
+    "third_party/blink/renderer/core/xml/xpath_grammar",
+
+    // Code may have heavily used pointers to Oilpan memory without a
+    // GarbageCollected type.
     "third_party/blink/renderer/platform/heap/",
     "third_party/blink/renderer/platform/wtf/",
-    "third_party/blink/renderer/platform/fonts/",
 
     // Contains sysroot dirs like debian_bullseye_amd64-sysroot/ that are not
     // part of the repository.
@@ -103,9 +98,16 @@ constexpr const char* const kRawPtrManualPathsToIgnore[] = {
 }  // namespace
 
 void AddManualPathsToIgnore(std::vector<std::string>& paths,
-                            bool add_legacy_oilpanized_paths) {
+                            bool add_legacy_oilpanized_paths,
+                            bool check_raw_ptr_in_blink) {
   for (const auto* line : kRawPtrManualPathsToIgnore) {
     paths.push_back(line);
+  }
+  if (!check_raw_ptr_in_blink) {
+    // TODO(crbug.com/335556942): Remove once check-raw-ptr-in-blink is
+    // enabled in build/config/clang/BUILD.gn.
+    paths.push_back("third_party/blink/renderer/core/");
+    paths.push_back("third_party/blink/renderer/platform/fonts/");
   }
   if (!add_legacy_oilpanized_paths) {
     return;
