@@ -345,5 +345,4 @@ missing_new_fields,extensions/browser/guest_view/web_view/controlled_frame_embed
 missing_new_fields,chrome/browser/ash/app_list/search/essential_search/socs_cookie_fetcher.cc
 
 # Header files with traffic annotations that existed before the new check was introduced.
-all,chrome/browser/ash/app_list/search/omnibox/omnibox_util.h
 all,chrome/browser/predictors/predictors_traffic_annotations.h

@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -174,6 +175,41 @@ std::unique_ptr<OmniboxResultData> CreateBaseResult(
 }
 
 }  // namespace
+
+constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("cros_launcher_omnibox", R"(
+        semantics {
+          sender: "Chrome OS Launcher"
+          description:
+            "Chrome OS provides search suggestions when a user types a query "
+            "into the launcher. This request downloads an image icon for a "
+            "suggested result in order to provide more information."
+          trigger:
+            "Change of results for the query typed by the user into the "
+            "launcher."
+          internal {
+            contacts {
+              owners: "//chrome/browser/ash/app_list/OWNERS"
+            }
+          }
+          user_data {
+            type: NONE
+          }
+          data:
+            "URL of the image to be downloaded. This URL corresponds to "
+            "search suggestions for the user's query."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2026-09-23"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Search autocomplete and suggestions can be disabled in Chrome OS "
+            "settings. Image icons cannot be disabled separately to this."
+          policy_exception_justification:
+            "No content is uploaded or saved, this request downloads a "
+            "publicly available image."
+        })");
 
 ash::SearchResultTags TagsForText(const std::u16string& text,
                                   OmniboxTextType type) {

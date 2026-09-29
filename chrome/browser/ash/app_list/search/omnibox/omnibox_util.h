@@ -34,36 +34,12 @@ struct OmniboxResultData;
 // See comments in autocomplete_provider.h.
 inline constexpr double kMaxOmniboxScore = 1500.0;
 
-// Traffic annotation details for fetching Omnibox image icons.
-inline constexpr net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("cros_launcher_omnibox", R"(
-        semantics {
-          sender: "Chrome OS Launcher"
-          description:
-            "Chrome OS provides search suggestions when a user types a query "
-            "into the launcher. This request downloads an image icon for a "
-            "suggested result in order to provide more information."
-          trigger:
-            "Change of results for the query typed by the user into the "
-            "launcher."
-          data:
-            "URL of the image to be downloaded. This URL corresponds to "
-            "search suggestions for the user's query."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Search autocomplete and suggestions can be disabled in Chrome OS "
-            "settings. Image icons cannot be disabled separately to this."
-          policy_exception_justification:
-            "No content is uploaded or saved, this request downloads a "
-            "publicly available image."
-        })");
-
 // Some omnibox answers overtrigger on short queries. This controls the minimum
 // query length before they are displayed.
 inline constexpr size_t kMinQueryLengthForCommonAnswers = 4u;
+
+// The traffic annotation details for fetching Omnibox image icons.
+extern const net::NetworkTrafficAnnotationTag kOmniboxTrafficAnnotation;
 
 // Returns the tag vector for the given text type.
 ash::SearchResultTags TagsForText(const std::u16string& text,
