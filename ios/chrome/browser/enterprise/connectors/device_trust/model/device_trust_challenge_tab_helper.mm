@@ -77,11 +77,9 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
   }
 
   // Opaque origins have no authority to request device attestation.
-  // TODO(crbug.com/563331507): Return a specific error code (e.g.
-  // kInvalidOrigin) instead of kUnknown.
   if (security_origin.opaque()) {
     PostError(std::move(callback),
-              enterprise_connectors::DeviceTrustError::kUnknown);
+              enterprise_connectors::DeviceTrustError::kInvalidOrigin);
     return;
   }
 

@@ -40,6 +40,7 @@
 namespace {
 
 constexpr char kChallenge[] = "my_challenge";
+constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kAllowedUrl[] = "https://example.com/login";
 
 std::unique_ptr<base::Value> MakeMessageBody(base::Value challenge) {
@@ -163,7 +164,6 @@ class DeviceTrustJavaScriptFeatureTest : public PlatformTest {
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonMainFrameMessage) {
   SendMessage(MakeMessageBody(base::Value(kChallenge)),
               /*is_main_frame=*/false);
-
   ExpectErrorReply("UNSUPPORTED_FRAME");
   ASSERT_TRUE(reply_.has_value());
   ASSERT_TRUE(reply_->is_dict());
@@ -175,42 +175,36 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonMainFrameMessage) {
 // Verifies that messages with null bodies are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingBody) {
   SendMessage(nullptr);
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
 // Verifies that non-dictionary message bodies are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectNonDictionaryBody) {
   SendMessage(std::make_unique<base::Value>("invalid"));
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
 // Verifies that messages missing the 'challengeRequest' key are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectMissingChallenge) {
   SendMessage(std::make_unique<base::Value>(base::DictValue()));
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
 // Verifies that challenges of non-string types (e.g. integers) are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectWrongChallengeType) {
   SendChallenge(base::Value(42));
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
 // Verifies that empty challenge strings are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectEmptyChallenge) {
   SendChallenge(base::Value(""));
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
 // Verifies that challenges exceeding the maximum allowed size are rejected.
 TEST_F(DeviceTrustJavaScriptFeatureTest, RejectOversizedChallenge) {
   SendChallenge(base::Value(std::string(1025, 'a')));
-
   ExpectErrorReply("INVALID_CHALLENGE_REQUEST");
 }
 
@@ -226,7 +220,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
                              /*security_origin=*/url::Origin());
   feature_.ScriptMessageReceivedWithReply(web_state(), message,
                                           CaptureReplyCallback());
-
   ExpectErrorReply("SERVICE_UNAVAILABLE");
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
@@ -238,9 +231,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 TEST_F(DeviceTrustJavaScriptFeatureTest,
        DefaultRoutingReturnsServiceUnavailableWhenServiceDisabled) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(false));
-
   ResetReply();
   base::RunLoop run_loop;
   web::ScriptMessage message(
@@ -248,16 +239,14 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
       /*is_user_interacting=*/false,
       /*is_main_frame=*/true,
       /*request_url=*/std::nullopt,
-      /*security_origin=*/url::Origin::Create(GURL("https://example.com")));
+      /*security_origin=*/url::Origin::Create(GURL(kExampleUrl)));
   feature_.ScriptMessageReceivedWithReply(
       web_state(), message, CaptureReplyCallback(run_loop.QuitClosure()));
-
   run_loop.Run();
   ExpectErrorReply("SERVICE_UNAVAILABLE");
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
             "Device attestation is not available.");
-
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
@@ -265,12 +254,10 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // URL is not in the Device Trust allowlist.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingReturnsUrlNotAllowed) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
-  EXPECT_CALL(*mock_service(), Watches(GURL("https://example.com")))
+  EXPECT_CALL(*mock_service(), Watches(GURL(kExampleUrl)))
       .WillOnce(
           testing::Return(std::set<enterprise_connectors::DTCPolicyLevel>()));
-
   ResetReply();
   base::RunLoop run_loop;
   web::ScriptMessage message(
@@ -278,16 +265,38 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingReturnsUrlNotAllowed) {
       /*is_user_interacting=*/false,
       /*is_main_frame=*/true,
       /*request_url=*/std::nullopt,
-      /*security_origin=*/url::Origin::Create(GURL("https://example.com")));
+      /*security_origin=*/url::Origin::Create(GURL(kExampleUrl)));
   feature_.ScriptMessageReceivedWithReply(
       web_state(), message, CaptureReplyCallback(run_loop.QuitClosure()));
-
   run_loop.Run();
   ExpectErrorReply("URL_NOT_ALLOWED");
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
             "The requesting URL is not allowed for device attestation.");
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
+}
 
+// Verifies that the default production routing returns INVALID_ORIGIN when the
+// requesting security origin is opaque.
+TEST_F(DeviceTrustJavaScriptFeatureTest,
+       DefaultRoutingReturnsInvalidOriginForOpaqueOrigin) {
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  ResetReply();
+  base::RunLoop run_loop;
+  web::ScriptMessage message(MakeMessageBody(base::Value(kChallenge)),
+                             /*is_user_interacting=*/false,
+                             /*is_main_frame=*/true,
+                             /*request_url=*/std::nullopt,
+                             /*security_origin=*/url::Origin());
+  feature_.ScriptMessageReceivedWithReply(
+      web_state(), message, CaptureReplyCallback(run_loop.QuitClosure()));
+  run_loop.Run();
+  ExpectErrorReply("INVALID_ORIGIN");
+  ASSERT_TRUE(reply_.has_value());
+  EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
+            "The requesting origin is invalid.");
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
@@ -297,13 +306,11 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingReturnsUrlNotAllowed) {
 // with TOO_MANY_REQUESTS before reaching the service.
 TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
   ON_CALL(*mock_service(), Watches(testing::_))
       .WillByDefault(testing::Return(levels));
-
   std::vector<enterprise_connectors::DeviceTrustService::DeviceTrustCallback>
       held_callbacks;
   EXPECT_CALL(*mock_service(),
@@ -314,7 +321,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
               const std::set<enterprise_connectors::DTCPolicyLevel>&,
               enterprise_connectors::DeviceTrustService::DeviceTrustCallback
                   callback) { held_callbacks.push_back(std::move(callback)); });
-
   // Send kMaxPendingRequests valid messages via ScriptMessageReceivedWithReply.
   // All should reach the service and be held pending.
   for (size_t i = 0; i < DeviceTrustChallengeTabHelper::kMaxPendingRequests;
@@ -325,7 +331,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
   }
   EXPECT_EQ(held_callbacks.size(),
             DeviceTrustChallengeTabHelper::kMaxPendingRequests);
-
   // The (kMaxPendingRequests + 1)-th request must be rejected with
   // TOO_MANY_REQUESTS without reaching the service.
   ResetReply();
@@ -336,14 +341,12 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
             "Too many pending device attestation requests.");
-
   // Complete held callbacks so pending requests are cleanly resolved.
   enterprise_connectors::DeviceTrustResponse service_response;
   service_response.challenge_response = "success";
   for (auto& callback : held_callbacks) {
     std::move(callback).Run(service_response);
   }
-
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
@@ -352,20 +355,17 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
 TEST_F(DeviceTrustJavaScriptFeatureTest,
        PendingRequestsIsolatedBetweenWebStates) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
   auto second_web_state = std::make_unique<web::FakeWebState>();
   second_web_state->SetBrowserState(profile_.get());
   second_web_state->SetWebFramesManager(
       web::ContentWorld::kPageContentWorld,
       std::make_unique<web::FakeWebFramesManager>());
   DeviceTrustChallengeTabHelper::CreateForWebState(second_web_state.get());
-
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
   ON_CALL(*mock_service(), Watches(testing::_))
       .WillByDefault(testing::Return(levels));
-
   std::vector<enterprise_connectors::DeviceTrustService::DeviceTrustCallback>
       held_callbacks;
   EXPECT_CALL(*mock_service(),
@@ -376,7 +376,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
               const std::set<enterprise_connectors::DTCPolicyLevel>&,
               enterprise_connectors::DeviceTrustService::DeviceTrustCallback
                   callback) { held_callbacks.push_back(std::move(callback)); });
-
   // Fill the first WebState up to the pending requests limit.
   for (size_t i = 0; i < DeviceTrustChallengeTabHelper::kMaxPendingRequests;
        ++i) {
@@ -386,14 +385,12 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
   }
   EXPECT_EQ(held_callbacks.size(),
             DeviceTrustChallengeTabHelper::kMaxPendingRequests);
-
   // The first WebState now feels the limit and rejects further requests.
   ResetReply();
   base::RunLoop run_loop;
   SendChallengeFrom(web_state(), run_loop.QuitClosure());
   run_loop.Run();
   ExpectErrorReply("TOO_MANY_REQUESTS");
-
   // The second WebState is isolated: its request is not blocked and succeeds
   // in reaching the service.
   ResetReply();
@@ -401,14 +398,12 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
   EXPECT_FALSE(reply_received_);
   EXPECT_EQ(held_callbacks.size(),
             DeviceTrustChallengeTabHelper::kMaxPendingRequests + 1);
-
   // Complete held callbacks so pending requests are cleanly resolved.
   enterprise_connectors::DeviceTrustResponse service_response;
   service_response.challenge_response = "success";
   for (auto& callback : held_callbacks) {
     std::move(callback).Run(service_response);
   }
-
   DeviceTrustChallengeTabHelper::RemoveFromWebState(second_web_state.get());
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
@@ -418,11 +413,8 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // payload.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
-  const url::Origin expected_origin =
-      url::Origin::Create(GURL("https://example.com"));
-  const GURL expected_url("https://example.com/login");
-
+  const url::Origin expected_origin = url::Origin::Create(GURL(kExampleUrl));
+  const GURL expected_url(kAllowedUrl);
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
@@ -439,7 +431,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
             response.challenge_response = "signed_payload_abc";
             std::move(callback).Run(response);
           });
-
   ResetReply();
   web::ScriptMessage message(MakeMessageBody(base::Value(kChallenge)),
                              /*is_user_interacting=*/false,
@@ -448,7 +439,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
                              /*security_origin=*/expected_origin);
   feature_.ScriptMessageReceivedWithReply(web_state(), message,
                                           CaptureReplyCallback());
-
   ASSERT_TRUE(reply_received_);
   ASSERT_TRUE(reply_.has_value());
   ASSERT_TRUE(reply_->is_dict());
@@ -456,7 +446,6 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
             "signed_payload_abc");
   EXPECT_EQ(reply_->GetDict().FindString("errorCode"), nullptr);
   EXPECT_EQ(reply_error_, nil);
-
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
@@ -465,13 +454,11 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
 // ATTESTATION_TIMEOUT.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingTimesOut) {
   DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
-
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
-  EXPECT_CALL(*mock_service(), Watches(GURL("https://example.com")))
+  EXPECT_CALL(*mock_service(), Watches(GURL(kExampleUrl)))
       .WillOnce(testing::Return(levels));
-
   enterprise_connectors::DeviceTrustService::DeviceTrustCallback saved_callback;
   EXPECT_CALL(*mock_service(),
               BuildChallengeResponse(testing::_, levels, testing::_))
@@ -480,33 +467,27 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingTimesOut) {
               const std::set<enterprise_connectors::DTCPolicyLevel>&,
               enterprise_connectors::DeviceTrustService::DeviceTrustCallback
                   callback) { saved_callback = std::move(callback); });
-
   ResetReply();
   web::ScriptMessage message(
       MakeMessageBody(base::Value(kChallenge)),
       /*is_user_interacting=*/false,
       /*is_main_frame=*/true,
       /*request_url=*/std::nullopt,
-      /*security_origin=*/url::Origin::Create(GURL("https://example.com")));
+      /*security_origin=*/url::Origin::Create(GURL(kExampleUrl)));
   feature_.ScriptMessageReceivedWithReply(web_state(), message,
                                           CaptureReplyCallback());
-
   EXPECT_TRUE(saved_callback);
   EXPECT_FALSE(reply_received_);
-
   // Fast forward past the browser-side attestation timeout (25 seconds).
   task_environment_.FastForwardBy(base::Seconds(25));
-
   ExpectErrorReply("ATTESTATION_TIMEOUT");
   ASSERT_TRUE(reply_.has_value());
   EXPECT_EQ(*reply_->GetDict().FindString("errorMessage"),
             "Timed out waiting for attestation response.");
-
   // A late response from the service after timeout is safely ignored.
   enterprise_connectors::DeviceTrustResponse late_response;
   late_response.challenge_response = "late_payload";
   std::move(saved_callback).Run(late_response);
-
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
