@@ -345,7 +345,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
       if (is_wallet_reminder_notice_eligible) {
         autofill_metrics::LogWalletReminderNoticeShowResult(
             autofill_metrics::WalletReminderNoticeShowResult::
-                kNotShownDueToMandatoryReauth);
+                kNotShownDueToMandatoryReauth,
+            WalletReminderNoticeManager::FlowType::kChromeDownstream);
       }
       return true;
     } else if (is_wallet_reminder_notice_eligible) {
@@ -377,7 +378,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     if (is_wallet_reminder_notice_eligible) {
       autofill_metrics::LogWalletReminderNoticeShowResult(
           autofill_metrics::WalletReminderNoticeShowResult::
-              kNotShownDueToVcnEnrollment);
+              kNotShownDueToVcnEnrollment,
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
     virtual_card_enrollment_manager->InitVirtualCardEnroll(
         *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
@@ -394,7 +396,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     if (is_wallet_reminder_notice_eligible) {
       autofill_metrics::LogWalletReminderNoticeShowResult(
           autofill_metrics::WalletReminderNoticeShowResult::
-              kNotShownDueToCardOrCvcSave);
+              kNotShownDueToCardOrCvcSave,
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
     if (!extracted_credit_card->cvc().empty()) {
       // TODO(crbug.com/526738761): Clean up after launch of
@@ -412,7 +415,8 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
     if (is_wallet_reminder_notice_eligible) {
       autofill_metrics::LogWalletReminderNoticeShowResult(
           autofill_metrics::WalletReminderNoticeShowResult::
-              kNotShownDueToMandatoryReauth);
+              kNotShownDueToMandatoryReauth,
+          WalletReminderNoticeManager::FlowType::kChromeDownstream);
     }
     return true;
   }

@@ -65,7 +65,8 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
     autofill_metrics::LogWalletReminderNoticeShowResult(
         autofill_metrics::WalletReminderNoticeShowResult::
-            kNotShownAlreadyAcknowledgedAccordingToPref);
+            kNotShownAlreadyAcknowledgedAccordingToPref,
+        FlowType::kChromeDownstream);
     return false;
   }
   return true;
@@ -86,7 +87,8 @@ bool WalletReminderNoticeManager::IsWalletReminderNoticeEligible(
   if (prefs::HasShownWalletReminderNotice(client_->GetPrefs())) {
     autofill_metrics::LogWalletReminderNoticeShowResult(
         autofill_metrics::WalletReminderNoticeShowResult::
-            kNotShownAlreadyAcknowledgedAccordingToPref);
+            kNotShownAlreadyAcknowledgedAccordingToPref,
+        FlowType::kWalletPass);
     return false;
   }
   return true;
@@ -113,13 +115,15 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     autofill_metrics::LogWalletReminderNoticeShowResult(
         autofill_metrics::WalletReminderNoticeShowResult::
-            kNotShownNetworkOrServerError);
+            kNotShownNetworkOrServerError,
+        flow_type);
     return;
   }
   if (response_details.has_user_been_shown_reminder) {
     autofill_metrics::LogWalletReminderNoticeShowResult(
         autofill_metrics::WalletReminderNoticeShowResult::
-            kNotShownAlreadyAcknowledgedAccordingToServer);
+            kNotShownAlreadyAcknowledgedAccordingToServer,
+        flow_type);
     prefs::SetHasShownWalletReminderNotice(client_->GetPrefs());
     return;
   }
@@ -129,7 +133,7 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
   CHECK_DEREF(GetPaymentsAutofillClient().GetWalletReminderNoticeUiDelegate())
       .ShowWalletReminderNotice(response_details.legal_message_lines);
   autofill_metrics::LogWalletReminderNoticeShowResult(
-      autofill_metrics::WalletReminderNoticeShowResult::kShown);
+      autofill_metrics::WalletReminderNoticeShowResult::kShown, flow_type);
 
   // Notify the Google Payments server that the user has been shown the Wallet
   // reminder notice.

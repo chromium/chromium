@@ -163,6 +163,11 @@ TEST_F(WalletReminderNoticeManagerTest,
       autofill_metrics::WalletReminderNoticeShowResult::
           kNotShownAlreadyAcknowledgedAccordingToPref,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.ChromeDownstream",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
@@ -212,6 +217,11 @@ TEST_F(WalletReminderNoticeManagerTest,
       EntityInstance::RecordType::kServerWallet));
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToPref,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.WalletPass",
       autofill_metrics::WalletReminderNoticeShowResult::
           kNotShownAlreadyAcknowledgedAccordingToPref,
       1);
@@ -274,6 +284,11 @@ TEST_F(WalletReminderNoticeManagerTest,
       autofill_metrics::WalletReminderNoticeShowResult::
           kNotShownNetworkOrServerError,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.ChromeDownstream",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownNetworkOrServerError,
+      1);
 }
 
 TEST_F(
@@ -299,6 +314,11 @@ TEST_F(
   EXPECT_TRUE(prefs::HasShownWalletReminderNotice(autofill_client_.GetPrefs()));
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::
+          kNotShownAlreadyAcknowledgedAccordingToServer,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.ChromeDownstream",
       autofill_metrics::WalletReminderNoticeShowResult::
           kNotShownAlreadyAcknowledgedAccordingToServer,
       1);
@@ -334,6 +354,9 @@ TEST_F(WalletReminderNoticeManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
       autofill_metrics::WalletReminderNoticeShowResult::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.ChromeDownstream",
+      autofill_metrics::WalletReminderNoticeShowResult::kShown, 1);
 }
 
 TEST_F(WalletReminderNoticeManagerTest,
@@ -364,6 +387,9 @@ TEST_F(WalletReminderNoticeManagerTest,
       PaymentsAutofillClient::PaymentsRpcResult::kSuccess, response_details);
   histogram_tester.ExpectUniqueSample(
       "Autofill.WalletReminderNotice.ShowResult",
+      autofill_metrics::WalletReminderNoticeShowResult::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.WalletReminderNotice.ShowResult.WalletPass",
       autofill_metrics::WalletReminderNoticeShowResult::kShown, 1);
 }
 

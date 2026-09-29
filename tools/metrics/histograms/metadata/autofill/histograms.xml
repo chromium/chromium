@@ -10925,10 +10925,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the outcome of attempting to show the reminder notice after a credit
-    card form submission (e.g. shown successfully, or suppressed due to user
+    card or Wallet pass form action (e.g. shown successfully, or suppressed due
+    to user acknowledgement, network error, etc.). Logged when a notice
+    presentation attempt completes.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.WalletReminderNotice.ShowResult.{FlowType}"
+    enum="AutofillWalletReminderNoticeShowResult" expires_after="2027-04-30">
+  <owner>ferny@google.com</owner>
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the outcome of attempting to show the Wallet Reminder Notice for the
+    {FlowType} flow (e.g. shown successfully, or suppressed due to user
     acknowledgement, network error, etc.). Logged when a notice presentation
     attempt completes.
   </summary>
+  <token key="FlowType">
+    <variant name="ChromeDownstream" summary="Chrome downstream credit card"/>
+    <variant name="WalletPass" summary="Wallet pass"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.WebOTP.OneTimeCode.FillDuration.FromInteraction"

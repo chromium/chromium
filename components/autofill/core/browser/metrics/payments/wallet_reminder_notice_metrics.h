@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_WALLET_REMINDER_NOTICE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_WALLET_REMINDER_NOTICE_METRICS_H_
 
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+
 namespace autofill::autofill_metrics {
 
 // The user's interaction on the Wallet Reminder Notice bottom sheet or dialog.
@@ -55,9 +57,12 @@ enum class WalletReminderNoticeShowResult {
 void LogWalletReminderNoticeInteraction(
     WalletReminderNoticeInteraction interaction);
 
-// Logs the outcome of attempting to show the Wallet Reminder Notice.
+// Logs the outcome of attempting to show the Wallet Reminder Notice, both in
+// aggregate and broken down by `flow_type`.
 void LogWalletReminderNoticeShowResult(
-    WalletReminderNoticeShowResult show_result);
+    WalletReminderNoticeShowResult show_result,
+    payments::RecordLegalReminderAcknowledgmentRequestDetails::FlowType
+        flow_type);
 
 }  // namespace autofill::autofill_metrics
 
