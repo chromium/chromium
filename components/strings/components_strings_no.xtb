@@ -740,6 +740,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2233745931693710080">CD</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2239100178324503013">Send nå</translation>
+<translation id="223921069122391343">Det lagrede tilbudet ditt blir tilgjengelig i kassen via autofyll. <ph name="BEGIN_LINK" />Se vilkårene<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Legg til redress-nummer</translation>
 <translation id="2241693394036365668">Filer lastes ned</translation>
 <translation id="2242389809734574253">Feltet nederst for lagring av IBAN er lukket.</translation>
@@ -986,7 +987,6 @@ Du kan fjerne dette forslaget fra Chrome. Den opprinnelige kilden blir ikke slet
 <translation id="2628025184666666186">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />, fordi den bruker et sikkerhetssertifikat som ikke er klarert av Chrome eller systemkonfigurasjonen din for kryptering av nettrafikk. Dette kan skyldes en feilkonfigurering eller at en angriper avskjærer tilkoblingen din.</translation>
 <translation id="2628224721443278970">Logg på Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Administratoren din fant denne enheten mens den var deaktivert. Den er aktivert igjen og klar til bruk.</translation>
-<translation id="2631387782019878060">Bekreftelseskode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Fant ikke IP-adressen til tjeneren for <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Signering</translation>
 <translation id="2638070510549214427">Merk som trygg</translation>
@@ -1371,6 +1371,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3308006649705061278">Organisasjonsenhet (OU)</translation>
 <translation id="3310946375819654151">Chrome prøver å fylle ut sensitiv info på <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Opplasting fullført</translation>
+<translation id="3323135197619890621">Slå på autofyll for å gjøre det enklere å handle</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
 <translation id="3325568918769906282">i synkende rekkefølge</translation>
 <translation id="3325662270238538525">nylige filtilganger og -endringer, inkludert filnavn, digitale fingeravtrykk av filinnholdet, nedlastingskilder og metadata</translation>
@@ -1596,6 +1597,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3704162925118123524">Det kan hende at det er et krav for nettverket du bruker, at du besøker påloggingssiden for nettverket.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Laster inn ...</translation>
+<translation id="3708927069677086144">Organisasjonen din krever at du logger på Chrome</translation>
 <translation id="3709599264800900598">Teksten du kopierte</translation>
 <translation id="3711223220609269738">Ny isolert fane</translation>
 <translation id="3711430313228789376">Chrome-nettleseren prøver å vise passord</translation>
@@ -1733,6 +1735,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3928806096717999469">Rediger, åpner et nytt vindu</translation>
 <translation id="393417216277380082">Bevegelses- og lyssensorer</translation>
 <translation id="3937640725563832867">Alternativt navn på sertifikatutsteder</translation>
+<translation id="3938243129430544357">Betal trygt med autofyll</translation>
 <translation id="3939773374150895049">Vil du bruke WebAuthn i stedet for CVC?</translation>
 <translation id="3941630233824954464">Slå på obligatorisk gjenautentisering</translation>
 <translation id="3942048175062210325">Prøv å åpne filene på nytt</translation>
@@ -2057,6 +2060,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4424024547088906515">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av Chrome. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="4425137053900958839">Det er som alltid praktisk og trygt å betale med Pix</translation>
 <translation id="443121186588148776">Seriell port</translation>
+<translation id="4431928532022419942">Vil du fjerne dette fra Chrome?</translation>
 <translation id="4432688616882109544">Enten godtok ikke <ph name="HOST_NAME" /> påloggingssertifikatet ditt, eller så ble det ikke oppgitt.</translation>
 <translation id="4432792777822557199">Fra nå av oversettes sider på <ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Ignorert fordi brukeren ikke er tilknyttet maskinadministrasjonen eller maskinen ikke er administrert.</translation>
@@ -3136,6 +3140,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bokmerker</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6264485186158353794">Tilbake til trygg grunn</translation>
+<translation id="6264507470395196064">Sikker gateway</translation>
 <translation id="6264636978858465832">Passordlagring trenger mer tilgang</translation>
 <translation id="6265794661083428563">Kopiér verdien av <ph name="POLICY_NAME" />-regelen</translation>
 <translation id="6271264012613848937">Du ble blokkert fra å besøke <ph name="URL" /> på grunn av retningslinjene for organisasjonen din. Kontakt administratoren din hvis dette var uforventet.</translation>
@@ -3345,6 +3350,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6630043285902923878">Finner USB-enheter …</translation>
 <translation id="6630388727238334626">Knappen «Administrer Chrome-innstillinger» – aktiver for å åpne Chrome-innstillingene</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">For å besøke nettstedet foran krever organisasjonen din at du logger på med den administrerte Google-kontoen.</translation>
 <translation id="6635900375070654124">en autentiseringsenhet</translation>
 <translation id="6641852376826221947">Bekreft kjøpet</translation>
 <translation id="6643016212128521049">Tøm</translation>
@@ -3534,6 +3540,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6957153644870901611">Slå på utvidet autofyll for å fylle ut flere felt automatisk</translation>
 <translation id="6957887021205513506">Tjenersertifikatet ser ut til å være forfalsket.</translation>
 <translation id="6958564499836457428">Administrer Google-personverninnstillinger i Google-kontoen din</translation>
+<translation id="6961161369573226336">Google Passordlagring kan hente disse kodene for deg fra Gmail-kontoen <ph name="EMAIL" />. Du kan ombestemme deg og <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Kan be om å få bruke skrifttyper som er installert på enheten</translation>
 <translation id="6962858948849099922">Flyttingen ble tidsavbrutt</translation>
 <translation id="6963520811470373926">Overstyrende</translation>
@@ -3611,6 +3618,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Opplasting forespurt av bruker</translation>
 <translation id="7090698782953528257">Hjelp meg med å lage et diagram av en funksjon for å visualisere den matematiske ligningen og se formen på kurven</translation>
+<translation id="7092087596499105699">Administratoren din har konfigurert koblingen for sikker gateway for å beskytte tilgangen til organisasjonens private nettapper. Den kan bruke data fra jobbprofilen til å bekrefte tilgang.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere tillatelser og data som er lagret på nettsteder, i Chrome-innstillingene</translation>
 <translation id="709604659664854823">Finn en restaurant i nærheten med ledig bord i kveld</translation>
 <translation id="7096341143397839437">E-postadresse: <ph name="EMAIL" />.</translation>
@@ -4864,6 +4872,7 @@ Mer informasjon:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> medlemmer ble med i fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="949314938206378263">Du ba om å få besøke dette nettstedet. Forelderen din kan svare i Family Link.</translation>
 <translation id="949484466204182817">Legg til Redress Number i Google Wallet</translation>
+<translation id="950533895669718124">finn ut mer om denne funksjonen i innstillingene</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="950926967802086924">Passnøkkel • Google Passordlagring</translation>
 <translation id="952165179818196872">Legg til <ph name="PROVIDER" /> for å betale uten å bytte app</translation>

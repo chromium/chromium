@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{У <ph name="BRAND" /> на гэтай прыладзе імпартаваны 1 пароль}one{У <ph name="BRAND" /> на гэтай прыладзе імпартаваны {NUM_PASSWORDS} пароль}few{У <ph name="BRAND" /> на гэтай прыладзе імпартавана {NUM_PASSWORDS} паролі}many{У <ph name="BRAND" /> на гэтай прыладзе імпартавана {NUM_PASSWORDS} пароляў}other{У <ph name="BRAND" /> на гэтай прыладзе імпартавана {NUM_PASSWORDS} пароля}}</translation>
 <translation id="1046572983040892965">Акно перамешчана ўверх і ўлева</translation>
 <translation id="1047431265488717055">Скапіраваць &amp;тэкст спасылкі</translation>
+<translation id="104751728059674265">Немагчымага адправіць водгук з твайго ўліковага запісу. Дарослы можа паведаміць пра праблему за цябе са сваёй прылады ці свайго профілю.</translation>
 <translation id="1048986595386481879">Дынамічнае размеркаванне</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Інкогніта</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">Сайты могуць запытваць дазвол на атрыманне і выкарыстанне ўводу з дапамогай мышы</translation>
 <translation id="1232569758102978740">Без назвы</translation>
 <translation id="1233497634904001272">Каб завяршыць запыт, дакраніцеся да ключа бяспекі яшчэ раз.</translation>
+<translation id="1233566345244684257">Любы, хто мае доступ да вашых праграм Gemini, можа кіраваць вашым браўзерам Chrome.</translation>
 <translation id="1233721473400465416">Лакальны стандарт</translation>
 <translation id="1233835246554936745">{0,plural, =1{Захаваць 1 элемент ва ўліковым запісе}one{Захаваць # элемент ва ўліковым запісе}few{Захаваць # элементы ва ўліковым запісе}many{Захаваць # элементаў ва ўліковым запісе}other{Захаваць # элемента ва ўліковым запісе}}</translation>
 <translation id="1234736487471201993">Стварыць QR-код для гэтага відарыса</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">Укажыце прычыну спампоўвання гэтых даных:</translation>
 <translation id="1422159345171879700">Загрузіць небяспечныя сцэнарыі</translation>
 <translation id="1425040197660226913">Запампаваць файл не ўдалося. Аб’ём відарыса не павінен перавышаць 20 МБ.</translation>
+<translation id="1426154609634610063">Азнаёміцца з рызыкамі выкарыстання Gemini</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="142655739075382478">Праграма "<ph name="APP_NAME" />" заблакіравана</translation>
 <translation id="1427179946227469514">Вышыня голасу для сінтэзу маўлення</translation>
@@ -983,6 +986,7 @@
 <translation id="1755601632425835748">Памер тэксту</translation>
 <translation id="1756963401828337401">Выберыце экран для здымка</translation>
 <translation id="17584710573359123">Прагледзець у Вэб-краме Chrome</translation>
+<translation id="1758845021884209593">Выкарыстоўваць спалучэнне клавіш у праграмах АС</translation>
 <translation id="1761402971842586829">Кнопка "<ph name="BUTTON_NAME" />" перапрызначана для дзеяння "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960">Уліковыя запісы карыстальніка <ph name="NAME" /></translation>
 <translation id="176272781006230109">прапановы тавараў</translation>
@@ -1824,6 +1828,7 @@
 <translation id="2416435988630956212">Функцыянальныя клавішы клавіятуры</translation>
 <translation id="2419131370336513030">Прагледзець усталяваныя праграмы</translation>
 <translation id="2419706071571366386">У мэтах бяспекі выходзьце са свайго ўліковага запісу, калі не выкарыстоўваеце камп’ютар.</translation>
+<translation id="2423226060967554289">Паказаць панэль закладак</translation>
 <translation id="2423506062824112361">Не ўдалося спампаваць змесціва па невядомай прычыне.</translation>
 <translation id="2423578206845792524">За&amp;хаваць відарыс як...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Госць}one{Госць (#)}few{Госць (#)}many{Госць (#)}other{Госць (#)}}</translation>
@@ -2061,6 +2066,7 @@
 <translation id="2588271083332682494">Навядзіце парадак з дапамогай груп укладак</translation>
 <translation id="2588636910004461974">Прылады ад пастаўшчыка "<ph name="VENDOR_NAME" />"</translation>
 <translation id="2589658397149952302">Ніколі не паказваць файлы Дыска</translation>
+<translation id="2595270892115552212">Калі вы пачынаеце задачу ў іншых праграмах Gemini, у тым ліку на сайце gemini.google.com і ў мабільных праграмах Gemini, Gemini можа выкарыстоўваць аўтаматычны прагляд у Chrome на гэтай прыладзе, каб узаемадзейнічаць з сайтамі і выконваць задачы ад вашага імя. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Каб знаходзіць побач з вамі прылады, функцыя "Абагульванне паблізу" выкарыстоўвае пошук праз Bluetooth.</translation>
 <translation id="2598136842498757793">Наладзіць кнопкі на панэлі інструментаў</translation>
 <translation id="2598710988533271874">Даступны новы Chrome</translation>
@@ -2798,6 +2804,7 @@
 <translation id="3132996321662585180">Абнаўляць штодзень</translation>
 <translation id="3134312457920437826">Не ўдаецца ўсталяваць пашырэнне, бо яно выкарыстоўвае версію маніфеста, якая не падтрымліваецца.</translation>
 <translation id="3134393957315651797">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />". Апісанне эксперымента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Дазволіць іншым праграмам Gemini аддалена праглядаць вэб-старонкі з любой прылады</translation>
 <translation id="3139925690611372679">Стандартны жоўты аватар</translation>
 <translation id="314095642664111744">Выключыць Канцэнтрацыю ўвагі</translation>
 <translation id="3141093262818886744">Усё роўна адкрыць</translation>
@@ -3083,6 +3090,7 @@
 <translation id="3355936511340229503">Памылка падключэння</translation>
 <translation id="335678817537689040">Статычны</translation>
 <translation id="3359256513598016054">Абмежаванні палітыкі сертыфікатаў</translation>
+<translation id="3359465538772230055">Няма задач</translation>
 <translation id="3360297538363969800">Памылка друку. Праверце прынтар і паўтарыце спробу.</translation>
 <translation id="3360306038446926262">Вокны</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}one{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}few{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}many{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}other{Прылада "<ph name="DEVICE_NAME" />" спрабуе абагуліць з вамі даныя (<ph name="ATTACHMENTS" />).}}</translation>
@@ -3611,6 +3619,7 @@
 <translation id="3736487688526377259">Выберыце прыладу, на якую вы хочаце адправіць гэту спасылку.</translation>
 <translation id="3737058101969549870">Захоўваць існуючыя даныя пра работу ў браўзеры асобна ад новага профілю?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini можа выкарыстоўваць аўтаматычны прагляд на гэтай прыладзе, толькі калі прылада актыўная і запушчаны браўзер Chrome.</translation>
 <translation id="3739254215541673094">Адкрыць праграму <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Сайты могуць запытваць дазвол на пошук і выкарыстанне прынтараў, даступных для вашай прылады</translation>
 <translation id="3741056951918180319">Знаходзячыся на любым сайце, вы заўжды можаце выкарыстаць пашырэнне, націснуўшы на яго</translation>
@@ -3966,6 +3975,7 @@
 <translation id="3987993985790029246">Скапіраваць спасылку</translation>
 <translation id="3988124842897276887">Гэта ўкладка падключана да прылады USB</translation>
 <translation id="3989635538409502728">Выйсці</translation>
+<translation id="399132041334931433">Дадаванне ўкладак у новую групу</translation>
 <translation id="399179161741278232">Імпартаваныя</translation>
 <translation id="3992008114154328194">Ідзе спампоўванне файла "<ph name="FILE_NAME" />", <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Дайце праграме "<ph name="SPECIFIC_NAME" />" дазвол на кіраванне USB-прыладамі.</translation>
@@ -5195,6 +5205,7 @@
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4951966678293618079">Не захоўваць паролі для гэтага сайта</translation>
 <translation id="4952580838083306838">Схаваць сродак упарадкавання ўкладак</translation>
+<translation id="4952628481830269193">Паказаць панэль закладак</translation>
 <translation id="4953808748584563296">Стандартны аранжавы аватар</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883">Спытаць пра наступнае: <ph name="TEXT" /></translation>
@@ -5447,6 +5458,7 @@
 <translation id="5149602533174716626">Кап&amp;іраваць кадр відэа</translation>
 <translation id="5150254825601720210">Назва SSL-сервера сертыфіката Netscape</translation>
 <translation id="5151354047782775295">Вызваліце месца на дыску або выберыце даныя, якія могуць быць аўтаматычна выдалены</translation>
+<translation id="5152719737931716272">Задача выканана, вы вярнуліся ў Gemini</translation>
 <translation id="5153074793829217329">Каб кіраваць курсорам мышы, выкарыстоўвайце клавіятуру ці панэль набору лічбаў</translation>
 <translation id="5153234146675181447">Забыць тэлефон</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5763,6 +5775,7 @@
 <translation id="5414836363063783498">Ідзе праверка…</translation>
 <translation id="5415497281076257439">Фраза</translation>
 <translation id="5415871492522952905">Гісторыя і ўкладкі будуць захоўвацца на ўсіх вашых прыладах, каб вы заўжды маглі працягнуць рабіць на любой з гэтых прылад тое, што перад гэтым рабілі на іншай</translation>
+<translation id="5417160551295347092">Gemini можа рабіць памылкі, напрыклад абагульваць вашу інфармацыю або ажыццяўляць куплі без запыту. <ph name="LINK_BEGIN" />Азнаёміцца з рызыкамі<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Гэты сайт можа выкарыстоўваць ідэнтыфікатары для прайгравання абароненага змесціва.</translation>
 <translation id="5417312524372586921">Тэмы браўзера</translation>
 <translation id="541737483547792035">Павелічэнне відарыса</translation>
@@ -6106,6 +6119,7 @@
 <translation id="5687340364605915800">Некаторыя сайты могуць не рэагаваць на гэты запыт</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Месцазнаходжанне</translation>
+<translation id="568984110402742489">Не ўдаецца адправіць водгук</translation>
 <translation id="56907980372820799">Звязаць даныя</translation>
 <translation id="5691772641933328258">Адбітак пальца не распазнаны</translation>
 <translation id="5693255400847650006">Выкарыстоўваецца мікрафон</translation>
@@ -6516,6 +6530,7 @@
 <translation id="6003143259071779217">Выдаліць сотавую сетку eSIM-карты</translation>
 <translation id="6003479444341796444">Панэль загалоўка паказана</translation>
 <translation id="6003582434972667631">Тэма зададзена вашай арганізацыяй</translation>
+<translation id="600407115562756795">Gemini будзе вызначаць, якія дзеянні выконваць, на аснове задач, якія вы пачынаеце або абнаўляеце.</translation>
 <translation id="6005045517426700202">Цагляны будынак</translation>
 <translation id="6006484371116297560">Класічная</translation>
 <translation id="6007053304250788613">У рэжыме люстэрка можна выключыць толькі адзін дысплэй</translation>
@@ -7439,7 +7454,7 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723946439672043591">Выбраць іншы профіль</translation>
 <translation id="6725206449694821596">Пратакол друку праз інтэрнэт (IPP)</translation>
-<translation id="6725250112230872513">Распазнаванне мультымедыя</translation>
+<translation id="6725250112230872513">Распазнаванне медыязмесціва</translation>
 <translation id="6725970970008349185">Колькасць варыянтаў на адной старонцы</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
 <translation id="6728528977475057549">Нумар IBAN, які заканчваецца на <ph name="LAST_FOUR_DIGITS" /></translation>
@@ -8497,6 +8512,7 @@
 <translation id="7523117833414447032">Пры агучванні загалоўных літар</translation>
 <translation id="7523585675576642403">Пераймянуйце профіль</translation>
 <translation id="7525067979554623046">Стварыць</translation>
+<translation id="7526083414913154899">Даведацца больш пра задачы Gemini</translation>
 <translation id="7528224636098571080">Не адкрываць</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Разгрупаваць групу ўкладак?}one{Разгрупаваць групы ўкладак?}few{Разгрупаваць групы ўкладак?}many{Разгрупаваць групы ўкладак?}other{Разгрупаваць групы ўкладак?}}</translation>
 <translation id="7529411698175791732">Праверце падключэнне да інтэрнэту. Калі праблема застанецца, паспрабуйце выйсці і ўвайсці зноў.</translation>
@@ -9226,6 +9242,7 @@
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
 <translation id="8082132721957920509">Ваша картка захавана</translation>
 <translation id="8082390128630131497">Выключэнне адладкі ADB скіне налады прылады "<ph name="DEVICE_TYPE" />" да заводскіх. Усе ўліковыя запісы карыстальнікаў і лакальныя даныя будуць сцёрты.</translation>
+<translation id="8082737802704584539">Ваша арганізацыя адключыла захаванне гісторыі ў вашым Уліковым запісе Google</translation>
 <translation id="8084114998886531721">Захаваны пароль</translation>
 <translation id="8084417885464859041">Бяспечнае выкарыстанне Gemini</translation>
 <translation id="8084429490152575036">Налады APN для сотавай сеткі</translation>
@@ -9268,6 +9285,7 @@
 <translation id="8109991406044913868">Тэма, створаная AI</translation>
 <translation id="8110393529211831722">Падпіска ўсталёўваецца толькі на гэту прыладу і не сінхранізуецца з іншымі прыладамі, на якіх вы ўвайшлі ва ўліковы запіс. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Ідзе спампоўванне спіса кантактаў...</translation>
+<translation id="8110781914702267195">Каб кіраваць <ph name="BEGIN_LINK1" />наладамі даных і прыватнасці<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />спосабамі аплаты<ph name="END_LINK2" /> і <ph name="BEGIN_LINK3" />карткамі<ph name="END_LINK3" /> (напрыклад, карткамі лаяльнасці), перайдзіце ў Google Кашалёк</translation>
 <translation id="8114925369073821854">Доступ да мікрафона для праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="8116497846156149">Запытай ухваленне ад бацькоў</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запамінае вашы даныя для ўваходу і, калі магчыма, будзе выконваць уваход аўтаматычна. Калі гэтая функцыя выключана, ад вас будзе патрабавацца пацвярджэнне пры кожным уваходзе.</translation>
@@ -9348,6 +9366,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> – <ph name="PRINTER_STATUS" />. Прынтар <ph name="ITEM_POSITION" /> з <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Эканомія энергіі ўключана</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" можа чытаць і выдаляць відарысы, відэа- і аўдыяфайлы ў адзначаных месцах.</translation>
+<translation id="8181132988581553950">Gemini будзе мець доступ да тых жа сайтаў, што і вы, у тым ліку да сайтаў, на якіх вы ўвайшлі ва ўліковы запіс. Сэрвіс будзе абагульваць неабходную інфармацыю з трэцімі бакамі, у тым ліку асабістую інфармацыю, якую вы можаце лічыць канфідэнцыяльнай.</translation>
 <translation id="8183703640399301650">EID прылады: <ph name="EID_NUMBER" />; IMEI прылады: <ph name="IMEI_NUMBER" />. Гэтыя нумары можна выкарыстаць для актывацыі сэрвісу.</translation>
 <translation id="8184288427634747179">Пераключыцца на профіль <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Дадатковая інфармацыя</translation>
@@ -10250,6 +10269,7 @@
 <translation id="8874341931345877644">Трансляцыя на прыладу:</translation>
 <translation id="8874647982044395866">Арганічны</translation>
 <translation id="8874790741333031443">Паспрабуйце часова дазволіць староннія файлы cookie – гэта знізіць вашу абароненасць падчас прагляду вэб-сайтаў, але павысіць імавернасць таго, што функцыі сайта будуць працаваць карэктна.</translation>
+<translation id="8874864294955002500">Немагчымага адправіць водгук з вашага ўліковага запісу. Адміністратар прадпрыемства можа паведаміць пра праблему за вас са сваёй прылады ці свайго профілю.</translation>
 <translation id="8875736897340638404">Выберыце параметры бачнасці</translation>
 <translation id="8876307312329369159">Гэту наладу нельга змяніць у дэманстрацыйным сеансе.</translation>
 <translation id="8876965259056847565">Каб выяўляць побач з вамі прылады, функцыя "<ph name="FEATURE_NAME" />" выкарыстоўвае пошук праз Bluetooth.</translation>

@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Програм за отклањање грешака је паузиран на другој картици. Кликните да бисте прешли на ту картицу.</translation>
 <translation id="1171774979989969504">Унесите имејл адресу.</translation>
 <translation id="1178581264944972037">Паузирај</translation>
+<translation id="1254779809141342904">Ово CAP упозорење користи технологију XSLT. Та функција се <ph name="REMOVAL_LINK" />. Када се то деси, ово упозорење ће се приказати као необрађени XML подаци. Можда можете да <ph name="EXTENSION_LINK" />, што ће вам омогућити да наставите с прегледом.</translation>
 <translation id="1306460908038601864">Искључено</translation>
 <translation id="1311894908970423688">Вредност мора да буде <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Нормалан</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2746543609216772311">Вредност мора да буде <ph name="MINIMUM_DATE_OR_TIME" /> или новија.</translation>
 <translation id="2761667185364618470">Потврдите избор у овом пољу за потврду уколико желите да наставите.</translation>
+<translation id="2854734116215697908">уклања из овог прегледача</translation>
 <translation id="2908441821576996758">Унесите листу имејл адреса раздвојених зарезима.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Унесите важећу вредност. Поље није попуњено или садржи неважећи датум.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Пребацуј</translation>
 <translation id="5630795885300617244">Двапут додирните лево или десно да бисте прескочили 10 сек</translation>
 <translation id="57838592816432529">Искључи звук</translation>
+<translation id="5855560023261018690">ускоро уклања из овог прегледача</translation>
 <translation id="5868587040512539609">Видео снимци</translation>
 <translation id="588258955323874662">Цеo екран</translation>
 <translation id="5888666972993069672">Тренутно се пребацује на <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Изађи из режима слике у слици</translation>
 <translation id="6484738902856791350">Лепо форматирај</translation>
 <translation id="6550675742724504774">Опције</translation>
+<translation id="65574987622079584">инсталирате додатак за прегледач</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6661136971638885481"><ph name="TRACK_NUMBER" />. снимак</translation>
 <translation id="668171684555832681">Друго...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Ова недеља</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
+<translation id="8243989288843872594">Никада не приказуј ово упозорење</translation>
 <translation id="8284326494547611709">Титл</translation>
 <translation id="835897206747267392">Неважећа вредност.</translation>
 <translation id="839593075537728968">Вредност мора да буде између <ph name="MINIMUM_TIME" /> и <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Прелом реда</translation>
 <translation id="8750798805984357768">Изаберите неку од ових опција.</translation>
+<translation id="8753001114009816390">Овај сајт користи XSLT; та функција се <ph name="REMOVAL_LINK" />. Када се то деси, ова страница се вероватно више неће правилно приказивати. Можда можете да <ph name="EXTENSION_LINK" />, што ће вам омогућити да наставите с прегледом. У супротном, треба да се обратите одржаваоцу сајта за више информација.</translation>
 <translation id="8845239796550121995">Тренутно се пребацује на ТВ</translation>
 <translation id="8875657656876809964">Грешка при пуштању видео снимка</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

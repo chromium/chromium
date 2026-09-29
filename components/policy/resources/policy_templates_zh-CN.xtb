@@ -1792,6 +1792,7 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
       如果此政策未设置，那么仅当检测到所用机器的物理内存容量即将用尽时，浏览器才会开始尝试节省内存空间。</translation>
 <translation id="2161348910646846717">允许用户更改发布渠道</translation>
 <translation id="2162703823039992020"><ph name="PRODUCT_OS_NAME" /> 上的 Google 服务情境集成</translation>
+<translation id="2163451780572451889">此组织的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 实例的 Web 应用网址。必须是有效的 https 网址。</translation>
 <translation id="2166155400701622446">这是 <ph name="PRODUCT_NAME" /> 内置的受限端口列表。与这些端口的连接将失败。此设置允许绕过该列表。此政策的值应是一个逗号分隔列表，包含 0 个或多个获准进行外发连接的端口。
 
       限制端口是为了防止有人将 <ph name="PRODUCT_NAME" /> 作为媒介来利用各种网络安全漏洞。设置此政策可能会致使您的网络遭到攻击。此政策是一种临时的变通方案，旨在应对“ERR_UNSAFE_PORT”代码类错误，以便将在被禁用的端口上运行的服务迁移到标准端口（例如端口 80 或 443）。
@@ -2177,9 +2178,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2421779938235645781">键盘背光颜色与当前壁纸一致</translation>
 <translation id="2423255396068675416">如果此政策已启用或未设置，系统会允许用户运行 <ph name="PRODUCT_CROSTINI_NAME" />（前提是 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 均已启用）。如果此政策已停用，系统会关闭 <ph name="PRODUCT_CROSTINI_NAME" />，不允许用户使用。如果将此政策的状态改为已停用，此政策将开始应用于新启动的 <ph name="PRODUCT_CROSTINI_NAME" /> 容器，而非应用于已在运行的容器。</translation>
 <translation id="2423654977291507457">停用集成</translation>
-<translation id="2424141395604579502">如果此政策设为 True 或未设置，用户可以添加、移除、修改或上传书签。
-
-      如果此政策设为 False，用户无法添加、移除、修改或上传书签，但仍能使用现有书签。</translation>
 <translation id="242521047682347997">不允许用户在手机和 Chromebook 之间同步短信</translation>
 <translation id="2426782419955104525">启用 <ph name="PRODUCT_NAME" /> 的即搜即得功能，并禁止用户更改此设置。
 
@@ -10622,6 +10620,21 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
 如果此政策未设置，由浏览器选择使用哪种 PDF 渲染程序。</translation>
 <translation id="7704244074621846004">为 SharedWorker 启用更长的生命周期</translation>
+<translation id="7705886216383850895">在 <ph name="PRODUCT_NAME" /> 中配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 的连接设置。
+
+如需配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />，管理员必须提供以下任一项：
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> Web 应用网址 (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />)，或
+* 所有三个旧版参数：<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> 和 <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />。如果仅指定这三个参数的部分子集，而不指定网址，则 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 将保持未配置状态。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数必须是使用 https 协议且不包含用户名或密码的有效网址。如果未满足这些要求，系统会忽略此政策，并且 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 将保持未配置状态。
+
+如果同时配置了 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数和旧版参数，则以 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数为准。
+
+如果设置了此政策，系统会为使用受管理账号或受管理浏览器登录的用户配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果未设置此政策，系统将不会配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+请注意，此政策不会控制常规的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 集成，该集成可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策控制。</translation>
 <translation id="7707869387893611318">启用充电提示音功能。
 
           该功能负责播放充电提示音。

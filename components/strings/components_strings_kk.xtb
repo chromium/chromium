@@ -740,6 +740,7 @@
 <translation id="2233745931693710080">Компакт диск</translation>
 <translation id="2236949375853147973">Әрекеттерім</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
+<translation id="223921069122391343">Сақталған ұсынысыңыз төлеу кезінде автотолтыру арқылы қолжетімді болады. <ph name="BEGIN_LINK" />Шарттар мен талаптарды көру<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Қайта қарау нөмірін қосу</translation>
 <translation id="2241693394036365668">Файл жүктеп алынды</translation>
 <translation id="2242389809734574253">Жабылған IBAN нөмірін сақтау.</translation>
@@ -986,7 +987,6 @@
 <translation id="2628025184666666186">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады, себебі ол интернет трафигін шифрлау үшін Chrome сенімді деп санамайтын қауіпсіздік сертификатын немесе жүйе конфигурациясын пайдаланып жатыр. Мұның себебі конфигурацияның қате болуынан не шабуылдаушының қосылымға тосқауыл жасауынан болуы мүмкін.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive аккаунтына кіру</translation>
 <translation id="2631059741268498165">Әкімшіңіз бұл құрылғыны өшірулі күйінде тапты. Ол қайта қосылды және пайдалануға дайын.</translation>
-<translation id="2631387782019878060">Растау коды: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> серверінің IP мекенжайын табу мүмкін емес.</translation>
 <translation id="2635276683026132559">Қолтаңба</translation>
 <translation id="2638070510549214427">Қауіпсіз деп белгілеу</translation>
@@ -1370,6 +1370,7 @@
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
 <translation id="3310946375819654151">Chrome браузері <ph name="APP_NAME" /> сайтында құпия ақпаратыңызды толтырғалы жатыр.</translation>
 <translation id="3312952471765023168">Сәтті жүктеп салынды</translation>
+<translation id="3323135197619890621">Жеңіл сауда жасау үшін автотолтыруды қосыңыз.</translation>
 <translation id="3324687287337751929">4 x 6 дюйм</translation>
 <translation id="3325568918769906282">кему ретімен</translation>
 <translation id="3325662270238538525">Файл атауларын, файл мазмұнының цифрлық саусақ іздерін, жүктеп алу көзін және метадеректерді қоса, соңғы файлға қол жеткізу және оның өзгертулері</translation>
@@ -1595,6 +1596,7 @@
 <translation id="3704162925118123524">Пайдаланып жатқан желі өзінің кіру бетіне өтуіңізді талап етуі мүмкін.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Жүктеліп жатыр…</translation>
+<translation id="3708927069677086144">Ұйымыңыз Chrome-ға кіруді талап етеді.</translation>
 <translation id="3709599264800900598">Көшірілген мәтін</translation>
 <translation id="3711223220609269738">Жаңа оқшау қойынды</translation>
 <translation id="3711430313228789376">Chrome құпия сөздерді көрсеткелі жатыр.</translation>
@@ -1732,6 +1734,7 @@
 <translation id="3928806096717999469">Өңдеу түймесі. Жаңа терезені ашады</translation>
 <translation id="393417216277380082">Қозғалыс және жарық датчиктері</translation>
 <translation id="3937640725563832867">Certificate Issuer Alternative Name</translation>
+<translation id="3938243129430544357">Автотолтыру арқылы қауіпсіз төлеңіз</translation>
 <translation id="3939773374150895049">CVC орнына WebAuthn қолданасыз ба?</translation>
 <translation id="3941630233824954464">Міндетті қайта аутентификациялауды қосу</translation>
 <translation id="3942048175062210325">Файлдарды қайта ашып көріңіз</translation>
@@ -2056,6 +2059,7 @@
 <translation id="4424024547088906515">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chrome сенім білдірмеген. Бұған қате конфигурация немесе қаскүнемнің байланысты үзуі себеп болуы мүмкін.</translation>
 <translation id="4425137053900958839">Pix ұсынатын барлық ыңғайлы және қауіпсіз мүмкіндікті пайдаланыңыз.</translation>
 <translation id="443121186588148776">Сериялық порт</translation>
+<translation id="4431928532022419942">Chrome-нан өшіру керек пе?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> кіру сертификатын қабылдамады немесе оны алмады.</translation>
 <translation id="4432792777822557199">Осыдан кейін <ph name="SOURCE_LANGUAGE" /> тіліндегі бет <ph name="TARGET_LANGUAGE" /> тіліне аударылады</translation>
 <translation id="4433642172056592619">Еленбеді, себебі пайдаланушы машина басқаруымен байланыстырылмаған немесе машина басқарылмайды.</translation>
@@ -3135,6 +3139,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>
+<translation id="6264507470395196064">Қауіпсіз шлюз</translation>
 <translation id="6264636978858465832">Password Manager қызметіне көбірек рұқсат қажет</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> саясатының мәнін көшіру</translation>
 <translation id="6271264012613848937">Ұйымыңыздың саясаттарына байланысты <ph name="URL" /> сайтына кіруіңіз блокталды. Бұл күтпеген жағдай болса, әкімшіге хабарласыңыз.</translation>
@@ -3344,6 +3349,7 @@
 <translation id="6630043285902923878">USB құрылғылары ізделуде...</translation>
 <translation id="6630388727238334626">"Chrome параметрлерін басқару" түймесі, Chrome параметрлеріне кіру үшін белсендіріңіз</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Сайтқа кіру үшін ұйымыңыз басқарылатын Google аккаунтымен кіруіңізді талап етеді.</translation>
 <translation id="6635900375070654124">аутентификатор құрылғысы</translation>
 <translation id="6641852376826221947">Сатып алу мәліметтерін растаңыз</translation>
 <translation id="6643016212128521049">Тазалау</translation>
@@ -3533,6 +3539,7 @@
 <translation id="6957153644870901611">Көбірек өрісті автоматты түрде толтыру үшін дұрысталған автотолтыру функциясын қосыңыз.</translation>
 <translation id="6957887021205513506">Сервер сертификаты жасанды сияқты.</translation>
 <translation id="6958564499836457428">Google аккаунтынан Google құпиялық параметрлерін басқару</translation>
+<translation id="6961161369573226336">Google Password Manager бұл кодтарды Gmail <ph name="EMAIL" /> поштаңыздан ала алады. Шешіміңізді өзгертіп, <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
 <translation id="6962858948849099922">Жылжыту уақыты өтіп кетті</translation>
 <translation id="6963520811470373926">Ауыстырылуда</translation>
@@ -3610,6 +3617,7 @@
 <translation id="70846382339153529">OpenDocument мәтіні</translation>
 <translation id="7086090958708083563">Пайдаланушы жүктеп салуды сұрады.</translation>
 <translation id="7090698782953528257">Математикалық теңдеуді визуализациялау және қисық сызықтың пішінін көру үшін функцияның графигін салуға көмектес</translation>
+<translation id="7092087596499105699">Әкімші ұйымыңыздың жеке веб-қолданбаларына кіру рұқсатын қорғау үшін қауіпсіз шлюз коннекторын конфигурациялады. Ол кіру рұқсатын тексеру үшін жұмыс профиліндегі деректерді пайдалануы мүмкін.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="709604659664854823">Маңайдағы мейрамханалардан бүгін кешке шұғыл резервтеуге болатын орындарды тауып бер</translation>
 <translation id="7096341143397839437">Электрондық пошта: <ph name="EMAIL" />.</translation>
@@ -4862,6 +4870,7 @@
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> қатысушы "<ph name="GROUP_NAME" />" қойындылар тобына қосылды.</translation>
 <translation id="949314938206378263">Осы сайтқа кіруді сұрадыңыз. Ата-анаңыз Family Link-те жауап бере алады.</translation>
 <translation id="949484466204182817">Redress Control Number нөмірін Google Wallet-ке қосу</translation>
+<translation id="950533895669718124">параметрлерде осы функция туралы толық ақпарат ала аласыз</translation>
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
 <translation id="950926967802086924">Кіру кілті • Google Password Manager</translation>
 <translation id="952165179818196872">Қолданбаларды ауыстырмай төлеу үшін <ph name="PROVIDER" /> әмиянын қосыңыз</translation>

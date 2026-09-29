@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Файлын төрлийг ихэвчлэн татдаггүй бөгөөд энэ нь аюултай байж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="1197860368385086056">Та дараагийн удаа <ph name="DEVICE_TYPE" /> дээрээ Chrome-г нээхэд үнэ хянах мэдэгдлийг идэвхжүүлэх сануулга харагдана.</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
+<translation id="1226003169284463347">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="1278833599417554002">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="1289911795790071537">Chrome-р хайхыг нээх</translation>
 <translation id="1290883685122687410">Тохируулгын алдаа: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION" />-г хассан.</translation>
 <translation id="2106831557840787829">ChromeOS Flex-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="2108778574543343055">Аппуудын хувьд Chrome-г дэвсгэрт ажиллуулахыг идэвхгүй болгох</translation>
+<translation id="2111985952714409792">Өргөтгөл болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="2120620239521071941">Энэ нь төхөөрөмжөөс <ph name="ITEMS_COUNT" /> зүйлийг устгана. Дараа нь өгөгдлөө сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="2121284319307530122">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chrome-г сайжруулахад тусална уу</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">Суурилуулагчид байлгах</translation>
 <translation id="2309047409763057870">Энэ нь Google Chrome-н хоёр дахь суулгалт тул таны өгөгдмөл хөтчөөр сонгох боломжгүй.</translation>
 <translation id="2345992953227471816">Эдгээр өргөтгөл хортой программ агуулж байгааг Chrome олж мэдлээ:</translation>
+<translation id="2358140144860869442">Унших жагсаалт болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2403703063067034158">Эхлэхэд алдаа гарлаа: одоогоор тохируулгын өөр нэг инстанс ажиллаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байсан}=1{1 HID төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байна}other{# HID төхөөрөмжид нэг эсвэл түүнээс олон Chrome-н өргөтгөл хандаж байна}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome таны хөтөч хамгийн аюулгүй тохиргоотой болохыг баталгаажуулахаар тогтмол шалгадаг. Та ямар нэг зүйлийг шалгах шаардлагатай бол бид танд мэдэгдэнэ.</translation>
 <translation id="2652691236519827073">Холбоосыг шинэ Chrome-н табад нээх</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" />-с өргөтгөл болон бусад зүйлээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="2665296953892887393">Google рүү эвдрэлийн тайлан болон <ph name="UMA_LINK" />-ыг илгээх замаар Google Chrome-ыг сайжруулахад туслаач</translation>
 <translation id="2668094785979141847">Google Lens-с гарахын тулд товшино уу</translation>
 <translation id="2674238339205910678">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromeOS Flex таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">Та <ph name="DEVICE_TYPE" /> дээрээ Chrome аппыг ашиглахдаа онлайн худалдан авалтаас илүү ихийг аваарай</translation>
 <translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
 <translation id="3249558306861350254">Windows-н тохиргооноосоо <ph name="BEGIN_BOLD" />Өгөгдмөл тохируулах<ph name="END_BOLD" /> дээр товшино уу.</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" />-с хавчуурга болон бусад зүйлээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="3259748324892322072">Chrome аппыг авах</translation>
 <translation id="3282568296779691940">Chrome руу нэвтрэх</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
@@ -346,6 +351,7 @@
 <translation id="4280647692742956593">Явж байх зуураа шинэ табын бүлэг нээх эсвэл үүсгэхийн тулд утсан дээрээ Chrome-г татаарай.</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="430327780270213103">Өргөтгөлд Chrome-н самбарт хандах хүсэлт харуулахыг зөвшөөрнө үү</translation>
+<translation id="4312908933392839680">Хадгалсан мэдээлэл болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome таны хөтчийг удаашруулж буй табыг түр зогсоохыг зөвлөж байна}other{Chrome таны хөтчийг удаашруулж буй табуудыг түр зогсоохыг зөвлөж байна}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Хувийн болгох болон бусад онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
@@ -515,7 +521,9 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6046028983725193307">Системийн аудиог хуваалцахын тулд Системийн тохиргоог нээгээд, Chrome-д 'Зөвхөн системийн аудио бичлэг'-ийг зөвшөөрнө үү. Та дараа нь Chrome-г дахин эхлүүлэх шаардлагатай.</translation>
 <translation id="6069027071882229820">Зургаар хуулах</translation>
 <translation id="6070348360322141662">Таны аюулгүй байдлыг сайжруулахын тулд Google Chrome таны өгөгдлийг шифрлэнэ</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" />-с нууц үг болон бусад зүйлээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="6075300983329039771">Танай байгууллага болох <ph name="MANAGER" /> таныг Chrome-д нэвтрэхийг шаардаж байна</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" />-с унших жагсаалт болон бусад зүйлээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="6113794647360055231">Chrome илүү сайн боллоо</translation>
 <translation id="6116004140911290070">Chrome-д Ур чадварыг идэвхжүүлэх</translation>
 <translation id="6116252277240876590">Энэ хэлийг Chrome-д цэс, тохиргоо, сэрэмжлүүлэг болон бусад текстийг үзүүлэхэд ашигладаг</translation>
@@ -713,6 +721,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7804947029129221742">Таны хайлтын системийг Chrome-с гадуур өөрчилсөн. Таныг хамгаалахын тулд Chrome үүнийг эх өгөгдмөл тохиргоо руу нь шинэчилсэн. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Кромоос хасах</translation>
 <translation id="7827099906024714326">Зарим өгөгдлийг таны Google Бүртгэлд хадгалж, бүх төхөөрөмж дээр тань ашиглах боломжтой болохын өмнө Chrome таныг мөн болохыг баталгаажуулах шаардлагатай. Хэрэв та одоо гарвал энэ өгөгдлийг устгана.</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" />-с хадгалсан мэдээлэл болон бусад зүйлээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="7832314606810669113">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д нэвтэрнэ үү. Таныг нэвтэрсний дараа энэ хавчуургыг Google Бүртгэлд тань хадгална.</translation>
 <translation id="7845233973568007926">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө компьютероо дахин эхлүүлэх ёстой.</translation>
 <translation id="7847170235260850604">Windows-г эхлэх үед Chrome-г эхлүүлэх</translation>

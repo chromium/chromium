@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Адладчык прыпынены на іншай укладцы. Націсніце, каб пераключыцца на яе.</translation>
 <translation id="1171774979989969504">Увядзіце адрас электроннай пошты.</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
+<translation id="1254779809141342904">У гэтай абвестцы CAP выкарыстоўваецца тэхналогія XSLT, якая <ph name="REMOVAL_LINK" />. Пасля гэтага абвестка будзе паказвацца ў выглядзе неапрацаваных даных XML. Магчыма, вы зможаце <ph name="EXTENSION_LINK" />, каб працягнуць прагляд.</translation>
 <translation id="1306460908038601864">выключыць</translation>
 <translation id="1311894908970423688">Значэнне павінна быць <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Звычайны</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2746543609216772311">Час павінен быць указаны не ранейшы, чым <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Каб працягнуць, пастаўце птушку ў гэтым полі.</translation>
+<translation id="2854734116215697908">будзе выдалена з гэтага браўзера</translation>
 <translation id="2908441821576996758">Увядзіце раздзелены коскамі спіс адрасоў электроннай пошты.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Увядзіце дапушчальнае значэнне. Поле не запоўнена, або ўказана няправільная дата.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Трансліраваць</translation>
 <translation id="5630795885300617244">Каб пераскочыць на 10 с, двойчы націсніце справа або злева</translation>
 <translation id="57838592816432529">Выключыць</translation>
+<translation id="5855560023261018690">будзе выдалена з гэтага браўзера ў самы бліжэйшы час</translation>
 <translation id="5868587040512539609">Відэадарожкі</translation>
 <translation id="588258955323874662">Поўнаэкранны рэжым</translation>
 <translation id="5888666972993069672">Ідзе трансляцыя на прыладу <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Выйсці з рэжыму "Відарыс у відарысе"</translation>
 <translation id="6484738902856791350">Вывесці ў зручным фармаце</translation>
 <translation id="6550675742724504774">Параметры</translation>
+<translation id="65574987622079584">усталяваць пашырэнне браўзера</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6661136971638885481">Трэк #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Іншы...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Гэты тыдзень</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">гггг</translation>
+<translation id="8243989288843872594">Ніколі не паказваць гэта папярэджанне</translation>
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="835897206747267392">Недапушчальнае значэнне.</translation>
 <translation id="839593075537728968">Значэнне павінна быць у дыяпазоне паміж <ph name="MINIMUM_TIME" /> і <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Пераносіць радкі</translation>
 <translation id="8750798805984357768">Выберыце адзін з варыянтаў.</translation>
+<translation id="8753001114009816390">Гэты сайт выкарыстоўвае тэхналогію XSLT, якая <ph name="REMOVAL_LINK" />. Пасля гэтага старонка, хутчэй за ўсё, больш не будзе паказвацца правільна. Магчыма, вы зможаце <ph name="EXTENSION_LINK" />, каб працягнуць прагляд. Або звярніцеся да адміністратара сайта па падрабязную інфармацыю.</translation>
 <translation id="8845239796550121995">Ідзе трансляцыя на тэлевізар</translation>
 <translation id="8875657656876809964">Памылка прайгравання відэа</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>

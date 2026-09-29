@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1197860368385086056">Când vei deschide din nou Chrome pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a activa alertele de urmărire a prețurilor.</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
+<translation id="1226003169284463347">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1289911795790071537">Deschide căutarea cu Chrome</translation>
 <translation id="1290883685122687410">Eroare de configurare: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Dezactivează rularea Chrome în fundal pentru aplicații</translation>
+<translation id="2111985952714409792">Pentru a accesa extensiile și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="2120620239521071941">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuie la îmbunătățirea browserului Chrome raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Păstrează în bara de andocare</translation>
 <translation id="2309047409763057870">Aceasta este o instalare secundară a browserului Google Chrome și nu poate fi setat ca browser prestabilit.</translation>
 <translation id="2345992953227471816">Chrome a descoperit că următoarele extensii conțin programe malware:</translation>
+<translation id="2358140144860869442">Pentru a accesa lista de lecturi și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2403703063067034158">Eroare la pornire: se execută o altă instanță de configurare. Încearcă din nou mai târziu.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Un dispozitiv HID a fost accesat de una sau mai multe extensii Chrome}=1{Un dispozitiv HID este accesat de una sau mai multe extensii Chrome}few{# dispozitive HID sunt accesate de una sau mai multe extensii Chrome}other{# de dispozitive HID sunt accesate de una sau mai multe extensii Chrome}}</translation>
@@ -172,6 +175,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
+<translation id="2661616016316841783">Pentru a accesa extensiile și alte date de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
 <translation id="2668094785979141847">Dă clic pentru a ieși din Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex nu a putut salva datele Chrome în Contul Google deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
@@ -243,6 +247,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3242486428260808857">Profită din plin de cumpărăturile online când folosești aplicația Chrome pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="3249558306861350254">Dă clic pe <ph name="BEGIN_BOLD" />Setează ca prestabilit<ph name="END_BOLD" /> în setările Windows.</translation>
+<translation id="3258706751219502154">Pentru a accesa marcajele și alte date de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="3259748324892322072">Descarcă aplicația Chrome</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3286538390144397061">Repornește acum</translation>
@@ -342,6 +347,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4280647692742956593">Descarcă Chrome pe telefon pentru a deschide sau a crea grupuri de file noi din mers.</translation>
 <translation id="4281844954008187215">Condiții de furnizare a serviciilor</translation>
 <translation id="430327780270213103">Permite extensiei să afișeze solicitări de acces în bara de instrumente Chrome</translation>
+<translation id="4312908933392839680">Pentru a accesa informațiile salvate și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomandă să întrerupi fila care încetinește browserul}few{Chrome recomandă să întrerupi filele care încetinesc browserul}other{Chrome recomandă să întrerupi filele care încetinesc browserul}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Pentru a beneficia de personalizare și alte funcții, include Chrome în Activitatea de pe web și din aplicații și în serviciile Google conectate</translation>
@@ -507,7 +513,9 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6046028983725193307">Pentru a permite accesul la conținutul audio de pe sistem, deschide Setările de sistem și permite Înregistrarea audio numai de pe sistem pentru Chrome. Apoi va trebui să repornești Chrome.</translation>
 <translation id="6069027071882229820">Copiază ca imagine</translation>
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
+<translation id="6071642418303142778">Pentru a accesa parolele și alte date de la <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="6075300983329039771">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chrome</translation>
+<translation id="6077365059401096066">Pentru a accesa lista de lecturi și alte date de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
 <translation id="6116004140911290070">Activează funcția Abilități în Chrome</translation>
 <translation id="6116252277240876590">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chrome</translation>
@@ -705,6 +713,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7804947029129221742">Motorul de căutare a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Elimină din Chrome...</translation>
 <translation id="7827099906024714326">Chrome trebuie să-ți confirme identitatea pentru ca unele date să poată fi salvate în Contul Google și folosite pe toate dispozitivele. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
+<translation id="7829850924999627855">Pentru a accesa informațiile salvate și altele de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="7832314606810669113">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome. Marcajul se va salva în Contul Google după ce te conectezi.</translation>
 <translation id="7845233973568007926">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești computerul.</translation>
 <translation id="7847170235260850604">Lansează Chrome când pornește Windows</translation>

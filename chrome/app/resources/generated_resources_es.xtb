@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 contraseña importada al <ph name="BRAND" /> de este dispositivo}other{{NUM_PASSWORDS} contraseñas importadas al <ph name="BRAND" /> de este dispositivo}}</translation>
 <translation id="1046572983040892965">Ventana movida hacia arriba y hacia la izquierda</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto de enlace</translation>
+<translation id="104751728059674265">El envío de comentarios no está disponible en tu cuenta. Una persona adulta puede usar su dispositivo o perfil para informar de un problema por ti.</translation>
 <translation id="1048986595386481879">Asignado dinámicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -983,6 +984,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1756963401828337401">Elige una pantalla para hacer la captura</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="1758845021884209593">Usar combinación de teclas en aplicaciones del SO</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> reasignado a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugerencias de compra</translation>
@@ -3087,6 +3089,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="335678817537689040">Estático</translation>
 <translation id="3359256513598016054">Restricciones de políticas de certificados</translation>
+<translation id="3359465538772230055">No hay tareas</translation>
 <translation id="3360297538363969800">Se ha producido un error al imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="3360306038446926262">Ventanas</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}other{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}}</translation>
@@ -6108,6 +6111,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
 <translation id="5689233503102158537">Alt + Retroceso</translation>
 <translation id="5689516760719285838">Ubicación</translation>
+<translation id="568984110402742489">No se pueden enviar comentarios</translation>
 <translation id="56907980372820799">Vincular datos</translation>
 <translation id="5691772641933328258">Huella digital no reconocida</translation>
 <translation id="5693255400847650006">El micrófono se está usando</translation>
@@ -8573,7 +8577,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7602173054665172958">Gestión de impresión</translation>
 <translation id="7602805861133750578">Ahora puedes gestionar tus grupos de pestañas, interacciones con Gemini y conversaciones del Modo IA en un solo lugar. Puedes desfijarlo en cualquier momento.</translation>
 <translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
-<translation id="7603583710244190070">Tu organización bloquea la pantalla compartida de esta pestaña</translation>
+<translation id="7603583710244190070">Tu organización impide compartir la pantalla de esta pestaña</translation>
 <translation id="7603785829538808504">Los sitios que se indican a continuación tienen una configuración personalizada.</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 contraseña no importada}other{{NUM_PASSWORDS} contraseñas no importadas}}</translation>
 <translation id="7605163396341021431">Permite a las aplicaciones Android controlar dispositivos USB en este Chromebook</translation>
@@ -8767,7 +8771,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7742706086992565332">Puedes configurar cuánto quieres ampliar o reducir determinados sitios web.</translation>
 <translation id="7742879569460013116">Compartir enlace con</translation>
 <translation id="774377079771918250">Elige dónde guardarla</translation>
-<translation id="7743876437245989842">Tu organización bloquea la pantalla compartida de una pestaña</translation>
+<translation id="7743876437245989842">Tu organización impide que se comparta la pantalla de una pestaña</translation>
 <translation id="7744047395460924128">Ver tu historial de impresiones</translation>
 <translation id="7744192722284567281">Encontrada en una brecha de seguridad de datos</translation>
 <translation id="7744649840067671761">Pulsa un nuevo interruptor o tecla del teclado para asignarle una acción.
@@ -9265,6 +9269,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8109991406044913868">Tema creado por IA</translation>
 <translation id="8110393529211831722">La suscripción solo está instalada en este dispositivo y no se sincroniza con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando lista de contactos...</translation>
+<translation id="8110781914702267195">Visita Google Wallet para controlar tus <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o gestionar los <ph name="BEGIN_LINK2" />métodos de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />documentos<ph name="END_LINK3" />, como las tarjetas de fidelización</translation>
 <translation id="8114925369073821854">Permiso de micrófono de <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Pide aprobación a tu padre o madre</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo has iniciado sesión y la inicia automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
@@ -10247,6 +10252,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8874341931345877644">Enviar a un dispositivo:</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Prueba a permitir temporalmente las cookies de terceros, lo que disminuirá la protección al navegar, pero aumentará la probabilidad de que las opciones de los sitios funcionen como se espera.</translation>
+<translation id="8874864294955002500">El envío de comentarios no está disponible en tu cuenta. El administrador de tu empresa puede usar su dispositivo o perfil para informar de un problema por ti.</translation>
 <translation id="8875736897340638404">Elige tu visibilidad</translation>
 <translation id="8876307312329369159">Este ajuste no se puede cambiar en una sesión de demostración.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> usa la búsqueda de dispositivos Bluetooth para encontrar dispositivos cercanos.</translation>
@@ -10767,7 +10773,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="973558314812359997">Tamaño del ratón</translation>
 <translation id="973788791897303708">Este grupo de pestañas está lleno</translation>
 <translation id="97381968209917373">Eliminar certificado <ph name="CERT_NAME" /></translation>
-<translation id="97570902379088759">Tu organización bloquea la pantalla compartida de <ph name="TAB_NAME" /></translation>
+<translation id="97570902379088759">Tu organización impide compartir la pantalla de <ph name="TAB_NAME" /></translation>
 <translation id="975893173032473675">Idioma al que se va a traducir</translation>
 <translation id="976572010712028687">Verifica que eres padre o madre</translation>
 <translation id="977175416263153310">Abrir en una ventana aislada</translation>

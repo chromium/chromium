@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Debuger został wstrzymany na innej karcie. Kliknij, aby się na nią przełączyć.</translation>
 <translation id="1171774979989969504">Wprowadź adres e-mail.</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
+<translation id="1254779809141342904">Ten alert CAP korzysta z technologii XSLT, która <ph name="REMOVAL_LINK" />. Gdy to nastąpi, ten alert będzie wyświetlany jako nieprzetworzone dane XML. Możesz spróbować <ph name="EXTENSION_LINK" />, które umożliwi jego dalsze wyświetlanie.</translation>
 <translation id="1306460908038601864">Wyłączono</translation>
 <translation id="1311894908970423688">Wymagana wartość: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normalny</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2746543609216772311">Musisz podać wartość <ph name="MINIMUM_DATE_OR_TIME" /> lub późniejszą.</translation>
 <translation id="2761667185364618470">Zaznacz to pole, jeśli chcesz kontynuować.</translation>
+<translation id="2854734116215697908">zostanie usunięta z tej przeglądarki</translation>
 <translation id="2908441821576996758">Podaj listę adresów e-mail rozdzielonych przecinkami.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Wpisz prawidłową wartość. Pole jest niekompletne lub zawiera nieprawidłową datę.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Przesyłaj</translation>
 <translation id="5630795885300617244">Kliknij dwukrotnie z lewej lub prawej, by przewinąć o 10 s</translation>
 <translation id="57838592816432529">Wycisz</translation>
+<translation id="5855560023261018690">wkrótce zostanie usunięta z tej przeglądarki</translation>
 <translation id="5868587040512539609">Ścieżki wideo</translation>
 <translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5888666972993069672">Przesyłam na urządzenie <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Wyłącz tryb obrazu w obrazie</translation>
 <translation id="6484738902856791350">Zastosuj formatowanie stylistyczne</translation>
 <translation id="6550675742724504774">Opcje</translation>
+<translation id="65574987622079584">zainstalować rozszerzenie przeglądarki</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6661136971638885481">Ścieżka <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Inny...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">W tym tygodniu</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">rrrr</translation>
+<translation id="8243989288843872594">Nigdy nie pokazuj tego ostrzeżenia</translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="835897206747267392">Nieprawidłowa wartość.</translation>
 <translation id="839593075537728968">Musisz podać wartość z zakresu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zawijaj tekst</translation>
 <translation id="8750798805984357768">Wybierz jedną z opcji.</translation>
+<translation id="8753001114009816390">Ta witryna używa XSLT; ta funkcja <ph name="REMOVAL_LINK" />. Gdy to nastąpi, ta strona prawdopodobnie nie będzie się już wyświetlać prawidłowo. Możesz spróbować <ph name="EXTENSION_LINK" />, które umożliwi jej dalsze wyświetlanie. W przeciwnym razie skontaktuj się z osobą odpowiedzialną za utrzymanie witryny, aby uzyskać więcej informacji.</translation>
 <translation id="8845239796550121995">Przesyłam na telewizor</translation>
 <translation id="8875657656876809964">Błąd odtwarzania filmu</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

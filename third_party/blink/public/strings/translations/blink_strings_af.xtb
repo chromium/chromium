@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Ontfouter het in ’n ander oortjie onderbreek, klik om na daardie oortjie oor te skakel.</translation>
 <translation id="1171774979989969504">Voer asseblief 'n e-posadres in.</translation>
 <translation id="1178581264944972037">Laat wag</translation>
+<translation id="1254779809141342904">Hierdie CAP-waarskuwing gebruik tegnologie genaamd XSLT; daardie funksie word <ph name="REMOVAL_LINK" />. Wanneer dit gebeur, sal hierdie opletberig as onverwerkte XML-data gewys word. Jy sal dalk <ph name="EXTENSION_LINK" /> waarmee jy steeds daarna kan kyk.</translation>
 <translation id="1306460908038601864">Af</translation>
 <translation id="1311894908970423688">Waarde moet <ph name="VALUE_DATE_OR_TIME" /> wees.</translation>
 <translation id="1588438908519853928">Normaal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later wees.</translation>
 <translation id="2761667185364618470">Merk asseblief hierdie blokkie as jy wil voortgaan.</translation>
+<translation id="2854734116215697908">van hierdie blaaier verwyder</translation>
 <translation id="2908441821576996758">Voer asseblief 'n kommageskeide lys e-posadresse in.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Voer asseblief 'n geldige waarde in. Die veld is onvolledig of het 'n ongeldige datum.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Saai uit</translation>
 <translation id="5630795885300617244">Dubbeltik links of regs om 10 s. oor te slaan</translation>
 <translation id="57838592816432529">Demp</translation>
+<translation id="5855560023261018690">binnekort van hierdie blaaier verwyder</translation>
 <translation id="5868587040512539609">Videosnitte</translation>
 <translation id="588258955323874662">Volskerm</translation>
 <translation id="5888666972993069672">Saai nou uit na <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Verlaat prent-in-prent</translation>
 <translation id="6484738902856791350">Teksformatering</translation>
 <translation id="6550675742724504774">Opsies</translation>
+<translation id="65574987622079584">’n blaaieruitbreiding kan installeer</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6661136971638885481">Snit #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Ander …</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Vandeesweek</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
+<translation id="8243989288843872594">Moet nooit hierdie waarskuwing wys nie</translation>
 <translation id="8284326494547611709">Onderskrifte</translation>
 <translation id="835897206747267392">Ongeldige waarde.</translation>
 <translation id="839593075537728968">Waarde moet tussen <ph name="MINIMUM_TIME" /> en <ph name="MAXIMUM_TIME" /> wees.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Reëlomvouing</translation>
 <translation id="8750798805984357768">Kies asseblief een van hierdie opsies.</translation>
+<translation id="8753001114009816390">Hierdie werf gebruik XSLT; daardie funksie word <ph name="REMOVAL_LINK" />. Wanneer dit gebeur, sal hierdie bladsy waarskynlik nie meer reg gewys word nie. Jy sal dalk <ph name="EXTENSION_LINK" /> waarmee jy steeds daarna kan kyk. Anders moet jy die persoon wat die werf in stand hou, vir verdere inligting kontak.</translation>
 <translation id="8845239796550121995">Saai nou na jou TV uit</translation>
 <translation id="8875657656876809964">Videoterugspeelfout</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

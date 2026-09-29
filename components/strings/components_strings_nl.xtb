@@ -740,6 +740,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
+<translation id="223921069122391343">Je opgeslagen aanbieding is beschikbaar bij het afrekenen via automatisch invullen. <ph name="BEGIN_LINK" />Algemene voorwaarden bekijken<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Redress number toevoegen</translation>
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
 <translation id="2242389809734574253">IBAN opslaan gesloten.</translation>
@@ -986,7 +987,6 @@ Je kunt deze suggestie verwijderen uit Chrome. Je oorspronkelijke bron wordt nie
 <translation id="2628025184666666186">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is, omdat de server een beveiligingscertificaat gebruikt dat niet wordt vertrouwd door Chrome of je systeemconfiguratie voor versleuteling van webverkeer. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2628224721443278970">Inloggen bij Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Je beheerder heeft dit apparaat gevonden terwijl het was uitgezet. Het apparaat is weer aangezet en is klaar voor gebruik.</translation>
-<translation id="2631387782019878060">Verificatiecode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Het IP-adres van de server van <ph name="HOST_NAME" /> kan niet worden gevonden.</translation>
 <translation id="2635276683026132559">Ondertekening</translation>
 <translation id="2638070510549214427">Markeren als veilig</translation>
@@ -1368,6 +1368,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
 <translation id="3310946375819654151">Chrome probeert je gevoelige informatie in te vullen in <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Uploaden voltooid</translation>
+<translation id="3323135197619890621">Zet automatisch invullen aan om makkelijker te winkelen</translation>
 <translation id="3324687287337751929">4 x 6 inch</translation>
 <translation id="3325568918769906282">in aflopende volgorde</translation>
 <translation id="3325662270238538525">Recente bestandstoegang en -aanpassingen, waaronder bestandsnamen, digitale vingerafdrukken van de bestandscontent, downloadbron en metadata</translation>
@@ -1591,6 +1592,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3704162925118123524">Het is mogelijk dat je de inlogpagina moet bezoeken van het netwerk dat je gebruikt.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
+<translation id="3708927069677086144">Je organisatie vereist dat je inlogt bij Chrome</translation>
 <translation id="3709599264800900598">Tekst die je hebt gekopieerd</translation>
 <translation id="3711223220609269738">Nieuw geïsoleerd tabblad</translation>
 <translation id="3711430313228789376">De Chrome-browser probeert wachtwoorden te tonen</translation>
@@ -1728,6 +1730,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3928806096717999469">Bewerken, hiermee wordt een nieuw venster geopend</translation>
 <translation id="393417216277380082">Bewegings- en lichtsensoren</translation>
 <translation id="3937640725563832867">Alternatieve naam voor uitgever van certificaat</translation>
+<translation id="3938243129430544357">Beveiligd betalen met automatisch invullen</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
 <translation id="3941630233824954464">Verplicht opnieuw verifiëren aanzetten</translation>
 <translation id="3942048175062210325">Probeer je bestanden opnieuw te openen</translation>
@@ -2051,6 +2054,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4424024547088906515">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chrome. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="4425137053900958839">Vertrouw op het gemak en de beveiliging van Pix</translation>
 <translation id="443121186588148776">Seriële poort</translation>
+<translation id="4431928532022419942">Verwijderen uit Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> heeft je inlogcertificaat niet geaccepteerd of er is geen inlogcertificaat geleverd.</translation>
 <translation id="4432792777822557199">Pagina's in het <ph name="SOURCE_LANGUAGE" /> worden vanaf nu vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Genegeerd omdat de gebruiker niet is aangesloten bij machinebeheer of de machine niet wordt beheerd.</translation>
@@ -3129,6 +3133,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6263376278284652872">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
 <translation id="6264485186158353794">Terug naar beveiligde website</translation>
+<translation id="6264507470395196064">Beveiligde gateway</translation>
 <translation id="6264636978858465832">Wachtwoordmanager heeft meer toegang nodig</translation>
 <translation id="6265794661083428563">Kopieer de waarde van het <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="6271264012613848937">Je kunt <ph name="URL" /> niet bezoeken vanwege het beleid van je organisatie. Neem contact op met je beheerder als dit onverwacht is.</translation>
@@ -3338,6 +3343,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6630043285902923878">Zoeken naar USB-apparaten...</translation>
 <translation id="6630388727238334626">Knop Chrome-instellingen beheren. Activeer deze om je Chrome-instellingen te openen.</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Als je de site wilt bezoeken, vereist je organisatie dat je inlogt met je beheerde Google-account.</translation>
 <translation id="6635900375070654124">een authenticatorapparaat</translation>
 <translation id="6641852376826221947">Je aankoop bevestigen</translation>
 <translation id="6643016212128521049">Wissen</translation>
@@ -3527,6 +3533,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6957153644870901611">Zet verbeterd automatisch invullen aan om meer velden automatisch in te vullen</translation>
 <translation id="6957887021205513506">Het certificaat van de server lijkt vals te zijn.</translation>
 <translation id="6958564499836457428">Google-privacyinstellingen beheren in je Google-account</translation>
+<translation id="6961161369573226336">Google Wachtwoordmanager kan deze codes voor je ophalen uit je Gmail <ph name="EMAIL" />. Je kunt van gedachten veranderen en <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Kan vragen of deze site de lettertypen mag gebruiken die zijn geïnstalleerd op je apparaat</translation>
 <translation id="6962858948849099922">Time-out bij verplaatsen</translation>
 <translation id="6963520811470373926">Vervangen</translation>
@@ -3604,6 +3611,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="70846382339153529">OpenDocument-tekst</translation>
 <translation id="7086090958708083563">Upload aangevraagd door gebruiker</translation>
 <translation id="7090698782953528257">Help me een functie te tekenen om de wiskundige vergelijking te visualiseren en de vorm van de curve te bekijken</translation>
+<translation id="7092087596499105699">Je beheerder heeft de Secure Gateway Connector ingesteld om de toegang tot de privé-web-apps van je organisatie te beschermen. De connector kan gegevens uit je werkprofiel gebruiken om de toegang te verifiëren.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om rechten en opgeslagen gegevens voor sites te beheren in de Chrome-instellingen</translation>
 <translation id="709604659664854823">Zoek lastminute reserveringen bij restaurants in de buurt voor vanavond</translation>
 <translation id="7096341143397839437">E-mailadres: <ph name="EMAIL" />.</translation>
@@ -4857,6 +4865,7 @@ Aanvullende informatie:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> leden zijn lid geworden van de tabbladgroep <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Je hebt gevraagd of je deze site mag bezoeken. Je ouder kan reageren in Family Link.</translation>
 <translation id="949484466204182817">Redress number toevoegen aan Google Wallet</translation>
+<translation id="950533895669718124">meer informatie over deze functie in de instellingen</translation>
 <translation id="950736567201356821">Drie perforaties boven</translation>
 <translation id="950926967802086924">Toegangssleutel • Google Wachtwoordmanager</translation>
 <translation id="952165179818196872">Voeg <ph name="PROVIDER" /> toe om te betalen zonder van app te wisselen</translation>

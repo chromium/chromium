@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Se importó 1 contraseña al <ph name="BRAND" /> en este dispositivo}other{Se importaron {NUM_PASSWORDS} contraseñas al <ph name="BRAND" /> en este dispositivo}}</translation>
 <translation id="1046572983040892965">La ventana se movió hacia arriba y hacia la izquierda</translation>
 <translation id="1047431265488717055">Copiar texto del vínculo</translation>
+<translation id="104751728059674265">Los comentarios no están disponibles para tu cuenta. Un adulto puede usar su dispositivo o perfil para informar un problema por ti.</translation>
 <translation id="1048986595386481879">Asignación dinámica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -983,6 +984,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1755601632425835748">Tamaño del texto</translation>
 <translation id="1756963401828337401">Elige una pantalla para capturar</translation>
 <translation id="17584710573359123">Ver en Chrome Web Store</translation>
+<translation id="1758845021884209593">Usar la combinación de teclas en las apps del SO</translation>
 <translation id="1761402971842586829">Se reasignó <ph name="BUTTON_NAME" /> a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Cuentas de <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugerencias de compras</translation>
@@ -1318,6 +1320,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="2010501376126504057">Dispositivos compatibles</translation>
 <translation id="2010636492623189611">Seleccionado.</translation>
 <translation id="2012935757369720523">Borrar archivo</translation>
+<translation id="2014191284313949173">Cerrar las pestañas aisladas</translation>
 <translation id="2016473077102413275">No se habilitarán las funciones que necesitan imágenes.</translation>
 <translation id="2017334798163366053">Inhabilitar recopilación de datos de rendimiento</translation>
 <translation id="2017770349934140286">Se borrarán de esta Chromebook Google Play y las apps que hayas descargado de Google Play.
@@ -1449,6 +1452,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2121825465123208577">Ajustar tamaño</translation>
 <translation id="2122446694240899610">Tus habilidades se guardan en tu Cuenta de Google,</translation>
 <translation id="2123766928840368256">Elegir otro archivo</translation>
+<translation id="2124153808069020510">Para borrar los datos, cierra todas las ventanas aisladas</translation>
 <translation id="2124930039827422115">{1,plural, =1{Calificación de <ph name="AVERAGE_RATING" /> de un usuario}other{Calificación de <ph name="AVERAGE_RATING" /> de # usuarios}}</translation>
 <translation id="2125715366913703594">Explorar y &amp;extensiones</translation>
 <translation id="2126167708562367080">Tu administrador inhabilitó la sincronización.</translation>
@@ -1591,6 +1595,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2227179592712503583">Quitar sugerencia</translation>
 <translation id="222931766245975952">Archivo truncado</translation>
 <translation id="2229342031987138128">Subtítulos opcionales</translation>
+<translation id="22294739381015133">Los sitios que visitas no se guardan en el modo aislado</translation>
 <translation id="2231351769755997720">No hay sugerencias disponibles. Intenta hacer tu propia pregunta sobre esta página.</translation>
 <translation id="2232751457155581899">Permitir que los sitios soliciten permiso para registrar la posición de la cámara</translation>
 <translation id="2233502537820838181">&amp;Más información</translation>
@@ -2905,6 +2910,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3213681682237645841">Descargando voces en <ph name="LANGUAGE" />…</translation>
 <translation id="3217843140356091325">¿Deseas crear un acceso directo?</translation>
 <translation id="3220494908385619295">Mostrar en paralelo</translation>
+<translation id="3220541426929880850">Para borrar del dispositivo el historial de navegación aislada, cierra todas las pestañas aisladas</translation>
 <translation id="3220943972464248773">Para sincronizar tus contraseñas, verifica tu identidad.</translation>
 <translation id="3222066309010235055">Renderizar previamente: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Conectarse a <ph name="USB_VM_NAME" /></translation>
@@ -3082,6 +3088,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="335678817537689040">Estático</translation>
 <translation id="3359256513598016054">Restricciones de directivas para certificados</translation>
+<translation id="3359465538772230055">No hay tareas</translation>
 <translation id="3360297538363969800">Se produjo un error al imprimir. Revisa la impresora y vuelve a intentarlo.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}other{<ph name="DEVICE_NAME" /> quiere compartir <ph name="ATTACHMENTS" /> contigo.}}</translation>
@@ -3403,6 +3410,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3600956933576601730">Debes revisar y aceptar las condiciones para usar estas funciones</translation>
 <translation id="3601374594714740284">Para obtener voces de mejor calidad, libera espacio en tu dispositivo</translation>
 <translation id="360180734785106144">Ofrecer funciones nuevas cuando estén disponibles</translation>
+<translation id="3601988315287782413">Esto solo afecta a las ventanas aisladas</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3602495161941872610">Solucionar un problema de &amp;sincronización</translation>
 <translation id="3602894439067790744">Leer números de la siguiente manera:</translation>
@@ -6105,6 +6113,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5687340364605915800">Los sitios usan su criterio cuando responden esta solicitud</translation>
 <translation id="5689233503102158537">Alt + retroceso</translation>
 <translation id="5689516760719285838">Ubicación</translation>
+<translation id="568984110402742489">No se pueden enviar los comentarios</translation>
 <translation id="56907980372820799">Vincular datos</translation>
 <translation id="5691772641933328258">No se reconoció la huella dactilar</translation>
 <translation id="5693255400847650006">Micrófono en uso</translation>
@@ -9262,6 +9271,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8109991406044913868">Tema creado con IA</translation>
 <translation id="8110393529211831722">La suscripción solo está instalada en este dispositivo y no está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Descargando la lista de contactos…</translation>
+<translation id="8110781914702267195">Visita la Billetera de Google para controlar tus <ph name="BEGIN_LINK1" />preferencias de datos y privacidad<ph name="END_LINK1" /> o administrar las <ph name="BEGIN_LINK2" />formas de pago<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />pases<ph name="END_LINK3" />, como las tarjetas de lealtad</translation>
 <translation id="8114925369073821854">Permiso del micrófono de <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Pídele aprobación a tu madre o padre</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> recuerda cómo ingresaste y te da acceso de forma automática cuando es posible. Si esta función está desactivada, siempre se te solicitará confirmación.</translation>
@@ -10135,6 +10145,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="878862491037637275">Este grupo de pestañas está completo</translation>
 <translation id="8791157330927639737">Más información sobre la actualización</translation>
 <translation id="8791534160414513928">Enviar solicitud de "Do Not Track" con el tráfico de navegación</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (aislada)</translation>
 <translation id="8793390639824829328">Los sitios usan esta función para desplazarse y hacer zoom en las pestañas compartidas</translation>
 <translation id="8793895150509408038">Ver los detalles del sitio de <ph name="SITE" /> en la lista <ph name="SECTION_HEADER" /></translation>
 <translation id="879413103056696865">Mientras el hotspot esté activado, tu número <ph name="PHONE_NAME" /> podrá:</translation>
@@ -10243,6 +10254,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8874341931345877644">Transmitir a un dispositivo:</translation>
 <translation id="8874647982044395866">Orgánico</translation>
 <translation id="8874790741333031443">Intenta permitir temporalmente cookies de terceros, lo que implica menos protección al navegar, pero aumenta las probabilidades de que las funciones del sitio funcionen como se espera.</translation>
+<translation id="8874864294955002500">Los comentarios no están disponibles para tu cuenta. El administrador de tu empresa puede usar su dispositivo o perfil para informar un problema por ti.</translation>
 <translation id="8875736897340638404">Elige la visibilidad</translation>
 <translation id="8876307312329369159">No se puede cambiar esta configuración en la sesión de demostración.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> usa la búsqueda de dispositivos Bluetooth para encontrar dispositivos cercanos.</translation>

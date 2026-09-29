@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Debugger dijeda di tab lain, klik untuk beralih ke tab tersebut.</translation>
 <translation id="1171774979989969504">Masukkan alamat email.</translation>
 <translation id="1178581264944972037">Jeda</translation>
+<translation id="1254779809141342904">Pemberitahuan CAP ini menggunakan teknologi yang disebut XSLT; fungsi tersebut akan <ph name="REMOVAL_LINK" />. Jika hal itu terjadi, pemberitahuan ini akan ditampilkan sebagai data XML mentah. Anda mungkin dapat <ph name="EXTENSION_LINK" /> yang memungkinkan Anda terus melihatnya.</translation>
 <translation id="1306460908038601864">Nonaktif</translation>
 <translation id="1311894908970423688">Nilai harus <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2746543609216772311">Tanggal harus <ph name="MINIMUM_DATE_OR_TIME" /> atau setelahnya.</translation>
 <translation id="2761667185364618470">Centang kotak ini jika Anda ingin melanjutkan.</translation>
+<translation id="2854734116215697908">dihapus dari browser ini</translation>
 <translation id="2908441821576996758">Masukkan daftar alamat email yang dipisahkan dengan koma.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Masukkan nilai yang valid. Bidang tersebut tidak lengkap atau memiliki tanggal yang tidak valid.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Transmisikan</translation>
 <translation id="5630795885300617244">Ketuk dua kali ke kiri atau kanan untuk melewati 10 detik</translation>
 <translation id="57838592816432529">Bisukan</translation>
+<translation id="5855560023261018690">segera dihapus dari browser ini</translation>
 <translation id="5868587040512539609">Trek Video</translation>
 <translation id="588258955323874662">Layar Penuh</translation>
 <translation id="5888666972993069672">Sedang melakukan cast ke <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Keluar dari Mode Picture-in-Picture</translation>
 <translation id="6484738902856791350">Pretty print</translation>
 <translation id="6550675742724504774">Opsi</translation>
+<translation id="65574987622079584">menginstal ekstensi browser</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6661136971638885481">Trek #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Lainnya...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Minggu ini</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">tttt</translation>
+<translation id="8243989288843872594">Jangan pernah tampilkan peringatan ini</translation>
 <translation id="8284326494547611709">Teks</translation>
 <translation id="835897206747267392">Nilai tidak valid.</translation>
 <translation id="839593075537728968">Nilai harus antara <ph name="MINIMUM_TIME" /> dan <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Penggabungan baris</translation>
 <translation id="8750798805984357768">Pilih salah satu opsi berikut.</translation>
+<translation id="8753001114009816390">Situs ini menggunakan XSLT; fungsi tersebut akan <ph name="REMOVAL_LINK" />. Jika hal itu terjadi, halaman ini kemungkinan tidak akan lagi ditampilkan dengan benar. Anda mungkin dapat <ph name="EXTENSION_LINK" /> yang memungkinkan Anda terus melihatnya. Jika tidak, Anda harus menghubungi pengelola situs untuk mendapatkan informasi lebih lanjut.</translation>
 <translation id="8845239796550121995">Sekarang sedang mentransmisi ke TV Anda</translation>
 <translation id="8875657656876809964">Error pemutaran video</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

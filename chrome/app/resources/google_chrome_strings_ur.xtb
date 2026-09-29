@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">‏Chrome نے اس ڈاؤن لوڈ کو مسدود کر دیا کیونکہ فائل کی یہ قسم عام طور پر ڈاؤن لوڈ نہیں ہوتی ہے اور یہ خطرناک ہو سکتی ہے</translation>
 <translation id="1197860368385086056">‏اگلی بار جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chrome کھولیں گے تو آپ کو قیمت کی ٹریکنگ کے الرٹس کو فعال کرنے کے لیے ایک پرامپٹ نظر آئے گا۔</translation>
 <translation id="1203500561924088507">انسٹال کرنے کا شکریہ۔ آپ کو <ph name="BUNDLE_NAME" /> استعمال کرنے سے پہلے اپنا براؤزر لازمی طور سے ری اسٹارٹ کرنا چاہیے۔</translation>
+<translation id="1226003169284463347">‏اپنے تمام آلات پر اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="1278833599417554002">‏Chrome&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="1289911795790071537">‏‫Chrome کے ساتھ تلاش کھولیں</translation>
 <translation id="1290883685122687410">سیٹ اپ میں خرابی: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">‏آپ نے حال ہی میں ملاحظہ نہیں کیا ہے۔ ‫Chrome نے <ph name="PERMISSION" /> کو ہٹا دیا۔</translation>
 <translation id="2106831557840787829">‏hromeOS Flex کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="2108778574543343055">‏ایپس کے لیے Chrome کا پس منظر میں چلنا غیر فعال کریں</translation>
+<translation id="2111985952714409792">‏اپنے تمام آلات پر اپنی ایکسٹینشنز اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="2120620239521071941">‏یہ اس آلہ سے <ph name="ITEMS_COUNT" /> آئٹمز کو حذف کر دے گا۔ بعد میں اپنے ڈیٹا کی بازیافت کرنے کیلئے، Chrome میں <ph name="USER_EMAIL" /> کے بطور سائن ان کریں۔</translation>
 <translation id="2121284319307530122">‏Chrome&amp; کو اپ ڈیٹ کرنے کیلئے بند کر کے دوبارہ چلائیں</translation>
 <translation id="2123055963409958220">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chrome کو بہتر بنانے میں مدد کریں</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">ڈاک میں رکھیں</translation>
 <translation id="2309047409763057870">‏یہ Google Chrome کا ثانوی انسٹالیشن ہے اور اسے آپ کا ڈیفالٹ براؤزر نہیں بنایا جا سکتا ہے۔</translation>
 <translation id="2345992953227471816">‏Chrome کو پتا چلا ہے کہ یہ ایکسٹینشنز میلوئیر پر مشتمل ہیں:</translation>
+<translation id="2358140144860869442">‏اپنے تمام آلات پر اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2403703063067034158">اسٹارٹ اپ کی خرابی: سیٹ اپ کی ایک اور مثال فی الحال چل رہی ہے، براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی تھی}=1{‏1 HID آلہ تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}other{‏# HID آلات تک ایک یا ایک سے زیادہ Chrome ایکسٹینشنز کے ذریعے رسائی حاصل کی جا رہی ہے}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏Chrome باقاعدگی سے یہ یقینی بنانے کے لیے چیک کرتا ہے کہ آپ کے براؤزر میں سب سے محفوظ ترتیبات موجود ہیں۔ اگر کسی چیز کو آپ کے جائزے کی ضرورت ہے تو ہم آپ کو مطلع کریں گے۔</translation>
 <translation id="2652691236519827073">‏لنک کو نئے Chrome &amp;ٹیب میں کھولیں</translation>
+<translation id="2661616016316841783">‏‫<ph name="DEVICE" /> سے اپنی ایکسٹینشنز وغیرہ حاصل کرنے کیلئے، Chrome میں سائن ان کریں</translation>
 <translation id="2665296953892887393">‏Google کو کریش کی رپورٹیں اور <ph name="UMA_LINK" /> بھیج کر Google Chrome کو بہتر بنانے میں مدد کریں</translation>
 <translation id="2668094785979141847">‏‫Google لینز سے باہر نکلنے کے لیے کلک کریں</translation>
 <translation id="2674238339205910678">‏ChromeOS Flex آپ کے Google اکاؤنٹ میں Chrome ڈیٹا محفوظ نہیں کر سکا کیونکہ آپ کے اکاؤنٹ کی سائن ان تفصیلات پرانی ہیں</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">‏جب آپ اپنے <ph name="DEVICE_TYPE" /> پر Chrome ایپ استعمال کرتے ہیں تو آن لائن خریداری سے مزید فائدہ اٹھائیں</translation>
 <translation id="3245429137663807393">‏اگر آپ Chrome کے استعمال کی رپورٹس کا بھی اشتراک کرتے ہیں تو ان رپورٹس میں آپ کے ملاحظہ کردہ URLs شامل ہوں گے</translation>
 <translation id="3249558306861350254">اپنی ونڈو کی ترتیبات میں <ph name="BEGIN_BOLD" />ڈیفالٹ سیٹ کریں<ph name="END_BOLD" /> پر کلک کریں۔</translation>
+<translation id="3258706751219502154">‏‫<ph name="DEVICE" /> سے اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="3259748324892322072">‏‫Chrome ایپ حاصل کریں</translation>
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3286538390144397061">ابھی ری اسٹارٹ کریں</translation>
@@ -345,6 +350,7 @@
 <translation id="4280647692742956593">‏چلتے پھرتے نئے ٹیب گروپس کھولنے یا تخلیق کرنے کے لیے اپنے فون پر Chrome ڈاؤن لوڈ کریں۔</translation>
 <translation id="4281844954008187215">سروس کی شرائط</translation>
 <translation id="430327780270213103">‏ایکسٹینشن کو Chrome ٹول بار میں رسائی کی درخواستیں دکھانے کی اجازت دیں</translation>
+<translation id="4312908933392839680">‏اپنے تمام آلات پر اپنی محفوظ کردہ معلومات وغیرہ حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیب کو روکنے کی تجویز دیتا ہے}other{‏‫Chrome آپ کے براؤزر کی رفتار کو کم کرنے والے ٹیبز کو روکنے کی تجویز دیتا ہے}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)‎</translation>
 <translation id="4329315893554541805">‏ذاتی نوعيت سازی اور ديگر خصوصيات حاصل کرنے کے ليے ويب اور ايپ سرگرمی اور لنک کردہ Google سروسز ميں Chrome شامل کريں</translation>
@@ -514,7 +520,9 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="6046028983725193307">‏سسٹم آڈیو کا اشتراک کرنے کے لیے، سسٹم کی ترتیبات کھولیں اور Chrome کے لیے 'صرف سسٹم آڈیو ریکارڈنگ' کی اجازت دیں۔ پھر آپ کو Chrome ری اسٹارٹ کرنے کی ضرورت ہوگی۔</translation>
 <translation id="6069027071882229820">بطور تصویر کاپی کریں</translation>
 <translation id="6070348360322141662">‏اضافی سیکیورٹی کیلئے، Google Chrome آپ کا ڈیٹا مرموز کر دے گا</translation>
+<translation id="6071642418303142778">‏‫<ph name="DEVICE" /> سے اپنے پاس ورڈز اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="6075300983329039771">‏آپ کی تنظیم، <ph name="MANAGER" />، چاہتی ہے کہ آپ Chrome میں سائن ان کریں</translation>
+<translation id="6077365059401096066">‏‫<ph name="DEVICE" /> سے اپنی پڑھنے کی فہرست اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="6113794647360055231">‏Chrome اور بھی بہتر ہوگیا ہے</translation>
 <translation id="6116004140911290070">‏‫Chrome میں مہارتوں کو فعال کریں</translation>
 <translation id="6116252277240876590">‏اس زبان کا استعمال Chrome میں مینوز، ترتیبات، الرٹس اور دیگر ٹیکسٹ ڈسپلے کرنے کے لیے کیا جاتا ہے</translation>
@@ -712,6 +720,7 @@ Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاص�
 <translation id="7804947029129221742">‏آپ کا سرچ انجن Chrome کے باہر سے تبدیل کیا گیا تھا۔ آپ کی حفاظت کیلئے، Chrome نے اسے اس کے اصل ڈیفالٹ پر ری سیٹ کر دیا۔ <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">‏Chrome سے ہٹائیں…</translation>
 <translation id="7827099906024714326">‏آپ کے Google اکاؤنٹ میں کچھ ڈیٹا کو محفوظ کرنے اور آپ کے تمام آلات پر اس کا استعمال کرنے سے پہلے Chrome کو اس بات کی توثیق کرنے کی ضرورت ہے کہ یہ آپ ہی ہیں۔ اگر آپ ابھی سائن آؤٹ کرتے ہیں تو یہ ڈیٹا حذف ہو جائے گا۔</translation>
+<translation id="7829850924999627855">‏‫<ph name="DEVICE" /> سے اپنی محفوظ کردہ معلومات اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں</translation>
 <translation id="7832314606810669113">‏اپنے تمام آلات پر اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، Chrome میں سائن ان کریں۔ آپ کے سائن ان کرنے کے بعد یہ بُک مارک آپ کے Google اکاؤنٹ میں محفوظ ہو جائے گا۔</translation>
 <translation id="7845233973568007926">انسٹال کرنے کا شکریہ۔ آپ کو <ph name="BUNDLE_NAME" /> استعمال کرنے سے پہلے اپنا کمپیوٹر لازمی طور سے ری اسٹارٹ کرنا چاہیے۔</translation>
 <translation id="7847170235260850604">‏‫Windows شروع ہونے پر Chrome شروع کریں</translation>

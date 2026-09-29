@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Der Debugger wurde auf einem anderen Tab pausiert. Klicke, um zu diesem Tab zu wechseln.</translation>
 <translation id="1171774979989969504">Gib eine E-Mail-Adresse ein.</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1254779809141342904">Diese CAP-Warnung verwendet eine Technologie namens XSLT. Diese Funktion wird <ph name="REMOVAL_LINK" />. In diesem Fall wird die Benachrichtigung als XML-Rohdaten angezeigt. Möglicherweise kannst du <ph name="EXTENSION_LINK" />, um sie weiterhin anzusehen.</translation>
 <translation id="1306460908038601864">Aus</translation>
 <translation id="1311894908970423688">Der Wert muss <ph name="VALUE_DATE_OR_TIME" /> sein.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2746543609216772311">Verwende <ph name="MINIMUM_DATE_OR_TIME" /> oder einen späteren Wert.</translation>
 <translation id="2761667185364618470">Klicke dieses Kästchen an, wenn du fortfahren möchtest.</translation>
+<translation id="2854734116215697908">aus diesem Browser entfernt</translation>
 <translation id="2908441821576996758">Gib eine durch Kommas getrennte Liste der E-Mail-Adressen ein.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Gib einen gültigen Wert ein. Das Feld ist nicht vollständig oder enthält ein ungültiges Datum.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Streamen</translation>
 <translation id="5630795885300617244">Tippe links oder rechts doppelt, um 10 s zu überspringen</translation>
 <translation id="57838592816432529">Stummschalten</translation>
+<translation id="5855560023261018690">in Kürze aus diesem Browser entfernt</translation>
 <translation id="5868587040512539609">Videotracks</translation>
 <translation id="588258955323874662">Vollbild</translation>
 <translation id="5888666972993069672">Wird gerade auf <ph name="DEVICE_FRIENDLY_NAME" /> gestreamt</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Bild im Bild beenden</translation>
 <translation id="6484738902856791350">Quelltextformatierung</translation>
 <translation id="6550675742724504774">Optionen</translation>
+<translation id="65574987622079584">eine Browsererweiterung installieren</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6661136971638885481">Track Nr. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Andere...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Diese Woche</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">jjjj</translation>
+<translation id="8243989288843872594">Diese Warnung nie anzeigen</translation>
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="835897206747267392">Ungültiger Wert.</translation>
 <translation id="839593075537728968">Der Wert muss zwischen <ph name="MINIMUM_TIME" /> und <ph name="MAXIMUM_TIME" /> liegen.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zeilenumbruch</translation>
 <translation id="8750798805984357768">Wähle eine dieser Optionen aus.</translation>
+<translation id="8753001114009816390">Diese Website verwendet XSLT. Diese Funktion wird <ph name="REMOVAL_LINK" />. Wenn dies der Fall ist, wird diese Seite wahrscheinlich nicht mehr korrekt angezeigt. Möglicherweise kannst du <ph name="EXTENSION_LINK" />, um sie weiterhin anzusehen. Wende dich andernfalls an den Betreiber der Website, um weitere Informationen zu erhalten.</translation>
 <translation id="8845239796550121995">Wird gerade auf deinen Fernseher gestreamt</translation>
 <translation id="8875657656876809964">Videowiedergabefehler</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

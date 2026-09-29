@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 password importata in <ph name="BRAND" /> su questo dispositivo}other{{NUM_PASSWORDS} password importate in <ph name="BRAND" /> su questo dispositivo}}</translation>
 <translation id="1046572983040892965">Finestra spostata verso l'alto e a sinistra</translation>
 <translation id="1047431265488717055">Copia testo del lin&amp;k</translation>
+<translation id="104751728059674265">L'invio di feedback non è disponibile per il tuo account. Un adulto può usare il suo dispositivo o profilo per segnalare un problema al posto tuo.</translation>
 <translation id="1048986595386481879">Allocazione dinamica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -983,6 +984,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1755601632425835748">Dimensioni testo</translation>
 <translation id="1756963401828337401">Scegli uno schermo da condividere con Gemini</translation>
 <translation id="17584710573359123">Visualizza nel Chrome Web Store</translation>
+<translation id="1758845021884209593">Usa la scorciatoia nelle app del sistema operativo</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> rimappato a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Account di <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggerimenti per gli acquisti</translation>
@@ -1554,6 +1556,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2198625180564913276">Aggiunta del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="2198712775285959645">Modifica</translation>
 <translation id="2199298570273670671">Errore</translation>
+<translation id="2199546617947317537">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="220006241671843310">Scegli se Chrome deve utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Log di sistema ChromeOS</translation>
@@ -2331,6 +2334,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2777525873368474674">Incolla link immagine</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{È stato trovato un sito con molte notifiche}other{Sono stati trovati {NUM_SITES} siti con molte notifiche}}</translation>
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
+<translation id="2781037472881921606">Per recuperare la cronologia dagli altri tuoi dispositivi, sincronizza la cronologia. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Utilizza il token di sicurezza con <ph name="APP_NAME" /></translation>
@@ -2393,6 +2397,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2826576843404243001">Ricevi un avviso prima di visitare i siti che non supportano le connessioni sicure. Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>
 <translation id="2828375943530438449">Indietro dalla pagina di accesso</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> di spazio liberato</translation>
+<translation id="2828851448902426206">Accedi e sincronizza la cronologia per recuperare le schede dagli altri tuoi dispositivi. Potrai anche accedere alle informazioni salvate e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="2833144527504272627">Naviga con il cursore di testo</translation>
 <translation id="2833727845850279275">Questo file contiene malware o proviene da un sito sospetto.</translation>
 <translation id="2835177225987815960">Se ripeti la configurazione della scansione, tutte le assegnazioni verranno reimpostate, compresi eventuali sensori assegnati e le preferenze di velocità per la scansione automatica.</translation>
@@ -2759,6 +2764,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3102309003841389927">Controlla l'aggiornamento del logo</translation>
 <translation id="310297983047869047">Diapositiva precedente</translation>
 <translation id="3103451787721578293">Inserisci un motivo per il caricamento di questi dati:</translation>
+<translation id="3105253709809514429">Accedi e sincronizza la cronologia per recuperare le schede dagli altri tuoi dispositivi. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="3105339775057145050">Ultimo aggiornamento non riuscito</translation>
 <translation id="3105796011181310544">Tornare a Google?</translation>
 <translation id="3105820656234755131">Password aggiornata</translation>
@@ -2770,6 +2776,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3109206895301430738">Gruppi di schede salvati</translation>
 <translation id="3109724472072898302">Compresso</translation>
 <translation id="3112292765614504292">Dimensioni app: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Accedi e sincronizza la cronologia per recuperare le schede dagli altri tuoi dispositivi. Potrai anche accedere ai preferiti e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="311347022006935575">Ha aggiunto questa scheda</translation>
 <translation id="311394601889664316">Non consentire ai siti di modificare file o cartelle sul dispositivo</translation>
 <translation id="3113970906450647715">Pulsante non fissato</translation>
@@ -3085,6 +3092,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3355936511340229503">Errore di connessione</translation>
 <translation id="335678817537689040">Statico</translation>
 <translation id="3359256513598016054">Vincoli policy certificati</translation>
+<translation id="3359465538772230055">Nessuna attività</translation>
 <translation id="3360297538363969800">Errore di stampa. Controlla la stampante e riprova.</translation>
 <translation id="3360306038446926262">Finestre</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
@@ -3275,6 +3283,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3498138244916757538">La modifica dell'impostazione del microfono richiede l'arresto di <ph name="SPECIFIC_NAME" />. Arresta <ph name="SPECIFIC_NAME" /> per continuare.</translation>
 <translation id="3500417806337761827">Errore durante il montaggio della condivisione. Sono già montate troppe condivisioni SMB.</translation>
 <translation id="3500764001796099683">Attiva le app web isolate</translation>
+<translation id="3501134531169168291">Accedi e sincronizza la cronologia per recuperare le schede dal <ph name="DEVICE" />. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="3505100368357440862">Suggerimenti per gli acquisti</translation>
 <translation id="3507650052590605702">Gestisci password</translation>
 <translation id="3507888235492474624">Ripeti la ricerca di dispositivi Bluetooth</translation>
@@ -3761,6 +3770,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3838085852053358637">Caricamento estensione non riuscito</translation>
 <translation id="3838486795898716504">Altre <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Non è stato aumentato o diminuito lo zoom di alcun sito</translation>
+<translation id="3839108710633244251">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere alle informazioni salvate e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="3839516600093027468">Impedisci sempre a <ph name="HOST" /> di leggere gli appunti</translation>
 <translation id="3840096463915153852">Cronologia conversazione</translation>
 <translation id="3841319830220785495">Voce naturale predefinita</translation>
@@ -4283,6 +4293,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Mantieni il gruppo}other{Mantieni i gruppi}}</translation>
 <translation id="4261429981378979799">Autorizzazioni per le estensioni</translation>
 <translation id="4262004481148703251">Ignora avviso</translation>
+<translation id="4262060800239714974">Per recuperare le schede dal <ph name="DEVICE" />, sincronizza la cronologia e le schede con <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4263470758446311292">Risparmio di memoria massimo. Le schede diventano inattive dopo un periodo di tempo più breve.</translation>
 <translation id="4263824086525632">Aurora boreale</translation>
 <translation id="4265096510956307240">Verifica la tua identità</translation>
@@ -4919,8 +4930,10 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4750185073185658673">Controlla altre autorizzazioni dal telefono. Assicurati che il Bluetooth e il Wi-Fi del telefono siano attivi.</translation>
 <translation id="4750394297954878236">Suggerimenti</translation>
 <translation id="475088594373173692">Primo utente</translation>
+<translation id="4751925628341802838">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4753084533826742808">Deve contenere almeno 1 carattere</translation>
 <translation id="4754590344707355551">Migliora il browser con le estensioni</translation>
+<translation id="4756130875344525429">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere alle informazioni salvate e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4756378406049221019">Interrompi/Ricarica</translation>
 <translation id="4756388243121344051">&amp;Cronologia</translation>
 <translation id="4756627014339714615">Reindirizza</translation>
@@ -5230,6 +5243,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="497403230787583386">Controlli di sicurezza effettuati. Il documento sarà stampato.</translation>
 <translation id="4974442344472293753">Esito aggiornamento</translation>
 <translation id="4975771730019223894">Badge dell'app</translation>
+<translation id="4976647810464861866">Accedi e sincronizza la cronologia per recuperare le schede dagli altri tuoi dispositivi. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Conferma accesso</translation>
 <translation id="4979263087381759787">Opzioni sviluppatore</translation>
@@ -5401,6 +5415,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="511313294362309725">Attiva l'Accoppiamento rapido</translation>
 <translation id="5113992879909788634">Scopri di più sulla navigazione automatica di Chrome</translation>
 <translation id="51143538739122961">Inserisci il token di sicurezza e toccalo</translation>
+<translation id="5114635223409082546">Accedi e sincronizza la cronologia per recuperare le schede dal <ph name="DEVICE" />. Potrai anche accedere ai preferiti e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Sal&amp;va audio come...</translation>
 <translation id="5117139026559873716">Disconnetti il telefono da <ph name="DEVICE_TYPE" />. I due dispositivi non si connetteranno più automaticamente.</translation>
@@ -5825,6 +5840,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5457795687441958389">Non eseguire l'accesso</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Hai inserito un PIN errato troppe volte. Per accedere alle passkey e alle password, modifica il PIN.</translation>
+<translation id="5459251585760045919">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere alle estensioni e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5459470938885464873">Errore durante l'importazione del certificato</translation>
 <translation id="5459864179070366255">Installa comunque</translation>
 <translation id="5460861858595506978">Ispirazione</translation>
@@ -5996,6 +6012,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Salvare il nome utente?</translation>
 <translation id="5585019845078534178">Schede</translation>
+<translation id="5585064628683466904">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="5585118885427931890">Impossibile creare la cartella Preferiti.</translation>
 <translation id="558563010977877295">Apri una pagina o un insieme di pagine specifiche</translation>
 <translation id="5587592231724900065">Un'estensione controlla questa impostazione</translation>
@@ -6106,6 +6123,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5687340364605915800">I siti rispondono a questa richiesta a propria discrezione</translation>
 <translation id="5689233503102158537">Alt + backspace</translation>
 <translation id="5689516760719285838">Posizione</translation>
+<translation id="568984110402742489">Impossibile inviare il feedback</translation>
 <translation id="56907980372820799">Collega dati</translation>
 <translation id="5691772641933328258">Impronta digitale non riconosciuta</translation>
 <translation id="5693255400847650006">Microfono in uso</translation>
@@ -6729,6 +6747,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6175910054050815932">Ottieni un link</translation>
 <translation id="6177478397823976397">Nessun dispositivo trovato. Apri un articolo del Centro assistenza in una nuova scheda</translation>
 <translation id="6177779807714496775">Apri link nella visualizzazione a sinistra</translation>
+<translation id="6178186430790239237">Per recuperare le schede dagli altri tuoi dispositivi, sincronizza la cronologia e le schede con <ph name="EMAIL" />. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="6178664161104547336">Seleziona un certificato</translation>
 <translation id="6178682841350631965">I dati di accesso sono stati aggiornati</translation>
 <translation id="6179830757749383456">Browser gestito da <ph name="BROWSER_DOMAIN" />, profilo gestito da <ph name="PROFILE_DOMAIN" /></translation>
@@ -7039,6 +7058,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6430202563517028640">Aggiungi link all'elenco di lettura</translation>
 <translation id="6430814529589430811">ASCII con codifica Base64, singolo certificato</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> imposterà gli aggiornamenti automatici per tutti gli utenti di questo computer.</translation>
+<translation id="6431970976661940755">Accedi e sincronizza la cronologia per recuperare le schede dal <ph name="DEVICE" />. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="6434104957329207050">Velocità della scansione per punto</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6434755719322447931">Caotico</translation>
@@ -7203,6 +7223,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6556903358015358733">Tema e sfondo</translation>
 <translation id="6557199166823345360">Per perfezionare la ricerca, aggiungi altri dettagli o fai una domanda sulla selezione</translation>
 <translation id="6557290421156335491">Le mie scorciatoie</translation>
+<translation id="655745275895381718">Accedi e sincronizza la cronologia per recuperare le schede dal <ph name="DEVICE" />. Potrai anche accedere alle informazioni salvate e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="6558098963164662391">&amp;Rimuovi dal dizionario</translation>
 <translation id="6560061709899140565">Mostra altre sessioni di trasmissione</translation>
 <translation id="656065428026159829">Mostra altri</translation>
@@ -7647,7 +7668,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6871860225073478239">Lingue...</translation>
 <translation id="6873156759937047811">PIN:</translation>
 <translation id="6873499199714317035">Quando l'opzione è attiva, Google Traduttore propone di tradurre siti e PDF nella tua lingua preferita. Può anche tradurre automaticamente i siti.</translation>
-<translation id="6873571253135628430">Modifica le autorizzazioni dei siti</translation>
+<translation id="6873571253135628430">Modifica le autorizzazioni per i siti</translation>
 <translation id="6874986444867497677">Impossibile completare l'installazione. Riprova o chiudi questa finestra.</translation>
 <translation id="6876155724392614295">Bicicletta</translation>
 <translation id="6876469544038980967">Non utili</translation>
@@ -7890,6 +7911,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 password importata in <ph name="BRAND" /> per <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} password importate in <ph name="BRAND" /> per <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Informazioni sul sistema</translation>
 <translation id="706626672220389329">Errore durante il montaggio della condivisione. La condivisione specificata è già montata.</translation>
+<translation id="7066357648902789011">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7067396782363924830">Colori ambient</translation>
 <translation id="7067725467529581407">Non visualizzare più questo messaggio.</translation>
 <translation id="7068539819344620805">Ora puoi dare un nuovo look al tuo browser in qualsiasi momento dal menu Personalizza Chrome</translation>
@@ -8075,6 +8097,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7214047272988222011">Autorizzazione consentita - <ph name="PERMISSION_DETAILS" />. Attiva l‘<ph name="LINK_BEGIN" />accesso alla fotocamera del sistema<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nuova scheda in 1 scheda}other{Nuova scheda in # schede}}</translation>
 <translation id="721490496276866468">Importa password</translation>
+<translation id="7216638029417040861">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere ai preferiti e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7217208603285112910">Selezione non in lingua: <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Aggiungi testo, commenti e note con il nuovo strumento Annotazioni di testo</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
@@ -8085,6 +8108,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7222232353993864120">Indirizzo email</translation>
 <translation id="7222335051802562841">Termina aggiornamento</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere all'elenco di lettura e molto altro su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7223027547122518521">Seleziona un file che questo sito può leggere</translation>
 <translation id="7223952304612664117">Questo consente ai servizi di sistema di utilizzare la precisione della localizzazione per determinare la tua posizione. La precisione della localizzazione utilizza informazioni su segnali wireless e sensori per stimare la posizione del dispositivo.</translation>
 <translation id="7225082563376899794">Usa Windows Hello in fase di inserimento delle password</translation>
@@ -8972,6 +8996,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Annulla configurazione</translation>
 <translation id="7912974581251770345">Traduzione</translation>
+<translation id="7913805372428124107">Accedi e sincronizza la cronologia per recuperare le schede dal <ph name="DEVICE" />. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7914399737746719723">App installata</translation>
 <translation id="7915457674565721553">Connettiti a Internet per configurare il Controllo genitori</translation>
 <translation id="7916364730877325865">La tua organizzazione non ti consente di attivare la sincronizzazione con questo account</translation>
@@ -9252,6 +9277,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="810362914482827094">Cerca nelle passkey</translation>
 <translation id="8104088837833760645">Scarica profilo eSIM</translation>
 <translation id="8104388155778519213">Condividi i contenuti sullo schermo con Google Lens</translation>
+<translation id="8104412594956510627">Per recuperare la cronologia dal <ph name="DEVICE" />, sincronizza la cronologia. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="8104778744208707085">Richiede la tua attenzione</translation>
 <translation id="8105273883928376822">Accedi per continuare.</translation>
 <translation id="8106114112474206597">Usa il tasto "I" per premere un tasto del mouse</translation>
@@ -9262,6 +9288,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8109991406044913868">Tema creato con l'IA</translation>
 <translation id="8110393529211831722">L'abbonamento è installato solo su questo dispositivo e non è sincronizzato con altri dispositivi collegati al tuo account. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Download dell'elenco contatti…</translation>
+<translation id="8110781914702267195">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze relative a dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /> come carte fedeltà</translation>
 <translation id="8114925369073821854">Autorizzazione di accesso al microfono di <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Chiedi l'approvazione a un genitore</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> memorizza il metodo di accesso e, se possibile, ti consente di accedere automaticamente. Se questa opzione è disattivata, ti verrà chiesta una conferma ogni volta.</translation>
@@ -9281,6 +9308,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8124313775439841391">ONC gestito</translation>
 <translation id="8125651784723647184">La condivisione delle password è gestita dall'amministratore</translation>
 <translation id="8126355825906412872">Sorridi</translation>
+<translation id="8126498026310640675">Per recuperare la cronologia dal <ph name="DEVICE" />, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche accedere ai preferiti e ad altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8133297578569873332">Accettabile - FM</translation>
@@ -10244,6 +10272,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="8874341931345877644">Trasmetti a un dispositivo:</translation>
 <translation id="8874647982044395866">Biologico</translation>
 <translation id="8874790741333031443">Prova a consentire temporaneamente i cookie di terze parti. In questo modo avrai meno protezione durante la navigazione, ma è più probabile che le funzionalità del sito operino come previsto.</translation>
+<translation id="8874864294955002500">L'invio di feedback non è disponibile per il tuo account. L'amministratore aziendale può utilizzare il proprio dispositivo o profilo per segnalare un problema per tuo conto.</translation>
 <translation id="8875736897340638404">Scegli la visibilità</translation>
 <translation id="8876307312329369159">Questa impostazione non può essere modificata in una sessione demo.</translation>
 <translation id="8876965259056847565">La funzionalità <ph name="FEATURE_NAME" /> usa la scansione Bluetooth per trovare dispositivi nelle vicinanze.</translation>

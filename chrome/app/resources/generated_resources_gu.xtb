@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{આ ડિવાઇસ પર <ph name="BRAND" /> પર 1 પાસવર્ડની આયાત કરી}one{આ ડિવાઇસ પર <ph name="BRAND" /> પર {NUM_PASSWORDS} પાસવર્ડની આયાત કરી}other{આ ડિવાઇસ પર <ph name="BRAND" /> પર {NUM_PASSWORDS} પાસવર્ડની આયાત કરી}}</translation>
 <translation id="1046572983040892965">વિન્ડોને ઉપરની તરફ અને ડાબી બાજુ ખસેડવામાં આવી</translation>
 <translation id="1047431265488717055">લિંક ટે&amp;ક્સ્ટને કૉપિ કરો</translation>
+<translation id="104751728059674265">તમારા એકાઉન્ટ માટે પ્રતિસાદ ઉપલબ્ધ નથી. તમારા માટે કોઈ સમસ્યાની જાણ કરવા માટે, કોઈ પુખ્ત વયની વ્યક્તિ તેમના ડિવાઇસ અથવા પ્રોફાઇલનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="1048986595386481879">ગતિશીલ રીતે ફાળવેલી</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}one{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}other{<ph name="DEVICE_NAME" /> પરથી <ph name="ATTACHMENTS" /> મેળવી રહ્યાં છીએ}}</translation>
 <translation id="1049743911850919806">છૂપી</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">સાઇટ તમારા માઉસ ઇનપુટને કૅપ્ચર કરવા અને તેનો ઉપયોગ કરવા દેવા માટે પૂછી શકે છે</translation>
 <translation id="1232569758102978740">શીર્ષક વિનાનું</translation>
 <translation id="1233497634904001272">વિનંતી પૂરી કરવા માટે તમારા સુરક્ષા કોડને ફરી સ્પર્શ કરો.</translation>
+<translation id="1233566345244684257">તમારી Gemini ઍપનો ઍક્સેસ ધરાવતી કોઈપણ વ્યક્તિ તમારા Chrome બ્રાઉઝરને નિયંત્રિત કરી શકે છે.</translation>
 <translation id="1233721473400465416">લોકેલ</translation>
 <translation id="1233835246554936745">{0,plural, =1{એકાઉન્ટમાં 1 આઇટમ સાચવો}one{એકાઉન્ટમાં # આઇટમ સાચવો}other{એકાઉન્ટમાં # આઇટમ સાચવો}}</translation>
 <translation id="1234736487471201993">આ છબી માટે QR કોડ બનાવો</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">કૃપા કરીને આ ડેટા ડાઉનલોડ કરવાનું કારણ દાખલ કરો:</translation>
 <translation id="1422159345171879700">અસુરક્ષિત સ્ક્રિપ્ટ લોડ કરો</translation>
 <translation id="1425040197660226913">અપલોડ કરી શકાતી નથી. 20 MB કરતાં નાની છબીનો ઉપયોગ કરો.</translation>
+<translation id="1426154609634610063">Geminiનો ઉપયોગ કરવાના જોખમોનો રિવ્યૂ કરો</translation>
 <translation id="1426410128494586442">હા</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> બ્લૉક કરેલી છે</translation>
 <translation id="1427179946227469514">ટેક્સ્ટ ટૂ સ્પીચની પિચ</translation>
@@ -983,6 +986,7 @@
 <translation id="1755601632425835748">ટેક્સ્ટનું કદ</translation>
 <translation id="1756963401828337401">કૅપ્ચર કરવા માટે સ્ક્રીન પસંદ કરો</translation>
 <translation id="17584710573359123">Chrome વેબ સ્ટોરમાં જુઓ</translation>
+<translation id="1758845021884209593">OS ઍપ પર શૉર્ટકટનો ઉપયોગ કરો</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />નું <ph name="REMAPPING_OPTION" /> પર ફરીથી મૅપિંગ કરવામાં આવ્યું.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ના એકાઉન્ટ</translation>
 <translation id="176272781006230109">શૉપિંગ માટેના સૂચનો</translation>
@@ -1828,6 +1832,7 @@
 <translation id="2416435988630956212">કીબોર્ડની ફંકશન કી</translation>
 <translation id="2419131370336513030">ઇન્સ્ટૉલ કરેલી ઍપ જુઓ</translation>
 <translation id="2419706071571366386">સુરક્ષા માટે, તમારા કમ્પ્યુટરનો ઉપયોગ ન થતો હોય ત્યારે સાઇન આઉટ કરો.</translation>
+<translation id="2423226060967554289">બુકમાર્ક બાર બતાવો</translation>
 <translation id="2423506062824112361">કોઈ અજાણ્યા કારણસર કન્ટેન્ટ ડાઉનલોડ કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="2423578206845792524">છબીને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="2424424966051154874">{0,plural, =1{અતિથિ}one{અતિથિ (#)}other{અતિથિ (#)}}</translation>
@@ -2065,6 +2070,7 @@
 <translation id="2588271083332682494">ટૅબના ગ્રૂપ વડે કામના ટૅબ વ્યવસ્થિત ગોઠવો</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> પાસે ઉપલબ્ધ ડિવાઇસની શ્રેણી</translation>
 <translation id="2589658397149952302">Driveની ફાઇલો ક્યારેય બતાવશો નહીં</translation>
+<translation id="2595270892115552212">જ્યારે તમે gemini.google.com અને Gemini મોબાઇલ ઍપ સહિત અન્ય Gemini ઍપમાંથી કોઈ કાર્ય શરૂ કરો, ત્યારે Gemini સાઇટ સાથે ક્રિયાપ્રતિક્રિયા કરવા અને તમારા વતી કાર્યો પૂર્ણ કરવા માટે આ ડિવાઇસ પર Chromeની ઑટો બ્રાઉઝ સુવિધાનો ઉપયોગ કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">'નજીકના શેર' સુવિધા નજીકના ડિવાઇસ શોધવા માટે બ્લૂટૂથ સ્કૅનિંગનો ઉપયોગ કરે છે.</translation>
 <translation id="2598136842498757793">ટૂલબારના બટન કસ્ટમાઇઝ કરો</translation>
 <translation id="2598710988533271874">નવું Chrome ઉપલબ્ધ છે</translation>
@@ -2802,6 +2808,7 @@
 <translation id="3132996321662585180">દરરોજ રિફ્રેશ કરો</translation>
 <translation id="3134312457920437826">એક્સ્ટેન્શન ઇન્સ્ટૉલ કરી શકાતું નથી, કારણ કે તે સપોર્ટેડ ન હોય એવા કોઈ મેનિફેસ્ટ વર્ઝનનો ઉપયોગ કરે છે.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે પ્રયોગનું સ્ટેટસ પસંદ કરો. પ્રયોગનું વર્ણન: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">અન્ય Gemini ઍપને કોઈપણ ડિવાઇસ પરથી રિમોટલી બ્રાઉઝ કરવા દો</translation>
 <translation id="3139925690611372679">ડિફૉલ્ટ પીળો અવતાર</translation>
 <translation id="314095642664111744">ફોકસ બંધ કરો</translation>
 <translation id="3141093262818886744">તેમ છતાં ખોલો</translation>
@@ -3087,6 +3094,7 @@
 <translation id="3355936511340229503">કનેક્શન ભૂલ</translation>
 <translation id="335678817537689040">સ્થિર</translation>
 <translation id="3359256513598016054">પ્રમાણપત્ર નીતિની મર્યાદાઓ</translation>
+<translation id="3359465538772230055">કોઈ ટાસ્ક નથી</translation>
 <translation id="3360297538363969800">છાપવાનું નિષ્ફળ થયું. કૃપા કરીને તમારું પ્રિન્ટર તપાસો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}one{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}other{<ph name="DEVICE_NAME" /> તમારી સાથે <ph name="ATTACHMENTS" /> શેર કરી રહ્યું છે.}}</translation>
@@ -3615,6 +3623,7 @@
 <translation id="3736487688526377259">તમે આ લિંક કયા ડિવાઇસ પર મેળવવા માગો છો તે પસંદ કરો.</translation>
 <translation id="3737058101969549870">શું વર્તમાન બ્રાઉઝિંગ ડેટાને આ નવી પ્રોફાઇલથી અલગ રાખીએ?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">જો ડિવાઇસ સક્રિય હોય અને Chrome ચાલુ હોય, તો જ Gemini આ ડિવાઇસ પર ઑટો બ્રાઉઝ સુવિધાનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> ખોલીએ?</translation>
 <translation id="3739349485749941749">સાઇટ તમારા ડિવાઇસ માટે ઍક્સેસિબલ હોય તેવા પ્રિન્ટર શોધવા અને તેનો ઉપયોગ કરવા માટે પૂછી શકશે</translation>
 <translation id="3741056951918180319">કોઈપણ સાઇટ પર આનો ઉપયોગ કરવા માટે, હંમેશાં એક્સ્ટેન્શન પર તમે ક્લિક કરી શકો છો</translation>
@@ -3970,6 +3979,7 @@
 <translation id="3987993985790029246">લિંક કૉપિ કરો</translation>
 <translation id="3988124842897276887">આ ટૅબ કોઈ USB ડિવાઇસ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="3989635538409502728">સાઇન આઉટ</translation>
+<translation id="399132041334931433">નવા ગ્રૂપમાં ટૅબ ઉમેરો</translation>
 <translation id="399179161741278232">આયાત કરેલા</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" />ને USB ડિવાઇસને નિયંત્રિત કરવાની સુવિધા આપો.</translation>
@@ -5199,6 +5209,7 @@
 <translation id="495170559598752135">ક્રિયાઓ</translation>
 <translation id="4951966678293618079">આ સાઇટ માટે ક્યારેય પાસવર્ડ સાચવશો નહીં</translation>
 <translation id="4952580838083306838">ઑર્ગેનાઇઝર છુપાવો</translation>
+<translation id="4952628481830269193">બુકમાર્ક બાર બતાવો</translation>
 <translation id="4953808748584563296">ડિફૉલ્ટ નારંગી અવતાર</translation>
 <translation id="4954652437333037880">ફાઇલ</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> વિશે પૂછો</translation>
@@ -5451,6 +5462,7 @@
 <translation id="5149602533174716626">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="5150254825601720210">નેટસ્કેપ પ્રમાણપત્ર SSL સર્વર નામ</translation>
 <translation id="5151354047782775295">ડિસ્ક સ્થાન ખાલી કરો અથવા પસંદ કરેલ ડેટા ઑટોમૅટિક રીતે કાઢી નાખવામાં આવી શકે છે</translation>
+<translation id="5152719737931716272">કાર્ય પૂર્ણ થયું અને Geminiને પરત કરવામાં આવ્યો</translation>
 <translation id="5153074793829217329">તમારા માઉસના કર્સરને નિયંત્રિત કરવા માટે તમારા કીબોર્ડ અથવા ન્યૂમેરિક કીપેડનો ઉપયોગ કરો</translation>
 <translation id="5153234146675181447">ફોન ભૂલી જાઓ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5768,6 +5780,7 @@
 <translation id="5414836363063783498">ચકાસી રહ્યું છે...</translation>
 <translation id="5415497281076257439">શબ્દસમૂહ</translation>
 <translation id="5415871492522952905">તમારી પાસે તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ અને ટૅબ હશે, જેથી તમે જે કરી રહ્યાં હતા તે આગળ વધારી શકો</translation>
+<translation id="5417160551295347092">Gemini ભૂલો કરી શકે છે, જેમ કે તમારી માહિતી શેર કરવી અથવા પૂછ્યા વિના ખરીદીઓ કરવી. <ph name="LINK_BEGIN" />જોખમોનો રિવ્યૂ કરો<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">આ સાઇટ સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે ઓળખકર્તાઓનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="5417312524372586921">બ્રાઉઝરની થીમ</translation>
 <translation id="541737483547792035">સ્ક્રીન મોટી કરો</translation>
@@ -6112,6 +6125,7 @@
 <translation id="5687340364605915800">આ વિનંતીનો પ્રત્યુત્તર આપતી વખતે સાઇટ તેની વિવેકબુદ્ધિનો ઉપયોગ કરે છે</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">સ્થાન</translation>
+<translation id="568984110402742489">પ્રતિસાદ મોકલી શકાતો નથી</translation>
 <translation id="56907980372820799">ડેટાને લિંક કરો</translation>
 <translation id="5691772641933328258">ફિંગરપ્રિન્ટ ઓળખી શકાઈ નથી</translation>
 <translation id="5693255400847650006">માઇક્રોફોન ઉપયોગમાં છે</translation>
@@ -6523,6 +6537,7 @@ USB ડિવાઇસ</translation>
 <translation id="6003143259071779217">ઇ-સિમ સેલ્યુલર નેટવર્ક કાઢી નાખો</translation>
 <translation id="6003479444341796444">હવે શીર્ષક બાર બતાવવામાં આવી રહ્યું છે</translation>
 <translation id="6003582434972667631">થીમ તમારી સંસ્થા દ્વારા સેટ કરવામાં આવે છે</translation>
+<translation id="600407115562756795">તમે શરૂ કરો છો અથવા અપડેટ કરો છો તે ટાસ્કના આધારે Gemini કઈ ઍક્શન લેવી તે નક્કી કરશે.</translation>
 <translation id="6005045517426700202">ઈંટની બિલ્ડિંગ</translation>
 <translation id="6006484371116297560">ક્લાસિક</translation>
 <translation id="6007053304250788613">મિરર મોડમાં માત્ર એક ડિસ્પ્લેને બાકાત કરી શકાય છે</translation>
@@ -8501,6 +8516,7 @@ USB ડિવાઇસ</translation>
 <translation id="7523117833414447032">કૅપિટલ વાંચતી વખતે</translation>
 <translation id="7523585675576642403">પ્રોફાઇલનું નામ બદલો</translation>
 <translation id="7525067979554623046">બનાવો</translation>
+<translation id="7526083414913154899">Geminiના કાર્યો વિશે વધુ જાણો</translation>
 <translation id="7528224636098571080">ખોલશો નહીં</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?}one{શું ટૅબનું ગ્રૂપ અનગ્રૂપ કરીએ?}other{શું ટૅબના ગ્રૂપ અનગ્રૂપ કરીએ?}}</translation>
 <translation id="7529411698175791732">તમારું ઇન્ટરનેટ કનેક્શન તપાસો. જો સમસ્યા ચાલુ રહે, તો સાઇન આઉટ કરો અને ફરીથી સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
@@ -9225,6 +9241,7 @@ USB ડિવાઇસ</translation>
 <translation id="8081989000209387414">ADB ડિબગીંગ બંધ કરીએ?</translation>
 <translation id="8082132721957920509">તમારું કાર્ડ સાચવવામાં આવ્યું</translation>
 <translation id="8082390128630131497">ADB ડિબગીંગ બંધ કરવાથી આ <ph name="DEVICE_TYPE" />ને ફેક્ટરી સેટિંગ પર રીસેટ કરવામાં આવશે. બધા વપરાશકર્તા એકાઉન્ટ અને સ્થાનિક ડેટા કાઢી નાખવામાં આવશે.</translation>
+<translation id="8082737802704584539">તમારી સંસ્થા દ્વારા તમારા Google એકાઉન્ટમાં ઇતિહાસ સાચવવાનું બંધ કરવામાં આવ્યું છે</translation>
 <translation id="8084114998886531721">સાચવેલ પાસવર્ડ</translation>
 <translation id="8084417885464859041">સલામત રીતે Geminiનો ઉપયોગ કરો</translation>
 <translation id="8084429490152575036">સેલ્યુલર APN સેટિંગ</translation>
@@ -9267,6 +9284,7 @@ USB ડિવાઇસ</translation>
 <translation id="8109991406044913868">AI વડે બનાવેલી થીમ</translation>
 <translation id="8110393529211831722">સબ્સ્ક્રિપ્શન ફક્ત આ ડિવાઇસ પર ઇન્સ્ટૉલ કરેલું છે અને તેને તમારા એકાઉન્ટ હેઠળના અન્ય ડિવાઇસ સાથે સિંક કરવામાં આવ્યું નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">સંપર્ક સૂચિ ડાઉનલોડ કરી રહ્યાં છીએ...</translation>
+<translation id="8110781914702267195">તમારા <ph name="BEGIN_LINK1" />ડેટા અને પ્રાઇવસી સંબંધિત પસંદગીઓ<ph name="END_LINK1" />ને નિયંત્રિત કરવા અથવા <ph name="BEGIN_LINK2" />ચુકવણી પદ્ધતિઓ<ph name="END_LINK2" /> અને લૉયલ્ટિ કાર્ડ જેવા <ph name="BEGIN_LINK3" />પાસ<ph name="END_LINK3" />ને મેનેજ કરવા માટે Google Walletની મુલાકાત લો</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> માઇક્રોફોનની પરવાનગી</translation>
 <translation id="8116497846156149">માતાપિતાને મંજૂરી આપવા કહો</translation>
 <translation id="8118276691321086429">તમે કેવી રીતે સાઇન ઇન કર્યું છે તે <ph name="PASSWORD_MANAGER_BRAND" /> યાદ રાખે છે અને શક્ય હોય ત્યારે તે તમને ઑટોમૅટિક રીતે સાઇન ઇન કરાવે છે. જ્યારે આ સુવિધા બંધ હોય, ત્યારે દર વખતે કન્ફર્મેશન માટે તમને પૂછવામાં આવશે.</translation>
@@ -9347,6 +9365,7 @@ USB ડિવાઇસ</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />માંથી <ph name="ITEM_POSITION" /> પ્રિન્ટર.</translation>
 <translation id="8180785270975217276">એનર્જી સેવર ચાલુ કર્યું</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" આ તપાસાયેલા સ્થાનોમાં ફોટા, વીડિયો અને સાઉન્ડ ફાઇલોને વાંચી શકે છે.</translation>
+<translation id="8181132988581553950">તમે સાઇન ઇન કરેલી સાઇટ સહિત, Geminiને તમારી જેમ જ સાઇટનો ઍક્સેસ રહેશે. તે ત્રીજા પક્ષો સાથે જરૂરી માહિતી શેર કરશે, જેમાં તમને સંવેદનશીલ લાગે તેવી વ્યક્તિગત માહિતી શામેલ હોઈ શકે છે.</translation>
 <translation id="8183703640399301650">તમારા ડિવાઇસનું EID <ph name="EID_NUMBER" /> અને IMEI <ph name="IMEI_NUMBER" /> છે. સેવા સક્રિય કરવામાં સહાય માટે આ નંબરનો ઉપયોગ થઈ શકે છે.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> પર સ્વિચ કરો</translation>
 <translation id="8184318863960255706">વધુ માહિતી</translation>
@@ -10249,6 +10268,7 @@ USB ડિવાઇસ</translation>
 <translation id="8874341931345877644">કોઈ ડિવાઇસ પર કાસ્ટ કરો:</translation>
 <translation id="8874647982044395866">ઑર્ગેનિક</translation>
 <translation id="8874790741333031443">ત્રીજા પક્ષની કુકીને હંગામી રીતે મંજૂરી આપવાનો પ્રયાસ કરવાનો અર્થ છે બ્રાઉઝિંગ સંરક્ષણ સાઇટ સુવિધાઓની અપેક્ષા મુજબ કાર્ય કરવાની સંભાવના વધુ છે.</translation>
+<translation id="8874864294955002500">તમારા એકાઉન્ટ માટે પ્રતિસાદ ઉપલબ્ધ નથી. તમારા એન્ટરપ્રાઇઝ ઍડમિનિસ્ટ્રેટર તમારા માટે સમસ્યાની જાણ કરવા માટે તેમના ડિવાઇસ અથવા પ્રોફાઇલનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="8875736897340638404">તમારી દૃશ્યતા પસંદ કરો</translation>
 <translation id="8876307312329369159">ડેમો સત્રમાં આ સેટિંગ બદલી શકાતી નથી.</translation>
 <translation id="8876965259056847565">નજીકના ડિવાઇસ શોધવા માટે, <ph name="FEATURE_NAME" /> બ્લૂટૂથ સ્કૅનિંગનો ઉપયોગ કરે છે.</translation>

@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{已將 1 組密碼匯入這部裝置的「<ph name="BRAND" />」中}other{已將 {NUM_PASSWORDS} 組密碼匯入這部裝置的「<ph name="BRAND" />」中}}</translation>
 <translation id="1046572983040892965">視窗已向左上方移動</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
+<translation id="104751728059674265">你的帳戶無法使用意見回饋功能。成人可以使用自己的裝置或設定檔，為你回報問題。</translation>
 <translation id="1048986595386481879">動態分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{正在從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">無痕模式</translation>
@@ -983,6 +984,7 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">選擇要擷取的畫面</translation>
 <translation id="17584710573359123">前往 Chrome 線上應用程式商店查看</translation>
+<translation id="1758845021884209593">在 OS 應用程式中使用快速鍵</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -3083,6 +3085,7 @@
 <translation id="3355936511340229503">連線錯誤</translation>
 <translation id="335678817537689040">靜態</translation>
 <translation id="3359256513598016054">憑證原則限制</translation>
+<translation id="3359465538772230055">沒有工作</translation>
 <translation id="3360297538363969800">列印失敗。請檢查你的印表機，然後再試一次。</translation>
 <translation id="3360306038446926262">視窗</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}other{「<ph name="DEVICE_NAME" />」與你分享了 <ph name="ATTACHMENTS" />。}}</translation>
@@ -6099,6 +6102,7 @@
 <translation id="5687340364605915800">網站會自行判斷是否回應這項要求</translation>
 <translation id="5689233503102158537">alt + backspace 鍵</translation>
 <translation id="5689516760719285838">位置</translation>
+<translation id="568984110402742489">無法傳送意見回饋</translation>
 <translation id="56907980372820799">連結資料</translation>
 <translation id="5691772641933328258">指紋辨識失敗</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
@@ -9212,6 +9216,7 @@
 <translation id="8081989000209387414">是否要停用 ADB 偵錯？</translation>
 <translation id="8082132721957920509">卡片已儲存</translation>
 <translation id="8082390128630131497">停用 ADB 偵錯會將這部 <ph name="DEVICE_TYPE" /> 恢復原廠設定。所有使用者帳戶和本機資料都將遭到清除。</translation>
+<translation id="8082737802704584539">貴機構已關閉在 Google 帳戶中儲存歷史記錄的功能</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
 <translation id="8084417885464859041">安全地使用 Gemini</translation>
 <translation id="8084429490152575036">行動網路 APN 設定</translation>
@@ -9254,6 +9259,7 @@
 <translation id="8109991406044913868">AI 製作的主題</translation>
 <translation id="8110393529211831722">訂閱項目只會安裝在這部裝置上，不會同步到帳戶中的其他裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下載聯絡人清單...</translation>
+<translation id="8110781914702267195">前往 Google 錢包控管<ph name="BEGIN_LINK1" />資料和隱私權偏好設定<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />付款方式<ph name="END_LINK2" />與會員卡等<ph name="BEGIN_LINK3" />票證<ph name="END_LINK3" /></translation>
 <translation id="8114925369073821854">「<ph name="APP_NAME" />」的麥克風權限</translation>
 <translation id="8116497846156149">請家長核准</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
@@ -10236,6 +10242,7 @@
 <translation id="8874341931345877644">投放到裝置：</translation>
 <translation id="8874647982044395866">有機</translation>
 <translation id="8874790741333031443">請嘗試暫時允許使用第三方 Cookie。這個操作會降低瀏覽防護程度，但會增加網站功能正常運作的機率。</translation>
+<translation id="8874864294955002500">你的帳戶無法使用意見回饋功能。企業管理員可以使用自己的裝置或設定檔，為你回報問題。</translation>
 <translation id="8875736897340638404">選擇瀏覽權限</translation>
 <translation id="8876307312329369159">這項設定無法在示範工作階段中變更。</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" />功能會透過藍牙掃描尋找鄰近裝置。</translation>

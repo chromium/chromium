@@ -740,6 +740,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2233745931693710080">Geisladiskur</translation>
 <translation id="2236949375853147973">Mín virkni</translation>
 <translation id="2239100178324503013">Senda núna</translation>
+<translation id="223921069122391343">Við greiðslu verður vistaða tilboðið þitt í boði með sjálfvirkri útfyllingu. <ph name="BEGIN_LINK" />Skoða skilmála<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Bæta leiðréttingarnúmeri við</translation>
 <translation id="2241693394036365668">Skrá er sótt</translation>
 <translation id="2242389809734574253">„Vista IBAN“, lokað.</translation>
@@ -986,7 +987,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2628025184666666186">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" /> vegna þess að hann notar öryggisvottorð sem Chrome eða kerfisstillingin þín treystir ekki fyrir dulkóðun vefumferðar. Þetta kann að orsakast af rangri stillingu eða tölvuþrjóti sem hefur komist inn í tenginguna.</translation>
 <translation id="2628224721443278970">Skrá inn í Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Kerfisstjórinn þinn fann þetta tæki þegar það var slökkt á því. Kveikt hefur verið á því aftur og það er tilbúið til notkunar.</translation>
-<translation id="2631387782019878060">Staðfestingarkóði: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-tala þjóns <ph name="HOST_NAME" /> fannst ekki.</translation>
 <translation id="2635276683026132559">Undirritun</translation>
 <translation id="2638070510549214427">Merkja sem öruggt</translation>
@@ -1371,6 +1371,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3308006649705061278">Skipulagseining (OU)</translation>
 <translation id="3310946375819654151">Google Chrome er að reyna að fylla út viðkvæmar upplýsingar í <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Tókst að hlaða upp</translation>
+<translation id="3323135197619890621">Kveiktu á sjálfvirkri útfyllingu til að auðvelda þér verslun</translation>
 <translation id="3324687287337751929">4 x 6 to.</translation>
 <translation id="3325568918769906282">í lækkandi röð</translation>
 <translation id="3325662270238538525">Nýlegur aðgangur og breytingar á skrá, þ.m.t. skráarheiti, stafræn fingraför skráarefnis, uppruni niðurhals og lýsigögn</translation>
@@ -1596,6 +1597,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3704162925118123524">Netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />–<ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Hleður...</translation>
+<translation id="3708927069677086144">Fyrirtækið þitt krefst þess að þú skráir þig inn í Chrome</translation>
 <translation id="3709599264800900598">Texti sem þú afritaðir</translation>
 <translation id="3711223220609269738">Nýr einangraður flipi</translation>
 <translation id="3711430313228789376">Chrome-vafri er að reyna að birta aðgangsorð</translation>
@@ -1733,6 +1735,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3928806096717999469">Breyta, opnast í nýjum glugga</translation>
 <translation id="393417216277380082">Hreyfi- og birtuskynjarar</translation>
 <translation id="3937640725563832867">Annað heiti vottorðsútgefanda</translation>
+<translation id="3938243129430544357">Gakktu á öruggan hátt frá kaupum með sjálfvirkri útfyllingu</translation>
 <translation id="3939773374150895049">Nota WebAuthn í stað CVC-númers?</translation>
 <translation id="3941630233824954464">Virkja áskilda endurauðkenningu</translation>
 <translation id="3942048175062210325">Prófaðu að opna skrárnar þínar aftur</translation>
@@ -2057,6 +2060,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4424024547088906515">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chrome treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="4425137053900958839">Njóttu allra þeirra þæginda og öryggis sem Pix getur veitt þér</translation>
 <translation id="443121186588148776">Raðtengi</translation>
+<translation id="4431928532022419942">Fjarlægja úr Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> samþykkti ekki innskráningarvottorðið þitt eða það var ekki gefið upp.</translation>
 <translation id="4432792777822557199">Síður á málinu „<ph name="SOURCE_LANGUAGE" />“ verða héðan í frá þýddar yfir á eftirfarandi tungumál: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Hunsað vegna þess að notandinn tengist ekki stjórn vélarinnar eða vélinni er ekki stýrt.</translation>
@@ -3136,6 +3140,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bókamerki</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
 <translation id="6264485186158353794">Aftur í öruggt skjól</translation>
+<translation id="6264507470395196064">Örugg gátt</translation>
 <translation id="6264636978858465832">Aðgangsorðastjórnun þarfnast fleiri aðgangsheimilda</translation>
 <translation id="6265794661083428563">Afrita gildi <ph name="POLICY_NAME" /> reglunnar</translation>
 <translation id="6271264012613848937">Lokað var á að þú gætir opnað <ph name="URL" /> vegna reglna innan fyrirtækisins þíns. Hafðu samband við kerfisstjórann ef þetta er eitthvað sem ekki var búist við.</translation>
@@ -3345,6 +3350,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6630043285902923878">Leitar að USB-tækjum...</translation>
 <translation id="6630388727238334626">Hnappurinn „Stjórna stillingum Chrome“, virkjaðu til að opna stillingar Chrome</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Til að opna næsta vefsvæði krefst fyrirtækið þitt þess að þú skráir þig inn með stýrða Google-reikningnum þínum.</translation>
 <translation id="6635900375070654124">auðkenningartæki</translation>
 <translation id="6641852376826221947">Staðfestu kaupin þín</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
@@ -3534,6 +3540,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6957153644870901611">Kveiktu á ítarlegri sjálfvirkri útfyllingu til að fylla út fleiri reiti</translation>
 <translation id="6957887021205513506">Vottorð þjónsins virðist vera falsað.</translation>
 <translation id="6958564499836457428">Stjórnaðu persónuverndarstillingum á Google reikningnum</translation>
+<translation id="6961161369573226336">Google-aðgangsorðastjórnun getur sótt þessa kóða fyrir þig í <ph name="EMAIL" /> á þínu Gmail. Þú getur skipt um skoðun og <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Getur beðið um að nota leturgerðir sem eru uppsettar í tækinu</translation>
 <translation id="6962858948849099922">Flutningur rann út á tíma</translation>
 <translation id="6963520811470373926">Leysir af hólmi</translation>
@@ -3611,6 +3618,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="70846382339153529">OpenDocument-texti</translation>
 <translation id="7086090958708083563">Notandi bað um sendingu</translation>
 <translation id="7090698782953528257">Hjálpaðu mér að teikna fall til að útfæra stærðfræðiformúlu á myndrænan hátt og sjá lögun ferilsins</translation>
+<translation id="7092087596499105699">Kerfisstjórinn þinn stillti tengi öruggu gáttarinnar til að vernda aðgang að lokuðum vefforritum fyrirtækisins þíns. Hún kann að nota gögn af vinnusniðinu þínu til að staðfesta aðgang.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo „Enter“ til að opna stillingar Chrome og stjórna heimildum og gögnum sem eru geymd á vefsvæðum</translation>
 <translation id="709604659664854823">Finndu borð fyrir mig á nálægum veitingastöðum í kvöld með litlum fyrirvara</translation>
 <translation id="7096341143397839437">Tölvupóstur: <ph name="EMAIL" />.</translation>
@@ -4864,6 +4872,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> meðlimir tóku þátt í flipahópnum „<ph name="GROUP_NAME" />“</translation>
 <translation id="949314938206378263">Þú baðst um að opna þetta vefsvæði. Foreldri þitt getur svarað í Family Link.</translation>
 <translation id="949484466204182817">Bæta leiðréttingarnúmeri við Google-veski</translation>
+<translation id="950533895669718124">kynnt þér frekar þennan eiginleika í stillingum</translation>
 <translation id="950736567201356821">Þrjú göt efst</translation>
 <translation id="950926967802086924">Aðgangslykill • Google-aðgangsorðastjórnun</translation>
 <translation id="952165179818196872">Bættu <ph name="PROVIDER" /> við til að greiða án þess að skipta um forrit</translation>

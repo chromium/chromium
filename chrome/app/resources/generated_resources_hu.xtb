@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 jelszó importálva a(z) <ph name="BRAND" /> szolgáltatásba ezen az eszközön}other{{NUM_PASSWORDS} jelszó importálva a(z) <ph name="BRAND" /> szolgáltatásba ezen az eszközön}}</translation>
 <translation id="1046572983040892965">Ablak felfelé és balra mozgatva</translation>
 <translation id="1047431265488717055">Link szövegének má&amp;solása</translation>
+<translation id="104751728059674265">A fiókban nem áll rendelkezésre a visszajelzés küldése. Egy felnőtt az eszközét vagy a profilját használva bejelentheti a problémát az Ön nevében.</translation>
 <translation id="1048986595386481879">Dinamikusan kiosztva</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> fogadása innen: <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> fogadása innen: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognitó mód</translation>
@@ -992,6 +993,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1755601632425835748">Szövegméret</translation>
 <translation id="1756963401828337401">Válassza ki a rögzíteni kívánt képernyőt</translation>
 <translation id="17584710573359123">Megtekintés a Chrome Internetes áruházban</translation>
+<translation id="1758845021884209593">Billentyűparancs használata az operációs rendszer alkalmazásaiban</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> újratársítva a következőhöz: <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> fiókjai</translation>
 <translation id="176272781006230109">vásárlási javaslatok</translation>
@@ -3097,6 +3099,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3355936511340229503">Kapcsolódási hiba</translation>
 <translation id="335678817537689040">Statikus</translation>
 <translation id="3359256513598016054">Tanúsítvány-irányelvi megkötések</translation>
+<translation id="3359465538772230055">Nincsenek feladatok</translation>
 <translation id="3360297538363969800">A nyomtatás sikertelen. Ellenőrizze a nyomtatót, majd próbálja újra.</translation>
 <translation id="3360306038446926262">Ablakok</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> Önnel való megosztására készül.}other{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" /> Önnel való megosztására készül.}}</translation>
@@ -6121,6 +6124,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5687340364605915800">A webhelyek saját mérlegelési szabadságuk szerint reagálnak erre a kérelemre</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Tartózkodási hely</translation>
+<translation id="568984110402742489">Nem sikerült elküldeni a visszajelzést</translation>
 <translation id="56907980372820799">Adatok összekapcsolása</translation>
 <translation id="5691772641933328258">Ujjlenyomat felismerése sikertelen</translation>
 <translation id="5693255400847650006">A mikrofon használatban van</translation>
@@ -9277,6 +9281,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8109991406044913868">AI által létrehozott téma</translation>
 <translation id="8110393529211831722">Az előfizetés csak erre az eszközre van telepítve, és nincs szinkronizálva a fiókhoz tartozó más eszközökkel. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="8110489095782891123">Névjegylista letöltése…</translation>
+<translation id="8110781914702267195">A Google Walletben kezelheti az <ph name="BEGIN_LINK1" />adatokat és az adatvédelmi beállításokat<ph name="END_LINK1" />, valamint a <ph name="BEGIN_LINK2" />fizetési módokat<ph name="END_LINK2" /> és a <ph name="BEGIN_LINK3" />kártyákat<ph name="END_LINK3" /> (például a hűségkártyákat).</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> mikrofonengedélye</translation>
 <translation id="8116497846156149">Kérj jóváhagyást a szülődtől</translation>
 <translation id="8118276691321086429">A <ph name="PASSWORD_MANAGER_BRAND" /> megjegyzi, hogy Ön hogyan jelentkezett be, és amikor csak lehetséges, automatikusan bejelentkezteti Önt. Ha a funkció ki van kapcsolva, akkor a rendszer minden alkalommal megerősítést kér Öntől.</translation>
@@ -10259,6 +10264,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="8874341931345877644">Átküldés egyetlen eszközre:</translation>
 <translation id="8874647982044395866">Organikus</translation>
 <translation id="8874790741333031443">Próbálja meg átmenetileg engedélyezni a harmadik felektől származó cookie-kat, ami kisebb böngészési védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel működnek majd megfelelően.</translation>
+<translation id="8874864294955002500">A fiókban nem áll rendelkezésre a visszajelzés küldése. A vállalati adminisztrátor az eszközét vagy a profilját használva jelentheti be Ön helyett a problémát.</translation>
 <translation id="8875736897340638404">Itt megadhatja a láthatóságot</translation>
 <translation id="8876307312329369159">Ezt a beállítást nem lehet módosítani demó munkamenetben.</translation>
 <translation id="8876965259056847565">A(z) <ph name="FEATURE_NAME" /> funkció a Bluetooth használatával keres közelben lévő eszközöket.</translation>

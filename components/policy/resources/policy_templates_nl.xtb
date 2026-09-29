@@ -1805,6 +1805,7 @@ Als je dit beleid niet instelt voor gewone gebruikers, is dit functioneel vergel
       Als dit beleid niet is ingesteld, begint de browser pas met het besparen van geheugen nadat is gedetecteerd dat er nog maar een kleine hoeveelheid fysiek geheugen op de machine beschikbaar is.</translation>
 <translation id="2161348910646846717">Gebruikers toestaan het releasekanaal te wijzigen</translation>
 <translation id="2162703823039992020">Contextuele integraties van Google-services op <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">De URL van de web-app van de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-instantie voor deze organisatie. Moet een geldige https-URL zijn.</translation>
 <translation id="2166155400701622446">Er is een lijst met beperkte poorten ingebouwd in <ph name="PRODUCT_NAME" />. Met deze poorten kan geen verbinding worden gemaakt. Met deze instelling kun je die lijst omzeilen. De waarde is een door komma's gescheiden lijst van 0 of meer poorten waarvoor uitgaande verbindingen zijn toegestaan.
 
       Poorten zijn beperkt om te voorkomen dat <ph name="PRODUCT_NAME" /> als vector wordt gebruikt om misbruik te maken van verschillende kwetsbaarheden in het netwerk. Als je dit beleid instelt, kun je je netwerk blootstellen aan aanvallen. Dit beleid is bedoeld als tijdelijke oplossing voor fouten met de code ERR_UNSAFE_PORT terwijl je een service van een geblokkeerde poort overzet naar een standaardpoort (zoals poort 80 of 443).
@@ -2188,9 +2189,6 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2421779938235645781">De achtergrondverlichting van het toetsenbord komt overeen met de huidige achtergrond</translation>
 <translation id="2423255396068675416">Als je het beleid toepast of niet instelt, kunnen gebruikers <ph name="PRODUCT_CROSTINI_NAME" /> uitvoeren, zolang <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> en <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aanstaan. Als je het beleid niet toepast, staat <ph name="PRODUCT_CROSTINI_NAME" /> uit voor de gebruiker. Als je het beleid niet toepast, wordt het beleid wel toegepast op startende nieuwe <ph name="PRODUCT_CROSTINI_NAME" />-containers en niet op containers die al actief zijn.</translation>
 <translation id="2423654977291507457">Integraties uitzetten</translation>
-<translation id="2424141395604579502">Als je het beleid toepast of niet instelt, kunnen gebruikers bookmarks toevoegen, verwijderen, wijzigen of uploaden.
-
-      Als je het beleid niet toepast, kunnen gebruikers geen bookmarks toevoegen, verwijderen, wijzigen of uploaden. Ze kunnen nog wel bestaande bookmarks gebruiken.</translation>
 <translation id="242521047682347997">Niet toestaan dat gebruikers sms-berichten synchroniseren tussen hun telefoon en Chromebook</translation>
 <translation id="2426782419955104525">Hiermee zet je de Instant-functie van <ph name="PRODUCT_NAME" /> aan en voorkom je dat gebruikers deze instelling wijzigen.
 
@@ -10666,6 +10664,21 @@ Als je dit beleid niet toepast, gebruikt de pdf-viewer het huidige AGG-weergavep
 
 Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de browser.</translation>
 <translation id="7704244074621846004">Uitgebreide levensduur voor SharedWorkers aanzetten</translation>
+<translation id="7705886216383850895">Hiermee worden de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> geconfigureerd.
+
+Als beheerders <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> willen instellen, moeten ze een van de volgende opties invoeren:
+* De URL van de web-app van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OF
+* Alle 3 de verouderde parameters samen: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> en <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Als je maar een gedeeltelijke subset van deze 3 parameters verstrekt zonder URL, blijft <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet-geconfigureerd.
+
+De parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> moet een geldige URL zijn die het https-schema gebruikt en mag geen gebruikersnaam of wachtwoord bevatten. Als niet aan deze vereisten wordt voldaan, wordt het beleid genegeerd en wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet ingesteld.
+
+Als zowel de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> als de oude parameters zijn ingesteld, heeft de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> voorrang.
+
+Als je dit beleid instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ingesteld voor gebruikers die zijn ingelogd met een beheerd account of een beheerde browser.
+
+Als je dit beleid niet instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet geconfigureerd.
+
+Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Die kan worden beheerd door het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">De functie voor oplaadgeluiden aanzetten.
 
           Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.

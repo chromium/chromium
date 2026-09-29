@@ -304,7 +304,7 @@
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
 <translation id="2226826835915474236">未使用的快捷字词</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
-<translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
+<translation id="2227444325776770048">以“<ph name="USER_FULL_NAME" />”的身份继续</translation>
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2233735624724508540">选择时间范围，然后点按“删除数据”</translation>
@@ -2000,6 +2000,7 @@
 <translation id="8816556050903368450">包含链接：<ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">无法查看标签页的预览内容。</translation>
 <translation id="8820817407110198400">书签</translation>
+<translation id="8822533681006532064">想与 Gemini 对话？请开启麦克风权限。您也可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行管理。</translation>
 <translation id="8840953339110955557">此网页可能与在线版本有所不同。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>

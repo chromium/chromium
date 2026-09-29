@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Araztailea beste fitxa batean pausatu da. Hara joateko, sakatu hau.</translation>
 <translation id="1171774979989969504">Idatzi helbide elektronikoa.</translation>
 <translation id="1178581264944972037">Pausatu</translation>
+<translation id="1254779809141342904">CAP alerta honek XSLT izeneko teknologia erabiltzen du, baina funtzionalitate hori <ph name="REMOVAL_LINK" /> egingo da. Hori gertatzen denean, alerta hau prozesatu gabeko XML datu gisa erakutsiko da. Agian <ph name="EXTENSION_LINK" /> ahal izango duzu, hura ikusten jarraitu ahal izateko.</translation>
 <translation id="1306460908038601864">Desaktibatuta</translation>
 <translation id="1311894908970423688">Balioak <ph name="VALUE_DATE_OR_TIME" /> izan behar du.</translation>
 <translation id="1588438908519853928">Arrunta</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Bidali</translation>
 <translation id="2746543609216772311">Balioak <ph name="MINIMUM_DATE_OR_TIME" /> edo geroago izan behar du.</translation>
 <translation id="2761667185364618470">Jarraitu nahi baduzu, hautatu koadro hau.</translation>
+<translation id="2854734116215697908">arakatzaile honetatik kendu</translation>
 <translation id="2908441821576996758">Idatzi helbide elektronikoak komaz bereizita.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Idatzi balio duen balio bat. Eremua ez dago osorik edo balio ez duen data dauka.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5630795885300617244">Sakatu birritan ezkerreko edo eskuineko aldea 10 s saltatzeko</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
+<translation id="5855560023261018690">laster arakatzaile honetatik kendu</translation>
 <translation id="5868587040512539609">Bideo-pistak</translation>
 <translation id="588258955323874662">Pantaila osoa</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> gailura igortzen</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Irten pantaila txiki gainjarriko modutik</translation>
 <translation id="6484738902856791350">Eman formatua</translation>
 <translation id="6550675742724504774">Aukerak</translation>
+<translation id="65574987622079584">arakatzailearen luzapen bat instalatu</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6661136971638885481"><ph name="TRACK_NUMBER" />. pista</translation>
 <translation id="668171684555832681">Beste bat…</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Aste hau</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">uuuu</translation>
+<translation id="8243989288843872594">Ez erakutsi abisu hau inoiz</translation>
 <translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="835897206747267392">Balioa ez da egokia.</translation>
 <translation id="839593075537728968">Balioak <ph name="MINIMUM_TIME" /> eta <ph name="MAXIMUM_TIME" /> artekoa izan behar du.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Lerro-doitzea</translation>
 <translation id="8750798805984357768">Hautatu aukera hauetako batzuk.</translation>
+<translation id="8753001114009816390">Webgune honek XSLT erabiltzen du, baina funtzionalitate hori <ph name="REMOVAL_LINK" />. Hori gertatzen denean, litekeena da orri hau behar bezala ez bistaratzea. Agian <ph name="EXTENSION_LINK" /> ahal izango duzu, hura ikusten jarraitu ahal izateko. Bestela, jarri webgunea mantentzeaz arduratzen den enpresarekin harremanetan informazio gehiago lortzeko.</translation>
 <translation id="8845239796550121995">Telebistara ari da igortzen edukia</translation>
 <translation id="8875657656876809964">Bideoaren erreprodukzio-errorea</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

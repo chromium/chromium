@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">‏‫Chrome میں سائن ان کریں</translation>
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1348779747280417563">نام کی توثیق کریں</translation>
+<translation id="1353546633704510580">منتخب کردہ علاقہ</translation>
 <translation id="1357195169723583938">حال ہی میں یہ آلہ کس نے اور کب استعمال کیا تھا</translation>
 <translation id="1358187717814494928">شیٹ تخلیق کریں</translation>
 <translation id="1358223345833465883">‏Chromium میں آپ کا سرچ انجن</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">ادائیگی کے طریقے کی توثیق ہو رہی ہے</translation>
 <translation id="1576277203042721907">خریداری کی بصیرتیں</translation>
 <translation id="1579189948231786790">آپ کی تنظیم نے اس سائٹ کو مسدود کر دیا ہے</translation>
+<translation id="1579940597679293608">سبھی الگ تھلگ ونڈوز کو بند کریں</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">یہ ویب صفحہ ڈسپلے کرتے ہوئے کچھ غلط ہو گیا۔</translation>
 <translation id="1585306568496579337">ایکسٹینشن "<ph name="EXTENSION_NAME" />" <ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="PROTOCOL" /> لنکس کھولنا چاہتی ہے</translation>
@@ -740,6 +742,7 @@
 <translation id="2233745931693710080">کمپیکٹ ڈسک</translation>
 <translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
+<translation id="223921069122391343">آپ کی محفوظ کردہ پیشکش چیک آؤٹ کے دوران آٹو فل کے ذریعے دستیاب ہوگی۔ <ph name="BEGIN_LINK" />شرائط و ضوابط دیکھیں<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">ریڈریس نمبر شامل کریں</translation>
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
 <translation id="2242389809734574253">‏‫IBAN محفوظ کریں بند ہے۔</translation>
@@ -986,7 +989,6 @@
 <translation id="2628025184666666186">‏یہ سرور ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے کیونکہ یہ ایک سیکیورٹی سرٹیفکیٹ استعمال کر رہا ہے جس پر Chrome یا آپ کے سسٹم کے کنفیگریشن کو ویب ٹریفک کی مرموز کاری کے لیے بھروسہ نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2628224721443278970">‏‫Microsoft OneDrive میں سائن ان کریں</translation>
 <translation id="2631059741268498165">آپ کے منتظم نے اس آلہ کا پتا لگایا جب یہ غیر فعال تھا۔ اسے دوبارہ فعال کر دیا گیا ہے اور یہ استعمال کے لیے تیار ہے۔</translation>
-<translation id="2631387782019878060">توثیقی کوڈ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏<ph name="HOST_NAME" /> کے سرور کا IP پتہ نہیں مل سکا۔</translation>
 <translation id="2635276683026132559">سائننگ</translation>
 <translation id="2638070510549214427">بطور محفوظ نشان زد کریں</translation>
@@ -1095,6 +1097,7 @@
 <translation id="2858134430383535011">‏‎200 x 300 ملی میٹر</translation>
 <translation id="2859383374160668142">آپ کسی بھی وقت ان پروڈکٹس کی قیمتوں میں کمی دیکھ سکتے ہیں جنہیں آپ ٹریک کرتے ہیں۔</translation>
 <translation id="2859806420264540918">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے۔</translation>
+<translation id="2864493683872263351">کوڈ کریں، لکھیں یا سلائیڈز بنائیں</translation>
 <translation id="2873317327342476681">‏‫Dino گیم، کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں یا اسپیس دبائیں</translation>
 <translation id="287387905105155974">مدد کا بلبلہ</translation>
 <translation id="2875109558992200904">‏جب سیکیورٹی ایونٹس پر Chrome پرچم لگاتا ہے تو ان ایونٹس سے متعلقہ ڈیٹا آپ کے منتظم کو بھیجا جاتا ہے۔ اس میں Chrome میں آپ کے ذریعے ملاحظہ کیے جانے والے صفحات کے URLs اور عنوانات، ان صفحات کے URLs جن سے آپ نے ڈیٹا کاپی کیا ہے، فائل کے نام یا میٹا ڈیٹا، IP پتے، براؤز یا ٹیب کی ناکامیاں اور وہ صارف نام جس کا استعمال آپ ویب پر مبنی ایپلیکیشنز اپنے آلے اور Chrome میں سائن ان کرنے کے لیے کرتے ہیں، شامل ہو سکتے ہیں۔</translation>
@@ -1277,6 +1280,7 @@
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="316542773973815724">نیویگیشن</translation>
 <translation id="316638481603975524">ویب ایپس انسٹال کرنے کے لیے پوچھ سکتے ہیں</translation>
+<translation id="3166688462674378969">الگ تھلگ ونڈوز کو بند کریں بٹن، ان تمام الگ تھلگ ونڈوز کو بند کرنے کے لیے فعال کریں جو فی الحال کھلی ہیں</translation>
 <translation id="3166788340998560642">‏اگلی بار اس کا استعمال کرنے پر، Chrome اسے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کرنے کی پیشکش کرے گا</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
 <translation id="3176929007561373547">اپنی پراکسی کی ترتیبات چیک کریں یا اپنے
@@ -1306,6 +1310,7 @@
 <translation id="3211727636285361260">‫<ph name="HANDLER_HOSTNAME" /> کے ذریعے <ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="3212468046572043669">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کیلئے، اوپر سے گھسیٹیں اور 'پیچھے جائیں' بٹن کو ٹچ کریں</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> پر آپ کی سرگرمی پر نظر رکھی جا رہی ہے</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{‏‫Chrome اس معلومات کو تجویز کرنا بند کر دے گا۔ آپ کا اصل ماخذ حذف نہیں کیا جائے گا۔}other{‏‫Chrome اس معلومات کو تجویز کرنا بند کر دے گا۔ آپ کے اصل ماخذات حذف نہیں کیے جائیں گے۔}}</translation>
 <translation id="3215092763954878852">‏WebAuthn کا استعمال نہیں کیا جا سکا</translation>
 <translation id="3215311088819828484">نتیجہ اپ ڈیٹ ہو گیا</translation>
 <translation id="3218181027817787318">متعلقہ</translation>
@@ -1372,6 +1377,7 @@
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
 <translation id="3310946375819654151">‏‫Google Chrome <ph name="APP_NAME" /> پر آپ کی حساس معلومات پُر کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="3312952471765023168">اپ لوڈ کامیاب</translation>
+<translation id="3323135197619890621">خریداری کو آسان بنانے کے لیے آٹو فل کو آن کریں</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3325568918769906282">نزولی ترتیب میں</translation>
 <translation id="3325662270238538525">فائل تک حالیہ رسائی اور ترامیم، بشمول فائل کے نام، فائل کے مواد کے ڈیجیٹل فنگر پرنٹس، ڈاؤن لوڈ کا ماخذ اور میٹا ڈیٹا</translation>
@@ -1456,6 +1462,7 @@
 <translation id="3474392552865647225">‏Chrome میں فونٹس کو حسب ضرورت بنائیں بٹن، Chrome میں فونٹ کے سائز کو اور ٹائپ فیسز کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
 <translation id="3478033058537426179">گروپ کے لحاظ سے</translation>
 <translation id="3479552764303398839">ابھی نہیں</translation>
+<translation id="3481315707647070701">ویژوئلائز کریں اور ترمیم کریں</translation>
 <translation id="3484560055331845446">‏آپ اپنے Google اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں۔ Chrome تجویز کرتا ہے کہ آپ ابھی اپنا پاس ورڈ تبدیل کریں۔ آپ سے سائن ان کرنے کو کہا جائے گا۔</translation>
 <translation id="3484861421501147767">یاد دہانی: محفوظ کردہ پرومو کوڈ دستیاب ہے</translation>
 <translation id="3485901585646640838">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈز اور مزید استعمال کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
@@ -1541,6 +1548,7 @@
 <translation id="3614001939154393113">حملہ آور <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> سے آپ کی معلومات (مثلاً، پاس ورڈز، پیغامات یا کریڈٹ کارڈز) چوری کرنے کی کوشش کر سکتے ہیں۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">فہرست کا اندراج "<ph name="LANGUAGE_ID" />": نامعلوم یا غیر تعاون یافتہ زبان۔</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر Enter دبائیں</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />، <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏اس IBAN کو Google والٹ میں محفوظ نہیں کیا جا سکا۔ اس کی بجائے اسے اس آلہ پر Chrome میں محفوظ کر دیا گیا ہے۔ اگلی بار آپ کے اس IBAN کو استعمال کرنے پر Chrome آپ سے دوبارہ پوچھے گا۔</translation>
 <translation id="3621401353678567613">آپ جن پروڈکٹس کو ٹریک کر رہے ہیں، ان کی قیمت میں کمی سے متعلق الرٹس حاصل کرنے کیلئے ترتیبات میں اطلاعات کو آن کریں۔</translation>
 <translation id="362276910939193118">پوری سرگزشت دکھائیں</translation>
@@ -1597,6 +1605,7 @@
 <translation id="3704162925118123524">آپ کے زیر استعمال نیٹ ورک آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">لوڈ ہو رہے ہیں…</translation>
+<translation id="3708927069677086144">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome میں سائن ان کریں</translation>
 <translation id="3709599264800900598">آپ کا کاپی کردہ متن</translation>
 <translation id="3711223220609269738">نیا الگ تھلگ ٹیب</translation>
 <translation id="3711430313228789376">‏‫Chrome براؤزر پاس ورڈز دکھانے کی کوشش کر رہا ہے</translation>
@@ -1705,6 +1714,7 @@
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> کے لیے یہاں شرائط دیکھیں</translation>
 <translation id="3869939189466884821">آپ کی مقامی فائلز <ph name="MINUTES" /> منٹ میں حذف ہو جائیں گی</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
+<translation id="3877021395754842994">فی الحال کھلی تمام الگ تھلگ ونڈوز کو بند کریں</translation>
 <translation id="3877603629930976930">اشتراک نہ کریں</translation>
 <translation id="3878445208930547646">اس سائٹ سے کاپی کرنے کی اجازت نہیں ہے</translation>
 <translation id="3879674895057686427">جس زبان میں ترجمہ کرنا ہے اسے منتخب کریں</translation>
@@ -1734,6 +1744,7 @@
 <translation id="3928806096717999469">ترمیم کریں، ایک نئی ونڈو کھلتی ہے</translation>
 <translation id="393417216277380082">موشن اور لائٹ سینسرز</translation>
 <translation id="3937640725563832867">سرٹیفیکیٹ جاری کنندہ کا متبادل نام</translation>
+<translation id="3938243129430544357">آٹو فل کے ساتھ محفوظ طریقے سے چیک آؤٹ کریں</translation>
 <translation id="3939773374150895049">‏CVC کے بجائے WebAuthn کا استعمال کریں؟</translation>
 <translation id="3941630233824954464">لازمی دوبارہ تصدیق کو فعال کریں</translation>
 <translation id="3942048175062210325">اپنی فائلز کو دوبارہ کھولنے کی کوشش کریں</translation>
@@ -2047,6 +2058,7 @@
 <translation id="4409271659088619928">آپ کا سرچ انجن <ph name="DSE" /> ہے۔ اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت حذف کرنے کے لیے ان کی ہدایات دیکھیں۔</translation>
 <translation id="4409556632583862731">نیا سلسلہ</translation>
 <translation id="4410614037742891410">‏‫Google والٹ میں ID کارڈ محفوظ طریقے سے اپ ڈیٹ کریں</translation>
+<translation id="441152911646545600">‫<ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، فی الحال کھلی ہوئی تمام الگ تھلگ ونڈوز کو بند کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="4412074349188076601">اس کنفیگریشن کو قابل انسٹال کے طور پر نشان زد کیا جاتا ہے لیکن اس فن تعمیر کے لیے کوئی تصویر فراہم نہیں کی جاتی ہے، لہذا اسے انسٹال نہیں کیا جا سکتا۔</translation>
 <translation id="4412377069090572315">لوگ کیا کہہ رہے ہیں</translation>
 <translation id="4414515549596849729">کوکیز اور سائٹ کا ڈیٹا</translation>
@@ -2058,6 +2070,7 @@
 <translation id="4424024547088906515">‏یہ سرور یہ بات ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کے سیکیورٹی سرٹیفکیٹ پر Chrome کو بھروسہ نہیں ہے۔ یہ غلط کنفیگرییشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="4425137053900958839">‏Pix پر اعتماد کے مطابق اس سے ملنے والی تمام سہولتیں اور سیکورٹی سے لطف اندوز ہوں</translation>
 <translation id="443121186588148776">سیریل پورٹ</translation>
+<translation id="4431928532022419942">‏‫Chrome سے ہٹائیں؟</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> نے آپ کا لاگ ان سرٹیفکیٹ قبول نہیں کیا یا ممکن ہے کوئی فراہم نہ کیا گیا ہو۔</translation>
 <translation id="4432792777822557199">آئندہ سے <ph name="SOURCE_LANGUAGE" /> کے صفحات کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کیا جائے گا</translation>
 <translation id="4433642172056592619">کلاؤڈ پالیسی کو نظرانداز کیا گیا کیونکہ صارف مشین کے مینجمنٹ سے الحاق یافتہ نہیں ہے یا مشین نظم کردہ نہیں ہے۔</translation>
@@ -2317,6 +2330,7 @@
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
 <translation id="4887785555357166111">ویڈیو فریم محفوظ کریں</translation>
 <translation id="4891425819480327855">‏<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، cache وغیرہ کو حذف کرنے کے لیے ٹیب، پھر Enter دبائیں</translation>
+<translation id="4892391379033030113">'الگ تھلگ ونڈو' بٹن کھولیں، نجی طور پر براؤز کرنے کی خاطر ایک نئی 'الگ تھلگ ونڈو' کھولنے کے لیے فعال کریں</translation>
 <translation id="4892518386797173871">پیچھے</translation>
 <translation id="4894390983254799375">‏جیسے آلہ ID، نام، OS ورژن اور OS صارف نام</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
@@ -2991,6 +3005,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /> (مطابقت پذیری کردہ)</translation>
 <translation id="6025471531651464742">فائلز شامل کریں</translation>
 <translation id="6028591542479806248">موبائل اور ای میل کی اطلاعات کا نظم کریں</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نئی الگ تھلگ ونڈو کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="603068602130820122">دائیں طرف دُہری سٹیپل</translation>
 <translation id="6031824805267965302">اپنے موشن سینسرز کا استعمال کریں</translation>
 <translation id="6032524144326295339">میل باکس 2</translation>
@@ -3138,6 +3153,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> بُک مارکس</translation>
 <translation id="6264376385120300461">بہر حال ڈاؤن لوڈ کریں</translation>
 <translation id="6264485186158353794">تحفظ پر واپس جائیں</translation>
+<translation id="6264507470395196064">محفوظ گیٹ وے</translation>
 <translation id="6264636978858465832">پاس ورڈ مینیجر مزید رسائی کی ضرورت ہے</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> پالیسی کی قدر کاپی کریں</translation>
 <translation id="6271264012613848937">آپ کی تنظیم کی پالیسیوں کی وجہ سے آپ کو <ph name="URL" /> ملاحظہ کرنے سے مسدود کر دیا گیا تھا۔ اگر یہ غیر متوقع ہے تو اپنے منتظم سے رابطہ کریں۔</translation>
@@ -3347,6 +3363,7 @@
 <translation id="6630043285902923878">‏USB آلات تلاش کئے جا رہے ہیں...</translation>
 <translation id="6630388727238334626">‏Chrome کی ترتیبات کا نظم کریں بٹن، اپنی Chrome کی ترتیبات کو دیکھنے کے لیے فعال کریں</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">‏آگے سائٹ ملاحظہ کرنے کے لیے، آپ کی تنظیم کو آپ سے اپنے نظم کردہ Google اکاؤنٹ سے سائن ان کرنے کی ضرورت ہے۔</translation>
 <translation id="6635900375070654124">ایک تصدیق کنندہ آلہ</translation>
 <translation id="6641852376826221947">اپنی خریداری کی تصدیق کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
@@ -3402,6 +3419,7 @@
 <translation id="671076103358959139">اندراج کا ٹوکن:</translation>
 <translation id="6711464428925977395">پراکسی سرور میں کچھ غلط ہے یا پتہ درست نہیں ہے۔</translation>
 <translation id="6711700233707023861">تغیرات کی سٹرنگ کو کلپ بورڈ پر کاپی کیا گیا</translation>
+<translation id="6712003214447962889">زیادہ اسمارٹ، تیز تر جوابات</translation>
 <translation id="6712343563085762261">اوپر منتقل کیا گیا</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> کا موازنہ کریں · <ph name="ITEMS" /> آئٹمز</translation>
 <translation id="6716672519412350405">‏<ph name="URL" /> آپ کے اطراف کا 3D نقشہ تخلیق اور کیمرے کی پوزیشن ٹریک کرنا چاہتا ہے</translation>
@@ -3536,6 +3554,7 @@
 <translation id="6957153644870901611">مزید فیلڈز کو خودکار طور پر پُر کرنے کے لیے بہتر کردہ آٹو فل خصوصیت کو آن کریں</translation>
 <translation id="6957887021205513506">سرور کا سرٹیفکیٹ ایک جعل سازی معلوم پڑتی ہے۔</translation>
 <translation id="6958564499836457428">‏اپنے Google اکاؤنٹ میں Google کی رازداری کی ترتیبات کا نظم کریں</translation>
+<translation id="6961161369573226336">‏‫Google پاس ورڈ مینیجر آپ کے Gmail <ph name="EMAIL" /> سے آپ کے لیے یہ کوڈز حاصل کر سکتا ہے۔ آپ اپنا ارادہ بدل سکتے ہیں اور <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />۔</translation>
 <translation id="6961844873822989059">سائٹ آپ کے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="6962858948849099922">منتقل کرنے کا وقت ختم ہو گیا</translation>
 <translation id="6963520811470373926">جگہ لے رہا ہے</translation>
@@ -3613,6 +3632,7 @@
 <translation id="70846382339153529">‏‫OpenDocument ٹیکسٹ</translation>
 <translation id="7086090958708083563">صارف کے ذریعے اپ لوڈ کی درخواست کی گئی</translation>
 <translation id="7090698782953528257">ریاضیاتی مساوات کو ویژوئلائز کرنے اور منحنی خطوط کی شکل دیکھنے کے لیے فنکشن کا گراف بنانے میں میری مدد کریں</translation>
+<translation id="7092087596499105699">آپ کے منتظم نے آپ کی تنظیم کی نجی ویب ایپلیکیشنز تک رسائی کی حفاظت کے لیے محفوظ گیٹ وے کنیکٹر کو کنفیگر کیا ہے۔ یہ رسائی کی توثیق کے لیے آپ کی ورق پروفائل سے ڈیٹا استعمال کر سکتا ہے۔</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود تمام سائٹس پر اسٹور کردہ اجازتوں اور ڈیٹا کا نظم کرنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="709604659664854823">آج رات قریبی ریسٹورنٹس میں میرے لیے آخری وقت کا ریزرویشن تلاش کریں</translation>
 <translation id="7096341143397839437">ای میل: <ph name="EMAIL" />۔</translation>
@@ -3743,6 +3763,7 @@
 <translation id="7316521168101843192">‏‫Microsoft OneDrive میں فائل کو محفوظ کیا جا رہا ہے</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">کنکشن سے متعلق مدد</translation>
+<translation id="7328315434053660512">الگ تھلگ ونڈو کھولیں</translation>
 <translation id="733354035281974745">آلہ کے مقامی اکاؤنٹ کا اوور رائیڈ</translation>
 <translation id="7334320624316649418">دوبارہ ترتیب کو &amp;واپس لائیں</translation>
 <translation id="7335157162773372339">سائٹ آپ کا کیمرا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
@@ -3791,6 +3812,7 @@
 <translation id="7402375256128852434">حالیہ ٹیبز شامل کریں</translation>
 <translation id="7403392780200267761">‏لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کریں</translation>
 <translation id="7403591733719184120">آپ کا <ph name="DEVICE_NAME" /> زیر انتظام ہے</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{تجویز ہٹا دی گئی۔ آپ کا اصل ماخذ حذف نہیں کیا جائے گا۔}other{تجویز ہٹا دی گئی۔ آپ کے اصل ماخذات حذف نہیں کیے جائیں گے۔}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> نے اضافی فنکشنز کیلئے ایپلیکیشنز انسٹال کی ہیں۔ ایپلیکیشنز کو آپ کے کچھ ڈیٹا تک رسائی حاصل ہوتی ہے۔</translation>
 <translation id="740691708085211707">‏‫Chrome آٹو فل سے دفتر کا پتہ ہٹائیں؟</translation>
 <translation id="7407424307057130981">‏&lt;p&gt;اگر آپ کے Windows کمپیوٹر پر Superfish سافٹ ویئر ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
@@ -4009,6 +4031,7 @@
 <translation id="7718626066800460799">اسکین محفوظ کرنے سے قاصر</translation>
 <translation id="772128550427553158">‏CVC آپ کے کارڈ کے سامنے کی طرف موجود ہے۔</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
+<translation id="7726402116075326231">نجی طور پر براؤز کرنے کے لیے ایک نئی الگ تھلگ ونڈو کھولیں</translation>
 <translation id="7730057435797792985">ترتیب</translation>
 <translation id="7734285854693414638">‏Google Forms میں تیزی سے ایک نیا فارم تخلیق کریں</translation>
 <translation id="773466115871691567">ہمیشہ <ph name="SOURCE_LANGUAGE" /> کے صفحات کا ترجمہ کریں</translation>
@@ -4200,6 +4223,7 @@
 <translation id="8075898834294118863">سائٹ کی ترتیبات کا نظم کریں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8076880883123051368">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں، جیسے کہ آپ کی <ph name="BEGIN_LINK_GAA" />Gemini ایپس کی سرگرمی<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">منتخب کردہ علاقے کو ہٹائیں</translation>
 <translation id="8077669823243888800">‏Chinese #8 لفافہ</translation>
 <translation id="8078006011486731853">{0,plural, =1{رازدارانہ فائل اپ لوڈ کریں؟}other{رازدارانہ فائلز اپ لوڈ کریں؟}}</translation>
 <translation id="8079031581361219619">سائٹ دوبارہ لوڈ کریں؟</translation>
@@ -4866,6 +4890,7 @@
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> اراکین "<ph name="GROUP_NAME" />" ٹیب گروپ میں شامل ہوئے</translation>
 <translation id="949314938206378263">‏آپ نے یہ سائٹ ملاحظہ کرنے کی اجازت مانگی ہے۔ آپ کے والد/والدہ Family Link میں جواب دے سکتے ہیں۔</translation>
 <translation id="949484466204182817">‏‫Google والٹ میں ریڈریس نمبر شامل کریں</translation>
+<translation id="950533895669718124">ترتیبات میں اس خصوصیت کے بارے میں مزید جانیں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
 <translation id="950926967802086924">‏پاس کی • Google پاس ورڈ مینیجر</translation>
 <translation id="952165179818196872">ایپس سوئچ کیے بغیر ادائیگی کرنے کے لیے <ph name="PROVIDER" /> شامل کریں</translation>

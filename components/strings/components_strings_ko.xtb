@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">Chrome에 로그인하세요</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1348779747280417563">이름 확인</translation>
+<translation id="1353546633704510580">선택한 영역</translation>
 <translation id="1357195169723583938">최근에 기기를 사용한 사용자와 사용 시간</translation>
 <translation id="1358187717814494928">시트 만들기</translation>
 <translation id="1358223345833465883">Chromium의 검색엔진</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">결제 수단 확인 중</translation>
 <translation id="1576277203042721907">쇼핑 통계</translation>
 <translation id="1579189948231786790">조직에서 차단한 사이트입니다.</translation>
+<translation id="1579940597679293608">모든 보안 시크릿 창 닫기</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
 <translation id="1585306568496579337">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 <ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="PROTOCOL" /> 링크를 열려고 합니다.</translation>
@@ -987,7 +989,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2628025184666666186">이 서버가 Chrome이나 웹 트래픽 암호화를 위한 시스템 구성에서 신뢰하지 않는 보안 인증서를 사용하고 있기 때문에 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2628224721443278970">Microsoft OneDrive에 로그인</translation>
 <translation id="2631059741268498165">이 기기가 사용 중지된 상태에서 관리자가 이 기기를 찾았습니다. 기기가 다시 사용 설정되었으며, 사용할 준비가 되었습니다.</translation>
-<translation id="2631387782019878060">인증 코드: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
 <translation id="2635276683026132559">서명</translation>
 <translation id="2638070510549214427">안전함으로 표시</translation>
@@ -1096,6 +1097,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2858134430383535011">200x300mm</translation>
 <translation id="2859383374160668142">언제든지 추적하는 제품의 가격 인하를 확인할 수 있습니다</translation>
 <translation id="2859806420264540918">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
+<translation id="2864493683872263351">코딩, 글쓰기 또는 슬라이드 만들기</translation>
 <translation id="2873317327342476681">공룡 게임입니다. 플레이하려면 공룡을 탭하거나 스페이스바를 누르세요</translation>
 <translation id="287387905105155974">도움말 풍선</translation>
 <translation id="2875109558992200904">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지의 URL 및 제목, 데이터를 복사한 페이지의 URL, 파일 이름 또는 메타데이터, IP 주소, 브라우저 또는 탭 비정상 종료, 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
@@ -1278,6 +1280,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="316542773973815724">탐색</translation>
 <translation id="316638481603975524">웹 앱 설치를 요청할 수 있음</translation>
+<translation id="3166688462674378969">보안 시크릿 창 닫기 버튼, 현재 열려 있는 보안 시크릿 창을 모두 닫으려면 활성화하세요</translation>
 <translation id="3166788340998560642">다음에 사용할 때 Chrome에서 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에 저장할지 묻습니다.</translation>
 <translation id="3169472444629675720">디스커버</translation>
 <translation id="3176929007561373547">프록시 설정을 확인하거나 네트워크 관리자에게 문의하여
@@ -1306,6 +1309,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3211727636285361260"><ph name="HANDLER_HOSTNAME" />을(를) 통해 <ph name="PROTOCOL" /> 링크 열기</translation>
 <translation id="3212468046572043669">다운로드가 시작되었습니다. 확인하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" />에서의 활동이 모니터링되고 있음</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome에서 이 정보를 더 이상 추천하지 않습니다. 원본 소스는 삭제되지 않습니다.}other{Chrome에서 이 정보를 더 이상 추천하지 않습니다. 원본 소스는 삭제되지 않습니다.}}</translation>
 <translation id="3215092763954878852">WebAuthn을 사용할 수 없음</translation>
 <translation id="3215311088819828484">결과가 업데이트됨</translation>
 <translation id="3218181027817787318">상대</translation>
@@ -1457,6 +1461,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3474392552865647225">Chrome의 글꼴 맞춤설정 버튼, Chrome 글꼴 크기와 서체를 맞춤설정하려면 활성화하세요.</translation>
 <translation id="3478033058537426179">그룹별</translation>
 <translation id="3479552764303398839">나중에</translation>
+<translation id="3481315707647070701">시각화 및 수정</translation>
 <translation id="3484560055331845446">Google 계정에 액세스하지 못할 수 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다. 로그인하라는 메시지가 표시됩니다.</translation>
 <translation id="3484861421501147767">알림: 저장된 프로모션 코드 사용 가능</translation>
 <translation id="3485901585646640838">Google 계정에 저장된 비밀번호 등을 사용하려면 본인 인증을 완료하세요.</translation>
@@ -1542,6 +1547,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3614001939154393113">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 사용자의 정보를 도용하려고 시도할 수 있습니다(예: 비밀번호, 메시지, 신용카드 정보). <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">이 IBAN은 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다. 다음에 이 IBAN을 사용할 때 Chrome에서 다시 확인합니다.</translation>
 <translation id="3621401353678567613">추적하는 제품의 가격 인하 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
@@ -1707,6 +1713,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3865339060090354361">여기에서 <ph name="CREDIT_CARD_NAME" /> 약관 보기</translation>
 <translation id="3869939189466884821">로컬 파일이 <ph name="MINUTES" />분 후 삭제됩니다</translation>
 <translation id="3875783148670536197">방법 보기</translation>
+<translation id="3877021395754842994">현재 열려 있는 보안 시크릿 창을 모두 닫습니다</translation>
 <translation id="3877603629930976930">공유 안함</translation>
 <translation id="3878445208930547646">이 사이트에서 복사할 수 없습니다</translation>
 <translation id="3879674895057686427">번역 도착어 선택</translation>
@@ -2050,6 +2057,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4409556632583862731">새 대화목록</translation>
 <translation id="4410614037742891410">Google 월렛에서 안전하게 신분증 업데이트하기</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 현재 열려 있는 모든 보안 시크릿 창을 닫습니다</translation>
 <translation id="4412074349188076601">이 구성은 설치 가능으로 표시되지만 이 아키텍처에 제공된 이미지가 없으므로 설치할 수 없습니다.</translation>
 <translation id="4412377069090572315">다른 사람들의 의견</translation>
 <translation id="4414515549596849729">쿠키 및 사이트 데이터</translation>
@@ -2321,6 +2329,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
 <translation id="4887785555357166111">동영상 프레임 저장</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="4892391379033030113">보안 시크릿 창 열기 버튼, 새 보안 시크릿 창을 열어 비공개로 탐색하려면 활성화하세요</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4894390983254799375">기기 ID, 이름, OS 버전, OS 사용자 이름 등</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2995,6 +3004,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" />(동기화됨)</translation>
 <translation id="6025471531651464742">파일 추가</translation>
 <translation id="6028591542479806248">모바일 및 이메일 알림 관리</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, 새 보안 시크릿 창을 열어 비공개로 탐색하려면 Tab을 누른 다음 Enter를 누르세요</translation>
 <translation id="603068602130820122">오른쪽 듀얼 스테이플</translation>
 <translation id="6031824805267965302">움직임 감지 센서 사용</translation>
 <translation id="6032524144326295339">메일박스 2</translation>
@@ -3407,6 +3417,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="671076103358959139">등록 토큰:</translation>
 <translation id="6711464428925977395">프록시 서버에 문제가 발생했거나 주소가 잘못되었습니다.</translation>
 <translation id="6711700233707023861">변형 문자열이 클립보드에 복사되었습니다.</translation>
+<translation id="6712003214447962889">더 스마트하고 빠른 대답</translation>
 <translation id="6712343563085762261">위로 이동했습니다</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> 비교 · 항목 <ph name="ITEMS" />개</translation>
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
@@ -3751,6 +3762,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7316521168101843192">Microsoft OneDrive에 파일 저장 중</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">연결 도움말</translation>
+<translation id="7328315434053660512">보안 시크릿 창 열기</translation>
 <translation id="733354035281974745">기기 로컬 계정 재정의</translation>
 <translation id="7334320624316649418">재정렬 다시 실행(&amp;R)</translation>
 <translation id="7335157162773372339">카메라 사용을 요청할 수 있음</translation>
@@ -3799,6 +3811,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7402375256128852434">최근 탭 추가</translation>
 <translation id="7403392780200267761">링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭 공유</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> 기기는 관리 대상 기기입니다</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{추천이 삭제되었습니다. 원본 소스는 삭제되지 않습니다.}other{추천이 삭제되었습니다. 원본 소스는 삭제되지 않습니다.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" />에서 추가 기능을 위한 애플리케이션을 설치했습니다. 애플리케이션에는 내 데이터 중 일부에 액세스할 권한이 있습니다.</translation>
 <translation id="740691708085211707">Chrome 자동 완성에서 직장 주소를 삭제하시겠습니까?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows 컴퓨터에 Superfish 소프트웨어가 있으면 이 오류가 표시됩니다.&lt;/p&gt;
@@ -4016,6 +4029,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7718626066800460799">스캔 항목을 저장할 수 없음</translation>
 <translation id="772128550427553158">CVC는 카드 앞면에 있습니다.</translation>
 <translation id="7724603315864178912">잘라내기</translation>
+<translation id="7726402116075326231">비공개로 탐색하려면 새 보안 시크릿 창을 여세요</translation>
 <translation id="7730057435797792985">정렬</translation>
 <translation id="7734285854693414638">Google Forms에서 빠르게 새 양식 만들기</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />로 된 페이지를 항상 번역</translation>
@@ -4207,6 +4221,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8075898834294118863">사이트 설정 관리</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8076880883123051368">Google 계정의 내 활동(<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />)에 방문 기록이 다른 형식(<ph name="BEGIN_LINK_GAA" />Gemini 앱 활동<ph name="END_LINK_GAA" />)으로 남아 있을 수도 있습니다.</translation>
+<translation id="8077465698530018904">선택한 영역 삭제</translation>
 <translation id="8077669823243888800">봉투 Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{기밀 파일을 업로드하시겠습니까?}other{기밀 파일을 업로드하시겠습니까?}}</translation>
 <translation id="8079031581361219619">사이트를 새로고침하시겠습니까?</translation>
@@ -4839,7 +4854,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9193018794001479794">상세하게 작성</translation>
-<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" /> 질문하기</translation>
+<translation id="9194783551575429711"><ph name="AI_ENGINE_NAME" />에게 물어보기</translation>
 <translation id="9195969368671142407">조직에서 Google 계정에 저장하는 것을 제한하는 경우 탭 그룹을 공유하거나 탭 그룹에 참여할 수 없습니다.</translation>
 <translation id="9198613052465150219">Google 계정의 내 활동(<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>

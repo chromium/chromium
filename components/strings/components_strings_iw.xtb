@@ -900,6 +900,7 @@
 <translation id="2491414235131909199">הדף הזה נחסם על ידי תוסף כלשהו</translation>
 <translation id="2493122313108999546">הגודל השתנה</translation>
 <translation id="2495083838625180221">‏מנתח JSON</translation>
+<translation id="2495909791227061512">להתחבר למכשירים בקרבת מקום?</translation>
 <translation id="2496402116964818747">ב<ph name="SETTINGS" /> יש אפשרות לקבוע אם להשתמש בטביעת האצבע למילוי סיסמאות</translation>
 <translation id="2498091847651709837">סריקת כרטיס חדש</translation>
 <translation id="2501270939904835585">Labels (Satin)</translation>
@@ -984,7 +985,6 @@
 <translation id="2628025184666666186">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" /> כי הוא משתמש באישור אבטחה שלא נחשב לאמין לפי Chrome או לפי הגדרות המערכת שלך להצפנת תעבורת אינטרנט. יכול להיות שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך.</translation>
 <translation id="2628224721443278970">‏כניסה ל-Microsoft OneDrive</translation>
 <translation id="2631059741268498165">האדמין איתר את המכשיר הזה כשהוא היה מושבת. הוא הופעל מחדש ומוכן לשימוש.</translation>
-<translation id="2631387782019878060">קוד אימות: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏לא ניתן היה למצוא את כתובת ה-IP של השרת של <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">חתימה</translation>
 <translation id="2638070510549214427">סימון שהאתר בטוח</translation>

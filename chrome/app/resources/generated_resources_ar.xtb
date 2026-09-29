@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{تم استيراد كلمة مرور واحدة إلى "<ph name="BRAND" />" على هذا الجهاز.}zero{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}two{تم استيراد كلمتَي مرور ({NUM_PASSWORDS}) إلى "<ph name="BRAND" />" على هذا الجهاز.}few{تم استيراد {NUM_PASSWORDS} كلمات مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}many{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}other{تم استيراد {NUM_PASSWORDS} كلمة مرور إلى "<ph name="BRAND" />" على هذا الجهاز.}}</translation>
 <translation id="1046572983040892965">تم نقل النافذة إلى الأعلى وإلى اليسار</translation>
 <translation id="1047431265488717055">نسخ ن&amp;ص الرابط</translation>
+<translation id="104751728059674265">ميزة إرسال الملاحظات غير متوفّرة لحسابك. ويمكن لشخص بالغ استخدام جهازه أو ملفه الشخصي للإبلاغ عن مشكلة نيابةً عنك.</translation>
 <translation id="1048986595386481879">مخصّص ديناميكيًا</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}zero{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}two{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}few{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}many{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}other{جارٍ استلام <ph name="ATTACHMENTS" /> من جهاز <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">يمكن للمواقع الإلكترونية طلب تخزين إدخالات الماوس واستخدامها</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1233497634904001272">يُرجى لمس مفتاح الأمان مرة أخرى لاستكمال الطلب.</translation>
+<translation id="1233566345244684257">‏يمكن لأي شخص لديه إذن الوصول إلى تطبيقات Gemini التحكّم في متصفّح Chrome.</translation>
 <translation id="1233721473400465416">اللغة</translation>
 <translation id="1233835246554936745">{0,plural, =1{حفظ عنصر واحد في الحساب}zero{حفظ # عنصر في الحساب}two{حفظ عنصرَين في الحساب}few{حفظ # عناصر في الحساب}many{حفظ # عنصرًا في الحساب}other{حفظ # عنصر في الحساب}}</translation>
 <translation id="1234736487471201993">إنشاء رمز استجابة سريعة لهذه الصورة</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">يُرجى تحديد سبب لتنزيل هذه البيانات:</translation>
 <translation id="1422159345171879700">تحميل النصوص البرمجية غير الآمنة</translation>
 <translation id="1425040197660226913">يتعذّر تحميل الملف. يُرجى استخدام صورة بحجم أصغر من 20 ميغابايت.</translation>
+<translation id="1426154609634610063">‏مراجعة مخاطر استخدام Gemini</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> محظور</translation>
 <translation id="1427179946227469514">حدّة صوت "تحويل النص إلى كلام"</translation>
@@ -984,6 +987,7 @@
 <translation id="1755601632425835748">حجم النص</translation>
 <translation id="1756963401828337401">يُرجى اختيار شاشة لأخذ لقطة لها</translation>
 <translation id="17584710573359123">‏العرض في سوق Chrome الإلكتروني</translation>
+<translation id="1758845021884209593">استخدام الاختصار في جميع تطبيقات نظام التشغيل</translation>
 <translation id="1761402971842586829">تمت إعادة تخصيص "<ph name="BUTTON_NAME" />" إلى "<ph name="REMAPPING_OPTION" />".</translation>
 <translation id="1761845175367251960">حسابات <ph name="NAME" /></translation>
 <translation id="176272781006230109">اقتراحات التسوّق</translation>
@@ -1830,6 +1834,7 @@
 <translation id="2416435988630956212">مفاتيح الوظائف على لوحة المفاتيح</translation>
 <translation id="2419131370336513030">عرض التطبيقات المثبّتة</translation>
 <translation id="2419706071571366386">لأغراض الأمان، سجّل الخروج عندما لا يتم استخدام الكمبيوتر.</translation>
+<translation id="2423226060967554289">عرض شريط الإشارات</translation>
 <translation id="2423506062824112361">تعذَّر تنزيل المحتوى لسبب غير معروف.</translation>
 <translation id="2423578206845792524">حف&amp;ظ الصورة باسم...</translation>
 <translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{نافذة ضيف (#)}two{نافذة ضيف (#)}few{نافذة ضيف (#)}many{نافذة ضيف (#)}other{نافذة ضيف (#)}}</translation>
@@ -2067,6 +2072,7 @@
 <translation id="2588271083332682494">نظِّم متصفّحك من خلال "مجموعات علامات التبويب"</translation>
 <translation id="2588636910004461974">أجهزة من <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏عدم عرض ملفات Drive مطلقًا</translation>
+<translation id="2595270892115552212">‏عند بدء مهمة من تطبيقات Gemini الأخرى، بما في ذلك gemini.google.com وتطبيقات Gemini للأجهزة الجوّالة، يمكن أن يستخدم Gemini ميزة "التصفّح التلقائي" في Chrome على هذا الجهاز للتفاعل مع المواقع الإلكترونية وإكمال المهام نيابةً عنك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">تستخدم ميزة "المشاركة عن قرب" تقنية البلوتوث للعثور على الأجهزة القريبة.</translation>
 <translation id="2598136842498757793">تخصيص أزرار شريط الأدوات</translation>
 <translation id="2598710988533271874">‏يتوفّر تحديث جديد لمتصفِّح Chrome</translation>
@@ -2804,6 +2810,7 @@
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
 <translation id="3134312457920437826">يتعذّر تثبيت الإضافة لأنّها تستخدم إصدار بيان غير متوافق.</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">‏السماح لتطبيقات Gemini الأخرى بالتصفّح عن بُعد من أي جهاز</translation>
 <translation id="3139925690611372679">الأفاتار التلقائي الأصفر</translation>
 <translation id="314095642664111744">إيقاف ميزة "التركيز"</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
@@ -3089,6 +3096,7 @@
 <translation id="3355936511340229503">خطأ الاتصال</translation>
 <translation id="335678817537689040">ثابت</translation>
 <translation id="3359256513598016054">القيود على سياسة الشهادة</translation>
+<translation id="3359465538772230055">ما مِن مهام</translation>
 <translation id="3360297538363969800">تعذّرت الطباعة. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرًا واحدًا (<ph name="ATTACHMENTS" />) معك.}zero{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}two{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرَين (<ph name="ATTACHMENTS" />) معك.}few{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عناصر معك.}many{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصرًا معك.}other{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}}</translation>
@@ -3618,6 +3626,7 @@
 <translation id="3736487688526377259">يُرجى اختيار الجهاز المطلوب تلقّي هذا الرابط عليه.</translation>
 <translation id="3737058101969549870">هل تريد الاحتفاظ ببيانات التصفُّح الحالية بشكل منفصل عن هذا الملف الشخصي الجديد؟</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">‏لا يمكن أن يستخدم Gemini ميزة التصفّح التلقائي على هذا الجهاز إلا إذا كان الجهاز نشطًا وكان Chrome قيد التشغيل.</translation>
 <translation id="3739254215541673094">هل ترغب في فتح <ph name="APPLICATION" />؟</translation>
 <translation id="3739349485749941749">السماح للمواقع الإلكترونية بطلب البحث عن الطابعات واستخدامها والتي يمكن لجهازك الوصول إليها</translation>
 <translation id="3741056951918180319">يمكنك متى شئت النقر على الإضافة لاستخدامها على أي موقع إلكتروني</translation>
@@ -3970,6 +3979,7 @@
 <translation id="3987993985790029246">نسخ الرابط</translation>
 <translation id="3988124842897276887">‏علامة التبويب هذه متصلة بجهاز USB.</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
+<translation id="399132041334931433">إضافة علامات تبويب إلى مجموعة جديدة</translation>
 <translation id="399179161741278232">المستوردة</translation>
 <translation id="3992008114154328194">جارٍ تنزيل "<ph name="FILE_NAME" />"، <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">‏يُرجى منح "<ph name="SPECIFIC_NAME" />" الإذن بالتحكّم في أجهزة USB.</translation>
@@ -5199,6 +5209,7 @@
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4951966678293618079">عدم حفظ كلمات مرور لهذا الموقع الإلكتروني مطلقًا</translation>
 <translation id="4952580838083306838">إخفاء المنظِّم</translation>
+<translation id="4952628481830269193">عرض شريط الإشارات</translation>
 <translation id="4953808748584563296">الأفاتار التلقائي البرتقالي</translation>
 <translation id="4954652437333037880">ملف</translation>
 <translation id="4954831709600868883">طرح أسئلة حول "<ph name="TEXT" />"</translation>
@@ -5451,6 +5462,7 @@
 <translation id="5149602533174716626">نس&amp;خ إطار الفيديو</translation>
 <translation id="5150254825601720210">‏اسم خادم بروتوكول SSL (طبقة المقابس الآمنة) لشهادة Netscape</translation>
 <translation id="5151354047782775295">احرص على تفريغ مساحة على القرص أو حدد بيانات قد يتم حذفها تلقائيًا</translation>
+<translation id="5152719737931716272">‏تم إنجاز المهمة والرجوع إلى Gemini</translation>
 <translation id="5153074793829217329">يمكنك استخدام لوحة المفاتيح أو لوحة المفاتيح الرقمية للتحكّم في مؤشر الماوس</translation>
 <translation id="5153234146675181447">عدم تذكُّر الهاتف</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5768,6 +5780,7 @@
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
 <translation id="5415497281076257439">جملة</translation>
 <translation id="5415871492522952905">سيظهر لك كلّ من سجلّ التصفّح وعلامات التبويب على جميع أجهزتك لتتمكّن من مواصلة التصفّح من حيث توقفت</translation>
+<translation id="5417160551295347092">‏قد يرتكب Gemini أخطاءً، مثل مشاركة معلوماتك أو إجراء عمليات شراء بدون إذنك. <ph name="LINK_BEGIN" />مراجعة المخاطر<ph name="LINK_END" /></translation>
 <translation id="5417293056300086453">يمكن لهذا الموقع الإلكتروني استخدام المعرّفات لتشغيل المحتوى المحمي.</translation>
 <translation id="5417312524372586921">مظاهر المتصفح</translation>
 <translation id="541737483547792035">تكبير الشاشة</translation>
@@ -6111,6 +6124,7 @@
 <translation id="5687340364605915800">تردّ المواقع الإلكترونية على هذا الطلب وفق تقديرها الخاص</translation>
 <translation id="5689233503102158537">‏‫alt + مفتاح backspace</translation>
 <translation id="5689516760719285838">الموقع الجغرافي</translation>
+<translation id="568984110402742489">يتعذّر إرسال الملاحظات</translation>
 <translation id="56907980372820799">ربط البيانات</translation>
 <translation id="5691772641933328258">لم يتمّ التعرُّف على البصمة</translation>
 <translation id="5693255400847650006">الميكروفون قيد الاستخدام</translation>
@@ -6521,6 +6535,7 @@
 <translation id="6003143259071779217">‏إزالة شبكة الجوّال لشريحة eSIM</translation>
 <translation id="6003479444341796444">شريط العناوين يظهر الآن على الشاشة</translation>
 <translation id="6003582434972667631">حدّدت مؤسستك هذا المظهر</translation>
+<translation id="600407115562756795">‏سيقرّر Gemini الإجراءات التي يجب اتخاذها استنادًا إلى المهام التي يتم بدؤها أو تعديلها.</translation>
 <translation id="6005045517426700202">مبنى من الطوب</translation>
 <translation id="6006484371116297560">كلاسيكي</translation>
 <translation id="6007053304250788613">يمكن استبعاد شاشة واحدة فقط في "وضع المرآة"</translation>
@@ -8505,6 +8520,7 @@
 <translation id="7523117833414447032">عند قراءة الأحرف الكبيرة</translation>
 <translation id="7523585675576642403">إعادة تسمية الملف الشخصي</translation>
 <translation id="7525067979554623046">إنشاء</translation>
+<translation id="7526083414913154899">‏مزيد من المعلومات حول مهام Gemini</translation>
 <translation id="7528224636098571080">عدم فتح الملف</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{هل تريد إلغاء تجميع مجموعة علامات التبويب؟}zero{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}two{هل تريد إلغاء تجميع مجموعتَي علامات التبويب؟}few{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}many{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}other{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}}</translation>
 <translation id="7529411698175791732">تحقق من اتصالك بالإنترنت. وإذا استمرت المشكلة، فحاول الخروج ثم تسجيل الدخول مرة أخرى.</translation>
@@ -9276,6 +9292,7 @@
 <translation id="8109991406044913868">مظهر من إنشاء الذكاء الاصطناعي</translation>
 <translation id="8110393529211831722">تم تثبيت الاشتراك على هذا الجهاز فقط ولم تتم مزامنته مع الأجهزة الأخرى ضِمن حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">جارٍ تنزيل قائمة جهات الاتصال...</translation>
+<translation id="8110781914702267195">‏يمكنك الانتقال إلى "محفظة Google" للتحكّم في <ph name="BEGIN_LINK1" />الإعدادات المفضَّلة للبيانات والخصوصية<ph name="END_LINK1" /> أو إدارة <ph name="BEGIN_LINK2" />طُرق الدفع<ph name="END_LINK2" /> و<ph name="BEGIN_LINK3" />البطاقات<ph name="END_LINK3" /> مثل بطاقات الولاء</translation>
 <translation id="8114925369073821854">إذن الوصول إلى الميكروفون لـ "<ph name="APP_NAME" />"</translation>
 <translation id="8116497846156149">يجب طلب الموافقة من أحد الوالدَين</translation>
 <translation id="8118276691321086429">يتذكّر "<ph name="PASSWORD_MANAGER_BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون هذا الخيار غير مفعّل، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
@@ -9356,6 +9373,7 @@
 <translation id="8180295062887074137">حالة الطابعة "<ph name="PRINTER_NAME" />": <ph name="PRINTER_STATUS" />. ترتيب الطابعة: <ph name="ITEM_POSITION" /> من <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">تم تفعيل وضع "توفير الطاقة"</translation>
 <translation id="8180786512391440389">يمكن لـ "<ph name="EXTENSION" />" قراءة الصور والفيديوهات وملفات الصوت في المواقع المحددة وحذفها.</translation>
+<translation id="8181132988581553950">‏سيتمكّن Gemini من الوصول إلى المواقع الإلكترونية نفسها المتاحة لك، بما في ذلك المواقع المسجِّل دخولك إليها. وسيشارك المعلومات اللازمة مع جهات خارجية، بما في ذلك معلومات شخصية قد تبدو حساسة بالنسبة إليك.</translation>
 <translation id="8183703640399301650">‏معرّف شريحة SIM المضمّنة (EID) للجهاز هو <ph name="EID_NUMBER" /> ورقم IMEI للجهاز هو <ph name="IMEI_NUMBER" />. يمكن استخدام هذه الأرقام للمساعدة في تفعيل الخدمة.</translation>
 <translation id="8184288427634747179">التبديل إلى <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">مزيد من المعلومات</translation>
@@ -10259,6 +10277,7 @@
 <translation id="8874341931345877644">البث على جهاز:</translation>
 <translation id="8874647982044395866">حيوي</translation>
 <translation id="8874790741333031443">جرِّب السماح مؤقتًا باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية. هذا يعني أنّك ستحظى بمستوى حماية أقل أثناء التصفّح، غير أنّ ميزات الموقع الإلكتروني ستعمل غالبًا على النحو المتوقَّع.</translation>
+<translation id="8874864294955002500">ميزة إرسال الملاحظات غير متوفّرة لحسابك. ويمكن لمشرف مؤسستك استخدام جهازه أو ملفه الشخصي للإبلاغ عن مشكلة نيابةً عنك.</translation>
 <translation id="8875736897340638404">اختَر مستوى الظهور.</translation>
 <translation id="8876307312329369159">لا يمكن تغيير هذا الإعداد في جلسة تجريبية.</translation>
 <translation id="8876965259056847565">تستخدم ميزة "<ph name="FEATURE_NAME" />" تقنية البلوتوث للعثور على الأجهزة المجاورة.</translation>

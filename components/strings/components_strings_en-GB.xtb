@@ -740,6 +740,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="2239100178324503013">Send now</translation>
+<translation id="223921069122391343">Your saved offer will be available at checkout using autofill. <ph name="BEGIN_LINK" />View Terms and Conditions<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Add redress number</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2242389809734574253">Save IBAN closed.</translation>
@@ -765,6 +766,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2277753418458118549">Show connection details</translation>
 <translation id="2277949605527755300"><ph name="URL" /> wants to track your hands</translation>
 <translation id="22792995594807632">Review is required before downloading</translation>
+<translation id="2279607542590042584">Passkey • Apple Passwords</translation>
 <translation id="2283340219607151381">Save and fill addresses</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' deleted</translation>
 <translation id="2283599456633275070">Travel</translation>
@@ -985,7 +987,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2628025184666666186">This server could not prove that it is <ph name="DOMAIN" /> because it is using a security certificate that is not trusted by Chrome or your system configuration for web traffic encryption. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2628224721443278970">Sign in to Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Your administrator located this device while it was disabled. It has been re-enabled and is ready to use.</translation>
-<translation id="2631387782019878060">Verification code: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />’s server IP address could not be found.</translation>
 <translation id="2635276683026132559">Signing</translation>
 <translation id="2638070510549214427">Mark as safe</translation>
@@ -1370,6 +1371,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
 <translation id="3310946375819654151">Chrome is trying to fill your sensitive info on <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Upload successful</translation>
+<translation id="3323135197619890621">Turn on autofill to make shopping easier</translation>
 <translation id="3324687287337751929">4 in x 6 in</translation>
 <translation id="3325568918769906282">in descending order</translation>
 <translation id="3325662270238538525">Recent file access and modifications, including file names, digital fingerprints of the file content, download source and metadata</translation>
@@ -1441,6 +1443,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3447884698081792621">Show certificate (issued by <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Can ask to control and reprogram your MIDI devices</translation>
 <translation id="3452404311384756672">Fetch interval:</translation>
+<translation id="345268527248907593">This site couldn't be reached</translation>
 <translation id="3453962258458347894">Number of retries</translation>
 <translation id="3461266716147554923"><ph name="URL" /> wants to see text and images copied to the clipboard</translation>
 <translation id="3461824795358126837">Highlighter</translation>
@@ -1594,6 +1597,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3704162925118123524">The network that you are using may require you to visit its log-in page.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Loading...</translation>
+<translation id="3708927069677086144">Your organisation requires you to sign in to Chrome</translation>
 <translation id="3709599264800900598">Text that you copied</translation>
 <translation id="3711223220609269738">New isolated tab</translation>
 <translation id="3711430313228789376">Chrome browser is trying to show passwords</translation>
@@ -1731,6 +1735,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3928806096717999469">Edit, opens a new window</translation>
 <translation id="393417216277380082">Motion and light sensors</translation>
 <translation id="3937640725563832867">Certificate Issuer Alternative Name</translation>
+<translation id="3938243129430544357">Securely check out with autofill</translation>
 <translation id="3939773374150895049">Use WebAuthn instead of CVC?</translation>
 <translation id="3941630233824954464">Enable mandatory re-authentication</translation>
 <translation id="3942048175062210325">Try opening your files again</translation>
@@ -1971,6 +1976,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4284885181066817063">Blocked by <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">Delete vehicle</translation>
 <translation id="4290920330097335010">Never allow</translation>
+<translation id="4291909791598163333">Your organisation blocked you from visiting the site ahead</translation>
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> updated</translation>
 <translation id="4298148761711700950">Pay instantly without QR upload</translation>
@@ -2054,6 +2060,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4424024547088906515">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chrome. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="4425137053900958839">Enjoy all the convenience and security that you count on from Pix</translation>
 <translation id="443121186588148776">Serial port</translation>
+<translation id="4431928532022419942">Remove from Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> didn’t accept your login certificate, or one may not have been provided.</translation>
 <translation id="4432792777822557199">Pages in <ph name="SOURCE_LANGUAGE" /> will be translated to <ph name="TARGET_LANGUAGE" /> from now on</translation>
 <translation id="4433642172056592619">Ignored because user is not affiliated to the machine management or the machine is not managed.</translation>
@@ -3133,8 +3140,10 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bookmarks</translation>
 <translation id="6264376385120300461">Download anyway</translation>
 <translation id="6264485186158353794">Back to safety</translation>
+<translation id="6264507470395196064">Secure gateway</translation>
 <translation id="6264636978858465832">Password Manager needs more access</translation>
 <translation id="6265794661083428563">Copy the value of <ph name="POLICY_NAME" /> policy</translation>
+<translation id="6271264012613848937">You were blocked from visiting <ph name="URL" /> because of your organisation's policies. If that's unexpected, contact your administrator.</translation>
 <translation id="6272088941196661550">Resume your journey to see relevant activity in your Chrome history</translation>
 <translation id="6272383483618007430">Google update</translation>
 <translation id="6278015583149890680">Google Drive and OneDrive</translation>
@@ -3341,6 +3350,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6630043285902923878">Finding USB devices…</translation>
 <translation id="6630388727238334626">Manage Chrome settings button, activate to visit your Chrome settings</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">To visit the site ahead, your organisation requires you to sign in with your managed Google Account.</translation>
 <translation id="6635900375070654124">an authenticator device</translation>
 <translation id="6641852376826221947">Confirm your purchase</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -3415,6 +3425,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Policy Value</translation>
 <translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
+<translation id="6753460329812070808">Suggestion removed from Chrome</translation>
 <translation id="6757797048963528358">Your device went to sleep.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> wants to use your motion and light sensors</translation>
 <translation id="6770747695101757579">Paper (cotton)</translation>
@@ -3494,6 +3505,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">You're signed out</translation>
+<translation id="6902049722133977432">Undo</translation>
 <translation id="6910211073230771657">Deleted</translation>
 <translation id="691024665142758461">Download multiple files</translation>
 <translation id="691046363691324218">Redress number</translation>
@@ -3528,6 +3540,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6957153644870901611">Turn on enhanced autofill to automatically fill more fields</translation>
 <translation id="6957887021205513506">The server's certificate appears to be a forgery.</translation>
 <translation id="6958564499836457428">Manage Google privacy settings in your Google Account</translation>
+<translation id="6961161369573226336">Google Password Manager can get these codes for you from your Gmail <ph name="EMAIL" />. You can change your mind and <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Can ask to use fonts installed on your device</translation>
 <translation id="6962858948849099922">Moving timed out</translation>
 <translation id="6963520811470373926">Superseding</translation>
@@ -3605,6 +3618,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Upload requested by user</translation>
 <translation id="7090698782953528257">Help me graph a function to visualise the mathematical equation and see the shape of the curve</translation>
+<translation id="7092087596499105699">Your administrator configured the secure gateway connector to protect access to your organisation's private web applications. It may use data from your work profile to verify access.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="709604659664854823">Find me a last-minute reservation at nearby restaurants tonight</translation>
 <translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
@@ -3708,6 +3722,7 @@ Additional details:
 <translation id="7266094331715305887">apps on device</translation>
 <translation id="7268742523336093718">Add passport securely to Google Wallet</translation>
 <translation id="7269151392155523061">Shortcut can't be the same as the search aggregator keyword defined by <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Something went wrong with protections or policies set by your organisation. Try again later or contact your administrator.</translation>
 <translation id="7273111226200291353">Files you download are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="7275334191706090484">Managed Bookmarks</translation>
 <translation id="7278933725460302617">You're now in isolated mode</translation>
@@ -4149,6 +4164,7 @@ Additional details:
 <translation id="7984945080620862648">You cannot visit <ph name="SITE" /> at the moment because the website sent scrambled credentials that Chrome cannot process. Network errors and attacks are usually temporary, so this page will probably work later.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Buy-now, pay-later issuers available for pay over time opened at full height.</translation>
+<translation id="7990290316254726169">You are seeing this warning because this site does not support HTTPS and you are in Isolated mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Screen sharing with <ph name="APPLICATION_TITLE" /> was resumed</translation>
 <translation id="799384093520583425">Your organisation has blocked the use of DevTools on this page</translation>
@@ -4489,6 +4505,7 @@ Additional details:
 <translation id="860043288473659153">Cardholder name</translation>
 <translation id="8601206103050338563">TLS WWW Client Authentication</translation>
 <translation id="8604103095921958091">Buy now, pay later Terms of Service screen opened at full height.</translation>
+<translation id="8605014984308506350">You are seeing this warning because this site does not support HTTPS and you are in Isolated mode. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">your device use</translation>
 <translation id="8619130384334725124">Current default</translation>
 <translation id="8620276786115098679">Envelope Kaku 7</translation>
@@ -4856,6 +4873,7 @@ Additional details:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> members joined '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>
 <translation id="949484466204182817">Add redress number to Google Wallet</translation>
+<translation id="950533895669718124">learn more about this feature in settings</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="952165179818196872">Add <ph name="PROVIDER" /> to pay without switching apps</translation>

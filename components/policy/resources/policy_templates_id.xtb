@@ -1866,6 +1866,7 @@ Jika kebijakan ini tidak disetel, hal ini setara dengan menyetelnya ke aktif (ya
       Jika kebijakan ini tidak ditetapkan, browser hanya akan mulai mencoba menghemat memori setelah mendeteksi bahwa perangkatnya memiliki jumlah memori fisik yang rendah.</translation>
 <translation id="2161348910646846717">Izinkan pengguna mengubah saluran rilis</translation>
 <translation id="2162703823039992020">Integrasi kontekstual layanan Google di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">URL aplikasi web instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> untuk organisasi ini. Harus berupa URL https yang valid.</translation>
 <translation id="2166155400701622446">Ada daftar port yang dibatasi yang dibuat di <ph name="PRODUCT_NAME" />. Koneksi ke port ini akan gagal. Setelan ini mengizinkan pengabaian daftar tersebut. Nilai berupa daftar yang dipisahkan koma dari nol atau lebih banyak port yang akan mengizinkan koneksi keluar.
 
       Port dibatasi guna mencegah <ph name="PRODUCT_NAME" /> digunakan sebagai vektor untuk mengeksploitasi berbagai kerentanan jaringan. Menyetel kebijakan ini dapat membuat jaringan Anda terkena serangan. Kebijakan ini ditujukan sebagai solusi sementara untuk error dengan kode "ERR_UNSAFE_PORT" saat memigrasikan layanan yang berjalan di port yang diblokir ke port standar (yaitu, port 80 atau 443).
@@ -2266,9 +2267,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2421779938235645781">Warna lampu latar keyboard cocok dengan wallpaper saat ini</translation>
 <translation id="2423255396068675416">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna dapat menjalankan <ph name="PRODUCT_CROSTINI_NAME" />, selama <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> dan <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> disetel ke Aktif. Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_CROSTINI_NAME" /> akan dinonaktifkan bagi pengguna. Jika setelan diubah ke Nonaktif, kebijakan mulai diterapkan ke penampung <ph name="PRODUCT_CROSTINI_NAME" /> baru yang akan dijalankan, bukan yang sudah berjalan.</translation>
 <translation id="2423654977291507457">Nonaktifkan integrasi</translation>
-<translation id="2424141395604579502">Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, pengguna akan dapat menambahkan, menghapus, mengubah, atau mengupload bookmark.
-
-      Jika kebijakan ini disetel ke Salah (False), pengguna tidak akan dapat menambahkan, menghapus, mengubah, atau mengupload bookmark. Pengguna tetap dapat menggunakan bookmark yang ada.</translation>
 <translation id="242521047682347997">Jangan izinkan pengguna menyinkronkan pesan SMS antara ponsel dan Chromebook mereka</translation>
 <translation id="2426782419955104525">Mengaktifkan fitur Instan <ph name="PRODUCT_NAME" /> dan mencegah pengguna mengubah setelan ini.
 
@@ -11160,6 +11158,21 @@ Jika kebijakan ini disetel ke nonaktif, penampil PDF akan menggunakan perender A
 
 Jika kebijakan ini tidak disetel, perender PDF akan dipilih oleh browser.</translation>
 <translation id="7704244074621846004">Memungkinkan masa aktif yang diperpanjang untuk SharedWorker</translation>
+<translation id="7705886216383850895">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
+
+Untuk mengonfigurasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, administrator harus memberikan:
+* URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), ATAU
+* Ketiga parameter lama secara bersamaan: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, dan <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Jika hanya menentukan sebagian dari ketiga parameter ini tanpa URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> harus berupa URL valid yang menggunakan skema https dan tidak menyertakan nama pengguna atau sandi. Jika tidak memenuhi persyaratan ini, kebijakan akan diabaikan dan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Jika parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> dan parameter lama dikonfigurasi, parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> akan diprioritaskan.
+
+Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
+
+Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Mengaktifkan fitur suara pengisian daya.
 
           Fitur ini berfungsi untuk memutar suara pengisian daya.

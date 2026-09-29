@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 Passwort wurde auf diesem Gerät in <ph name="BRAND" /> importiert}other{{NUM_PASSWORDS} Passwörter wurden auf diesem Gerät in <ph name="BRAND" /> importiert}}</translation>
 <translation id="1046572983040892965">Fenster nach oben links verschoben</translation>
 <translation id="1047431265488717055">Linkte&amp;xt kopieren</translation>
+<translation id="104751728059674265">Für dein Konto kann kein Feedback gegeben werden. Ein Erwachsener kann ein Problem für dich über sein Gerät oder Profil melden.</translation>
 <translation id="1048986595386481879">Dynamisch zugeordnet</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> wird von <ph name="DEVICE_NAME" /> empfangen}other{<ph name="ATTACHMENTS" /> werden von <ph name="DEVICE_NAME" /> empfangen}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -469,6 +470,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1341701348342335220">Gut gemacht!</translation>
 <translation id="1342886103232377846">Rufe den Google Passwortmanager auf, um nach kompromittierten Passwörtern zu suchen</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
+<translation id="1344216785734288669">Apple Passwörter</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1347512539447549782">Linux-Speicher</translation>
@@ -982,6 +984,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1755601632425835748">Textgröße</translation>
 <translation id="1756963401828337401">Anzeige zum Erfassen auswählen</translation>
 <translation id="17584710573359123">Im Chrome Web Store ansehen</translation>
+<translation id="1758845021884209593">Tastenkombination in allen Betriebssystem-Apps verwenden</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> neu zugeordnet zu <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konten von <ph name="NAME" /></translation>
 <translation id="176272781006230109">Shopping-Vorschläge</translation>
@@ -3083,6 +3086,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3355936511340229503">Verbindungsfehler</translation>
 <translation id="335678817537689040">Statisch</translation>
 <translation id="3359256513598016054">Beschränkungen für Zertifikatrichtlinien</translation>
+<translation id="3359465538772230055">Keine Aufgaben</translation>
 <translation id="3360297538363969800">Fehler beim Drucken. Bitte überprüfe deinen Drucker und versuche es noch einmal.</translation>
 <translation id="3360306038446926262">Fenster</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> teilt <ph name="ATTACHMENTS" /> mit dir.}other{<ph name="DEVICE_NAME" /> teilt <ph name="ATTACHMENTS" /> mit dir.}}</translation>
@@ -4756,6 +4760,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4631637535315947773">Verknüpfungen zu deinen am häufigsten besuchten Websites wurden entfernt, weil du sie in letzter Zeit nicht verwendet hast</translation>
 <translation id="4631955550884380853">Auf Stimme konzentrieren</translation>
 <translation id="4632655012900268062">Karten anpassen</translation>
+<translation id="4634719521235795064">Gemini kann den Google Passwortmanager verwenden, um dich anzumelden. <ph name="BEGIN_LINK" />Wie Gemini mit deinen Daten umgeht<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Crostini deinstallieren</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> ist für Gastnutzer nicht verfügbar.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Du kannst maximal 1 Bild hochladen, das für deine Frage verwendet werden soll}other{Du kannst maximal # Bilder hochladen, die für deine Frage verwendet werden sollen}}</translation>
@@ -6063,6 +6068,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5641715878999557094">„<ph name="EXTENSION_NAME" />“ hat geändert, welche Seite angezeigt wird, wenn auf den Button „Startseite“ geklickt wird.</translation>
 <translation id="5643191124441701136">Der Sicherheitscode befindet sich auf der Vorderseite deiner Karte</translation>
 <translation id="5643321261065707929">Kostenpflichtiges Netzwerk</translation>
+<translation id="5645369002069651355">E‑Mail-Adresse wird geprüft</translation>
 <translation id="5646376287012673985">Standort</translation>
 <translation id="5646558797914161501">Geschäftsmann</translation>
 <translation id="564670806635578888">Mit Google nach „<ph name="SEARCH_TERMS" />“ suchen</translation>
@@ -6101,6 +6107,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5687340364605915800">Bei dieser Anfrage ändern Websites ihr Verhalten nicht immer</translation>
 <translation id="5689233503102158537">Alt + Rücktaste</translation>
 <translation id="5689516760719285838">Standort</translation>
+<translation id="568984110402742489">Feedback kann nicht gesendet werden</translation>
 <translation id="56907980372820799">Daten verknüpfen</translation>
 <translation id="5691772641933328258">Fingerabdruck nicht erkannt</translation>
 <translation id="5693255400847650006">Mikrofon aktiv</translation>
@@ -8477,6 +8484,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7517292544534877198">Standardverschlüsselung von Google für die Passwörter in meinem Google-Konto verwenden</translation>
 <translation id="7517959947270534934">Dein Familienmitglied kann derzeit keine Passwörter erhalten. Bitte es, Chrome zu aktualisieren und seine Passwörter zu synchronisieren.</translation>
 <translation id="7518079994230200553">Diese Option ist momentan nicht verfügbar.</translation>
+<translation id="7519506357537394422">Gemini erlauben, dich bei <ph name="DOMAIN" /> anzumelden?</translation>
 <translation id="752021853309481824">Wenn du auf allen deinen Geräten auf deine gespeicherten Informationen und andere Daten zugreifen möchtest, melde dich als <ph name="EMAIL" /> an</translation>
 <translation id="7520766081042531487">Inkognitoportal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Verknüpfungen anzeigen</translation>
@@ -9069,6 +9077,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7978450511781612192">Dadurch wirst du aus deinen Google-Konten abgemeldet. Deine Lesezeichen, der Verlauf, deine Passwörter usw. werden nicht mehr synchronisiert.</translation>
 <translation id="7980066177668669492">Base64-verschlüsselter ASCII-Code, mehrere Zertifikate</translation>
 <translation id="7981410461060625406">Gespeicherten Passkey für <ph name="APP_NAME" /> verwenden</translation>
+<translation id="7981445433812028278">E-Mail-Adresse konnte nicht bestätigt werden</translation>
 <translation id="7981662863948574132">Pop-up mit Geräte-EID und QR-Code anzeigen</translation>
 <translation id="7982578888426609524">Letzte Aktualisierungen dieser Gruppe</translation>
 <translation id="7982789257301363584">Netzwerk</translation>
@@ -9255,6 +9264,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8109991406044913868">Von KI erstelltes Design</translation>
 <translation id="8110393529211831722">Das Abo ist nur auf diesem Gerät installiert und wird nicht mit anderen Geräten in deinem Konto synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Kontaktliste wird heruntergeladen...</translation>
+<translation id="8110781914702267195">In Google Wallet kannst du deine <ph name="BEGIN_LINK1" />Daten- und Datenschutzeinstellungen<ph name="END_LINK1" /> anpassen oder <ph name="BEGIN_LINK2" />Zahlungsmethoden<ph name="END_LINK2" /> sowie <ph name="BEGIN_LINK3" />Karten/Tickets<ph name="END_LINK3" /> wie Kundenkarten verwalten</translation>
 <translation id="8114925369073821854">Mikrofonberechtigung für <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Eltern um Genehmigung bitten</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> merkt sich, wie du dich angemeldet hast, und meldet dich wenn möglich automatisch an. Wenn diese Funktion deaktiviert ist, wirst du jedes Mal um eine Bestätigung gebeten.</translation>
@@ -10237,6 +10247,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8874341931345877644">Auf ein Gerät streamen:</translation>
 <translation id="8874647982044395866">Organisch</translation>
 <translation id="8874790741333031443">Versuche, Drittanbieter-Cookies vorübergehend zuzulassen. Das bedeutet zwar weniger Schutz beim Surfen, aber dadurch erhöht sich die Wahrscheinlichkeit, dass Websites wie erwartet funktionieren.</translation>
+<translation id="8874864294955002500">Für dein Konto kann kein Feedback gegeben werden. Der Administrator deines Unternehmens kann über sein Gerät oder Profil ein Problem für dich melden.</translation>
 <translation id="8875736897340638404">Sichtbarkeit festlegen</translation>
 <translation id="8876307312329369159">Diese Einstellung kann nicht in einer Demositzung geändert werden.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> nutzt die Bluetooth-Suche, um Geräte in der Nähe zu finden.</translation>

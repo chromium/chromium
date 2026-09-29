@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{මෙම උපාංගය මත <ph name="BRAND" /> වෙත 1 මුරපදයක් ආයාත කරන ලදි}one{මෙම උපාංය මත <ph name="BRAND" /> වෙත මුරපද {NUM_PASSWORDS}ක් ආයාත කරන ලදි}other{මෙම උපාංය මත <ph name="BRAND" /> වෙත මුරපද {NUM_PASSWORDS}ක් ආයාත කරන ලදි}}</translation>
 <translation id="1046572983040892965">කවුළුව ඉහළට සහ වමට ගෙන ගියා</translation>
 <translation id="1047431265488717055">සබැඳි පෙළ පිටපත් කරන්න</translation>
+<translation id="104751728059674265">ඔබේ ගිණුම සඳහා ප්‍රතිපෝෂණ ලබා ගත නොහැක. ඔබ වෙනුවෙන් ගැටලුවක් වාර්තා කිරීමට වැඩිහිටියෙකුට ඔවුන්ගේ උපාංගය හෝ පැතිකඩ භාවිතා කළ හැකිය.</translation>
 <translation id="1048986595386481879">ගතිකව වෙන් කළා</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබෙමින්}one{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබෙමින්}other{<ph name="DEVICE_NAME" /> වෙතින් <ph name="ATTACHMENTS" /> ලැබෙමින්}}</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">අඩවිවලට ඔබේ මූසික ආදානය ග්‍රහණ කර භාවිත කිරීමට අවසර ඉල්ලිය හැක</translation>
 <translation id="1232569758102978740">මාතෘකා නොමැති</translation>
 <translation id="1233497634904001272">ඉල්ලීම සම්පූර්ණ කිරීමට ඔබේ ආරක්‍ෂක යතුර නැවතත් ස්පර්ශ කරන්න.</translation>
+<translation id="1233566345244684257">ඔබේ Gemini යෙදුම් වෙත ප්‍රවේශය ඇති ඕනෑම කෙනෙකුට ඔබේ Chrome බ්‍රව්සරය පාලනය කළ හැක.</translation>
 <translation id="1233721473400465416">ස්ථානය</translation>
 <translation id="1233835246554936745">{0,plural, =1{ගිණුමේ 1 අයිතමයක් සුරකින්න}one{ගිණුමේ අයිතම #ක් සුරකින්න}other{ගිණුමේ අයිතම #ක් සුරකින්න}}</translation>
 <translation id="1234736487471201993">මෙම රූපය සඳහා QR කේතය තනන්න</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">මෙම දත්ත බාගැනීමට හේතුවක් ඇතුළු කරන්න:</translation>
 <translation id="1422159345171879700">අනාරක්ෂිත ස්ක්‍රිප්ට පූර්ණය කරන්න</translation>
 <translation id="1425040197660226913">උඩුගත කළ නොහැක. 20 MBට වඩා කුඩා රූපයක් භාවිත කරන්න.</translation>
+<translation id="1426154609634610063">Gemini භාවිතා කිරීමේ අවදානම් සමාලෝචනය කරන්න</translation>
 <translation id="1426410128494586442">ඔව්</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> අවහිර කර ඇත</translation>
 <translation id="1427179946227469514">කථනයට පාඨය ස්වරමානය</translation>
@@ -983,6 +986,7 @@
 <translation id="1755601632425835748">පාඨයේ තරම</translation>
 <translation id="1756963401828337401">ග්‍රහණය කර ගැනීමට තිරයක් තෝරා ගන්න</translation>
 <translation id="17584710573359123">Chrome Web Store තුළ බලන්න</translation>
+<translation id="1758845021884209593">මෙහෙයුම් පද්ධති යෙදුම් හරහා කෙටිමඟ භාවිත කරන්න</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> වෙත යළි අනුරූපණය කර ඇත.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ගේ ගිණුම්</translation>
 <translation id="176272781006230109">සාප්පු සවාරි යෝජනා</translation>
@@ -1830,6 +1834,7 @@
 <translation id="2416435988630956212">යතුරු පුවරු කාර්ය යතුරු</translation>
 <translation id="2419131370336513030">ස්ථාපිත යෙදුම් බලන්න</translation>
 <translation id="2419706071571366386">ආරක්ෂාව සඳහා, ඔබේ පරිගණකය භාවිතා නොකරන විට වරන්න.</translation>
+<translation id="2423226060967554289">පිටුසන් තීරුව පෙන්වන්න</translation>
 <translation id="2423506062824112361">නොදන්නා හේතුවක් නිසා අන්තර්ගතය බාගැනීමට අසමත් විය.</translation>
 <translation id="2423578206845792524">රූපය මෙසෙල සුරකින්න...</translation>
 <translation id="2424424966051154874">{0,plural, =1{ආගන්තුක}one{ආගන්තුක (#)}other{ආගන්තුක (#)}}</translation>
@@ -2067,6 +2072,7 @@
 <translation id="2588271083332682494">පටිති සමූහ සමග පිළිවෙලට කරන්න</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> වෙතින් උපාංග</translation>
 <translation id="2589658397149952302">කිසි විටෙකත් Drive ගොනු නොපෙන්වන්න</translation>
+<translation id="2595270892115552212">gemini.google.com සහ Gemini ජංගම යෙදුම් ඇතුළුව, වෙනත් Gemini යෙදුම් වලින් ඔබ කාර්යයක් ආරම්භ කරන විට, Gemini හට අඩවි සමඟ අන්තර් ක්‍රියා කිරීමට සහ ඔබ වෙනුවෙන් කාර්යයන් සම්පූර්ණ කිරීමට මෙම උපාංගයේ Chrome ස්වයං බ්‍රවුස් කිරීම භාවිතා කළ හැක. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">ළඟ බෙදා ගැනීම ළඟ උපාංග සොයා ගැනීමට බ්ලූටූත් ස්කෑන් කිරීම භාවිත කරයි.</translation>
 <translation id="2598136842498757793">මෙවලම් තීරු බොත්තම් අභිරුචිකරණය කරන්න</translation>
 <translation id="2598710988533271874">නව Chrome තිබේ</translation>
@@ -2804,6 +2810,7 @@
 <translation id="3132996321662585180">දිනපතා නැවුම් කරන්න</translation>
 <translation id="3134312457920437826">එය සහාය නොදක්වන මැනිෆෙස්ට් අනුවාදයක් භාවිතා කරන නිසා දිගුව ස්ථාපනය කළ නොහැක.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> අත්හදා බැලීම සඳහා අත්හදා බැලීමේ තත්ත්වය තෝරන්න. අත්හදා බැලීමේ විස්තරය: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">වෙනත් Gemini යෙදුම්වලට ඕනෑම උපාංගයකින් දුරස්ථව බ්‍රවුස් කිරීමට ඉඩ දෙන්න</translation>
 <translation id="3139925690611372679">පෙරනිමි කහ නියුරුව</translation>
 <translation id="314095642664111744">අවධානය ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="3141093262818886744">කෙසේ වුවත් විවෘත කරන්න</translation>
@@ -3087,6 +3094,7 @@
 <translation id="3355936511340229503">සම්බන්ධතා දෝෂයකි</translation>
 <translation id="335678817537689040">ස්ථිතික</translation>
 <translation id="3359256513598016054">සහතික ප්‍රතිපත්ති නිරෝධනයන්</translation>
+<translation id="3359465538772230055">කාර්යයන් කිසිවක් නැත</translation>
 <translation id="3360297538363969800">මුද්‍රණය අසාර්ථකයි. කරුණාකර ඔබේ මුද්‍රකය පිරික්සා නැවත උත්සහ කරන්න.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}one{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}other{<ph name="DEVICE_NAME" /> ඔබ සමඟ <ph name="ATTACHMENTS" /> බෙදා ගනියි.}}</translation>
@@ -3615,6 +3623,7 @@
 <translation id="3736487688526377259">ඔබට මෙම සබැඳිය ලබා ගැනීමට අවශ්‍ය උපාංගය තෝරන්න.</translation>
 <translation id="3737058101969549870">පවතින බ්‍රවුස් කිරීමේ දත්ත මෙම නව පැතිකඩෙන් වෙන්ව තබන්න ද?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">උපාංගය සක්‍රියව ඇත්නම් සහ Chrome ධාවනය වන්නේ නම් පමණක් Gemini හට මෙම උපාංගයේ ස්වයංක්‍රියව බ්‍රවුස් කිරීම භාවිත කළ හැකි ය.</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> විවෘත කරන්නද?</translation>
 <translation id="3739349485749941749">ඔබේ උපාංගයට ප්‍රවේශ විය හැකි මුද්‍රක සෙවීමට සහ භාවිත කිරීමට අඩවිවලට විමසිය හැක</translation>
 <translation id="3741056951918180319">ඕනෑම අඩවියක එය භාවිතා කිරීමට ඔබට සැම විටම දිගුව ක්ලික් කළ හැකිය</translation>
@@ -3970,6 +3979,7 @@
 <translation id="3987993985790029246">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="3988124842897276887">මෙම පටිත්ත USB උපාංගයකට සම්බන්ධිතයි</translation>
 <translation id="3989635538409502728">වරන්න</translation>
+<translation id="399132041334931433">නව සමූහයට පටිති එක් කරන්න</translation>
 <translation id="399179161741278232">ආයාත කෙරිණි</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> බාගනිමින්, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">USB උපාංග මත පාලනය <ph name="SPECIFIC_NAME" /> ලබා දෙන්න.</translation>
@@ -5199,6 +5209,7 @@
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
 <translation id="4951966678293618079">මෙම අඩවිය සඳහා කිසිවිටක මුරපද නොසුරකින්න</translation>
 <translation id="4952580838083306838">සංවිධායක සඟවන්න</translation>
+<translation id="4952628481830269193">පිටුසන් තීරුව පෙන්වන්න</translation>
 <translation id="4953808748584563296">පෙරනිමි තැඹිලි නියුරුව</translation>
 <translation id="4954652437333037880">ගොනුව</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> ගැන අසන්න</translation>
@@ -5451,6 +5462,7 @@
 <translation id="5149602533174716626">වීඩියෝ රාමුව පිටපත් කරන්න</translation>
 <translation id="5150254825601720210">නෙට්ස්කේප් සහතික SSL සේවාදායක නම</translation>
 <translation id="5151354047782775295">තැටි ඉඩ හිස් කරන්න නැතහොත් තෝරන දත්ත ස්වයංක්‍රියව මැකීමට හැකිය</translation>
+<translation id="5152719737931716272">කාර්යය ඉටු කර Gemini වෙත ආපසු ලබා දෙන ලදි</translation>
 <translation id="5153074793829217329">ඔබේ මූසික කර්සරය පාලනය කිරීමට ඔබේ යතුරු පුවරුව හෝ සංඛ්‍යාත්මක යතුරු පෑඩයක් භාවිතා කරන්න</translation>
 <translation id="5153234146675181447">දුරකථනය අමතක කරන්න</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5767,6 +5779,7 @@
 <translation id="5414836363063783498">ස්ථිර කරයි…</translation>
 <translation id="5415497281076257439">වාක්‍ය ඛණ්ඩය</translation>
 <translation id="5415871492522952905">ඔබට ඔබ කරමින් සිටි දෙය දිගටම කළ හැකි විමට ඔබේ සියලුම උපාංගය මත ඔබට ඔබේ ඉතිහාසය සහ පටිති තිබෙයි</translation>
+<translation id="5417160551295347092">Gemini අතින්, ඔබෙන් විමසීමකින් තොරව ඔබේ තොරතුරු බෙදා ගැනීම හෝ මිල දී ගැනීම් සිදු කිරීම වැනි වැරදි සිදු විය හැක. <ph name="LINK_BEGIN" />අවදානම් සමාලෝචනය කරන්න<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">මෙම අඩවියට ආරක්ෂිත අන්තර්ගතයන් වාදනය කිරීමට හඳුනාගැනීම් භාවිතා කළ හැක.</translation>
 <translation id="5417312524372586921">බ්‍රව්සර් තේමාවන්</translation>
 <translation id="541737483547792035">තිරය විශාලනය කරන්න</translation>
@@ -6111,6 +6124,7 @@
 <translation id="5687340364605915800">මෙම ඉල්ලීමට ප්‍රතිචාර දැක්වීමේ දී අඩවි ඒවායේ අභිමතය භාවිතා කරයි</translation>
 <translation id="5689233503102158537">alt + බැක්ස්පේස්</translation>
 <translation id="5689516760719285838">ස්ථානය</translation>
+<translation id="568984110402742489">ප්‍රතිපෝෂණ යැවීමට නොහැක</translation>
 <translation id="56907980372820799">සබැඳි දත්ත</translation>
 <translation id="5691772641933328258">ඇඟිලි සලකුණ හඳුනා නොගැනිණි</translation>
 <translation id="5693255400847650006">මයික්‍රෆෝනය භාවිතා වේ</translation>
@@ -6521,6 +6535,7 @@
 <translation id="6003143259071779217">eSIM සෙලියුලර් ජාලය ඉවත් කරන්න</translation>
 <translation id="6003479444341796444">මාතෘකා තීරුව දැන් පෙන්වයි</translation>
 <translation id="6003582434972667631">තේමාව සකසා ඇත්තේ ඔබගේ සංවිධානය මගිනි</translation>
+<translation id="600407115562756795">ඔබ ආරම්භ කරන හෝ යාවත්කාලීන කරන කාර්යයන් මත පදනම්ව ගත යුතු ක්‍රියාමාර්ග Gemini විසින් තීරණය කරනු ඇත.</translation>
 <translation id="6005045517426700202">ගඩොල් ගොඩනැඟිල්ල</translation>
 <translation id="6006484371116297560">පැරණි</translation>
 <translation id="6007053304250788613">දර්පණ ප්‍රකාරයේ දී එක් සංදර්ශකයක් පමණක් බැහැර කළ හැක</translation>
@@ -8496,6 +8511,7 @@
 <translation id="7523117833414447032">මහකුරු කියවන විට</translation>
 <translation id="7523585675576642403">පැතිකඩ යළි නම් කරන්න</translation>
 <translation id="7525067979554623046">නිර්මාණය කරන්න</translation>
+<translation id="7526083414913154899">Gemini කාර්යයන් ගැන තව දැන ගන්න</translation>
 <translation id="7528224636098571080">විවෘත නොකරන්න</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{පටිති සමූහය සමූහ නොකරන්න ද?}one{පටිති සමූහ සමූහ නොකරන්න ද?}other{පටිති සමූහ සමූහ නොකරන්න ද?}}</translation>
 <translation id="7529411698175791732">ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කරන්න. ප්‍රශ්නය දිගටම පැවතුණහොත්, වරා නැවත පිරීමට උත්සාහ කරන්න.</translation>
@@ -9225,6 +9241,7 @@
 <translation id="8081989000209387414">ADB නිදොස් කිරීම අබල කරන්නද?</translation>
 <translation id="8082132721957920509">ඔබේ කාඩ්පත සුරැක ඇත</translation>
 <translation id="8082390128630131497">ADB නිදොස් කිරීම අබල කිරීම මෙම <ph name="DEVICE_TYPE" /> කර්මාන්තශාලා සැකසුම් වෙත යළි සකසයි. සියලුම පරිශීලක ගිණුම් සහ අභ්‍යන්තර දත්ත මකනු ලැබේ.</translation>
+<translation id="8082737802704584539">ඔබේ සංවිධානය ඔබේ Google ගිණුමේ ඉතිහාසය සුරැකීම ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="8084114998886531721">සුරැකි මුරපද</translation>
 <translation id="8084417885464859041">Gemini ආරක්ෂිතව භාවිතා කරන්න</translation>
 <translation id="8084429490152575036">සෙලියුලර් APN සැකසීම්</translation>
@@ -9267,6 +9284,7 @@
 <translation id="8109991406044913868">AI සෑදූ තේමාව</translation>
 <translation id="8110393529211831722">ග්‍රාහකත්වය මෙම උපාංගයෙහි පමණක් ස්ථාපනය කර ඇති අතර ඔබේ ගිණුම යටතේ ඇති අනෙකුත් උපාංග සමඟ සමමුහුර්ත නොවේ. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">සම්බන්ධතා ලැයිස්තුව බාගනිමින්…</translation>
+<translation id="8110781914702267195">ඔබේ <ph name="BEGIN_LINK1" />දත්ත සහ පෞද්ගලිකත්ව මනාප<ph name="END_LINK1" /> පාලනය කිරීමට හෝ <ph name="BEGIN_LINK2" />ගෙවීම් ක්‍රම<ph name="END_LINK2" /> සහ පක්ෂපාතීත්ව කාඩ්පත් වැනි <ph name="BEGIN_LINK3" />අවසරපත්<ph name="END_LINK3" /> කළමනාකරණය කිරීමට Google Wallet වෙත පිවිසෙන්න</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> මයික්‍රෆෝන අවසරය</translation>
 <translation id="8116497846156149">අනුමැතිය සඳහා මාපියන්ගෙන් විමසන්න</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> ඔබ පුරනය වූ ආකාරය මතක තබා ගන්නා අතර ස්වයංක්‍රීයව ඔබව පුරනය කරයි. ක්‍රියාවිරහිත වූ විට, එක් එක් වහවේ තහවුරු කිරීම සඳහා ඔබෙන් අසනු ඇත.</translation>
@@ -9347,6 +9365,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />න් <ph name="ITEM_POSITION" /> වැනි මුද්‍රකය.</translation>
 <translation id="8180785270975217276">බලශක්ති සුරැකුම ක්‍රියාත්මකයි</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" ට පරීක්ෂා කළ ස්ථානවල රූප, වීඩියෝ සහ ශබ්ද ගොනු කියවා මැකිය හැක.</translation>
+<translation id="8181132988581553950">Gemini හට ඔබ පුරනය වී ඇති වෙබ් අඩවි ඇතුළුව, ඔබට මෙන් ම එකම වෙබ් අඩවි තුළට ප්‍රවේශය ඇත. එය ඔබ සංවේදී යැයි සිතිය හැකි පුද්ගලික තතු ඇතුළත් විය හැකි තෙවන පාර්ශ්ව සමග අවශ්‍ය තතු බෙදා ගනු ඇත.</translation>
 <translation id="8183703640399301650">ඔබේ උපාංග EID <ph name="EID_NUMBER" /> වන අතර උපාංගයේ IMEI <ph name="IMEI_NUMBER" /> වේ. සේවාව සක්‍රිය කිරීමට උදවු කිරීමට මෙම අංක භාවිතා කළ හැක.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> වෙත මාරුවෙන්න</translation>
 <translation id="8184318863960255706">තවත් තතු</translation>
@@ -10249,6 +10268,7 @@
 <translation id="8874341931345877644">උපාංගයක් වෙත විකාශ කරන්න:</translation>
 <translation id="8874647982044395866">කාබනික</translation>
 <translation id="8874790741333031443">තෙවන පාර්ශ්ව කුකීස් සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න, ඉන් අදහස් වන්නේ බ්‍රවුස් කිරීමේ ආරක්ෂාව අඩු නමුත් අඩවි විශේෂාංග අපේක්ෂිත පරිදි ක්‍රියා කිරීමට වැඩි ඉඩක් ඇති බවයි.</translation>
+<translation id="8874864294955002500">ඔබේ ගිණුම සඳහා ප්‍රතිපෝෂණ ලබා ගත නොහැක. ඔබේ ව්‍යවසාය පරිපාලකයාට ඔවුන්ගේ උපාංගය හෝ පැතිකඩ භාවිතයෙන් ඔබ වෙනුවෙන් ගැටලුවක් වාර්තා කළ හැකිය.</translation>
 <translation id="8875736897340638404">ඔබේ දෘශ්‍යතාව තෝරන්න</translation>
 <translation id="8876307312329369159">මෙම සැකසීම ආදර්ශන සැසිය තුළ වෙනස් කළ නොහැක.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> අවට උපාංග සොයා ගැනීමට බ්ලූටූත් ස්කෑන් කිරීම භාවිතා කරයි.</translation>

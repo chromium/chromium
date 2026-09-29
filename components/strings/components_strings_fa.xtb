@@ -741,6 +741,7 @@
 <translation id="2233745931693710080">لوح فشرده</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2239100178324503013">اکنون ارسال شود</translation>
+<translation id="223921069122391343">پیشنهاد ویژه ذخیره‌شده شما هنگام تسویه‌حساب بااستفاده از تکمیل خودکار دردسترس خواهد بود. <ph name="BEGIN_LINK" />مشاهده شرایط خدمات<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">افزودن شناسه جبران خطای تطبیق</translation>
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
 <translation id="2242389809734574253">‏برگ ذخیره کردن IBAN بسته شد.</translation>
@@ -766,6 +767,7 @@
 <translation id="2277753418458118549">نمایش جزئیات اتصال</translation>
 <translation id="2277949605527755300">‫<ph name="URL" /> می‌خواهد دست‌هایتان را ردیابی کند</translation>
 <translation id="22792995594807632">قبل‌از بارگیری باید بررسی شود</translation>
+<translation id="2279607542590042584">‏گذرکلید • گذرواژه‌های Apple</translation>
 <translation id="2283340219607151381">ذخیره و پر کردن نشانی‌ها</translation>
 <translation id="2283447177162560884">«<ph name="PAGE_TITLE" />» حذف شد</translation>
 <translation id="2283599456633275070">سفر</translation>
@@ -986,7 +988,6 @@
 <translation id="2628025184666666186">‏این سرور نتوانست اثبات کند <ph name="DOMAIN" /> است زیرا از گواهینامه امنیتی‌ای استفاده می‌کند که مورداعتماد Chrome یا پیکربندی سیستم برای رمزگذاری ترافیک وب نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی درحال رهگیری اتصالتان باشد.</translation>
 <translation id="2628224721443278970">‏ورود به سیستم Microsoft OneDrive</translation>
 <translation id="2631059741268498165">سرپرستتان این دستگاه را در حالی که غیرفعال بود مکان‌یابی کرد. دوباره فعال شده است و آماده استفاده است.</translation>
-<translation id="2631387782019878060">کد درستی‌سنجی: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏نشانی IP سرور <ph name="HOST_NAME" /> پیدا نشد.</translation>
 <translation id="2635276683026132559">امضا</translation>
 <translation id="2638070510549214427">علامت‌گذاری به‌عنوان ایمن</translation>
@@ -1371,6 +1372,7 @@
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
 <translation id="3310946375819654151">‏Chrome تلاش دارد اطلاعات حساس شما را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="3312952471765023168">بارگذاری انجام شد</translation>
+<translation id="3323135197619890621">برای آسان‌تر کردن خرید، تکمیل خودکار را روشن کنید</translation>
 <translation id="3324687287337751929">۶ × ۴ اینچ</translation>
 <translation id="3325568918769906282">به‌ترتیب نزولی</translation>
 <translation id="3325662270238538525">اطلاعات مربوط به آخرین تغییرات و دسترسی به فایل، ازجمله نام فایل، اثر انگشت دیجیتالی محتوای فایل، منبع بارگیری، و فراداده</translation>
@@ -1442,6 +1444,7 @@
 <translation id="3447884698081792621">نمایش  گواهی (صادرشده توسط <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">‏می‌تواند دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند</translation>
 <translation id="3452404311384756672">فاصله زمانی واکشی:</translation>
+<translation id="345268527248907593">دسترسی به این سایت امکان‌پذیر نبود</translation>
 <translation id="3453962258458347894">تعداد امتحان مجدد</translation>
 <translation id="3461266716147554923"><ph name="URL" /> می‌خواهد به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
 <translation id="3461824795358126837">ماژیک</translation>
@@ -1595,6 +1598,7 @@
 <translation id="3704162925118123524">شاید شبکه‌ای که استفاده می‌کنید، بازدید از صفحه ورود به سیستم خودش را برای شما ضروری کرده باشد.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">در حال بارکردن…</translation>
+<translation id="3708927069677086144">‏سازمانتان شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
 <translation id="3709599264800900598">نوشتاری که کپی کرده‌اید</translation>
 <translation id="3711223220609269738">زبانه مجزای جدید</translation>
 <translation id="3711430313228789376">‏مرورگر Chrome می‌خواهد گذرواژه‌ها را نشان دهد</translation>
@@ -1732,6 +1736,7 @@
 <translation id="3928806096717999469">ویرایش، پنجره جدیدی را باز می‌کند</translation>
 <translation id="393417216277380082">حسگرهای حرکتی و نوری</translation>
 <translation id="3937640725563832867">نام دیگر صادرکننده گواهی</translation>
+<translation id="3938243129430544357">تسویه‌حساب کردن ایمن با تکمیل خودکار</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
 <translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
 <translation id="3942048175062210325">فایل‌ها را دوباره باز کنید</translation>
@@ -1972,6 +1977,7 @@
 <translation id="4284885181066817063">مسدودشده توسط <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">حذف خودرو</translation>
 <translation id="4290920330097335010">هرگز اجازه ندادن</translation>
+<translation id="4291909791598163333">سازمانتان شما را از بازدید سایت پیش‌رو مسدود کرده است</translation>
 <translation id="4297502707443874121">ریزعکس صفحه <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> به‌روز شد</translation>
 <translation id="4298148761711700950">پرداخت فوری بدون بارگذاری رمزینه پاسخ‌سریع</translation>
@@ -2055,6 +2061,7 @@
 <translation id="4424024547088906515">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد Chrome نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="4425137053900958839">‏از راحتی و امنیتی که Pix در اختیارتان قرار می‌دهد لذت ببرید</translation>
 <translation id="443121186588148776">درگاه سریالی</translation>
+<translation id="4431928532022419942">‏برداشتن از Chrome؟</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> گواهی ورود به سیستمتان را نپذیرفت یا ممکن است گواهی‌ای ارائه نشده باشد.</translation>
 <translation id="4432792777822557199">از این به بعد، صفحه‌های <ph name="SOURCE_LANGUAGE" />، به <ph name="TARGET_LANGUAGE" /> ترجمه خواهند شد</translation>
 <translation id="4433642172056592619">نادیده گرفته شد زیرا کاربر تابع مدیریت ماشین نیست یا ماشین مدیریت نمی‌شود.</translation>
@@ -3134,8 +3141,10 @@
 <translation id="6263376278284652872">نشانک‌های <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
 <translation id="6264485186158353794">بازگشت به ایمنی</translation>
+<translation id="6264507470395196064">دروازه امن</translation>
 <translation id="6264636978858465832">«مدیر گذرواژه» نیاز به دسترسی بیشتری دارد</translation>
 <translation id="6265794661083428563">کپی کردن مقدار خط‌مشی <ph name="POLICY_NAME" /></translation>
+<translation id="6271264012613848937">بازدید شما از <ph name="URL" /> به‌دلیل خط‌مشی‌های سازمانتان مسدود شده است. اگر این موضوع غیرمنتظره است، با سرپرست خود تماس بگیرید.</translation>
 <translation id="6272088941196661550">‏مسیر را ازسر بگیرید تا فعالیت‌های مرتبط را در سابقه Chrome ببینید</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">‏‫Google Drive و OneDrive</translation>
@@ -3342,6 +3351,7 @@
 <translation id="6630043285902923878">‏درحال پیدا کردن دستگاه‌های USB…</translation>
 <translation id="6630388727238334626">‏دکمه «مدیریت تنظیمات Chrome»؛ برای رفتن به تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">‏برای بازدید از سایت پیش‌رو، سازمانتان شما را ملزم می‌کند با «حساب Google» تحت‌مدیریت خود به سیستم وارد شوید.</translation>
 <translation id="6635900375070654124">دستگاه اصالت‌سنجی.</translation>
 <translation id="6641852376826221947">تأیید کردن خرید</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
@@ -3416,6 +3426,7 @@
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">مقدار خط‌‌مشی</translation>
 <translation id="6753434778807740853">حذف ورودی <ph name="ENTRY_VOICEOVER" /></translation>
+<translation id="6753460329812070808">‏پیشنهاد از Chrome برداشته شد</translation>
 <translation id="6757797048963528358">دستگاهتان به خواب رفته است.</translation>
 <translation id="6758934187792712102">‫<ph name="URL" /> می‌خواهد از حسگرهای حرکتی و نوری شما استفاده کند</translation>
 <translation id="6770747695101757579">کاغذ (پنبه‌ای)</translation>
@@ -3495,6 +3506,7 @@
 <translation id="6897140037006041989">نماینده کاربر</translation>
 <translation id="6898699227549475383">‏سازمان (O)</translation>
 <translation id="6900702165119149418">از سیستم خارج شده‌اید</translation>
+<translation id="6902049722133977432">واگرد</translation>
 <translation id="6910211073230771657">حذف شد</translation>
 <translation id="691024665142758461">بارگیری چندین فایل.</translation>
 <translation id="691046363691324218">شناسه جبران خطای تطبیق</translation>
@@ -3529,6 +3541,7 @@
 <translation id="6957153644870901611">«تکمیل خودکار بهبودیافته» را روشن کنید تا فیلدهای بیشتری را به‌طور خودکار تکمیل کند</translation>
 <translation id="6957887021205513506">به نظر می‌رسد که گواهی سرور جعلی باشد.</translation>
 <translation id="6958564499836457428">‏مدیریت تنظیمات حریم خصوصی Google در «حساب Google»</translation>
+<translation id="6961161369573226336">‏«مدیر گذرواژه Google» می‌تواند این کدها را از Gmail <ph name="EMAIL" /> برای شما دریافت کند. می‌توانید نظرتان را تغییر دهید و <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">می‌تواند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهد</translation>
 <translation id="6962858948849099922">مهلت زمانی جابه‌جایی تمام شد</translation>
 <translation id="6963520811470373926">درحال جایگزین شدن</translation>
@@ -3606,6 +3619,7 @@
 <translation id="70846382339153529">‏نوشتار OpenDocument</translation>
 <translation id="7086090958708083563">بارگذاری درخواست‌شده توسط کاربر</translation>
 <translation id="7090698782953528257">کمک کن تابعی را نموداری کنم تا معادله ریاضی را دیداری و شکل منحنی را ببینم</translation>
+<translation id="7092087596499105699">سرپرست شما رابط دروازه امن را برای محافظت از دسترسی به برنامه‌های وب خصوصی سازمانتان پیکربندی کرده است. ممکن است از داده‌های نمایه کاری شما برای درستی‌سنجی دسترسی استفاده کند.</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، کلید «جهش» و سپس «ورود» را فشار دهید تا اجازه‌ها و داده‌های ذخیره‌شده در سایت‌ها را در تنظیمات Chrome مدیریت کنید</translation>
 <translation id="709604659664854823">امشب در رستوران‌های اطراف برایم رزرو لحظه آخری پیدا کنید</translation>
 <translation id="7096341143397839437">ایمیل: <ph name="EMAIL" />.</translation>
@@ -3709,6 +3723,7 @@
 <translation id="7266094331715305887">برنامه‌های موجود در دستگاه.</translation>
 <translation id="7268742523336093718">‏افزودن امن گذرنامه به «کیف پول Google»</translation>
 <translation id="7269151392155523061">میان‌بر نباید با کلیدواژه جمع‌کننده جستجو که <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> تعریف کرده است یکسان باشد: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">مشکلی در محافظت‌ها یا خط‌مشی‌های تنظیم‌شده توسط سازمانتان پیش آمد. بعداً دوباره امتحان کنید یا با سرپرست خود تماس بگیرید.</translation>
 <translation id="7273111226200291353">‏فایل‌هایی که بارگیری می‌کنید برای تجزیه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود و براساس خط‌مشی‌های شرکت ذخیره شود و برای سرپرست شما قابل‌مشاهده باشد.</translation>
 <translation id="7275334191706090484">نشانک‌های مدیریت شده</translation>
 <translation id="7278933725460302617">اکنون در حالت «ایزوله‌شده» هستید</translation>
@@ -4150,6 +4165,7 @@
 <translation id="7984945080620862648">‏در حال حاضر نمی‌توانید از <ph name="SITE" /> بازدید کنید زیرا این وب‌سایت اعتبارنامه‌های درهمی ارسال کرده است که Chrome نمی‌تواند پردازش کند. معمولاً خطاهای شبکه و حمله‌ها موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">فهرست صادرکنندگان روش «الآن خریدن، پراخت بعداً» موجود برای پرداخت به‌مرور در حالت کاملاً باز است.</translation>
+<translation id="7990290316254726169">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند و در «حالت مجزا» هستید. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">به‌هم چسباندن</translation>
 <translation id="7992044431894087211">هم‌رسانی صفحه‌نمایش با <ph name="APPLICATION_TITLE" /> ازسر گرفته شد</translation>
 <translation id="799384093520583425">‏سازمانتان استفاده از DevTools را در این صفحه مسدود کرده است</translation>
@@ -4490,6 +4506,7 @@
 <translation id="860043288473659153">نام صاحب کارت</translation>
 <translation id="8601206103050338563">‏راستی‌آزمایی سرویس گیرنده TLS WWW</translation>
 <translation id="8604103095921958091">صفحه شرایط خدمات «الآن خریدن، پراخت بعداً» به‌صورت کامل باز شده است.</translation>
+<translation id="8605014984308506350">‏این هشدار را به این دلیل می‌بینید که این سایت از HTTPS پشتیبانی نمی‌کند و در «حالت مجزا» هستید. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">استفاده از دستگاه</translation>
 <translation id="8619130384334725124">برنامه پیش‌فرض فعلی</translation>
 <translation id="8620276786115098679">پاکت کاکو ۷</translation>
@@ -4857,6 +4874,7 @@
 <translation id="949026252328034572">‫<ph name="MEMBER_COUNT" /> عضو به گروه زبانه «<ph name="GROUP_NAME" />» پیوستند</translation>
 <translation id="949314938206378263">‏درخواست کرده‌اید از این سایت بازدید کنید. ولی‌تان می‌تواند در Family Link پاسخ دهد.</translation>
 <translation id="949484466204182817">‏افزودن «شناسه جبران خطای تطبیق» به «کیف پول Google»</translation>
+<translation id="950533895669718124">درباره این ویژگی در تنظیمات بیشتر بدانید</translation>
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="950926967802086924">‏گذرکلید • مدیر گذرواژه Google</translation>
 <translation id="952165179818196872">برای پرداخت بدون عوض کردن برنامه، <ph name="PROVIDER" /> اضافه شود</translation>

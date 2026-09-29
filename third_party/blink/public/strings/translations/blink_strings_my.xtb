@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">အခြားတဘ်တွင် အမှားရှာပြင်ကိရိယာကို ခဏရပ်ထားသည်။ ၎င်းတဘ်သို့ပြောင်းရန် ကလစ်နှိပ်ပါ။</translation>
 <translation id="1171774979989969504">ကျေးဇူးပြုပြီး အီးမေးလ် လိပ်စာကို ထည့်ပေးပါ</translation>
 <translation id="1178581264944972037">ဆိုင်းငံ့ထားရန်</translation>
+<translation id="1254779809141342904">ဤ CAP သတိပေးချက်သည် XSLT ဟုခေါ်သော နည်းပညာကို သုံးသည်။ ၎င်းလုပ်ဆောင်ချက်ကို <ph name="REMOVAL_LINK" />။ ထိုသို့ဖြစ်သောအခါ ဤသတိပေးချက်ကို မူရင်း XML ဒေတာအဖြစ် ပြပါမည်။ ၎င်းကို ဆက်လက်ကြည့်ရှုနိုင်ရန် <ph name="EXTENSION_LINK" /> နိုင်ပါသည်။</translation>
 <translation id="1306460908038601864">ပိတ်</translation>
 <translation id="1311894908970423688">တန်ဖိုးမှာ <ph name="VALUE_DATE_OR_TIME" /> ဖြစ်ရမည်။</translation>
 <translation id="1588438908519853928">ပုံမှန်</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ပေးပို့ရန်</translation>
 <translation id="2746543609216772311">တန်ဖိုးမှာ <ph name="MINIMUM_DATE_OR_TIME" /> သို့မဟုတ် ပိုနောက်ကျတာ ဖြစ်ရမည်။</translation>
 <translation id="2761667185364618470">သင်သည် ဆက်လုပ်ကိုင် လိုလျှင် ကျေးဇူးပြုပြီး ဒီအကွက်ကို ခြစ်ပါ။</translation>
+<translation id="2854734116215697908">ဤဘရောင်ဇာမှ ဖယ်ရှားလိုက်သည်</translation>
 <translation id="2908441821576996758">ကျေးဇူးပြုပြီး ကော်မာဖြင့် ခြားထားသည့် အီးမေးလ် လိပ်စာများ စာရင်းကို ထည့်သွင်းပါ။</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ကျေးဇူးပြုပြီး မှန်ကန်သည့် တန်ဖိုးကို ထည့်ပေးပါ။ အကွက်မှာ မပြည့်စုံပါ သို့မဟုတ် မမှန်သည့် ရက်စွဲ ပါနေသည်။</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">သရုပ်ဆောင်​များ</translation>
 <translation id="5630795885300617244">၁၀ စက္ကန့်ကျော်ရန် ဘယ်ဘက် သို့မဟုတ် ညာဘက်ကို နှစ်ချက်တို့ပါ</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
+<translation id="5855560023261018690">ဤဘရောင်ဇာမှ မကြာမီ ဖယ်ရှားပါမည်</translation>
 <translation id="5868587040512539609">ဗီဒီယို</translation>
 <translation id="588258955323874662">မျက်နှာပြင် အပြည့်</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> သို့ ယခု ကာစ်လုပ်နေသည်</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">နှစ်ခုထပ်၍ကြည့်ခြင်းမှ ထွက်ရန်</translation>
 <translation id="6484738902856791350">လှလှရှင်းရှင်း စာလုံးသုံးရန်</translation>
 <translation id="6550675742724504774">ရွေးစရာများ</translation>
+<translation id="65574987622079584">ဘရောင်ဇာနောက်ဆက်တွဲ ထည့်သွင်း</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6661136971638885481">အပိုင်း #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">အခြား...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">ဤအပတ်</translation>
 <translation id="8131955114056917397">၀.၂၅</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">ဤသတိပေးချက်ကို ဘယ်တော့မှ မပြပါနှင့်</translation>
 <translation id="8284326494547611709">စာတန်းများ</translation>
 <translation id="835897206747267392">မမှန်ကန်သော တန်ဖိုး။</translation>
 <translation id="839593075537728968">တန်ဖိုးသည် <ph name="MINIMUM_TIME" /> နှင့် <ph name="MAXIMUM_TIME" /> အကြားတွင် ရှိရမည်။</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">၁.၇၅</translation>
 <translation id="8668988909814782445">စာကြောင်းကို ပတ်ရန်</translation>
 <translation id="8750798805984357768">ကျေးဇူးပြုပြီး အောက်ပါ ရွေးစရာများ ထဲက တစ်ခုကို ရွေးပါ။</translation>
+<translation id="8753001114009816390">ဤဝဘ်ဆိုက်သည် XSLT သုံးသည်။ ၎င်းလုပ်ဆောင်ချက်ကို <ph name="REMOVAL_LINK" />။ ထိုသို့ဖြစ်သောအခါ ဤစာမျက်နှာကို မှန်ကန်စွာ ပြနိုင်တော့မည်မဟုတ်ပါ။ ၎င်းကို ဆက်လက်ကြည့်ရှုနိုင်ရန် <ph name="EXTENSION_LINK" /> နိုင်ပါသည်။ သို့မဟုတ်ပါက နောက်ထပ်အချက်အလက်အတွက် ဝဘ်ဆိုက်ထိန်းသိမ်းသူကို ဆက်သွယ်သင့်သည်။</translation>
 <translation id="8845239796550121995">ယခု သင့် TV သို့ ကာစ်လုပ်နေပါသည်</translation>
 <translation id="8875657656876809964">ဗီဒီယိုဖွင့်ခြင်း အမှား</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

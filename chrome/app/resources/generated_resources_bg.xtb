@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 парола бе импортирана в(ъв) <ph name="BRAND" /> на това устройство}other{{NUM_PASSWORDS} пароли бяха импортирани в(ъв) <ph name="BRAND" /> на това устройство}}</translation>
 <translation id="1046572983040892965">Прозорецът бе преместен нагоре и наляво</translation>
 <translation id="1047431265488717055">Копиране на тек&amp;ста на връзката</translation>
+<translation id="104751728059674265">Функцията за отзиви не е налице за профила ви. Пълнолетно лице може да използва устройството или потребителския си профил, за да подаде сигнал за проблем вместо вас.</translation>
 <translation id="1048986595386481879">Динамично заделен</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">Сайтовете могат да поискат да записват и използват въведеното с мишката</translation>
 <translation id="1232569758102978740">Неозаглавен</translation>
 <translation id="1233497634904001272">Докоснете отново ключа си за сигурност, за да завършите заявката.</translation>
+<translation id="1233566345244684257">Всеки с достъп до приложенията Gemini може да контролира браузъра ви Chrome.</translation>
 <translation id="1233721473400465416">Локал</translation>
 <translation id="1233835246554936745">{0,plural, =1{Запазване на 1 елемент в профила}other{Запазване на # елемента в профила}}</translation>
 <translation id="1234736487471201993">Създаване на QR код за това изображение</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">Въведете причина за изтеглянето на тези данни:</translation>
 <translation id="1422159345171879700">Зареждане на опасните скриптове</translation>
 <translation id="1425040197660226913">Качването не е възможно. Използвайте изображение, по-малко от 20 МБ.</translation>
+<translation id="1426154609634610063">Прегледайте рисковете от използването на Gemini</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478">Приложението <ph name="APP_NAME" /> е блокирано</translation>
 <translation id="1427179946227469514">Височина на синтезирания говор</translation>
@@ -991,6 +994,7 @@
 <translation id="1755601632425835748">Размер на текста</translation>
 <translation id="1756963401828337401">Изберете екран за заснемане</translation>
 <translation id="17584710573359123">Преглед в уеб магазина на Chrome</translation>
+<translation id="1758845021884209593">Използване на клавишната комбинация в приложенията за операционната система</translation>
 <translation id="1761402971842586829">За <ph name="BUTTON_NAME" /> е зададена функцията „<ph name="REMAPPING_OPTION" />“.</translation>
 <translation id="1761845175367251960">Профилите на <ph name="NAME" /></translation>
 <translation id="176272781006230109">предложения за пазаруване</translation>
@@ -1839,6 +1843,7 @@
 <translation id="2416435988630956212">Функционални клавиши на клавиатурата</translation>
 <translation id="2419131370336513030">Преглед на инсталираните приложения</translation>
 <translation id="2419706071571366386">От съображения за сигурност излизайте от профила си, когато не използвате компютъра си.</translation>
+<translation id="2423226060967554289">Показване на лентата на отметките</translation>
 <translation id="2423506062824112361">Съдържанието не бе изтеглено поради неизвестна причина.</translation>
 <translation id="2423578206845792524">&amp;Запазване на изображението като...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гост}other{Гост (#)}}</translation>
@@ -2076,6 +2081,7 @@
 <translation id="2588271083332682494">Подредете разделите си с помощта на групи</translation>
 <translation id="2588636910004461974">Устройства от <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Без показване на файлове от Диск</translation>
+<translation id="2595270892115552212">Когато стартирате задача от други приложения Gemini, включително gemini.google.com и мобилните приложения Gemini, услугата може да използва функцията за автоматично сърфиране в Chrome на това устройство, за да взаимодейства със сайтове и да изпълнява задачи вместо вас. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Функцията „Споделяне наблизо“ използва сканирането през Bluetooth, за да намира устройства в близост.</translation>
 <translation id="2598136842498757793">Персонализиране на бутоните на лентата с инструменти</translation>
 <translation id="2598710988533271874">Има нова версия на Chrome</translation>
@@ -2813,6 +2819,7 @@
 <translation id="3132996321662585180">Ежедневно опресняване</translation>
 <translation id="3134312457920437826">Разширението не може да се инсталира, защото използва неподдържана версия на манифеста.</translation>
 <translation id="3134393957315651797">Изберете състояние за експеримента „<ph name="EXPERIMENT_NAME" />“. Описание на експеримента: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Разрешаване на други приложения Gemini да сърфират отдалечено от всяко устройство</translation>
 <translation id="3139925690611372679">Стандартен жълт аватар</translation>
 <translation id="314095642664111744">Изключване на режима за концентрация</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
@@ -3098,6 +3105,7 @@
 <translation id="3355936511340229503">Грешка във връзката</translation>
 <translation id="335678817537689040">Статично</translation>
 <translation id="3359256513598016054">Ограничения на правилата за сертификата</translation>
+<translation id="3359465538772230055">Няма задачи</translation>
 <translation id="3360297538363969800">Отпечатването не бе успешно. Моля, проверете принтера си и опитайте отново.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> споделя с вас <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> споделя с вас <ph name="ATTACHMENTS" />.}}</translation>
@@ -3626,6 +3634,7 @@
 <translation id="3736487688526377259">Изберете устройството, на което искате да получите тази връзка.</translation>
 <translation id="3737058101969549870">Искате ли съществуващите данни за сърфирането да се съхраняват отделно от този нов потребителски профил?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini може да използва функцията за автоматично сърфиране на това устройство само ако то е активно и Chrome работи.</translation>
 <translation id="3739254215541673094">Да се отвори ли <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Сайтовете могат да извеждат запитвания за търсене и използване на принтерите, достъпни за устройството ви</translation>
 <translation id="3741056951918180319">Можете да кликнете върху разширението по всяко време, за да го използвате в който и да е сайт</translation>
@@ -3981,6 +3990,7 @@
 <translation id="3987993985790029246">Връзка: Коп.</translation>
 <translation id="3988124842897276887">Този раздел е свързан с USB устройство</translation>
 <translation id="3989635538409502728">Изход</translation>
+<translation id="399132041334931433">Добавяне на разделите към нова група</translation>
 <translation id="399179161741278232">Импортирани</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> се изтегля – <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Предоставете на <ph name="SPECIFIC_NAME" /> контрол над USB устройствата.</translation>
@@ -5210,6 +5220,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Без запазване на паролите за този сайт</translation>
 <translation id="4952580838083306838">Скриване на организатора</translation>
+<translation id="4952628481830269193">Показване на лентата на отметките</translation>
 <translation id="4953808748584563296">Стандартен оранжев аватар</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883">Попитайте за <ph name="TEXT" /></translation>
@@ -5462,6 +5473,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5149602533174716626">Копиран&amp;е на кадъра от видеоклипа</translation>
 <translation id="5150254825601720210">Име на SSL сървър за сертификат на Netscape</translation>
 <translation id="5151354047782775295">Освободете място на диска, в противен случай е възможно автоматично да бъдат изтрити определени данни</translation>
+<translation id="5152719737931716272">Задачата е изпълнена и отново сте в Gemini</translation>
 <translation id="5153074793829217329">Използвайте клавиатурата или цифровата клавиатура, за да контролирате курсора на мишката</translation>
 <translation id="5153234146675181447">Забравяне на телефона</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5779,6 +5791,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5414836363063783498">Потвърждава се…</translation>
 <translation id="5415497281076257439">По фраза</translation>
 <translation id="5415871492522952905">Ще имате достъп до историята и разделите си на всичките си устройства, за да можете да продължавате заниманията си на всяко от тях</translation>
+<translation id="5417160551295347092">Gemini може да допуска грешки, като например да споделя информацията ви или да извършва покупки, без да пита. <ph name="LINK_BEGIN" />Прегледайте рисковете<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Този сайт може да използва идентификатори с цел възпроизвеждане на защитено съдържание.</translation>
 <translation id="5417312524372586921">Теми за браузъра</translation>
 <translation id="541737483547792035">Увеличаване на екрана</translation>
@@ -6123,6 +6136,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5687340364605915800">Сайтовете отговарят на тази заявка по свое усмотрение</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Местоположение</translation>
+<translation id="568984110402742489">Не може да изпращате отзиви</translation>
 <translation id="56907980372820799">Свързване на данните</translation>
 <translation id="5691772641933328258">Отпечатъкът не бе разпознат</translation>
 <translation id="5693255400847650006">Микрофонът се използва</translation>
@@ -6533,6 +6547,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6003143259071779217">Премахване на мобилната мрежа за електронната SIM карта</translation>
 <translation id="6003479444341796444">Заглавната лента се показва</translation>
 <translation id="6003582434972667631">Темата е зададена от организацията ви</translation>
+<translation id="600407115562756795">Gemini ще решава кои действия да предприеме въз основа на задачите, които стартирате или актуализирате.</translation>
 <translation id="6005045517426700202">Тухлена сграда</translation>
 <translation id="6006484371116297560">Класическа тема</translation>
 <translation id="6007053304250788613">Само един екран може да бъде изключен в режима за дублиране</translation>
@@ -8509,6 +8524,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7523117833414447032">При четене на главни букви</translation>
 <translation id="7523585675576642403">Преименуване на профила</translation>
 <translation id="7525067979554623046">Създаване</translation>
+<translation id="7526083414913154899">Научете повече относно задачите за Gemini</translation>
 <translation id="7528224636098571080">Без отваряне</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Искате ли да разгрупирате разделите?}other{Искате ли да разгрупирате разделите?}}</translation>
 <translation id="7529411698175791732">Проверете връзката си с интернет. Ако проблемът продължи, опитайте да излезете от профила си и отново да влезете в него.</translation>
@@ -9238,6 +9254,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8081989000209387414">Да се деактивира ли отстраняването на грешки през ADB?</translation>
 <translation id="8082132721957920509">Картата ви е запазена</translation>
 <translation id="8082390128630131497">Деактивирането на отстраняването на грешки през ADB ще възстанови фабричните настройки на това устройство <ph name="DEVICE_TYPE" />. Всички профили на потребители и локални данни ще бъдат изтрити.</translation>
+<translation id="8082737802704584539">Организацията ви е изключила запазването на историята в профила ви в Google</translation>
 <translation id="8084114998886531721">Запазена парола</translation>
 <translation id="8084417885464859041">Безопасно използване на Gemini</translation>
 <translation id="8084429490152575036">Настройки за името на точката за достъп (APN) за мобилна мрежа</translation>
@@ -9280,6 +9297,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8109991406044913868">Тема, създадена от AI</translation>
 <translation id="8110393529211831722">Абонаментът е инсталиран само на това устройство и не е синхронизиран с другите устройства в профила ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Списъкът с контакти се изтегля...</translation>
+<translation id="8110781914702267195">Отворете Google Wallet, за да контролирате <ph name="BEGIN_LINK1" />предпочитанията за поверителността и данните<ph name="END_LINK1" /> или да управлявате <ph name="BEGIN_LINK2" />начините на плащане<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />картите<ph name="END_LINK3" />, като например карти за лоялност</translation>
 <translation id="8114925369073821854">Разрешение на <ph name="APP_NAME" /> за достъп до микрофона</translation>
 <translation id="8116497846156149">Искане на одобрение от родител</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> помни как сте влезли в профила си и след това автоматично влиза в него, когато е възможно. Ако настройката е изключена, всеки път ще се иска потвърждение от вас.</translation>
@@ -9360,6 +9378,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> – <ph name="PRINTER_STATUS" />. Принтер <ph name="ITEM_POSITION" /> от <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Режимът за икономия на енергия е включен</translation>
 <translation id="8180786512391440389"><ph name="EXTENSION" /> може да чете и изтрива изображения, видео- и звукови файлове в местоположенията с отметка.</translation>
+<translation id="8181132988581553950">Gemini ще има достъп до същите сайтове като вас, включително тези, в които сте влезли в профила си. Услугата ще споделя с трети страни необходимата информация, която може да включва лични данни, които е възможно да смятате за поверителни.</translation>
 <translation id="8183703640399301650">EID номерът на устройството ви е <ph name="EID_NUMBER" />, а IMEI номерът е <ph name="IMEI_NUMBER" />. Тези номера могат да се използват за активиране на услугата.</translation>
 <translation id="8184288427634747179">Превключване към <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Още информация</translation>
@@ -10262,6 +10281,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8874341931345877644">Предаване към устройство:</translation>
 <translation id="8874647982044395866">Органичен</translation>
 <translation id="8874790741333031443">Опитайте временно да разрешите „бисквитките“ на трети страни. Това ще понижи нивото на защита при сърфиране, но е по-вероятно функциите на сайта да работят по очаквания начин.</translation>
+<translation id="8874864294955002500">Функцията за отзиви не е налице за профила ви. Администраторът на корпорацията ви може да използва устройството или потребителския си профил, за да подаде сигнал за проблем вместо вас.</translation>
 <translation id="8875736897340638404">Избиране на настройка за видимостта</translation>
 <translation id="8876307312329369159">Тази настройка не може да бъде променена по време на демонстрационна сесия.</translation>
 <translation id="8876965259056847565">Функцията „<ph name="FEATURE_NAME" />“ използва сканирането през Bluetooth, за да намира устройства в близост.</translation>

@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}one{{NUM_PASSWORDS} mot de passe importé dans le <ph name="BRAND" /> sur cet appareil}other{{NUM_PASSWORDS} mots de passe importés dans le <ph name="BRAND" /> sur cet appareil}}</translation>
 <translation id="1046572983040892965">Fenêtre déplacée vers le haut et la gauche</translation>
 <translation id="1047431265488717055">Copier le te&amp;xte du lien</translation>
+<translation id="104751728059674265">Les commentaires ne sont pas disponibles pour ton compte. Un adulte peut utiliser son appareil ou son profil pour signaler un problème à ta place.</translation>
 <translation id="1048986595386481879">Allouée dynamiquement</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}one{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}other{Réception de <ph name="ATTACHMENTS" /> de l'appareil "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
@@ -983,6 +984,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1755601632425835748">Taille du texte</translation>
 <translation id="1756963401828337401">Choisissez un écran à capturer</translation>
 <translation id="17584710573359123">Afficher sur le Chrome Web Store</translation>
+<translation id="1758845021884209593">Utiliser le raccourci dans les applis de l'OS</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remappé sur <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Comptes appartenant à <ph name="NAME" /></translation>
 <translation id="176272781006230109">les suggestions d'achat</translation>
@@ -3084,6 +3086,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3355936511340229503">Erreur de connexion</translation>
 <translation id="335678817537689040">Statique</translation>
 <translation id="3359256513598016054">Contraintes des stratégies de certificat</translation>
+<translation id="3359465538772230055">Aucune tâche</translation>
 <translation id="3360297538363969800">Échec de l'impression. Veuillez vérifier votre imprimante, puis réessayer.</translation>
 <translation id="3360306038446926262">Fenêtres</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> essaie de partager <ph name="ATTACHMENTS" /> avec vous.}one{<ph name="DEVICE_NAME" /> essaie de partager <ph name="ATTACHMENTS" /> avec vous.}other{<ph name="DEVICE_NAME" /> essaie de partager <ph name="ATTACHMENTS" /> avec vous.}}</translation>
@@ -6107,6 +6110,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5687340364605915800">La réponse apportée par les sites à cette demande est à leur discrétion</translation>
 <translation id="5689233503102158537">Alt+Retour arrière</translation>
 <translation id="5689516760719285838">Position</translation>
+<translation id="568984110402742489">Impossible d'envoyer des commentaires</translation>
 <translation id="56907980372820799">Associer les données</translation>
 <translation id="5691772641933328258">Empreinte digitale non reconnue</translation>
 <translation id="5693255400847650006">Micro utilisé</translation>
@@ -9266,6 +9270,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8109991406044913868">Thème créé par l'IA</translation>
 <translation id="8110393529211831722">L'abonnement est installé sur cet appareil uniquement et n'est pas synchronisé avec les autres appareils de votre compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Téléchargement de la liste de contacts…</translation>
+<translation id="8110781914702267195">Accédez à Google Wallet pour contrôler vos <ph name="BEGIN_LINK1" />préférences concernant les données et la confidentialité<ph name="END_LINK1" /> ou gérer les <ph name="BEGIN_LINK2" />modes de paiement<ph name="END_LINK2" /> et les <ph name="BEGIN_LINK3" />pass<ph name="END_LINK3" /> comme les cartes de fidélité</translation>
 <translation id="8114925369073821854">Autorisation d'accéder au micro de <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Demande l'approbation de ton parent</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> mémorise votre mode de connexion et vous connecte automatiquement quand c'est possible. Lorsque la connexion automatique est désactivée, une confirmation vous est demandée à chaque fois.</translation>
@@ -10248,6 +10253,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8874341931345877644">Castez sur un appareil :</translation>
 <translation id="8874647982044395866">Bio</translation>
 <translation id="8874790741333031443">Essayez d'autoriser temporairement les cookies tiers. Vous réduirez ainsi la protection de la navigation, mais les fonctionnalités du site auront plus de chances de fonctionner comme prévu.</translation>
+<translation id="8874864294955002500">Les commentaires ne sont pas disponibles pour votre compte. L'administrateur de votre entreprise peut utiliser son appareil ou son profil pour signaler un problème à votre place.</translation>
 <translation id="8875736897340638404">Sélectionnez un paramètre de visibilité</translation>
 <translation id="8876307312329369159">Impossible de modifier ce paramètre dans une session de démonstration.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> utilise la recherche Bluetooth pour trouver les appareils à proximité.</translation>

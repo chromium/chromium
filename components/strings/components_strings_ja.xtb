@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1348779747280417563">名前を確認</translation>
+<translation id="1353546633704510580">選択した範囲</translation>
 <translation id="1357195169723583938">最近デバイスを使用したユーザーとその日時</translation>
 <translation id="1358187717814494928">スプレッドシートを作成</translation>
 <translation id="1358223345833465883">Chromium で使用する検索エンジン</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">お支払い方法を確認しています</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1579189948231786790">このサイトは組織によってブロックされています</translation>
+<translation id="1579940597679293608">すべてのアイソレート ウィンドウを閉じる</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1585306568496579337">拡張機能「<ph name="EXTENSION_NAME" />」が <ph name="HANDLER_HOSTNAME" /> 経由で <ph name="PROTOCOL" /> リンクを開くことを求めています</translation>
@@ -740,6 +742,7 @@
 <translation id="2233745931693710080">コンパクト ディスク</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
 <translation id="2239100178324503013">送信</translation>
+<translation id="223921069122391343">保存した特典は、自動入力を使用してご購入手続き時にご利用いただけます。<ph name="BEGIN_LINK" />利用規約を表示<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Redress 番号の追加</translation>
 <translation id="2241693394036365668">ファイルがダウンロードされた</translation>
 <translation id="2242389809734574253">[IBAN を保存] を閉じました。</translation>
@@ -986,7 +989,6 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2628025184666666186">このサーバーは、Chrome またはウェブ トラフィック暗号化のシステム構成で信頼されていないセキュリティ証明書を使用しているため、<ph name="DOMAIN" /> であることを証明できませんでした。原因として、設定が不適切であるか、悪意のあるユーザーが接続を妨害していることが考えられます。</translation>
 <translation id="2628224721443278970">Microsoft OneDrive にログイン</translation>
 <translation id="2631059741268498165">このデバイスの位置情報を管理者が取得しました。デバイスは無効になっていましたが、再度有効化され、使用できるようになっています。</translation>
-<translation id="2631387782019878060">確認コード: <ph name="OTP" /></translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2635276683026132559">署名</translation>
 <translation id="2638070510549214427">安全としてマーク</translation>
@@ -1095,6 +1097,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="2858134430383535011">200x300 mm</translation>
 <translation id="2859383374160668142">トラッキングしている商品の値下げ情報をいつでも確認できます。</translation>
 <translation id="2859806420264540918">このサイトでは煩わしい広告または誤解を招く広告が表示されます。</translation>
+<translation id="2864493683872263351">コードの記述、文章の作成、スライドの作成</translation>
 <translation id="2873317327342476681">恐竜ゲーム、恐竜をタップするか Space キーを押すとプレイできます</translation>
 <translation id="287387905105155974">ヘルプバブル</translation>
 <translation id="2875109558992200904">セキュリティ イベントが Chrome によって報告されると、そのイベントに関するデータが管理者に送信されます。送信されるデータには、Chrome でアクセスしたページの URL とタイトル、データをコピーしたページの URL、ファイル名やメタデータ、IP アドレス、ブラウザやタブの障害のほか、ウェブベースのアプリケーションやデバイス、Chrome へのログインに使用したユーザー名が含まれる可能性があります。</translation>
@@ -1277,6 +1280,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3162559335345991374">ご利用の Wi-Fi ネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="316542773973815724">ナビゲーション</translation>
 <translation id="316638481603975524">ウェブアプリのインストールを要求できる</translation>
+<translation id="3166688462674378969">[アイソレート ウィンドウを閉じる] ボタンです。実行すると、現在開いているすべてのアイソレート ウィンドウを閉じます</translation>
 <translation id="3166788340998560642">次回この情報を使用するときに、<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> に保存するかどうかを確認するメッセージが表示されます。</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">プロキシの設定を確認するか、ネットワーク管理者に問い合わせて、プロキシ サーバーが正常に
@@ -1305,6 +1309,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3211727636285361260"><ph name="PROTOCOL" />のリンクを <ph name="HANDLER_HOSTNAME" /> で開く</translation>
 <translation id="3212468046572043669">ダウンロードを開始しました。表示するには、上部からドラッグして [戻る] ボタンをタップします</translation>
 <translation id="3212581601480735796"><ph name="HOSTNAME" /> でのアクティビティは監視されています</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome でこの情報が候補として表示されなくなります。元のソースは削除されません。}other{Chrome でこの情報が候補として表示されなくなります。元のソースは削除されません。}}</translation>
 <translation id="3215092763954878852">WebAuthn を使用できませんでした</translation>
 <translation id="3215311088819828484">結果が更新されました</translation>
 <translation id="3218181027817787318">相対的</translation>
@@ -1371,6 +1376,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3308006649705061278">組織単位（OU）</translation>
 <translation id="3310946375819654151">Chrome が <ph name="APP_NAME" /> に機密情報を入力しようとしています。</translation>
 <translation id="3312952471765023168">アップロードが正常に完了しました</translation>
+<translation id="3323135197619890621">自動入力をオンにすると、買い物がよりスムーズになります</translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3325568918769906282">降順</translation>
 <translation id="3325662270238538525">最近行ったファイルへのアクセスと変更（ファイル名、ファイル コンテンツのデジタル フィンガープリント、ダウンロード元、メタデータなど）</translation>
@@ -1455,6 +1461,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3474392552865647225">[Chrome のフォントをカスタマイズ] ボタンです。実行すると、Chrome のフォントサイズと書体をカスタマイズできます</translation>
 <translation id="3478033058537426179">グループ別</translation>
 <translation id="3479552764303398839">後で</translation>
+<translation id="3481315707647070701">ビジュアル化して編集</translation>
 <translation id="3484560055331845446">Google アカウントにアクセスできなくなる可能性があります。Chrome で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
 <translation id="3484861421501147767">リマインダー: 保存済みのプロモーション コードを利用できます</translation>
 <translation id="3485901585646640838">Google アカウントに保存されているパスワードなどの情報を使用するには、本人確認を行ってください</translation>
@@ -1540,6 +1547,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3614001939154393113">攻撃者が、<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上のあなたの情報（パスワード、メッセージ、クレジット カード情報など）を不正に取得しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">リスト項目「<ph name="LANGUAGE_ID" />」: 不明またはサポートされていない言語です。</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome の設定で安全チェックを実行できます</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />、<ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">この IBAN を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。次回この IBAN を使用するときに再度確認が行われます。</translation>
 <translation id="3621401353678567613">追跡している商品の値下げアラートを受け取るには、設定で通知をオンにしてください。</translation>
 <translation id="362276910939193118">全履歴を表示</translation>
@@ -1596,6 +1604,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3704162925118123524">ご利用のネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">読み込んでいます...</translation>
+<translation id="3708927069677086144">組織が Chrome にログインするよう求めています</translation>
 <translation id="3709599264800900598">コピーしたテキスト</translation>
 <translation id="3711223220609269738">新しいアイソレート タブ</translation>
 <translation id="3711430313228789376">Chrome ブラウザがパスワードを表示しようとしています</translation>
@@ -1704,6 +1713,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> の利用規約はこちらをご確認ください</translation>
 <translation id="3869939189466884821">ローカル ファイルは <ph name="MINUTES" /> 分後に削除されます</translation>
 <translation id="3875783148670536197">手順を見る</translation>
+<translation id="3877021395754842994">現在開いているすべてのアイソレート ウィンドウを閉じる</translation>
 <translation id="3877603629930976930">共有しない</translation>
 <translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
 <translation id="3879674895057686427">訳文の言語を選択</translation>
@@ -1733,6 +1743,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="3928806096717999469">編集、新しいウィンドウを開きます</translation>
 <translation id="393417216277380082">モーション センサーと光センサー</translation>
 <translation id="3937640725563832867">証明書の発行元の代替名</translation>
+<translation id="3938243129430544357">自動入力で安全にお支払い</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
 <translation id="3941630233824954464">必須の再認証を有効にする</translation>
 <translation id="3942048175062210325">ファイルをもう一度開いてみてください</translation>
@@ -2046,6 +2057,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="4409271659088619928">検索エンジンは <ph name="DSE" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="4409556632583862731">新しいスレッド</translation>
 <translation id="4410614037742891410">Google ウォレットで ID カードを安全に更新</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、現在開いているすべてのアイソレート ウィンドウを閉じます</translation>
 <translation id="4412074349188076601">この構成はインストール可能と指定されていますが、このアーキテクチャのイメージが提供されていないため、インストールできません。</translation>
 <translation id="4412377069090572315">レビュー</translation>
 <translation id="4414515549596849729">Cookie とサイトデータ</translation>
@@ -2057,6 +2069,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="4424024547088906515">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chrome によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4425137053900958839">Pix ならではの便利さとセキュリティを、すべてご利用いただけます</translation>
 <translation id="443121186588148776">シリアルポート</translation>
+<translation id="4431928532022419942">Chrome から削除しますか？</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> でログイン証明書が承認されなかったか、ログイン証明書が提示されていない可能性があります。</translation>
 <translation id="4432792777822557199">今後、<ph name="SOURCE_LANGUAGE" />のページは<ph name="TARGET_LANGUAGE" />に翻訳されます</translation>
 <translation id="4433642172056592619">ユーザーがマシン管理に関連付けられていないか、マシンが管理対象でないため無視されました。</translation>
@@ -2316,6 +2329,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="4887406273302438710">Windows Hello でパスワードを保護</translation>
 <translation id="4887785555357166111">動画フレームを保存</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除できます</translation>
+<translation id="4892391379033030113">[アイソレート ウィンドウを開く] ボタンです。実行すると、新しいアイソレート ウィンドウを開いてシークレット モードでブラウジングします</translation>
 <translation id="4892518386797173871">背面</translation>
 <translation id="4894390983254799375">デバイス ID、名前、OS バージョン、OS ユーザー名など</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
@@ -2990,6 +3004,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="6025416945513303461"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" />（同期済み）</translation>
 <translation id="6025471531651464742">ファイルを追加</translation>
 <translation id="6028591542479806248">モバイル通知とメール通知を管理します</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいアイソレート ウィンドウを開いてシークレット モードでブラウジングします</translation>
 <translation id="603068602130820122">2 か所のステープル（右）</translation>
 <translation id="6031824805267965302">モーション センサーの使用</translation>
 <translation id="6032524144326295339">用紙受け 2</translation>
@@ -3136,6 +3151,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
 <translation id="6264485186158353794">セキュリティで保護されたページに戻る</translation>
+<translation id="6264507470395196064">セキュア ゲートウェイ</translation>
 <translation id="6264636978858465832">パスワード マネージャーにさらにアクセスを許可する必要があります</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ポリシーの値をコピーします</translation>
 <translation id="6271264012613848937">組織のポリシーにより、<ph name="URL" /> へのアクセスがブロックされました。これが想定外である場合は、管理者にお問い合わせください。</translation>
@@ -3345,6 +3361,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="6630043285902923878">USB デバイスを検出しています...</translation>
 <translation id="6630388727238334626">[Chrome の設定を管理] ボタンです。実行すると Chrome の設定に移動できます</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">このサイトにアクセスするには、管理対象の Google アカウントでログインする必要があります</translation>
 <translation id="6635900375070654124">認証システム デバイス</translation>
 <translation id="6641852376826221947">購入の確定</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -3400,6 +3417,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="671076103358959139">登録トークン:</translation>
 <translation id="6711464428925977395">プロキシ サーバーに問題がある、またはアドレスが正しくありません。</translation>
 <translation id="6711700233707023861">バリエーションの文字列をクリップボードにコピーしました</translation>
+<translation id="6712003214447962889">よりスマートにすばやく回答</translation>
 <translation id="6712343563085762261">上に移動しました</translation>
 <translation id="6716039223770814796">「<ph name="COMPARE_SET_NAME" />」の比較 · <ph name="ITEMS" /> 個のアイテム</translation>
 <translation id="6716672519412350405"><ph name="URL" /> が周囲の 3D マップの作成とカメラ位置の追跡を行う許可を求めています</translation>
@@ -3534,6 +3552,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="6957153644870901611">高精度の自動入力をオンにすると、より多くの項目を自動入力できます</translation>
 <translation id="6957887021205513506">サーバーの証明書が偽造されたもののようです。</translation>
 <translation id="6958564499836457428">Google アカウントで Google のプライバシー設定を管理します</translation>
+<translation id="6961161369573226336">Google パスワード マネージャーでは、Gmail（<ph name="EMAIL" />）からこれらのコードを取得できます。この設定はいつでも変更できます。<ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />。</translation>
 <translation id="6961844873822989059">デバイスにインストールされたフォントの使用を要求できる</translation>
 <translation id="6962858948849099922">移動がタイムアウトしました</translation>
 <translation id="6963520811470373926">優先</translation>
@@ -3611,6 +3630,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="70846382339153529">OpenDocument テキスト</translation>
 <translation id="7086090958708083563">ユーザーからアップロードがリクエストされました</translation>
 <translation id="7090698782953528257">数式を視覚化して曲線の形を確認したいので、関数をグラフ化して</translation>
+<translation id="7092087596499105699">組織のプライベート ウェブ アプリケーションへのアクセスを保護するため、管理者がセキュア ゲートウェイ コネクタを設定しています。アクセスを確認するため、仕事用プロファイルのデータが使用されることがあります。</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="709604659664854823">今夜、近くのレストランで直前に予約できるところを探して</translation>
 <translation id="7096341143397839437">メール: <ph name="EMAIL" />。</translation>
@@ -3742,6 +3762,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7316521168101843192">ファイルを Microsoft OneDrive に保存しています</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">接続に関するヘルプ</translation>
+<translation id="7328315434053660512">アイソレート ウィンドウを開く</translation>
 <translation id="733354035281974745">デバイスのローカル アカウントのオーバーライド</translation>
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
 <translation id="7335157162773372339">カメラの使用を要求できる</translation>
@@ -3790,6 +3811,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7402375256128852434">最近使ったタブを追加</translation>
 <translation id="7403392780200267761">リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有します</translation>
 <translation id="7403591733719184120">ご使用の <ph name="DEVICE_NAME" /> は管理されています</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{候補を削除しました。元のソースは削除されません。}other{候補を削除しました。元のソースは削除されません。}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> によって、機能を追加するアプリケーションがインストールされました。このアプリケーションでは、ユーザーデータの一部にアクセスする場合があります。</translation>
 <translation id="740691708085211707">Chrome の自動入力から職場の住所を削除しますか？</translation>
 <translation id="7407424307057130981">&lt;p&gt;このエラーは、Windows パソコンで Superfish ソフトウェアを使用している場合に表示されます。&lt;/p&gt;
@@ -4008,6 +4030,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="7718626066800460799">スキャンを保存できません</translation>
 <translation id="772128550427553158">CVC はカードの表側に記載されています。</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7726402116075326231">新しいアイソレート ウィンドウを開いてシークレット モードでブラウジングします</translation>
 <translation id="7730057435797792985">並べ替え</translation>
 <translation id="7734285854693414638">Google フォームで新しいフォームをすばやく作成します</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" />のページを常に翻訳する</translation>
@@ -4199,6 +4222,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="8075898834294118863">サイトの設定を管理</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8076880883123051368">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴（<ph name="BEGIN_LINK_GAA" />Gemini アプリ アクティビティ<ph name="END_LINK_GAA" />など）が記録されている場合があります</translation>
+<translation id="8077465698530018904">選択した範囲を削除</translation>
 <translation id="8077669823243888800">中国 #8 封筒</translation>
 <translation id="8078006011486731853">{0,plural, =1{機密ファイルをアップロードしますか？}other{機密ファイルをアップロードしますか？}}</translation>
 <translation id="8079031581361219619">このサイトを再読み込みしますか？</translation>
@@ -4865,6 +4889,7 @@ Chrome からこの提案を削除できます。元のソースは削除され�
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 人が「<ph name="GROUP_NAME" />」タブグループに参加しました</translation>
 <translation id="949314938206378263">このサイトを開いてもよいかの問い合わせを送信しました。保護者の方は、ファミリー リンクで返信できます。</translation>
 <translation id="949484466204182817">Google ウォレットに Redress 番号を追加</translation>
+<translation id="950533895669718124">この機能について詳しくは、設定をご覧ください</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="950926967802086924">パスキー • Google パスワード マネージャー</translation>
 <translation id="952165179818196872"><ph name="PROVIDER" /> を追加すると、アプリを切り替えずに支払えます</translation>

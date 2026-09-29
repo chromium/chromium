@@ -30,6 +30,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1194807384646768652">„Chrome“ užblokavo šį atsisiuntimą, nes šio tipo failas nėra dažnai atsisiunčiamas ir jis gali būti pavojingas</translation>
 <translation id="1197860368385086056">Kitą kartą atidarius „Chrome“ įrenginyje „<ph name="DEVICE_TYPE" />“, bus pateiktas raginimas įgalinti kainų stebėjimo įspėjimus.</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
+<translation id="1226003169284463347">Jei norite pasiekti žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="1278833599417554002">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="1289911795790071537">Atidaryti paiešką naudojant „Chrome“</translation>
 <translation id="1290883685122687410">Sąrankos klaida: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2096213354152647998">Pastaruoju metu nesilankėte. „Chrome“ pašalino <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">„ChromeOS Flex“, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">„Chrome“ vykdymo fone programose išjungimas</translation>
+<translation id="2111985952714409792">Jei norite pasiekti plėtinius ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="2120620239521071941">Atlikus šį veiksmą, iš šio įrenginio bus ištrinta tiek elementų: <ph name="ITEMS_COUNT" />. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="2123055963409958220">Padėkite tobulinti „Chrome“ pateikę ataskaitą apie <ph name="BEGIN_LINK" />dabartinius nustatymus<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2307973900865360088">Palikti doke</translation>
 <translation id="2309047409763057870">Tai yra antrinis „Google Chrome“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="2345992953227471816">„Chrome“ aptiko kenkėjišką programą šiuose plėtiniuose:</translation>
+<translation id="2358140144860869442">Jei norite pasiekti skaitymo sąrašą ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2403703063067034158">Paleisties klaida: šiuo metu vykdoma kita sąrankos kopija. Vėliau bandykite dar kartą.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Vienas ŽSĮ įrenginys buvo pasiekiamas naudojant vieną ar daugiau „Chrome“ plėtinių}=1{Vienas ŽSĮ įrenginys pasiekiamas naudojant vieną ar daugiau „Chrome“ plėtinių}one{# ŽSĮ įrenginys pasiekiamas naudojant vieną ar daugiau „Chrome“ plėtinių}few{# ŽSĮ įrenginiai pasiekiami naudojant vieną ar daugiau „Chrome“ plėtinių}many{# ŽSĮ įrenginio pasiekiama naudojant vieną ar daugiau „Chrome“ plėtinių}other{# ŽSĮ įrenginių pasiekiama naudojant vieną ar daugiau „Chrome“ plėtinių}}</translation>
@@ -176,6 +179,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">„Chrome“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
 <translation id="2652691236519827073">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>
+<translation id="2661616016316841783">Jei norite gauti plėtinius ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chrome“</translation>
 <translation id="2665296953892887393">Padėkite tobulinti „Google Chrome“ siųsdami „Google“ strigčių ataskaitas ir <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Spustelėkite, kad išeitumėte iš „Google Lens“</translation>
 <translation id="2674238339205910678">„ChromeOS Flex“ nepavyko išsaugoti „Chrome“ duomenų „Google“ paskyroje, nes paskyros išsami prisijungimo informacija yra pasenusi</translation>
@@ -247,6 +251,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="3242486428260808857">Išnaudokite daugiau apsipirkimo internetu galimybių su „Chrome“ programa įrenginyje „<ph name="DEVICE_TYPE" />“</translation>
 <translation id="3245429137663807393">Jei taip pat bendrinate „Chrome“ naudojimo ataskaitas, į tas ataskaitas įtraukiami URL, kuriais lankėtės</translation>
 <translation id="3249558306861350254">Spustelėkite <ph name="BEGIN_BOLD" />Nustatyti kaip numatytąją<ph name="END_BOLD" /> „Windows“ nustatymuose.</translation>
+<translation id="3258706751219502154">Jei norite gauti žymes ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chrome“</translation>
 <translation id="3259748324892322072">Gauti „Chrome“ programą</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3286538390144397061">Paleisti iš naujo dabar</translation>
@@ -346,6 +351,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="4280647692742956593">Atsisiųskite „Chrome“ į telefoną, kad galėtumėte atidaryti arba kurti naujas skirtukų grupes keliaudami.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="430327780270213103">Leisti plėtiniui rodyti prieigos užklausas „Chrome“ įrankių juostoje</translation>
+<translation id="4312908933392839680">Jei norite pasiekti išsaugotą informaciją ir kt. visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{„Chrome“ rekomenduoja pristabdyti skirtuką, kuris lėtina naršyklę}one{„Chrome“ rekomenduoja pristabdyti skirtukus, kurie lėtina naršyklę}few{„Chrome“ rekomenduoja pristabdyti skirtukus, kurie lėtina naršyklę}many{„Chrome“ rekomenduoja pristabdyti skirtukus, kurie lėtina naršyklę}other{„Chrome“ rekomenduoja pristabdyti skirtukus, kurie lėtina naršyklę}}</translation>
 <translation id="4328355335528187361">„Google Chrome Dev“ („mDNS-In“)</translation>
 <translation id="4329315893554541805">Jei norite naudoti suasmeninimo ir kitas funkcijas, įtraukite „Chrome“ į Žiniatinklio ir programų veiklą bei susietas „Google“ paslaugas</translation>
@@ -515,7 +521,9 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6046028983725193307">Jei norite bendrinti sistemos garsą, atidarykite sistemos nustatymus ir leiskite „Chrome“ įrašyti tik sistemos garsą. Tada turėsite iš naujo paleisti „Chrome“.</translation>
 <translation id="6069027071882229820">Kopijuoti kaip vaizdą</translation>
 <translation id="6070348360322141662">Kad būtų papildomai užtikrintas saugumas, „Google Chrome“ užšifruos duomenis</translation>
+<translation id="6071642418303142778">Jei norite gauti slaptažodžius ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chrome“</translation>
 <translation id="6075300983329039771">Jūsų organizacija (<ph name="MANAGER" />) reikalauja prisijungti prie „Chrome“</translation>
+<translation id="6077365059401096066">Jei norite gauti skaitymo sąrašą ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chrome“</translation>
 <translation id="6113794647360055231">„Chrome“ dabar dar tobulesnė</translation>
 <translation id="6116004140911290070">Įgalinti įgūdžius naršyklėje „Chrome“</translation>
 <translation id="6116252277240876590">Ši kalba vartojama „Chrome“ meniu, nustatymams, įspėjimams ir kitam tekstui pateikti</translation>
@@ -713,6 +721,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7804947029129221742">Paieškos variklis buvo pakeistas ne naršyklėje „Chrome“. Kad jus apsaugotų, „Chrome“ jį nustatė iš naujo į pradinį numatytąjį nustatymą. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Pašalinti iš „Chrome“...</translation>
 <translation id="7827099906024714326">„Chrome“ turi patvirtinti jūsų tapatybę, kad kai kuriuos duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei dabar atsijungsite, šie duomenys bus ištrinti.</translation>
+<translation id="7829850924999627855">Jei norite gauti išsaugotą informaciją ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chrome“</translation>
 <translation id="7832314606810669113">Jei norite pasiekti žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“. Ši žymė bus išsaugota jūsų „Google“ paskyroje, kai prisijungsite.</translation>
 <translation id="7845233973568007926">Dėkojame už diegimą. Turite iš naujo paleisti kompiuterį, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
 <translation id="7847170235260850604">Paleisti „Chrome“ paleidus „Windows“</translation>

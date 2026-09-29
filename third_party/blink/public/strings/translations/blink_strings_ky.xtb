@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Башка өтмөктө мүчүлүштүктөрдү оңдогуч тындырылды. Ал өтмөккө өтүү үчүн чыкылдатыңыз.</translation>
 <translation id="1171774979989969504">Электрондук почта дарегин киргизиңиз.</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
+<translation id="1254779809141342904">Бул CAP эскертүүсү XSLT деп аталган технологияны колдонот; бул функция <ph name="REMOVAL_LINK" />. Мындай учурда бул эскертүү иштетилбеген XML маалыматы катары көрсөтүлөт. Аны көрө берүү үчүн <ph name="EXTENSION_LINK" />.</translation>
 <translation id="1306460908038601864">Өчүк</translation>
 <translation id="1311894908970423688">Мааниси <ph name="VALUE_DATE_OR_TIME" /> болуш керек.</translation>
 <translation id="1588438908519853928">Кадыресе</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2746543609216772311">Маани <ph name="MINIMUM_DATE_OR_TIME" /> же андан жаңыраак болушу керек.</translation>
 <translation id="2761667185364618470">Уланткыңыз келсе бул кутуну белгилеңиз.</translation>
+<translation id="2854734116215697908">ушул серепчиден өчүрүлүүдө</translation>
 <translation id="2908441821576996758">Электрондук почта даректеринин тизмесин үтүр менен бөлүп киргизиңиз.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Мб</translation>
 <translation id="3075154866155599887">Жарактуу маанини киргизиңиз. Талаа толук эмес же күнү жараксыз.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">10 сек. өткөрүп жиберүү үчүн эки жолу сол же оң жагын таптаңыз</translation>
 <translation id="57838592816432529">Үнсүз</translation>
+<translation id="5855560023261018690">жакында бул серепчиден өчүрүлөт</translation>
 <translation id="5868587040512539609">Видео тректер</translation>
 <translation id="588258955323874662">Толук экран</translation>
 <translation id="5888666972993069672">Азыр <ph name="DEVICE_FRIENDLY_NAME" /> экранына чыгарылууда</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Сүрөт ичиндеги сүрөт режиминен чыгуу</translation>
 <translation id="6484738902856791350">Кооз басып чыгаруу</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
+<translation id="65574987622079584">серепчинин кеңейтүүсүн орнотуңуз</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
 <translation id="6661136971638885481"><ph name="TRACK_NUMBER" />-композиция</translation>
 <translation id="668171684555832681">Башка…</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Ушул аптада</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">жжжж</translation>
+<translation id="8243989288843872594">Бул эскертүү эч качан көрүнбөсүн</translation>
 <translation id="8284326494547611709">Коштомо жазуулар</translation>
 <translation id="835897206747267392">Жараксыз маани.</translation>
 <translation id="839593075537728968">Маани <ph name="MINIMUM_TIME" /> – <ph name="MAXIMUM_TIME" /> ортосунда болушу керек.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Жаңы сапка көчүрүү</translation>
 <translation id="8750798805984357768">Булардын бирин тандаңыз.</translation>
+<translation id="8753001114009816390">Бул сайт XSLT технологиясын колдонот; бул функция <ph name="REMOVAL_LINK" />. Мындай учурда бул бет туура көрсөтүлбөй калышы мүмкүн. Аны көрө берүү үчүн <ph name="EXTENSION_LINK" />. Болбосо, кошумча маалымат алуу үчүн сайттын администратору менен байланышыңыз.</translation>
 <translation id="8845239796550121995">Азыр сыналгыңызга чыгарылууда</translation>
 <translation id="8875657656876809964">Видеону ойнотууда ката кетти</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> Кб</translation>

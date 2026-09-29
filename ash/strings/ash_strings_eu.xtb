@@ -685,7 +685,6 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3039491566278747710">Ezin izan da instalatu konexiorik gabeko gidalerroa gailuan.</translation>
 <translation id="3039939407102840004">Arkatzaren bateriari <ph name="PERCENTAGE" /> gelditzen zaio.</translation>
 <translation id="304097922505898963">Ireki Lasterbideak aplikazioa</translation>
-<translation id="3040982432432547149">Lagun iezaguzu Chromebook-erako Steam hobetzen</translation>
 <translation id="304417730895741346">Aplikazio ainguratuak eta irekiak apalean daude. Aplikazio bat apalean ainguratzeko, egin klik bertan eskuineko botoiarekin edo sakatu ukipen-panela bi hatzekin.</translation>
 <translation id="3045670165536837541">Goiko eskuineko kontrol-puntua hautatu da, erabili teklak mugitzeko</translation>
 <translation id="3046178388369461825">Oso toki gutxi geratzen da Linux-en diskoan</translation>
@@ -1080,7 +1079,6 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="4147911968024186208">Saiatu berriro. Errore hau berriz agertzen bazaizu, jarri laguntza-zerbitzuko ordezkariarekin harremanetan.</translation>
 <translation id="4150201353443180367">Bistaratzea</translation>
 <translation id="4151054805501931758">Erretratu-ukituak</translation>
-<translation id="4151449637210235443">Esan iezaguzu nola funtzionatu duten jokoek azkenaldian</translation>
 <translation id="4156293514828496577">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio (<ph name="TIME_LEFT" /> inguru).
 Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4158003972857765638">Antolatu lan-eremu berri batean</translation>

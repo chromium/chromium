@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importēta 1 parole.}zero{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importētas {NUM_PASSWORDS} paroles.}one{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importēta {NUM_PASSWORDS} parole.}other{Pakalpojumā <ph name="BRAND" /> šajā ierīcē tika importētas {NUM_PASSWORDS} paroles.}}</translation>
 <translation id="1046572983040892965">Logs ir pārvietots uz augšu un pa kreisi</translation>
 <translation id="1047431265488717055">Saites te&amp;ksta kopēšana</translation>
+<translation id="104751728059674265">Atsauksmes nevar iesniegt, izmantojot jūsu kontu. Pieaugušais var izmantot savu ierīci vai profilu, lai ziņotu par problēmu jūsu vārdā.</translation>
 <translation id="1048986595386481879">Dinamiski piešķirts</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Notiek satura (<ph name="ATTACHMENTS" />) saņemšana no ierīces <ph name="DEVICE_NAME" />}zero{Notiek satura (<ph name="ATTACHMENTS" />) saņemšana no ierīces <ph name="DEVICE_NAME" />}one{Notiek satura (<ph name="ATTACHMENTS" />) saņemšana no ierīces <ph name="DEVICE_NAME" />}other{Notiek satura (<ph name="ATTACHMENTS" />) saņemšana no ierīces <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -983,6 +984,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1755601632425835748">Teksta lielums</translation>
 <translation id="1756963401828337401">Izvēlieties ekrānu, kura attēlu uzņemt</translation>
 <translation id="17584710573359123">Skatīt Chrome interneta veikalā</translation>
+<translation id="1758845021884209593">Izmantot īsinājumtaustiņu visās OS lietotnēs</translation>
 <translation id="1761402971842586829">Poga “<ph name="BUTTON_NAME" />” ir pārkartēta uz iespēju “<ph name="REMAPPING_OPTION" />”.</translation>
 <translation id="1761845175367251960">Lietotāja <ph name="NAME" /> konti</translation>
 <translation id="176272781006230109">pirkumu ieteikumi</translation>
@@ -3084,6 +3086,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3355936511340229503">Savienojuma kļūda</translation>
 <translation id="335678817537689040">Statisks</translation>
 <translation id="3359256513598016054">Sertifikātu politikas ierobežojumi</translation>
+<translation id="3359465538772230055">Nav uzdevumu</translation>
 <translation id="3360297538363969800">Drukāšana neizdevās. Lūdzu, pārbaudiet printeri un mēģiniet vēlreiz.</translation>
 <translation id="3360306038446926262">Logi</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}zero{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}one{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}other{<ph name="DEVICE_NAME" /> kopīgo ar jums saturu (<ph name="ATTACHMENTS" />).}}</translation>
@@ -6105,6 +6108,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5687340364605915800">Atbildot uz šo pieprasījumu, vietnes rīkojas pēc saviem ieskatiem</translation>
 <translation id="5689233503102158537">Alt + atkāpšanās taustiņš</translation>
 <translation id="5689516760719285838">Atrašanās vieta</translation>
+<translation id="568984110402742489">Nevar nosūtīt atsauksmes</translation>
 <translation id="56907980372820799">Saistīt datus</translation>
 <translation id="5691772641933328258">Pirksta nospiedums netika atpazīts</translation>
 <translation id="5693255400847650006">Tiek izmantots mikrofons</translation>
@@ -9265,6 +9269,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8109991406044913868">MI izveidots motīvs</translation>
 <translation id="8110393529211831722">Abonements ir instalēts tikai šajā ierīcē un netiek sinhronizēts ar citām ierīcēm jūsu kontā. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="8110489095782891123">Notiek kontaktpersonu saraksta ielāde...</translation>
+<translation id="8110781914702267195">Pārejiet uz lietotni Google maks, lai pārvaldītu <ph name="BEGIN_LINK1" />datu un konfidencialitātes preferences<ph name="END_LINK1" /> vai <ph name="BEGIN_LINK2" />maksājumu veidus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />kartes<ph name="END_LINK3" />, piemēram, lojalitātes kartes.</translation>
 <translation id="8114925369073821854">Lietotnes <ph name="APP_NAME" /> mikrofona atļauja</translation>
 <translation id="8116497846156149">Apstiprinājuma lūgšana vecākiem</translation>
 <translation id="8118276691321086429">Pakalpojumā <ph name="PASSWORD_MANAGER_BRAND" /> tiek saglabāti pierakstīšanās akreditācijas dati un, kad iespējams, jūsu vārdā automātiski veikta pierakstīšanās. Ja šī funkcija ir izslēgta, jums katru reizi tiek prasīts apstiprinājums.</translation>
@@ -10247,6 +10252,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="8874341931345877644">Apraide uz ierīci:</translation>
 <translation id="8874647982044395866">Organiskais stils</translation>
 <translation id="8874790741333031443">Īslaicīgi atļaujiet izmantot trešo pušu sīkfailus. Tas nozīmē, ka pārlūkošanas aizsardzības līmenis būs zemāks, taču pastāv lielāka iespēja, ka vietnes funkcijas darbosies, kā paredzēts.</translation>
+<translation id="8874864294955002500">Atsauksmes nevar iesniegt, izmantojot jūsu kontu. Jūsu uzņēmuma administrators var izmantot savu ierīci vai profilu, lai ziņotu par problēmu jūsu vārdā.</translation>
 <translation id="8875736897340638404">Izvēlieties redzamības iestatījumu.</translation>
 <translation id="8876307312329369159">Demonstrācijas sesijā šo iestatījumu nevar mainīt.</translation>
 <translation id="8876965259056847565">Funkcija <ph name="FEATURE_NAME" /> izmanto Bluetooth meklēšanu, lai atrastu tuvumā esošas ierīces.</translation>

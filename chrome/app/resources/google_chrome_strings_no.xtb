@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1197860368385086056">Neste gang du åpner Chrome på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å slå på varsler om prissporing.</translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">For å få bokmerkene dine med mer på alle enhetene dine, logg på Chrome</translation>
 <translation id="1278833599417554002">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="1289911795790071537">Åpne søk med Chrome</translation>
 <translation id="1290883685122687410">Konfigureringsfeil: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Deaktiver kjøring av Chrome i bakgrunnen for apper</translation>
+<translation id="2111985952714409792">For å få utvidelsene dine med mer på alle enhetene dine, logg på Chrome</translation>
 <translation id="2120620239521071941">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="2123055963409958220">Bidra til å gjøre Chrome bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Behold i dokken</translation>
 <translation id="2309047409763057870">Dette er en sekundær installering av Google Chrome. Den kan ikke brukes som standardnettleser.</translation>
 <translation id="2345992953227471816">Chrome har oppdaget at disse utvidelsene inneholder skadelig programvare:</translation>
+<translation id="2358140144860869442">For å få leselisten din med mer på alle enhetene dine, logg på Chrome</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2403703063067034158">Oppstartsfeil: En annen forekomst av konfigureringen kjører for øyeblikket. Prøv på nytt senere.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID-enhet ble brukt av en eller flere Chrome-utvidelser}=1{1 HID-enhet brukes av en eller flere Chrome-utvidelser}other{# HID-enheter brukes av en eller flere Chrome-utvidelser}}</translation>
@@ -172,6 +175,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>
+<translation id="2661616016316841783">For å få utvidelsene med mer fra <ph name="DEVICE" />, logg på Chrome</translation>
 <translation id="2665296953892887393">Bidra til å gjøre Google Chrome bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="2668094785979141847">Klikk for å gå ut av Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex kunne ikke lagre Chrome-data i Google-kontoen din, fordi påloggingsopplysningene dine er utdaterte</translation>
@@ -243,6 +247,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="3242486428260808857">Få mer ut av netthandel når du bruker Chrome-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="3249558306861350254">Klikk på <ph name="BEGIN_BOLD" />Angi som standard<ph name="END_BOLD" /> i Windows-innstillingene.</translation>
+<translation id="3258706751219502154">For å få bokmerkene dine med mer fra <ph name="DEVICE" />, logg på Chrome</translation>
 <translation id="3259748324892322072">Få Chrome-appen</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
@@ -342,6 +347,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="4280647692742956593">Last ned Chrome på telefonen for å åpne eller opprette nye fanegrupper uansett hvor du er.</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
 <translation id="430327780270213103">Tillat at utvidelsen viser tilgangsforespørsler på Chrome-verktøylinjen</translation>
+<translation id="4312908933392839680">For å få den lagrede informasjonen med mer på alle enhetene, logg på Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome anbefaler at du setter fanen som gjør nettleseren treg, på pause}other{Chrome anbefaler at du setter fanene som gjør nettleseren treg, på pause}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS – inn)</translation>
 <translation id="4329315893554541805">For å få personlig tilpasning og andre funksjoner må du inkludere Chrome i Nett- og appaktivitet og tilknyttede Google-tjenester</translation>
@@ -507,7 +513,9 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6046028983725193307">For å dele systemlyd, åpne Systeminnstillinger og tillat «Bare opptak av systemlyd» for Chrome. Deretter må du starte Chrome på nytt.</translation>
 <translation id="6069027071882229820">Kopier som bilde</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>
+<translation id="6071642418303142778">For å få passordene dine med mer fra <ph name="DEVICE" />, logg på Chrome</translation>
 <translation id="6075300983329039771">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chrome</translation>
+<translation id="6077365059401096066">For å få leselisten med mer fra <ph name="DEVICE" />, logg på Chrome</translation>
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
 <translation id="6116004140911290070">Slå på ferdigheter i Chrome</translation>
 <translation id="6116252277240876590">Dette språket brukes når menyer, innstillinger, varsler og annen tekst vises i Chrome</translation>
@@ -705,6 +713,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7804947029129221742">Søkemotoren er endret utenfor Chrome. For å beskytte deg har Chrome tilbakestilt den til den opprinnelige standardinnstillingen. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
 <translation id="7827099906024714326">Chrome må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, blir disse dataene slettet.</translation>
+<translation id="7829850924999627855">For å få den lagrede informasjonen med mer fra <ph name="DEVICE" />, logg på Chrome</translation>
 <translation id="7832314606810669113">Logg på Chrome for å få bokmerkene dine med mer på alle enhetene dine. Dette bokmerket lagres i Google-kontoen din når du logger på.</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Start Chrome når Windows starter</translation>

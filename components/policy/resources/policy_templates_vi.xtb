@@ -1819,6 +1819,7 @@ Việc không đặt chính sách này đối với người dùng thông thư�
       Nếu bạn không đặt chính sách này, thì trình duyệt sẽ chỉ bắt đầu tìm cách tiết kiệm bộ nhớ sau khi phát hiện thấy rằng dung lượng bộ nhớ thực trên máy ở mức thấp.</translation>
 <translation id="2161348910646846717">Cho phép người dùng thay đổi kênh phát hành</translation>
 <translation id="2162703823039992020">Thành phần tích hợp theo ngữ cảnh của các dịch vụ của Google trên <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">URL ứng dụng web của phiên bản <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> cho tổ chức này. Phải là một URL loại HTTPS hợp lệ.</translation>
 <translation id="2166155400701622446">Có một danh sách các cổng bị hạn chế được tích hợp sẵn trong <ph name="PRODUCT_NAME" />. Kết nối với các cổng này sẽ không thực hiện được. Chế độ cài đặt này cho phép bỏ qua danh sách đó. Giá trị này là một danh sách được phân tách bằng dấu phẩy, có thể trống hoặc gồm một hay nhiều cổng cho phép thực hiện các kết nối đi.
 
       Các cổng bị hạn chế nhằm ngăn chặn hành vi lợi dụng <ph name="PRODUCT_NAME" /> để khai thác các lỗ hổng bảo mật của mạng. Việc thiết lập chính sách này có thể khiến mạng của bạn có nguy cơ bị tấn công. Chính sách này dùng để xử lý tạm thời các lỗi có mã "ERR_UNSAFE_PORT" khi di chuyển một dịch vụ đang chạy trên cổng bị chặn sang một cổng thông thường (ví dụ: cổng 80 hoặc 443).
@@ -2204,9 +2205,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
 <translation id="2421779938235645781">Màu đèn nền bàn phím khớp với hình nền hiện tại</translation>
 <translation id="2423255396068675416">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể chạy <ph name="PRODUCT_CROSTINI_NAME" /> miễn là <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> và <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> đều được đặt thành Bật. Việc đặt chính sách này thành Tắt sẽ tắt <ph name="PRODUCT_CROSTINI_NAME" /> đối với người dùng. Khi bạn đổi chính sách này thành Tắt, chính sách sẽ được áp dụng cho các vùng chứa <ph name="PRODUCT_CROSTINI_NAME" /> mới đang khởi động, chứ không phải các vùng chứa đã chạy.</translation>
 <translation id="2423654977291507457">Tắt thành phần tích hợp</translation>
-<translation id="2424141395604579502">Nếu bạn đặt chính sách này thành True (Đúng) hoặc không đặt, người dùng sẽ có thể thêm, xoá, sửa đổi hoặc tải dấu trang lên.
-
-      Nếu bạn đặt chính sách này thành False (Sai), người dùng sẽ không thể thêm, xoá, sửa đổi hoặc tải dấu trang lên. Người dùng vẫn có thể sử dụng dấu trang hiện có.</translation>
 <translation id="242521047682347997">Không cho phép người dùng đồng bộ hoá tin nhắn SMS giữa Chromebook và điện thoại</translation>
 <translation id="2426782419955104525">Bật tính năng Instant của <ph name="PRODUCT_NAME" /> và chặn người dùng thay đổi cài đặt này.
 
@@ -10890,6 +10888,21 @@ Khi bạn tắt chính sách này, trình xem PDF sẽ sử dụng trình kết 
 
 Khi bạn không đặt chính sách này, trình duyệt sẽ chọn trình kết xuất đồ hoạ PDF.</translation>
 <translation id="7704244074621846004">Bật thời gian hoạt động lâu hơn cho SharedWorker</translation>
+<translation id="7705886216383850895">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />.
+
+Để định cấu hình <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, quản trị viên phải cung cấp:
+* URL ứng dụng web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) HOẶC
+* Cả ba tham số cũ: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> và <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Nếu bạn chỉ khai báo 1 hoặc 2 trong số 3 tham số này mà không có URL thì <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> phải là một URL hợp lệ sử dụng giao thức HTTPS và không chứa tên người dùng hoặc mật khẩu. Nếu không đáp ứng các yêu cầu này, chính sách bị bỏ qua và <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Nếu bạn định cấu hình cả tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> và các tham số cũ thì tham số <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> sẽ được ưu tiên.
+
+Nếu bạn đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ được định cấu hình cho những người dùng đăng nhập bằng tài khoản được quản lý hoặc qua trình duyệt được quản lý.
+
+Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Bật tính năng phát chuông báo khi sạc.
 
           Tính năng này có nhiệm vụ phát chuông báo khi sạc.

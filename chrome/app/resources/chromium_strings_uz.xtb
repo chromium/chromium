@@ -42,6 +42,7 @@
 <translation id="141901961143729572">Fikr-mulohaza qoldiring</translation>
 <translation id="1465192221147974788">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
+<translation id="147870194906295621"><ph name="DEVICE" /> qurilmasidagi saqlangan axborot va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="1497802159252041924">O'rnatishdagi xatolik: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Bu sahifa himoyalangan</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
@@ -189,6 +190,7 @@
 <translation id="3012615494352020668">{count,plural, =1{Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chromium shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar (1 obyekt) oʻchib ketadi.}other{Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chromium shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar ({count} obyekt) oʻchib ketadi.}}</translation>
 <translation id="3013473503895162900">Chromiumda yangi varaqda ochish: <ph name="URL" /></translation>
 <translation id="302551344979399011">Malakalar kabi AI innovatsiyalari Google hisobingizga saqlanadi va Chromium sinxronizatsiyasidan alohida boshqariladi</translation>
+<translation id="3032219013429286568">Oʻrnatilgan kengaytmalarni barcha qurilmalarda ishlatish uchun Chromium hisobiga kiring</translation>
 <translation id="3032787606318309379">Chromium‘ga o‘rnatilmoqda...</translation>
 <translation id="3038232873781883849">Oʻrnatish kutilmoqda…</translation>
 <translation id="3045032126857188731">Tarjima qilingan tili: <ph name="LANGUAGE" /></translation>
@@ -199,6 +201,7 @@
 <translation id="3068515742935458733">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Chromium yaxshilanishiga yordam berish.</translation>
 <translation id="3071024987058544609">Google xavfsizligini harakatda ham ta’minlash uchun Chromium ilovasidan foydalaning</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}=1{1 ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}other{# ta USB qurilma kamida bitta Chromium kengaytmasi tomonidan ochilmoqda}}</translation>
+<translation id="3090734884397229414"><ph name="DEVICE" /> qurilmasidagi saqlangan sahifalar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="3095811995836568724">Chromium tarixi</translation>
 <translation id="3103660991484857065">O‘rnatish dasturi arxivni ajrata olmadi. Chromium’ni qayta yuklab oling.</translation>
 <translation id="310459126943037700">Vazifalar yakunlanmadi.</translation>
@@ -218,6 +221,7 @@
 <translation id="3234316605225071811">Keyinroq Chromium shakllarni toʻldirishda saqlangan axborotlarni avtomatik kiritishni taklif qilishi mumkin</translation>
 <translation id="3258596308407688501">Chromium o‘z jildidan ma’lumotlarni o‘qib yoki yozib ololmadi: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS qurilmasidagi Chromium bilan sevimli Google AI vositalaringiz doim yoningizda.</translation>
+<translation id="3264761466044851269"><ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
 <translation id="328888136576916638">Google API kalitlari yetishmayapti. Chromium’ning ba’zi funksiyalari ishlamasligi mumkin.</translation>
 <translation id="3296368748942286671">Chromium yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
@@ -229,6 +233,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mavjud Chromium profiliga almashilsinmi?</translation>
 <translation id="3412460710772753638">Bu qurilmada Parollar menejeriga</translation>
+<translation id="3427159664004296878"><ph name="DEVICE" /> qurilmasidagi bukmarklar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="3438772217992559640">Bu varaqda rasmli qidiruv bilan qidirish</translation>
 <translation id="3455907671758333080">Telefonda Chromium orqali Saytlarni kuchaytirilgan rejimda xavfsiz kezish imkoniyatini kengaytiring</translation>
 <translation id="3461644266919055473">Chromiumni moslab oling...</translation>
@@ -261,6 +266,7 @@
 
           **Savol takliflari:** Skrinshotni yaxshiroq tushunish uchun foydalanuvchi berishi mumkin 3-5 oʻylantiruvchi savollarning markerlangan roʻyxatini yarating. Bu savollarga vizual obyekt, uning dizayni yoki joylashuvi haqida kamida bittasi kiritilishi kerak.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">Barcha qurilmalarda bukmarklarni olish uchun Chromium hisobiga kiring</translation>
 <translation id="3885770153807205175">Til tanlash vositasi</translation>
 <translation id="388648406173476553">Chromium brauzerini sozlash va boshqarish. Diqqat qaratishingiz zarur. Batafsil axborot olish uchun bu yerga bosing.</translation>
 <translation id="3889543394854987837">Chromium‘ga kirish uchun o‘z ismingiz ustiga bosing.</translation>
@@ -269,6 +275,7 @@
 <translation id="3909353120217047026">Bu kengaytma Chrome Web Store qoidalariga mos emas va xavfli boʻlishi mumkin. Ochilgan saytlarda shaxsiy axborot kabi maʼlumotlarni koʻrishi va oʻzgartirishini tugatish uchun uni Chromiumdan olib tashlang.</translation>
 <translation id="3941890832296813527">Oʻrnatishda xato: Oʻrnatish vositasi fayl nomi yaroqsiz yoki ishlamaydi.</translation>
 <translation id="3945058413678539331">Chromium parollarni nusxalashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
+<translation id="3950481960271781644">Barcha qurilmalaringizda saqlangan maʼlumotlar va boshqalardan foydalanish uchun Chromium hisobiga kiring</translation>
 <translation id="3954172517175569325">Google hisobingizga saqlangan parollar, toʻlov usullari va manzillar bu qurilmadan olib tashlanadi. Ularni Chromiumda yana ishlatish uchun hisobingizga kiring.</translation>
 <translation id="395904275706073188">Himoyalangan sahifalarni oʻqish imkonsiz. Boshqa sahifada urining.</translation>
 <translation id="3962647064319009959">Chromium qanday qilib sizni himoya qilishi haqida batafsil</translation>
@@ -357,6 +364,7 @@
 <translation id="4893347770495441059">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="4918086044614829423">Qabul qilish</translation>
 <translation id="4918844574251943176">Rasmdan nusxa olindi</translation>
+<translation id="4919431996536326528">Barcha qurilmalaringizda saqlangan sahifalar va boshqa maʼlumotlardan foydalanish uchun Chromium hisobiga kiring</translation>
 <translation id="4943838377383847465">Chromium orqa fon rejimida ishlamoqda.</translation>
 <translation id="494490797786467921">Chromium tizimiga kirish oynasini yopish uchun bosing</translation>
 <translation id="4950660488495335294">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Doʻstlar va oila uchun profillar yarating yoki ish va hordiqni ajrating.</translation>
@@ -787,6 +795,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="904366664621834601">Chromium bu yuklanmani blokladi, chunki bu arxivda zararli dastur yashirilgan boʻlishi mumkin</translation>
 <translation id="9053882453960391422">Parollar, bukmarklar va tarixni qurilmalararo mukammal sinxronlashda davom eting. Birlamchi brauzerni Chromiumga yangilab, tanish va sevimli funksiyalardan oson foydalaning. Tezkor kirish uchun Chromium vazifalar paneliga qadaladi.</translation>
 <translation id="9056398481763999048">Telefonda Chromium ilovasi bilan Googlening eng ilgʻor AI vositalaridan foydalaning</translation>
+<translation id="9057625473949801035"><ph name="DEVICE" /> qurilmasidagi parollar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
 <translation id="9062666675513499497">Boshqa Google xizmatlariga kirilganda Chromium hisobiga kirilsin</translation>
 <translation id="9078733879136747090">Chromium avtomatik yopildi</translation>
 <translation id="9089354809943900324">Chromium versiyasi eskirdi</translation>

@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Hata ayıklayıcı başka bir sekmede duraklatıldı. Söz konusu sekmeye geçmek için tıklayın.</translation>
 <translation id="1171774979989969504">Lütfen e-posta adresi girin.</translation>
 <translation id="1178581264944972037">Duraklat</translation>
+<translation id="1254779809141342904">Bu CAP uyarısında XSLT adlı teknoloji kullanılıyor. Bu işlev <ph name="REMOVAL_LINK" />. Bu durumda, bu uyarı ham XML verisi olarak gösterilir. <ph name="EXTENSION_LINK" /> işlemini gerçekleştirerek görüntülemeye devam edebilirsiniz.</translation>
 <translation id="1306460908038601864">Kapalı</translation>
 <translation id="1311894908970423688">Değer, <ph name="VALUE_DATE_OR_TIME" /> olmalıdır.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2746543609216772311">Değer <ph name="MINIMUM_DATE_OR_TIME" /> veya daha ileri olmalıdır.</translation>
 <translation id="2761667185364618470">İlerlemek istiyorsanız lütfen bu kutuyu işaretleyin.</translation>
+<translation id="2854734116215697908">bu tarayıcıdan kaldırıldı</translation>
 <translation id="2908441821576996758">Lütfen e-posta adreslerinin virgülle ayrılmış listesini girin.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Lütfen geçerli bir tarih girin. Alan tam doldurulmamış veya geçersiz bir tarih var.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Yayınla</translation>
 <translation id="5630795885300617244">10 sn. atlamak için sola veya sağa iki kez dokunun</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
+<translation id="5855560023261018690">çok yakında bu tarayıcıdan kaldırılacak</translation>
 <translation id="5868587040512539609">Video Kanalları</translation>
 <translation id="588258955323874662">Tam ekran</translation>
 <translation id="5888666972993069672">Şimdi <ph name="DEVICE_FRIENDLY_NAME" /> adlı cihaza yayınlanıyor</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Pencere İçinde Pencereden Çık</translation>
 <translation id="6484738902856791350">Okunaklı hale getir</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
+<translation id="65574987622079584">tarayıcı uzantısı yükleme</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6661136971638885481">Takip numarası <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Diğer...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Bu hafta</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">Bu uyarıyı bir daha gösterme</translation>
 <translation id="8284326494547611709">Altyazılar</translation>
 <translation id="835897206747267392">Geçersiz değer.</translation>
 <translation id="839593075537728968">Değer, <ph name="MINIMUM_TIME" /> ile <ph name="MAXIMUM_TIME" /> arasında olmalıdır.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Satır kaydır</translation>
 <translation id="8750798805984357768">Lütfen bu seçeneklerden birini belirleyin.</translation>
+<translation id="8753001114009816390">Bu sitede XSLT kullanılıyor. Bu işlev <ph name="REMOVAL_LINK" />. Bu durumda, bu sayfa muhtemelen artık doğru şekilde görüntülenmeyecek. <ph name="EXTENSION_LINK" /> işlemini gerçekleştirerek görüntülemeye devam edebilirsiniz. Aksi takdirde, daha fazla bilgi için sitenin bakım sorumlusuyla iletişime geçmeniz gerekir.</translation>
 <translation id="8845239796550121995">Şimdi TV'nize yayınlanıyor</translation>
 <translation id="8875657656876809964">Video oynatma hatası</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

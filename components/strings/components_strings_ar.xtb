@@ -740,6 +740,7 @@
 <translation id="2233745931693710080">قرص مضغوط</translation>
 <translation id="2236949375853147973">نشاطي</translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
+<translation id="223921069122391343">سيتوفّر العرض المحفوظ عند الدفع باستخدام ميزة "الملء التلقائي". <ph name="BEGIN_LINK" />عرض الأحكام والشروط<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">إضافة رقم التعويض</translation>
 <translation id="2241693394036365668">تم تنزيل ملف</translation>
 <translation id="2242389809734574253">‏تمّ إغلاق نافذة "حفظ رقم الحساب بصيغة IBAN".</translation>
@@ -986,7 +987,6 @@
 <translation id="2628025184666666186">‏لا يستطيع هذا الخادم إثبات أنّه <ph name="DOMAIN" /> لأنّه يستخدم شهادة أمان غير موثوق بها من قِبل Chrome أو إعدادات النظام لتشفير بيانات الزيارات على الويب. وقد يعود ذلك إلى خطأ في الضبط أو مهاجم يحاول اعتراض اتصالك.</translation>
 <translation id="2628224721443278970">‏تسجيل الدخول إلى Microsoft OneDrive</translation>
 <translation id="2631059741268498165">تمكّن المشرف من تحديد موقع هذا الجهاز عندما كان غير مفعّل. وقد أعاد تفعيله وأصبح جاهزًا للاستخدام.</translation>
-<translation id="2631387782019878060">رمز التحقّق: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">‏تعذّر العثور على عنوان IP لخادم <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">التوقيع</translation>
 <translation id="2638070510549214427">تصنيفه كآمن</translation>
@@ -1371,6 +1371,7 @@
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
 <translation id="3310946375819654151">‏يحاول Chrome تعبئة معلوماتك الحساسة على "<ph name="APP_NAME" />".</translation>
 <translation id="3312952471765023168">تم تحميل الملف بنجاح</translation>
+<translation id="3323135197619890621">يُرجى تفعيل ميزة "الملء التلقائي" لتسهيل عملية التسوّق</translation>
 <translation id="3324687287337751929">4 × 6 بوصة</translation>
 <translation id="3325568918769906282">تنازلي</translation>
 <translation id="3325662270238538525">الوصول إلى الملفات وتعديلاتها الأخيرة، بما في ذلك أسماء الملفات، والبصمات الرقمية لمحتوى الملف، ومصدر التنزيل، والبيانات الوصفية</translation>
@@ -1596,6 +1597,7 @@
 <translation id="3704162925118123524">قد تتطلب الشبكة التي تستخدمها زيارة صفحة تسجيل الدخول.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
+<translation id="3708927069677086144">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chrome</translation>
 <translation id="3709599264800900598">النص الذي نسخته</translation>
 <translation id="3711223220609269738">علامة تبويب تصفّح معزول جديدة</translation>
 <translation id="3711430313228789376">‏يحاول متصفِّح Chrome إظهار كلمات المرور</translation>
@@ -1733,6 +1735,7 @@
 <translation id="3928806096717999469">تعديل (يفتح هذا الزر نافذة جديدة)</translation>
 <translation id="393417216277380082">أدوات استشعار الإضاءة والحركة</translation>
 <translation id="3937640725563832867">الاسم البديل لجهة إصدار الشهادة</translation>
+<translation id="3938243129430544357">إتمام الدفع بأمان باستخدام ميزة "الملء التلقائي"</translation>
 <translation id="3939773374150895049">‏هل تريد استخدم WebAuthn بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
 <translation id="3941630233824954464">تفعيل ميزة إعادة المصادقة الإلزامية</translation>
 <translation id="3942048175062210325">حاوِل فتح الملفات مرة أخرى.</translation>
@@ -2057,6 +2060,7 @@
 <translation id="4424024547088906515">‏هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من قبل Chrome. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="4425137053900958839">‏كل وسائل الراحة والأمان التي تقدّمها Pix بين يديك</translation>
 <translation id="443121186588148776">منفذ تسلسلي</translation>
+<translation id="4431928532022419942">‏إزالة الاقتراح من Chrome؟</translation>
 <translation id="4432688616882109544">لم يقبل <ph name="HOST_NAME" /> شهادة تسجيل الدخول أو من المحتمل ألا يكون قد تم تقديم واحدة.</translation>
 <translation id="4432792777822557199">ستتم ترجمة الصفحات باللغة <ph name="SOURCE_LANGUAGE" /> إلى اللغة <ph name="TARGET_LANGUAGE" /> من الآن فصاعدًا</translation>
 <translation id="4433642172056592619">تم تجاهل هذه السياسة لأنّ المستخدم ليس لديه صلاحية إدارة الجهاز أو أنّ الجهاز غير مُدارٍ.</translation>
@@ -3136,6 +3140,7 @@
 <translation id="6263376278284652872">إشعارات <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
 <translation id="6264485186158353794">الرجوع</translation>
+<translation id="6264507470395196064">بوابة آمنة</translation>
 <translation id="6264636978858465832">يحتاج "مدير كلمات المرور" إلى مزيد من أذونات الوصول</translation>
 <translation id="6265794661083428563">نسخ قيمة السياسة <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">تم حظر الانتقال إلى <ph name="URL" /> بسبب سياسات مؤسستك. إذا كان هذا غير متوقع، يُرجى التواصل مع المشرف.</translation>
@@ -3345,6 +3350,7 @@
 <translation id="6630043285902923878">‏جارٍ البحث عن أجهزة USB...</translation>
 <translation id="6630388727238334626">‏زر إدارة إعدادات Chrome: انقر على هذا الزر للانتقال إلى إعدادات Chrome.</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">‏للانتقال إلى الموقع الإلكتروني التالي، تطلُب المؤسسة منك تسجيل الدخول باستخدام حسابك المُدار على Google.</translation>
 <translation id="6635900375070654124">جهاز مصادقة</translation>
 <translation id="6641852376826221947">تأكيد عملية الشراء</translation>
 <translation id="6643016212128521049">محو</translation>
@@ -3534,6 +3540,7 @@
 <translation id="6957153644870901611">يمكنك تفعيل ميزة "الملء التلقائي المحسّن" لملء المزيد من الحقول تلقائيًا</translation>
 <translation id="6957887021205513506">يبدو أن شهادة الخادم مزيفة.</translation>
 <translation id="6958564499836457428">‏إدارة إعدادات الخصوصية في حسابك على Google</translation>
+<translation id="6961161369573226336">‏بإمكان "مدير كلمات المرور في Google" الحصول على هذه الرموز من حسابك على Gmail‏ (<ph name="EMAIL" />). ويمكنك متى شئت تغيير رأيك و<ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">السماح للموقع الإلكتروني بطلب استخدام أشكال الخط المثبَّتة على جهازك</translation>
 <translation id="6962858948849099922">انتهت مهلة النقل</translation>
 <translation id="6963520811470373926">يتم استبدال القيمة الأخرى</translation>
@@ -3611,6 +3618,7 @@
 <translation id="70846382339153529">‏نص OpenDocument</translation>
 <translation id="7086090958708083563">طلب التحميل مقدّم من المستخدم</translation>
 <translation id="7090698782953528257">ساعِدني في تمثيل دالة بيانيًا لتوضيح المعادلة الرياضية ومعاينة شكل المنحنى</translation>
+<translation id="7092087596499105699">ضبط المشرف موصِّل البوابة الآمنة لحماية الوصول إلى تطبيقات الويب الخاصة بمؤسستك. وقد يتم استخدام بيانات من ملف العمل للتحقّق من الوصول.</translation>
 <translation id="7095139009144195559">‏<ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
 <translation id="709604659664854823">أريد العثور على حجوزات في اللحظة الأخيرة في مطاعم قريبة الليلة</translation>
 <translation id="7096341143397839437">عنوان البريد الإلكتروني: <ph name="EMAIL" /></translation>
@@ -4868,6 +4876,7 @@
 <translation id="949026252328034572">انضمَ أعضاء يبلغ عددهم <ph name="MEMBER_COUNT" /> إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">‏لقد طلبت زيارة هذا الموقع الإلكتروني. يمكن لأحد والدَيك الرد على هذا الطلب في تطبيق Family Link.</translation>
 <translation id="949484466204182817">‏إضافة رقم الإنصاف (Redress number) إلى "محفظة Google"</translation>
+<translation id="950533895669718124">التعرّف على مزيد من المعلومات حول هذه الميزة في الإعدادات</translation>
 <translation id="950736567201356821">عمل ثلاثة ثقوب من الأعلى</translation>
 <translation id="950926967802086924">‏مفتاح المرور • مدير كلمات المرور في Google</translation>
 <translation id="952165179818196872">يُرجى إضافة بطاقة "<ph name="PROVIDER" />" للدفع بدون التبديل بين التطبيقات</translation>

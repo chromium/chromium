@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">डीबगर को किसी दूसरे टैब में रोका गया. उस टैब पर स्विच करने के लिए क्लिक करें.</translation>
 <translation id="1171774979989969504">कृपया ई-मेल पता दर्ज करें.</translation>
 <translation id="1178581264944972037">रोकें</translation>
+<translation id="1254779809141342904">सीएपी की यह सूचना, XSLT टेक्नोलॉजी का इस्तेमाल करती है. इस टेक्नोलॉजी को <ph name="REMOVAL_LINK" />. ऐसा होने पर, यह सूचना रॉ एक्सएमएल डेटा के तौर पर दिखेगी. आपको <ph name="EXTENSION_LINK" /> का विकल्प मिल सकता है, जिससे सूचना पहले की तरह ही दिखना जारी रहेगी.</translation>
 <translation id="1306460908038601864">बंद है</translation>
 <translation id="1311894908970423688">तारीख <ph name="VALUE_DATE_OR_TIME" /> होनी चाहिए.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> या बाद का होना चाहिए.</translation>
 <translation id="2761667185364618470">अगर आप आगे बढ़ना चाहते हैं तो इस बॉक्‍स को सही का निशान लगाकर चुनें.</translation>
+<translation id="2854734116215697908">इस ब्राउज़र से हटाया जा रहा है</translation>
 <translation id="2908441821576996758">कृपया ईमेल पतों की अल्पविराम द्वारा विभाजित सूची दर्ज करें.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
 <translation id="3075154866155599887">कृपया सही मान डालें. फ़ील्ड अधूरी है या उसमें डाली गई तारीख गलत है.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">कास्‍ट करें</translation>
 <translation id="5630795885300617244">10 सेकंड के लिए 'स्किप' करने के लिए बाएं या दाएं पर दो बार टैप करें</translation>
 <translation id="57838592816432529">म्यूट करें</translation>
+<translation id="5855560023261018690">जल्द ही इस ब्राउज़र से हटा दिया जाएगा</translation>
 <translation id="5868587040512539609">वीडियो ट्रैक</translation>
 <translation id="588258955323874662">पूर्णस्‍क्रीन</translation>
 <translation id="5888666972993069672">अब <ph name="DEVICE_FRIENDLY_NAME" /> पर कास्ट किया जा रहा है</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">'पिक्चर में पिक्चर से बाहर निकलें'</translation>
 <translation id="6484738902856791350">प्रिटी-प्रिंट</translation>
 <translation id="6550675742724504774">विकल्प</translation>
+<translation id="65574987622079584">ब्राउज़र एक्सटेंशन को इंस्टॉल करने</translation>
 <translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6661136971638885481">ट्रैक #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">अन्य...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">इस हफ़्ते</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">yyyy</translation>
+<translation id="8243989288843872594">यह चेतावनी कभी न दिखाएं</translation>
 <translation id="8284326494547611709">कैप्शन</translation>
 <translation id="835897206747267392">अमान्य मान.</translation>
 <translation id="839593075537728968">मान, <ph name="MINIMUM_TIME" /> और <ph name="MAXIMUM_TIME" /> के बीच होना चाहिए.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">लाइन रैप करें</translation>
 <translation id="8750798805984357768">कृपया इनमें से कोई विकल्प चुनें.</translation>
+<translation id="8753001114009816390">यह साइट, XSLT का इस्तेमाल करती है. इस टेक्नोलॉजी को <ph name="REMOVAL_LINK" />. ऐसा होने पर, हो सकता है कि यह पेज सही तरीके से न दिखे. आपको <ph name="EXTENSION_LINK" /> का विकल्प मिल सकता है, जिससे यह पेज पहले की तरह ही दिखना जारी रहेगा. अगर ऐसा नहीं होता है, तो आगे की जानकारी के लिए आपको साइट के रखरखाव करने वाले से संपर्क करना चाहिए.</translation>
 <translation id="8845239796550121995">अब आपके टीवी पर कास्ट हो रहा है</translation>
 <translation id="8875657656876809964">वीडियो चलाने में गड़बड़ी</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> केबी</translation>

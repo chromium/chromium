@@ -1842,6 +1842,7 @@ Se questa policy non viene configurata, equivale ad attivarla per gli utenti nor
       Se questa policy non viene impostata, il browser farà dei tentativi per risparmiare memoria solo una volta rilevato che la memoria fisica del computer è in esaurimento.</translation>
 <translation id="2161348910646846717">Consenti agli utenti di modificare il canale di rilascio</translation>
 <translation id="2162703823039992020">Integrazioni contestuali dei servizi Google su <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">L'URL dell'applicazione web dell'istanza di <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> per questa organizzazione. Deve essere un URL HTTPS valido.</translation>
 <translation id="2166155400701622446">Esiste un elenco di porte limitate integrate a <ph name="PRODUCT_NAME" />. Non sarà possibile eseguire collegamenti a tali porte. Questa impostazione consente di bypassare tale elenco. Il valore è un elenco separato da virgole di nessuna porta o di più porte tramite le quali saranno consentiti collegamenti in uscita.
 
       Le porte sono limitate per impedire l'utilizzo di <ph name="PRODUCT_NAME" /> come vettore per sfruttare varie vulnerabilità di rete. La configurazione di questa policy potrebbe esporre la tua rete a eventuali attacchi. Questa policy è intesa come soluzione alternativa temporanea per gli errori con codice "ERR_UNSAFE_PORT" durante la migrazione a una porta standard (ossia 80 o 443) di un servizio in esecuzione tramite una porta bloccata.
@@ -2230,9 +2231,6 @@ Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialm
 <translation id="2421779938235645781">Il colore della retroilluminazione della tastiera corrisponde allo sfondo corrente</translation>
 <translation id="2423255396068675416">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti possono eseguire <ph name="PRODUCT_CROSTINI_NAME" />, finché <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> e <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sono impostate su Attivata. Se la policy viene impostata su Disattivata, <ph name="PRODUCT_CROSTINI_NAME" /> viene disattivata per l'utente. Impostando la policy su Disattivata, questa viene applicata all'avvio di nuovi container <ph name="PRODUCT_CROSTINI_NAME" />, non a quelli già in esecuzione.</translation>
 <translation id="2423654977291507457">Disattiva integrazioni</translation>
-<translation id="2424141395604579502">Se la policy viene impostata su True o se non viene configurata, gli utenti possono aggiungere, rimuovere, modificare o caricare i preferiti.
-
-      Se viene impostata su False, gli utenti non possono aggiungere, rimuovere, modificare o caricare i preferiti, ma possono comunque utilizzare quelli esistenti.</translation>
 <translation id="242521047682347997">Non consentire agli utenti di sincronizzare i messaggi SMS tra il telefono e Chromebook</translation>
 <translation id="2426782419955104525">Consente di attivare la funzione Instant di <ph name="PRODUCT_NAME" /> e di impedire agli utenti di modificare l'impostazione.
 
@@ -10870,6 +10868,21 @@ Se questa policy viene disattivata, il visualizzatore di PDF utilizza il rendere
 
 Se questa policy non viene impostata, il renderer del PDF viene scelto dal browser.</translation>
 <translation id="7704244074621846004">Abilita la durata estesa per SharedWorker</translation>
+<translation id="7705886216383850895">Configura le impostazioni di connessione per <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Per configurare <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, gli amministratori devono fornire:
+* L'URL dell'applicazione web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OPPURE
+* Tutti e tre i parametri legacy insieme: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> e <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Se specifichi solo un sottoinsieme parziale di questi tre parametri senza un URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+
+Il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> deve essere un URL valido che utilizzi il protocollo https e non contenga né nome utente né password. Se non soddisfa questi requisiti, la policy viene ignorata e <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+
+Se sono configurati sia il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> sia i parametri legacy, il parametro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> ha la precedenza.
+
+Se questa policy viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> verrà configurato per gli utenti che hanno fatto l'accesso con un account gestito o un browser gestito.
+
+Se questa policy non viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non verrà configurato.
+
+Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere controllata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Consente di attivare la funzionalità Suoni di ricarica.
 
           Questa funzionalità consente di riprodurre i suoni di ricarica.

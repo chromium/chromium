@@ -43,6 +43,7 @@
 <translation id="141901961143729572">Del det du har på hjertet</translation>
 <translation id="1465192221147974788">For å dele vinduet, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
+<translation id="147870194906295621">Logg på Chromium for å få den lagrede informasjonen med mer fra <ph name="DEVICE" />.</translation>
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Denne siden er beskyttet</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
@@ -190,6 +191,7 @@
 <translation id="3012615494352020668">{count,plural, =1{Chromium må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, slettes disse dataene (1 element).}other{Chromium må bekrefte at det er deg, før enkelte data kan lagres i Google-kontoen din og brukes på alle enhetene dine. Hvis du logger av nå, slettes disse dataene ({count} elementer).}}</translation>
 <translation id="3013473503895162900">Åpne <ph name="URL" /> i en ny fane i Chromium.</translation>
 <translation id="302551344979399011">AI-innovasjoner som ferdigheter lagres i Google-kontoen og administreres separat fra Chromium-synkronisering</translation>
+<translation id="3032219013429286568">Logg på Chromium for å få utvidelsene med mer på alle enhetene.</translation>
 <translation id="3032787606318309379">Legger til i Chromium …</translation>
 <translation id="3038232873781883849">Venter på installering</translation>
 <translation id="3045032126857188731">Oversatt språk: <ph name="LANGUAGE" /></translation>
@@ -200,6 +202,7 @@
 <translation id="3068515742935458733">Bidra til å gjøre Chromium bedre ved å sende programstopprapporter og <ph name="UMA_LINK" /> til Google</translation>
 <translation id="3071024987058544609">Bruk Chromium-appen for å ta med deg sikkerheten til Google uansett hvor du er</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB-enhet ble brukt av en eller flere Chromium-utvidelser}=1{1 USB-enhet brukes av en eller flere Chromium-utvidelser}other{# USB-enheter brukes av en eller flere Chromium-utvidelser}}</translation>
+<translation id="3090734884397229414">Logg på Chromium for å få leselisten med mer fra <ph name="DEVICE" />.</translation>
 <translation id="3095811995836568724">Chromium-logg</translation>
 <translation id="3103660991484857065">Installasjonsprogrammet kunne ikke dekomprimere arkivet. Last ned Chromium på nytt.</translation>
 <translation id="310459126943037700">Kunne ikke avslutte oppgaven(e).</translation>
@@ -221,6 +224,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Ta med deg favorittverktøyene dine fra Google AI på farten med Chromium på iOS.</translation>
+<translation id="3264761466044851269">Logg på Chromium for å få utvidelsene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="328888136576916638">API-nøkler for Google mangler. Noe funksjonalitet i Chromium blir deaktivert.</translation>
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
@@ -232,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Vil du bytte til den eksisterende Chromium-profilen?</translation>
 <translation id="3412460710772753638">I Passordlagring på denne enheten</translation>
+<translation id="3427159664004296878">Logg på Chromium for å få bokmerkene med mer fra <ph name="DEVICE" />.</translation>
 <translation id="3438772217992559640">Søk på denne fanen med Bildesøk</translation>
 <translation id="3455907671758333080">Utvid Safe Browsing med økt beskyttelse med Chromium på telefonen</translation>
 <translation id="3461644266919055473">Gjør Chromium til din …</translation>
@@ -264,6 +269,7 @@
 
           **Foreslå spørsmål:** Generer en punktliste med tre til fem tankevekkende spørsmål en bruker kan stille for å forstå skjermbildet bedre. Disse spørsmålene må inneholde minst ett som handler spesifikt om et visuelt objekt, utformingen av det eller plasseringen av det.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="386243222263310720">Logg på Chromium for å få bokmerkene med mer på alle enhetene.</translation>
 <translation id="3885770153807205175">Språkvelger</translation>
 <translation id="388648406173476553">Tilpass og kontroller Chromium. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="3889543394854987837">Klikk på navnet ditt for å åpne Chromium og starte surfingen.</translation>
@@ -272,6 +278,7 @@
 <translation id="3909353120217047026">Denne utvidelsen er i strid med retningslinjene for Chrome Nettmarked og kan være utrygg. Fjern den fra Chromium, slik at den ikke lenger kan se og endre dataene dine på nettsteder du besøker, inkludert personopplysningene dine.</translation>
 <translation id="3941890832296813527">Installasjonsfeil: Navnet på installasjonsprogrammet er ugyldig eller støttes ikke.</translation>
 <translation id="3945058413678539331">Chromium prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
+<translation id="3950481960271781644">Logg på Chromium for å få den lagrede informasjonen med mer på alle enhetene.</translation>
 <translation id="3954172517175569325">Passordene, betalingsmåtene og adressene du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>
 <translation id="395904275706073188">Beskyttede sider kan ikke leses. Prøv en annen side.</translation>
 <translation id="3962647064319009959">Finn ut hvordan Chromium holder deg trygg</translation>
@@ -360,6 +367,7 @@
 <translation id="4893347770495441059">Start på nytt for å oppdatere &amp;Chromium</translation>
 <translation id="4918086044614829423">Godta</translation>
 <translation id="4918844574251943176">Bildet er kopiert</translation>
+<translation id="4919431996536326528">Logg på Chromium for å få leselisten med mer på alle enhetene.</translation>
 <translation id="4943838377383847465">Chromium er i bakgrunnsmodus.</translation>
 <translation id="494490797786467921">Klikk for å lukke dialogboksen for Chromium-pålogging</translation>
 <translation id="4950660488495335294">Med Chromium-profiler kan du holde alle Chromium-tingene dine atskilt. Opprett profiler for venner og familie, eller skill mellom jobb og fritid.</translation>
@@ -790,6 +798,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="904366664621834601">Chromium har blokkert denne nedlastingen fordi arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>
 <translation id="9053882453960391422">Hold passordene, bokmerkene og loggen din synkronisert på alle enheter. Ved å oppdatere standardnettleseren din til Chromium, får du enkel tilgang til funksjonene du kjenner og liker. Chromium festes til oppgavelinjen for rask tilgang.</translation>
 <translation id="9056398481763999048">Bruk Googles beste AI-verktøy med Chromium-appen på telefonen</translation>
+<translation id="9057625473949801035">Logg på Chromium for å få passordene dine med mer fra <ph name="DEVICE" />.</translation>
 <translation id="9062666675513499497">Logg på Chromium når du logger på andre Google-tjenester</translation>
 <translation id="9078733879136747090">Chromium ble lukket automatisk</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>

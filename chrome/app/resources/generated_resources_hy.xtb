@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}one{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}other{{NUM_PASSWORDS} գաղտնաբառ ներմուծվեց <ph name="BRAND" /> այս սարքում}}</translation>
 <translation id="1046572983040892965">Պատուհանը տեղափոխվեց վերև և ձախ</translation>
 <translation id="1047431265488717055">Պատճենել հղման տեքստը</translation>
+<translation id="104751728059674265">Ձեր հաշվից հնարավոր չէ կարծիք ուղարկել։ Չափահաս օգտատերը կարող է օգտագործել իր սարքը կամ պրոֆիլը՝ ձեր փոխարեն խնդրի մասին հաղորդելու համար։</translation>
 <translation id="1048986595386481879">Դինամիկ կերպով հատկացված</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}one{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}other{<ph name="ATTACHMENTS" />ի ստացում <ph name="DEVICE_NAME" /> սարքից}}</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
@@ -983,6 +984,7 @@
 <translation id="1755601632425835748">Տեքստի չափսը</translation>
 <translation id="1756963401828337401">Ընտրեք էկրան՝ սքրինշոթ անելու համար</translation>
 <translation id="17584710573359123">Դիտել Chrome Web Store-ում</translation>
+<translation id="1758845021884209593">Օգտագործել դյուրանցումը OS-ի հավելվածներում</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />ն այժմ աշխատում է որպես «<ph name="REMAPPING_OPTION" />» կոճակ։</translation>
 <translation id="1761845175367251960"><ph name="NAME" />-ի հաշիվը</translation>
 <translation id="176272781006230109">գնումների առաջարկներ</translation>
@@ -3082,6 +3084,7 @@
 <translation id="3355936511340229503">Կապակցման սխալ</translation>
 <translation id="335678817537689040">Ստատիկ</translation>
 <translation id="3359256513598016054">Վկայագրերի քաղաքականության սահմանափակումներ</translation>
+<translation id="3359465538772230055">Առաջադրանքներ չկան</translation>
 <translation id="3360297538363969800">Չհաջողվեց տպել: Ստուգեք ձեր տպիչը և կրկին փորձեք:</translation>
 <translation id="3360306038446926262">Պատուհաններ</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}one{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}other{<ph name="DEVICE_NAME" /> սարքը ձեզ է ուղարկում <ph name="ATTACHMENTS" />։}}</translation>
@@ -6103,6 +6106,7 @@
 <translation id="5687340364605915800">Որոշ կայքեր կարող են չարձագանքել այս հարցմանը</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Տեղորոշում</translation>
+<translation id="568984110402742489">Չհաջողվեց ուղարկել կարծիքը</translation>
 <translation id="56907980372820799">Հղման տվյալներ</translation>
 <translation id="5691772641933328258">Չհաջողվեց ճանաչել մատնահետքը</translation>
 <translation id="5693255400847650006">Խոսափողը ներկայումս օգտագործվում է</translation>
@@ -9260,6 +9264,7 @@
 <translation id="8109991406044913868">Արհեստական բանականության օգնությամբ ստեղծված թեմա</translation>
 <translation id="8110393529211831722">Բաժանորդագրությունը տեղադրված է միայն այս սարքում և չի համաժամացվում ձեր հաշվի ներքո գրանցված այլ սարքերի հետ։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Կոնտակտների ցանկը ներբեռնվում է…</translation>
+<translation id="8110781914702267195">Այցելեք Google Wallet՝ <ph name="BEGIN_LINK1" />տվյալների և գաղտնիության կարգավորումները<ph name="END_LINK1" /> ստուգելու կամ <ph name="BEGIN_LINK2" />վճարման եղանակները<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />անցաքարտերը<ph name="END_LINK3" />, օրինակ՝ մշտական հաճախորդի քարտերը, կառավարելու համար</translation>
 <translation id="8114925369073821854">Խոսափողի օգտագործման թույլտվություն <ph name="APP_NAME" /> հավելվածի համար</translation>
 <translation id="8116497846156149">Խնդրեք ծնողին, որ հաստատի</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />ը հիշում է, թե ինչպես եք մտել հաշիվ, և հնարավորության դեպքում ավտոմատ կերպով մուտք է գործում։ Եթե այս գործառույթն անջատված է, ամեն անգամ մուտք գործելուց առաջ ձեզանից հաստատում կպահանջվի։</translation>
@@ -10242,6 +10247,7 @@
 <translation id="8874341931345877644">Հեռարձակում սարքին՝</translation>
 <translation id="8874647982044395866">Օրգանական</translation>
 <translation id="8874790741333031443">Փորձեք ժամանակավորապես թույլատրել երրորդ կողմի քուքիները։ Սա կթուլացնի ձեր դիտարկման պաշտպանությունը, սակայն կայքի գործառույթները, ամենայն հավանականությամբ, պատշաճ կերպով կաշխատեն։</translation>
+<translation id="8874864294955002500">Ձեր հաշվից հնարավոր չէ կարծիք ուղարկել։ Կազմակերպության ադմինիստրատորը կարող է օգտագործել իր սարքը կամ պրոֆիլը՝ ձեր փոխարեն խնդրի մասին հաղորդելու համար։</translation>
 <translation id="8875736897340638404">Ընտրեք տեսանելիության մակարդակը</translation>
 <translation id="8876307312329369159">Այս կարգավորումը հնարավոր չէ փոխել ցուցադրական աշխատաշրջանում:</translation>
 <translation id="8876965259056847565">«<ph name="FEATURE_NAME" />» գործառույթը մոտակա սարքեր է փնտրում Bluetooth-ի միջոցով։</translation>

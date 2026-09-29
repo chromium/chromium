@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 የይለፍ ቃል በዚህ መሣሪያ ላይ ወደ <ph name="BRAND" /> መጥቷል}one{{NUM_PASSWORDS} የይለፍ ቃል በዚህ መሣሪያ ላይ ወደ <ph name="BRAND" /> መጥቷል}other{{NUM_PASSWORDS} የይለፍ ቃላት በዚህ መሣሪያ ላይ ወደ <ph name="BRAND" /> መጥተዋል}}</translation>
 <translation id="1046572983040892965">መስኮት ወደ ላይ እና ወደ ግራ ተንቀሳቅሷል</translation>
 <translation id="1047431265488717055">የአገናኝ ጽሁፍ &amp;ቅዳ</translation>
+<translation id="104751728059674265">ለእርስዎ መለያ ግብረመልስ አይገኝም። አንድ አዋቂ ለእርስዎ ችግር ሪፖርት ለማድረግ መሣሪያቸውን ወይም መገለጫቸውን መጠቀም ይችላሉ።</translation>
 <translation id="1048986595386481879">በተለዋዋጭነት የሚመደብ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}one{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}other{<ph name="ATTACHMENTS" />ን ከ<ph name="DEVICE_NAME" /> በመቀበል ላይ}}</translation>
 <translation id="1049743911850919806">ማንነት የማያሳውቅ</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">ጣቢያዎች የእርስዎን የመዳፊት ግቤት ለማግኘት እና ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="1232569758102978740">ርዕስ አልባ</translation>
 <translation id="1233497634904001272">ጥያቄውን ለማጠናቀቅ የእርስዎን የደህንነት ቁልፍ እንደገና ነካ ያድርጉ።</translation>
+<translation id="1233566345244684257">የእርስዎ Gemini መተግበሪያዎች መዳረሻ ያለው ማንኛውም ሰው የእርስዎን የChrome አሳሽ መቆጣጠር ይችላል።</translation>
 <translation id="1233721473400465416">አካባቢ</translation>
 <translation id="1233835246554936745">{0,plural, =1{በመለያ ውስጥ 1 ንጥል አስቀምጥ}one{በመለያ ውስጥ # ንጥል አስቀምጥ}other{በመለያ ውስጥ # ንጥሎች አስቀምጥ}}</translation>
 <translation id="1234736487471201993">ለዚህ ምስል የQR ኮድ ፍጠር</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">እባክዎ ይህን ውሂብ የሚያወርዱበትን ምክንያት ያስገቡ፦</translation>
 <translation id="1422159345171879700">ደህንነታቸው አስተማማኝ ያልሆኑ ስክሪፕቶችን ጫን</translation>
 <translation id="1425040197660226913">መስቀል አልተቻለም። ከ20 ሜባ ያነሰ ምስል ይጠቀሙ።</translation>
+<translation id="1426154609634610063">Geminiን የመጠቀም ስጋቶችን ይገምግሙ</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ታግዷል</translation>
 <translation id="1427179946227469514">የጽሑፍ-ወደ-ንግግር ድምፅ ውፍረት</translation>
@@ -990,6 +993,7 @@
 <translation id="1755601632425835748">የጽሑፍ መጠን</translation>
 <translation id="1756963401828337401">ለመቅረጽ ማያ ገጽ ይምረጡ</translation>
 <translation id="17584710573359123">በChrome የድር መደብር ውስጥ ይመልከቱ</translation>
+<translation id="1758845021884209593">በመላው የሥርዓተ ክወና መተግበሪያዎች ላይ አቋራጭ ይጠቀሙ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> ወደ <ph name="REMAPPING_OPTION" /> ዳግም ተመድቧል።</translation>
 <translation id="1761845175367251960">የ<ph name="NAME" /> መለያዎች</translation>
 <translation id="176272781006230109">የግብይት ጥቆማዎች</translation>
@@ -1835,6 +1839,7 @@
 <translation id="2416435988630956212">የቁልፍ ሰሌዳ ተግባር ቁልፎች</translation>
 <translation id="2419131370336513030">የተጫኑ መተግበረያዎችን ይመልከቱ</translation>
 <translation id="2419706071571366386">ለደህንነት ሲባል የእርስዎ ኮምፒውተር ጥቅም ላይ በማይውልበት ጊዜ ዘግተውት ይውጡ።</translation>
+<translation id="2423226060967554289">የዕልባት አሞሌን አሳይ</translation>
 <translation id="2423506062824112361">ባልታወቀ ምክንያት ይዘትን ማውረድ አልተሳካም።</translation>
 <translation id="2423578206845792524">ምስል አስ&amp;ቀምጥ እንደ…</translation>
 <translation id="2424424966051154874">{0,plural, =1{እንግዳ}one{እንግዳ (#)}other{እንግዳ (#)}}</translation>
@@ -2072,6 +2077,7 @@
 <translation id="2588271083332682494">በትር ቡድኖች ያጽዱ</translation>
 <translation id="2588636910004461974">የ<ph name="VENDOR_NAME" /> መሣሪያዎች</translation>
 <translation id="2589658397149952302">የDrive ፋይሎችን በጭራሽ አታሳይ</translation>
+<translation id="2595270892115552212">gemini.google.com እና Gemini የሞባይል መተግበሪያዎችን ጨምሮ ከሌሎች የGemini መተግበሪያዎች ተግባርን ሲጀምሩ Gemini ከጣቢያዎች ጋር መስተጋብር ለመፍጠር እና እርስዎን ወክሎ ተግባራትን ለማጠናቀቅ በዚህ መሣሪያ ላይ የChrome ራስ-ሰር ማሰስን መጠቀም ይችላል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">አቅራቢያ አጋራ በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት የብሉቱዝ ቅኝትን ይጠቀማል።</translation>
 <translation id="2598136842498757793">የመሣሪያ አሞሌ አዝራሮችን ያበጁ</translation>
 <translation id="2598710988533271874">አዲስ Chrome ይገኛል</translation>
@@ -2809,6 +2815,7 @@
 <translation id="3132996321662585180">በየቀኑ ዳግም አድስ</translation>
 <translation id="3134312457920437826">ያልተደገፈ የዝርዝር ሰነድ ስሪት ስለሚጠቀም ቅጥያን መጫን አይቻልም።</translation>
 <translation id="3134393957315651797">ለ<ph name="EXPERIMENT_NAME" /> ሙከራ የሙከራ ሁኔታን ይምረጡ። የሙከራ መግለጫ፦ <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">ሌሎች የGemini መተግበሪያዎች ከማንኛውም መሣሪያ በርቀት እንዲያስሱ ይፍቀዱ</translation>
 <translation id="3139925690611372679">ነባሪ ቢጫ አምሳያ</translation>
 <translation id="314095642664111744">ትኩረትን አጥፋ</translation>
 <translation id="3141093262818886744">ለማንኛውም ክፈት</translation>
@@ -3094,6 +3101,7 @@
 <translation id="3355936511340229503">የግንኙነት ስህተት</translation>
 <translation id="335678817537689040">አይለወጤ</translation>
 <translation id="3359256513598016054">የሰርቲፊኬት መመሪያ እገዳዎች</translation>
+<translation id="3359465538772230055">ምንም ተግባራት የሉም</translation>
 <translation id="3360297538363969800">ማተም አልተሳካም። እባክዎ አታሚዎን ይፈትሹትና እንደገና ይሞክሩ።</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" />ን ለእርስዎ እያጋሩ ነው።}one{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" />ን ለእርስዎ እያጋሩ ነው።}other{<ph name="DEVICE_NAME" /> <ph name="ATTACHMENTS" />ን ለእርስዎ እያጋሩ ነው።}}</translation>
@@ -3622,6 +3630,7 @@
 <translation id="3736487688526377259">ይህን አገናኝ ማግኘት የሚፈልጉበትን መሣሪያ ይምረጡ።</translation>
 <translation id="3737058101969549870">ነባሩ የአሰሳ ውሂብ ከዚህ አዲስ መገለጫ እንደተለየ ይቆይ?</translation>
 <translation id="3738924763801731196"><ph name="OID" />፦</translation>
+<translation id="3739203168951159754">Gemini ራስ-ሰር ማሰስን በዚህ መሣሪያ ላይ መጠቀም የሚችለው መሣሪያው ከእንቅልፍ ከነቃ እና Chrome እያሄደ ከሆነ ብቻ ነው።</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> ይከፈት?</translation>
 <translation id="3739349485749941749">ጣቢያዎች ለመሣሪያዎ ተደራሽ የሆኑ አታሚዎችን ለመፈለግ እና ለመጠቀም ጥያቄ ማቅረብ ይችላሉ</translation>
 <translation id="3741056951918180319">በማንኛውም ጣቢያ ላይ ለመጠቀም ቅጥያውን ሁልጊዜ ጠቅ ማድረግ ይችላሉ።</translation>
@@ -3977,6 +3986,7 @@
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
 <translation id="3988124842897276887">ይህ ትር ከአንድ ዩኤስቢ መሣሪያ ጋር የተገናኘ ነው</translation>
 <translation id="3989635538409502728">ዘግተህ ውጣ</translation>
+<translation id="399132041334931433">ትሮችን ወደ አዲስ ቡድን ያክሉ</translation>
 <translation id="399179161741278232">ከውጭ የመጣ</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" />ን በማውረድ ላይ፣ <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">በUSB መሣሪያዎች ላይ ለ<ph name="SPECIFIC_NAME" /> ቁጥጥር ይስጡ።</translation>
@@ -5204,6 +5214,7 @@
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4951966678293618079">ለዚህ ጣቢያ መቼም የይለፍ ቃሎችን አታስቀምጥ</translation>
 <translation id="4952580838083306838">አስተባባሪን ደብቅ</translation>
+<translation id="4952628481830269193">የዕልባት አሞሌን አሳይ</translation>
 <translation id="4953808748584563296">ነባሪ ብርቱካናማ አምሳያ</translation>
 <translation id="4954652437333037880">ፋይል</translation>
 <translation id="4954831709600868883">ስለ <ph name="TEXT" /> ይጠይቁ</translation>
@@ -5456,6 +5467,7 @@
 <translation id="5149602533174716626">የቪዲዮ ፍሬም ቅ&amp;ዳ</translation>
 <translation id="5150254825601720210">የNetscape ሰርቲፊኬት SSL አገልጋይ ስም</translation>
 <translation id="5151354047782775295">የዲስክ ቦታ ያስለቅቁ፣ አለበለዚያ የተመረጠ ውሂብ በራስ-ሰር ሊሰርዝ ይችላል</translation>
+<translation id="5152719737931716272">ተግባር ተከናውኗል እና ወደ Gemini ተመልሷል</translation>
 <translation id="5153074793829217329">የመዳፊት ጠቋሚዎን ለመቆጣጠር የቁልፍ ሰሌዳ ወይም አሃዛዊ ቁልፍ ሰሌዳዎን ይጠቀሙ</translation>
 <translation id="5153234146675181447">ስልክን እርሳ</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5773,6 +5785,7 @@
 <translation id="5414836363063783498">በማረጋገጥ ላይ…</translation>
 <translation id="5415497281076257439">ሐረግ</translation>
 <translation id="5415871492522952905">እያደረጉ የነበሩትን ነገር መቀጠል እንዲችሉ ታሪክዎን እና ትሮችዎን በሁሉም መሣሪያዎችዎ ላይ ያገኟቸዋል።</translation>
+<translation id="5417160551295347092">Gemini እንደ መረጃዎን ማጋራት ወይም ሳይጠይቅ ግዢዎችን መፈጸም ያሉ ስሕተቶችን ሊሠራ ይችላል። <ph name="LINK_BEGIN" />ስጋቶቹን ይገምግሙ<ph name="LINK_END" />።</translation>
 <translation id="5417293056300086453">ይህ ጣቢያ ጥበቃ የሚደረግለትን ይዘት ለማጫወት ለዪዎችን መጠቀም ይችላል።</translation>
 <translation id="5417312524372586921">የአሳሽ ገጽታዎች</translation>
 <translation id="541737483547792035">ማያ ገጽን አጉላ</translation>
@@ -6116,6 +6129,7 @@
 <translation id="5687340364605915800">ጣቢያዎች ለዚህ ጥያቄ ምላሽ ሲሰጡ የግል ምርጫቸውን ይጠቀማል</translation>
 <translation id="5689233503102158537">alt + የኋሊት መደምሰሻ</translation>
 <translation id="5689516760719285838">አካባቢ</translation>
+<translation id="568984110402742489">ግብረመልስ መላክ አልተቻለም</translation>
 <translation id="56907980372820799">ውሂብ አገናኝ</translation>
 <translation id="5691772641933328258">የጣት አሻራ አልታወቀም</translation>
 <translation id="5693255400847650006">ማይክሮፎን ሥራ ላይ ነው</translation>
@@ -6526,6 +6540,7 @@
 <translation id="6003143259071779217">የኢሲም የተንቀሳቃሽ ስልክ አውታረ መረብን ያስወግዱ</translation>
 <translation id="6003479444341796444">የርዕስ አሞሌ አሁን እየታየ ነው</translation>
 <translation id="6003582434972667631">ገጽታ የሚቀናበረው በድርጅትዎ ነው</translation>
+<translation id="600407115562756795">Gemini እርስዎ በሚጀምሯቸው ወይም በሚያዘምኗቸው ተግባራት ላይ በመመሥረት የትኛዎቹን እርምጃዎች እንደሚወስድ ይወስናል።</translation>
 <translation id="6005045517426700202">የጡብ ግንባታ</translation>
 <translation id="6006484371116297560">የቀድሞ</translation>
 <translation id="6007053304250788613">በመስኮት ሁነታ ውጭ መውጣት የሚችለው አንድ ማሳያ ብቻ ነው</translation>
@@ -8504,6 +8519,7 @@
 <translation id="7523117833414447032">አቢይ ሆሄያትን ስታነብ</translation>
 <translation id="7523585675576642403">መገለጫውን እንደገና ይሰይሙ</translation>
 <translation id="7525067979554623046">ፍጠር</translation>
+<translation id="7526083414913154899">ስለ Gemini ተግባሮች የበለጠ ይወቁ</translation>
 <translation id="7528224636098571080">አትክፈት</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{የትር ቡድን ይበተን?}one{የትር ቡድን ይበተን?}other{የትር ቡድኖች ይበተኑ?}}</translation>
 <translation id="7529411698175791732">የበይነመረብ ግንኙነትዎን ይፈትሹ። ችግሩ ከቀጠለ ዘግተው ወጥተው እንደገና ለመግባት ይሞክሩ።</translation>
@@ -9280,6 +9296,7 @@ nil</translation>
 <translation id="8109991406044913868">በAI የተፈጠረ ገጽታ</translation>
 <translation id="8110393529211831722">የደንበኝነት ምዝገባ በዚህ መሣሪያ ላይ ብቻ ተጭኗል እና በመለያዎ ስር ካሉ ሌሎች መሣሪያዎች ጋር አልሰመረም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">የእውቂያ ዝርዝርን በማውረድ ላይ...</translation>
+<translation id="8110781914702267195">የእርስዎን <ph name="BEGIN_LINK1" />ውሂብ እና የግላዊነት ምርጫዎች<ph name="END_LINK1" /> ለመቆጣጠር ወይም እንደ የታማኝነት ካርዶች ያሉ <ph name="BEGIN_LINK2" />የመክፈያ ዘዴዎችን<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />ይለፎችን<ph name="END_LINK3" /> ለማስተዳደር Google Walletን ይጎብኙ</translation>
 <translation id="8114925369073821854">የ<ph name="APP_NAME" /> የማይክሮፎን ፈቃድ</translation>
 <translation id="8116497846156149">ወላጅ እንዲያጸድቁልዎ ይጠይቁ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> እንዴት በመለያ እንደገቡ ያስታውሳል እና በሚቻልበት ጊዜ በራስ-ሰር በመለያ ያስገባዎታል። በሚጠፋበት ጊዜ በእያንዳንዱ ጊዜ ማረጋገጫ ይጠየቃሉ።</translation>
@@ -9360,6 +9377,7 @@ nil</translation>
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />። <ph name="ITEM_POSITION" /> ከ<ph name="NUM_PRINTERS" /> አታሚዎች።</translation>
 <translation id="8180785270975217276">ኃይል ቆጣቢ በርቷል</translation>
 <translation id="8180786512391440389">«<ph name="EXTENSION" />» ምልክት በተደረገባቸው አካባቢዎች ላይ ያሉ ምስሎችን፣ ቪዲዮ እና የድምጽ ፋይሎችን ማንበብ እና መሰረዝ ይችላል።</translation>
+<translation id="8181132988581553950">Gemini እርስዎ የገቡባቸውን ጣቢያዎች ጨምሮ እንደ እርስዎ ተመሳሳይ የጣቢያዎች መዳረሻ ይኖረዋል። አስፈላጊውን መረጃ ለሦስተኛ ወገኖች ያጋራል፣ ይህም ልዩ ጥንቃቄ እንደሚያስፈልገው ሊያገኙት የሚችሉትን የግል መረጃ ሊያካትት ይችላል።</translation>
 <translation id="8183703640399301650">የእርስዎ የመሣሪያ EID <ph name="EID_NUMBER" /> ሲሆን የመሣሪያ IMEI <ph name="IMEI_NUMBER" /> ነው። እነዚህ ቁጥሮች አገልግሎትን ለማግበር እንዲያግዙ ሥራ ላይ መዋል ይችላሉ።</translation>
 <translation id="8184288427634747179">ወደ <ph name="AVATAR_NAME" /> ቀይር</translation>
 <translation id="8184318863960255706">ተጨማሪ መረጃ</translation>
@@ -10262,6 +10280,7 @@ nil</translation>
 <translation id="8874341931345877644">ወደ አንድ መሣሪያ Cast ያድርጉ፦</translation>
 <translation id="8874647982044395866">የተፈጥሮ</translation>
 <translation id="8874790741333031443">በጊዜያዊነት የሦስተኛ ወገን ኩኪዎችን ለመፍቀድ ይሞክሩ፣ ይህ ማለት ያነሰ የአሰሳ ጥበቃ ነው ነገር ግን የጣቢያ ባህሪያት እንደተጠበቀው የመሥራት ዕድላቸው ከፍተኛ ነው።</translation>
+<translation id="8874864294955002500">ለእርስዎ መለያ ግብረመልስ አይገኝም። የድርጅት አስተዳዳሪዎ ለእርስዎ ችግር ሪፖርት ለማድረግ መሣሪያቸውን ወይም መገለጫቸውን መጠቀም ይችላሉ።</translation>
 <translation id="8875736897340638404">የእርስዎን ታይነት ይምረጡ</translation>
 <translation id="8876307312329369159">ይህ ቅንብር በማሳያ ክፍለ-ጊዜ ላይ ሊቀየር አይችልም።</translation>
 <translation id="8876965259056847565">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት <ph name="FEATURE_NAME" /> የብሉቱዝ ቅኝትን ይጠቀማል።</translation>

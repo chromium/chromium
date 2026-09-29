@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{इस डिवाइस पर, <ph name="BRAND" /> में एक पासवर्ड इंपोर्ट किया गया}one{इस डिवाइस पर, <ph name="BRAND" /> में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किया गया}other{इस डिवाइस पर, <ph name="BRAND" /> में {NUM_PASSWORDS} पासवर्ड इंपोर्ट किए गए}}</translation>
 <translation id="1046572983040892965">विंडो को ऊपर की ओर बाईं तरफ़ ले जाया गया</translation>
 <translation id="1047431265488717055">लिंक ले&amp;ख को कॉपी करें</translation>
+<translation id="104751728059674265">आपके खाते के लिए सुझाव, शिकायत या राय सबमिट करने की सुविधा उपलब्ध नहीं है. कोई वयस्क आपके लिए, अपने डिवाइस या प्रोफ़ाइल का इस्तेमाल करके समस्या की शिकायत कर सकता है.</translation>
 <translation id="1048986595386481879">डाइनैमिक रूप से दिया गया साइज़</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहा है}one{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहा है}other{<ph name="DEVICE_NAME" /> से <ph name="ATTACHMENTS" /> मिल रहे हैं}}</translation>
 <translation id="1049743911850919806">गुप्त</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">साइटें आपके माउस इनपुट को कैप्चर और इस्तेमाल करने की अनुमति मांग सकती हैं</translation>
 <translation id="1232569758102978740">टाइटल रहित</translation>
 <translation id="1233497634904001272">अनुरोध को पूरा करने के लिए अपनी सुरक्षा कुंजी दोबारा छुएं.</translation>
+<translation id="1233566345244684257">जिस किसी भी व्यक्ति के पास आपके Gemini Apps का ऐक्सेस है, वह आपके Chrome ब्राउज़र को कंट्रोल कर सकता है.</translation>
 <translation id="1233721473400465416">स्थान-भाषा</translation>
 <translation id="1233835246554936745">{0,plural, =1{खाते में 1 आइटम सेव करें}one{खाते में # आइटम सेव करें}other{खाते में # आइटम सेव करें}}</translation>
 <translation id="1234736487471201993">इस इमेज के लिए क्यूआर कोड बनाएं</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">कृपया इस डेटा को डाउनलोड करने की वजह बताएं:</translation>
 <translation id="1422159345171879700">असुरक्षित स्क्रिप्ट लोड करें</translation>
 <translation id="1425040197660226913">इमेज को अपलोड नहीं किया जा सकता. कृपया 20 एमबी से कम साइज़ की इमेज अपलोड करें.</translation>
+<translation id="1426154609634610063">Gemini का इस्तेमाल करने से जुड़े जोखिमों के बारे में जानें</translation>
 <translation id="1426410128494586442">हां</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> को ब्लॉक कर दिया गया है</translation>
 <translation id="1427179946227469514">लिखाई को बोली में बदलने की पिच</translation>
@@ -992,6 +995,7 @@
 <translation id="1755601632425835748">टेक्स्ट का आकार</translation>
 <translation id="1756963401828337401">कैप्चर करने के लिए कोई स्क्रीन चुनें</translation>
 <translation id="17584710573359123">Chrome वेब स्टोर में देखें</translation>
+<translation id="1758845021884209593">ओएस के सभी ऐप्लिकेशन में शॉर्टकट का इस्तेमाल करें</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> को <ph name="REMAPPING_OPTION" /> पर दोबारा मैप किया गया.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> के खाते</translation>
 <translation id="176272781006230109">खरीदारी के लिए सुझाव</translation>
@@ -1840,6 +1844,7 @@
 <translation id="2416435988630956212">कीबोर्ड के फ़ंक्शन बटन</translation>
 <translation id="2419131370336513030">इंस्टॉल किए गए ऐप्लिकेशन देखें</translation>
 <translation id="2419706071571366386">सुरक्षा के लिए, आपका कंप्यूटर इस्तेमाल में नहीं होने पर साइन आउट कर दें.</translation>
+<translation id="2423226060967554289">बुकमार्क बार दिखाएं</translation>
 <translation id="2423506062824112361">किसी अज्ञात वजह से कॉन्टेंट डाउनलोड नहीं किया जा सका.</translation>
 <translation id="2423578206845792524">इमेज को इस रूप में सेव करें...</translation>
 <translation id="2424424966051154874">{0,plural, =1{मेहमान}one{मेहमान (#)}other{मेहमान (#)}}</translation>
@@ -2077,6 +2082,7 @@
 <translation id="2588271083332682494">टैब ग्रुप की मदद से, अपने काम के टैब व्यवस्थित करें</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> की ओर से डिवाइस</translation>
 <translation id="2589658397149952302">Drive में मौजूद फ़ाइलें कभी न दिखाएं</translation>
+<translation id="2595270892115552212">जब दूसरे Gemini Apps से कोई टास्क शुरू किया जाता है, तो Gemini इस डिवाइस पर Chrome की 'ऑटो ब्राउज़' सुविधा का इस्तेमाल कर सकता है. इससे वह आपकी ओर से साइटों के साथ इंटरैक्ट कर सकता है और टास्क पूरे कर सकता है. इन ऐप्लिकेशन में, gemini.google.com और Gemini के मोबाइल ऐप्लिकेशन शामिल हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">आस-पास मौजूद डिवाइसों को खोजने के लिए, आस-पास शेयर करने की सुविधा में ब्लूटूथ स्कैनिंग का इस्तेमाल किया जाता है.</translation>
 <translation id="2598136842498757793">टूलबार के बटनों को पसंद के मुताबिक बनाएं</translation>
 <translation id="2598710988533271874">Chrome का नया वर्शन उपलब्ध है</translation>
@@ -2814,6 +2820,7 @@
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
 <translation id="3134312457920437826">एक्सटेंशन इंस्टॉल नहीं किया जा सकता, क्योंकि इसमें ऐसे मेनिफ़ेस्ट वर्शन का इस्तेमाल किया है जो काम नहीं करता.</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">दूसरे Gemini Apps को किसी भी डिवाइस से रिमोट तरीके से ब्राउज़ करने की अनुमति दें</translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
 <translation id="314095642664111744">फ़ोकस बंद करें</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
@@ -3099,6 +3106,7 @@
 <translation id="3355936511340229503">कनेक्शन गड़बड़ी</translation>
 <translation id="335678817537689040">स्टैटिक</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति बाध्यताएं</translation>
+<translation id="3359465538772230055">कोई टास्क मौजूद नहीं है</translation>
 <translation id="3360297538363969800">प्रिंट करना पूरा नहीं हो सका. कृपया अपना प्रिंटर जाँचें और फिर से कोशिश करें.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}one{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}other{<ph name="DEVICE_NAME" /> आपके साथ <ph name="ATTACHMENTS" /> शेयर कर रहा है.}}</translation>
@@ -3627,6 +3635,7 @@
 <translation id="3736487688526377259">वह डिवाइस चुनें जिस पर आपको यह लिंक चाहिए.</translation>
 <translation id="3737058101969549870">क्या आपको मौजूदा ब्राउज़िंग डेटा को इस नई प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini इस डिवाइस पर 'ऑटो ब्राउज़' सुविधा का इस्तेमाल सिर्फ़ तब कर सकता है, जब डिवाइस ऐक्टिव हो और Chrome चल रहा हो.</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> खोलना चाहते हैं?</translation>
 <translation id="3739349485749941749">साइटें आपके डिवाइस से ऐक्सेस किए जा सकने वाले प्रिंटर खोजने और उनका इस्तेमाल करने की अनुमति मांग सकती हैं</translation>
 <translation id="3741056951918180319">एक्सटेंशन पर क्लिक करके, इसे किसी भी साइट पर इस्तेमाल किया जा सकता है</translation>
@@ -3981,6 +3990,7 @@
 <translation id="3987993985790029246">लिंक कॉपी करें</translation>
 <translation id="3988124842897276887">यह टैब किसी यूएसबी डिवाइस से कनेक्ट है</translation>
 <translation id="3989635538409502728">साइन आउट करें</translation>
+<translation id="399132041334931433">नए ग्रुप में टैब जोड़ें</translation>
 <translation id="399179161741278232">आयातित</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> डाउनलोड हो रही है, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें.</translation>
@@ -5209,6 +5219,7 @@
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4951966678293618079">इस साइट के लिए कभी भी पासवर्ड सेव न करें</translation>
 <translation id="4952580838083306838">ऑर्गनाइज़र पैनल छिपाएं</translation>
+<translation id="4952628481830269193">बुकमार्क बार दिखाएं</translation>
 <translation id="4953808748584563296">डिफ़ॉल्ट नारंगी अवतार</translation>
 <translation id="4954652437333037880">फ़ाइल</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> के बारे में पूछें</translation>
@@ -5461,6 +5472,7 @@
 <translation id="5149602533174716626">वीडियो फ़्रेम कॉपी करें</translation>
 <translation id="5150254825601720210">Netscape प्रमाणपत्र SSL सर्वर नाम</translation>
 <translation id="5151354047782775295">डिस्क स्पेस खाली करें अन्यथा चयनित डेटा अपने आप हट जाएगा</translation>
+<translation id="5152719737931716272">टास्क पूरा हो गया है और Gemini पर वापस आ गया है</translation>
 <translation id="5153074793829217329">माउस के कर्सर को कंट्रोल करने के लिए, कीबोर्ड या न्यूमेरिक कीपैड का इस्तेमाल करें</translation>
 <translation id="5153234146675181447">फ़ोन को भूल जाएं</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5777,6 +5789,7 @@
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>
 <translation id="5415497281076257439">वाक्यांश</translation>
 <translation id="5415871492522952905">आपके सभी डिवाइसों पर टैब और ब्राउज़िंग इतिहास सेव रहेगा, ताकि आप अपने पिछले काम जारी रख सकें</translation>
+<translation id="5417160551295347092">Gemini से गलतियां हो सकती हैं. जैसे, यह बिना पूछे आपकी जानकारी शेयर कर सकता है या खरीदारी कर सकता है. <ph name="LINK_BEGIN" />जोखिमों के बारे में जानें<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">यह साइट आपको सुरक्षित कॉन्टेंट दिखाने के लिए आइडेंटिफ़ायर इस्तेमाल कर सकती है.</translation>
 <translation id="5417312524372586921">ब्राउज़र थीम</translation>
 <translation id="541737483547792035">स्क्रीन ज़ूम करने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
@@ -6120,6 +6133,7 @@
 <translation id="5687340364605915800">यह साइटों पर निर्भर करता है कि वे इस अनुरोध को स्वीकार करेंगी या नहीं</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
+<translation id="568984110402742489">सुझाव, शिकायत या राय सबमिट नहीं की जा सकती</translation>
 <translation id="56907980372820799">डेटा लिंक करें</translation>
 <translation id="5691772641933328258">फ़िंगरप्रिंट नहीं पहचाना गया</translation>
 <translation id="5693255400847650006">माइक्रोफ़ोन इस्तेमाल हो रहा है</translation>
@@ -6530,6 +6544,7 @@
 <translation id="6003143259071779217">eSIM मोबाइल नेटवर्क हटाएं</translation>
 <translation id="6003479444341796444">अब टाइटल बार दिख रहा है</translation>
 <translation id="6003582434972667631">थीम को आपके संगठन ने सेट किया है</translation>
+<translation id="600407115562756795">Gemini, आपके शुरू या अपडेट किए गए टास्क के आधार पर यह तय करेगा कि उसे कौनसी कार्रवाइयां करनी हैं.</translation>
 <translation id="6005045517426700202">ब्रिक बिल्डिंग</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007053304250788613">मिरर मोड में सिर्फ़ एक डिसप्ले को हटाया जा सकता है</translation>
@@ -8507,6 +8522,7 @@
 <translation id="7523117833414447032">कैपिटल लेटर पढ़ते समय</translation>
 <translation id="7523585675576642403">प्रोफ़ाइल का नाम बदलें</translation>
 <translation id="7525067979554623046">बनाएं</translation>
+<translation id="7526083414913154899">Gemini की मदद से किए जाने वाले टास्क के बारे में ज़्यादा जानें</translation>
 <translation id="7528224636098571080">न खोलें</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{क्या टैब ग्रुप को ग्रुप से अलग करना है?}one{क्या टैब ग्रुप को ग्रुप से अलग करना है?}other{क्या टैब ग्रुप, ग्रुप से अलग करने हैं?}}</translation>
 <translation id="7529411698175791732">अपना इंटरनेट कनेक्शन जाँचें. अगर समस्या बनी रहती है, तो साइन आउट करें और दोबारा साइन इन करके देखें.</translation>
@@ -9236,6 +9252,7 @@
 <translation id="8081989000209387414">ADB डीबग करने की सुविधा बंद करें?</translation>
 <translation id="8082132721957920509">आपका कार्ड सेव किया गया</translation>
 <translation id="8082390128630131497">ADB डीबग करने की सुविधा बंद करने से यह <ph name="DEVICE_TYPE" /> फ़ैक्ट्री सेटिंग पर रीसेट हो जाएगा. सभी उपयोगकर्ता खातों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
+<translation id="8082737802704584539">आपके संगठन ने Google खाते में इतिहास सेव करने की सुविधा बंद कर दी है</translation>
 <translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
 <translation id="8084417885464859041">Gemini का सुरक्षित तरीके से इस्तेमाल करें</translation>
 <translation id="8084429490152575036">मोबाइल की एपीएन सेटिंग</translation>
@@ -9278,6 +9295,7 @@
 <translation id="8109991406044913868">एआई की मदद से बनाई गई थीम</translation>
 <translation id="8110393529211831722">सदस्यता सिर्फ़ इस डिवाइस पर सिंक की गई है. इसे आपके खाते का इस्तेमाल करने वाले अन्य डिवाइसों के साथ सिंक नहीं किया गया है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">संपर्क सूची डाउनलोड हो रही है...</translation>
+<translation id="8110781914702267195"><ph name="BEGIN_LINK1" />डेटा और निजता से जुड़ी प्राथमिकताएं<ph name="END_LINK1" /> कंट्रोल करने या <ph name="BEGIN_LINK2" />पेमेंट के तरीके<ph name="END_LINK2" /> और लॉयल्टी कार्ड जैसे <ph name="BEGIN_LINK3" />पास<ph name="END_LINK3" /> मैनेज करने के लिए, Google Wallet पर जाएं</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> के लिए माइक्रोफ़ोन को इस्तेमाल करने की अनुमति</translation>
 <translation id="8116497846156149">माता-पिता से अनुमति मांगें</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> याद रखता है कि आपने कैसे साइन इन किया था और जब भी संभव होता है, वह आपको अपने-आप साइन कर देता है. इस सुविधा के बंद होने पर, आपसे हर बार पुष्टि करने के लिए कहा जाएगा.</translation>
@@ -9358,6 +9376,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" /> में से <ph name="ITEM_POSITION" /> प्रिंटर.</translation>
 <translation id="8180785270975217276">एनर्जी सेवर चालू किया गया</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" चेक किए गए स्थानों में इमेज, वीडियो, और ध्वनि फ़ाइलों को पढ़ सकता है और मिटा सकता है.</translation>
+<translation id="8181132988581553950">Gemini के पास उन्हीं साइटों का ऐक्सेस होगा जिनका ऐक्सेस आपके पास है. इनमें वे साइटें भी शामिल हैं जिन पर आपने साइन इन किया हुआ है. यह तीसरे पक्ष के साथ ज़रूरी जानकारी शेयर करेगा. इसमें आपकी वह निजी जानकारी भी शामिल हो सकती है जो आपको संवेदनशील लग सकती है.</translation>
 <translation id="8183703640399301650">आपके डिवाइस का ईआईडी <ph name="EID_NUMBER" /> है और IMEI <ph name="IMEI_NUMBER" /> है. सेवा चालू करने के लिए, इन नंबरों का इस्तेमाल किया जा सकता है.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> पर जाएं</translation>
 <translation id="8184318863960255706">ज़्यादा जानकारी</translation>
@@ -10260,6 +10279,7 @@
 <translation id="8874341931345877644">किसी डिवाइस पर कास्ट करें:</translation>
 <translation id="8874647982044395866">ऑर्गैनिक</translation>
 <translation id="8874790741333031443">कुछ समय के लिए तीसरे पक्ष की कुकी को अनुमति दें. इसका मतलब है कि साइट को मिलने वाली ब्राउज़िंग से जुड़ी सुरक्षा कम हो जाएगी. हालांकि, साइट की सुविधाएं उम्मीद के मुताबिक काम करेंगी.</translation>
+<translation id="8874864294955002500">आपके खाते के लिए सुझाव, शिकायत या राय सबमिट करने की सुविधा उपलब्ध नहीं है. आपके एंटरप्राइज़ का एडमिन, आपके लिए किसी समस्या की शिकायत करने के लिए, अपने डिवाइस या प्रोफ़ाइल का इस्तेमाल कर सकता है.</translation>
 <translation id="8875736897340638404">'डिवाइस किसको दिखाई दे' सेटिंग में कोई विकल्प चुनें</translation>
 <translation id="8876307312329369159">यह सेटिंग किसी डेमो सत्र में बदली नहीं जा सकती है.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> आस-पास मौजूद डिवाइसों को खोजने के लिए, ब्लूटूथ डिवाइस का पता लगाने की सुविधा का इस्तेमाल करती है.</translation>

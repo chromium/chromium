@@ -740,6 +740,7 @@
 <translation id="2233745931693710080">Компактен диск</translation>
 <translation id="2236949375853147973">Моја активност</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
+<translation id="223921069122391343">Вашата зачувана понуда ќе биде достапна при плаќањето со „Автоматско пополнување“. <ph name="BEGIN_LINK" />Погледнете ги условите и одредбите<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Додајте поправен број</translation>
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2242389809734574253">Долниот лист за зачувување IBAN е затворен.</translation>
@@ -986,7 +987,6 @@
 <translation id="2628025184666666186">Серверов не можеше да докаже дека е <ph name="DOMAIN" /> бидејќи користи сертификат за безбедност во којшто нема доверба Chrome или конфигурацијата на системот за шифрирање сообраќај на интернет. Тоа може да се должи на погрешна конфигурација или на напаѓач што ја пресретнува врската.</translation>
 <translation id="2628224721443278970">Најавете се на Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Администраторот го лоцира уредов додека беше оневозможен. Повторно е овозможен и подготвен за користење.</translation>
-<translation id="2631387782019878060">Код за потврда: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
 <translation id="2635276683026132559">Потпишување</translation>
 <translation id="2638070510549214427">Означи како безбедно</translation>
@@ -1371,6 +1371,7 @@
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
 <translation id="3310946375819654151">Chrome се обидува да пополни ваши чувствителни податоци во апликацијата <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Прикачувањето е успешно</translation>
+<translation id="3323135197619890621">Вклучете „Автоматско пополнување“ за да го олесните купувањето</translation>
 <translation id="3324687287337751929">4 x 6 инчи</translation>
 <translation id="3325568918769906282">по опаѓачки редослед</translation>
 <translation id="3325662270238538525">неодамнешен пристап до датотеките и измени во нив, вклучувајќи имиња на датотеки, дигитални отпечатоци на содржините на датотеките, извор на преземање и метаподатоци</translation>
@@ -1596,6 +1597,7 @@
 <translation id="3704162925118123524">Мрежата што ја користите може да бара да ја посетите страницата за најавување.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Се вчитува...</translation>
+<translation id="3708927069677086144">Вашата организација бара да се најавите на Chrome</translation>
 <translation id="3709599264800900598">Текстот што го копиравте</translation>
 <translation id="3711223220609269738">Нова изолирана картичка</translation>
 <translation id="3711430313228789376">Прелистувачот Chrome се обидува да ги прикаже лозинките</translation>
@@ -1733,6 +1735,7 @@
 <translation id="3928806096717999469">Изменете, се отвора во нов прозорец</translation>
 <translation id="393417216277380082">Сензори за движење и светлина</translation>
 <translation id="3937640725563832867">Алтернативно име на издавач на сертификат</translation>
+<translation id="3938243129430544357">Плаќајте безбедно со „Автоматско пополнување“</translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
 <translation id="3941630233824954464">Овозможете задолжителна повторна автентикација</translation>
 <translation id="3942048175062210325">Обидете се да ги отворите датотеките повторно</translation>
@@ -2057,6 +2060,7 @@
 <translation id="4424024547088906515">Серверот не може да докаже дека е <ph name="DOMAIN" />; Chrome не му верува на неговиот безбедносен сертификат. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="4425137053900958839">Уживајте во погодноста и безбедноста што ви ги нуди Pix</translation>
 <translation id="443121186588148776">Сериска порта</translation>
+<translation id="4431928532022419942">Да се отстрани од Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> не го прифати вашиот сертификат за најавување или можеби таков сертификат не е обезбеден.</translation>
 <translation id="4432792777822557199">Отсега-натаму, страниците на <ph name="SOURCE_LANGUAGE" /> ќе се преведуваат на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Игнорирано бидејќи корисникот не е поврзан со управувањето на машината или машината не е управувана.</translation>
@@ -3136,6 +3140,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> обележувачи</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
 <translation id="6264485186158353794">Назад во безбедност</translation>
+<translation id="6264507470395196064">Безбеден премин</translation>
 <translation id="6264636978858465832">Password Manager бара повеќе пристап</translation>
 <translation id="6265794661083428563">Копирај ја вредноста на правилото <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Вашиот пристап до <ph name="URL" /> е блокиран од правилата на вашата организација. Ако тоа е неочекувано, контактирајте со администраторот.</translation>
@@ -3345,6 +3350,7 @@
 <translation id="6630043285902923878">Се бараат USB-уреди…</translation>
 <translation id="6630388727238334626">Копче за управување со поставките за Chrome, активирајте го за да појдете во поставките за Chrome</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">За да го посетите сајтот во продолжение, вашата организација бара да се најавите со вашата управувана сметка на Google.</translation>
 <translation id="6635900375070654124">уред за автентикација</translation>
 <translation id="6641852376826221947">Потврдете го купувањето</translation>
 <translation id="6643016212128521049">Исчисти</translation>
@@ -3534,6 +3540,7 @@
 <translation id="6957153644870901611">Вклучете ја „Подобрено автоматско пополнување“ за да пополнува повеќе полиња автоматски</translation>
 <translation id="6957887021205513506">Се чини дека сертификатот на серверот е фалсификат.</translation>
 <translation id="6958564499836457428">Управувајте со поставките за приватност на Google во сметката на Google</translation>
+<translation id="6961161369573226336">Google Password Manager може да ги добива кодовиве за вас од вашата адреса на Gmail <ph name="EMAIL" />. Може да се предомислите и <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Може да прашува за да ги користи фонтовите инсталирани на уредот</translation>
 <translation id="6962858948849099922">Времето за преместување истече</translation>
 <translation id="6963520811470373926">Заменување</translation>
@@ -3611,6 +3618,7 @@
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Побарано е прикачување од корисникот</translation>
 <translation id="7090698782953528257">Помогни ми да нацртам графикон на функција за да ја визуализирам математичката равенка и да го видам обликот на кривата</translation>
+<translation id="7092087596499105699">Администраторот го конфигурирал конекторот за безбеден премин за да го заштити пристапот до приватните веб-апликации на вашата организација. Може да користи податоци од вашиот работен профил за да го потврди пристапот.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, па Enter за да управувате со дозволите и податоците коишто се складираат на сајтовите во поставките за Chrome</translation>
 <translation id="709604659664854823">Најди ми резервации во последен момент во ресторани во близина вечерва</translation>
 <translation id="7096341143397839437">Е-пошта: <ph name="EMAIL" />.</translation>
@@ -4864,6 +4872,7 @@
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> члена се придружија во групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="949314938206378263">Побара да го посетиш сајтов. Твојот родител може да одговори во Family Link.</translation>
 <translation id="949484466204182817">Додајте број за ревизија во Google Wallet</translation>
+<translation id="950533895669718124">да дознаете повеќе за функцијава во поставките</translation>
 <translation id="950736567201356821">Три дупки горе</translation>
 <translation id="950926967802086924">Криптографски клуч • Google Password Manager</translation>
 <translation id="952165179818196872">Додајте <ph name="PROVIDER" /> за да плаќате без да се префрлате во друга апликација</translation>

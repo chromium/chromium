@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 ລະຫັດຜ່ານຖືກນໍາເຂົ້າໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້}other{{NUM_PASSWORDS} ລະຫັດຜ່ານຖືກນຳເຂົ້າໃສ່ <ph name="BRAND" /> ຢູ່ອຸປະກອນນີ້}}</translation>
 <translation id="1046572983040892965">ໜ້າຈໍເລື່ອນຂຶ້ນ ແລະ ໄປທາງຊ້າຍ</translation>
 <translation id="1047431265488717055">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
+<translation id="104751728059674265">ບໍ່ສາມາດໃຊ້ບັນຊີຂອງທ່ານສົ່ງຄຳຕິຊົມໄດ້. ຜູ້ໃຫຍ່ສາມາດໃຊ້ອຸປະກອນ ຫຼື ໂປຣໄຟລ໌ຂອງຕົນເອງເພື່ອລາຍງານບັນຫາໃຫ້ທ່ານໄດ້.</translation>
 <translation id="1048986595386481879">ຈັດສັນແບບໄດນາມິກ</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{ກຳລັງຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" />}other{ກຳລັງຮັບ <ph name="ATTACHMENTS" /> ຈາກ <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">ບໍ່​ເຜີຍ​ຕົວຕົນ</translation>
@@ -992,6 +993,7 @@
 <translation id="1755601632425835748">ຂະໜາດຂໍ້ຄວາມ</translation>
 <translation id="1756963401828337401">ເລືອກໜ້າຈໍທີ່ຈະຖ່າຍຮູບ</translation>
 <translation id="17584710573359123">ເບິ່ງໃນ Chrome Web Store</translation>
+<translation id="1758845021884209593">ໃຊ້ທາງລັດໃນແອັບຕ່າງໆຂອງລະບົບປະຕິບັດການ</translation>
 <translation id="1761402971842586829">ແມັບ <ph name="BUTTON_NAME" /> ໃໝ່ເປັນ <ph name="REMAPPING_OPTION" /> ແລ້ວ.</translation>
 <translation id="1761845175367251960">ບັນຊີຂອງ <ph name="NAME" /></translation>
 <translation id="176272781006230109">ການແນະນຳການຊື້ເຄື່ອງ</translation>
@@ -3098,6 +3100,7 @@
 <translation id="3355936511340229503">ການເຊື່ອມຕໍ່ຜິດພາດ</translation>
 <translation id="335678817537689040">ຄົງທີ່</translation>
 <translation id="3359256513598016054">ຂໍ້ຈໍາກັດນະໂຍບາຍໃບຢັ້ງຢືນ</translation>
+<translation id="3359465538772230055">ບໍ່ມີໜ້າວຽກ</translation>
 <translation id="3360297538363969800">ການພິມບໍ່ສໍາເລັດ. ກະລຸນາກວດເບິ່ງເຄື່ອງພິມຂອງທ່ານ ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}other{<ph name="DEVICE_NAME" /> ກຳລັງແບ່ງປັນ <ph name="ATTACHMENTS" /> ກັບທ່ານ.}}</translation>
@@ -6121,6 +6124,7 @@
 <translation id="5687340364605915800">ເວັບໄຊຕ່າງໆຈະໃຊ້ວິຈາລະນະຍານຂອງຕົນເອງໃນເວລາຕອບສະໜອງຕໍ່ຄຳຮ້ອງຂໍນີ້</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">ສະຖານທີ່</translation>
+<translation id="568984110402742489">ບໍ່ສາມາດສົ່ງຄຳຕິຊົມໄດ້</translation>
 <translation id="56907980372820799">ລິ້ງຂໍ້ມູນ</translation>
 <translation id="5691772641933328258">ບໍ່ຮູ້ຈັກລາຍນິ້ວມື</translation>
 <translation id="5693255400847650006">ມີການໃຊ້ໄມໂຄຣໂຟນຢູ່</translation>
@@ -9234,6 +9238,7 @@
 <translation id="8081989000209387414">ປິດນຳໃຊ້ການດີບັກ ADB ບໍ?</translation>
 <translation id="8082132721957920509">ບັນທຶກບັດຂອງທ່ານແລ້ວ</translation>
 <translation id="8082390128630131497">ການປິດນຳໃຊ້ການດີບັກ ADB ຈະຣີເຊັດ <ph name="DEVICE_TYPE" /> ນີ້ເປັນການຕັ້ງຄ່າຈາກໂຮງງານ. ລະບົບຈະລຶບບັນຊີຜູ້ໃຊ້ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດ.</translation>
+<translation id="8082737802704584539">ອົງກອນຂອງທ່ານໄດ້ປິດໃຊ້ການບັນທຶກປະ​ຫວັດ​ຢູ່ໃນບັນຊີ Google ຂອງທ່ານແລ້ວ</translation>
 <translation id="8084114998886531721">ບັນທຶກລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="8084417885464859041">ໃຊ້ Gemini ຢ່າງປອດໄພ</translation>
 <translation id="8084429490152575036">ການຕັ້ງຄ່າ APN ເຄືອຂ່າຍມືຖື</translation>
@@ -9276,6 +9281,7 @@
 <translation id="8109991406044913868">ຮູບແບບສີສັນທີ່ສ້າງໂດຍ AI</translation>
 <translation id="8110393529211831722">ການສະໝັກສະມາຊິກແມ່ນຕິດຕັ້ງຢູ່ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ ແລະ ບໍ່ໄດ້ຊິ້ງກັບອຸປະກອນອື່ນໆພາຍໃຕ້ບັນຊີຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">ກຳລັງດາວໂຫຼດລາຍຊື່ຜູ້ຕິດຕໍ່...</translation>
+<translation id="8110781914702267195">ເຂົ້າເບິ່ງ Google Wallet ເພື່ອຄວບຄຸມ <ph name="BEGIN_LINK1" />ຄ່າກຳນົດຂໍ້ມູນ ແລະ ຄວາມເປັນສ່ວນຕົວ<ph name="END_LINK1" /> ຂອງທ່ານ ຫຼື ຈັດການ <ph name="BEGIN_LINK2" />ວິທີການຈ່າຍເງິນ<ph name="END_LINK2" /> ແລະ <ph name="BEGIN_LINK3" />ບັດຮວມ<ph name="END_LINK3" /> ເຊັ່ນ: ບັດສະມາຊິກ</translation>
 <translation id="8114925369073821854">ການອະນຸຍາດໄມໂຄຣໂຟນຂອງ <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">ຂໍໃຫ້ຜູ້ປົກຄອງອະນຸມັດ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> ຈະຈື່ວິທີທີ່ທ່ານເຂົ້າສູ່ລະບົບ ແລະ ຈະເຂົ້າສູ່ລະບົບໃຫ້ທ່ານໂດຍອັດຕະໂນມັດເມື່ອເປັນໄປໄດ້. ເມື່ອປິດການຕັ້ງຄ່ານີ້, ລະບົບຈະຂໍໃຫ້ທ່ານຢືນຢັນທຸກໆເທື່ອ.</translation>
@@ -10258,6 +10264,7 @@
 <translation id="8874341931345877644">ສົ່ງສັນຍານໄປຫາອຸປະກອນ:</translation>
 <translation id="8874647982044395866">ທຳມະຊາດ</translation>
 <translation id="8874790741333031443">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຊົ່ວຄາວ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງລະຫວ່າງທ່ອງເວັບຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກຕາມທີ່ຄາດໄດ້ຫຼາຍກວ່າ.</translation>
+<translation id="8874864294955002500">ບໍ່ສາມາດໃຊ້ບັນຊີຂອງທ່ານສົ່ງຄຳຕິຊົມໄດ້. ຜູ້ເບິ່ງແຍງລະບົບອົງກອນຂອງທ່ານສາມາດໃຊ້ອຸປະກອນ ຫຼື ໂປຣໄຟລ໌ຂອງເຂົາເຈົ້າເພື່ອລາຍງານບັນຫາໃຫ້ທ່ານໄດ້.</translation>
 <translation id="8875736897340638404">ເລືອກການສະແດງຂອງທ່ານ</translation>
 <translation id="8876307312329369159">ບໍ່ສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ໃນເຊດຊັນສາທິດ.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> ໃຊ້ການສະແກນ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ.</translation>

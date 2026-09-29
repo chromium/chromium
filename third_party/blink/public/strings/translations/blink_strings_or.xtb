@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">ଅନ୍ୟ ଏକ ଟାବରେ ଡିବଗରକୁ ବିରତ କରାଯାଇଛି, ସେହି ଟାବକୁ ସୁଇଚ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="1171774979989969504">ଦୟାକରି ଗୋଟିଏ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ।</translation>
 <translation id="1178581264944972037">ବିରତି</translation>
+<translation id="1254779809141342904">ଏହି CAP ଆଲର୍ଟ XSLT ନାମକ ଟେକ୍ନୋଲୋଜି ବ୍ୟବହାର କରେ; ସେହି କାର୍ଯ୍ୟକ୍ଷମତାକୁ <ph name="REMOVAL_LINK" /> କରାଯାଉଛି। ତାହା ହେଲେ, ଏହି ଆଲର୍ଟ, ର XML ଡାଟା ଭାବେ ଦେଖାଯିବ। ଆପଣ <ph name="EXTENSION_LINK" /> କରିବାକୁ ସକ୍ଷମ ହୋଇପାରନ୍ତି ଯାହା ଆପଣଙ୍କୁ ଏହାକୁ ଭ୍ୟୁ କରିବା ଜାରି ରଖିବାକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="1306460908038601864">ବନ୍ଦ ଅଛି</translation>
 <translation id="1311894908970423688">ମୂଲ୍ୟ ନିଶ୍ଚିତ ଭାବରେ <ph name="VALUE_DATE_OR_TIME" /> ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2746543609216772311">ମୂଲ୍ୟ <ph name="MINIMUM_DATE_OR_TIME" /> କିମ୍ବା ତା’ପର ହେବା ଉଚିତ।</translation>
 <translation id="2761667185364618470">ଯଦି ଆପଣ ଆଗକୁ ବଢ଼ିବାକୁ ଚାହାନ୍ତି, ତେବେ ଦୟାକରି ଏହି ବକ୍ସରେ ଠିକ୍ ଚିହ୍ନ ଦିଅନ୍ତୁ।</translation>
+<translation id="2854734116215697908">ଏହି ବ୍ରାଉଜରରୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="2908441821576996758">ଦୟାକରି ଇମେଲ୍ ଠିକଣାଗୁଡ଼ିକର ଏକ କମା ଦ୍ୱାରା ଅଲଗା କରାଯାଇଥିବା ତାଲିକା ଲେଖନ୍ତୁ।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">ଦୟାକରି ଏକ ବୈଧ ମୂଲ୍ୟ ଲେଖନ୍ତୁ। ଫିଲ୍ଡ ଅସମ୍ପୂର୍ଣ୍ଣ ଅଟେ କିମ୍ବା ଏହାର ଏକ ଅବୈଧ ତାରିଖ ଅଟେ।</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">କାଷ୍ଟ</translation>
 <translation id="5630795885300617244">10s ବାଦ୍‌ ଦେବାକୁ ବାମ କିମ୍ବା ଡାହାଣକୁ ଦୁଇଥର ଟାପ୍‌ କରନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
+<translation id="5855560023261018690">ଖୁବ ଶୀଘ୍ର ଏହି ବ୍ରାଉଜରରୁ କାଢ଼ି ଦିଆଯିବ</translation>
 <translation id="5868587040512539609">ଭିଡିଓ ଟ୍ରାକ</translation>
 <translation id="588258955323874662">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5888666972993069672">ବର୍ତ୍ତମାନ <ph name="DEVICE_FRIENDLY_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">ପିକଚର୍-ଇନ୍-ପିକଚର୍‌ରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="6484738902856791350">ପ୍ରେଟି-ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6550675742724504774">ବିକଳ୍ପଗୁଡ଼ିକ</translation>
+<translation id="65574987622079584">ଏକ ବ୍ରାଉଜର ଏକ୍ସଟେନସନ ଇନଷ୍ଟଲ କରନ୍ତୁ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6661136971638885481">ଟ୍ରାକ #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">ଅନ୍ୟ...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">ଏହି ସପ୍ତାହ</translation>
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ବର୍ଷ</translation>
+<translation id="8243989288843872594">ଏହି ଚେତାବନୀକୁ କେବେ ବି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="8284326494547611709">କ୍ୟାପସନ୍</translation>
 <translation id="835897206747267392">ଅବୈଧ ମୂଲ୍ୟ।</translation>
 <translation id="839593075537728968">ମୂଲ୍ୟ <ph name="MINIMUM_TIME" /> ଏବଂ <ph name="MAXIMUM_TIME" /> ମଧ୍ୟରେ ରହିବା ଆବଶ୍ୟକ।</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1.75</translation>
 <translation id="8668988909814782445">ଲାଇନ୍ ରାପ୍</translation>
 <translation id="8750798805984357768">ଦୟାକରି ଏହି ବିକଳ୍ପଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ଚୟନ କରନ୍ତୁ।</translation>
+<translation id="8753001114009816390">ଏହି ସାଇଟ XSLT ବ୍ୟବହାର କରେ; ସେହି କାର୍ଯ୍ୟକ୍ଷମତାକୁ <ph name="REMOVAL_LINK" /> କରାଯାଉଛି। ତାହା ହେଲେ, ଏହି ପୃଷ୍ଠାଟି ଆଉ ସଠିକ ଭାବେ ଡିସପ୍ଲେ ହେବାର ସମ୍ଭାବନା ନାହିଁ। ଆପଣ <ph name="EXTENSION_LINK" /> କରିବାକୁ ସକ୍ଷମ ହୋଇପାରନ୍ତି ଯାହା ଆପଣଙ୍କୁ ଏହାକୁ ଭ୍ୟୁ କରିବା ଜାରି ରଖିବାକୁ ଅନୁମତି ଦିଏ। ଅନ୍ୟଥା, ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣ ସାଇଟର ରକ୍ଷଣାବେକ୍ଷଣକାରୀଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରିବା ଉଚିତ।</translation>
 <translation id="8845239796550121995">ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଟିଭିକୁ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="8875657656876809964">ଭିଡିଓ ପ୍ଲେବ୍ୟାକ୍ ତ୍ରୁଟି</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

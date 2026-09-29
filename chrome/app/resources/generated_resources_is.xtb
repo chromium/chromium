@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 aðgangsorð var flutt inn í <ph name="BRAND" /> í þessu tæki}one{{NUM_PASSWORDS} aðgangsorð var flutt inn í <ph name="BRAND" /> í þessu tæki}other{{NUM_PASSWORDS} aðgangsorð voru flutt inn í <ph name="BRAND" /> í þessu tæki}}</translation>
 <translation id="1046572983040892965">Gluggi færðist upp og til vinstri</translation>
 <translation id="1047431265488717055">Afrita tenglate&amp;xta</translation>
+<translation id="104751728059674265">Ábendingar eru ekki í boði fyrir reikninginn þinn. Fullorðinn einstaklingur getur notað tækið sitt eða prófíl til að tilkynna vandamál fyrir þig.</translation>
 <translation id="1048986595386481879">Kvik úthlutun</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}one{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}other{Móttekur <ph name="ATTACHMENTS" /> frá <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Fara huldu höfði</translation>
@@ -992,6 +993,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1755601632425835748">Textastærð</translation>
 <translation id="1756963401828337401">Veldu skjá til að taka mynd af</translation>
 <translation id="17584710573359123">Skoða í vefverslun Chrome</translation>
+<translation id="1758845021884209593">Nota flýtileið í stýrikerfisforritum</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> endurvarpað á <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Reikningar sem <ph name="NAME" /> á</translation>
 <translation id="176272781006230109">innkaupatillögur</translation>
@@ -3099,6 +3101,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3355936511340229503">Tengingarvilla</translation>
 <translation id="335678817537689040">Föst</translation>
 <translation id="3359256513598016054">Stefnutakmarkanir vottorðs</translation>
+<translation id="3359465538772230055">Engin verkefni</translation>
 <translation id="3360297538363969800">Prentun mistókst. Athugaðu prentarann og reyndu aftur.</translation>
 <translation id="3360306038446926262">Gluggar</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}one{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}other{<ph name="DEVICE_NAME" /> deilir <ph name="ATTACHMENTS" /> með þér.}}</translation>
@@ -6123,6 +6126,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5687340364605915800">Vefsvæði svara þessari beiðni að eigin ákvörðun</translation>
 <translation id="5689233503102158537">alt + bakklykill</translation>
 <translation id="5689516760719285838">Staðsetning</translation>
+<translation id="568984110402742489">Ekki er hægt að senda ábendingu</translation>
 <translation id="56907980372820799">Tenglagögn</translation>
 <translation id="5691772641933328258">Fingrafar þekkist ekki</translation>
 <translation id="5693255400847650006">Hljóðnemi í notkun</translation>
@@ -9281,6 +9285,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8109991406044913868">Þema búið til með gervigreind</translation>
 <translation id="8110393529211831722">Áskriftin er eingöngu uppsett í þessu tæki og er ekki samstillt við önnur tæki þar sem þú skráir þig inn á reikninginn þinn. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Sækir tengiliðalista...</translation>
+<translation id="8110781914702267195">Opnaðu Google-veski til að stjórna <ph name="BEGIN_LINK1" />gagna- og persónuverndarstillingum<ph name="END_LINK1" /> eða stjórna <ph name="BEGIN_LINK2" />greiðslumátum<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />pössum<ph name="END_LINK3" /> á borð við tryggðarkort</translation>
 <translation id="8114925369073821854">Hljóðnemaheimild fyrir <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Biðja foreldri um samþykki</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> man hvernig þú skráðir þig inn og skráir þig inn sjálfkrafa þegar hægt er. Þegar slökkt er á þessu færðu beiðni um að staðfesta í hvert skipti.</translation>
@@ -10263,6 +10268,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8874341931345877644">Senda út í tæki:</translation>
 <translation id="8874647982044395866">Lífrænt</translation>
 <translation id="8874790741333031443">Prófaðu að leyfa fótspor þriðju aðila tímabundið, það þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
+<translation id="8874864294955002500">Ábendingar eru ekki í boði fyrir reikninginn þinn. Kerfisstjóri fyrirtækisins getur notað tækið sitt eða prófíl til að tilkynna vandamál fyrir þig.</translation>
 <translation id="8875736897340638404">Veldu sýnileika</translation>
 <translation id="8876307312329369159">Ekki er hægt að breyta þessari stillingu í prufuútgáfu.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> notar Bluetooth-skönnun til að finna nálæg tæki.</translation>

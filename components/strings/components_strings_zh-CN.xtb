@@ -740,6 +740,7 @@
 <translation id="2233745931693710080">CD</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
 <translation id="2239100178324503013">立即发送</translation>
+<translation id="223921069122391343">结账时，您可以使用自动填充功能应用已保存的优惠。<ph name="BEGIN_LINK" />查看条款及条件<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">添加身份纠正识别号</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2242389809734574253">保存 IBAN 的底部动作条已关闭。</translation>
@@ -986,7 +987,6 @@
 <translation id="2628025184666666186">此服务器无法证明其所在网域是 <ph name="DOMAIN" />，因为它使用的安全证书不受 Chrome 或您系统的网站流量加密配置所信任。出现此问题的原因可能是配置有误，或是有攻击者拦截您的连接。</translation>
 <translation id="2628224721443278970">登录 Microsoft OneDrive</translation>
 <translation id="2631059741268498165">管理员已定位到这部停用的设备。它已重新启用，可以使用了。</translation>
-<translation id="2631387782019878060">验证码：<ph name="OTP" /></translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的服务器 IP 地址。</translation>
 <translation id="2635276683026132559">签名</translation>
 <translation id="2638070510549214427">标记为安全网站</translation>
@@ -1369,6 +1369,7 @@
 <translation id="3308006649705061278">组织单位 (OU)</translation>
 <translation id="3310946375819654151">Chrome 正尝试在“<ph name="APP_NAME" />”上填充您的敏感信息。</translation>
 <translation id="3312952471765023168">上传成功</translation>
+<translation id="3323135197619890621">开启自动填充功能，让购物更轻松</translation>
 <translation id="3324687287337751929">4 x 6 英寸</translation>
 <translation id="3325568918769906282">按降序</translation>
 <translation id="3325662270238538525">近期文件访问和修改活动，包括文件名、文件内容的数字指纹、下载来源和元数据</translation>
@@ -1592,6 +1593,7 @@
 <translation id="3704162925118123524">您正在使用的网络可能会要求您访问其登录页面。</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">正在加载...</translation>
+<translation id="3708927069677086144">您的组织要求您登录 Chrome</translation>
 <translation id="3709599264800900598">您复制的文字</translation>
 <translation id="3711223220609269738">新隔离标签页</translation>
 <translation id="3711430313228789376">Chrome 浏览器正在尝试显示密码</translation>
@@ -1729,6 +1731,7 @@
 <translation id="3928806096717999469">修改，在新窗口中打开</translation>
 <translation id="393417216277380082">移动传感器和光传感器</translation>
 <translation id="3937640725563832867">证书颁发者的备用名称</translation>
+<translation id="3938243129430544357">使用自动填充功能安全结账</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3941630233824954464">启用强制性身份重新验证</translation>
 <translation id="3942048175062210325">尝试重新打开文件</translation>
@@ -2053,6 +2056,7 @@
 <translation id="4424024547088906515">此服务器无法证明它是<ph name="DOMAIN" />；Chrome不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="4425137053900958839">获享 Pix 值得信赖的便利性和安全性</translation>
 <translation id="443121186588148776">串行端口</translation>
+<translation id="4431928532022419942">要从 Chrome 中移除吗？</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> 不接受您的登录证书，或者您可能没有提供登录证书。</translation>
 <translation id="4432792777822557199">从现在开始，源语言为<ph name="SOURCE_LANGUAGE" />的网页一律会被翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">被忽略了，因为用户未关联到机器管理服务或者相应机器不是处于受管理状态。</translation>
@@ -3131,6 +3135,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 书签</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6264485186158353794">返回安全连接</translation>
+<translation id="6264507470395196064">安全网关</translation>
 <translation id="6264636978858465832">密码管理工具需要更多访问权限</translation>
 <translation id="6265794661083428563">复制 <ph name="POLICY_NAME" /> 政策的值</translation>
 <translation id="6271264012613848937">根据您组织的政策，您无法访问 <ph name="URL" />。若有疑问，请与管理员联系。</translation>
@@ -3340,6 +3345,7 @@
 <translation id="6630043285902923878">正在查找 USB 设备…</translation>
 <translation id="6630388727238334626">“管理 Chrome 设置”按钮，激活它即可访问您的 Chrome 设置</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">若要访问您要前往的网站，您必须按照您所在组织的要求，使用受管理的 Google 账号登录。</translation>
 <translation id="6635900375070654124">身份验证器设备</translation>
 <translation id="6641852376826221947">确认您的支付信息</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -3529,6 +3535,7 @@
 <translation id="6957153644870901611">开启增强型自动填充功能，即可自动填充更多字段</translation>
 <translation id="6957887021205513506">该服务器的证书似乎是伪造的。</translation>
 <translation id="6958564499836457428">在您的 Google 账号中管理 Google 隐私设置</translation>
+<translation id="6961161369573226336">Google 密码管理工具可以从您的 Gmail <ph name="EMAIL" /> 中获取这些验证码。您可以随时改变主意并<ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />。</translation>
 <translation id="6961844873822989059">可以询问能否使用您设备上安装的字体</translation>
 <translation id="6962858948849099922">移动超时</translation>
 <translation id="6963520811470373926">正在取代</translation>
@@ -3606,6 +3613,7 @@
 <translation id="70846382339153529">OpenDocument 文本</translation>
 <translation id="7086090958708083563">用户已请求上传</translation>
 <translation id="7090698782953528257">帮我绘制函数图像，直观呈现数学方程，让曲线形状一目了然</translation>
+<translation id="7092087596499105699">您的管理员配置了安全网关连接器，以保护对组织专用 Web 应用的访问。它可能会使用您工作资料中的数据验证访问权限。</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理各网站的权限及存储的数据</translation>
 <translation id="709604659664854823">帮我看看今晚附近餐厅还有没有空位</translation>
 <translation id="7096341143397839437">电子邮件地址：<ph name="EMAIL" />。</translation>
@@ -4860,6 +4868,7 @@
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> 位成员加入了“<ph name="GROUP_NAME" />”标签页分组</translation>
 <translation id="949314938206378263">你已请求访问此网站。你的家长可在 Family Link 内回复。</translation>
 <translation id="949484466204182817">向 Google 钱包添加身份纠正识别号</translation>
+<translation id="950533895669718124">在设置中详细了解此功能</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="950926967802086924">通行密钥 • Google 密码管理工具</translation>
 <translation id="952165179818196872">添加<ph name="PROVIDER" />，无需切换应用即可付款</translation>

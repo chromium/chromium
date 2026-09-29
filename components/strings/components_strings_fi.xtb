@@ -987,7 +987,6 @@ Voit poistaa tämän ehdotuksen Chromesta. Alkuperäistä lähdettä ei poisteta
 <translation id="2628025184666666186">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, koska se käyttää suojausvarmennetta, johon Chrome tai järjestelmän määritykset eivät luota verkkoliikenteen salauksessa. Tämä voi johtua määritysvirheestä tai yhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2628224721443278970">Kirjaudu Microsoft OneDriveen</translation>
 <translation id="2631059741268498165">Järjestelmänvalvoja paikansi tämän laitteen, kun se oli poistettu käytöstä. Se on otettu uudelleen käyttöön ja valmis käytettäväksi.</translation>
-<translation id="2631387782019878060">Vahvistuskoodi: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Sivuston <ph name="HOST_NAME" /> palvelimen IP-osoitetta ei löytynyt.</translation>
 <translation id="2635276683026132559">Allekirjoitus</translation>
 <translation id="2638070510549214427">Merkitse turvalliseksi</translation>

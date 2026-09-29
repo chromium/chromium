@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1348779747280417563">ຢືນຢັນຊື່</translation>
+<translation id="1353546633704510580">ພາກພື້ນທີ່ເລືອກ</translation>
 <translation id="1357195169723583938">ໃຜໃຊ້ອຸປະກອນເມື່ອບໍ່ດົນມານີ້ ແລະ ເວລາໃດ</translation>
 <translation id="1358187717814494928">ສ້າງຊີດ</translation>
 <translation id="1358223345833465883">ໂປຣແກຣມຊອກຫາຂອງທ່ານໃນ Chromium</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">ກຳລັງຢັ້ງຢືນວິທີການຈ່າຍເງິນ</translation>
 <translation id="1576277203042721907">ຂໍ້ມູນເຈາະເລິກການຊື້ເຄື່ອງ</translation>
 <translation id="1579189948231786790">ອົງການຂອງທ່ານບລັອກເວັບໄຊນີ້ໄວ້</translation>
+<translation id="1579940597679293608">ປິດໜ້າຈໍແຍກທັງໝົດ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ມີບາງອັນຜິດພາດ ໃນຂະນະທີ່ກໍາລັງສະແດງໜ້າ​ເວັບນີ້.</translation>
 <translation id="1585306568496579337">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ຕ້ອງການເປີດລິ້ງ <ph name="PROTOCOL" /> ລາຍການຜ່ານ <ph name="HANDLER_HOSTNAME" /></translation>
@@ -740,6 +742,7 @@
 <translation id="2233745931693710080">ແຜ່ນຊີດີ</translation>
 <translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
 <translation id="2239100178324503013">ສົ່ງດຽວນີ້</translation>
+<translation id="223921069122391343">ຂໍ້ສະເໜີທີ່ທ່ານບັນທຶກໄວ້ຈະພ້ອມໃຫ້ນຳໃຊ້ໃນຕອນຈ່າຍເງິນໂດຍໃຊ້ການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ. <ph name="BEGIN_LINK" />ເບິ່ງຂໍ້ກຳນົດ ແລະ ເງື່ອນໄຂ<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">ເພີ່ມໝາຍເລກປະຈຳຕົວຜູ້ທີ່ຢູ່ໃນກຸ່ມສ່ຽງ</translation>
 <translation id="2241693394036365668">ລະບົບຈະດາວໂຫຼດໄຟລ໌</translation>
 <translation id="2242389809734574253">ປິດຂໍ້ຄວາມແຈ້ງໃຫ້ບັນທຶກ IBAN ແລ້ວ.</translation>
@@ -986,7 +989,6 @@
 <translation id="2628025184666666186">ເຊີບເວີນີ້ບໍ່ສາມາດຢືນຢັນໄດ້ວ່າມັນແມ່ນ <ph name="DOMAIN" /> ເນື່ອງຈາກມັນກຳລັງໃຊ້ໃບຮັບຮອງຄວາມປອດໄພທີ່ Chrome ຫຼື ການຕັ້ງຄ່າລະບົບຂອງທ່ານສຳລັບການເຂົ້າລະຫັດທຣາບຟິກເວັບບໍ່ເຊື່ອຖື. ນີ້ອາດເກີດຈາກການຕັ້ງຄ່າຜິດ ຫຼື ມີຜູ້ໂຈມຕີສະກັດກັ້ນການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2628224721443278970">ເຂົ້າສູ່ລະບົບ Microsoft OneDrive</translation>
 <translation id="2631059741268498165">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານລະບຸຕຳແໜ່ງອຸປະກອນນີ້ໃນລະຫວ່າງທີ່ປິດການນຳໃຊ້ຢູ່. ລະບົບໄດ້ເປີດການນຳໃຊ້ຄືນໃໝ່ ແລະ ພ້ອມນຳໃຊ້ແລ້ວ.</translation>
-<translation id="2631387782019878060">ລະຫັດການຢັ້ງຢືນ: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">ບໍ່ສາມາດຊອກເຫັນທີ່ຢູ່ IP ເຊີບເວີຂອງ <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">ການເຊັນ</translation>
 <translation id="2638070510549214427">ໝາຍວ່າປອດໄພ</translation>
@@ -1095,6 +1097,7 @@
 <translation id="2858134430383535011">200 x 300 ມມ</translation>
 <translation id="2859383374160668142">ທ່ານສາມາດເບິ່ງການຫຼຸດລາຄາຂອງຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມໄດ້ທຸກເວລາ.</translation>
 <translation id="2859806420264540918">ເວັບໄຊນີ້ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ.</translation>
+<translation id="2864493683872263351">ຂຽນໂຄດ, ຂຽນຂໍ້ຄວາມ ຫຼື ສ້າງສະໄລ້</translation>
 <translation id="2873317327342476681">ເກມໄດໂນເສົາ, ແຕະໄດໂນເສົາ ຫຼື ກົດ Space ເພື່ອຫຼິ້ນ</translation>
 <translation id="287387905105155974">ຟອງຊ່ວຍເຫຼືອ</translation>
 <translation id="2875109558992200904">ເມື່ອມີການໝາຍທຸງເຫດການຄວາມປອດໄພໂດຍ Chrome, ຂໍ້ມູນກ່ຽວຂ້ອງທີ່ກ່ຽວກັບເຫດການນັ້ນຈະຖືກສົ່ງໃຫ້ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ເຊິ່ງອາດຮວມມີ URL ແລະ ຊື່ຂອງໜ້າທີ່ທ່ານເຂົ້າເບິ່ງໃນ Chrome, URL ຂອງໜ້າທີ່ທ່ານສຳເນົາຂໍ້ມູນຈາກ, ຊື່ໄຟລ໌ ຫຼື ເມຕາເດຕາ, ທີ່ຢູ່ IP, ໂປຣແກຣມທ່ອງເວັບ ຫຼື ແຖບຂັດຂ້ອງ ແລະ ຊື່ຜູ້ໃຊ້ທີ່ທ່ານໃຊ້ເພື່ອເຂົ້າສູ່ລະບົບແອັບພລິເຄຊັນຢູ່ເວັບ, ອຸປະກອນຂອງທ່ານ ແລະ Chrome.</translation>
@@ -1277,6 +1280,7 @@
 <translation id="3162559335345991374">Wi-Fi ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າ​ສູ່ລະ​ບົບ​ຂອງ​ມັນ.</translation>
 <translation id="316542773973815724">ການນໍາ​ທາງ</translation>
 <translation id="316638481603975524">ສາມາດຂໍຕິດຕັ້ງເວັບແອັບໄດ້</translation>
+<translation id="3166688462674378969">ປຸ່ມປິດໜ້າຈໍແຍກ, ເປີດນຳໃຊ້ເພື່ອປິດໜ້າຈໍແຍກທັງໝົດທີ່ເປີດຢູ່ໃນປັດຈຸບັນ</translation>
 <translation id="3166788340998560642">Chrome ຈະສະເໜີໃຫ້ບັນທຶກໃສ່ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ເມື່ອທ່ານນຳໃຊ້ໃນເທື່ອຕໍ່ໄປ</translation>
 <translation id="3169472444629675720">ຄົ້ນຫາ</translation>
 <translation id="3176929007561373547">ກວດເບິ່ງການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ ຫຼືຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບເຄືອຂ່າຍຂອງທ່ານເພື່ອ
@@ -1305,6 +1309,7 @@
 <translation id="3211727636285361260">ເປີດລິ້ງ <ph name="PROTOCOL" /> ຜ່ານ <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">ເລີ່ມດາວໂຫຼດແລ້ວ. ເພື່ອເບິ່ງ, ໃຫ້ລາກຈາກເທິງສຸດແລ້ວແຕະປຸ່ມກັບຄືນ</translation>
 <translation id="3212581601480735796">ກຳລັງມີການຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນ <ph name="HOSTNAME" /></translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome ຈະຢຸດແນະນຳຂໍ້ມູນນີ້. ລະບົບຈະບໍ່ລຶບແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບຂອງທ່ານ.}other{Chrome ຈະຢຸດແນະນຳຂໍ້ມູນນີ້. ແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບຂອງທ່ານຈະບໍ່ຖືກລຶບ.}}</translation>
 <translation id="3215092763954878852">ບໍ່ສາມາດໃຊ້ WebAuthn ໄດ້</translation>
 <translation id="3215311088819828484">ອັບເດດຜົນໄດ້ຮັບແລ້ວ</translation>
 <translation id="3218181027817787318">ຍາດພີ່ນ້ອງ</translation>
@@ -1371,6 +1376,7 @@
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
 <translation id="3310946375819654151">Chrome ກຳລັງພະຍາຍາມຕື່ມຂໍ້ມູນລະອຽດອ່ອນຂອງທ່ານໃສ່ <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">ອັບໂຫຼດສໍາເລັດແລ້ວ</translation>
+<translation id="3323135197619890621">ເປີດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດເພື່ອໃຫ້ເລືອກຊື້ໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="3324687287337751929">4 x 6 ນິ້ວ</translation>
 <translation id="3325568918769906282">ຕາມລຳດັບຈາກໃຫຍ່ຫານ້ອຍ</translation>
 <translation id="3325662270238538525">ການເຂົ້າເຖິງ ແລະ ການແກ້ໄຂໄຟລ໌ຫຼ້າສຸດ, ເຊິ່ງຮວມທັງຊື່ໄຟລ໌, ລາຍນິ້ວມືດິຈິຕອນຂອງເນື້ອຫາໄຟລ໌, ແຫຼ່ງທີ່ມາຂອງການດາວໂຫຼດ ແລະ ເມຕາເດຕາ</translation>
@@ -1455,6 +1461,7 @@
 <translation id="3474392552865647225">ປຸ່ມປັບແຕ່ງຟອນໃນ Chrome, ເປີດນຳໃຊ້ເພື່ອປັບແຕ່ງຂະໜາດຟອນ ແລະ ແບບອັກສອນໃນ Chrome</translation>
 <translation id="3478033058537426179">ຕາມກຸ່ມ</translation>
 <translation id="3479552764303398839">ບໍ່ແມ່ນດຽວນີ້</translation>
+<translation id="3481315707647070701">ສະແດງພາບ ແລະ ແກ້ໄຂ</translation>
 <translation id="3484560055331845446">ທ່ານສາມາດສູນເສຍສິດເຂົ້າເຖິງບັນຊີ Google ຂອງທ່ານໄດ້. Chrome ແນະນຳໃຫ້ປ່ຽນລະຫັດຜ່ານຕອນນີ້ເລີຍ. ທ່ານຈະຖືກຮ້ອງຂໍໃຫ້ເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3484861421501147767">ຄຳເຕືອນ: ມີລະຫັດໂປຣໂມຊັນທີ່ບັນທຶກໄວ້</translation>
 <translation id="3485901585646640838">ເພື່ອໃຊ້ລະຫັດຜ່ານ ແລະ ອື່ນໆເພີ່ມເຕີມທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, ໃຫ້ຢັ້ງຢືນວ່າມັນແມ່ນທ່ານ</translation>
@@ -1540,6 +1547,7 @@
 <translation id="3614001939154393113">ຜູ້ໂຈມຕີອາດກຳລັງພະຍາຍາມລັກຂໍ້ມູນຂອງທ່ານຈາກ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ). <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຳເຕືອນນີ້<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">ລະບຸລາຍການ "<ph name="LANGUAGE_ID" />": ພາສາທີ່ບໍ່ຮູ້ຈັກ ຫຼື ບໍ່ຮອງຮັບ.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພືີ່ອເປີດໃຊ້ການກວດສອບຄວາມປອດໄພໃນການຕັ້ງຄ່າ Chrome</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">ບໍ່ສາມາດບັນທຶກ IBAN ນີ້ໄວ້ໃນ Google Wallet ໄດ້. ແຕ່ບັນທຶກໃສ່ໃນ Chrome ຢູ່ອຸປະກອນນີ້ແທນ. Chrome ຈະຖາມທ່ານອີກຄັ້ງໃນເທື່ອຕໍ່ໄປທີ່ທ່ານໃຊ້ IBAN ນີ້.</translation>
 <translation id="3621401353678567613">ເພື່ອຮັບການແຈ້ງເຕືອນລາຄາຫຼຸດລົງສຳລັບຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມ, ໃຫ້ເປີດການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າ.</translation>
 <translation id="362276910939193118">ສະ​ແດງ​ປະຫວັດທັງໝົດ</translation>
@@ -1596,6 +1604,7 @@
 <translation id="3704162925118123524">ເຄືອ​ຂ່າຍ​ທີ່​ທ່ານ​ກຳ​ລັງ​ໃຊ້​ອາດ​ຈະ​ຕ້ອງ​ການ​ໃຫ້​ທ່ານ​ເຂົ້າ​ເບິ່ງ​ໜ້າ​ເຂົ້າ​ລະ​ບົບ​ຂອງ​ມັນ.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">ກໍາລັງໂຫຼດ ...</translation>
+<translation id="3708927069677086144">ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="3709599264800900598">ຂໍ້ຄວາມທີ່ທ່ານສຳເນົາ</translation>
 <translation id="3711223220609269738">ແຖບແຍກໃໝ່</translation>
 <translation id="3711430313228789376">ໂປຣແກຣມທ່ອງເວັບ Chrome ກຳລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ</translation>
@@ -1704,6 +1713,7 @@
 <translation id="3865339060090354361">ເບິ່ງຂໍ້ກຳນົດກ່ຽວກັບ <ph name="CREDIT_CARD_NAME" /> ຢູ່ບ່ອນນີ້</translation>
 <translation id="3869939189466884821">ໄຟລ໌ໃນເຄື່ອງຂອງທ່ານຈະຖືກລຶບໃນ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
+<translation id="3877021395754842994">ປິດໜ້າຈໍແຍກທັງໝົດທີ່ເປີດຢູ່ໃນປັດຈຸບັນ</translation>
 <translation id="3877603629930976930">ບໍ່ແບ່ງປັນ</translation>
 <translation id="3878445208930547646">ບໍ່ອະນຸຍາດໃຫ້ມີການສຳເນົາຈາກເວັບໄຊນີ້</translation>
 <translation id="3879674895057686427">ເລືອກພາສາທີ່ຈະແປເປັນ</translation>
@@ -1733,6 +1743,7 @@
 <translation id="3928806096717999469">ແກ້ໄຂ, ເປີດໜ້າຈໍໃໝ່</translation>
 <translation id="393417216277380082">ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ແລະ ແສງ</translation>
 <translation id="3937640725563832867">ຊື່ທາງເລືອກຜູ້ອອກໃບຢັ້ງຢືນ</translation>
+<translation id="3938243129430544357">ຈ່າຍເງິນຢ່າງປອດໄພດ້ວຍການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="3939773374150895049">ໃຊ້ WebAuthn ແທນ CVC ບໍ?</translation>
 <translation id="3941630233824954464">ເປີດການນຳໃຊ້ການພິສູດຢືນຢັນແບບບັງຄັບອີກຄັ້ງ</translation>
 <translation id="3942048175062210325">ລອງເປີດໄຟລ໌ຂອງທ່ານອີກຄັ້ງ</translation>
@@ -2046,6 +2057,7 @@
 <translation id="4409271659088619928">ໂປຣແກຣມຊອກຫາຂອງທ່ານແມ່ນ <ph name="DSE" />. ກະລຸນາອ່ານຄຳແນະນຳສຳລັບການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ.</translation>
 <translation id="4409556632583862731">ຫົວຂໍ້ໃໝ່</translation>
 <translation id="4410614037742891410">ອັບເດດບັດປະຈຳຕົວໃນ Google Wallet ຢ່າງປອດໄພ</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອປິດໜ້າຈໍແຍກທັງໝົດທີ່ເປີດຢູ່ໃນປັດຈຸບັນ</translation>
 <translation id="4412074349188076601">ການຕັ້ງຄ່ານີ້ຖືກໝາຍວ່າສາມາດຕິດຕັ້ງໄດ້, ແຕ່ບໍ່ມີຮູບໃຫ້ສຳລັບສະຖາປັດຕະຍະກຳນີ້, ດັ່ງນັ້ນຈຶ່ງບໍ່ສາມາດຕິດຕັ້ງມັນໄດ້.</translation>
 <translation id="4412377069090572315">ຄຳເຫັນຈາກຜູ້ອື່ນ</translation>
 <translation id="4414515549596849729">ຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ</translation>
@@ -2057,6 +2069,7 @@
 <translation id="4424024547088906515">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນບໍ່ໄດ້ຮັບການເຊື່ອໝັ້ນຈາກ Chrome. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="4425137053900958839">ເພີດເພີນໄປກັບຄວາມສະດວກສະບາຍ ແລະ ຄວາມປອດໄພທັງໝົດທີ່ທ່ານໄວ້ວາງໃຈໄດ້ຈາກ Pix</translation>
 <translation id="443121186588148776">ຜອດອະນຸກຳ</translation>
+<translation id="4431928532022419942">ລຶບອອກຈາກ Chrome ບໍ?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> ບໍ່ຍອມຮັບໃບຮັບຮອງການເຂົ້າສູ່ລະບົບຂອງທ່ານ ຫຼື ຍັງບໍ່ມີການໃຫ້ໃບຮັບຮອງເທື່ອ.</translation>
 <translation id="4432792777822557199">ໜ້າຕ່າງໆຢູ່ໃນ <ph name="SOURCE_LANGUAGE" /> ຈະຖືກແປເປັນ <ph name="TARGET_LANGUAGE" /> ຈາກນີ້ເປັນຕົ້ນໄປ</translation>
 <translation id="4433642172056592619">ບໍ່ສົນໃຈແລ້ວເນື່ອງຜູ້ໃຊ້ບໍ່ກ່ຽວຂ້ອງກັບການຈັດການເຄື່ອງ ຫຼື ເຄື່ອງນີ້ບໍ່ມີການຈັດການ.</translation>
@@ -2316,6 +2329,7 @@
 <translation id="4887406273302438710">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ Windows Hello</translation>
 <translation id="4887785555357166111">ບັນທຶກເຟຣມວິດີໂອ</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອລຶບປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
+<translation id="4892391379033030113">ປຸ່ມເປີດໜ້າຈໍແຍກ, ເປີດນຳໃຊ້ເພື່ອເປີດໜ້າຈໍແຍກໃໝ່ສຳລັບການທ່ອງເວັບແບບເປັນສ່ວນຕົວ</translation>
 <translation id="4892518386797173871">ຫຼັງ</translation>
 <translation id="4894390983254799375">ເຊັ່ນ: ID ອຸປະກອນ, ຊື່, ເວີຊັນຂອງລະບົບປະຕິບັດການ ແລະ ຊື່ຜູ້ໃຊ້ຂອງລະບົບປະຕິບັດການ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2990,6 +3004,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="6025471531651464742">ເພີ່ມໄຟລ໌</translation>
 <translation id="6028591542479806248">ຈັດການການແຈ້ງເຕືອນມືຖື ແລະ ອີເມວ</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອເປີດໜ້າຈໍແຍກໃໝ່ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ</translation>
 <translation id="603068602130820122">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຂວາສອງເທື່ອ</translation>
 <translation id="6031824805267965302">ໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວຂອງທ່ານ</translation>
 <translation id="6032524144326295339">ກ່ອງຈົດໝາຍ 2</translation>
@@ -3136,6 +3151,7 @@
 <translation id="6263376278284652872">ບຸກມາກສ໌ <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ຢືນຢັນການດາວໂຫຼດ</translation>
 <translation id="6264485186158353794">ກັບ​ຄືນ​ສູ່ຄາມປອດ​ໄພ</translation>
+<translation id="6264507470395196064">ເກດເວທີ່ປອດໄພ</translation>
 <translation id="6264636978858465832">ຕົວຈັດການລະຫັດຜ່ານຕ້ອງການສິດເຂົ້າເຖິງເພີ່ມເຕີມ</translation>
 <translation id="6265794661083428563">ສຳເນົາຄ່ານະໂຍບາຍ <ph name="POLICY_NAME" /> ໄວ້</translation>
 <translation id="6271264012613848937">ທ່ານຖືກບລັອກບໍ່ໃຫ້ເຂົ້າເບິ່ງ <ph name="URL" /> ເນື່ອງຈາກນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ. ຫາກທ່ານບໍ່ໄດ້ຄາດໄວ້, ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
@@ -3345,6 +3361,7 @@
 <translation id="6630043285902923878">ກຳລັງຊອກຫາອຸປະກອນ USB...</translation>
 <translation id="6630388727238334626">ປຸ່ມຈັດການການຕັ້ງຄ່າ Chrome, ເປີດນຳໃຊ້ເພື່ອເຂົ້າເບິ່ງການຕັ້ງຄ່າ Chrome ຂອງທ່ານ</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">ເພື່ອເຂົ້າເບິ່ງເວັບໄຊທາງໜ້າ, ອົງກອນຂອງທ່ານກຳນົດໃຫ້ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ທີ່ມີການຈັດການຂອງທ່ານ.</translation>
 <translation id="6635900375070654124">ອຸປະກອນ Authenticator</translation>
 <translation id="6641852376826221947">ຢືນຢັນການຊື້ຂອງທ່ານ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
@@ -3400,6 +3417,7 @@
 <translation id="671076103358959139">ໂທເຄັນການລົງທະບຽນ:</translation>
 <translation id="6711464428925977395">ມີບາງຢ່າງຜິດພາດກັບເຊີບເວີພຣັອກຊີ ຫຼື ທີ່ຢູ່ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="6711700233707023861">ສຳເນົາສະຕຣິງຮູບແບບໃສ່ຄລິບບອດແລ້ວ</translation>
+<translation id="6712003214447962889">ຄຳຕອບທີ່ສະຫຼາດຂຶ້ນ ແລະ ໄວຂຶ້ນ</translation>
 <translation id="6712343563085762261">ຍ້າຍຂຶ້ນແລ້ວ</translation>
 <translation id="6716039223770814796">ປຽບທຽບ <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> ລາຍການ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ຕ້ອງການສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
@@ -3534,6 +3552,7 @@
 <translation id="6957153644870901611">ເປີດໃຊ້ຄຸນສົມບັດການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທີ່ປັບປຸງໃຫ້ດີຂຶ້ນເພື່ອຕື່ມຂໍ້ມູນໃນຊ່ອງເພີ່ມເຕີມໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6957887021205513506">ປະກົດວ່າໃບຢັ້ງຢືນຂອງເຊີບເວີເປັນຂອງປອມ.</translation>
 <translation id="6958564499836457428">ຈັດການການຕັ້ງຄ່າຄວາມເປັນສ່ວນຕົວ Google ໃນບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="6961161369573226336">ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດຮັບລະຫັດເຫຼົ່ານີ້ໃຫ້ທ່ານໄດ້ຈາກ Gmail <ph name="EMAIL" /> ຂອງທ່ານ. ທ່ານສາມາດປ່ຽນໃຈ ແລະ <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" /> ໄດ້.</translation>
 <translation id="6961844873822989059">ສາມາດຂໍໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6962858948849099922">ການຍ້າຍໝົດເວລາແລ້ວ</translation>
 <translation id="6963520811470373926">ການແທນທີ່</translation>
@@ -3611,6 +3630,7 @@
 <translation id="70846382339153529">ຂໍ້ຄວາມ OpenDocument</translation>
 <translation id="7086090958708083563">ການອັບໂຫຼດທີ່ຂໍໂດຍຜູ້ໃຊ້</translation>
 <translation id="7090698782953528257">ຊ່ວຍຂ້ອຍສ້າງກຣາບຟັງຊັນເພື່ອສະແດງສົມຜົນທາງຄະນິດສາດເປັນພາບ ແລະ ເບິ່ງຮູບຮ່າງຂອງເສັ້ນໂຄ້ງ</translation>
+<translation id="7092087596499105699">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ຕັ້ງຄ່າຕົວເຊື່ອມຕໍ່ເກດເວທີ່ປອດໄພເພື່ອປົກປ້ອງການເຂົ້າເຖິງໂປຣແກຣມນຳໃຊ້ຜ່ານເວັບສ່ວນຕົວຂອງອົງກອນຂອງທ່ານ. ໂດຍອາດໃຊ້ຂໍ້ມູນຈາກໂປຣໄຟລ໌ບ່ອນເຮັດວຽກຂອງທ່ານເພື່ອຢັ້ງຢືນການເຂົ້າເຖິງ.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="709604659664854823">ຊອກຫາການຈອງໃນນາທີສຸດທ້າຍຢູ່ຮ້ານອາຫານໃກ້ຄຽງໃຫ້ຂ້ອຍໃນຄືນນີ້</translation>
 <translation id="7096341143397839437">ອີເມວ: <ph name="EMAIL" />.</translation>
@@ -3741,6 +3761,7 @@
 <translation id="7316521168101843192">ກຳລັງບັນທຶກໄຟລ໌ໄປໃສ່ Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ຄວາມຊ່ວຍເຫຼືອກ່ຽວກັບການເຊື່ອມຕໍ່</translation>
+<translation id="7328315434053660512">ເປີດໜ້າຈໍແຍກ</translation>
 <translation id="733354035281974745">ລົບລ້າງບັນຊີພາຍໃນອຸປະກອນ</translation>
 <translation id="7334320624316649418">ເຮັດຄືນຄໍາສັ່ງຈັດລໍາດັບຄືນ</translation>
 <translation id="7335157162773372339">ສາມາດຂໍໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ</translation>
@@ -3789,6 +3810,7 @@
 <translation id="7402375256128852434">ເພີ່ມແຖບຫຼ້າສຸດ</translation>
 <translation id="7403392780200267761">ແບ່ງປັນແຖບນີ້ໂດຍການແບ່ງປັນລິ້ງ, ການສ້າງລະຫັດ QR, ການສົ່ງສັນຍານ ແລະ ອື່ນໆ</translation>
 <translation id="7403591733719184120">ມີການຈັດການ <ph name="DEVICE_NAME" /> ຂອງທ່ານ</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{ລຶບການແນະນຳອອກແລ້ວ. ລະບົບຈະບໍ່ລຶບແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບຂອງທ່ານ.}other{ລຶບການແນະນຳອອກແລ້ວ. ລະບົບຈະບໍ່ລຶບແຫຼ່ງຂໍ້ມູນຕົ້ນສະບັບຂອງທ່ານ.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ໄດ້ຕິດຕັ້ງແອັບພລິເຄຊັນສຳລັບຄຸນສົມບັດເພີ່ມເຕີມແລ້ວ. ແອັບພລິເຄຊັນມີສິດເຂົ້າເຖິງບາງຂໍ້ມູນຂອງທ່ານ.</translation>
 <translation id="740691708085211707">ລຶບທີ່ຢູ່ບ່ອນເຮັດວຽກອອກຈາກຄຸນສົມບັດຕື່ມຂໍ້ມູນອັດຕະໂນມັດຂອງ Chrome ບໍ?</translation>
 <translation id="7407424307057130981">&lt;p&gt;ທ່ານຈະເຫັນຂໍ້ຜິດພາດນີ້ຖ້າທ່ານມີຊອບແວ Superfish ຢູ່ໃນຄອມພິວເຕີ Windows ຂອງທ່ານ.&lt;/p&gt;
@@ -4007,6 +4029,7 @@
 <translation id="7718626066800460799">ບໍ່ສາມາດບັນທຶກໄຟລ໌ສະແກນໄດ້</translation>
 <translation id="772128550427553158">CVC ຕັ້ງຢູ່ດ້ານໜ້າຂອງບັດຂອງທ່ານ.</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
+<translation id="7726402116075326231">ເປີດໜ້າຈໍແຍກໃໝ່ເພື່ອທ່ອງເວັບແບບສ່ວນຕົວ</translation>
 <translation id="7730057435797792985">ຈັດຮຽງ</translation>
 <translation id="7734285854693414638">ສ້າງແບບຟອມໃໝ່ໃນ Google Forms ໄດ້ຢ່າງວ່ອງໄວ</translation>
 <translation id="773466115871691567">ແປໜ້າຕ່າງໆສະເໝີໃນ <ph name="SOURCE_LANGUAGE" /></translation>
@@ -4198,6 +4221,7 @@
 <translation id="8075898834294118863">ຈັດການການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
 <translation id="8076880883123051368">ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ເຊັ່ນ: <ph name="BEGIN_LINK_GAA" />ການເຄື່ອນໄຫວແອັບ Gemini<ph name="END_LINK_GAA" /> ຂອງທ່ານ</translation>
+<translation id="8077465698530018904">ລຶບພາກພື້ນທີ່ເລືອກອອກ</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}other{ອັບໂຫຼດໄຟລ໌ລັບບໍ?}}</translation>
 <translation id="8079031581361219619">ໂຫຼດເວັບໄຊຄືນໃໝ່ບໍ?</translation>
@@ -4864,6 +4888,7 @@
 <translation id="949026252328034572">ສະມາຊິກ <ph name="MEMBER_COUNT" /> ຄົນໄດ້ເຂົ້າຮ່ວມກຸ່ມແຖບ "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">ທ່ານໄດ້ຂໍເຂົ້າເບິ່ງເວັບໄຊນີ້. ຜູ້ປົກຄອງຂອງທ່ານສາມາດຕອບກັບໃນ Family Link.</translation>
 <translation id="949484466204182817">ເພີ່ມໝາຍເລກແກ້ໄຂບັນຫາຜູ້ເດີນທາງໃສ່ໃນ Google Wallet</translation>
+<translation id="950533895669718124">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຄຸນສົມບັດນີ້ໃນການຕັ້ງຄ່າ</translation>
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>
 <translation id="950926967802086924">ກະແຈຜ່ານ • ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="952165179818196872">ເພີ່ມ <ph name="PROVIDER" /> ເພື່ອຈ່າຍເງິນໂດຍບໍ່ຕ້ອງປ່ຽນແອັບ</translation>

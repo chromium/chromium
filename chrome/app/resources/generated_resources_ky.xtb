@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 сырсөз ушул түзмөктөгү <ph name="BRAND" /> кызматына өткөрүлүп алынды}other{{NUM_PASSWORDS} сырсөз ушул түзмөктөгү <ph name="BRAND" /> кызматына өткөрүлүп алынды}}</translation>
 <translation id="1046572983040892965">Терезе өйдө жана солго жылдырылды</translation>
 <translation id="1047431265488717055">Шилтеме тек&amp;стин көчүрүү</translation>
+<translation id="104751728059674265">Пикир билдирүү мүмкүнчүлүгү аккаунтуңузда жеткиликсиз. Чоң киши түзмөгүн же профилин колдонуп, сенин ордуңа маселе тууралуу кабарлай алат.</translation>
 <translation id="1048986595386481879">Динамикалык түрдө бөлүнгөн</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}other{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}}</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
@@ -992,6 +993,7 @@
 <translation id="1755601632425835748">Тексттин өлчөмү</translation>
 <translation id="1756963401828337401">Сүрөткө тартуу үчүн экран тандаңыз</translation>
 <translation id="17584710573359123">Chrome Web Store'до көрүү</translation>
+<translation id="1758845021884209593">Ыкчам баскычты OS колдонмолорунда пайдалануу</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" /> болуп дайындалды.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> аккаунту</translation>
 <translation id="176272781006230109">Соода кылуу сунуштары</translation>
@@ -3099,6 +3101,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3355936511340229503">Туташуу катасы</translation>
 <translation id="335678817537689040">Туруктуу</translation>
 <translation id="3359256513598016054">Тастыктама саясатындагы чектөөлөр</translation>
+<translation id="3359465538772230055">Жасалчу иштер жок</translation>
 <translation id="3360297538363969800">Басып чыгара албай койду. Принтериңизди текшерип, кайталап көрүңүз.</translation>
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> сиз менен <ph name="ATTACHMENTS" /> бөлүшүүдө}other{<ph name="DEVICE_NAME" /> сиз менен <ph name="ATTACHMENTS" /> бөлүшүүдө}}</translation>
@@ -6123,6 +6126,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5687340364605915800">Сайттар бул сурамга каалагандай жооп беришет</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Жайгашкан жер</translation>
+<translation id="568984110402742489">Пикир жөнөтүлбөй жатат</translation>
 <translation id="56907980372820799">Шилтеме дайындары</translation>
 <translation id="5691772641933328258">Манжа изи таанылган жок</translation>
 <translation id="5693255400847650006">Микрофон колдонулууда</translation>
@@ -9279,6 +9283,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8109991406044913868">ЖИ түзгөн тема</translation>
 <translation id="8110393529211831722">Жазылуу ушул түзмөккө гана орнотулат жана аккаунтуңузга кирип турган башка түзмөктөр менен шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Байланыштар тизмеси жүктөлүп алынууда...</translation>
+<translation id="8110781914702267195"><ph name="BEGIN_LINK1" />Маалыматты жана купуялык параметрлерин<ph name="END_LINK1" /> көзөмөлдөө же <ph name="BEGIN_LINK2" />төлөм ыкмаларын<ph name="END_LINK2" /> жана туруктуу кардардын карталары сыяктуу <ph name="BEGIN_LINK3" />билеттерди<ph name="END_LINK3" /> тескөө үчүн Google Капчыкка өтүңүз</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> колдонмосунун микрофон уруксаты</translation>
 <translation id="8116497846156149">Ата-энеңден ырастоосун сура</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> аккаунтка кантип киргениңизди эстеп калып, сизди, мүмкүн болгондо, автоматтык түрдө киргизип турат. Өчүрүлсө, аккаунтка кирген сайын сырсөздү ырастоого туура келет.</translation>
@@ -10261,6 +10266,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8874341931345877644">Түзмөктүн экранына чыгаруу:</translation>
 <translation id="8874647982044395866">Органикалык</translation>
 <translation id="8874790741333031443">Үчүнчү тараптын cookie файлдарына убактылуу уруксат берип көрүңүз. Мында Интернетте коопсуздугуңуз азыраак корголот, бирок сайттын функциялары ойдогудай иштеши мүмкүн.</translation>
+<translation id="8874864294955002500">Пикир билдирүү мүмкүнчүлүгү аккаунтуңузда жеткиликсиз. Ишкананын администратору түзмөгүн же профилин колдонуп, сиздин ордуңузга маселе тууралуу кабарлай алат.</translation>
 <translation id="8875736897340638404">Көрүнүү параметрлерин тандаңыз</translation>
 <translation id="8876307312329369159">Бул параметрди демо сеанста өзгөртүүгө болбойт.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> жакын жердеги түзмөктөрдү издөө үчүн Bluetooth'ду колдонот.</translation>

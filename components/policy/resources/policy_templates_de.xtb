@@ -1803,6 +1803,7 @@ Wird diese Richtlinie nicht konfiguriert, entspricht dies für normale Nutzer ei
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Browser versuchen, Arbeitsspeicher zu leeren, wenn der verfügbare Arbeitsspeicher auf dem jeweiligen Gerät gering ist.</translation>
 <translation id="2161348910646846717">Nutzern erlauben, die Release-Version zu ändern</translation>
 <translation id="2162703823039992020">Kontextbezogene Integrationen von Google-Diensten in <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">Die Webanwendungs-URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz für diese Organisation. Muss eine gültige HTTPS-URL sein.</translation>
 <translation id="2166155400701622446">Es gibt eine in <ph name="PRODUCT_NAME" /> integrierte Liste beschränkter Ports. Verbindungen zu diesen Ports schlagen fehl. Mit dieser Einstellung wird das Umgehen dieser Liste erlaubt. Der Wert ist eine durch Kommas getrennte Liste von null oder mehr Ports, an denen ausgehende Verbindungen erlaubt werden.
 
       Ports sind beschränkt, um zu verhindern, dass <ph name="PRODUCT_NAME" /> als Vektor für die Ausnutzung verschiedener Netzwerk-Sicherheitslücken verwendet wird. Wird diese Richtlinie konfiguriert, kann dein Netzwerk dadurch dem Risiko von Angriffen ausgesetzt sein. Diese Richtlinie dient der vorübergehenden Problemumgehung bei Fehlern mit dem Code „ERR_UNSAFE_PORT“, die während der Migration eines Dienstes auftreten, wenn der Dienst an einem gesperrten Port läuft und an einen Standardport migriert wird (z. B. Port 80 oder 443).
@@ -2188,9 +2189,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2421779938235645781">Hintergrundbeleuchtung der Tastatur auf aktuellen Hintergrund abgestimmt</translation>
 <translation id="2423255396068675416">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer <ph name="PRODUCT_CROSTINI_NAME" /> ausführen, solange <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> aktiviert sind. Ist die Richtlinie deaktiviert, ist auch <ph name="PRODUCT_CROSTINI_NAME" /> für Nutzer deaktiviert. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer <ph name="PRODUCT_CROSTINI_NAME" />-Container angewandt. Die bereits ausgeführten sind nicht betroffen.</translation>
 <translation id="2423654977291507457">Integrationen deaktivieren</translation>
-<translation id="2424141395604579502">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen, ändern oder hochladen.
-
-      Ist sie auf „False“ gesetzt, können Nutzer keine Lesezeichen hinzufügen, entfernen, ändern oder hochladen. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="242521047682347997">Nutzern nicht erlauben, SMS zwischen Smartphone und Chromebook zu synchronisieren</translation>
 <translation id="2426782419955104525">Hiermit wird die Instant-Funktion von <ph name="PRODUCT_NAME" /> aktiviert und verhindert, dass Nutzer diese Einstellung ändern können.
 
@@ -10693,6 +10691,21 @@ Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
 <translation id="7704244074621846004">Verlängerte Lebensdauer für SharedWorker aktivieren</translation>
+<translation id="7705886216383850895">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Zum Konfigurieren von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> müssen Administratoren Folgendes angeben:
+* Die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ODER
+* Alle drei Legacy-Parameter zusammen: „<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />“, „<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />“ und „<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />“. Wenn nur eine Teilmenge der drei Parameter ohne URL angeben wird, bleibt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ muss eine gültige URL sein, die das HTTPS-Schema verwendet und weder einen Nutzernamen noch ein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt nicht konfiguriert.
+
+Falls sowohl der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ als auch die Legacy-Parameter konfiguriert sind, hat der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ Vorrang.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="7707869387893611318">Dadurch wird die Funktion für Ladetöne aktiviert.
 
           Diese Funktion sorgt dafür, dass die Ladetöne abgespielt werden.

@@ -109,6 +109,7 @@
 <translation id="1322735045095424339">Szervezete megköveteli az inkognitó mód használatát</translation>
 <translation id="1323735185997015385">Törlés</translation>
 <translation id="132683371494960526">Koppintson duplán a szülőmappa módosításához.</translation>
+<translation id="1327794256477341646">A helyadatokat igénylő funkciók nem működnek</translation>
 <translation id="132969855425874290">A keresés és kitöltés bezárása</translation>
 <translation id="1333455942675373522">Billentyűzet</translation>
 <translation id="1333669029961409292">A „Jelszavak ellenőrzése” befejeződött.</translation>
@@ -141,6 +142,7 @@
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1408847409015257906">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
 <translation id="1411386976162024013">Lens vizuális keresés</translation>
+<translation id="1414315029670184034">A webhelyek nem használhatják a kamerát</translation>
 <translation id="1417474386970818917">Kijelentkezés és törlés</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
@@ -212,6 +214,7 @@
 <translation id="1612754831519568745">A Biztonságos Böngészés jelenleg ki van kapcsolva. Védekezzen a veszélyes webhelyekkel, letölthető tartalmakkal és bővítményekkel szemben.</translation>
 <translation id="1617300545081951343">A funkció használatára a következők vonatkoznak: az <ph name="BEGIN_LINK" />Általános Szerződési Feltételek<ph name="END_LINK" />, a <ph name="BEGIN_LINK" />Koreai tartózkodási helyre vonatkozó feltételek<ph name="END_LINK" /> és az <ph name="BEGIN_LINK" />Adatvédelmi közlemény<ph name="END_LINK" />. A Gemini egy mesterséges intelligencia, amely hibázhat (többek között személyekkel kapcsolatban is).</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621729191093924223">A mikrofont igénylő funkciók nem működnek majd</translation>
 <translation id="1622717322707146952">Válassza a „Hozzáadás a Google Naptárhoz” vagy a „Hozzáadás az Apple Naptárhoz” lehetőséget.</translation>
 <translation id="1629162218487290695">Személyazonosság igazolása…</translation>
 <translation id="1634520742547161889">HH/ÉÉ</translation>
@@ -365,6 +368,7 @@
 <translation id="2089180529062519164">Mikrofon bekapcsolása</translation>
 <translation id="2096239473850415494">Nem sikerült letölteni</translation>
 <translation id="2096716221239095980">Minden adat törlése</translation>
+<translation id="2102396546234652240">A webhelyek nem használhatják a mikrofont</translation>
 <translation id="2104436223719117661">Felkapott keresések</translation>
 <translation id="21133533946938348">Lap rögzítése</translation>
 <translation id="2117650889962717098">Megőrizheti a böngészés privát jellegét az inkognitó módra való váltással</translation>
@@ -395,6 +399,7 @@
 <translation id="2202084845446535117">Nincs e-mail-fiók</translation>
 <translation id="2214453882118345682">Vásárlás, fordítás és a látott dolgok azonosítása a kamera segítségével.</translation>
 <translation id="2216366330550244277">Ugrás az adott termék oldalára</translation>
+<translation id="2218389616572918761">A webhelyek kérhetik az Ön mikrofonjához való hozzáférést</translation>
 <translation id="2219935992754556187">A Chrome biztonságban tartja az Ön bizalmas adatait a Face ID segítségével.</translation>
 <translation id="2220529011494928058">Probléma bejelentése</translation>
 <translation id="2222149859067335623">A(z) „<ph name="SITE_DOMAIN" />” nem férhet hozzá az Ön kamerájához</translation>
@@ -514,6 +519,7 @@
 <translation id="2580306219079937316">Fordítási beállítások megnyitása</translation>
 <translation id="2583688836549072561">Lapcsoport, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> lap, új tevékenység.</translation>
 <translation id="2584994295315085351">Új lap megnyitása, amikor 4 óra elteltével visszatér a Chrome-ba</translation>
+<translation id="2592917252160773942">A webhelyek kérhetik a kamerájához való hozzáférést</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Termékek árcsökkenésének nyomon követése</translation>
 <translation id="2602372807870028932">Ezzel törli az erre az eszközre mentett, kiválasztott információkat</translation>
@@ -545,6 +551,7 @@
 <translation id="2673508731173059946">Másolt link megnyitása</translation>
 <translation id="2679659833697380">Adatait az eszközre menti a rendszer</translation>
 <translation id="2681572445246787428">Dokumentum-aláírás</translation>
+<translation id="2685514716378236873">Nincs engedélyezve</translation>
 <translation id="2688535388040882469">Üzenetszalagok</translation>
 <translation id="2690858294534178585">A kamera épp használatban van</translation>
 <translation id="2691653761409724435">Nem érhető el offline</translation>
@@ -620,6 +627,7 @@
 <translation id="2922210239002704889">Lépjen a kezdőlapra vagy a billentyűzethez.</translation>
 <translation id="2924940770243654951">Megnyitás új inkognitó lapon</translation>
 <translation id="2934607171563543600">a „Jelszavak ellenőrzése” elvégzése óta</translation>
+<translation id="2941680850471407949">Források megtekintése</translation>
 <translation id="2952278131021475699">Lens Kamerás kereső</translation>
 <translation id="2953821385349876107">Másik Google-fiók kiválasztása</translation>
 <translation id="2962516096219646456">Az automatikus kitöltés összes adatának megtekintése</translation>
@@ -820,6 +828,7 @@
 <translation id="362709345066740529">Itt személyre szabhatja kártyáit, hírcsatornáját és egyebeket</translation>
 <translation id="3630104167004786843">Nem kérek értesítéseket</translation>
 <translation id="3631443864840848029">Mindenképpen mentse a webhelyhez tartozó aktuális jelszavát.</translation>
+<translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
 <translation id="3642060527569456384">A rendszer automatikusan menti a lapcsoportokat, és frissíti őket az Ön összes eszközén.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} jelszót csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné, mentse Google-fiókjába ({email}).}other{{count} jelszót csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába ({email}).}}</translation>
 <translation id="3659297405161482746">Nem találhatók fizetési módok</translation>
@@ -975,6 +984,7 @@
 <translation id="4161488339191275792">Létrehozhat lapcsoportokat a megnyitott lapok rendszerezéséhez.</translation>
 <translation id="4163699139741158298">{count,plural, =1{Könyvjelző mentve ide: „{title}”. Csak erre az eszközre van mentve.}other{{count} könyvjelző mentve ide: „{title}”. Csak erre az eszközre vannak mentve.}}</translation>
 <translation id="4164514562270305824">Letöltések automatikus törlése</translation>
+<translation id="4165986682804962316">Webhelybeállítások</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" />, utolsó számjegyei: <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Tiltás</translation>
 <translation id="417138788035229076">Csoport kezelése</translation>
@@ -1008,6 +1018,7 @@
 <translation id="4271575273430679392">Koppintson duplán, és tartsa nyomva a képernyőt az előzmények megnyitásához</translation>
 <translation id="4272631900155121838">QR-kód beolvasásához engedélyezze a kamerát a beállítások között</translation>
 <translation id="4277990410970811858">Biztonságos Böngészés</translation>
+<translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="4279431713294750185">Ujját a képernyő szélén gyorsan csúsztatva előreléphet.</translation>
 <translation id="4282944936010261425">Nincs olyan biztonsági probléma, amelyet Ön kijavíthatna.</translation>
 <translation id="4286718549648564014">Cím áthelyezve a(z) <ph name="USER_EMAIL" /> fiókba</translation>
@@ -1054,6 +1065,7 @@
 <translation id="4430277756566635951">Jelenleg kiválasztva: <ph name="EMAIL" />. Válasszon fiókot.</translation>
 <translation id="4430505936695785931">Mentett jelszavak lekérése más alkalmazásokban</translation>
 <translation id="4431224949908513835">Válassza ki a kitöltéshez használni kívánt fizetési módot.</translation>
+<translation id="4431928532022419942">Eltávolítja a Chrome-ból?</translation>
 <translation id="4432122368769493392">Beállítások…</translation>
 <translation id="443295142249850475">A megnyitott lapok oldalcímeit és URL-jeit arra használja a böngésző, hogy releváns javaslatokat adjon Önnek.</translation>
 <translation id="4439968635693513370">Tervezze meg a hétvégét a következővel:</translation>
@@ -1378,6 +1390,7 @@
 <translation id="5443636120437209490">Alapértelmezés szerint jobb böngészés</translation>
 <translation id="5444892875087332195">Könyvjelzők</translation>
 <translation id="5447973833955560753">Helyreállítási jelszó</translation>
+<translation id="5448623529214315261">Mentett fotó: <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Erős jelszót használjon:</translation>
 <translation id="5453088693079603292">Milyen tevékenységeket gyűjt a rendszer?</translation>
 <translation id="5454211924362324495">Ha nem szeretné, hogy mások használhassák az Ön jelszavát, <ph name="BEGIN_LINK" />módosítsa a következő webhelyen: <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
@@ -1441,6 +1454,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5633237939819267663">{count,plural, =1{Könyvjelző mentve ide: „{title}”}other{{count} könyvjelző mentve ide: „{title}”}}</translation>
 <translation id="564170563478022912">Kijelentkezik? A nem mentett fiókadatok törlődnek.</translation>
 <translation id="5642707040609478753">Megjelölés olvasatlanként</translation>
+<translation id="5646376287012673985">Tartózkodási hely</translation>
 <translation id="5647096944343801045">Nagy belépési pont</translation>
 <translation id="5647193778876139879">Tartsa lenyomva ujját a kívánt címen.</translation>
 <translation id="5647702255748985085">Elhagyja a csoportot?</translation>
@@ -1654,6 +1668,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">A címsáv helyének kiválasztása</translation>
+<translation id="6305257382500066042">Próbálja ki most</translation>
 <translation id="6307241780749477694">Igazolja személyazonosságát, hogy hozzáférhessen az összes jelszavához ezen az eszközön</translation>
 <translation id="6307792728709337290">Mentse el kártyát a Google-fiókjába, hogy automatikusan kitölthesse a jelenlegi és a Chrome-ban végzett jövőbeli vásárlások során.</translation>
 <translation id="6316141353357700666">A megjelenő listából válassza ki a használni kívánt jelszót.</translation>
@@ -2007,6 +2022,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7412027924265291969">Tovább</translation>
 <translation id="741204030948306876">Igen, folytatom</translation>
 <translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>
+<translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7425053386765766120">Fizetési mód hozzáadása…</translation>
 <translation id="7425346204213733349">Könyvjelzői, előzményei, jelszavai és más beállításai a továbbiakban már nem lesznek szinkronizálva Google-fiókjával. Meglévő adatait azonban továbbra is tárolni fogja a fiók.</translation>
 <translation id="742664698522525515">Megtartja a csoportot?</translation>
@@ -2031,6 +2047,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="746872191028309255">Megvásárolhatja, amit a kamerájával vagy a fotógalériájában lát.</translation>
 <translation id="7471557245617580330">Új lap létrehozása</translation>
 <translation id="7473555040328423550">Lap hozzáadása</translation>
+<translation id="7474043404939621342">Eszköztár személyre szabása</translation>
 <translation id="7476548258282096076">Ez a kártya az Ön által leggyakrabban látogatott webhelyeket mutatja.</translation>
 <translation id="7482823403440483089">Továbbfejlesztett automatikus kitöltés</translation>
 <translation id="7484645889979462775">Ezen a webhelyen soha</translation>
@@ -2221,6 +2238,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8038078082340255234">Piaci jelentés</translation>
 <translation id="8040407350301524547">A lehetséges útvonalak megtekintéséhez koppintson az „Útvonaltervezés” lehetőségre.</translation>
 <translation id="804427445359061970">Itt láthatja majd a többi eszközéről származó lapokat</translation>
+<translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>
 <translation id="8058655154417507695">Lejárat éve</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} könyvjelző}other{{count} könyvjelző}}</translation>
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
@@ -2284,6 +2302,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8258999165172757081">Hozzáadva</translation>
 <translation id="8261506727792406068">Törlés</translation>
 <translation id="82619448491672958">További lapok megtekintése</translation>
+<translation id="8262563499355483764">A Chrome nem fogja javasolni ezt az információt. Az eredeti forrás nem fog törlődni.</translation>
 <translation id="8263228331881858381">Azonosítókulcs mentve</translation>
 <translation id="8263809106706527890">Előfordulhat, hogy az alapértelmezett böngészőbeállítások módosultak. Ezt a beállítások között ellenőrizheti.</translation>
 <translation id="8264966119170358612">Egyes mentett jelszavai nyilvánosságra kerültek egy nem a Google-hoz köthető adatvédelmi incidens során. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
@@ -2545,6 +2564,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="9038526468059454274">Összegezze a következővel:</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
+<translation id="9044703854323320868">Gmail-üzenet: <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Létrehozhat lapcsoportokat a megnyitott lapok rendszerezéséhez és a hatékonyság fenntartásához</translation>
 <translation id="9055580485132823283">{password_count} jelszót, {passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="9057030985451135243">További információ a megosztott lapcsoportokról</translation>

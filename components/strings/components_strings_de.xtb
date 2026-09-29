@@ -740,6 +740,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2236949375853147973">Meine Aktivitäten</translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
+<translation id="223921069122391343">Dein gespeichertes Angebot ist beim Bezahlen über Autofill verfügbar. <ph name="BEGIN_LINK" />Nutzungsbedingungen ansehen<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Redress-Nummer hinzufügen</translation>
 <translation id="2241693394036365668">Datei heruntergeladen</translation>
 <translation id="2242389809734574253">Ansicht „IBAN speichern“ wurde geschlossen.</translation>
@@ -765,6 +766,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2277753418458118549">Verbindungsdetails anzeigen</translation>
 <translation id="2277949605527755300"><ph name="URL" /> möchte deine Hände tracken</translation>
 <translation id="22792995594807632">Vor dem Download ist eine Überprüfung erforderlich</translation>
+<translation id="2279607542590042584">Passkey • Apple Passwörter</translation>
 <translation id="2283340219607151381">Adressen für Autofill speichern</translation>
 <translation id="2283447177162560884">„<ph name="PAGE_TITLE" />“ wurde gelöscht</translation>
 <translation id="2283599456633275070">Reisen</translation>
@@ -985,7 +987,6 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="2628025184666666186">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist, da er ein Sicherheitszertifikat verwendet, das von Chrome oder deiner Systemkonfiguration für die Verschlüsselung von Web-Traffic nicht als vertrauenswürdig eingestuft wird. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2628224721443278970">In Microsoft OneDrive anmelden</translation>
 <translation id="2631059741268498165">Dein Administrator hat dieses Gerät gefunden, während es deaktiviert war. Es wurde wieder aktiviert und ist einsatzbereit.</translation>
-<translation id="2631387782019878060">Bestätigungscode: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Die Server-IP-Adresse von <ph name="HOST_NAME" /> wurde nicht gefunden.</translation>
 <translation id="2635276683026132559">Signatur</translation>
 <translation id="2638070510549214427">Als sicher markieren</translation>
@@ -1370,6 +1371,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3308006649705061278">Organisationseinheit (OU)</translation>
 <translation id="3310946375819654151">Chrome versucht, deine vertraulichen Daten auf <ph name="APP_NAME" /> auszufüllen.</translation>
 <translation id="3312952471765023168">Upload erfolgreich</translation>
+<translation id="3323135197619890621">Autofill aktivieren, um das Einkaufen zu erleichtern</translation>
 <translation id="3324687287337751929">4 × 6 Zoll</translation>
 <translation id="3325568918769906282">in absteigender Reihenfolge</translation>
 <translation id="3325662270238538525">Letzte Zugriffe auf Dateien und Änderungen, einschließlich Dateinamen, digitale Fingerabdrücke des Dateiinhalts, Downloadquelle und Metadaten</translation>
@@ -1441,6 +1443,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3447884698081792621">Zertifikat anzeigen (ausgestellt von <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Darf darum bitten, meine MIDI-Geräte zu steuern und neu zu programmieren</translation>
 <translation id="3452404311384756672">Abrufintervall: </translation>
+<translation id="345268527248907593">Diese Website ist nicht erreichbar</translation>
 <translation id="3453962258458347894">Anzahl der Wiederholungen</translation>
 <translation id="3461266716147554923"><ph name="URL" /> möchte Texte und Bilder aus der Zwischenablage abrufen</translation>
 <translation id="3461824795358126837">Textmarker</translation>
@@ -1592,6 +1595,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3704162925118123524">Eventuell musst du die Anmeldeseite des verwendeten Netzwerks aufrufen.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Wird geladen...</translation>
+<translation id="3708927069677086144">Deine Organisation verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="3709599264800900598">Von dir kopierter Text</translation>
 <translation id="3711223220609269738">Neuer isolierter Tab</translation>
 <translation id="3711430313228789376">Der Chrome-Browser versucht, Passwörter anzuzeigen</translation>
@@ -1729,6 +1733,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3928806096717999469">Bearbeiten, öffnet ein neues Fenster</translation>
 <translation id="393417216277380082">Bewegungs- und Lichtsensoren</translation>
 <translation id="3937640725563832867">Alternativer Name des Zertifikatausstellers</translation>
+<translation id="3938243129430544357">Mit Autofill sicher bezahlen</translation>
 <translation id="3939773374150895049">WebAuthn anstelle des CVCs verwenden?</translation>
 <translation id="3941630233824954464">Obligatorische erneute Authentifizierung aktivieren</translation>
 <translation id="3942048175062210325">Versuche noch einmal, deine Dateien zu öffnen</translation>
@@ -1969,6 +1974,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4284885181066817063">Blockiert durch <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">Fahrzeug löschen</translation>
 <translation id="4290920330097335010">Nie erlauben</translation>
+<translation id="4291909791598163333">Deine Organisation hat dich daran gehindert, die angeforderte Website aufzurufen</translation>
 <translation id="4297502707443874121">Miniaturansicht für Seite <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390"><ph name="ATTRIBUTE_NAME" /> wurde aktualisiert</translation>
 <translation id="4298148761711700950">Sofort bezahlen, ohne einen QR-Code hochzuladen</translation>
@@ -2052,6 +2058,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425137053900958839">Mit Pix genießt du Komfort und Sicherheit, auf die du dich verlassen kannst</translation>
 <translation id="443121186588148776">Serieller Port</translation>
+<translation id="4431928532022419942">Aus Chrome entfernen?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> hat dein Anmeldezertifikat nicht akzeptiert oder es wurde keines bereitgestellt.</translation>
 <translation id="4432792777822557199">Seiten auf <ph name="SOURCE_LANGUAGE" /> werden ab jetzt auf <ph name="TARGET_LANGUAGE" /> übersetzt</translation>
 <translation id="4433642172056592619">Ignoriert, weil der Nutzer nicht mit der Maschinenverwaltung verknüpft ist oder die Maschine nicht verwaltet wird.</translation>
@@ -3131,8 +3138,10 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6263376278284652872"><ph name="DOMAIN" />-Lesezeichen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6264485186158353794">Zurück zu sicherer Website</translation>
+<translation id="6264507470395196064">Sicheres Gateway</translation>
 <translation id="6264636978858465832">Der Passwortmanager benötigt einen umfassenderen Zugriff</translation>
 <translation id="6265794661083428563">Den Wert der Richtlinie <ph name="POLICY_NAME" /> kopieren</translation>
+<translation id="6271264012613848937">Aufgrund der Richtlinien deiner Organisation konnte <ph name="URL" /> nicht aufgerufen werden. Wenn dies unerwartet ist, wende dich an deinen Administrator.</translation>
 <translation id="6272088941196661550">Du kannst weiter stöbern, um relevante Aktivitäten in deinem Chrome-Verlauf zu sehen</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6278015583149890680">Google Drive und OneDrive</translation>
@@ -3339,6 +3348,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6630043285902923878">USB-Geräte werden gesucht…</translation>
 <translation id="6630388727238334626">Button „Einstellungen verwalten“ – aktivieren, um deine Chrome-Einstellungen aufzurufen</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Wenn du die folgende Website besuchen möchtest, musst du dich mit deinem verwalteten Google-Konto anmelden.</translation>
 <translation id="6635900375070654124">einem Authentifizierungsgerät</translation>
 <translation id="6641852376826221947">Kauf bestätigen</translation>
 <translation id="6643016212128521049">Löschen</translation>
@@ -3413,6 +3423,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Wert der Richtlinie</translation>
 <translation id="6753434778807740853">Eintrag „<ph name="ENTRY_VOICEOVER" />“ löschen</translation>
+<translation id="6753460329812070808">Vorschlag aus Chrome entfernt</translation>
 <translation id="6757797048963528358">Dein Gerät ist im Ruhemodus.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> möchte deine Bewegungs- und Lichtsensoren verwenden</translation>
 <translation id="6770747695101757579">Papier (Baumwolle)</translation>
@@ -3492,6 +3503,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">Du bist abgemeldet</translation>
+<translation id="6902049722133977432">Rückgängig machen</translation>
 <translation id="6910211073230771657">Gelöscht</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
 <translation id="691046363691324218">Redress Number</translation>
@@ -3526,6 +3538,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6957153644870901611">Aktiviere das erweiterte Autofill, um mehr Felder automatisch ausfüllen zu lassen</translation>
 <translation id="6957887021205513506">Das Zertifikat des Servers ist möglicherweise eine Fälschung.</translation>
 <translation id="6958564499836457428">Datenschutzeinstellungen in deinem Google-Konto verwalten</translation>
+<translation id="6961161369573226336">Der Google Passwortmanager kann diese Codes für dich aus deinem Gmail-Konto (<ph name="EMAIL" />) abrufen. Du kannst deine Meinung jederzeit ändern und <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Darf nachfragen, ob Schriftarten verwendet werden können, die auf meinem Gerät installiert sind</translation>
 <translation id="6962858948849099922">Zeitüberschreitung beim Verschieben</translation>
 <translation id="6963520811470373926">Ersetzt</translation>
@@ -3603,6 +3616,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="70846382339153529">OpenDocument-Text</translation>
 <translation id="7086090958708083563">Upload vom Nutzer angefordert</translation>
 <translation id="7090698782953528257">Hilf mir, eine Funktion grafisch darzustellen, um die mathematische Gleichung zu visualisieren und die Form der Kurve zu sehen</translation>
+<translation id="7092087596499105699">Dein Administrator hat den Connector für das sichere Gateway konfiguriert, um den Zugriff auf die privaten Webanwendungen deiner Organisation zu schützen. Möglicherweise werden Daten aus deinem Arbeitsprofil verwendet, um den Zugriff zu bestätigen.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="709604659664854823">Finde für mich für heute Abend eine Last-Minute-Reservierung in einem Restaurant in der Nähe</translation>
 <translation id="7096341143397839437">E-Mail: <ph name="EMAIL" />.</translation>
@@ -3706,6 +3720,7 @@ Weitere Details:
 <translation id="7266094331715305887">Apps auf dem Gerät</translation>
 <translation id="7268742523336093718">Reisepass sicher zu Google Wallet hinzufügen</translation>
 <translation id="7269151392155523061">Das Kürzel darf nicht mit dem von <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" /> festgelegten Suchaggregator-Suchbegriff übereinstimmen: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Bei den von deiner Organisation festgelegten Schutzmaßnahmen oder Richtlinien ist ein Fehler aufgetreten. Versuche es später noch einmal oder kontaktiere deinen Administrator.</translation>
 <translation id="7273111226200291353">Dateien, die du herunterlädst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß Unternehmensrichtlinien gespeichert und für deinen Administrator sichtbar sein.</translation>
 <translation id="7275334191706090484">Verwaltete Lesezeichen</translation>
 <translation id="7278933725460302617">Du bist jetzt im isolierten Modus</translation>
@@ -4147,6 +4162,7 @@ Weitere Details:
 <translation id="7984945080620862648">Du kannst <ph name="SITE" /> zurzeit nicht aufrufen, weil die Website verschlüsselte Anmeldedaten gesendet hat, die von Chrome nicht verarbeitet werden können. Netzwerkfehler und Angriffe sind in der Regel nur vorübergehend, sodass die Seite wahrscheinlich später wieder funktioniert.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“, die für Ratenzahlung verfügbar sind, ist vollständig geöffnet.</translation>
+<translation id="7990290316254726169">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du den isolierten Modus nutzt. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Binden</translation>
 <translation id="7992044431894087211">Die Bildschirmfreigabe mit <ph name="APPLICATION_TITLE" /> wurde fortgesetzt</translation>
 <translation id="799384093520583425">Deine Organisation hat die Verwendung der Entwicklertools auf dieser Seite blockiert</translation>
@@ -4488,6 +4504,7 @@ Weitere Details:
 <translation id="860043288473659153">Name des Karteninhabers</translation>
 <translation id="8601206103050338563">TLS-WWW-Client-Authentifizierung</translation>
 <translation id="8604103095921958091">Der Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“ ist vollständig geöffnet.</translation>
+<translation id="8605014984308506350">Du siehst diese Warnung, weil diese Website kein HTTPS unterstützt und du den isolierten Modus nutzt. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">Informationen zu deiner Gerätenutzung</translation>
 <translation id="8619130384334725124">Aktueller Standard</translation>
 <translation id="8620276786115098679">Umschlag Kaku 7</translation>
@@ -4855,6 +4872,7 @@ Weitere Details:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> Mitglieder sind der Tabgruppe „<ph name="GROUP_NAME" />“ beigetreten</translation>
 <translation id="949314938206378263">Deine Anfrage wurde gesendet. Dein Elternteil kann sie in Family Link prüfen.</translation>
 <translation id="949484466204182817">Redress Number zu Google Wallet hinzufügen</translation>
+<translation id="950533895669718124">findest in den Einstellungen weitere Informationen zu dieser Funktion</translation>
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="950926967802086924">Passkey • Google Passwortmanager</translation>
 <translation id="952165179818196872"><ph name="PROVIDER" /> hinzufügen, um zu bezahlen, ohne die App zu wechseln</translation>

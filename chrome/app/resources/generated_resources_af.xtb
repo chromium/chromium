@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 wagwoord is by <ph name="BRAND" /> op hierdie toestel ingevoer}other{{NUM_PASSWORDS} wagwoorde is by <ph name="BRAND" /> op hierdie toestel ingevoer}}</translation>
 <translation id="1046572983040892965">Venster het op en na links beweeg</translation>
 <translation id="1047431265488717055">Kopieer skakelteks</translation>
+<translation id="104751728059674265">Terugvoer is nie vir jou rekening beskikbaar nie. ’n Volwassene kan hul toestel of profiel gebruik om ’n kwessie vir jou aan te gee.</translation>
 <translation id="1048986595386481879">Dinamies toegeken</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ontvang tans <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af}other{Ontvang tans <ph name="ATTACHMENTS" /> van <ph name="DEVICE_NAME" /> af}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -992,6 +993,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1755601632425835748">Teksgrootte</translation>
 <translation id="1756963401828337401">Kies ’n skerm om vas te vang</translation>
 <translation id="17584710573359123">Bekyk in Chrome Webwinkel</translation>
+<translation id="1758845021884209593">Gebruik kortpad in alle bedryfstelselapps</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> hertoegewys na <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> se rekeninge</translation>
 <translation id="176272781006230109">inkopievoorstelle</translation>
@@ -3099,6 +3101,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3355936511340229503">Verbindingfout</translation>
 <translation id="335678817537689040">Staties</translation>
 <translation id="3359256513598016054">Sertifikaatbeleidbeperkings</translation>
+<translation id="3359465538772230055">Geen take nie</translation>
 <translation id="3360297538363969800">Kon nie uitdruk nie. Gaan asseblief jou drukker na en probeer weer.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deel tans <ph name="ATTACHMENTS" /> met jou.}other{<ph name="DEVICE_NAME" /> deel tans <ph name="ATTACHMENTS" /> met jou.}}</translation>
@@ -6124,6 +6127,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5687340364605915800">Werwe gebruik hul vrye oordeel wanneer hulle op hierdie versoek reageer</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Ligging</translation>
+<translation id="568984110402742489">Kan nie terugvoer stuur nie</translation>
 <translation id="56907980372820799">Koppel data</translation>
 <translation id="5691772641933328258">Vingerafdruk nie herken nie</translation>
 <translation id="5693255400847650006">Mikrofoon in gebruik</translation>
@@ -9280,6 +9284,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8109991406044913868">KI-geskepte tema</translation>
 <translation id="8110393529211831722">Intekening is net op hierdie toestel geïnstalleer en is nie met ander toestelle in jou rekening gesinkroniseer nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Laai tans kontaklys af …</translation>
+<translation id="8110781914702267195">Besoek Google Wallet om jou <ph name="BEGIN_LINK1" />data- en privaatheidvoorkeure<ph name="END_LINK1" /> te beheer of <ph name="BEGIN_LINK2" />betaalmetodes<ph name="END_LINK2" /> en <ph name="BEGIN_LINK3" />passe<ph name="END_LINK3" />, soos lojaliteitskaarte, te bestuur</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" />-mikrofoontoestemming</translation>
 <translation id="8116497846156149">Vra ouer vir goedkeuring</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> onthou hoe jy aangemeld het en meld jou outomaties aan indien dit moontlik is. Indien dit afgeskakel is, sal jy elke keer vir bevestiging gevra word.</translation>
@@ -10262,6 +10267,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8874341931345877644">Saai uit na 'n toestel:</translation>
 <translation id="8874647982044395866">Organies</translation>
 <translation id="8874790741333031443">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder blaaibeskerming beteken, maar werfkenmerke is meer geneig om te werk soos verwag word.</translation>
+<translation id="8874864294955002500">Terugvoer is nie vir jou rekening beskikbaar nie. Jou ondernemingadmin kan hul toestel of profiel gebruik om ’n kwessie vir jou aan te gee.</translation>
 <translation id="8875736897340638404">Kies jou sigbaarheid</translation>
 <translation id="8876307312329369159">Hierdie instelling kan nie in 'n demonstrasiesessie verander word nie.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> gebruik Bluetooth-skandering om toestelle in die omtrek te soek.</translation>

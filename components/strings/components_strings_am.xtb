@@ -740,6 +740,7 @@
 <translation id="2233745931693710080">ኮምፓክት ዲስክ</translation>
 <translation id="2236949375853147973">የእኔ እንቅስቃሴ</translation>
 <translation id="2239100178324503013">አሁን ላክ</translation>
+<translation id="223921069122391343">የእርስዎ የተቀመጠ ቅናሽ ራስ-ሙላን በመጠቀም ክፍያ ማጠናቀቅ ላይ ይገኛል። <ph name="BEGIN_LINK" />የአገልግሎት ውል ይመልከቱ<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">የማስተካከያ ቁጥር ያክሉ</translation>
 <translation id="2241693394036365668">ፋይል ወርዷል</translation>
 <translation id="2242389809734574253">አይቢኤኤን ማስቀመጥ ተዘግቷል።</translation>
@@ -986,7 +987,6 @@
 <translation id="2628025184666666186">ይህ አገልጋይ ለድር ትራፊክ ምሥጠራ በChrome ወይም በእርስዎ የሥርዓት ውቅረት ተዓማኒነት የሌለው የደኅንነት የዕውቅና ማረጋገጫ እየተጠቀመ ስለሆነ <ph name="DOMAIN" /> መሆኑን ማረጋገጥ አልቻለም። ይህ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2628224721443278970">ወደ Microsoft OneDrive ይግቡ</translation>
 <translation id="2631059741268498165">ይህ መሣሪያ ተሰናክሎ ሳለ አስተዳዳሪዎ አግኝተውታል። እንደገና ነቅቷል እና ለመጠቀም ዝግጁ ነው።</translation>
-<translation id="2631387782019878060">የማረጋገጫ ኮድ፦ <ph name="OTP" /></translation>
 <translation id="2634124572758952069">የ<ph name="HOST_NAME" /> አገልጋይ አይፒ አድራሻ ሊገኝ አልቻለም።</translation>
 <translation id="2635276683026132559">መፈረም</translation>
 <translation id="2638070510549214427">ደኅነንቱ የተጠበቀ በሚል ምልክት አድርግ</translation>
@@ -1370,6 +1370,7 @@
 <translation id="3308006649705061278">ድርጅታዊ መስፈርት (OU)</translation>
 <translation id="3310946375819654151">Chrome <ph name="APP_NAME" /> ላይ የእርስዎን ልዩ ጥንቃቄ የሚያስፈልገው መረጃ ለመሙላት እየሞከረ ነው።</translation>
 <translation id="3312952471765023168">መስቀል ተሳክቷል</translation>
+<translation id="3323135197619890621">ሸመታን ይበልጥ ቀላል ለማድረግ ራስ-ሙላን ያብሩ</translation>
 <translation id="3324687287337751929">4 x 6 ኢንች</translation>
 <translation id="3325568918769906282">እየቀነሰ በሚሄድ ቅደም-ተከተል</translation>
 <translation id="3325662270238538525">የፋይል ስሞች፣ የፋይል ይዘቱ ዲጂታል የጣት አሻራዎች፣ የውርድ ምንጭ እና ዲበ ውሂብን ጨምሮ የቅርብ ጊዜ የፋይል መዳረሻ እና ማሻሻያዎች</translation>
@@ -1595,6 +1596,7 @@
 <translation id="3704162925118123524">እየተጠቀሙ ያሉት አውታረ መረብ በመለያ መግቢያ ገጹን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">በመጫን ላይ…</translation>
+<translation id="3708927069677086144">ድርጅትዎ ወደ Chrome እንዲገቡ ይጠይቅዎታል።</translation>
 <translation id="3709599264800900598">እርስዎ የቀዱት ጽሁፍ</translation>
 <translation id="3711223220609269738">አዲስ የተለየ ትር</translation>
 <translation id="3711430313228789376">Chrome አሳሽ የይለፍ ቃላትን ለማሳየት እየሞከረ ነው</translation>
@@ -1732,6 +1734,7 @@
 <translation id="3928806096717999469">አርትዕ፣ አዲስ መስኮት ይክፈቱ።</translation>
 <translation id="393417216277380082">የእንቅስቃሴ እና የብርሃን ዳሳሾች</translation>
 <translation id="3937640725563832867">የሰርቲፊኬት አቅራቢ ተለዋጭ ስም</translation>
+<translation id="3938243129430544357">በራስ-ሙላ ደኅንነቱ በተጠበቀ መልኩ ግዢ ያጠናቅቁ</translation>
 <translation id="3939773374150895049">ከCVC ይልቅ WebAuthnን ይጠቀሙ?</translation>
 <translation id="3941630233824954464">የግዴታ ዳግም ማረጋገጥን አንቃ</translation>
 <translation id="3942048175062210325">ፋይሎችዎን እንደገና ለመክፈት ይሞክሩ</translation>
@@ -2056,6 +2059,7 @@
 <translation id="4424024547088906515">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በChrome የሚታመን አይደለም። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="4425137053900958839">ከPix በሚያገኙት ምቾት እና ደኅንነት ሁሉ ይደሰቱ</translation>
 <translation id="443121186588148776">የመለያ ወደብ</translation>
+<translation id="4431928532022419942">ከChrome ይወገድ?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> የመግቢያ እውቅና ማረጋገጫዎን አልተቀበለም፣ ወይም ገና አልተሰጠዎት ይሆናል።</translation>
 <translation id="4432792777822557199">በ<ph name="SOURCE_LANGUAGE" /> ያሉ ገጾች ወደ <ph name="TARGET_LANGUAGE" /> ከአሁን በኋላ ይተረጎማሉ</translation>
 <translation id="4433642172056592619">ችላ ተብሏል ምክንያቱም ተጠቃሚው ከማሽኑ አስተዳደር ጋር አጋር ስላልሆነ ወይም ማሽኑ ስለማይተዳደረ።</translation>
@@ -3135,6 +3139,7 @@
 <translation id="6263376278284652872"><ph name="DOMAIN" /> እልባቶች</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
 <translation id="6264485186158353794">ወደ አስተማማኝ ተመለስ</translation>
+<translation id="6264507470395196064">ደኅንነቱ የተጠበቀ አግባቢ ፍኖት</translation>
 <translation id="6264636978858465832">የሚስጥር ቁልፍ አስተዳዳሪ ተጨማሪ መዳረሻ ያስፈልገዋል</translation>
 <translation id="6265794661083428563">የ<ph name="POLICY_NAME" /> መመሪያውን ይቅዱ</translation>
 <translation id="6271264012613848937">በድርጅትዎ መመሪያዎች ምክንያት <ph name="URL" />ን እንዳይጎበኙ ታግደዋል። ያ ያልተጠበቀ ከሆነ አስተዳዳሪዎን ያነጋግሩ።</translation>
@@ -3344,6 +3349,7 @@
 <translation id="6630043285902923878">የዩኤስቢ መሣሪያዎችን በማግኘት ላይ...</translation>
 <translation id="6630388727238334626">የChrome ቅንብሮች አዝራርን ያስተዳድሩ፣ የChrome ቅንብሮችዎን ለመጎብኘት ያግብሩ</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">ወደፊት ጣቢያውን ለመጎብኘት ድርጅትዎ በሚተዳደረው የGoogle መለያዎ እንዲገቡ ይጠይቅዎታል።</translation>
 <translation id="6635900375070654124">የማረጋገጫ መሣሪያ</translation>
 <translation id="6641852376826221947">ግዢዎን ያረጋግጡ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
@@ -3533,6 +3539,7 @@
 <translation id="6957153644870901611">ተጨማሪ መስኮችን በራስ-ሰር ለመሙላት የተሻሻለ ራስ-ሙላን ያብሩ</translation>
 <translation id="6957887021205513506">የአገልጋዩ እውቅና ማረጋገጫ የተጭበረበረ ይመስላል።</translation>
 <translation id="6958564499836457428">በእርስዎ Google መለያ ውስጥ የGoogle ግላዊነት ቅንብሮችን ያቀናብሩ</translation>
+<translation id="6961161369573226336">Google የይለፍ ቃል አስተዳዳሪ እነዚህን ኮዶች ከእርስዎ Gmail <ph name="EMAIL" /> ላይ ሊያገኝልዎት ይችላል። ሐሳብዎን መለወጥ እና <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" /> ይችላሉ።</translation>
 <translation id="6961844873822989059">በእርስዎ መሣሪያ ላይ የተጫኑ ቅርጸ-ቁምፊዎችን ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="6962858948849099922">የእረፍት ጊዜን በማንቀሳቀስ ላይ</translation>
 <translation id="6963520811470373926">መተካት</translation>
@@ -3610,6 +3617,7 @@
 <translation id="70846382339153529">የOpenDocument ጽሑፍ</translation>
 <translation id="7086090958708083563">ሰቀላ በተጠቃሚ ተጠይቋል</translation>
 <translation id="7090698782953528257">የሒሳብ እኩልታውን በዓይነ ሕሊናዬ ለመሳል እና የኩርባውን ቅርጽ ለማየት ተግባርን በግራፍ እንድሠራ አግዘኝ</translation>
+<translation id="7092087596499105699">አስተዳዳሪዎ የድርጅትዎን የግል ድር መተግበሪያዎች መዳረሻ ለመጠበቅ ደኅንነቱ የተጠበቀ የአግባቢ ፍኖት አገናኝን አዋቅረዋል። መዳረሻን ለማረጋገጥ ከሥራ መገለጫዎ የሆነ ውሂብን ሊጠቀም ይችላል።</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በChrome ቅንብሮች ውስጥ ፈቃዶችን እና በመላ ጣቢያዎች ላይ የተከማቸ ውሂብን ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="709604659664854823">በአቅራቢያ ባሉ ምግብ ቤቶች ውስጥ ለዛሬ ማታ የመጨረሻ ደቂቃ ቦታ ማስያዞችን ፈልግልኝ</translation>
 <translation id="7096341143397839437">ኢሜይል፦ <ph name="EMAIL" />።</translation>
@@ -4865,6 +4873,7 @@
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> የተገናኙ አባሎች «<ph name="GROUP_NAME" />» የትር ቡድን</translation>
 <translation id="949314938206378263">ይህን ጣቢያ ለመጎብኘት ጠይቀዋል። የእርስዎ ወላጅ በFamily Link ውስጥ ምላሽ መስጠት ይችላሉ።</translation>
 <translation id="949484466204182817">የማስተካከያ ቁጥርን ወደ Google Wallet ያክሉ</translation>
+<translation id="950533895669718124">በቅንብሮች ውስጥ ስለዚህ ባህሪ የበለጠ ይወቁ</translation>
 <translation id="950736567201356821">ሦስቴ ከላይ ብሳ</translation>
 <translation id="950926967802086924">የይለፍ ቁልፍ • Google የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="952165179818196872">መተግበሪያዎችን ሳይቀይሩ ለመክፈል <ph name="PROVIDER" /> ያክሉ</translation>

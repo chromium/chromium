@@ -741,6 +741,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2233745931693710080">Cakram Padat</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2239100178324503013">Kirim sekarang</translation>
+<translation id="223921069122391343">Penawaran tersimpan Anda akan tersedia saat checkout menggunakan isi otomatis. <ph name="BEGIN_LINK" />Lihat persyaratan dan ketentuan<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Tambahkan Redress Number</translation>
 <translation id="2241693394036365668">File didownload</translation>
 <translation id="2242389809734574253">Simpan IBAN ditutup.</translation>
@@ -987,7 +988,6 @@ Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus.
 <translation id="2628025184666666186">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" /> karena menggunakan sertifikat keamanan yang tidak dipercaya oleh Chrome atau konfigurasi sistem Anda untuk enkripsi traffic web. Hal ini mungkin disebabkan oleh kesalahan konfigurasi, atau ada penyerang yang menyadap koneksi Anda.</translation>
 <translation id="2628224721443278970">Login ke Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Administrator Anda menemukan lokasi perangkat ini saat perangkat dinonaktifkan. Perangkat ini telah diaktifkan kembali dan siap digunakan.</translation>
-<translation id="2631387782019878060">Kode Verifikasi: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Alamat IP server <ph name="HOST_NAME" /> tidak dapat ditemukan.</translation>
 <translation id="2635276683026132559">Penandatanganan</translation>
 <translation id="2638070510549214427">Tandai sebagai aman</translation>
@@ -1372,6 +1372,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
 <translation id="3310946375819654151">Chrome mencoba mengisikan info sensitif Anda di <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Upload berhasil</translation>
+<translation id="3323135197619890621">Aktifkan isi otomatis untuk memudahkan belanja</translation>
 <translation id="3324687287337751929">4 x 6 inci (10 x 15 cm)</translation>
 <translation id="3325568918769906282">dalam urutan menurun</translation>
 <translation id="3325662270238538525">Akses dan perubahan file terbaru, termasuk nama file, sidik jari digital konten file, sumber download, dan metadata</translation>
@@ -1596,6 +1597,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3704162925118123524">Jaringan yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuk jaringan.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Memuat...</translation>
+<translation id="3708927069677086144">Organisasi Anda mengharuskan Anda login ke Chrome</translation>
 <translation id="3709599264800900598">Teks yang Anda Salin</translation>
 <translation id="3711223220609269738">Tab Terisolasi Baru</translation>
 <translation id="3711430313228789376">Browser Chrome mencoba menampilkan sandi</translation>
@@ -1733,6 +1735,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3928806096717999469">Edit, jendela baru akan terbuka</translation>
 <translation id="393417216277380082">Sensor gerakan dan cahaya</translation>
 <translation id="3937640725563832867">Nama Alternatif Penerbit Sertifikat</translation>
+<translation id="3938243129430544357">Check out dengan aman menggunakan isi otomatis</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
 <translation id="3941630233824954464">Aktifkan autentikasi ulang wajib</translation>
 <translation id="3942048175062210325">Coba buka file lagi</translation>
@@ -2057,6 +2060,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4424024547088906515">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh Chrome. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="4425137053900958839">Nikmati semua kenyamanan dan keamanan yang dapat diandalkan dari Pix</translation>
 <translation id="443121186588148776">Port serial</translation>
+<translation id="4431928532022419942">Hapus dari Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> tidak menerima sertifikat masuk Anda, atau sertifikat masuk mungkin tidak diberikan.</translation>
 <translation id="4432792777822557199">Mulai sekarang, halaman dalam bahasa <ph name="SOURCE_LANGUAGE" /> akan diterjemahkan ke <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Diabaikan karena pengguna tidak berafiliasi dengan pengelolaan mesin atau mesin tidak dikelola.</translation>
@@ -3136,6 +3140,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6263376278284652872">Bookmark <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Tetap download</translation>
 <translation id="6264485186158353794">Kembali agar aman</translation>
+<translation id="6264507470395196064">Gateway aman</translation>
 <translation id="6264636978858465832">Pengelola Sandi memerlukan lebih banyak akses</translation>
 <translation id="6265794661083428563">Salin nilai kebijakan <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Anda tidak dapat mengunjungi <ph name="URL" /> karena kebijakan organisasi Anda memblokirnya. Jika hal ini tidak semestinya terjadi, hubungi administrator Anda.</translation>
@@ -3345,6 +3350,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6630043285902923878">Mencari perangkat USB ...</translation>
 <translation id="6630388727238334626">Tombol Kelola setelan Chrome, aktifkan untuk membuka setelan Chrome Anda</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Untuk mengunjungi situs yang akan dibuka, organisasi Anda mengharuskan Anda login dengan Akun Google terkelola.</translation>
 <translation id="6635900375070654124">perangkat pengautentikasi</translation>
 <translation id="6641852376826221947">Konfirmasi pembelian Anda</translation>
 <translation id="6643016212128521049">Hapus</translation>
@@ -3534,6 +3540,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6957153644870901611">Aktifkan isi otomatis yang ditingkatkan untuk mengisi lebih banyak kolom secara otomatis</translation>
 <translation id="6957887021205513506">Sertifikat server tampaknya palsu.</translation>
 <translation id="6958564499836457428">Kelola setelan privasi Google di Akun Google Anda</translation>
+<translation id="6961161369573226336">Pengelola Sandi Google dapat memperoleh kode ini untuk Anda dari Gmail Anda <ph name="EMAIL" />. Anda dapat mengubah keputusan Anda dan <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Dapat meminta untuk menggunakan font yang diinstal di perangkat Anda</translation>
 <translation id="6962858948849099922">Waktu pemindahan habis</translation>
 <translation id="6963520811470373926">Menggantikan</translation>
@@ -3611,6 +3618,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="70846382339153529">Teks OpenDocument</translation>
 <translation id="7086090958708083563">Upload yang diminta oleh pengguna</translation>
 <translation id="7090698782953528257">Bantu saya membuat grafik fungsi untuk memvisualisasikan persamaan matematika dan melihat bentuk kurvanya</translation>
+<translation id="7092087596499105699">Administrator Anda mengonfigurasi konektor gateway aman untuk melindungi akses ke aplikasi web pribadi organisasi Anda. Fitur ini mungkin menggunakan data dari profil kerja Anda untuk memverifikasi akses.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk mengelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="709604659664854823">Carikan reservasi dadakan di restoran terdekat untuk malam ini</translation>
 <translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
@@ -4861,6 +4869,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> anggota bergabung ke grup tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Kamu meminta untuk membuka situs ini. Orang tuamu bisa membalas di Family Link.</translation>
 <translation id="949484466204182817">Tambahkan redress number ke Google Wallet</translation>
+<translation id="950533895669718124">pelajari lebih lanjut fitur ini di setelan</translation>
 <translation id="950736567201356821">Tiga lubang di atas</translation>
 <translation id="950926967802086924">Kunci sandi • Pengelola Sandi Google</translation>
 <translation id="952165179818196872">Tambahkan <ph name="PROVIDER" /> untuk membayar tanpa beralih aplikasi</translation>

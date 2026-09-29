@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Chrome жүктеп алуды блоктады, себебі бұл файл түрі әдетте жүктеп алынбайды және ол қауіпті болуы мүмкін.</translation>
 <translation id="1197860368385086056">Келесі жолы Chrome-ды <ph name="DEVICE_TYPE" /> құрылғысынан ашқан кезде, баға бақылау хабарландыруларын қосу туралы нұсқауды көресіз.</translation>
 <translation id="1203500561924088507">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын браузерді жауып, қайта ашуыңыз керек.</translation>
+<translation id="1226003169284463347">Барлық құрылғыдан бетбелгілер мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="1278833599417554002">&amp;Chrome-ды жаңарту үшін қайта іске қосу</translation>
 <translation id="1289911795790071537">Chrome-мен іздеу функциясын ашу</translation>
 <translation id="1290883685122687410">Реттеу қатесі: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">Жақында кірмедіңіз. Chrome <ph name="PERMISSION" /> рұқсатын өшірді.</translation>
 <translation id="2106831557840787829">ChromeOS Flex операциялық жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты қосымша <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="2108778574543343055">Chrome-ның қолданбаларда фондық режимде жұмыс істеу мүмкіндігін өшіру</translation>
+<translation id="2111985952714409792">Барлық құрылғыдан кеңейтімдер мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> элемент бұл құрылғыдан жойылады. Деректерді кейінірек алу үшін Chrome жүйесіне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="2121284319307530122">&amp;Chrome-ды жаңарту үшін қайта іске қосу</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы Chrome браузерін жақсартуға көмектесіңіз</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">Бекітілген күйде қалдыру</translation>
 <translation id="2309047409763057870">Бұл – Google Chrome браузерінің қайта орнатылған нұсқасы және әдепкі браузер бола алмайды.</translation>
 <translation id="2345992953227471816">Chrome бұл кеңейтімдерде зиянды бағдарлама бар екенін анықтады:</translation>
+<translation id="2358140144860869442">Барлық құрылғыдан оқу тізімі мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2403703063067034158">Іске қосу қатесі: қазір басқа орнату процесі жүріп жатыр, әрекетті кейінірек қайталаңыз.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1 HID құрылғысын бір немесе бірнеше Chrome кеңейтімі пайдаланды}=1{1 HID құрылғысын бір немесе бірнеше Chrome кеңейтімі пайдаланып жатыр}other{# HID құрылғысын бір немесе бірнеше Chrome кеңейтімі пайдаланып жатыр}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Браузеріңізде ең қауіпсіз параметрлер бар екеніне көз жеткізу үшін Chrome жүйелі түрде тексереді. Пікіріңіз керек болса, сізге хабар жібереміз.</translation>
 <translation id="2652691236519827073">Сілтемені жаңа Chrome қойындысында ашу</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" /> құрылғысынан кеңейтімдер мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="2665296953892887393">Google компаниясына ақау есептерін және <ph name="UMA_LINK" /> жіберу арқылы Google Chrome жақсартуға көмектесіңіз</translation>
 <translation id="2668094785979141847">Google Lens-ден шығу үшін басыңыз.</translation>
 <translation id="2674238339205910678">ChromeOS Flex жүйесі Chrome деректерін Google аккаунтыңызға сақтай алмады, себебі аккаунтқа кіру мәліметтері ескірген.</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" /> құрылғысында Chrome пайдаланып, онлайн сатып алудан барынша пайда көріңіз</translation>
 <translation id="3245429137663807393">Chrome пайдалану есептерін де бөліссеңіз, бұл есептерде сіз кірген URL мекенжайлары қамтылады.</translation>
 <translation id="3249558306861350254">Windows параметрлерінде <ph name="BEGIN_BOLD" />Әдепкі ретінде орнату<ph name="END_BOLD" /> түймесін басыңыз.</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" /> құрылғысынан бетбелгілер мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="3259748324892322072">Chrome Apps-ті жүктеп алу</translation>
 <translation id="3282568296779691940">Chrome жүйесіне кіру</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
@@ -345,6 +350,7 @@
 <translation id="4280647692742956593">Жолда жаңа қойындылар тобын ашу немесе жасау үшін телефоныңызға Chrome-ды жүктеп алыңыз.</translation>
 <translation id="4281844954008187215">Қызмет көрсету шарттары</translation>
 <translation id="430327780270213103">Кеңейтімге Chrome құралдар тақтасында сайтқа кіру сұрауларын көрсетуге рұқсат беру</translation>
+<translation id="4312908933392839680">Барлық құрылғыдан сақталған ақпарат пен басқа деректерді алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome браузер жұмысын баяулататын қойындыны кідіртуді ұсынады}other{Chrome браузер жұмысын баяулататын қойындыларды кідіртуді ұсынады}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Жекелендіру мен басқа функцияларды алу үшін Chrome-ды интернет пен қолданбаларды пайдалану тарихы мен байланысқан Google қызметтеріне қосыңыз.</translation>
@@ -514,7 +520,9 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="6046028983725193307">Жүйе дыбысын бөлісу үшін жүйе параметрлерін ашып, Chrome-ға "Тек жүйе дыбысын жазу" опциясына рұқсат беріңіз. Содан кейін Chrome-ды қайта іске қосуыңыз қажет.</translation>
 <translation id="6069027071882229820">Сурет түрінде көшіру</translation>
 <translation id="6070348360322141662">Қауіпсіздікті күшейту үшін Google Chrome деректеріңізді шифрлайды</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" /> құрылғысынан құпия сөздер мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="6075300983329039771">Ұйымыңыз (<ph name="MANAGER" />) Chrome-ға кіруді талап етеді</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" /> құрылғысынан оқу тізімі мен басқа ақпаратты алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="6113794647360055231">Chrome жақсара түсті</translation>
 <translation id="6116004140911290070">Chrome-да дағдыларды қосу</translation>
 <translation id="6116252277240876590">Бұл тіл Chrome-да мәзірлерді, параметрлерді, ескертулерді және басқа мәтінді көрсету үшін пайдаланылады.</translation>
@@ -712,6 +720,7 @@ Google Chrome параметрлеріңізді қалпына келтіре �
 <translation id="7804947029129221742">Іздеу жүйесі Chrome-нан тыс өзгертілді. Сізді қорғау үшін Chrome оны бастапқы әдепкі күйіне қайтарды. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome ішінен жою…</translation>
 <translation id="7827099906024714326">Chrome браузері деректерді Google аккаунтыңызға сақтау және барлық құрылғыңызда пайдалануға рұқсат беру үшін жеке басыңызды растауы қажет. Қазір шықсаңыз, бұл деректер жойылады.</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" /> құрылғысынан сақталған ақпарат пен басқа деректерді алу үшін Chrome-ға кіріңіз.</translation>
 <translation id="7832314606810669113">Бетбелгілер мен басқа ақпаратты барлық құрылғыдан алу үшін Chrome аккаунтына кіріңіз. Аккаунтқа кіргеннен кейін, бұл бетбелгі Google аккаунтыңызға сақталады.</translation>
 <translation id="7845233973568007926">Орнатқаныңыз үшін рақмет. <ph name="BUNDLE_NAME" /> пайдаланбас бұрын компьютерді өшіріп қосуыңыз керек.</translation>
 <translation id="7847170235260850604">Windows жұмысын бастағанда, Chrome-ды іске қосады</translation>

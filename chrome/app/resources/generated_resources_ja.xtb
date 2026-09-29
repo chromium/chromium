@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 件のパスワードをこのデバイスの <ph name="BRAND" /> にインポートしました}other{{NUM_PASSWORDS} 件のパスワードをこのデバイスの <ph name="BRAND" /> にインポートしました}}</translation>
 <translation id="1046572983040892965">ウィンドウを左上に移動しました</translation>
 <translation id="1047431265488717055">リンクテキストをコピー(&amp;X)</translation>
+<translation id="104751728059674265">このアカウントではフィードバックを利用できません。保護者の方のデバイスやプロファイルを使用して、代わりに問題を報告してもらうことができます。</translation>
 <translation id="1048986595386481879">動的に割り当て</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受信しています}other{<ph name="DEVICE_NAME" /> から <ph name="ATTACHMENTS" />を受信しています}}</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">サイトがマウス入力の取得と使用を要求できるようにする</translation>
 <translation id="1232569758102978740">無題</translation>
 <translation id="1233497634904001272">リクエストを完了するには、セキュリティ キーをもう一度タップしてください。</translation>
+<translation id="1233566345244684257">Gemini アプリにアクセスできるすべてのユーザーが Chrome ブラウザを操作できます。</translation>
 <translation id="1233721473400465416">言語/地域</translation>
 <translation id="1233835246554936745">{0,plural, =1{アカウントに 1 件のアイテムを保存}other{アカウントに # 件のアイテムを保存}}</translation>
 <translation id="1234736487471201993">この画像の QR コードを作成</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">このデータをダウンロードする理由を入力してください。</translation>
 <translation id="1422159345171879700">安全でないスクリプトを読み込む</translation>
 <translation id="1425040197660226913">アップロードできません。20 MB 未満の画像を使用してください。</translation>
+<translation id="1426154609634610063">Gemini の使用に関するリスクを確認する</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> はブロックされています</translation>
 <translation id="1427179946227469514">テキスト読み上げの音声の高さ</translation>
@@ -983,6 +986,7 @@
 <translation id="1755601632425835748">テキストのサイズ</translation>
 <translation id="1756963401828337401">キャプチャする画面を選択</translation>
 <translation id="17584710573359123">Chrome ウェブストアのページに移動</translation>
+<translation id="1758845021884209593">OS アプリ全体でショートカットを使用する</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> を <ph name="REMAPPING_OPTION" /> に再マッピングしました。</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> さんのアカウント</translation>
 <translation id="176272781006230109">おすすめのショッピング情報</translation>
@@ -1826,6 +1830,7 @@
 <translation id="2416435988630956212">キーボードのファンクション キー</translation>
 <translation id="2419131370336513030">インストール済みアプリの表示</translation>
 <translation id="2419706071571366386">セキュリティ確保のため、パソコンが使用されていないときにはログアウトします。</translation>
+<translation id="2423226060967554289">ブックマーク バーを表示</translation>
 <translation id="2423506062824112361">不明な理由により、コンテンツをダウンロードできませんでした。</translation>
 <translation id="2423578206845792524">名前を付けて画像を保存(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{ゲスト}other{ゲスト（#）}}</translation>
@@ -2063,6 +2068,7 @@
 <translation id="2588271083332682494">タブグループで整理整頓</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> のデバイス</translation>
 <translation id="2589658397149952302">ドライブ ファイルを表示しない</translation>
+<translation id="2595270892115552212">gemini.google.com や Gemini モバイルアプリなどの他の Gemini アプリからタスクを開始すると、Gemini はこのデバイスで Chrome の自動ブラウジングを使用してサイトを操作し、ユーザーに代わってタスクを完了できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">ニアバイシェアでは Bluetooth のスキャン機能を使用して、付近のデバイスを探します。</translation>
 <translation id="2598136842498757793">ツールバーのボタンをカスタマイズ</translation>
 <translation id="2598710988533271874">新しい Chrome をご利用いただけます</translation>
@@ -2800,6 +2806,7 @@
 <translation id="3132996321662585180">毎日更新する</translation>
 <translation id="3134312457920437826">サポートされていないマニフェスト バージョンを使用しているため、拡張機能をインストールできません。</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">他の Gemini アプリが任意のデバイスからリモートでブラウジングできるようにする</translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
 <translation id="314095642664111744">フォーカスをオフにする</translation>
 <translation id="3141093262818886744">開く</translation>
@@ -3083,6 +3090,7 @@
 <translation id="3355936511340229503">接続エラー</translation>
 <translation id="335678817537689040">静的</translation>
 <translation id="3359256513598016054">証明書ポリシーの制約</translation>
+<translation id="3359465538772230055">タスクはありません</translation>
 <translation id="3360297538363969800">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="3360306038446926262">ウィンドウ</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
@@ -3611,6 +3619,7 @@
 <translation id="3736487688526377259">このリンクを送信するデバイスを選択してください。</translation>
 <translation id="3737058101969549870">既存の閲覧データをこの新しいプロフィールとは別に保持しますか？</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini は、デバイスが起動していて Chrome が実行されている場合にのみ、このデバイスで自動ブラウジングを使用できます。</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> を開きますか？</translation>
 <translation id="3739349485749941749">サイトがデバイスにアクセスできるプリンタの検索と使用を要求できるようにする</translation>
 <translation id="3741056951918180319">どのサイトでも、いつでも拡張機能をクリックして使用できます</translation>
@@ -3966,6 +3975,7 @@
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3988124842897276887">このタブは USB デバイスに接続されています</translation>
 <translation id="3989635538409502728">ログアウト</translation>
+<translation id="399132041334931433">タブを新しいグループに追加</translation>
 <translation id="399179161741278232">インポートしたブックマーク</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> をダウンロードしています、<ph name="STATUS" /></translation>
 <translation id="3994075804072562819"><ph name="SPECIFIC_NAME" /> に USB デバイスの制御を許可します。</translation>
@@ -5194,6 +5204,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">今後このサイトのパスワードを保存しない</translation>
 <translation id="4952580838083306838">整理機能を非表示</translation>
+<translation id="4952628481830269193">ブックマーク バーを表示</translation>
 <translation id="4953808748584563296">デフォルトのオレンジのアバター</translation>
 <translation id="4954652437333037880">ファイル</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> について質問する</translation>
@@ -5446,6 +5457,7 @@
 <translation id="5149602533174716626">動画フレームをコピー(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 証明書 SSL サーバー名</translation>
 <translation id="5151354047782775295">ディスクの空き領域を確保してください。十分な空き領域がない場合、一部のデータが自動的に削除される可能性があります</translation>
+<translation id="5152719737931716272">タスクが完了し、Gemini に戻りました</translation>
 <translation id="5153074793829217329">キーボードまたはテンキーを使用してマウスカーソルを操作します</translation>
 <translation id="5153234146675181447">スマートフォンを削除</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5760,6 +5772,7 @@
 <translation id="5414836363063783498">確認しています…</translation>
 <translation id="5415497281076257439">語句</translation>
 <translation id="5415871492522952905">すべてのデバイスで履歴とタブにアクセスできるため、デバイスが替わっても作業を続けられます</translation>
+<translation id="5417160551295347092">Gemini は間違えることがあります。たとえば、ユーザーに確認せずにユーザー情報の共有や購入などを行う可能性があります。<ph name="LINK_BEGIN" />リスクを確認<ph name="LINK_END" />。</translation>
 <translation id="5417293056300086453">このサイトでは、識別子の使用と保護されたコンテンツの再生が許可されています。</translation>
 <translation id="5417312524372586921">ブラウザのテーマ</translation>
 <translation id="541737483547792035">画面の拡大</translation>
@@ -6103,6 +6116,7 @@
 <translation id="5687340364605915800">このリクエストへの対応はサイトが自らの裁量で決定します</translation>
 <translation id="5689233503102158537">Alt+Backspace</translation>
 <translation id="5689516760719285838">位置情報</translation>
+<translation id="568984110402742489">フィードバックを送信できません</translation>
 <translation id="56907980372820799">データをリンク</translation>
 <translation id="5691772641933328258">指紋を認識できません</translation>
 <translation id="5693255400847650006">マイクを使用中</translation>
@@ -6513,6 +6527,7 @@
 <translation id="6003143259071779217">eSIM モバイル ネットワークの削除</translation>
 <translation id="6003479444341796444">タイトルバーが表示されました</translation>
 <translation id="6003582434972667631">テーマは組織によって設定されています</translation>
+<translation id="600407115562756795">Gemini は、開始または更新するタスクに基づいて、実行するアクションを決定します。</translation>
 <translation id="6005045517426700202">レンガ造りの建物</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007053304250788613">ミラーモードで除外できるディスプレイは 1 つだけです</translation>
@@ -8489,6 +8504,7 @@
 <translation id="7523117833414447032">大文字の読み上げ</translation>
 <translation id="7523585675576642403">プロファイルの名前を変更</translation>
 <translation id="7525067979554623046">作成</translation>
+<translation id="7526083414913154899">Gemini タスクの詳細</translation>
 <translation id="7528224636098571080">開かない</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{タブグループを解除しますか？}other{タブグループを解除しますか？}}</translation>
 <translation id="7529411698175791732">インターネット接続を確認してください。問題が解消しない場合は、ログアウトして再度ログインしてみてください。</translation>
@@ -9217,6 +9233,7 @@
 <translation id="8081989000209387414">ADB デバッグを無効にしますか？</translation>
 <translation id="8082132721957920509">支払いカードが保存されました</translation>
 <translation id="8082390128630131497">ADB デバッグを無効にすると、この <ph name="DEVICE_TYPE" /> が出荷時の設定にリセットされます。ユーザー アカウントとローカルデータはすべて消去されます。</translation>
+<translation id="8082737802704584539">Google アカウントでの履歴の保存は組織によって無効にされています</translation>
 <translation id="8084114998886531721">保存したパスワード</translation>
 <translation id="8084417885464859041">Gemini を安全に使用する</translation>
 <translation id="8084429490152575036">モバイル APN 設定</translation>
@@ -9259,6 +9276,7 @@
 <translation id="8109991406044913868">AI が作成したテーマ</translation>
 <translation id="8110393529211831722">登録はこのデバイスにのみインストールされ、アカウントの他のデバイスとは同期されません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">連絡先リストをダウンロードしています...</translation>
+<translation id="8110781914702267195"><ph name="BEGIN_LINK1" />データとプライバシーの設定<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />お支払い方法<ph name="END_LINK2" />やポイントカードなどの<ph name="BEGIN_LINK3" />パス<ph name="END_LINK3" />を管理するには、Google ウォレットにアクセスしてください</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> のマイクへのアクセス権</translation>
 <translation id="8116497846156149">保護者に承認を依頼してください</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
@@ -9339,6 +9357,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。プリンタ <ph name="ITEM_POSITION" />/<ph name="NUM_PRINTERS" />。</translation>
 <translation id="8180785270975217276">省エネモードがオンになっています</translation>
 <translation id="8180786512391440389">「<ph name="EXTENSION" />」は、チェックした場所にある画像、動画、音声ファイルの読み取りと削除ができます。</translation>
+<translation id="8181132988581553950">Gemini は、ログインしているサイトを含め、ユーザーと同じサイトにアクセスできます。必要に応じてサードパーティと情報を共有することがあり、これにはセンシティブな個人情報も含まれます。</translation>
 <translation id="8183703640399301650">デバイスの EID は <ph name="EID_NUMBER" /> で、デバイスの IMEI は <ph name="IMEI_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" /> に切り替える</translation>
 <translation id="8184318863960255706">詳細</translation>
@@ -10241,6 +10260,7 @@
 <translation id="8874341931345877644">デバイスにキャスト:</translation>
 <translation id="8874647982044395866">オーガニック</translation>
 <translation id="8874790741333031443">サードパーティ Cookie を一時的に許可してみてください。ブラウジング保護の強度は低下しますが、サイトの機能が想定どおりに動作する可能性が高くなります。</translation>
+<translation id="8874864294955002500">このアカウントではフィードバックを利用できません。組織の管理者のデバイスやプロファイルを使用して、代わりに問題を報告してもらうことができます。</translation>
 <translation id="8875736897340638404">公開設定を選択します</translation>
 <translation id="8876307312329369159">この設定はデモセッションでは変更できません。</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> では Bluetooth のスキャン機能を使用して、付近のデバイスを探します。</translation>

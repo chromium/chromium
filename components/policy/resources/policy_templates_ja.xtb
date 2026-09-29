@@ -1071,7 +1071,7 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
       注: この設定は <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> より優先されます（指定されている場合）。</translation>
 <translation id="1723571018091915166">組み込みの <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> とのスマートタブ共有を許可しない。</translation>
 <translation id="172374442286684480">ローカル データの設定をすべてのサイトに許可する</translation>
-<translation id="1726467454355516626">このポリシーを True に設定した場合、Chrome アプリのデフォルトの有効化設定に関係なく、管理者がインストールした Chrome アプリの実行とインストールが引き続き許可されます。
+<translation id="1726467454355516626">このポリシーを True に設定した場合、Chrome アプリのデフォルトの有効化設定にかかわらず、管理者がインストールした Chrome アプリの実行とインストールが引き続き許可されます。
 
 このポリシーを未設定のままにするか False に設定した場合、デバイスで定義されているデフォルトの動作が使用されます。
 
@@ -1757,6 +1757,7 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
       このポリシーを設定しない場合、ブラウザでパソコンの物理メモリが少なくなったことが検出されたときにのみ、メモリの節約が試行されます。</translation>
 <translation id="2161348910646846717">ユーザーによるリリース チャンネルの変更を許可する</translation>
 <translation id="2162703823039992020"><ph name="PRODUCT_OS_NAME" /> での Google サービスのコンテキスト統合</translation>
+<translation id="2163451780572451889">この組織の <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> インスタンスのウェブ アプリケーション URL。有効な HTTPS URL にする必要があります。</translation>
 <translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> には制限ポートのリストが組み込まれており、これらのポートに接続することはできません。この設定を使用すると、このリストを回避することができます。値には、発信接続を許可する 0 個以上のポートのカンマ区切りのリストを指定します。
 
       ポートは、<ph name="PRODUCT_NAME" /> を経路としてさまざまなネットワークの脆弱性が悪用されるのを防ぐために制限されています。このポリシーを設定した場合、ネットワークが攻撃にさらされる可能性があります。このポリシーは、ブロックされたポートで実行されるサービスを標準ポート（ポート 80 または 443）に移行する際に、コード「ERR_UNSAFE_PORT」のエラーを一時的に解決するためのものです。
@@ -2111,9 +2112,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="2421779938235645781">キーボード バックライトの色を現在の壁紙と合わせる</translation>
 <translation id="2423255396068675416">このポリシーを有効に設定するか未設定のままにした場合、<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> と <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> が有効であれば、ユーザーは <ph name="PRODUCT_CROSTINI_NAME" /> を実行できます。このポリシーを無効に設定した場合、ユーザーに対して <ph name="PRODUCT_CROSTINI_NAME" /> はオフになります。このポリシーを無効に変更すると、すでに実行されているコンテナではなく、新しい <ph name="PRODUCT_CROSTINI_NAME" /> コンテナの開始に対してポリシーが適用されます。</translation>
 <translation id="2423654977291507457">統合を無効にする</translation>
-<translation id="2424141395604579502">このポリシーを True に設定するか未設定のままにした場合、ユーザーはブックマークを追加、削除、変更、アップロードできます。
-
-      このポリシーを False に設定した場合、ユーザーはブックマークを追加、削除、変更、アップロードできません。既存のブックマークは引き続き使用できます。</translation>
 <translation id="242521047682347997">ユーザーがスマートフォンと Chromebook の間で SMS メッセージを同期できないようにする</translation>
 <translation id="2426782419955104525"><ph name="PRODUCT_NAME" /> のインスタント検索機能を有効にします。ユーザーはこの設定を変更できなくなります。
 
@@ -10336,6 +10334,21 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
 
 このポリシーを設定しない場合、PDF のレンダラはブラウザによって選択されます。</translation>
 <translation id="7704244074621846004">SharedWorker の有効期間の延長を有効にする</translation>
+<translation id="7705886216383850895"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
+
+<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> を構成するには、管理者は次のいずれかを指定する必要があります。
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーションの URL（<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />）または
+* 3 つのレガシー パラメータ（<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />）すべてURL を指定せずに、これら 3 つのパラメータの一部のみを指定した場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータは、HTTPS スキームを使用する有効な URL で、ユーザー名やパスワードを含まないものである必要があります。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータとレガシー パラメータの両方を指定した場合は、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータが優先されます。
+
+このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
+
+このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
+
+なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="7707869387893611318">充電時のサウンド機能を有効にします。
 
           これは充電器に接続したときにサウンドを鳴らす機能です。

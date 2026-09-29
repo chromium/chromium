@@ -109,6 +109,7 @@
 <translation id="1322735045095424339">La tua organizzazione richiede la modalità in incognito</translation>
 <translation id="1323735185997015385">Elimina</translation>
 <translation id="132683371494960526">Tocca due volte per cambiare la cartella principale.</translation>
+<translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
 <translation id="132969855425874290">Chiudi Trova e compila</translation>
 <translation id="1333455942675373522">Tastiera</translation>
 <translation id="1333669029961409292">Azione completata: "Controlla le tue password".</translation>
@@ -141,6 +142,7 @@
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408847409015257906">Tocca l'opzione "Privacy e sicurezza".</translation>
 <translation id="1411386976162024013">Ricerca visiva di Lens</translation>
+<translation id="1414315029670184034">Non consentire ai siti di usare la fotocamera</translation>
 <translation id="1417474386970818917">Esci ed elimina</translation>
 <translation id="1426410128494586442">Sì</translation>
 <translation id="1430915738399379752">Stampa</translation>
@@ -212,6 +214,7 @@
 <translation id="1612754831519568745">Navigazione sicura è attualmente disattivata. Ricevi protezione da estensioni, download e siti pericolosi.</translation>
 <translation id="1617300545081951343">Si applicano i <ph name="BEGIN_LINK" />Termini<ph name="END_LINK" />, i <ph name="BEGIN_LINK" />Termini per la posizione coreani<ph name="END_LINK" /> e l‘<ph name="BEGIN_LINK" />Informativa sulla privacy<ph name="END_LINK" />. Gemini è un'AI e può commettere errori, anche in merito a persone.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
+<translation id="1621729191093924223">Le funzionalità che richiedono un microfono non funzioneranno</translation>
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
 <translation id="1629162218487290695">Verifica la tua identità…</translation>
 <translation id="1634520742547161889">MM/AA</translation>
@@ -365,6 +368,7 @@
 <translation id="2089180529062519164">Attiva il microfono</translation>
 <translation id="2096239473850415494">Download non riuscito</translation>
 <translation id="2096716221239095980">Elimina tutti i dati</translation>
+<translation id="2102396546234652240">Non consentire ai siti di usare il microfono</translation>
 <translation id="2104436223719117661">Ricerche di tendenza</translation>
 <translation id="21133533946938348">Fissa scheda</translation>
 <translation id="2117650889962717098">Mantieni privata la navigazione passando alla modalità Incognito</translation>
@@ -395,6 +399,7 @@
 <translation id="2202084845446535117">Nessun account email</translation>
 <translation id="2214453882118345682">Acquista, traduci e identifica ciò che vedi con la fotocamera.</translation>
 <translation id="2216366330550244277">Vai alla pagina di un prodotto</translation>
+<translation id="2218389616572918761">I siti possono chiedere di utilizzare il microfono</translation>
 <translation id="2219935992754556187">Chrome protegge i tuoi dati sensibili con Face ID</translation>
 <translation id="2220529011494928058">Segnala un problema</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" non può accedere alla fotocamera</translation>
@@ -514,6 +519,7 @@
 <translation id="2580306219079937316">Apri le impostazioni di traduzione</translation>
 <translation id="2583688836549072561">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede, nuova attività.</translation>
 <translation id="2584994295315085351">Apri una nuova scheda quando riapri Chrome dopo 4 ore</translation>
+<translation id="2592917252160773942">I siti possono chiedere di utilizzare la videocamera</translation>
 <translation id="2593272815202181319">Monospace</translation>
 <translation id="2601778637777010194">Monitora i cali di prezzo dei prodotti</translation>
 <translation id="2602372807870028932">In questo modo le informazioni selezionate salvate su questo dispositivo verranno eliminate</translation>
@@ -545,6 +551,7 @@
 <translation id="2673508731173059946">Visita il link copiato</translation>
 <translation id="2679659833697380">Le tue informazioni sono salvate sul dispositivo</translation>
 <translation id="2681572445246787428">Firma del documento</translation>
+<translation id="2685514716378236873">Autorizzazione non concessa</translation>
 <translation id="2688535388040882469">Banner</translation>
 <translation id="2690858294534178585">La videocamera è in uso</translation>
 <translation id="2691653761409724435">Non disponibile offline</translation>
@@ -620,6 +627,7 @@
 <translation id="2922210239002704889">Vai alla home page o alla tastiera</translation>
 <translation id="2924940770243654951">Apri in nuova scheda Incognito</translation>
 <translation id="2934607171563543600">da quando hai completato "Controlla le tue password"</translation>
+<translation id="2941680850471407949">Visualizza fonti</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2953821385349876107">Scegli un Account Google diverso</translation>
 <translation id="2962516096219646456">Visualizza tutti i dati di compilazione automatica</translation>
@@ -820,6 +828,7 @@
 <translation id="362709345066740529">Personalizza le tue schede, il tuo feed e altro ancora qui</translation>
 <translation id="3630104167004786843">Non ricevere aggiornamenti</translation>
 <translation id="3631443864840848029">Assicurati di salvare la tua password corrente per questo sito.</translation>
+<translation id="3641456520301071208">I siti possono chiederti la posizione</translation>
 <translation id="3642060527569456384">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} password è salvata solo su questo dispositivo. Per usarla su altri dispositivi, salvala nel tuo Account Google {email}.}other{{count} password sono salvate solo su questo dispositivo. Per usarle su altri dispositivi, salvale nel tuo Account Google {email}.}}</translation>
 <translation id="3659297405161482746">Nessun metodo di pagamento trovato</translation>
@@ -975,6 +984,7 @@
 <translation id="4161488339191275792">Crea gruppi di schede per organizzare le schede aperte</translation>
 <translation id="4163699139741158298">{count,plural, =1{Preferito salvato in "{title}", solo su questo dispositivo.}other{{count} preferiti salvati in "{title}" solo su questo dispositivo.}}</translation>
 <translation id="4164514562270305824">Eliminazione automatica dei download</translation>
+<translation id="4165986682804962316">Impostazioni sito</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> che termina con <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Non consentire</translation>
 <translation id="417138788035229076">Gestisci gruppo</translation>
@@ -1008,6 +1018,7 @@
 <translation id="4271575273430679392">Tocca due volte e tieni premuto per aprire la cronologia</translation>
 <translation id="4272631900155121838">Per eseguire la scansione di un codice QR, attiva la videocamera dalle impostazioni</translation>
 <translation id="4277990410970811858">Navigazione sicura</translation>
+<translation id="4278390842282768270">Autorizzazione concessa</translation>
 <translation id="4279431713294750185">Puoi far scorrere il bordo per andare avanti.</translation>
 <translation id="4282944936010261425">Non ci sono problemi di sicurezza da risolvere.</translation>
 <translation id="4286718549648564014">Indirizzo spostato nel tuo account <ph name="USER_EMAIL" /></translation>
@@ -1054,6 +1065,7 @@
 <translation id="4430277756566635951">Selezione attuale: <ph name="EMAIL" />. Scegli un account.</translation>
 <translation id="4430505936695785931">Recupera le password salvate in altre app</translation>
 <translation id="4431224949908513835">Seleziona un metodo di pagamento da inserire.</translation>
+<translation id="4431928532022419942">Rimuovere da Chrome?</translation>
 <translation id="4432122368769493392">Impostazioni</translation>
 <translation id="443295142249850475">I titoli delle pagine e gli URL delle schede aperte vengono utilizzati per fornirti suggerimenti pertinenti.</translation>
 <translation id="4439968635693513370">Programma il tuo weekend con</translation>
@@ -1378,6 +1390,7 @@
 <translation id="5443636120437209490">Una migliore esperienza di navigazione per impostazione predefinita</translation>
 <translation id="5444892875087332195">Preferiti</translation>
 <translation id="5447973833955560753">Password di recupero</translation>
+<translation id="5448623529214315261">Foto salvata <ph name="INDEX" /></translation>
 <translation id="5452354193031718372">Usa una password efficace:</translation>
 <translation id="5453088693079603292">Quali attività vengono raccolte</translation>
 <translation id="5454211924362324495">Per impedire ad altri di utilizzare la tua password, <ph name="BEGIN_LINK" />modificala su <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
@@ -1441,6 +1454,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5633237939819267663">{count,plural, =1{Preferito salvato in "{title}"}other{{count} preferiti salvati in "{title}"}}</translation>
 <translation id="564170563478022912">Uscire? I dati dell'account non salvati verranno eliminati.</translation>
 <translation id="5642707040609478753">Segna come da leggere</translation>
+<translation id="5646376287012673985">Posizione</translation>
 <translation id="5647096944343801045">Punto di accesso di grandi dimensioni</translation>
 <translation id="5647193778876139879">Tocca e tieni premuto un indirizzo.</translation>
 <translation id="5647702255748985085">Lasciare il gruppo?</translation>
@@ -1654,6 +1668,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6301104306974789820">Ricevi notifiche per il monitoraggio del prezzo</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Scegli la posizione della barra degli indirizzi</translation>
+<translation id="6305257382500066042">Prova ora</translation>
 <translation id="6307241780749477694">Verifica la tua identità per accedere a tutte le tue password su questo dispositivo</translation>
 <translation id="6307792728709337290">Salva la carta nel tuo Account Google per la compilazione automatica per questo acquisto e per acquisti futuri effettuati su Chrome.</translation>
 <translation id="6316141353357700666">Scegli la password che vuoi utilizzare dall'elenco visualizzato.</translation>
@@ -2007,6 +2022,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7412027924265291969">Continua</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
+<translation id="7423098979219808738">Chiedi prima</translation>
 <translation id="7425053386765766120">Aggiungi il metodo di pagamento…</translation>
 <translation id="7425346204213733349">Le modifiche ai preferiti, alla cronologia, alle password e ad altre impostazioni non verranno più sincronizzate con il tuo Account Google. Tuttavia, i dati esistenti rimarranno memorizzati.</translation>
 <translation id="742664698522525515">Mantenere il gruppo?</translation>
@@ -2031,6 +2047,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="746872191028309255">Acquista ciò che vedi con la fotocamera o la galleria fotografica.</translation>
 <translation id="7471557245617580330">Crea nuova scheda</translation>
 <translation id="7473555040328423550">Aggiungi scheda</translation>
+<translation id="7474043404939621342">Personalizza la barra degli strumenti</translation>
 <translation id="7476548258282096076">Questa scheda mostra i siti che visiti di più.</translation>
 <translation id="7482823403440483089">Compilazione automatica avanzata</translation>
 <translation id="7484645889979462775">Mai per questo sito</translation>
@@ -2221,6 +2238,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8038078082340255234">Analisi di mercato</translation>
 <translation id="8040407350301524547">Per conoscere le opzioni per il percorso, tocca "Ricevi indicazioni stradali".</translation>
 <translation id="804427445359061970">Qui troverai le tue schede aperte su altri dispositivi</translation>
+<translation id="8051193500142930381">Le funzionalità che richiedono una videocamera non funzioneranno</translation>
 <translation id="8058655154417507695">Anno di scadenza</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} preferito}other{{count} preferiti}}</translation>
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>
@@ -2284,6 +2302,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8258999165172757081">Aggiunto</translation>
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="82619448491672958">Vedi altre schede</translation>
+<translation id="8262563499355483764">Chrome non suggerirà più queste informazioni. La fonte originale non verrà eliminata.</translation>
 <translation id="8263228331881858381">Passkey salvata</translation>
 <translation id="8263809106706527890">Le impostazioni del browser predefinito potrebbero essere state modificate. Puoi verificarlo nelle impostazioni.</translation>
 <translation id="8264966119170358612">Alcune delle password che hai salvato sono state compromesse nell'ambito di una violazione dei dati non di Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -2545,6 +2564,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="9038526468059454274">Riassumi con</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
+<translation id="9044703854323320868">Messaggio Gmail <ph name="INDEX" /></translation>
 <translation id="9055291197094969722">Crea gruppi di schede per organizzare le schede aperte e mantenere la produttività</translation>
 <translation id="9055580485132823283">Stai per eliminare {password_count} password, {passkey_count} passkey e l'elenco di siti e app per cui hai scelto di non salvare mai i dati di accesso. Gli account creati per siti e app non verranno eliminati.</translation>
 <translation id="9057030985451135243">Scopri di più sui gruppi di schede condivisi</translation>

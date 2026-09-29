@@ -740,6 +740,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2233745931693710080">Kompaktdisks</translation>
 <translation id="2236949375853147973">Manas darbības</translation>
 <translation id="2239100178324503013">Sūtīt tūlīt</translation>
+<translation id="223921069122391343">Jūsu saglabātais piedāvājums būs pieejams norēķināšanās laikā, izmantojot automātisko aizpildi. <ph name="BEGIN_LINK" />Skatiet pakalpojumu sniegšanas noteikumus<ph name="END_LINK" />.</translation>
 <translation id="224130779555573777">Kompensācijas numura pievienošana</translation>
 <translation id="2241693394036365668">Fails tiek lejupielādēts</translation>
 <translation id="2242389809734574253">IBAN saglabāšanas uzvedne ir aizvērta.</translation>
@@ -986,7 +987,6 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2628025184666666186">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />, jo tajā tiek izmantots drošības sertifikāts, kas netiek uzskatīts par uzticamu pārlūkā Chrome vai jūsu sistēmas konfigurācijā, lai šifrētu tīmekļa datplūsmu. Šī problēma var rasties nepareizas konfigurācijas dēļ vai tādēļ, ka kāds uzbrucējs ir pārtvēris jūsu savienojumu.</translation>
 <translation id="2628224721443278970">Pierakstīties pakalpojumā Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Jūsu administrators noteica šīs ierīces atrašanās vietu, kad tā bija atspējota. Tā ir atkārtoti iespējota un gatava lietošanai.</translation>
-<translation id="2631387782019878060">Verifikācijas kods: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Nevarēja atrast vietnes <ph name="HOST_NAME" /> servera IP adresi.</translation>
 <translation id="2635276683026132559">Parakstīšana</translation>
 <translation id="2638070510549214427">Atzīmēt kā drošu</translation>
@@ -1371,6 +1371,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
 <translation id="3310946375819654151">Pārlūkā Chrome tiek mēģināts ievadīt jūsu sensitīvo informāciju lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Augšupielāde sekmīga</translation>
+<translation id="3323135197619890621">Ieslēdziet automātisko aizpildi, lai atvieglotu iepirkšanos.</translation>
 <translation id="3324687287337751929">4 x 6 collas</translation>
 <translation id="3325568918769906282">dilstošā secībā</translation>
 <translation id="3325662270238538525">Nesena piekļuve failiem un to izmaiņas, tostarp failu nosaukumi, faila satura digitālie ciparnospiedumi, lejupielādes avots un metadati</translation>
@@ -1595,6 +1596,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3704162925118123524">Iespējams, izmantotajā tīklā tiks pieprasīts apmeklēt pieteikšanās lapu.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Notiek ielāde...</translation>
+<translation id="3708927069677086144">Saskaņā ar jūsu organizācijas politiku jums ir jāpierakstās pārlūkā Chrome</translation>
 <translation id="3709599264800900598">Kopētais teksts</translation>
 <translation id="3711223220609269738">Jauna izolēta cilne</translation>
 <translation id="3711430313228789376">Chrome mēģina parādīt paroles</translation>
@@ -1732,6 +1734,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3928806096717999469">Rediģēt; tiks atvērts jauns logs</translation>
 <translation id="393417216277380082">Kustību un gaismas sensori</translation>
 <translation id="3937640725563832867">Sertifikāta izsniedzēja otrs nosaukums</translation>
+<translation id="3938243129430544357">Droši norēķini, izmantojot automātisko aizpildi</translation>
 <translation id="3939773374150895049">Vai vēlaties izmantot WebAuthn, nevis CVC?</translation>
 <translation id="3941630233824954464">Iespējot obligātu atkārtotu autentifikāciju</translation>
 <translation id="3942048175062210325">Mēģiniet vēlreiz atvērt savus failus.</translation>
@@ -2055,6 +2058,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4424024547088906515">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu pārlūkā Chrome. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="4425137053900958839">Izbaudiet visas Pix ērtības un drošību, uz ko paļaujaties</translation>
 <translation id="443121186588148776">Seriālais ports</translation>
+<translation id="4431928532022419942">Vai noņemt no Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> nepieņēma jūsu pieteikšanās sertifikātu, vai arī pieteikšanās sertifikāts netika iesniegts.</translation>
 <translation id="4432792777822557199">Turpmāk lapas šādā valodā: <ph name="SOURCE_LANGUAGE" /> tiks tulkotas šādā valodā: <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="4433642172056592619">Tiek ignorēta, jo lietotājs nav saistīts ar ierīces pārvaldību vai ierīce netiek pārvaldīta.</translation>
@@ -3134,6 +3138,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6263376278284652872"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
 <translation id="6264485186158353794">Atpakaļ drošībā</translation>
+<translation id="6264507470395196064">Droša vārteja</translation>
 <translation id="6264636978858465832">Paroļu pārvaldniekam ir nepieciešama plašāka piekļuve</translation>
 <translation id="6265794661083428563">Kopēt politikas <ph name="POLICY_NAME" /> vērtību</translation>
 <translation id="6271264012613848937">Jūsu organizācijas politiku dēļ jums tika bloķēta piekļuve vietnei <ph name="URL" />. Ja tas notika negaidīti, sazinieties ar administratoru.</translation>
@@ -3343,6 +3348,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6630043285902923878">Notiek USB ierīču meklēšana...</translation>
 <translation id="6630388727238334626">Poga “Pārvaldīt Chrome iestatījumus”. Aktivizējiet, lai apmeklētu Chrome iestatījumus</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Saskaņā ar jūsu organizācijas politiku, lai apmeklētu tālāk norādīto vietni, jums ir jāpierakstās, izmantojot savu pārvaldīto Google kontu.</translation>
 <translation id="6635900375070654124">autentifikatora ierīce</translation>
 <translation id="6641852376826221947">Apstipriniet pirkumu</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
@@ -3532,6 +3538,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6957153644870901611">Ieslēdziet uzlabotu automātisko aizpildi, lai automātiski aizpildītu vairāk lauku.</translation>
 <translation id="6957887021205513506">Šķiet, ka servera sertifikāts ir viltojums.</translation>
 <translation id="6958564499836457428">Pārvaldīt Google konfidencialitātes iestatījumus Google kontā</translation>
+<translation id="6961161369573226336">Google paroļu pārvaldnieks var iegūt šos kodus no jūsu Gmail konta (<ph name="EMAIL" />). Varat pārdomāt un <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Var pieprasīt atļauju izmantot jūsu ierīcē instalētos fontus</translation>
 <translation id="6962858948849099922">Pārvietošanai iestājās noildze</translation>
 <translation id="6963520811470373926">Aizstāj</translation>
@@ -3609,6 +3616,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="70846382339153529">OpenDocument teksts</translation>
 <translation id="7086090958708083563">Augšupielādi pieprasīja lietotājs.</translation>
 <translation id="7090698782953528257">Palīdzi man izveidot funkcijas grafiku, lai vizualizētu matemātisko vienādojumu un attēlotu līknes formu.</translation>
+<translation id="7092087596499105699">Jūsu administrators konfigurēja drošās vārtejas savienotāju, lai aizsargātu piekļuvi jūsu organizācijas privātajām tīmekļa lietojumprogrammām. Lai verificētu piekļuvi, var tikt izmantoti dati no jūsu darba profila.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu atļaujas un datus, kas tiek glabāti vietnēs.</translation>
 <translation id="709604659664854823">Atrodi man pēdējā brīža rezervācijas tuvējos restorānos šovakar</translation>
 <translation id="7096341143397839437">E-pasta adrese: <ph name="EMAIL" />.</translation>
@@ -4863,6 +4871,7 @@ Papildu informācija:
 <translation id="949026252328034572">Vairāki dalībnieki (<ph name="MEMBER_COUNT" />) pievienojās ciļņu grupai “<ph name="GROUP_NAME" />”.</translation>
 <translation id="949314938206378263">Jūs lūdzāt atļauju apmeklēt šo vietni. Kāds no jūsu vecākiem var atbildēt lietotnē Family Link.</translation>
 <translation id="949484466204182817">Kompensācijas numura pievienošana lietotnei Google maks</translation>
+<translation id="950533895669718124">uzzināt vairāk par šo funkciju iestatījumos</translation>
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
 <translation id="950926967802086924">Piekļuves atslēga • Google paroļu pārvaldnieks</translation>
 <translation id="952165179818196872">Pievienojiet <ph name="PROVIDER" />, lai maksātu, nepārslēdzot lietotnes</translation>

@@ -252,7 +252,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
-<translation id="2022369817198611683">Das Beste von Gemini direkt über die Chrome-Symbolleiste. Zum Anpassen lange drücken.</translation>
+<translation id="2022369817198611683">Mit der Chrome-Symbolleiste kannst du Gemini optimal nutzen (zum Anpassen gedrückt halten).</translation>
 <translation id="2024195579772565064">Suchmaschine löschen</translation>
 <translation id="2029669011553795746">Opt-in für Benachrichtigungen mit Tipps halb geöffnet</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
@@ -2002,6 +2002,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8816556050903368450">Mit Link: <ph name="ORIGIN" /></translation>
 <translation id="881688628773363275">Vorschau des Tab-Inhalts kann nicht angezeigt werden.</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
+<translation id="8822533681006532064">Wenn du mit Gemini sprechen möchtest, benötigt Gemini Zugriff auf dein Mikrofon. Du kannst dies auch <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="8840953339110955557">Diese Seite unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">Verborgen</translation>

@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 şifre bu cihazda <ph name="BRAND" /> hizmetine aktarıldı.}other{{NUM_PASSWORDS} şifre bu cihazda <ph name="BRAND" /> hizmetine aktarıldı}}</translation>
 <translation id="1046572983040892965">Pencere sol üst tarafa taşındı</translation>
 <translation id="1047431265488717055">&amp;Bağlantı Metnini Kopyala</translation>
+<translation id="104751728059674265">Hesabınızda geri bildirim gönderme işlevi kullanılamıyor. Yetişkin biri kendi cihazını veya profilini kullanarak sizin adınıza sorun bildirebilir.</translation>
 <translation id="1048986595386481879">Dinamik olarak ayrıldı</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> adlı cihazdan <ph name="ATTACHMENTS" /> alınıyor}other{<ph name="DEVICE_NAME" /> adlı cihazdan <ph name="ATTACHMENTS" /> alınıyor}}</translation>
 <translation id="1049743911850919806">Gizli mod</translation>
@@ -983,6 +984,7 @@
 <translation id="1755601632425835748">Metin boyutu</translation>
 <translation id="1756963401828337401">Ekran görüntüsünü alacağınız ekranı seçin</translation>
 <translation id="17584710573359123">Chrome Web Mağazası'nda göster</translation>
+<translation id="1758845021884209593">Kısayolu işletim sistemi uygulamalarında kullan</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />, <ph name="REMAPPING_OPTION" /> olarak yeniden eşlendi.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> kullanıcısının hesapları</translation>
 <translation id="176272781006230109">alışveriş önerileri</translation>
@@ -3084,6 +3086,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3355936511340229503">Bağlantı hatası</translation>
 <translation id="335678817537689040">Statik</translation>
 <translation id="3359256513598016054">Sertifika Politikası Kısıtlamaları</translation>
+<translation id="3359465538772230055">Görev yok</translation>
 <translation id="3360297538363969800">Yazdırma işlemi başarısız oldu. Lütfen yazıcınızı kontrol edin ve tekrar deneyin.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> sizinle <ph name="ATTACHMENTS" /> paylaşıyor.}other{<ph name="DEVICE_NAME" /> sizinle <ph name="ATTACHMENTS" /> paylaşıyor.}}</translation>
@@ -6108,6 +6111,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5687340364605915800">Siteler bu isteğe yanıt verirken şahsi karar verme yetkisini kullanır</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Konum</translation>
+<translation id="568984110402742489">Geri bildirim gönderilemiyor</translation>
 <translation id="56907980372820799">Verileri bağla</translation>
 <translation id="5691772641933328258">Parmak izi tanınmadı</translation>
 <translation id="5693255400847650006">Mikrofon kullanılıyor</translation>
@@ -9264,6 +9268,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8109991406044913868">Yapay zeka tarafından üretilmiş tema</translation>
 <translation id="8110393529211831722">Abonelik yalnızca bu cihaza yüklenir ve hesabınızın altındaki diğer cihazlarla senkronize edilmez. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Kişi listesi indiriliyor...</translation>
+<translation id="8110781914702267195"><ph name="BEGIN_LINK1" />Veri ve gizlilik tercihlerinizi<ph name="END_LINK1" /> kontrol etmek veya <ph name="BEGIN_LINK2" />ödeme yöntemlerini<ph name="END_LINK2" /> ve bağlılık kartları gibi <ph name="BEGIN_LINK3" />kartları<ph name="END_LINK3" /> yönetmek için Google Cüzdan'ı ziyaret edin</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> mikrofon izni</translation>
 <translation id="8116497846156149">Anne veya babanızdan onay isteyin</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />, nasıl oturum açtığınızı hatırlar ve mümkün olduğunda oturumunuzu otomatik olarak açar. Bu özellik kapalıyken her defasında işlemi onaylamanız istenir.</translation>
@@ -10246,6 +10251,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="8874341931345877644">Bir cihaza yayınla:</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Üçüncü taraf çerezlerine geçici olarak izin vermeyi deneyin. Bu durumda, internette gezinirken daha az korunursunuz ancak site özelliklerinin beklendiği gibi çalışma olasılığı daha yüksektir.</translation>
+<translation id="8874864294955002500">Hesabınızda geri bildirim gönderme işlevi kullanılamıyor. Kuruluş yöneticiniz, cihazını veya profilini kullanarak sizin adınıza sorun bildirebilir.</translation>
 <translation id="8875736897340638404">Görünürlük ayarınızı seçin</translation>
 <translation id="8876307312329369159">Bu ayar demo oturumunda değiştirilemez.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> özelliği, etraftaki cihazları bulmak için Bluetooth taramasını kullanır.</translation>

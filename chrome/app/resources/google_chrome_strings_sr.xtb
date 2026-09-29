@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Chrome је блокирао ово преузимање јер се овај тип фајл не преузима често и може да буде опасан</translation>
 <translation id="1197860368385086056">Следећи пут када отворите Chrome на уређају <ph name="DEVICE_TYPE" />, видећете упит да омогућите обавештења о праћењу цена.</translation>
 <translation id="1203500561924088507">Хвала вам на инсталацији. Потребно је да рестартујете прегледач пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Пријавите се у Chrome да бисте приступали обележивачима и другом на свим уређајима</translation>
 <translation id="1278833599417554002">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="1289911795790071537">Отвори претрагу помоћу Chrome-а</translation>
 <translation id="1290883685122687410">Грешка при подешавању: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">Нисте скоро посећивали сајт. Chrome је уклонио дозволу <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />, као што је <ph name="BEGIN_LINK_LINUX_OSS" />Linux окружење за програмирање<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Онемогући Chrome који ради у позадини за апликације</translation>
+<translation id="2111985952714409792">Пријавите се у Chrome да бисте преузели додатке и друго на свим уређајима</translation>
 <translation id="2120620239521071941">Овим ћете избрисати <ph name="ITEMS_COUNT" /> ставке(и) са овог уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Поново покрени да би се &amp;Chrome ажурирао</translation>
 <translation id="2123055963409958220">Помозите да побољшамо Chrome тако што ћете послати извештај о <ph name="BEGIN_LINK" />актуелним подешавањима<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">Задржи на траци</translation>
 <translation id="2309047409763057870">Ово је секундарна инсталација Google Chrome-а па не можете да га подесите као подразумевани прегледач.</translation>
 <translation id="2345992953227471816">Chrome је открио малвер у овим додацима:</translation>
+<translation id="2358140144860869442">Пријавите се у Chrome да бисте преузели листу за читање и друго на свим уређајима</translation>
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2403703063067034158">Грешка при покретању: Тренутно је покренута друга инстанца подешавања. Пробајте поново касније.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Један или више додатака за Chrome су приступали 1 HID уређају}=1{Један или више додатака за Chrome приступају 1 HID уређају}one{Један или више додатака за Chrome приступају # HID уређају}few{Један или више додатака за Chrome приступају HID уређајима (#)}other{Један или више додатака за Chrome приступају HID уређајима (#)}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome редовно проверава да ли прегледач има најбезбеднија подешавања. Обавестићемо вас ако је потребно да нешто прегледате.</translation>
 <translation id="2652691236519827073">Отвори линк у новој Chrome &amp;картици</translation>
+<translation id="2661616016316841783">Пријавите се у Chrome да бисте преузели додатке и друго са уређаја <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">Помозите нам да побољшамо Google Chrome тако што ћете Google-у слати извештаје о отказивању и <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Кликните да бисте изашли из Google објектива</translation>
 <translation id="2674238339205910678">ChromeOS Flex није успео да сачува Chrome податке на Google налогу зато што су подаци за пријављивање на налог застарели</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">Искористите више предности онлајн куповине када користите апликацију Chrome на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3249558306861350254">Кликните на <ph name="BEGIN_BOLD" />Подеси као подразумевано<ph name="END_BOLD" /> у подешавањима Windows-а.</translation>
+<translation id="3258706751219502154">Пријавите се у Chrome да бисте преузели обележиваче и друго са уређаја <ph name="DEVICE" /></translation>
 <translation id="3259748324892322072">Преузми апликацију Chrome</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
@@ -346,6 +351,7 @@
 <translation id="4280647692742956593">Преузмите Chrome на телефон да бисте у покрету отварали или правили нове групе картица.</translation>
 <translation id="4281844954008187215">Услови коришћења услуге</translation>
 <translation id="430327780270213103">Дозволи додатку да приказује захтеве за приступ на Chrome траци с алаткама</translation>
+<translation id="4312908933392839680">Пријавите се у Chrome да бисте приступали сачуваним информацијама и другом на свим уређајима</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome препоручује да паузирате картицу која успорава прегледач}one{Chrome препоручује да паузирате картице које успоравају прегледач}few{Chrome препоручује да паузирате картице које успоравају прегледач}other{Chrome препоручује да паузирате картице које успоравају прегледач}}</translation>
 <translation id="4328355335528187361">Програмерска верзија Google Chrome-а (mDNS-In)</translation>
 <translation id="4329315893554541805">Да бисте добили персонализацију и друге функције, уврстите Chromium у активности на вебу и у апликацијама и повезане Google услуге</translation>
@@ -515,7 +521,9 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6046028983725193307">Да бисте делили звук система, отворите Подешавања система и дозволите Само снимање звука система за Chrome. Затим треба да рестартујете Chrome.</translation>
 <translation id="6069027071882229820">Копирај као слику</translation>
 <translation id="6070348360322141662">Google Chrome ће шифровати податке ради додатне сигурности</translation>
+<translation id="6071642418303142778">Пријавите се у Chrome да бисте приступали лозинкама и другом са уређаја <ph name="DEVICE" /></translation>
 <translation id="6075300983329039771">Ваша организација, <ph name="MANAGER" />, захтева да се пријавите у Chrome</translation>
+<translation id="6077365059401096066">Пријавите се у Chrome да бисте преузели листу за читање и друго са уређаја <ph name="DEVICE" /></translation>
 <translation id="6113794647360055231">Управо смо побољшали Chrome</translation>
 <translation id="6116004140911290070">Омогућите Вештине у Chrome-у</translation>
 <translation id="6116252277240876590">Овај језик се користи за приказивање менија, подешавања, упозорења и другог текста у Chrome-у</translation>
@@ -713,6 +721,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7804947029129221742">Претраживач је промењен изван Chrome-а. Chrome га је ресетовао на првобитно подразумевано подешавање ради ваше заштите. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Уклони из Chrome-а...</translation>
 <translation id="7827099906024714326">Chrome мора да верификује да сте то ви да би неки подаци могли да се чувају на Google налогу и користе на свим уређајима. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
+<translation id="7829850924999627855">Пријавите се у Chrome да бисте приступали сачуваним информацијама и другом са уређаја <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">Да би вам обележивачи и други садржај били доступни на свим уређајима, пријавите се у Chrome. Овај обележивач ће бити сачуван на Google налогу када се пријавите.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Покрени Chrome када се Windows покрене</translation>

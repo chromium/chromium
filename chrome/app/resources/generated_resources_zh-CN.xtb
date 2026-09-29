@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{已将 1 个密码导入到此设备上的 <ph name="BRAND" />}other{已将 {NUM_PASSWORDS} 个密码导入到此设备上的 <ph name="BRAND" />}}</translation>
 <translation id="1046572983040892965">窗口已向上左移</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
+<translation id="104751728059674265">无法通过你的账号提供反馈。成人可以使用其设备或个人资料为你报告问题。</translation>
 <translation id="1048986595386481879">动态分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}other{正在接收“<ph name="DEVICE_NAME" />”发来的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">无痕模式</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">网站可以请求捕获和使用您的鼠标输入</translation>
 <translation id="1232569758102978740">无标题</translation>
 <translation id="1233497634904001272">请再次轻触您的安全密钥以完成请求。</translation>
+<translation id="1233566345244684257">任何有权访问您的 Gemini 应用的用户都能控制您的 Chrome 浏览器。</translation>
 <translation id="1233721473400465416">语言区域</translation>
 <translation id="1233835246554936745">{0,plural, =1{将 1 项内容保存在账号中}other{将 # 项内容保存在账号中}}</translation>
 <translation id="1234736487471201993">为此图片创建二维码</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">请输入下载此数据的原因：</translation>
 <translation id="1422159345171879700">加载不安全的脚本</translation>
 <translation id="1425040197660226913">无法上传。请使用小于 20MB 的图片。</translation>
+<translation id="1426154609634610063">查看使用 Gemini 的风险</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">“<ph name="APP_NAME" />”已被禁用</translation>
 <translation id="1427179946227469514">文字转语音的音调</translation>
@@ -983,6 +986,7 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">选择要截取的屏幕</translation>
 <translation id="17584710573359123">在 Chrome 应用商店中查看详情</translation>
+<translation id="1758845021884209593">在操作系统应用中使用快捷键</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> 已重新映射为 <ph name="REMAPPING_OPTION" />。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的账号</translation>
 <translation id="176272781006230109">购物建议</translation>
@@ -1827,6 +1831,7 @@
 <translation id="2416435988630956212">键盘功能键</translation>
 <translation id="2419131370336513030">查看已安装的应用</translation>
 <translation id="2419706071571366386">为了安全起见，当您未使用计算机时，请退出账号。</translation>
+<translation id="2423226060967554289">显示书签栏</translation>
 <translation id="2423506062824112361">未知原因导致内容下载失败。</translation>
 <translation id="2423578206845792524">图片另存为(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{访客}other{访客 (#)}}</translation>
@@ -2064,6 +2069,7 @@
 <translation id="2588271083332682494">使用标签页分组整理标签页</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
 <translation id="2589658397149952302">一律不显示云端硬盘文件</translation>
+<translation id="2595270892115552212">当您从其他 Gemini 应用（包括 gemini.google.com 和 Gemini 移动应用）启动任务时，Gemini 可以在此设备上使用 Chrome 自动浏览功能与网站互动，并代您完成任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">附近分享功能使用蓝牙扫描寻找附近的设备。</translation>
 <translation id="2598136842498757793">自定义工具栏按钮</translation>
 <translation id="2598710988533271874">有新版 Chrome 可用</translation>
@@ -2801,6 +2807,7 @@
 <translation id="3132996321662585180">每日刷新</translation>
 <translation id="3134312457920437826">无法安装扩展程序，因为它使用了不受支持的清单版本。</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">允许其他 Gemini 应用从任何设备远程浏览</translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
 <translation id="314095642664111744">关闭专注模式</translation>
 <translation id="3141093262818886744">仍然打开</translation>
@@ -3084,6 +3091,7 @@
 <translation id="3355936511340229503">连接出错</translation>
 <translation id="335678817537689040">静态</translation>
 <translation id="3359256513598016054">证书政策约束</translation>
+<translation id="3359465538772230055">无任务</translation>
 <translation id="3360297538363969800">打印失败。请检查您的打印机，然后重试。</translation>
 <translation id="3360306038446926262">窗口</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}other{“<ph name="DEVICE_NAME" />”与您分享了 <ph name="ATTACHMENTS" />。}}</translation>
@@ -3612,6 +3620,7 @@
 <translation id="3736487688526377259">选择您要在哪台设备上接收此链接。</translation>
 <translation id="3737058101969549870">是否要将现有浏览数据与这份新资料分开？</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
+<translation id="3739203168951159754">仅当此设备处于唤醒状态且 Chrome 正在运行时，Gemini 才能在此设备上使用自动浏览功能。</translation>
 <translation id="3739254215541673094">要打开 <ph name="APPLICATION" /> 吗？</translation>
 <translation id="3739349485749941749">网站可以请求查找和使用您的设备可访问的打印机</translation>
 <translation id="3741056951918180319">您可以在任意网站上点击该扩展程序，即可随时使用它</translation>
@@ -3966,6 +3975,7 @@
 <translation id="3987993985790029246">复制链接</translation>
 <translation id="3988124842897276887">此标签页已连接到 USB 设备</translation>
 <translation id="3989635538409502728">退出</translation>
+<translation id="399132041334931433">在新分组中添加标签页</translation>
 <translation id="399179161741278232">已导入</translation>
 <translation id="3992008114154328194">正在下载“<ph name="FILE_NAME" />”，<ph name="STATUS" /></translation>
 <translation id="3994075804072562819">授权<ph name="SPECIFIC_NAME" />控制 USB 设备。</translation>
@@ -5194,6 +5204,7 @@
 <translation id="495170559598752135">操作</translation>
 <translation id="4951966678293618079">一律不为此网站保存密码</translation>
 <translation id="4952580838083306838">隐藏整理工具</translation>
+<translation id="4952628481830269193">显示书签栏</translation>
 <translation id="4953808748584563296">默认的橙色头像</translation>
 <translation id="4954652437333037880">文件</translation>
 <translation id="4954831709600868883">咨询<ph name="TEXT" /></translation>
@@ -5446,6 +5457,7 @@
 <translation id="5149602533174716626">复制视频帧(&amp;Y)</translation>
 <translation id="5150254825601720210">Netscape 证书 SSL 服务器名称</translation>
 <translation id="5151354047782775295">请释放磁盘空间，否则系统可能会自动删除某些数据</translation>
+<translation id="5152719737931716272">任务已完成，并已返回 Gemini</translation>
 <translation id="5153074793829217329">使用键盘或数字键盘控制鼠标光标</translation>
 <translation id="5153234146675181447">移除手机</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5762,6 +5774,7 @@
 <translation id="5414836363063783498">正在验证…</translation>
 <translation id="5415497281076257439">词组</translation>
 <translation id="5415871492522952905">在您的所有设备上同步历史记录和标签页，以便您继续执行先前未完成的工作</translation>
+<translation id="5417160551295347092">Gemini 可能会出错，例如未询问就分享信息或进行购买交易。<ph name="LINK_BEGIN" />请查看相关风险<ph name="LINK_END" />。</translation>
 <translation id="5417293056300086453">此网站可以使用标识符播放受保护内容。</translation>
 <translation id="5417312524372586921">浏览器主题背景</translation>
 <translation id="541737483547792035">放大屏幕</translation>
@@ -6103,6 +6116,7 @@
 <translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
 <translation id="5689233503102158537">alt + 退格键</translation>
 <translation id="5689516760719285838">位置信息</translation>
+<translation id="568984110402742489">无法发送反馈</translation>
 <translation id="56907980372820799">关联数据</translation>
 <translation id="5691772641933328258">无法识别指纹</translation>
 <translation id="5693255400847650006">麦克风正在使用中</translation>
@@ -6512,6 +6526,7 @@
 <translation id="6003143259071779217">移除 eSIM 卡移动网络</translation>
 <translation id="6003479444341796444">标题栏现已显示</translation>
 <translation id="6003582434972667631">主题由贵单位设定</translation>
+<translation id="600407115562756795">Gemini 会根据您发起或更新的任务来决定所要执行的操作。</translation>
 <translation id="6005045517426700202">砖砌建筑</translation>
 <translation id="6006484371116297560">经典</translation>
 <translation id="6007053304250788613">在镜像模式下只能排除一个显示屏</translation>
@@ -8488,6 +8503,7 @@
 <translation id="7523117833414447032">读出大写字母时</translation>
 <translation id="7523585675576642403">重命名配置文件</translation>
 <translation id="7525067979554623046">创建</translation>
+<translation id="7526083414913154899">详细了解 Gemini 任务</translation>
 <translation id="7528224636098571080">不要打开</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{要取消标签页分组吗？}other{要取消标签页分组吗？}}</translation>
 <translation id="7529411698175791732">请检查您的互联网连接。如果问题仍然存在，请尝试退出账号并重新登录。</translation>
@@ -9259,6 +9275,7 @@
 <translation id="8109991406044913868">AI 创建的主题</translation>
 <translation id="8110393529211831722">订阅仅会安装在此设备上，不会与您账号下的其他设备同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">正在下载联系人列表…</translation>
+<translation id="8110781914702267195">请前往 Google 钱包控制<ph name="BEGIN_LINK1" />数据和隐私偏好设置<ph name="END_LINK1" />，或管理<ph name="BEGIN_LINK2" />支付方式<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />卡券<ph name="END_LINK3" />（例如会员卡）</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 麦克风使用权限</translation>
 <translation id="8116497846156149">请家长批准</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
@@ -9339,6 +9356,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />。这是第 <ph name="ITEM_POSITION" /> 台打印机，共 <ph name="NUM_PRINTERS" /> 台。</translation>
 <translation id="8180785270975217276">节能模式已开启</translation>
 <translation id="8180786512391440389">“<ph name="EXTENSION" />”可以读取及删除选中位置的图片、视频及音频文件。</translation>
+<translation id="8181132988581553950">Gemini 将能够访问您可以访问的所有网站，包括您已登录的网站。它还会与第三方分享必要的信息，其中可能包括您认为敏感的个人信息。</translation>
 <translation id="8183703640399301650">您的设备 EID 为 <ph name="EID_NUMBER" />，设备 IMEI 为 <ph name="IMEI_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="8184288427634747179">改用“<ph name="AVATAR_NAME" />”</translation>
 <translation id="8184318863960255706">更多信息</translation>
@@ -10241,6 +10259,7 @@
 <translation id="8874341931345877644">投放到设备：</translation>
 <translation id="8874647982044395866">有机</translation>
 <translation id="8874790741333031443">尝试暂时允许使用第三方 Cookie，这样浏览保护会降低，但网站功能更可能正常运行。</translation>
+<translation id="8874864294955002500">无法通过您的账号提供反馈。企业管理员可以使用其设备或个人资料为您报告问题。</translation>
 <translation id="8875736897340638404">选择您的公开范围</translation>
 <translation id="8876307312329369159">在演示会话中，此设置无法更改。</translation>
 <translation id="8876965259056847565">“<ph name="FEATURE_NAME" />”功能使用蓝牙扫描寻找附近的设备。</translation>

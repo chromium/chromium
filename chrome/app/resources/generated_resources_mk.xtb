@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Увезена е 1 лозинка во <ph name="BRAND" /> на уредов}one{Увезени се {NUM_PASSWORDS} лозинка во <ph name="BRAND" /> на уредов}other{Увезени се {NUM_PASSWORDS} лозинки во <ph name="BRAND" /> на уредов}}</translation>
 <translation id="1046572983040892965">Прозорецот е преместен нагоре, на левата страна</translation>
 <translation id="1047431265488717055">Копирај го &amp;текстот на врската</translation>
+<translation id="104751728059674265">Повратните информации не се достапни за твојата сметка. Возрасно лице може да го користи својот уред или профил за да пријави проблем за тебе.</translation>
 <translation id="1048986595386481879">Динамички доделена</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Се преземаат <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -992,6 +993,7 @@
 <translation id="1755601632425835748">Големина на текстот</translation>
 <translation id="1756963401828337401">Изберете екран за снимање</translation>
 <translation id="17584710573359123">Прикажи во веб-продавницата на Chrome</translation>
+<translation id="1758845021884209593">Користете ја кратенката во апликациите на OS</translation>
 <translation id="1761402971842586829">Копчето <ph name="BUTTON_NAME" /> е повторно мапирано во <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Сметки на <ph name="NAME" /></translation>
 <translation id="176272781006230109">предлози за купување</translation>
@@ -3099,6 +3101,7 @@
 <translation id="3355936511340229503">Грешка при поврзување</translation>
 <translation id="335678817537689040">Статично</translation>
 <translation id="3359256513598016054">Ограничувања на политика за сертификат</translation>
+<translation id="3359465538772230055">Нема задачи</translation>
 <translation id="3360297538363969800">Печатењето не успеа. Проверете го вашиот печатач и обидете се повторно.</translation>
 <translation id="3360306038446926262">Прозорци</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}one{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}other{<ph name="DEVICE_NAME" /> споделува <ph name="ATTACHMENTS" /> со вас.}}</translation>
@@ -6123,6 +6126,7 @@
 <translation id="5687340364605915800">Сајтовите постапуваат според сопствено убедување при одговарање на барањево</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
+<translation id="568984110402742489">Не може да се испратат повратни информации</translation>
 <translation id="56907980372820799">Поврзи податоци</translation>
 <translation id="5691772641933328258">Отпечатокот не е препознаен</translation>
 <translation id="5693255400847650006">Микрофонот е во употреба</translation>
@@ -9281,6 +9285,7 @@
 <translation id="8109991406044913868">Тема создадена со AI</translation>
 <translation id="8110393529211831722">Претплатата е инсталирана само на уредов и не е синхронизирана со други уреди на вашата сметка. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Се презема списокот со контакти…</translation>
+<translation id="8110781914702267195">Одете во Google Wallet за да ги контролирате <ph name="BEGIN_LINK1" />поставките за податоци и приватност<ph name="END_LINK1" /> или да управувате со <ph name="BEGIN_LINK2" />начините на плаќање<ph name="END_LINK2" /> и <ph name="BEGIN_LINK3" />пропусниците<ph name="END_LINK3" /> како картички за лојалност</translation>
 <translation id="8114925369073821854">Дозвола за микрофон за <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Побарај одобрување од родител</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> памти како сте се најавиле и кога е тоа можно, ве најавува автоматски. Кога е исклучен, ќе се бара потврда од вас при секое најавување.</translation>
@@ -10263,6 +10268,7 @@
 <translation id="8874341931345877644">Емитувај на уред:</translation>
 <translation id="8874647982044395866">Органско</translation>
 <translation id="8874790741333031443">Обидете се со привремено дозволување колачиња од трети страни, што значи помала заштита при прелистување, но поголема веројатност функциите на сајтот да работат според очекувањата.</translation>
+<translation id="8874864294955002500">Повратните информации не се достапни за вашата сметка. Администраторот на претпријатието може да го користи својот уред или профил за да пријави проблем за вас.</translation>
 <translation id="8875736897340638404">Изберете поставка за видливоста</translation>
 <translation id="8876307312329369159">Поставкава не може да се промени во демо-сесија.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> користи скенирање за Bluetooth за да најде уреди во близина.</translation>

@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 adgangskode er importeret til <ph name="BRAND" /> på denne enhed}one{{NUM_PASSWORDS} adgangskode er importeret til <ph name="BRAND" /> på denne enhed}other{{NUM_PASSWORDS} adgangskoder er importeret til <ph name="BRAND" /> på denne enhed}}</translation>
 <translation id="1046572983040892965">Vinduet blev flyttet opad og til venstre</translation>
 <translation id="1047431265488717055">Kopiér linkte&amp;kst</translation>
+<translation id="104751728059674265">Feedback er ikke tilgængelig for din konto. En voksen kan bruge sin enhed eller profil til at rapportere et problem for dig.</translation>
 <translation id="1048986595386481879">Dynamisk fordelt</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Modtager <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}one{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Modtager <ph name="ATTACHMENTS" /> fra <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -331,6 +332,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1231572247662419826">Websites kan anmode om tilladelse til at registrere og bruge dit museinput</translation>
 <translation id="1232569758102978740">Unavngivet</translation>
 <translation id="1233497634904001272">Tryk på din sikkerhedsnøgle igen for at fuldføre anmodningen.</translation>
+<translation id="1233566345244684257">Alle, der har adgang til dine Gemini-apps, kan styre din Chrome-browser.</translation>
 <translation id="1233721473400465416">Landestandard</translation>
 <translation id="1233835246554936745">{0,plural, =1{Gem 1 element på kontoen}one{Gem # element på kontoen}other{Gem # elementer på kontoen}}</translation>
 <translation id="1234736487471201993">Opret en QR-kode for dette billede</translation>
@@ -553,6 +555,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1421514190500081936">Angiv en årsag til, at du vil downloade disse data:</translation>
 <translation id="1422159345171879700">Indlæs usikre scripts</translation>
 <translation id="1425040197660226913">Det er ikke muligt at uploade. Brug et billede, der er mindre end 20 MB.</translation>
+<translation id="1426154609634610063">Gennemgå risiciene ved at bruge Gemini</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er blokeret</translation>
 <translation id="1427179946227469514">Toneleje ved oplæsning</translation>
@@ -992,6 +995,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1755601632425835748">Tekststørrelse</translation>
 <translation id="1756963401828337401">Vælg en skærm, du vil tage et screenshot af</translation>
 <translation id="17584710573359123">Se i Chrome Webshop</translation>
+<translation id="1758845021884209593">Brug genvejen i alle OS-apps</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> blev omdefineret til <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Konti tilhørende <ph name="NAME" /></translation>
 <translation id="176272781006230109">forslag til shopping</translation>
@@ -1841,6 +1845,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2416435988630956212">Funktionstaster på tastaturet</translation>
 <translation id="2419131370336513030">Se installerede apps</translation>
 <translation id="2419706071571366386">Af sikkerhedshensyn skal du logge ud, når computeren ikke bruges.</translation>
+<translation id="2423226060967554289">Vis bogmærkelinje</translation>
 <translation id="2423506062824112361">Indholdet kunne ikke downloades af ukendte årsager.</translation>
 <translation id="2423578206845792524">&amp;Gem billede som...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gæst}one{Gæst (#)}other{Gæst (#)}}</translation>
@@ -2078,6 +2083,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2588271083332682494">Hold orden med fanegrupper</translation>
 <translation id="2588636910004461974">Enheder fra <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Vis aldrig Drev-filer</translation>
+<translation id="2595270892115552212">Når du starter en opgave fra andre Gemini-apps, herunder gemini.google.com og Gemini-mobilapps, kan Gemini bruge automatisk browsing i Chrome på denne enhed til at interagere med websites og udføre opgaver på dine vegne. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">"Deling tæt på" anvender Bluetooth-scanning til at registrere enheder i nærheden.</translation>
 <translation id="2598136842498757793">Tilpas værktøjslinjeknapper</translation>
 <translation id="2598710988533271874">En ny Chrome-opdatering er tilgængelig</translation>
@@ -2815,6 +2821,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3132996321662585180">Opdater dagligt</translation>
 <translation id="3134312457920437826">Udvidelsen kan ikke installeres, fordi den bruger en manifestversion, der ikke understøttes.</translation>
 <translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Lad andre Gemini-apps browse via fjernadgang fra en hvilken som helst enhed</translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
 <translation id="314095642664111744">Deaktiver fokus</translation>
 <translation id="3141093262818886744">Åbn alligevel</translation>
@@ -3100,6 +3107,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3355936511340229503">Forbindelsesfejl</translation>
 <translation id="335678817537689040">Statisk</translation>
 <translation id="3359256513598016054">Begrænsninger for certifikatpolitik</translation>
+<translation id="3359465538772230055">Ingen opgaver</translation>
 <translation id="3360297538363969800">Udskrivning mislykkedes. Kontrollér din printer, og prøv igen.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med dig.}one{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> deler <ph name="ATTACHMENTS" /> med dig.}}</translation>
@@ -3628,6 +3636,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3736487688526377259">Vælg den enhed, hvor du vil have dette link.</translation>
 <translation id="3737058101969549870">Vil du holde eksisterende browserdata adskilt fra denne nye profil?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini kan kun bruge automatisk browsing på denne enhed, hvis enheden er tændt, og Chrome kører.</translation>
 <translation id="3739254215541673094">Vil du åbne <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Websites kan anmode om at søge efter og anvende printere, der er tilgængelige for din enhed</translation>
 <translation id="3741056951918180319">Du kan altid klikke på udvidelsen for at bruge den på enhver side</translation>
@@ -3983,6 +3992,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
 <translation id="3988124842897276887">Denne fane er tilsluttet en USB-enhed</translation>
 <translation id="3989635538409502728">Log ud</translation>
+<translation id="399132041334931433">Føj faner til ny gruppe</translation>
 <translation id="399179161741278232">Importeret</translation>
 <translation id="3992008114154328194">Downloader <ph name="FILE_NAME" /> – <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Giv <ph name="SPECIFIC_NAME" /> kontrol over USB-enheder.</translation>
@@ -5212,6 +5222,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Gem aldrig adgangskoder til dette website</translation>
 <translation id="4952580838083306838">Skjul arrangør</translation>
+<translation id="4952628481830269193">Vis bogmærkelinje</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
 <translation id="4954652437333037880">Arkiv</translation>
 <translation id="4954831709600868883">Spørg om <ph name="TEXT" /></translation>
@@ -5464,6 +5475,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5149602533174716626">Kopiér videoramme</translation>
 <translation id="5150254825601720210">SSL-servernavn for Netscape-certifikat</translation>
 <translation id="5151354047782775295">Hvis du ikke frigør diskplads, slettes udvalgte data muligvis automatisk</translation>
+<translation id="5152719737931716272">Opgaven er udført og returneret til Gemini</translation>
 <translation id="5153074793829217329">Brug dit tastatur eller et numerisk tastatur til at styre din musemarkør</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5781,6 +5793,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5414836363063783498">Verificerer...</translation>
 <translation id="5415497281076257439">Frase</translation>
 <translation id="5415871492522952905">Du har adgang til din historik og dine faner på alle dine enheder, så du kan fortsætte med det, du var i gang med</translation>
+<translation id="5417160551295347092">Gemini kan begå fejl, f.eks. ved at dele dine oplysninger eller foretage køb uden at spørge. <ph name="LINK_BEGIN" />Gennemgå risiciene.<ph name="LINK_END" /></translation>
 <translation id="5417293056300086453">Dette website kan bruge id'er til at afspille beskyttet indhold.</translation>
 <translation id="5417312524372586921">Browsertemaer</translation>
 <translation id="541737483547792035">Forstør skærm</translation>
@@ -6124,6 +6137,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5687340364605915800">Websites vurderer selv, om de vil besvare denne anmodning</translation>
 <translation id="5689233503102158537">Alt + Backspace</translation>
 <translation id="5689516760719285838">Placering</translation>
+<translation id="568984110402742489">Der kan ikke sendes feedback</translation>
 <translation id="56907980372820799">Link data</translation>
 <translation id="5691772641933328258">Fingeraftrykket kunne ikke genkendes</translation>
 <translation id="5693255400847650006">Mikrofonen er i brug</translation>
@@ -6534,6 +6548,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6003143259071779217">Fjern eSIM-kortmobilnetværk</translation>
 <translation id="6003479444341796444">Titelfeltet vises nu</translation>
 <translation id="6003582434972667631">Temaet er indstillet af din organisation</translation>
+<translation id="600407115562756795">Gemini beslutter, hvilke handlinger der skal foretages, baseret på de opgaver, du starter eller opdaterer.</translation>
 <translation id="6005045517426700202">Murstensbygning</translation>
 <translation id="6006484371116297560">Klassisk</translation>
 <translation id="6007053304250788613">Der kan kun ekskluderes én skærm i Spejl-tilstand</translation>
@@ -8512,6 +8527,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7523117833414447032">Ved oplæsning af store bogstaver</translation>
 <translation id="7523585675576642403">Omdøb profil</translation>
 <translation id="7525067979554623046">Opret</translation>
+<translation id="7526083414913154899">Få flere oplysninger om Gemini-opgaver</translation>
 <translation id="7528224636098571080">Åbn ikke</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Vil du ophæve grupperingen af fanegruppen?}one{Vil du ophæve grupperingen af fanegruppen?}other{Vil du ophæve grupperingen af fanegrupperne?}}</translation>
 <translation id="7529411698175791732">Tjek din internetforbindelse. Hvis problemet fortsætter, kan du prøve at logge ud og logge ind igen.</translation>
@@ -9283,6 +9299,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8109991406044913868">AI-oprettet tema</translation>
 <translation id="8110393529211831722">Abonnementet er kun installeret på denne enhed og synkroniseres ikke med andre enheder på din konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Downloader liste over kontakter...</translation>
+<translation id="8110781914702267195">Gå til Google Wallet for at styre dine <ph name="BEGIN_LINK1" />data- og privatlivsindstillinger<ph name="END_LINK1" /> eller administrere <ph name="BEGIN_LINK2" />betalingsmetoder<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />kort<ph name="END_LINK3" /> som f.eks. loyalitetskort</translation>
 <translation id="8114925369073821854">Mikrofontilladelse for <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Bed din forælder om godkendelse</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> husker, hvordan du loggede ind, og logger dig automatisk ind, når det er muligt. Når funktionen er slået fra, bliver du bedt om en bekræftelse hver gang.</translation>
@@ -9363,6 +9380,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printer <ph name="ITEM_POSITION" /> af <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energisparefunktion er aktiveret</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" har læse- og sletterettigheder til billed-, video- og lydfiler på de markerede placeringer.</translation>
+<translation id="8181132988581553950">Gemini har adgang til de samme websites som dig, herunder de websites, du er logget ind på. Den deler de nødvendige oplysninger med tredjeparter, hvilket kan omfatte personlige oplysninger, du muligvis finder følsomme.</translation>
 <translation id="8183703640399301650">Din enheds EID er <ph name="EID_NUMBER" />, og enhedens IMEI er <ph name="IMEI_NUMBER" />. Disse numre kan bruges til at aktivere tjenesten.</translation>
 <translation id="8184288427634747179">Skift til <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Flere oplysninger</translation>
@@ -10266,6 +10284,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="8874341931345877644">Cast til en enhed:</translation>
 <translation id="8874647982044395866">Organisk</translation>
 <translation id="8874790741333031443">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre browserbeskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer som forventet.</translation>
+<translation id="8874864294955002500">Feedback er ikke tilgængelig for din konto. Din virksomhedsadministrator kan bruge sin enhed eller profil til at rapportere et problem for dig.</translation>
 <translation id="8875736897340638404">Vælg din synlighed</translation>
 <translation id="8876307312329369159">Denne indstilling kan ikke ændres i en demosession.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> anvender Bluetooth-scanning til at finde enheder i nærheden.</translation>

@@ -740,6 +740,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2233745931693710080">Kompaktný disk</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2239100178324503013">Odoslať</translation>
+<translation id="223921069122391343">Uložená ponuka bude k dispozícii pri platbe pomocou automatického dopĺňania. <ph name="BEGIN_LINK" />Zobraziť zmluvné podmienky<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Pridanie čísla Redress</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
 <translation id="2242389809734574253">Okno uloženie čísla IBAN bolo zavreté.</translation>
@@ -765,6 +766,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2277753418458118549">Zobraziť podrobnosti o pripojení</translation>
 <translation id="2277949605527755300">Web <ph name="URL" /> chce sledovať vaše ruky</translation>
 <translation id="22792995594807632">Pred stiahnutím sa vyžaduje kontrola</translation>
+<translation id="2279607542590042584">Prístupový kľúč • Heslá Apple</translation>
 <translation id="2283340219607151381">Ukladať a dopĺňať adresy</translation>
 <translation id="2283447177162560884">Položka <ph name="PAGE_TITLE" /> bola odstránená</translation>
 <translation id="2283599456633275070">Cestovanie</translation>
@@ -985,7 +987,6 @@ Tento návrh môžete z Chromu odstrániť. Pôvodný zdroj sa neodstráni. <ph
 <translation id="2628025184666666186">Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" />, pretože používa bezpečnostný certifikát, ktorý nie je pre Chrome alebo vašu systémovú konfiguráciu šifrovania internetovej návštevnosti dôveryhodný. Môže to byť spôsobené nesprávnou konfiguráciou alebo napadnutím vášho pripojenia útočníkom.</translation>
 <translation id="2628224721443278970">Prihlásiť sa do služby Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Váš správca našiel toto zariadenie, keď bolo deaktivované. Bolo znova aktivované a je pripravené na použitie.</translation>
-<translation id="2631387782019878060">Overovací kód: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Adresu IP servera <ph name="HOST_NAME" /> sa nepodarilo nájsť.</translation>
 <translation id="2635276683026132559">Podpísanie</translation>
 <translation id="2638070510549214427">Označiť ako bezpečný</translation>
@@ -1367,6 +1368,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3308006649705061278">Organizačná jednotka (OU)</translation>
 <translation id="3310946375819654151">Chrome sa pokúša doplniť vaše citlivé údaje v aplikácii <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Nahranie bolo úspešné</translation>
+<translation id="3323135197619890621">Zapnite automatické dopĺňanie, aby bolo nakupovanie jednoduchšie</translation>
 <translation id="3324687287337751929">4 × 6 palcov</translation>
 <translation id="3325568918769906282">v zostupnom poradí</translation>
 <translation id="3325662270238538525">Nedávny prístup k súborom a ich úpravy vrátane názvov súborov, digitálnych odtlačkov obsahu súborov, zdroja sťahovania a metadát</translation>
@@ -1438,6 +1440,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3447884698081792621">Zobraziť certifikát (od vydavateľa <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Môže žiadať o povolenie ovládať a preprogramovať zariadenia MIDI</translation>
 <translation id="3452404311384756672">Interval načítania:</translation>
+<translation id="345268527248907593">Tento web je nedostupný</translation>
 <translation id="3453962258458347894">Počet opakovaných pokusov</translation>
 <translation id="3461266716147554923">Web <ph name="URL" /> chce získať prístup k textu a obrázkom pridaným do schránky</translation>
 <translation id="3461824795358126837">Zvýrazňovač</translation>
@@ -1590,6 +1593,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3704162925118123524">Sieť, ktorú používate, môže vyžadovať, aby ste navštívili jej prihlasovaciu stránku.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Načítava sa...</translation>
+<translation id="3708927069677086144">Vaša organizácia vyžaduje, aby ste sa prihlásili do Chromu</translation>
 <translation id="3709599264800900598">Skopírovaný text</translation>
 <translation id="3711223220609269738">Nová izolovaná karta</translation>
 <translation id="3711430313228789376">Prehliadač Chrome sa pokúša zobraziť heslá</translation>
@@ -1727,6 +1731,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3928806096717999469">Upraviť, otvorí sa nové okno</translation>
 <translation id="393417216277380082">Senzory pohybu a svetla</translation>
 <translation id="3937640725563832867">Alternatívny názov vydavateľa certifikátu</translation>
+<translation id="3938243129430544357">Plaťte bezpečne pomocou automatického dopĺňania</translation>
 <translation id="3939773374150895049">Chcete namiesto overovacieho kódu karty použiť WebAuthn?</translation>
 <translation id="3941630233824954464">Povoliť povinné opätovné overenie</translation>
 <translation id="3942048175062210325">Skúste súbory znova otvoriť</translation>
@@ -1967,6 +1972,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4284885181066817063">Blokované doménou <ph name="DOMAIN" /></translation>
 <translation id="4288101205645068104">Odstránenie vozidla</translation>
 <translation id="4290920330097335010">Nikdy nepovoliť</translation>
+<translation id="4291909791598163333">Vaša organizácia váš prechod na tento web zablokovala</translation>
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4297937944457164390">Atribút <ph name="ATTRIBUTE_NAME" /> bol aktualizovaný</translation>
 <translation id="4298148761711700950">Plaťte okamžite bez nahrávania QR kódu</translation>
@@ -2050,6 +2056,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4424024547088906515">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, Chrome nedôveruje jej bezpečnostnému certifikátu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="4425137053900958839">Užívajte si pohodlie a spoľahlivé zabezpečenie, ktoré ponúka Pix</translation>
 <translation id="443121186588148776">Sériový port</translation>
+<translation id="4431928532022419942">Chcete návrh odstrániť z Chromu?</translation>
 <translation id="4432688616882109544">Web <ph name="HOST_NAME" /> neakceptoval váš prihlasovací certifikát alebo nebol žiadny poskytnutý.</translation>
 <translation id="4432792777822557199">Stránky v jazyku <ph name="SOURCE_LANGUAGE" /> budú odteraz prekladané do jazyka <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Ignorované, pretože používateľ nie je pričlenený k správe zariadenia alebo zariadenie nie je spravované.</translation>
@@ -3128,8 +3135,10 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6263376278284652872">Záložky domény <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
 <translation id="6264485186158353794">Späť do bezpečia</translation>
+<translation id="6264507470395196064">Zabezpečená brána</translation>
 <translation id="6264636978858465832">Správca hesiel potrebuje rozsiahlejší prístup</translation>
 <translation id="6265794661083428563">Skopírovať hodnotu pravidla <ph name="POLICY_NAME" /></translation>
+<translation id="6271264012613848937">Váš prechod na web <ph name="URL" /> bol zablokovaný pre pravidlá vašej organizácie. Ak je to neočakávané, kontaktujte svojho správcu.</translation>
 <translation id="6272088941196661550">Pokračujte v ceste a zobrazte si relevantnú aktivitu v histórii Chromu</translation>
 <translation id="6272383483618007430">Aktualizácie Google</translation>
 <translation id="6278015583149890680">Disk Google a OneDrive</translation>
@@ -3336,6 +3345,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6630043285902923878">Hľadajú sa zariadenia USB…</translation>
 <translation id="6630388727238334626">Tlačidlo Spravovať nastavenia Chromu, ktorého aktivovaním prejdete do nastavení Chromu</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Ak chcete navštíviť tento web, vaša organizácia vyžaduje, aby ste sa prihlásili pomocou svojho spravovaného účtu Google.</translation>
 <translation id="6635900375070654124">zariadenie s overovateľom</translation>
 <translation id="6641852376826221947">Potvrďte nákup</translation>
 <translation id="6643016212128521049">Vymazať</translation>
@@ -3410,6 +3420,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6753269504797312559">Hodnota pravidla</translation>
 <translation id="6753434778807740853">Odstrániť záznam <ph name="ENTRY_VOICEOVER" /></translation>
+<translation id="6753460329812070808">Návrh bol odstránený z Chromu</translation>
 <translation id="6757797048963528358">Vaše zariadenie prešlo do režimu spánku.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> chce používať vaše senzory pohybu a svetla</translation>
 <translation id="6770747695101757579">Papier (bavlna)</translation>
@@ -3489,6 +3500,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6897140037006041989">Používateľský agent</translation>
 <translation id="6898699227549475383">Organizácia (O)</translation>
 <translation id="6900702165119149418">Odhlásili ste sa</translation>
+<translation id="6902049722133977432">Späť</translation>
 <translation id="6910211073230771657">Odstránené</translation>
 <translation id="691024665142758461">Stiahnuť viacero súborov</translation>
 <translation id="691046363691324218">Číslo Redress</translation>
@@ -3523,6 +3535,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6957153644870901611">Zapnite vylepšené automatické dopĺňanie, aby sa automaticky vypĺňali ďalšie polia</translation>
 <translation id="6957887021205513506">Zdá sa, že certifikát servera je falošný.</translation>
 <translation id="6958564499836457428">Spravujte nastavenia ochrany súkromia Google vo svojom účte Google</translation>
+<translation id="6961161369573226336">Správca hesiel Google môže pre vás tieto kódy získať z vášho Gmailu <ph name="EMAIL" />. Môžete si to rozmyslieť a <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Môže žiadať o povolenie používať písma nainštalované v zariadení</translation>
 <translation id="6962858948849099922">Vypršal časový limit prenosu</translation>
 <translation id="6963520811470373926">Nahradené</translation>
@@ -3600,6 +3613,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="70846382339153529">Text vo formáte OpenDocument</translation>
 <translation id="7086090958708083563">O nahranie požiadal používateľ</translation>
 <translation id="7090698782953528257">Pomôž mi vytvoriť graf funkcie na vizualizáciu matematickej rovnice a zobrazenie tvaru krivky</translation>
+<translation id="7092087596499105699">Váš správca nakonfiguroval konektor zabezpečenej brány na ochranu prístupu k súkromným webovým aplikáciám vašej organizácie. Na overenie prístupu môže použiť údaje z vášho pracovného profilu.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter môžete v nastaveniach Chromu spravovať povolenia a údaje uložené na rôznych weboch</translation>
 <translation id="709604659664854823">Nájdi mi voľné stoly na dnešný večer v reštauráciách v okolí</translation>
 <translation id="7096341143397839437">E‑mail: <ph name="EMAIL" />.</translation>
@@ -3703,6 +3717,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7266094331715305887">aplikácie v zariadení</translation>
 <translation id="7268742523336093718">Bezpečne si pridajte pas do Peňaženky Google</translation>
 <translation id="7269151392155523061">Odkaz nemôže byť rovnaký ako kľúčové slovo agregátora vyhľadávania definované v dokumente <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
+<translation id="7271135282910524932">Vyskytol sa problém s ochranou alebo pravidlami nastavenými vašou organizáciou. Skúste to neskôr alebo kontaktujte správcu.</translation>
 <translation id="7273111226200291353">Súbory, ktoré si stiahnete, sa odosielajú na analýzu do služby Google Cloud alebo tretím stranám. V rámci nej môžu byť napríklad podrobené kontrole prítomnosti citlivých údajov alebo malvéru, pričom môžu byť uložené podľa firemných pravidiel a viditeľné pre vášho správcu.</translation>
 <translation id="7275334191706090484">Spravované záložky</translation>
 <translation id="7278933725460302617">Teraz ste v izolovanom režime</translation>
@@ -4144,6 +4159,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="7984945080620862648">Webové stránky <ph name="SITE" /> momentálne nemôžete navštíviť, pretože vrátili zakódované poverenia, ktoré Chrome nedokáže spracovať. Chyby siete a útoky sú zvyčajne dočasné, takže by táto stránka mala neskôr pravdepodobne fungovať.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="7987087088851949178">Vydavatelia spôsobov platby Kúpte hneď, plaťte neskôr umožňujúci platiť priebežne sú otvorení na celú výšku.</translation>
+<translation id="7990290316254726169">Toto upozornenie sa vám zobrazuje, pretože tento web nepodporuje protokol HTTPS a ste v izolovanom režime. <ph name="BEGIN_LEARN_MORE_LINK" />Ďalšie informácie o tomto upozornení<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="799149739215780103">Zviazať</translation>
 <translation id="7992044431894087211">Zdieľanie obrazovky pomocou aplikácie <ph name="APPLICATION_TITLE" /> bolo obnovené</translation>
 <translation id="799384093520583425">Vaša organizácia zablokovala používanie nástrojov pre vývojárov na tejto stránke</translation>
@@ -4485,6 +4501,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="860043288473659153">Meno držiteľa karty</translation>
 <translation id="8601206103050338563">Overenie WWW klienta protokolom TLS</translation>
 <translation id="8604103095921958091">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr je otvorená na celú výšku.</translation>
+<translation id="8605014984308506350">Toto upozornenie sa vám zobrazuje, pretože tento web nepodporuje protokol HTTPS a ste v izolovanom režime. <ph name="LEARN_MORE" /></translation>
 <translation id="8617269623452051934">používanie vášho zariadenia</translation>
 <translation id="8619130384334725124">Aktuálne predvolené</translation>
 <translation id="8620276786115098679">Obálka Kaku 7</translation>
@@ -4851,6 +4868,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="949026252328034572">Niekoľko členov (<ph name="MEMBER_COUNT" />) sa pripojilo ku skupine kariet <ph name="GROUP_NAME" /></translation>
 <translation id="949314938206378263">Požiadal(a) si o návštevu tohto webu. Tvoj rodič môže odpovedať v aplikácii Family Link.</translation>
 <translation id="949484466204182817">Pridajte si číslo Redress Control Number do Peňaženky Google</translation>
+<translation id="950533895669718124">prečítať si viac o tejto funkcii v nastaveniach</translation>
 <translation id="950736567201356821">Tri dierky hore</translation>
 <translation id="950926967802086924">Prístupový kľúč • Správca hesiel Google</translation>
 <translation id="952165179818196872">Pridajte si službu <ph name="PROVIDER" /> a plaťte bez prepínania aplikácií</translation>

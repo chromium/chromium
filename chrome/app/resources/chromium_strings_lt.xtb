@@ -45,6 +45,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="141901961143729572">Pasidalykite mintimis</translation>
 <translation id="1465192221147974788">Jei norite bendrinti langą, sistemos nustatymuose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
 <translation id="1478370723027452770">Gauti pagalbos dėl „Chrome for Testing“</translation>
+<translation id="147870194906295621">Jei norite gauti išsaugotą informaciją ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chromium“</translation>
 <translation id="1497802159252041924">Diegimo klaida: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Šis puslapis apsaugotas</translation>
 <translation id="1524282610922162960">„Chromium“ skirtuko bendrinimas</translation>
@@ -192,6 +193,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3012615494352020668">{count,plural, =1{„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei atsijungsite dabar, šie duomenys (1 elementas) bus ištrinti.}one{„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei atsijungsite dabar, šie duomenys ({count} elementas) bus ištrinti.}few{„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei atsijungsite dabar, šie duomenys ({count} elementai) bus ištrinti.}many{„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei atsijungsite dabar, šie duomenys ({count} elemento) bus ištrinti.}other{„Chromium“ turi patvirtinti jūsų tapatybę, kad tam tikrus duomenis būtų galima išsaugoti „Google“ paskyroje ir naudoti visuose jūsų įrenginiuose. Jei atsijungsite dabar, šie duomenys ({count} elementų) bus ištrinti.}}</translation>
 <translation id="3013473503895162900">Atidarykite <ph name="URL" /> naujame „Chromium“ skirtuke.</translation>
 <translation id="302551344979399011">DI naujovės, pvz., įgūdžiai, išsaugomos „Google“ paskyroje ir tvarkomos atskirai nuo „Chromium“ sinchronizavimo</translation>
+<translation id="3032219013429286568">Jei norite pasiekti plėtinius ir kt. visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="3032787606318309379">Pridedama prie „Chromium“...</translation>
 <translation id="3038232873781883849">Laukiama, kol bus įdiegta...</translation>
 <translation id="3045032126857188731">Vertimo kalba: <ph name="LANGUAGE" /></translation>
@@ -202,6 +204,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3068515742935458733">Padėkite tobulinti „Chromium“ siųsdami „Google“ strigčių ataskaitas ir <ph name="UMA_LINK" /></translation>
 <translation id="3071024987058544609">Naudokitės „Google“ saugos funkcijomis keliaudami su „Chromium“ programa</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Vienas USB įrenginys buvo pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}=1{Vienas USB įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}one{# USB įrenginys pasiekiamas naudojant vieną ar daugiau „Chromium“ plėtinių}few{# USB įrenginiai pasiekiami naudojant vieną ar daugiau „Chromium“ plėtinių}many{# USB įrenginio pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}other{# USB įrenginių pasiekiama naudojant vieną ar daugiau „Chromium“ plėtinių}}</translation>
+<translation id="3090734884397229414">Jei norite gauti skaitymo sąrašą ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chromium“</translation>
 <translation id="3095811995836568724">„Chromium“ istorija</translation>
 <translation id="3103660991484857065">Diegimo programai nepavyko išpakuoti archyvo. Atsisiųskite „Chromium“ dar kartą.</translation>
 <translation id="310459126943037700">Nepavyko užbaigti užduoties (-čių).</translation>
@@ -223,6 +226,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Keliaudami pasiimkite mėgstamiausius „Google“ DI įrankius su savimi, naudodami „Chromium“ sistemoje „iOS“.</translation>
+<translation id="3264761466044851269">Jei norite gauti plėtinius ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chromium“</translation>
 <translation id="3286538390144397061">Paleisti iš naujo dabar</translation>
 <translation id="328888136576916638">Trūksta „Google“ API raktų. Bus išjungtos kai kurios „Chromium“ funkcijos.</translation>
 <translation id="3296368748942286671">Toliau vykdyti fonines programas, kai „Chromium“ uždaroma</translation>
@@ -234,6 +238,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3387527074123400161">„Chromium“ OS</translation>
 <translation id="3406848076815591792">Perjungti į esamą „Chromium“ profilį?</translation>
 <translation id="3412460710772753638">Slaptažodžių tvarkyklėje šiame įrenginyje</translation>
+<translation id="3427159664004296878">Jei norite gauti žymes ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chromium“</translation>
 <translation id="3438772217992559640">Ieškoti šiame skirtuke naudojant vaizdų paiešką</translation>
 <translation id="3455907671758333080">Sustiprinto saugaus naršymo išplėtimas naudojant „Chromium“ telefone</translation>
 <translation id="3461644266919055473">„Chromium“ suasmeninimas...</translation>
@@ -266,6 +271,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
           **Pasiūlykite klausimų:** sugeneruokite tris–penkis mąstyti skatinančius klausimus, kuriuos naudotojas galėtų užduoti, kad geriau suprastų ekrano kopiją, sąrašą. Šie klausimai turi apimti bent vieną, kuris konkrečiai susijęs su vaizdiniu objektu, jo dizainu ar išdėstymu.</translation>
 <translation id="3848258323044014972">„<ph name="PAGE_TITLE" />“ – „Chromium“</translation>
+<translation id="386243222263310720">Jei norite pasiekti žymes ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="3885770153807205175">Kalbos rinkiklis</translation>
 <translation id="388648406173476553">Tinkinkite ir valdykite „Chromium“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="3889543394854987837">Spustelėkite savo vardą, kad atidarytumėte „Chromium“ ir pradėtumėte naršyti.</translation>
@@ -274,6 +280,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3909353120217047026">Šis plėtinys pažeidžia „Chrome“ internetinės parduotuvės politiką ir gali būti nesaugus. Pašalinkite jį iš „Chromium“, kad jis nebematytų ir negalėtų pakeisti jūsų duomenų svetainėse, kuriose lankotės, įskaitant jūsų asmens informaciją.</translation>
 <translation id="3941890832296813527">Diegimo klaida: diegimo programos failo pavadinimas netinkamas arba nepalaikomas.</translation>
 <translation id="3945058413678539331">„Chromium“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
+<translation id="3950481960271781644">Jei norite pasiekti išsaugotą informaciją ir kt. visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="3954172517175569325">Slaptažodžiai, mokėjimo metodai ir adresai, kuriuos išsaugojote „Google“ paskyroje, bus pašalinti iš šio įrenginio. Jei norite juos vėl naudoti „Chromium“, vėl prisijunkite.</translation>
 <translation id="395904275706073188">Apsaugotų puslapių negalima skaityti. Pabandykite kitą puslapį.</translation>
 <translation id="3962647064319009959">Sužinokite, kaip „Chromium“ jus apsaugo</translation>
@@ -362,6 +369,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4893347770495441059">Paleisti iš naujo atnaujinant „&amp;Chromium“</translation>
 <translation id="4918086044614829423">Priimti</translation>
 <translation id="4918844574251943176">Vaizdas nukopijuotas</translation>
+<translation id="4919431996536326528">Jei norite pasiekti skaitymo sąrašą ir kt. visuose įrenginiuose, prisijunkite prie „Chromium“</translation>
 <translation id="4943838377383847465">„Chromium“ veikia fono režimu.</translation>
 <translation id="494490797786467921">Spustelėkite, kad uždarytumėte „Chromium“ prisijungimo dialogo langą</translation>
 <translation id="4950660488495335294">Naudodami „Chromium“ profilius galite atskirti visus savo „Chromium“ duomenis. Sukurkite profilius draugams ir šeimos nariams arba atskirkite darbą ir pramogas.</translation>
@@ -792,6 +800,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="904366664621834601">„Chromium“ užblokavo šį atsisiuntimą, nes archyvo faile yra kitų failų, kurie gali slėpti kenkėjiškas programas</translation>
 <translation id="9053882453960391422">Užtikrinkite, kad slaptažodžiai, žymės ir istorija būtų tobulai sinchronizuojami įrenginiuose. Lengvai pasiekite žinomas ir mėgstamas funkcijas naujovinę numatytąją naršyklę į „Chromium“. „Chromium“ bus prisegta prie užduočių juostos, kad galėtumėte greitai ją pasiekti.</translation>
 <translation id="9056398481763999048">Naudokite geriausius „Google“ DI įrankius su „Chromium“ programa telefone</translation>
+<translation id="9057625473949801035">Jei norite gauti slaptažodžius ir kt. iš <ph name="DEVICE" />, prisijunkite prie „Chromium“</translation>
 <translation id="9062666675513499497">Prisijunkite prie „Chromium“ prisijungdami prie kitų „Google“ paslaugų</translation>
 <translation id="9078733879136747090">„Chromium“ automatiškai uždaryta</translation>
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>

@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Debuggeren er sat på pause på en anden fane. Klik for at skifte til den pågældende fane.</translation>
 <translation id="1171774979989969504">Angiv en mailadresse.</translation>
 <translation id="1178581264944972037">Pause</translation>
+<translation id="1254779809141342904">Denne CAP-underretning anvender en teknologi, der kaldes XSLT. Denne funktionalitet <ph name="REMOVAL_LINK" />. Når det sker, vises denne underretning som rå XML-data. Du kan muligvis <ph name="EXTENSION_LINK" />, så du kan fortsætte med at se den.</translation>
 <translation id="1306460908038601864">Fra</translation>
 <translation id="1311894908970423688">Værdien skal være <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Send</translation>
 <translation id="2746543609216772311">Værdien må ikke være tidligere end <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Markér dette felt, hvis du vil fortsætte.</translation>
+<translation id="2854734116215697908">fjernet fra denne browser</translation>
 <translation id="2908441821576996758">Angiv en kommasepareret liste over mailadresser.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Angiv en gyldig værdi. Feltet er ufuldstændigt eller har en ugyldig dato.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">Tryk to gange til venstre eller højre for at springe ti sekunder over</translation>
 <translation id="57838592816432529">Slå lyden fra</translation>
+<translation id="5855560023261018690">fjernes snart fra denne browser</translation>
 <translation id="5868587040512539609">Videospor</translation>
 <translation id="588258955323874662">Fuld skærm</translation>
 <translation id="5888666972993069672">Caster nu til <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Afslut integreret billede</translation>
 <translation id="6484738902856791350">Anvend pretty print</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
+<translation id="65574987622079584">installere en browserudvidelse</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6661136971638885481">Spor nr. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Andre...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Denne uge</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">åååå</translation>
+<translation id="8243989288843872594">Vis aldrig denne advarsel</translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="835897206747267392">Ugyldig værdi.</translation>
 <translation id="839593075537728968">Værdien skal være mellem <ph name="MINIMUM_TIME" /> og <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Linjeombrydning</translation>
 <translation id="8750798805984357768">Vælg en af disse muligheder.</translation>
+<translation id="8753001114009816390">Dette website bruger XSLT. Denne funktionalitet <ph name="REMOVAL_LINK" />. Når det sker, vises denne side sandsynligvis ikke længere korrekt. Du kan muligvis <ph name="EXTENSION_LINK" />, så du kan fortsætte med at se den. Ellers skal du kontakte den person, der vedligeholder websitet, for at få flere oplysninger.</translation>
 <translation id="8845239796550121995">Caster nu til dit fjernsyn</translation>
 <translation id="8875657656876809964">Fejl under videoafspilning</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

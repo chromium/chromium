@@ -740,6 +740,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2236949375853147973">Aking Aktibidad</translation>
 <translation id="2239100178324503013">Ipadala ngayon</translation>
+<translation id="223921069122391343">Magiging available ang iyong naka-save na alok sa pag-checkout gamit ang autofill. <ph name="BEGIN_LINK" />Tingnan ang mga tuntunin at kundisyon<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Magdagdag ng numero ng pag-redress</translation>
 <translation id="2241693394036365668">Nag-download ng file</translation>
 <translation id="2242389809734574253">Isinara ang I-save ang IBAN.</translation>
@@ -986,7 +987,6 @@ Puwede mong alisin ang suhestyong ito sa Chrome. Hindi made-delete ang iyong ori
 <translation id="2628025184666666186">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito dahil gumagamit ito ng certificate na panseguridad na hindi pinagkakatiwalaan ng Chrome o ng iyong configuration ng system para sa pag-encrypt ng trapiko sa web. Posibleng sanhi ito ng maling pag-configure, o ng pag-intercept ng isang attacker sa koneksyon mo.</translation>
 <translation id="2628224721443278970">Mag-sign in sa Microsoft OneDrive</translation>
 <translation id="2631059741268498165">Nahanap ng iyong administrator ang device na ito habang naka-disable ito. Na-enable ulit ito at handa na itong gamitin.</translation>
-<translation id="2631387782019878060">Code sa Pag-verify: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Hindi makita ang IP address ng server ng <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Paglagda</translation>
 <translation id="2638070510549214427">Markahan bilang ligtas</translation>
@@ -1371,6 +1371,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3308006649705061278">Organizational Unit (OU)</translation>
 <translation id="3310946375819654151">Sinusubukan ng Chrome na ilagay ang iyong sensitibong impormasyon sa <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Matagumpay ang pag-upload</translation>
+<translation id="3323135197619890621">I-on ang autofill para mapadali ang pamimili</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3325568918769906282">sa pababang ayos</translation>
 <translation id="3325662270238538525">Kamakailang pag-access at mga pagbabago sa file, kabilang ang mga pangalan ng file, mga digital na fingerprint ng content ng file, source ng download, at metadata</translation>
@@ -1596,6 +1597,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3704162925118123524">Ang network na ginagamit mo ay maaaring humiling sa iyo na bisitahin ang page ng pag-login nito.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Naglo-load...</translation>
+<translation id="3708927069677086144">Nire-require ka ng iyong organisasyon na mag-sign in sa Chrome</translation>
 <translation id="3709599264800900598">Text Na Kinopya Mo</translation>
 <translation id="3711223220609269738">Bagong Naka-isolate na Tab</translation>
 <translation id="3711430313228789376">Sinusubukan ng Chrome browser na ipakita ang mga password</translation>
@@ -1733,6 +1735,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3928806096717999469">I-edit, magbubukas ng bagong window</translation>
 <translation id="393417216277380082">Sensor ng paggalaw at liwanag</translation>
 <translation id="3937640725563832867">Kahaliling Pangalan ng Tagapagbigay ng Certificate</translation>
+<translation id="3938243129430544357">Secure na mag-check out gamit ang autofill</translation>
 <translation id="3939773374150895049">Gamitin ang WebAuthn sa halip na CVC?</translation>
 <translation id="3941630233824954464">I-enable ang mandatoryong pag-authenticate ulit</translation>
 <translation id="3942048175062210325">Subukang buksan ulit ang iyong mga file</translation>
@@ -2057,6 +2060,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4424024547088906515">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng Chrome ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="4425137053900958839">Ma-enjoy ang lahat ng kaginhawaan at seguridad na maaasahan mo sa Pix</translation>
 <translation id="443121186588148776">Serial port</translation>
+<translation id="4431928532022419942">Alisin sa Chrome?</translation>
 <translation id="4432688616882109544">Hindi tinanggap ng <ph name="HOST_NAME" /> ang iyong certificate sa pag-log in o maaaring walang ibinigay.</translation>
 <translation id="4432792777822557199">Simula ngayon ay isasalin na sa <ph name="TARGET_LANGUAGE" /> ang mga page na nasa <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="4433642172056592619">Binalewala dahil hindi affiliated ang user sa pamamahala ng machine o hindi pinapamahalaan ang machine.</translation>
@@ -3136,6 +3140,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6263376278284652872">Mga bookmark ng <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
 <translation id="6264485186158353794">Bumalik sa safety</translation>
+<translation id="6264507470395196064">Secure na gateway</translation>
 <translation id="6264636978858465832">Nangangailangan ng karagdagang access ang Password Manager</translation>
 <translation id="6265794661083428563">Kopyahin ang value ng patakarang <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">Na-block ka sa pagbisita sa <ph name="URL" /> dahil sa mga patakaran ng iyong organisasyon. Kung hindi iyon inaasahan, makipag-ugnayan sa iyong administrator.</translation>
@@ -3345,6 +3350,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6630043285902923878">Naghahanap ng mga USB device...</translation>
 <translation id="6630388727238334626">Button na Pamahalaan ang mga setting ng Chrome, i-activate para mabisita ang iyong mga setting ng Chrome</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Para bisitahin ang susunod na site, nire-require ka ng organisasyon mo na mag-sign in gamit ang iyong pinapamahalaang Google account.</translation>
 <translation id="6635900375070654124">isang authenticator device</translation>
 <translation id="6641852376826221947">Kumpirmahin ang iyong pagbili</translation>
 <translation id="6643016212128521049">I-clear</translation>
@@ -3534,6 +3540,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6957153644870901611">I-on ang pinahusay na autofill para awtomatikong mapunan ang mas maraming field</translation>
 <translation id="6957887021205513506">Lumilitaw na isang pamamalsipika ang certificate ng server.</translation>
 <translation id="6958564499836457428">Pamahalaan ang mga setting ng privacy ng Google sa iyong Google Account</translation>
+<translation id="6961161369573226336">Puwedeng kunin ng Google Password Manager ang mga code na ito para sa iyo mula sa Gmail mo na <ph name="EMAIL" />. Puwede kang magbago ng isip at <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Puwedeng hilinging gamitin ang mga font na naka-install sa iyong device</translation>
 <translation id="6962858948849099922">Nag-time out ang paglilipat</translation>
 <translation id="6963520811470373926">Nasasapawan</translation>
@@ -3611,6 +3618,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="70846382339153529">OpenDocument Text</translation>
 <translation id="7086090958708083563">Hiniling ng user ang pag-upload</translation>
 <translation id="7090698782953528257">Tulungan akong mag-graph ng function para ma-visualize ang mathematical equation at makita ang hugis ng curve</translation>
+<translation id="7092087596499105699">Na-configure ng iyong administrator ang secure gateway connector para protektahan ang access sa mga pribadong web application ng organisasyon mo. Posibleng gumamit ito ng data mula sa iyong profile sa trabaho para i-verify ang access.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab pagkatapos ay ang Enter para pamahalaan ang mga pahintulot at data na naka-store sa lahat ng site sa mga setting ng Chrome</translation>
 <translation id="709604659664854823">Hanapan ako ng mga last-minute na reservation sa mga kalapit na restaurant ngayong gabi</translation>
 <translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
@@ -4865,6 +4873,7 @@ Mga karagdagang detalye:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> (na) miyembro ang sumali sa grupo ng tab na "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Hiniling mong bisitahin ang site na ito. Puwedeng sumagot ang iyong magulang sa Family Link.</translation>
 <translation id="949484466204182817">Magdagdag ng redress number sa Google Wallet</translation>
+<translation id="950533895669718124">matuto pa tungkol sa feature na ito sa mga setting</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="952165179818196872">Idagdag ang <ph name="PROVIDER" /> para magbayad nang hindi lumilipat ng app</translation>

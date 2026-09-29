@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">Chrome ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି କାରଣ ଏହି ଫାଇଲ ପ୍ରକାରକୁ ସାଧାରଣତଃ ଡାଉନଲୋଡ କରାଯାଇନଥାଏ ଏବଂ ଏହା ବିପଦଜନକ ହୋଇପାରେ</translation>
 <translation id="1197860368385086056">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chrome ଖୋଲିଲେ, ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକୁ ସକ୍ଷମ କରିବା ପାଇଁ ଆପଣ ଏକ ପ୍ରମ୍ପ୍ଟ ଦେଖିବେ।</translation>
 <translation id="1203500561924088507">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
+<translation id="1226003169284463347">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="1278833599417554002">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1289911795790071537">Chromeରେ ସର୍ଚ୍ଚ ଖୋଲନ୍ତୁ</translation>
 <translation id="1290883685122687410">ସେଟଅପ ତ୍ରୁଟି: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chrome <ph name="PERMISSION" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="2106831557840787829">ChromeOS Flex <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭଲପମେଣ୍ଟ ଏନଭାୟରନମେଣ୍ଟ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="2108778574543343055">ଆପ୍ସ ପାଇଁ ବେକଗ୍ରାଉଣ୍ଡରେ ଚାଲୁଥିବା Chrome ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="2111985952714409792">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2120620239521071941">ଏହି ଡିଭାଇସ୍‌ରୁ ଏହା <ph name="ITEMS_COUNT" />ଟି ଆଇଟମ୍‌ ଡିଲିଟ୍‌ କରିବ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ, Chromeରେ <ph name="USER_EMAIL" />ଭାବେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="2121284319307530122">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />ବର୍ତ୍ତମାନ ସେଟିଂସ୍‌<ph name="END_LINK" />ର ରିପୋର୍ଟ କରି Chromeକୁ ଆହୁରି ଉତ୍ତମ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">ଡକରେ ରଖନ୍ତୁ</translation>
 <translation id="2309047409763057870">ଏହା Google Chromeର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2345992953227471816">ଏହି ଏକ୍ସଟେନସନଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chrome ଜାଣିବାକୁ ପାଇଛି:</translation>
+<translation id="2358140144860869442">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2403703063067034158">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ସେଟଅପର ଅନ୍ୟ ଏକ ଇନଷ୍ଟାନ୍ସ ବର୍ତ୍ତମାନ ଚାଲିଛି, ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chrome ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଥିଲା}=1{1ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chrome ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}other{#ଟି HID ଡିଭାଇସ ଗୋଟିଏ କିମ୍ବା ଏକାଧିକ Chrome ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଆକ୍ସେସ କରାଯାଉଛି}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">ଆପଣଙ୍କ ବ୍ରାଉଜରର ସବୁଠାରୁ ସୁରକ୍ଷିତ ସେଟିଂସ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ Chrome ନିୟମିତ ଭାବେ ଯାଞ୍ଚ କରେ। ଯଦି କୌଣସି ବିଷୟ ପାଇଁ ଆପଣଙ୍କ ସମୀକ୍ଷାର ଆବଶ୍ୟକତା ହୁଏ, ତେବେ ଆମେ ଆପଣଙ୍କୁ ଜଣାଇବୁ।</translation>
 <translation id="2652691236519827073">ନୂଆ Chrome &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ଏକ୍ସଟେନସନ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2665296953892887393">Googleକୁ କ୍ରାଶ୍ ରିପୋର୍ଟ ଏବଂ <ph name="UMA_LINK" /> ପଠାଇ Google Chromeକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="2668094785979141847">Google Lensରୁ ବାହାରିଯିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="2674238339205910678">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromeOS Flex ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ସେଭ କରିପାରିଲା ନାହିଁ</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଆପଣ Chrome ଆପ ବ୍ୟବହାର କରି ଅନଲାଇନ ସପିଂରୁ ଅଧିକ ଲାଭ ପାଆନ୍ତୁ</translation>
 <translation id="3245429137663807393">ଯଦି ଆପଣ Chrome ବ୍ୟବହାର ରିପୋର୍ଟଗୁଡ଼ିକ ମଧ୍ୟ ସେୟାର କରନ୍ତି, ତେବେ ସେହି ରିପୋର୍ଟଗୁଡ଼ିକ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବ</translation>
 <translation id="3249558306861350254">ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BEGIN_BOLD" />ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ।</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3259748324892322072">Chrome ଆପ ପାଆନ୍ତୁ</translation>
 <translation id="3282568296779691940">Chromeରେ ସାଇନ୍‌ ଇନ୍‌ କରନ୍ତୁ</translation>
 <translation id="3286538390144397061">ଏବେ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
@@ -345,6 +350,7 @@
 <translation id="4280647692742956593">ଅନ ଦି ଗୋରେ ନୂଆ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ ଖୋଲିବା କିମ୍ବା ତିଆରି କରିବାକୁ ଆପଣଙ୍କ ଫୋନରେ Chrome ଡାଉନଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="4281844954008187215">ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="430327780270213103">Chrome ଟୁଲବାରରେ ଆକ୍ସେସ ଅନୁରୋଧଗୁଡ଼ିକ ଦେଖାଇବା ପାଇଁ ଏକ୍ସଟେନସନକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="4312908933392839680">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}other{Chrome ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ଧୀର କରୁଥିବା ଟାବଗୁଡ଼ିକୁ ବିରତ କରିବାକୁ ସୁପାରିଶ କରେ}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇବାକୁ ୱେବ ଏବଂ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chrome ଏବଂ ଲିଙ୍କ ହୋଇଥିବା Google ସେବାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
@@ -514,7 +520,9 @@
 <translation id="6046028983725193307">ସିଷ୍ଟମ ଅଡିଓ ସେୟାର କରିବାକୁ, ସିଷ୍ଟମ ସେଟିଂସ ଖୋଲି Chrome ପାଇଁ 'କେବଳ ସିଷ୍ଟମ ଅଡିଓ ରେକର୍ଡିଂ'କୁ ଅନୁମତି ଦିଅନ୍ତୁ। ଆପଣଙ୍କୁ ତା'ପରେ Chrome ରିଷ୍ଟାର୍ଟ କରିବାକୁ ହେବ।</translation>
 <translation id="6069027071882229820">ଇମେଜ ଭାବେ କପି କରନ୍ତୁ</translation>
 <translation id="6070348360322141662">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Google Chrome ଆପଣଙ୍କର ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବ</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6075300983329039771">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="MANAGER" /> ଆବଶ୍ୟକ କରନ୍ତି</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ପଢ଼ିବା ତାଲିକା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6113794647360055231">Chrome ଏଇ ବର୍ତ୍ତମାନ ଉନ୍ନତ ହୋଇଛି</translation>
 <translation id="6116004140911290070">Chromeରେ ଦକ୍ଷତାଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6116252277240876590">Chromeରେ ମେନୁ, ସେଟିଂସ, ଆଲର୍ଟ ଏବଂ ଅନ୍ୟ ଟେକ୍ସଟକୁ ଡିସପ୍ଲେ କରିବା ପାଇଁ ଏହି ଭାଷାକୁ ବ୍ୟବହାର କରାଯାଏ</translation>
@@ -712,6 +720,7 @@
 <translation id="7804947029129221742">ଆପଣଙ୍କ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ Chrome ବାହାରୁ ପରିବର୍ତ୍ତନ କରାଯାଇଛି। ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chrome ଏହାକୁ ଏହାର ମୂଳ ଡିଫଲ୍ଟରେ ରିସେଟ କରିଛି। <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chromeରୁ କାଢ଼ିଦିଅନ୍ତୁ...</translation>
 <translation id="7827099906024714326">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ କିଛି ଡାଟାକୁ ସେଭ କରାଯାଇ ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ବ୍ୟବହାର କରାଯିବା ପୂର୍ବରୁ Chrome ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରିବା ଆବଶ୍ୟକ କରେ। ଯଦି ଆପଣ ବର୍ତ୍ତମାନ ସାଇନ ଆଉଟ କରନ୍ତି, ତେବେ ଏହି ଡାଟା ଡିଲିଟ ହୋଇଯିବ।</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କର ସେଭ କରାଯାଇଥିବା ସୂଚନା ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="7832314606810669113">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ। ଆପଣ ସାଇନ ଇନ କରିବା ପରେ ଏହି ବୁକମାର୍କ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ ହେବ।</translation>
 <translation id="7845233973568007926">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="7847170235260850604">Windows ଆରମ୍ଭ ହେଲେ Chrome ଲଞ୍ଚ କରନ୍ତୁ</translation>

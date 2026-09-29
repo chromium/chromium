@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Korrigjuesi është vendosur në pauzë në një skedë tjetër. Kliko për të kaluar tek ajo skedë.</translation>
 <translation id="1171774979989969504">Fut një adresë mail-i.</translation>
 <translation id="1178581264944972037">Pauzë</translation>
+<translation id="1254779809141342904">Ky sinjalizim CAP përdor teknologjinë e quajtur XSLT. Ky funksionalitet do të <ph name="REMOVAL_LINK" />. Kur ndodh kjo, ky sinjalizim do të shfaqet në formën e të dhënave të papërpunuara XML. Mund të jesh në gjendje të <ph name="EXTENSION_LINK" /> që të lejon të vazhdosh ta shikosh.</translation>
 <translation id="1306460908038601864">Joaktiv</translation>
 <translation id="1311894908970423688">Vlera duhet të jetë <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2746543609216772311">Vlera duhet të jetë <ph name="MINIMUM_DATE_OR_TIME" /> ose më e vonshme.</translation>
 <translation id="2761667185364618470">Verifikoje këtë kuti, nëse do të vazhdosh.</translation>
+<translation id="2854734116215697908">hiqet nga ky shfletues</translation>
 <translation id="2908441821576996758">Fut një listë të ndarë me presje me adresa mail-i.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Fut një atribut të vlefshëm. Fusha nuk është e plotë ose ka datë të pavlefshme.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Transmeto</translation>
 <translation id="5630795885300617244">Trokit dy herë majtas ose djathtas për të kapërcyer 10 sek.</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
+<translation id="5855560023261018690">hiqet nga ky shfletues së shpejti</translation>
 <translation id="5868587040512539609">Pjesët e videove</translation>
 <translation id="588258955323874662">Ekrani i plotë</translation>
 <translation id="5888666972993069672">Po transmeton tani në <ph name="DEVICE_FRIENDLY_NAME" /></translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">Dil nga "figurë brenda figurës"</translation>
 <translation id="6484738902856791350">Formatimi elegant</translation>
 <translation id="6550675742724504774">Opsionet</translation>
+<translation id="65574987622079584">instalosh një shtesë të shfletuesit</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6661136971638885481">Pjesa zanore nr. <ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">Tjetër...</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Këtë javë</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">vvvv</translation>
+<translation id="8243989288843872594">Mos e shfaq asnjëherë këtë paralajmërim</translation>
 <translation id="8284326494547611709">Titrat</translation>
 <translation id="835897206747267392">Vlerë e pavlefshme.</translation>
 <translation id="839593075537728968">Vlera duhet të jetë nga <ph name="MINIMUM_TIME" /> deri në <ph name="MAXIMUM_TIME" />.</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Thyerja e rreshtit</translation>
 <translation id="8750798805984357768">Përzgjidh një nga këto opsione.</translation>
+<translation id="8753001114009816390">Ky sajt përdor XSLT. Ky funksionalitet do të <ph name="REMOVAL_LINK" />. Kur të ndodhë kjo, kjo faqe ndoshta nuk do të shfaqet më siç duhet. Mund të jesh në gjendje të <ph name="EXTENSION_LINK" /> që të lejon të vazhdosh ta shikosh. Përndryshe, duhet të kontaktosh me mirëmbajtësin e sajtit për informacione të mëtejshme.</translation>
 <translation id="8845239796550121995">Po transmeton tani në televizor</translation>
 <translation id="8875657656876809964">Gabim gjatë luajtjes së videos</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>

@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{ఈ పరికరంలో <ph name="BRAND" />కి 1 పాస్‌వర్డ్ దిగుమతి చేయబడింది}other{ఈ పరికరంలో <ph name="BRAND" />కి {NUM_PASSWORDS} పాస్‌వర్డ్‌లు దిగుమతి చేయబడ్డాయి}}</translation>
 <translation id="1046572983040892965">విండో ఎగువ ఎడమ వైపుకు తరలించబడింది</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
+<translation id="104751728059674265">మీ ఖాతా కోసం ఫీడ్‌బ్యాక్ అందుబాటులో లేదు. 18 ఏళ్ల పైబడిన వ్యక్తి (పెద్ద వారు) మీ కోసం సమస్యను రిపోర్ట్ చేయడానికి తన డివైజ్‌ను లేదా ప్రొఫైల్‌ను ఉపయోగించవచ్చు.</translation>
 <translation id="1048986595386481879">డైనమిక్‌గా కేటాయించబడింది</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}}</translation>
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
@@ -331,6 +332,7 @@
 <translation id="1231572247662419826">మీ మౌస్ ఇన్‌పుట్‌ను క్యాప్చర్ చేయడానికి, ఉపయోగించడానికి సైట్‌లు అనుమతి కోరవచ్చు</translation>
 <translation id="1232569758102978740">శీర్షికలేనిది</translation>
 <translation id="1233497634904001272">రిక్వెస్ట్‌ను పూర్తి చేయడానికి మీ సెక్యూరిటీ కీని మళ్లీ తాకండి.</translation>
+<translation id="1233566345244684257">మీ Gemini యాప్స్‌కు యాక్సెస్ ఉన్న ఎవరైనా మీ Chrome బ్రౌజర్‌ను కంట్రోల్ చేయగలరు.</translation>
 <translation id="1233721473400465416">లొకేల్</translation>
 <translation id="1233835246554936745">{0,plural, =1{ఖాతాలో 1 ఐటెమ్‌ను సేవ్ చేయండి}other{ఖాతాలో # ఐటెమ్‌లను సేవ్ చేయండి}}</translation>
 <translation id="1234736487471201993">ఈ ఇమేజ్ కోసం QR కోడ్‌ను క్రియేట్ చేయండి</translation>
@@ -553,6 +555,7 @@
 <translation id="1421514190500081936">ఈ డేటాను డౌన్‌లోడ్ చేయడానికి దయచేసి కారణాన్ని ఎంటర్ చేయండి:</translation>
 <translation id="1422159345171879700">అసురక్షిత స్క్రిప్ట్‌లను లోడ్ చేయి</translation>
 <translation id="1425040197660226913">అప్‌లోడ్ చేయడం సాధ్యం కాదు. 20MB కంటే తక్కువ ఉన్న ఇమేజ్‌ను ఉపయోగించండి.</translation>
+<translation id="1426154609634610063">Geminiని ఉపయోగించడం వల్ల కలిగే రిస్క్‌లను రివ్యూ చేయండి</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> బ్లాక్ చేయబడింది</translation>
 <translation id="1427179946227469514">టెక్ట్స్-టు-స్పీచ్ పిచ్</translation>
@@ -990,6 +993,7 @@
 <translation id="1755601632425835748">వచన సైజ్‌</translation>
 <translation id="1756963401828337401">క్యాప్చర్ చేయడానికి స్క్రీన్‌ను ఎంచుకోండి</translation>
 <translation id="17584710573359123">Chrome వెబ్ స్టోర్‌లో చూడండి</translation>
+<translation id="1758845021884209593">OS యాప్‌ల అంతటా షార్ట్‌కట్‌ను ఉపయోగించండి</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> <ph name="REMAPPING_OPTION" />కి రీమ్యాప్ చేయబడింది.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> యొక్క ఖాతాలు</translation>
 <translation id="176272781006230109">షాపింగ్ సూచనలు</translation>
@@ -1838,6 +1842,7 @@
 <translation id="2416435988630956212">కీబోర్డ్ ఫంక్షన్ కీలు</translation>
 <translation id="2419131370336513030">ఇన్‌స్టాల్ చేసిన యాప్‌లను చూడండి</translation>
 <translation id="2419706071571366386">భద్రత కోసం, మీ కంప్యూటర్‌ని ఉపయోగించనప్పుడు సైన్ అవుట్ చేయండి.</translation>
+<translation id="2423226060967554289">బుక్‌మార్క్ బార్‌ను చూపించు</translation>
 <translation id="2423506062824112361">తెలియని కారణం వల్ల కంటెంట్‌ను డౌన్‌లోడ్ చేయడం విఫలమైంది.</translation>
 <translation id="2423578206845792524">చిత్రాన్ని ఇలా సే&amp;వ్ చేయి...</translation>
 <translation id="2424424966051154874">{0,plural, =1{గెస్ట్}other{గెస్ట్ (#)}}</translation>
@@ -2075,6 +2080,7 @@
 <translation id="2588271083332682494">ట్యాబ్ గ్రూప్‌లను క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> నుండి పరికరాలు</translation>
 <translation id="2589658397149952302">Drive ఫైళ్లను ఎప్పుడూ చూపవద్దు</translation>
+<translation id="2595270892115552212">మీరు gemini.google.com, Gemini మొబైల్ యాప్‌లతో సహా ఇతర Gemini యాప్‌ల నుండి టాస్క్‌ను ప్రారంభించినప్పుడు, Gemini ఈ డివైజ్‌లో Chrome ఆటోమేటిక్ బ్రౌజింగ్‌ను ఉపయోగించి సైట్‌లతో ఇంటరాక్ట్ అవ్వగలదు, మీ తరఫున టాస్క్‌లను పూర్తి చేయగలదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">సమీపంలోని పరికరాలను కనుగొనడానికి సమీప షేరింగ్, బ్లూటూత్ స్కానింగ్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="2598136842498757793">టూల్‌బార్ బటన్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="2598710988533271874">కొత్త Chrome అందుబాటులోకి వచ్చింది</translation>
@@ -2812,6 +2818,7 @@
 <translation id="3132996321662585180">ప్రతిరోజూ రిఫ్రెష్ చేయండి</translation>
 <translation id="3134312457920437826">ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు ఎందుకంటే ఇది సపోర్ట్ లేని మ్యానిఫెస్ట్ వెర్షన్‌ను ఉపయోగిస్తుంది.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> ప్రయోగానికి ప్రయోగ స్థితిని ఎంచుకోండి. ప్రయోగ వివరణ: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">ఏ డివైజ్ నుండైనా ఇతర Gemini యాప్‌లు రిమోట్‌గా బ్రౌజ్ చేయడానికి అనుమతించండి</translation>
 <translation id="3139925690611372679">డిఫాల్ట్ పసుపు రంగు అవతార్</translation>
 <translation id="314095642664111744">ఫోకస్‌ను ఆఫ్ చేయండి</translation>
 <translation id="3141093262818886744">ఏదేమైనా తెరవండి</translation>
@@ -3097,6 +3104,7 @@
 <translation id="3355936511340229503">కనెక్షన్ ఎర్రర్</translation>
 <translation id="335678817537689040">స్టాటిక్</translation>
 <translation id="3359256513598016054">సర్టిఫికెట్ విధాన పరిమితులు</translation>
+<translation id="3359465538772230055">టాస్క్‌లు ఏవీ లేవు</translation>
 <translation id="3360297538363969800">ముద్రణ విఫలమైంది. దయచేసి మీ ప్రింటర్‌ను చెక్ చేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3360306038446926262">విండోలు</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}other{<ph name="DEVICE_NAME" /> మీతో <ph name="ATTACHMENTS" />ని షేర్ చేస్తోంది.}}</translation>
@@ -3625,6 +3633,7 @@
 <translation id="3736487688526377259">మీరు ఈ లింక్‌ను పొందాలనుకుంటున్న డివైజ్‌ను ఎంచుకోండి.</translation>
 <translation id="3737058101969549870">ఇప్పటికే ఉన్న బ్రౌజింగ్ డేటాను ఈ కొత్త ప్రొఫైల్ నుండి వేరుగా ఉంచాలా?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">ఈ డివైజ్ యాక్టివ్‌గా ఉండి, Chrome రన్ అవుతున్నప్పుడు మాత్రమే Gemini ఈ డివైజ్‌లో ఆటోమేటిక్ బ్రౌజ్‌ను ఉపయోగించగలదు.</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" />ని తెరవాలా?</translation>
 <translation id="3739349485749941749">మీ పరికరానికి యాక్సెస్ చేయగల ప్రింటర్‌ల కోసం వెతకమని, వాటిని ఉపయోగించమని సైట్‌లు అడగవచ్చు</translation>
 <translation id="3741056951918180319">ఏ సైట్‌లోనైనా ఉపయోగించడానికి, ఎల్లప్పుడూ మీరు ఎక్స్‌టెన్షన్‌ను క్లిక్ చేయవచ్చు</translation>
@@ -3980,6 +3989,7 @@
 <translation id="3987993985790029246">లింక్‌ను కాపీ చేయండి</translation>
 <translation id="3988124842897276887">ఈ ట్యాబ్ USB పరికరానికి కనెక్ట్ చేయబడింది</translation>
 <translation id="3989635538409502728">సైన్ అవుట్</translation>
+<translation id="399132041334931433">ట్యాబ్‌లను కొత్త గ్రూప్‌నకు జోడించండి</translation>
 <translation id="399179161741278232">దిగుమతి అయ్యింది</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> డౌన్‌లోడ్ చేస్తోంది, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">USB డివైజ్‌లపై <ph name="SPECIFIC_NAME" /> కంట్రోల్‌ను అందించండి.</translation>
@@ -5209,6 +5219,7 @@
 <translation id="495170559598752135">చర్యలు</translation>
 <translation id="4951966678293618079">ఈ సైట్‌కు పాస్‌వర్డ్‌లను ఎన్నడూ సేవ్ చేయవద్దు</translation>
 <translation id="4952580838083306838">ఆర్గనైజర్‌ను దాచండి</translation>
+<translation id="4952628481830269193">బుక్‌మార్క్ బార్‌ను చూపించు</translation>
 <translation id="4953808748584563296">డిఫాల్ట్ నారింజ రంగు అవతార్</translation>
 <translation id="4954652437333037880">ఫైల్</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> గురించి అడగండి</translation>
@@ -5461,6 +5472,7 @@
 <translation id="5149602533174716626">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
 <translation id="5150254825601720210">Netscape సర్టిఫికెట్ SSL సర్వర్ పేరు</translation>
 <translation id="5151354047782775295">డిస్క్ స్థలాన్ని ఖాళీ చేయండి, లేదంటే ఎంపిక చేసిన డేటా ఆటోమేటిక్‌గా తొలగించబడవచ్చు</translation>
+<translation id="5152719737931716272">టాస్క్ పూర్తయింది, Geminiకి తిరిగి వచ్చింది</translation>
 <translation id="5153074793829217329">మీ మౌస్ కర్సర్‌ను కంట్రోల్ చేయడానికి మీ కీబోర్డ్ లేదా సంఖ్యా కీప్యాడ్‌ను ఉపయోగించండి</translation>
 <translation id="5153234146675181447">ఫోన్‌ని మర్చిపో</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5777,6 +5789,7 @@
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
 <translation id="5415497281076257439">ఫ్రేజ్</translation>
 <translation id="5415871492522952905">మీరు మీ అన్ని పరికరాలలో మీ హిస్టరీ, ట్యాబ్‌లను కలిగి ఉంటారు కాబట్టి మీరు చేస్తున్న పనిని కొనసాగించవచ్చు</translation>
+<translation id="5417160551295347092">Gemini పొరపాట్లు చేయవచ్చు, ఉదాహరణకు, మీ సమాచారాన్ని షేర్ చేయడం లేదా అడగకుండానే కొనుగోళ్లు చేయడం వంటివి జరగవచ్చు. <ph name="LINK_BEGIN" />రిస్క్‌లను రివ్యూ చేయండి<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి, ఈ సైట్ ఐడెంటిఫయర్‌లను ఉపయోగించగలదు.</translation>
 <translation id="5417312524372586921">బ్రౌజర్ థీమ్‌లు</translation>
 <translation id="541737483547792035">స్క్రీన్‌ను పెద్దదిగా చేయండి</translation>
@@ -6120,6 +6133,7 @@
 <translation id="5687340364605915800">సైట్‌లు, వాటి విచక్షణానుసారం ఈ రిక్వెస్ట్‌కు సమాధానం ఇస్తాయి</translation>
 <translation id="5689233503102158537">alt + బ్యాక్‌స్పేస్</translation>
 <translation id="5689516760719285838">లొకేషన్</translation>
+<translation id="568984110402742489">ఫీడ్‌బ్యాక్‌ను పంపడం సాధ్యపడదు</translation>
 <translation id="56907980372820799">డేటాను జోడించండి</translation>
 <translation id="5691772641933328258">వేలిముద్ర (ఫింగర్-ప్రింట్) మ్యాచ్ కాలేదు</translation>
 <translation id="5693255400847650006">మైక్రోఫోన్ ఉపయోగంలో ఉంది</translation>
@@ -6530,6 +6544,7 @@
 <translation id="6003143259071779217">eSIM సెల్యులర్ నెట్‌వర్క్‌ను తీసివేయండి</translation>
 <translation id="6003479444341796444">టైటిల్ బార్ ఇప్పుడు కనిపిస్తోంది</translation>
 <translation id="6003582434972667631">మీ సంస్థ ద్వారా థీమ్ సెట్ చేయబడింది</translation>
+<translation id="600407115562756795">మీరు ప్రారంభించే లేదా అప్‌డేట్ చేసే టాస్క్‌ల ఆధారంగా ఏ చర్యలు తీసుకోవాలో Gemini నిర్ణయిస్తుంది.</translation>
 <translation id="6005045517426700202">ఇటుకల భవనం</translation>
 <translation id="6006484371116297560">క్లాసిక్</translation>
 <translation id="6007053304250788613">మిర్రర్ మోడ్‌లో ఒక డిస్‌ప్లే మాత్రమే మినహాయించబడుతుంది</translation>
@@ -8506,6 +8521,7 @@
 <translation id="7523117833414447032">క్యాపిటల్స్ చదువుతున్నప్పుడు</translation>
 <translation id="7523585675576642403">ప్రొఫైల్‌కు పేరు మార్చండి</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
+<translation id="7526083414913154899">Gemini టాస్క్‌ల గురించి మరింత తెలుసుకోండి</translation>
 <translation id="7528224636098571080">తెరవవద్దు</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{ట్యాబ్ గ్రూప్‌ని అన్‌గ్రూప్ చేయాలా?}other{ట్యాబ్ గ్రూప్‌లను అన్‌గ్రూప్ చేయాలా?}}</translation>
 <translation id="7529411698175791732">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి. సమస్య కొనసాగితే, సైన్ అవుట్ చేసి, మళ్లీ సైన్ ఇన్ చేయడాన్ని ప్రయత్నించండి.</translation>
@@ -9232,6 +9248,7 @@
 <translation id="8081989000209387414">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేయాలా?</translation>
 <translation id="8082132721957920509">మీ కార్డ్ సేవ్ అయింది</translation>
 <translation id="8082390128630131497">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేస్తే, ఈ <ph name="DEVICE_TYPE" />ను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది. అన్ని యూజర్ ఖాతాలు, స్థానిక డేటా తొలగించబడతాయి.</translation>
+<translation id="8082737802704584539">మీ Google ఖాతాలో హిస్టరీని సేవ్ చేసే ఆప్షన్‌ను మీ సంస్థ ఆఫ్ చేసింది</translation>
 <translation id="8084114998886531721">సేవ్ చేసిన పాస్‌వర్డ్</translation>
 <translation id="8084417885464859041">Geminiని సురక్షితంగా ఉపయోగించండి</translation>
 <translation id="8084429490152575036">సెల్యులార్ APN సెట్టింగ్‌లు</translation>
@@ -9274,6 +9291,7 @@
 <translation id="8109991406044913868">AI ద్వారా క్రియేట్ చేయబడిన రూపం</translation>
 <translation id="8110393529211831722">సబ్‌స్క్రిప్షన్ ఈ పరికరంలో మాత్రమే ఇన్‌స్టాల్ చేయబడింది, మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడదు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేస్తోంది...</translation>
+<translation id="8110781914702267195">మీ <ph name="BEGIN_LINK1" />డేటా &amp; గోప్యతా ప్రాధాన్యతల<ph name="END_LINK1" />ను కంట్రోల్ చేయడానికి లేదా <ph name="BEGIN_LINK2" />పేమెంట్ ఆప్షన్‌ల<ph name="END_LINK2" />ను, లాయల్టీ కార్డ్‌ల వంటి <ph name="BEGIN_LINK3" />పాస్‌ల<ph name="END_LINK3" />ను మేనేజ్ చేయడానికి Google Walletకు వెళ్లండి</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> మైక్రోఫోన్ అనుమతులు</translation>
 <translation id="8116497846156149">ఆమోదం కోసం తల్లి/తండ్రిని అడగండి</translation>
 <translation id="8118276691321086429">మీరు ఎలా సైన్ ఇన్ చేశారు అనే దానిని <ph name="PASSWORD_MANAGER_BRAND" /> గుర్తుంచుకొని, వీలయినప్పుడు ఆటోమేటిక్‌గా మిమ్మల్ని సైన్ ఇన్ చేస్తుంది. ఇది ఆఫ్‌లో ఉన్నప్పుడు, ప్రతిసారి ధృవీకరించమని మిమ్మల్ని అడుగుతుంది.</translation>
@@ -9354,6 +9372,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />లో <ph name="ITEM_POSITION" />వ ప్రింటర్.</translation>
 <translation id="8180785270975217276">ఎనర్జీ సేవర్ ఆన్ చేయబడింది</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" ఎంచుకున్న స్థానాల్లోని చిత్రాలను, వీడియోను, సౌండ్ ఫైల్స్‌ను చదవగలదు. తొలగించగలదు.</translation>
+<translation id="8181132988581553950">మీరు సైన్ ఇన్ చేసిన సైట్‌లతో సహా, Geminiకి మీలాగే అదే సైట్‌లకు యాక్సెస్ ఉంటుంది. ఇది థర్డ్-పార్టీలతో అవసరమైన సమాచారాన్ని షేర్ చేస్తుంది, ఇందులో మీరు గోప్యమైనదిగా భావించే వ్యక్తిగత సమాచారం ఉండవచ్చు.</translation>
 <translation id="8183703640399301650">మీ పరికర EID <ph name="EID_NUMBER" />, పరికర IMEI <ph name="IMEI_NUMBER" />. సర్వీస్‌ను యాక్టివేట్ చేయడంలో సహాయపడటానికి ఈ నంబర్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="8184288427634747179"><ph name="AVATAR_NAME" />కి మార్చు</translation>
 <translation id="8184318863960255706">మరింత సమాచారం</translation>
@@ -10256,6 +10275,7 @@
 <translation id="8874341931345877644">పరికరానికి ప్రసారం చేయండి:</translation>
 <translation id="8874647982044395866">ఆర్గానిక్</translation>
 <translation id="8874790741333031443">థర్డ్-పార్టీ కుక్కీలను తాత్కాలికంగా అనుమతించడానికి ట్రై చేయండి, అంటే బ్రౌజింగ్ రక్షణ తక్కువగా ఉంటుంది కానీ సైట్ ఫీచర్‌లు ఆశించిన విధంగా పని చేసే అవకాశం ఉంటుంది.</translation>
+<translation id="8874864294955002500">మీ ఖాతా కోసం ఫీడ్‌బ్యాక్ అందుబాటులో లేదు. మీ ఎంటర్‌ప్రైజ్ అడ్మినిస్ట్రేటర్ తన డివైజ్‌ను లేదా ప్రొఫైల్‌ను ఉపయోగించి మీ కోసం సమస్యను రిపోర్ట్ చేయగలరు.</translation>
 <translation id="8875736897340638404">మీ విజిబిలిటీని ఎంచుకోండి</translation>
 <translation id="8876307312329369159">ఈ సెట్టింగ్‌ను డెమో సెషన్‌లో మార్చడం సాధ్యపడదు.</translation>
 <translation id="8876965259056847565">సమీపంలోని పరికరాలను కనుగొనడానికి <ph name="FEATURE_NAME" />, బ్లూటూత్ స్కానింగ్‌ను ఉపయోగిస్తుంది.</translation>

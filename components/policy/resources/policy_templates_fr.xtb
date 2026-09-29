@@ -1805,6 +1805,7 @@ Si cette règle n'est pas configurée : pour les utilisateurs standards, c'est 
       Si cette règle n'est pas configurée, le navigateur ne commence à économiser de la mémoire que s'il détecte que la quantité de mémoire physique sur l'ordinateur est faible.</translation>
 <translation id="2161348910646846717">Autoriser les utilisateurs à changer le canal de publication</translation>
 <translation id="2162703823039992020">Intégrations contextuelles des services Google sur <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="2163451780572451889">L'URL de l'instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> de l'application Web pour cette organisation. Il doit s'agir d'une URL HTTPS valide.</translation>
 <translation id="2166155400701622446">Une liste de ports restreints est intégrée à <ph name="PRODUCT_NAME" />. Toute connexion à ces ports échouera. Ce paramètre permet de contourner cette liste. Il s'agit d'une liste d'éléments séparés par une virgule contenant zéro port ou plus sur lesquels les connexions sortantes seront autorisées.
 
       Les ports sont restreints afin d'éviter l'utilisation de <ph name="PRODUCT_NAME" /> en tant que vecteur pour exploiter différentes failles réseau. Définir cette règle peut exposer votre réseau aux attaques. Elle est conçue comme solution de contournement temporaire pour les erreurs avec le code "ERR_UNSAFE_PORT" qui surviennent lors de la migration d'un service, d'un port bloqué vers un port standard (port 80 ou 443, par exemple).
@@ -2190,9 +2191,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2421779938235645781">La couleur de rétroéclairage du clavier s'accorde avec le fond d'écran actuel</translation>
 <translation id="2423255396068675416">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs sont autorisés à exécuter<ph name="PRODUCT_CROSTINI_NAME" />, tant que les règles <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> et <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> sont activées. Si cette règle est désactivée, <ph name="PRODUCT_CROSTINI_NAME" /> est désactivé pour l'utilisateur. Si vous la désactivez, elle est appliquée aux conteneurs <ph name="PRODUCT_CROSTINI_NAME" /> qui vont être lancés, mais pas à ceux qui le sont déjà.</translation>
 <translation id="2423654977291507457">Désactiver les intégrations</translation>
-<translation id="2424141395604579502">Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent ajouter, supprimer, modifier ou importer des favoris.
-
-      Si elle est définie sur "False", les utilisateurs ne peuvent pas ajouter, supprimer, modifier ni importer de favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="242521047682347997">Ne pas autoriser les utilisateurs à synchroniser les SMS entre leur téléphone et leur Chromebook</translation>
 <translation id="2426782419955104525">Activer la fonctionnalité de recherche instantanée de <ph name="PRODUCT_NAME" /> et empêcher les utilisateurs de modifier ce paramètre.
 
@@ -10711,6 +10709,21 @@ Si elle est désactivée, la visionneuse de PDF utilise son moteur de rendu AGG 
 
 Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélectionné par le navigateur.</translation>
 <translation id="7704244074621846004">Activer la durée de vie étendue pour les SharedWorkers</translation>
+<translation id="7705886216383850895">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />.
+
+Pour configurer <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, les administrateurs doivent fournir :
+* l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ; OU
+* les trois anciens paramètres ensemble : <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> et <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Si uniquement un sous-ensemble partiel de ces trois paramètres est indiqué sans URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> doit être une URL valide qui utilise le schéma HTTPS et n'inclut pas de nom d'utilisateur ni de mot de passe. S'il ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Si le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> et les anciens paramètres sont tous deux configurés, le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> prévaut.
+
+Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte ou un navigateur géré.
+
+Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
+
+Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Active la fonctionnalité des sons de recharge.
 
           Cette fonctionnalité permet d'émettre les sons de recharge.

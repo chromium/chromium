@@ -2212,9 +2212,6 @@ False로 설정하면 개인 정보 보호 화면은 항상 사용 중지됩니�
 <translation id="2421779938235645781">키보드 백라이트 색상이 현재 배경화면과 일치함</translation>
 <translation id="2423255396068675416">정책을 사용으로 설정하거나 설정하지 않으면 <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 및 <ph name="CROSTINI_ALLOWED_POLICY_NAME" />가 사용으로 설정되어 있는 한 사용자가 <ph name="PRODUCT_CROSTINI_NAME" />를 실행할 수 있습니다. 사용 안함으로 설정하면 사용자의 <ph name="PRODUCT_CROSTINI_NAME" />가 사용 중지됩니다. 사용 안함으로 변경하면 기존에 실행 중이던 컨테이너가 아닌 새로 시작되는 <ph name="PRODUCT_CROSTINI_NAME" /> 컨테이너에 정책 적용이 시작됩니다.</translation>
 <translation id="2423654977291507457">통합 사용 중지</translation>
-<translation id="2424141395604579502">정책을 True로 설정하거나 설정하지 않으면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 있습니다.
-
-      정책을 False로 설정하면 사용자가 북마크를 추가, 삭제, 수정 또는 업로드할 수 없습니다. 사용자는 계속해서 기존 북마크를 사용할 수 있습니다.</translation>
 <translation id="242521047682347997">사용자가 휴대전화와 Chromebook 간에 SMS 메시지를 동기화하도록 허용 안함</translation>
 <translation id="2426782419955104525"><ph name="PRODUCT_NAME" />의 순간 검색 기능을 사용하도록 설정하고 사용자가 이 설정을 변경하지 못하게 합니다.
 

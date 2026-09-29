@@ -1833,6 +1833,7 @@ Bu politikanın normal kullanıcılar için ayarlanmadan bırakılması, işlevs
       Bu politika ayarlanmazsa tarayıcı yalnızca makinesindeki fiziksel bellek miktarının düştüğünü algıladığında bellekten tasarruf etmeye çalışır.</translation>
 <translation id="2161348910646846717">Kullanıcıların, sürüm kanalını değiştirmesine izin ver</translation>
 <translation id="2162703823039992020"><ph name="PRODUCT_OS_NAME" /> üzerinde Google hizmetlerinin bağlamsal entegrasyonları</translation>
+<translation id="2163451780572451889">Bu kuruluşun <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> örneğinin web uygulaması URL'si. Geçerli bir https URL'si olmalıdır.</translation>
 <translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> tarayıcıda yerleşik olarak bulunan kısıtlanmış bağlantı noktalarının listesi mevcuttur. Bu bağlantı noktalarına yapılan bağlantılar başarısız olur. Bu ayar, söz konusu listenin atlanmasına olanak tanır. Değer, giden bağlantılara izin verilen sıfır veya daha fazla bağlantı noktasının virgülle ayrılmış listesidir.
 
       Bağlantı noktaları, çeşitli ağ güvenlik açıklarından yararlanmak amacıyla <ph name="PRODUCT_NAME" /> tarayıcının kullanılmasını önlemek için kısıtlanır. Bu politikanın ayarlanması ağınızı saldırılara açık hale getirebilir. Bu politika, engellenen bir bağlantı noktasında çalışan bir hizmeti standart bir bağlantı noktasına (yani bağlantı noktası 80 veya 443) taşırken "ERR_UNSAFE_PORT" kodlu hatalar için geçici bir çözüm olarak tasarlanmıştır.
@@ -2229,9 +2230,6 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="2421779938235645781">Klavye arka ışığı rengini mevcut duvar kağıdıyla eşleştir</translation>
 <translation id="2423255396068675416">Politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> ve <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> politikaları Etkin değerine ayarlandığı sürece, kullanıcıların <ph name="PRODUCT_CROSTINI_NAME" /> çalıştırmasına izin verilir. Politika Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_CROSTINI_NAME" />, kullanıcı için kapatılır. Politika Devre Dışı olarak değiştirilirse halihazırda çalışan kapsayıcılara değil, başlatılan yeni <ph name="PRODUCT_CROSTINI_NAME" /> kapsayıcılarına uygulanmaya başlar.</translation>
 <translation id="2423654977291507457">Entegrasyonları devre dışı bırak</translation>
-<translation id="2424141395604579502">Politikayı Doğru değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların yer işaretleri eklemelerine, kaldırmalarına, değiştirmelerine veya yüklemelerine izin verir.
-
-      Politikayı Yanlış değerine ayarlarsanız kullanıcılar yer işaretleri ekleyemez, kaldıramaz, değiştiremez veya yükleyemez. Mevcut yer işaretlerini kullanmaya devam edebilirler.</translation>
 <translation id="242521047682347997">Kullanıcıların telefonları ile Chromebook'ları arasında SMS mesajlarını senkronize etmesine izin verme</translation>
 <translation id="2426782419955104525"><ph name="PRODUCT_NAME" /> ürününün Anında Arama özelliğini etkinleştirir ve kullanıcıların bu ayarı değiştirmesini önler.
 
@@ -10903,6 +10901,21 @@ Bu politika devre dışı bırakılırsa PDF görüntüleyici kendi AGG oluştur
 
 Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından seçilir.</translation>
 <translation id="7704244074621846004">SharedWorker'lar için uzatılmış kullanım ömrünü etkinleştir.</translation>
+<translation id="7705886216383850895"><ph name="PRODUCT_NAME" /> hizmetinde <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> için bağlantı ayarlarını yapılandırır.
+
+Yöneticilerin, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> hizmetini yapılandırmak için şunlardan birini sağlaması gerekir:
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> web uygulaması URL'si (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) VEYA
+* Üç eski parametrenin tümü: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> ve <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Bu üç parametrenin alt kümesi yalnızca kısmen URL olmadan belirtilirse <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> politikası yapılandırılamaz.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi, https şemasını kullanan ve kullanıcı adı veya şifre içermeyen geçerli bir URL olmalıdır. Bu koşullar karşılanmazsa politika yoksayılır ve <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmadan bırakılır.
+
+Hem <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi hem de eski parametreler yapılandırılmışsa <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi öncelikli olur.
+
+Bu politika ayarlanırsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, yönetilen bir hesap veya yönetilen tarayıcıyla oturum açan kullanıcılar için yapılandırılır.
+
+Bu politika ayarlanmazsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmaz.
+
+Bu politikanın, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından kontrol edilebilen genel <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu kontrol etmediğini unutmayın.</translation>
 <translation id="7707869387893611318">Şarj sesleri özelliğini etkinleştirin.
 
           Bu özellik, şarj seslerini çalmaktan sorumludur.

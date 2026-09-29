@@ -42,6 +42,7 @@
 <translation id="141901961143729572">ご意見をお聞かせください</translation>
 <translation id="1465192221147974788">ウィンドウを共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
+<translation id="147870194906295621"><ph name="DEVICE" /> で保存した情報などを使用するには、Chromium にログインしてください</translation>
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">このページは保護されています</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
@@ -189,6 +190,7 @@
 <translation id="3012615494352020668">{count,plural, =1{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（1 個のアイテム）は削除されます。}other{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（{count} 個のアイテム）は削除されます。}}</translation>
 <translation id="3013473503895162900">Chromium の新しいタブで <ph name="URL" /> を開きます。</translation>
 <translation id="302551344979399011">スキルなどの AI イノベーションは Google アカウントに保存され、Chromium 同期とは別に管理されます</translation>
+<translation id="3032219013429286568">すべてのデバイスで同じ拡張機能などを使用するには、Chromium にログインしてください</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
 <translation id="3038232873781883849">インストールの待機中...</translation>
 <translation id="3045032126857188731">翻訳先の言語: <ph name="LANGUAGE" /></translation>
@@ -199,6 +201,7 @@
 <translation id="3068515742935458733">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Chromium の機能向上に役立てる</translation>
 <translation id="3071024987058544609">Chromium アプリで、Google の安全機能を外出先でも利用できます</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の USB デバイスにアクセスしています}}</translation>
+<translation id="3090734884397229414"><ph name="DEVICE" /> のリーディング リストなどを使用するには、Chromium にログインしてください</translation>
 <translation id="3095811995836568724">Chromium の履歴</translation>
 <translation id="3103660991484857065">インストーラ アーカイブを解凍できませんでした。Chromium をダウンロードし直してください。</translation>
 <translation id="310459126943037700">タスクを終了できませんでした。</translation>
@@ -220,6 +223,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS 版 Chromium で、お気に入りの Google AI ツールを外出先でも利用できます。</translation>
+<translation id="3264761466044851269"><ph name="DEVICE" /> の拡張機能などを使用するには、Chromium にログインしてください</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
@@ -231,6 +235,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">既存の Chromium プロフィールに切り替えますか？</translation>
 <translation id="3412460710772753638">このデバイスのパスワード マネージャーで更新</translation>
+<translation id="3427159664004296878"><ph name="DEVICE" /> のブックマークなどを使用するには、Chromium にログインしてください</translation>
 <translation id="3438772217992559640">画像検索でこのタブを検索</translation>
 <translation id="3455907671758333080">スマートフォンの Chromium でセーフ ブラウジング保護強化機能を有効にする</translation>
 <translation id="3461644266919055473">Chromium をカスタマイズしています...</translation>
@@ -263,6 +268,7 @@
 
           **質問の提案:** スクリーンショットの理解を深めるためにユーザーが質問しそうな項目を箇条書きで 3～5 つ生成します。視覚的なオブジェクトやそのデザイン、または配置に関する具体的な質問が 1 つ以上含まれます。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chromium にログインしてください</translation>
 <translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="388648406173476553">Chromium をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="3889543394854987837">Chromium を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
@@ -271,6 +277,7 @@
 <translation id="3909353120217047026">この拡張機能は Chrome ウェブストアのポリシーに違反しており、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chromium からこの拡張機能を削除してください。</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
 <translation id="3945058413678539331">Chromium がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
+<translation id="3950481960271781644">すべてのデバイスで保存した情報などを使用するには、Chromium にログインしてください</translation>
 <translation id="3954172517175569325">Google アカウントに保存したパスワード、お支払い方法、住所は、このデバイスから削除されます。Chromium でこれらのデータを再度使用するには、もう一度ログインしてください。</translation>
 <translation id="395904275706073188">保護されたページは読み込めません。別のページをお試しください。</translation>
 <translation id="3962647064319009959">Chromium のユーザー保護の仕組みについて</translation>
@@ -359,6 +366,7 @@
 <translation id="4893347770495441059">再起動して Chromium を更新(&amp;C)</translation>
 <translation id="4918086044614829423">同意する</translation>
 <translation id="4918844574251943176">画像をコピーしました</translation>
+<translation id="4919431996536326528">すべてのデバイスで同じリーディング リストなどを使用するには、Chromium にログインしてください</translation>
 <translation id="4943838377383847465">Chromium はバックグラウンド モードです。</translation>
 <translation id="494490797786467921">クリックすると、Chromium のログイン ダイアログを閉じます</translation>
 <translation id="4950660488495335294">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。友達や家族のプロフィールを作成したり、仕事とプライベートでプロフィールを使い分けたりできます。</translation>
@@ -787,6 +795,7 @@
 <translation id="904366664621834601">このダウンロードは Chromium でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
 <translation id="9053882453960391422">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chromium に変更すると、お馴染みの機能を簡単に利用できるようになります。Chromium はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="9056398481763999048">スマートフォンの Chromium アプリで Google の優れた AI ツールを使用できます</translation>
+<translation id="9057625473949801035"><ph name="DEVICE" /> のパスワードなどを使用するには、Chromium にログインしてください</translation>
 <translation id="9062666675513499497">他の Google サービスにログインしたときに Chromium にログインする</translation>
 <translation id="9078733879136747090">Chromium は自動的に終了しました</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>

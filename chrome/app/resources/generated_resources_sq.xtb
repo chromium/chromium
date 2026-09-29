@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 fjalëkalim u importua te "<ph name="BRAND" />" në këtë pajisje}other{{NUM_PASSWORDS} fjalëkalime u importuan te "<ph name="BRAND" />" në këtë pajisje}}</translation>
 <translation id="1046572983040892965">Dritarja u zhvendos lart dhe në të majtë</translation>
 <translation id="1047431265488717055">Kopjo tekstin e lidhjes</translation>
+<translation id="104751728059674265">Komentet nuk ofrohen për llogarinë tënde. Një i rritur mund të përdorë pajisjen ose profilin e vet për të raportuar një problem për ty.</translation>
 <translation id="1048986595386481879">Caktuar në mënyrë dinamike</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Po merr <ph name="ATTACHMENTS" /> nga <ph name="DEVICE_NAME" />}other{Po merr <ph name="ATTACHMENTS" /> nga <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
@@ -983,6 +984,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1755601632425835748">Madhësia e tekstit</translation>
 <translation id="1756963401828337401">Zgjidh një ekran për të regjistruar</translation>
 <translation id="17584710573359123">Shikoje në "Dyqanin e uebit" të Chrome</translation>
+<translation id="1758845021884209593">Përdor shkurtoren në aplikacionet e sistemit operativ</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> u rilidh me <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Llogaritë e <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugjerimet për blerje</translation>
@@ -1317,6 +1319,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2010501376126504057">Pajisjet e pajtueshme</translation>
 <translation id="2010636492623189611">Zgjedhur.</translation>
 <translation id="2012935757369720523">Fshi skedarin</translation>
+<translation id="2014191284313949173">Mbyll modalitetin "I izoluar"</translation>
 <translation id="2016473077102413275">Veçoritë që kanë nevojë për imazhet nuk do të funksionojnë</translation>
 <translation id="2017334798163366053">Çaktivizo mbledhjen e të dhënave të aktivitetit</translation>
 <translation id="2017770349934140286">Google Play dhe aplikacionet që ke shkarkuar nga Google Play do të fshihen nga ky Chromebook.
@@ -1448,6 +1451,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2121825465123208577">Ndrysho madhësinë</translation>
 <translation id="2122446694240899610">Aftësitë e tua ruhen në "Llogarinë tënde të Google",</translation>
 <translation id="2123766928840368256">Zgjidh një skedar tjetër</translation>
+<translation id="2124153808069020510">Për të fshirë të dhënat, mbylli të gjitha "Ditaret e izoluara"</translation>
 <translation id="2124930039827422115">{1,plural, =1{Vlerësuar me <ph name="AVERAGE_RATING" /> nga një përdorues.}other{Vlerësuar me <ph name="AVERAGE_RATING" /> nga # përdorues.}}</translation>
 <translation id="2125715366913703594">Eksploro shtesat</translation>
 <translation id="2126167708562367080">Sinkronizimi është çaktivizuar nga administratori.</translation>
@@ -1590,6 +1594,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2227179592712503583">Hiq sugjerimin</translation>
 <translation id="222931766245975952">Dosja është e shkurtuar</translation>
 <translation id="2229342031987138128">Titrat</translation>
+<translation id="22294739381015133">Sajtet që viziton nuk ruhen në modalitetin "I izoluar"</translation>
 <translation id="2231351769755997720">Nuk ka asnjë sugjerim të disponueshëm. Provo të bësh pyetjen tënde për këtë faqe.</translation>
 <translation id="2232751457155581899">Sajtet mund të kërkojnë të monitorojnë pozicionin e kamerës</translation>
 <translation id="2233502537820838181">&amp;Më shumë informacion</translation>
@@ -2905,6 +2910,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3213681682237645841">Po shkarkohen zërat në <ph name="LANGUAGE" />...</translation>
 <translation id="3217843140356091325">Të krijohet një shkurtore?</translation>
 <translation id="3220494908385619295">Shfaq krah për krah</translation>
+<translation id="3220541426929880850">Për të fshirë historikun e shfletimit në modalitetin "I izoluar" nga pajisja jote, mbylli të gjitha skedat në modalitetin "I izoluar".</translation>
 <translation id="3220943972464248773">Për të sinkronizuar fjalëkalimet e tua, verifiko që je ti</translation>
 <translation id="3222066309010235055">Interpretuesi paraprak: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Lidhu me <ph name="USB_VM_NAME" /></translation>
@@ -3082,6 +3088,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3355936511340229503">Gabim në lidhje</translation>
 <translation id="335678817537689040">Statike</translation>
 <translation id="3359256513598016054">Kufizimet e politikës së certifikatës</translation>
+<translation id="3359465538772230055">Nuk ka detyra</translation>
 <translation id="3360297538363969800">Printimi dështoi. Kontrollo printerin dhe provo sërish.</translation>
 <translation id="3360306038446926262">Dritaret</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> po ndan <ph name="ATTACHMENTS" /> me ty.}other{<ph name="DEVICE_NAME" /> po ndan <ph name="ATTACHMENTS" /> me ty.}}</translation>
@@ -3403,6 +3410,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3600956933576601730">Duhet të rishikosh dhe të pranosh kushtet për të përdorur këto veçori</translation>
 <translation id="3601374594714740284">Për zëra me cilësi më të lartë, pastro hapësirën në pajisjen tënde</translation>
 <translation id="360180734785106144">Të ofrojë funksione të reja kur të mundësohen</translation>
+<translation id="3601988315287782413">Kjo prek vetëm "Dritaret e izoluara"</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3602495161941872610">Rregullo &amp;problemin e sinkronizimit</translation>
 <translation id="3602894439067790744">Lexo numrat si</translation>
@@ -6103,6 +6111,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5687340364605915800">Sajtet përdorin gjykimin e tyre kur i përgjigjen kësaj kërkese</translation>
 <translation id="5689233503102158537">alt + tasti Backspace</translation>
 <translation id="5689516760719285838">Vendndodhja</translation>
+<translation id="568984110402742489">Komenti nuk mund të dërgohet</translation>
 <translation id="56907980372820799">Lidh të dhënat</translation>
 <translation id="5691772641933328258">Gjurma e gishtit nuk njihet</translation>
 <translation id="5693255400847650006">Mikrofoni në përdorim</translation>
@@ -9217,6 +9226,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8081989000209387414">Të çaktivizohet korrigjimi i ADB-së?</translation>
 <translation id="8082132721957920509">Karta është ruajtur</translation>
 <translation id="8082390128630131497">Çaktivizimi i korrigjimit të ADB-së do ta rivendosë këtë pajisje <ph name="DEVICE_TYPE" /> në cilësimet e fabrikës. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të spastrohen.</translation>
+<translation id="8082737802704584539">Organizata jote ka çaktivizuar ruajtjen e historikut në "Llogarinë tënde të Google"</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
 <translation id="8084417885464859041">Përdor Gemini në mënyrë të sigurt</translation>
 <translation id="8084429490152575036">Cilësimet e APN-së së rrjetit celular</translation>
@@ -9259,6 +9269,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8109991406044913868">Tema e krijuar me IA</translation>
 <translation id="8110393529211831722">Abonimi është instaluar vetëm në këtë pajisje dhe nuk është sinkronizuar me pajisje të tjera të lidhura me llogarinë tënde. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Po shkarkohet lista e kontakteve...</translation>
+<translation id="8110781914702267195">Vizito "Portofolin e Google" për të kontrolluar <ph name="BEGIN_LINK1" />preferencat e të dhënave dhe privatësisë<ph name="END_LINK1" /> ose për të menaxhuar <ph name="BEGIN_LINK2" />mënyrat e pagesës<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />dokumentet dixhitale<ph name="END_LINK3" /> si kartat e besnikërisë</translation>
 <translation id="8114925369073821854">Leja e mikrofonit: <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Kërko miratim nga prindi</translation>
 <translation id="8118276691321086429">"<ph name="PASSWORD_MANAGER_BRAND" />" mban mend se si je i identifikuar dhe të identifikon automatikisht kur është e mundur. Kur është joaktiv, do të të kërkohet gjithmonë konfirmimi.</translation>
@@ -10132,6 +10143,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="878862491037637275">Ky grup skedash është plot</translation>
 <translation id="8791157330927639737">Mëso më shumë rreth përditësimit</translation>
 <translation id="8791534160414513928">Dërgo një kërkesë "Do Not Track" me trafikun e shfletimit</translation>
+<translation id="879230900046110068"><ph name="WINDOW_TITLE" /> (I izoluar)</translation>
 <translation id="8793390639824829328">Sajtet e përdorin këtë veçori për të lëvizur dhe zmadhuar skedat e ndara</translation>
 <translation id="8793895150509408038">Shiko detajet e sajtit për <ph name="SITE" /> nga lista "<ph name="SECTION_HEADER" />"</translation>
 <translation id="879413103056696865">Kur zona e qasjes për internet është aktive, telefoni yt <ph name="PHONE_NAME" /> do të:</translation>
@@ -10240,6 +10252,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8874341931345877644">Transmeto te një pajisje:</translation>
 <translation id="8874647982044395866">Organik</translation>
 <translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
+<translation id="8874864294955002500">Komentet nuk ofrohen për llogarinë tënde. Administratori yt i ndërmarrjes mund të përdorë pajisjen ose profilin e vet për të raportuar një problem për ty.</translation>
 <translation id="8875736897340638404">Zgjidh dukshmërinë</translation>
 <translation id="8876307312329369159">Ky cilësim nuk mund të ndryshohet në një sesion demonstrimi.</translation>
 <translation id="8876965259056847565">"<ph name="FEATURE_NAME" />" përdor skanimin përmes Bluetooth-it për të gjetur pajisjet në afërsi.</translation>

@@ -4,6 +4,7 @@
 <translation id="1012241361789814178">Түзеткіш басқа қойындыда кідіртілді. Сол қойындыға ауысу үшін басыңыз.</translation>
 <translation id="1171774979989969504">Электрондық пошта мекенжайын енгізіңіз.</translation>
 <translation id="1178581264944972037">Кідірту</translation>
+<translation id="1254779809141342904">Бұл CAP хабарландыруы XSLT деп аталатын технологияны пайдаланады. Бұл функция <ph name="REMOVAL_LINK" />. Осы жағдай орын алған кезде, бұл ескерту өңделмеген XML деректері ретінде көрсетіледі. Оны көруді жалғастыруға мүмкіндік беретін <ph name="EXTENSION_LINK" /> рұқсат берілуі мүмкін.</translation>
 <translation id="1306460908038601864">Өшірулі</translation>
 <translation id="1311894908970423688">Қажетті мән: <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Қалыпты</translation>
@@ -26,6 +27,7 @@
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2746543609216772311">Мән <ph name="MINIMUM_DATE_OR_TIME" /> немесе одан кейінірек болуы керек.</translation>
 <translation id="2761667185364618470">Жалғастырғыңыз келсе, осы ұяшықты белгілеңіз.</translation>
+<translation id="2854734116215697908">осы браузерден өшіріліп жатыр</translation>
 <translation id="2908441821576996758">Электрондық пошта мекенжайларының үтірмен бөлінген тізімін енгізіңіз.</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Жарамды мән енгізіңіз. Бұл өріс толық емес немесе күні жарамсыз.</translation>
@@ -60,6 +62,7 @@
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5630795885300617244">10 секунд уақытты өткізіп жіберу үшін солға немесе оңға қарай екі рет түртіңіз</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
+<translation id="5855560023261018690">жақын арада осы браузерден өшіріледі</translation>
 <translation id="5868587040512539609">Бейнетректер</translation>
 <translation id="588258955323874662">Толық экран</translation>
 <translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> құрылғысына трансляциялануда</translation>
@@ -69,6 +72,7 @@
 <translation id="6310801910862476708">"Суреттегі сурет" режимінен шығу</translation>
 <translation id="6484738902856791350">Автоформаттау</translation>
 <translation id="6550675742724504774">Опциялар</translation>
+<translation id="65574987622079584">браузер кеңейтімін орнатуға</translation>
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6661136971638885481">№ <ph name="TRACK_NUMBER" /> аудиотрек</translation>
 <translation id="668171684555832681">Басқа…</translation>
@@ -91,6 +95,7 @@
 <translation id="8117451130807776954">Осы апта</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">жжжж</translation>
+<translation id="8243989288843872594">Бұл ескертуді ешқашан көрсетпеу</translation>
 <translation id="8284326494547611709">Титрлер</translation>
 <translation id="835897206747267392">Жарамсыз мән.</translation>
 <translation id="839593075537728968">Мән <ph name="MINIMUM_TIME" /> және <ph name="MAXIMUM_TIME" /> аралығында болуы қажет</translation>
@@ -99,6 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Жаңа жолға көшіру</translation>
 <translation id="8750798805984357768">Осы параметрлердің біреуін таңдаңыз.</translation>
+<translation id="8753001114009816390">Бұл сайт XSLT технологиясын пайдаланады. Бұл функция <ph name="REMOVAL_LINK" />. Осы жағдай орын алған кезде, бұл бет енді дұрыс көрсетілмеуі мүмкін. Оны көруді жалғастыруға мүмкіндік беретін <ph name="EXTENSION_LINK" /> рұқсат берілуі мүмкін. Болмаса қосымша ақпарат алу үшін сайттың техникалық маманына хабарласуыңыз керек.</translation>
 <translation id="8845239796550121995">Қазір теледидарға трансляциялануда</translation>
 <translation id="8875657656876809964">Бейне ойнату қатесі</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>

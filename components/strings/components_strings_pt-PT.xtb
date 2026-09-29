@@ -507,7 +507,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem as suas ideias</translation>
 <translation id="1839551713262164453">A validação dos valores da política falhou devido a erros.</translation>
-<translation id="184153295865602321">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando pagar com o preenchimento automático</translation>
+<translation id="184153295865602321">Para proteção adicional, use sempre a sua impressão digital, cara ou outro bloqueio de ecrã quando pagar com o preenchimento automático</translation>
 <translation id="1842969606798536927">Pagar</translation>
 <translation id="184517536440397176">Os teus pais ou tutor têm de indicar que podes visitar este Website. Antes de pedires, temos de validar a tua identidade.</translation>
 <translation id="1846432862466000825">Plástico (de arquivo)</translation>
@@ -740,6 +740,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2236949375853147973">A minha atividade</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
+<translation id="223921069122391343">A sua oferta guardada vai estar disponível no pagamento através do preenchimento automático. <ph name="BEGIN_LINK" />Ver Termos de Utilização<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Adicione o número de correção</translation>
 <translation id="2241693394036365668">É transferido um ficheiro</translation>
 <translation id="2242389809734574253">"Guardar IBAN" fechado.</translation>
@@ -986,7 +987,6 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2628025184666666186">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" /> porque está a usar um certificado de segurança que não é considerado fidedigno pelo Chrome nem pela configuração do sistema para a encriptação do tráfego Web. Isto pode ser o resultado de uma configuração incorreta ou de um atacante que intercetou a sua ligação.</translation>
 <translation id="2628224721443278970">Iniciar sessão no Microsoft OneDrive</translation>
 <translation id="2631059741268498165">O seu administrador localizou este dispositivo enquanto estava desativado. Foi reativado e está pronto a ser usado.</translation>
-<translation id="2631387782019878060">Código de validação: <ph name="OTP" /></translation>
 <translation id="2634124572758952069">Não foi possível encontrar o endereço IP do servidor de <ph name="HOST_NAME" />.</translation>
 <translation id="2635276683026132559">Assinatura</translation>
 <translation id="2638070510549214427">Marcar como seguro</translation>
@@ -1371,6 +1371,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
 <translation id="3310946375819654151">O Chrome está a tentar preencher as suas informações confidenciais em <ph name="APP_NAME" />.</translation>
 <translation id="3312952471765023168">Carregamento feito com êxito</translation>
+<translation id="3323135197619890621">Ative o preenchimento automático para facilitar as compras</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3325568918769906282">por ordem descendente</translation>
 <translation id="3325662270238538525">Acesso e modificações recentes de ficheiros, incluindo nomes de ficheiros, pegadas digitais do conteúdo de ficheiros, origem das transferências e metadados</translation>
@@ -1596,6 +1597,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3704162925118123524">A rede que está a utilizar pode exigir que visite a respetivapágina de início de sessão.</translation>
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
+<translation id="3708927069677086144">A sua organização requer que inicie sessão no Chrome</translation>
 <translation id="3709599264800900598">Texto que copiou</translation>
 <translation id="3711223220609269738">Novo separador isolado</translation>
 <translation id="3711430313228789376">O navegador Chrome está a tentar mostrar palavras-passe</translation>
@@ -1733,6 +1735,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3928806096717999469">Editar, abre uma nova janela</translation>
 <translation id="393417216277380082">Sensores de movimento e de luz</translation>
 <translation id="3937640725563832867">Nome alternativo do emissor do certificado</translation>
+<translation id="3938243129430544357">Faça pagamentos em segurança com o preenchimento automático</translation>
 <translation id="3939773374150895049">Quer utilizar o WebAuthn em vez do CVC?</translation>
 <translation id="3941630233824954464">Ative a reautenticação obrigatória</translation>
 <translation id="3942048175062210325">Tente abrir os ficheiros novamente</translation>
@@ -2057,6 +2060,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4424024547088906515">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o Chrome não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="4425137053900958839">Aproveite toda a comodidade e segurança com que pode contar no Pix</translation>
 <translation id="443121186588148776">Porta de série</translation>
+<translation id="4431928532022419942">Remover do Chrome?</translation>
 <translation id="4432688616882109544"><ph name="HOST_NAME" /> não aceitou o seu certificado de início de sessão ou este pode não ter sido fornecido.</translation>
 <translation id="4432792777822557199">As páginas em <ph name="SOURCE_LANGUAGE" /> serão traduzidas para <ph name="TARGET_LANGUAGE" /> a partir de agora</translation>
 <translation id="4433642172056592619">Política ignorada porque o utilizador não está afiliado à gestão da máquina ou a máquina não é gerida.</translation>
@@ -3136,6 +3140,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6263376278284652872">Marcadores do <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
+<translation id="6264507470395196064">Gateway seguro</translation>
 <translation id="6264636978858465832">O Gestor de Palavras-passe precisa de mais acesso</translation>
 <translation id="6265794661083428563">Copie o valor da política <ph name="POLICY_NAME" /></translation>
 <translation id="6271264012613848937">O seu acesso ao site <ph name="URL" /> foi bloqueado devido às políticas da sua organização. Se não era esta a ação esperada, contacte o seu administrador.</translation>
@@ -3345,6 +3350,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6630043285902923878">A procurar dispositivos USB…</translation>
 <translation id="6630388727238334626">Botão Gerir definições do Chrome; ative para aceder às definições do Chrome</translation>
 <translation id="663260587451432563">JIS B4</translation>
+<translation id="6634706903707808689">Para visitar o site seguinte, a sua organização requer que inicie sessão com a sua Conta Google gerida.</translation>
 <translation id="6635900375070654124">um dispositivo autenticador</translation>
 <translation id="6641852376826221947">Confirme a compra</translation>
 <translation id="6643016212128521049">Limpar</translation>
@@ -3534,6 +3540,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6957153644870901611">Ative o preenchimento automático melhorado para preencher automaticamente mais campos</translation>
 <translation id="6957887021205513506">O certificado do servidor parece ser uma falsificação.</translation>
 <translation id="6958564499836457428">Faça a gestão das definições de privacidade do Google na sua Conta Google</translation>
+<translation id="6961161369573226336">O Gestor de Palavras-passe da Google pode extrair estes códigos do seu Gmail <ph name="EMAIL" />. Pode mudar de ideias e <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Pode solicitar a utilização de tipos de letra instalados no seu dispositivo</translation>
 <translation id="6962858948849099922">A movimentação excedeu o tempo limite</translation>
 <translation id="6963520811470373926">A substituir</translation>
@@ -3611,6 +3618,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="70846382339153529">Texto OpenDocument</translation>
 <translation id="7086090958708083563">Carregamento solicitado pelo utilizador</translation>
 <translation id="7090698782953528257">Ajuda-me a representar graficamente uma função para visualizar a equação matemática e ver a forma da curva</translation>
+<translation id="7092087596499105699">O seu administrador configurou o conetor do gateway seguro para proteger o acesso às apps Web privadas da sua organização. Pode usar dados do seu perfil de trabalho para validar o acesso.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para gerir as autorizações e os dados armazenados em sites nas Definições do Chrome.</translation>
 <translation id="709604659664854823">Encontra reservas de última hora em restaurantes próximos para hoje à noite</translation>
 <translation id="7096341143397839437">Email: <ph name="EMAIL" />.</translation>
@@ -3769,7 +3777,7 @@ Detalhes adicionais:
 <translation id="7372973238305370288">resultado da pesquisa</translation>
 <translation id="7374461526650987610">Processadores de protocolos</translation>
 <translation id="7374733840632556089">Este problema ocorre devido a um certificado que o utilizador ou outra pessoa instalou no dispositivo. Sabe-se que o certificado é usado para monitorizar e intercetar redes e não é considerado fidedigno pelo Chrome. Embora existam alguns casos legítimos para a monitorização, como numa rede escolar ou da empresa, o Chrome quer certificar-se de que o utilizador tem conhecimento da situação, mesmo que não seja possível interrompê-la. A monitorização pode ocorrer em qualquer navegador ou aplicação que aceda à Web.</translation>
-<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, rosto ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
+<translation id="73750335798090836">Para proteção adicional, use sempre a sua impressão digital, cara ou outro bloqueio de ecrã quando usar informações confidenciais, como documentos de viagem e de identidade</translation>
 <translation id="7375532151824574023">{NUM_COOKIES,plural, =0{Nenhum site permitido}=1{1 site permitido}other{# sites permitidos}}</translation>
 <translation id="7375818412732305729">É anexado um ficheiro</translation>
 <translation id="7376031331622621328">Secção inferior do comércio</translation>
@@ -4865,6 +4873,7 @@ Detalhes adicionais:
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> membros aderiram ao grupo de separadores "<ph name="GROUP_NAME" />"</translation>
 <translation id="949314938206378263">Pediste para visitar este site. O teu adulto responsável pode responder no Family Link.</translation>
 <translation id="949484466204182817">Adicione um número de reparação à Carteira do Google</translation>
+<translation id="950533895669718124">saber mais sobre esta funcionalidade nas definições</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gestor de Palavras-passe da Google</translation>
 <translation id="952165179818196872">Adicione o fornecedor <ph name="PROVIDER" /> para fazer pagamentos sem mudar de app</translation>

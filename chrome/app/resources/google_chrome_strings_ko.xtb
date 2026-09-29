@@ -30,6 +30,7 @@
 <translation id="1194807384646768652">일반적으로 다운로드하지 않는 파일 형식이며 위험할 가능성이 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="1197860368385086056">다음번에 <ph name="DEVICE_TYPE" />에서 Chrome을 열면 가격 추적 알림을 사용 설정하라는 메시지가 표시됩니다.</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
+<translation id="1226003169284463347">모든 기기에서 북마크 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1289911795790071537">Chrome으로 검색 열기</translation>
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@
 <translation id="2096213354152647998">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION" /> 권한을 삭제했습니다.</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="2108778574543343055">앱에서 백그라운드 실행 중인 Chrome 사용 중지</translation>
+<translation id="2111985952714409792">모든 기기에서 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
@@ -148,6 +150,7 @@
 <translation id="2307973900865360088">도크에 고정</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="2345992953227471816">Chrome에서 다음 확장 프로그램에 멀웨어가 포함된 것을 발견했습니다.</translation>
+<translation id="2358140144860869442">모든 기기에서 읽기 목록 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2403703063067034158">시작 오류: 현재 다른 설정 인스턴스가 실행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{하나 이상의 Chrome 확장 프로그램에서 HID 기기 1개에 액세스했습니다.}=1{하나 이상의 Chrome 확장 프로그램에서 HID 기기 1개에 액세스하고 있습니다.}other{하나 이상의 Chrome 확장 프로그램에서 HID 기기 #개에 액세스하고 있습니다.}}</translation>
@@ -176,6 +179,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
 <translation id="2652691236519827073">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
+<translation id="2661616016316841783"><ph name="DEVICE" />에서 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2665296953892887393">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="2668094785979141847">클릭하여 Google 렌즈 종료</translation>
 <translation id="2674238339205910678">Google 계정의 로그인 정보가 오래되어 ChromeOS Flex에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
@@ -247,6 +251,7 @@
 <translation id="3242486428260808857"><ph name="DEVICE_TYPE" />에서 Chrome 앱을 사용하여 온라인 쇼핑을 최대한 활용하세요</translation>
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
 <translation id="3249558306861350254">Windows 설정에서 <ph name="BEGIN_BOLD" />기본으로 설정<ph name="END_BOLD" />을 클릭합니다.</translation>
+<translation id="3258706751219502154"><ph name="DEVICE" />에서 북마크 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="3259748324892322072">Chrome 앱 다운로드</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
@@ -345,6 +350,7 @@
 <translation id="4280647692742956593">이동 중에 새 탭 그룹을 열거나 만들려면 휴대전화에 Chrome을 다운로드하세요.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="430327780270213103">확장 프로그램이 Chrome 툴바에 액세스 요청을 표시하도록 허용</translation>
+<translation id="4312908933392839680">모든 기기에서 저장된 정보 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
 <translation id="4329315893554541805">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chrome을 포함하세요</translation>
@@ -514,7 +520,9 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6046028983725193307">시스템 오디오를 공유하려면 시스템 설정을 열고 Chrome에 대해 '시스템 오디오 녹음만'을 허용하세요. 그런 다음 Chrome을 다시 시작해야 합니다.</translation>
 <translation id="6069027071882229820">이미지로 복사</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터 암호화</translation>
+<translation id="6071642418303142778"><ph name="DEVICE" />에서 비밀번호 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="6075300983329039771">조직(<ph name="MANAGER" />)의 요청에 따라 Chrome에 로그인해야 합니다</translation>
+<translation id="6077365059401096066"><ph name="DEVICE" />에서 읽기 목록 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
 <translation id="6116004140911290070">Chrome에서 스킬 사용 설정</translation>
 <translation id="6116252277240876590">Chrome에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>
@@ -712,6 +720,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7804947029129221742">Chrome 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7827099906024714326">일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chrome에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
+<translation id="7829850924999627855"><ph name="DEVICE" />에서 저장된 정보 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="7832314606810669113">모든 기기에서 북마크 등을 사용하려면 Chrome에 로그인하세요. 로그인하면 이 북마크가 Google 계정에 저장됩니다.</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
 <translation id="7847170235260850604">Windows 시작 시 Chrome 실행</translation>

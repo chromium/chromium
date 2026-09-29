@@ -75,6 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{1 password imported to <ph name="BRAND" /> on this device}other{{NUM_PASSWORDS} passwords imported to <ph name="BRAND" /> on this device}}</translation>
 <translation id="1046572983040892965">Window moved upwards and to the left</translation>
 <translation id="1047431265488717055">Copy Link Te&amp;xt</translation>
+<translation id="104751728059674265">Feedback isn't available for your account. An adult can use their device or profile to report an issue for you.</translation>
 <translation id="1048986595386481879">Dynamically allocated</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Receiving <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incognito</translation>
@@ -469,6 +470,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1341701348342335220">Nicely done!</translation>
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
+<translation id="1344216785734288669">Apple Passwords</translation>
 <translation id="1346630054604077329">Confirm and restart</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1347512539447549782">Linux storage</translation>
@@ -991,6 +993,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1755601632425835748">Text size</translation>
 <translation id="1756963401828337401">Choose a screen to capture</translation>
 <translation id="17584710573359123">View in Chrome Web Store</translation>
+<translation id="1758845021884209593">Use shortcut across OS apps</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remapped to <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />'s accounts</translation>
 <translation id="176272781006230109">shopping suggestions</translation>
@@ -3098,6 +3101,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3355936511340229503">Connection error</translation>
 <translation id="335678817537689040">Static</translation>
 <translation id="3359256513598016054">Certificate Policy Constraints</translation>
+<translation id="3359465538772230055">No tasks</translation>
 <translation id="3360297538363969800">Printing failed. Please check your printer and try again.</translation>
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}other{<ph name="DEVICE_NAME" /> is sharing <ph name="ATTACHMENTS" /> with you.}}</translation>
@@ -4771,6 +4775,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4631637535315947773">Shortcuts for your most visited sites were removed because you haven't used them recently</translation>
 <translation id="4631955550884380853">Focused voice</translation>
 <translation id="4632655012900268062">Customise cards</translation>
+<translation id="4634719521235795064">Gemini can use Google Password Manager to sign in for you. <ph name="BEGIN_LINK" />Learn how Gemini handles your data<ph name="END_LINK" /></translation>
 <translation id="4635072447747973225">Uninstall Crostini</translation>
 <translation id="4635398712689569051"><ph name="PAGE_NAME" /> is not available to Guest users.</translation>
 <translation id="4635975718422788482">{FILE_LIMIT,plural, =1{Upload 1 image to use with your question}other{Upload up to # images to use with your question}}</translation>
@@ -6082,6 +6087,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5641715878999557094">'<ph name="EXTENSION_NAME" />' has changed what page is shown when you click the Home button.</translation>
 <translation id="5643191124441701136">Your security code is on the front of your card</translation>
 <translation id="5643321261065707929">Metered network</translation>
+<translation id="5645369002069651355">Verifying email</translation>
 <translation id="5646376287012673985">Location</translation>
 <translation id="5646558797914161501">Businessman</translation>
 <translation id="564670806635578888">Search Google for '<ph name="SEARCH_TERMS" />'</translation>
@@ -6120,6 +6126,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5687340364605915800">Sites use their discretion when responding to this request</translation>
 <translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Location</translation>
+<translation id="568984110402742489">Can't send feedback</translation>
 <translation id="56907980372820799">Link data</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
 <translation id="5693255400847650006">Microphone in use</translation>
@@ -8497,6 +8504,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7517292544534877198">Use Google's default encryption for the passwords in your Google Account</translation>
 <translation id="7517959947270534934">Your family member can't receive passwords right now. Ask them to update Chrome and sync their passwords.</translation>
 <translation id="7518079994230200553">This option is unavailable right now.</translation>
+<translation id="7519506357537394422">Allow Gemini to sign in to <ph name="DOMAIN" /> for you?</translation>
 <translation id="752021853309481824">To get your saved info and more on all your devices, sign in as <ph name="EMAIL" /></translation>
 <translation id="7520766081042531487">Incognito portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Show shortcuts</translation>
@@ -9089,6 +9097,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7978450511781612192">This will sign you out of your Google accounts. Your bookmarks, history, passwords and more will no longer be synced.</translation>
 <translation id="7980066177668669492">Base64-encoded ASCII, multiple certificates</translation>
 <translation id="7981410461060625406">Use a saved passkey for <ph name="APP_NAME" /></translation>
+<translation id="7981445433812028278">Couldn't verify your email</translation>
 <translation id="7981662863948574132">Show device EID and QR code pop-up</translation>
 <translation id="7982578888426609524">Latest updates to this group</translation>
 <translation id="7982789257301363584">Network</translation>
@@ -9275,6 +9284,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8109991406044913868">AI-created theme</translation>
 <translation id="8110393529211831722">Subscription is installed on this device only and not synced with other devices under your account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">Downloading contact list…</translation>
+<translation id="8110781914702267195">Visit Google Wallet to control your <ph name="BEGIN_LINK1" />data and privacy preferences<ph name="END_LINK1" /> or manage <ph name="BEGIN_LINK2" />payment methods<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />passes<ph name="END_LINK3" /> like loyalty cards</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> microphone permission</translation>
 <translation id="8116497846156149">Ask parent for approval</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> remembers how you signed in and automatically signs you in when possible. When off, you'll be asked for confirmation every time.</translation>
@@ -10257,6 +10267,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8874341931345877644">Cast to a device:</translation>
 <translation id="8874647982044395866">Organic</translation>
 <translation id="8874790741333031443">Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
+<translation id="8874864294955002500">Feedback isn't available for your account. Your enterprise administrator can use their device or profile to report an issue for you.</translation>
 <translation id="8875736897340638404">Choose your visibility</translation>
 <translation id="8876307312329369159">This setting can't be changed in a demo session.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> uses Bluetooth scanning to find nearby devices.</translation>
