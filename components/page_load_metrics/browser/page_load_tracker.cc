@@ -1171,6 +1171,14 @@ void PageLoadTracker::OnMainFrameAdRectsChanged(
   }
 }
 
+void PageLoadTracker::OnSubresourceLoadMetricsObserved(
+    content::RenderFrameHost* rfh,
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {
+  for (const auto& observer : observers_) {
+    observer->OnSubresourceLoadMetricsObserved(rfh, subresource_load_metrics);
+  }
+}
+
 content::WebContents* PageLoadTracker::GetWebContents() const {
   return web_contents_;
 }

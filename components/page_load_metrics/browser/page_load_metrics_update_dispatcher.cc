@@ -512,6 +512,16 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
         render_data->new_layout_shifts);
   }
 
+  if (subresource_load_metrics) {
+    auto [it, inserted] = subresource_load_metrics_by_frame_.try_emplace(
+        render_frame_host->GetFrameTreeNodeId(), *subresource_load_metrics);
+    if (inserted || it->second != *subresource_load_metrics) {
+      it->second = *subresource_load_metrics;
+      client_->OnSubresourceLoadMetricsObserved(render_frame_host,
+                                                *subresource_load_metrics);
+    }
+  }
+
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
 }
 
@@ -550,6 +560,8 @@ void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
   // previously committed navigation.
   subframe_navigation_start_offset_.erase(
       navigation_handle->GetFrameTreeNodeId());
+  subresource_load_metrics_by_frame_.erase(
+      navigation_handle->GetFrameTreeNodeId());
 
   if (navigation_start_ > navigation_handle->NavigationStart()) {
     RecordInternalError(ERR_SUBFRAME_NAVIGATION_START_BEFORE_MAIN_FRAME);
@@ -564,6 +576,7 @@ void PageLoadMetricsUpdateDispatcher::DidFinishSubFrameNavigation(
 void PageLoadMetricsUpdateDispatcher::OnSubFrameDeleted(
     content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
+  subresource_load_metrics_by_frame_.erase(frame_tree_node_id);
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdateSubFrameTiming(

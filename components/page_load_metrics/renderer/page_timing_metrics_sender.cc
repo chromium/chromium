@@ -108,8 +108,17 @@ void PageTimingMetricsSender::DidObserveSubresourceLoad(
       *subresource_load_metrics_ == subresource_load_metrics) {
     return;
   }
+  // Send urgently when local font cache subresources are loaded so that
+  // prewarmed pages flush the metric before prerender cancellation.
+  const bool send_urgently =
+      subresource_load_metrics
+          .number_of_subresource_loads_from_local_font_cache >
+      (subresource_load_metrics_
+           ? subresource_load_metrics_
+                 ->number_of_subresource_loads_from_local_font_cache
+           : 0);
   subresource_load_metrics_ = subresource_load_metrics;
-  EnsureSendTimer();
+  EnsureSendTimer(send_urgently);
 }
 
 void PageTimingMetricsSender::DidObserveNewFeatureUsage(

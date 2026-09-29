@@ -325,6 +325,13 @@ void PageLoadMetricsForwardObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<mojom::ResourceDataUpdatePtr>& resources) {}
 
+// OnSubresourceLoadMetricsObserved is called through
+// PageLoadTracker::UpdateMetrics, which already forwards raw UpdateMetrics
+// calls directly to parent_tracker_. So, we don't need to forward here.
+void PageLoadMetricsForwardObserver::OnSubresourceLoadMetricsObserved(
+    content::RenderFrameHost* rfh,
+    const blink::SubresourceLoadMetrics& subresource_load_metrics) {}
+
 void PageLoadMetricsForwardObserver::MediaStartedPlaying(
     const content::WebContentsObserver::MediaPlayerInfo& video_type,
     content::RenderFrameHost* render_frame_host) {

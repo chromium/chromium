@@ -21,6 +21,10 @@ struct SubresourceLoadMetrics {
   // called `respondWith`. i.e. no fallback to network.
   uint32_t number_of_subresource_loads_handled_by_service_worker = 0;
 
+  // The number of subresource loads resolved from the local font cache in the
+  // frame (via @font-face src: local() or FontFace API).
+  uint32_t number_of_subresource_loads_from_local_font_cache = 0;
+
   std::optional<ServiceWorkerSubresourceLoadMetrics>
       service_worker_subresource_load_metrics;
 
@@ -29,6 +33,8 @@ struct SubresourceLoadMetrics {
                other.number_of_subresources_loaded &&
            number_of_subresource_loads_handled_by_service_worker ==
                other.number_of_subresource_loads_handled_by_service_worker &&
+           number_of_subresource_loads_from_local_font_cache ==
+               other.number_of_subresource_loads_from_local_font_cache &&
            service_worker_subresource_load_metrics ==
                other.service_worker_subresource_load_metrics;
   }

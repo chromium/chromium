@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -57,6 +58,10 @@ class CORE_EXPORT CSSFontFaceSource
   // Allows for LocalFontFaceSource to operate in two modes: synchronous and
   // asynchronously.
   virtual bool IsLocalNonBlocking() const { return false; }
+  // Returns whether this source represents a local font (i.e. src: local()).
+  virtual bool IsLocalFont() const { return false; }
+  // Returns the font name if this source represents a local font.
+  virtual const AtomicString& GetLocalFontName() const { return g_null_atom; }
   virtual bool IsLoading() const { return false; }
   virtual bool IsLoaded() const { return true; }
   virtual bool IsValid() const { return true; }

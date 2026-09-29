@@ -1270,6 +1270,16 @@ void ResourceFetcher::RemovePreload(Resource* resource) {
   }
 }
 
+void ResourceFetcher::DidLoadResourceFromFontCache(
+    const AtomicString& font_name) {
+  if (font_name.empty() ||
+      !loaded_local_fonts_.insert(font_name).is_new_entry) {
+    return;
+  }
+  ++subresource_load_metrics_.number_of_subresource_loads_from_local_font_cache;
+  context_->UpdateSubresourceLoadMetrics(subresource_load_metrics_);
+}
+
 std::optional<ResourceRequestBlockedReason>
 ResourceFetcher::UpdateRequestForTransparentPlaceholderImage(
     FetchParameters& params) {

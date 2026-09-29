@@ -340,6 +340,10 @@ struct SubresourceLoadMetrics {
   // i.e. `respondWith` was called.
   uint32 number_of_subresource_loads_handled_by_service_worker;
 
+  // Number of subresource loads resolved from the local font cache in the
+  // frame (via @font-face src: local() or FontFace API).
+  uint32 number_of_subresource_loads_from_local_font_cache;
+
   // Metrics for service workers.
   ServiceWorkerSubresourceLoadMetrics? service_worker_subresource_load_metrics;
 };

@@ -106,6 +106,13 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateTimingAndFontLoadingMetricsUpdate(
       const mojom::PageLoadTiming& timing,
       mojom::FontLoadingMetricsPtr font_loading_metrics);
+  // TODO(crbug.com/454263659): Used by observer unit tests in downstream CLs
+  // (e.g. GWSPrewarmPageLoadMetricsObserverTest in crrev.com/c/8403365).
+  void SimulateSubresourceLoadMetricsUpdate(
+      const blink::SubresourceLoadMetrics& subresource_load_metrics);
+  void SimulateSubresourceLoadMetricsUpdate(
+      const blink::SubresourceLoadMetrics& subresource_load_metrics,
+      content::RenderFrameHost* rfh);
   void SimulateFeaturesUpdate(
       const std::vector<blink::UseCounterFeature>& new_features);
   void SimulateResourceDataUseUpdate(

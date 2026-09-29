@@ -35,6 +35,8 @@ class LocalFontFaceSource final : public CSSFontFaceSource,
   // behaving similar to a RemoteFontFaceSource. This is needed on Windows 7 and
   // 8 where the font lookup map needs to be built first.
   bool IsLocalNonBlocking() const override;
+  bool IsLocalFont() const override { return true; }
+  const AtomicString& GetLocalFontName() const override { return font_name_; }
   bool IsLocalFontAvailable(const FontDescription&) const override;
   bool IsLoaded() const override;
   bool IsLoading() const override;

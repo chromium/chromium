@@ -36,12 +36,14 @@
 #include "third_party/blink/renderer/core/css/font_face_set_worker.h"
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 #include "third_party/blink/renderer/core/css/remote_font_face_source.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
 
@@ -276,13 +278,30 @@ void CSSFontFace::Load(const FontDescription& font_description) {
 
 void CSSFontFace::SetLoadStatus(FontFace::LoadStatusType new_status) {
   DCHECK(font_face_);
+  if (LoadStatus() == new_status) {
+    return;
+  }
   if (new_status == FontFace::kError) {
     font_face_->SetError();
   } else {
     font_face_->SetLoadStatus(new_status);
   }
 
-  if (segmented_font_faces_.empty() || !font_face_->GetExecutionContext()) {
+  if (!font_face_->GetExecutionContext()) {
+    return;
+  }
+
+  if (new_status == FontFace::kLoaded && FrontSource() &&
+      FrontSource()->IsLocalFont()) {
+    if (Document* document = font_face_->GetDocument()) {
+      if (ResourceFetcher* fetcher = document->Fetcher()) {
+        fetcher->DidLoadResourceFromFontCache(
+            FrontSource()->GetLocalFontName());
+      }
+    }
+  }
+
+  if (segmented_font_faces_.empty()) {
     return;
   }
 

@@ -184,6 +184,9 @@ class AssertPageLoadMetricsObserver final
       content::RenderFrameHost* rfh,
       const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
           resources) override {}
+  void OnSubresourceLoadMetricsObserved(
+      content::RenderFrameHost* rfh,
+      const blink::SubresourceLoadMetrics& subresource_load_metrics) override {}
   void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
       content::RenderFrameHost* render_frame_host) override {}

@@ -163,6 +163,9 @@ class PageLoadMetricsUpdateDispatcher {
         const gfx::Rect& main_frame_viewport_rect) = 0;
     virtual void OnMainFrameAdRectsChanged(
         const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) = 0;
+    virtual void OnSubresourceLoadMetricsObserved(
+        content::RenderFrameHost* rfh,
+        const blink::SubresourceLoadMetrics& subresource_load_metrics) = 0;
   };
 
   // The |client| instance must outlive this object.
@@ -370,6 +373,11 @@ class PageLoadMetricsUpdateDispatcher {
   // frame.
   std::map<content::FrameTreeNodeId, base::TimeDelta>
       subframe_navigation_start_offset_;
+
+  // SubresourceLoadMetrics per frame to ensure observers are only notified when
+  // metrics are newly observed or updated.
+  std::map<content::FrameTreeNodeId, blink::SubresourceLoadMetrics>
+      subresource_load_metrics_by_frame_;
 
   // Whether we have seen an input or scroll event in any frame. This comes to
   // us via PaintTimingDetector::OnInputOrScroll, which triggers on user scrolls

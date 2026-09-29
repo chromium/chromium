@@ -248,6 +248,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       const gfx::Rect& main_frame_viewport_rect) override;
   void OnMainFrameAdRectsChanged(
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
+  void OnSubresourceLoadMetricsObserved(
+      content::RenderFrameHost* rfh,
+      const blink::SubresourceLoadMetrics& subresource_load_metrics) override;
 
   // PageLoadMetricsObserverDelegate implementation:
   content::WebContents* GetWebContents() const override;

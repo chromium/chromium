@@ -16,6 +16,8 @@ bool StructTraits<page_load_metrics::mojom::SubresourceLoadMetricsDataView,
   out->number_of_subresources_loaded = data.number_of_subresources_loaded();
   out->number_of_subresource_loads_handled_by_service_worker =
       data.number_of_subresource_loads_handled_by_service_worker();
+  out->number_of_subresource_loads_from_local_font_cache =
+      data.number_of_subresource_loads_from_local_font_cache();
   return data.ReadServiceWorkerSubresourceLoadMetrics(
       &out->service_worker_subresource_load_metrics);
 }

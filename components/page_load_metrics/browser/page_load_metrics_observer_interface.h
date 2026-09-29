@@ -500,6 +500,12 @@ class PageLoadMetricsObserverInterface {
       content::RenderFrameHost* rfh,
       const std::vector<mojom::ResourceDataUpdatePtr>& resources) = 0;
 
+  // Invoked when subresource load metrics are updated for a given
+  // RenderFrameHost.
+  virtual void OnSubresourceLoadMetricsObserved(
+      content::RenderFrameHost* rfh,
+      const blink::SubresourceLoadMetrics& subresource_load_metrics) = 0;
+
   // Invoked when a media element starts playing.
   virtual void MediaStartedPlaying(
       const content::WebContentsObserver::MediaPlayerInfo& video_type,
