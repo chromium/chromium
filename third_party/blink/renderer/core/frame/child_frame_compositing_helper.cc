@@ -44,6 +44,7 @@ void ChildFrameCompositingHelper::ChildFrameGone(float device_scale_factor) {
   crash_ui_layer_->SetIsDrawable(true);
 
   bool is_surface_layer = false;
+  CHECK(child_frame_compositor_);
   child_frame_compositor_->SetCcLayer(crash_ui_layer_, is_surface_layer);
 }
 
@@ -68,6 +69,7 @@ void ChildFrameCompositingHelper::SetSurfaceId(
 
   // TODO(lfg): Investigate if it's possible to propagate the information
   // about the child surface's opacity. https://crbug.com/629851.
+  CHECK(child_frame_compositor_);
   child_frame_compositor_->SetCcLayer(surface_layer_,
                                       true /* is_surface_layer */);
 
@@ -102,6 +104,7 @@ void ChildFrameCompositingHelper::PaintHoldingTimerFired() {
 }
 
 void ChildFrameCompositingHelper::UpdateVisibility(bool visible) {
+  CHECK(child_frame_compositor_);
   const scoped_refptr<cc::Layer>& layer = child_frame_compositor_->GetCcLayer();
   if (layer) {
     layer->SetIsDrawable(visible);
@@ -117,6 +120,7 @@ ChildFrameCompositingHelper::PaintContentsToDisplayList() {
   display_list->StartPaint();
   display_list->push<cc::DrawColorOp>(SkColors::kGray, SkBlendMode::kSrc);
 
+  CHECK(child_frame_compositor_);
   SkBitmap* sad_bitmap = child_frame_compositor_->GetSadPageBitmap();
   if (sad_bitmap) {
     float paint_width = sad_bitmap->width() * device_scale_factor_;

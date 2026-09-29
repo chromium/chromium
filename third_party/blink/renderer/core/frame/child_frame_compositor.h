@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CHILD_FRAME_COMPOSITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CHILD_FRAME_COMPOSITOR_H_
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+
 class SkBitmap;
 
 namespace cc {
@@ -15,7 +17,7 @@ namespace blink {
 
 // A ChildFrameCompositor is an owner of a cc::Layer that embeds a child
 // frame.
-class ChildFrameCompositor {
+class ChildFrameCompositor : public GarbageCollectedMixin {
  public:
   // Get the child frame's cc::Layer.
   virtual const scoped_refptr<cc::Layer>& GetCcLayer() = 0;

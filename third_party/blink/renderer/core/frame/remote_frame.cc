@@ -167,6 +167,7 @@ void RemoteFrame::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(main_frame_receiver_);
   Frame::Trace(visitor);
+  ChildFrameCompositor::Trace(visitor);
 }
 
 void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
