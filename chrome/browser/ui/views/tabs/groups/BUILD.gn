@@ -69,7 +69,6 @@ source_set("impl") {
     "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:tab_ui_helper",

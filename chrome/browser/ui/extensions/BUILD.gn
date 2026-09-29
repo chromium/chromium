@@ -224,7 +224,6 @@ source_set("impl") {
       "//chrome/browser/prefs",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
       "//chrome/browser/ui:singleton_tabs",

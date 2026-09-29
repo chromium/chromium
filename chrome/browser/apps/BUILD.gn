@@ -55,7 +55,6 @@ if (is_chromeos && enable_extensions) {
       "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/browser/serial",
       "//chrome/browser/site_protection",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/hid",
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/views:file_system_access_test_support",

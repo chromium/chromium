@@ -138,7 +138,6 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_element_identifiers",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/test:test_support",

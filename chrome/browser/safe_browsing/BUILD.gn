@@ -1394,7 +1394,6 @@ source_set("browser_tests") {
       "//chrome/browser/ssl:cert_verifier_test_support",
       "//chrome/browser/sync:factories",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/exclusive_access:test_support",

@@ -208,7 +208,6 @@ source_set("browser_tests") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/device_scheduled_reboot",
     "//chrome/browser/ui/ash/system_web_apps",

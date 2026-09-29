@@ -94,7 +94,6 @@ source_set("impl") {
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/tabs:tab_strip",

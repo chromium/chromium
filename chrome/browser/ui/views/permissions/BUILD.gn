@@ -210,7 +210,6 @@ if (toolkit_views) {
       "//chrome/browser/custom_handlers",
       "//chrome/browser/permissions",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/permission_bubble:browser_tests",
       "//chrome/browser/ui/views/frame:browser_view_header",

@@ -141,7 +141,6 @@ source_set("browser_tests") {
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/signin",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",

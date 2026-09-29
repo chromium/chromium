@@ -276,7 +276,6 @@ if (!is_android) {
       "//chrome/browser/new_tab_page",
       "//chrome/browser/search_provider_logos",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/customize_chrome",
       "//chrome/browser/ui/side_panel",

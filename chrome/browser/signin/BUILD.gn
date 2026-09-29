@@ -775,7 +775,6 @@ if (!is_android) {
       ":test_support",
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//chrome/test/base:profile_lifecycle_test_utils",

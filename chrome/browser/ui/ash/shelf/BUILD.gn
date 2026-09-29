@@ -235,7 +235,6 @@ source_set("unit_tests") {
     "//chrome/browser/prefs",
     "//chrome/browser/sync",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/apps",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/session",

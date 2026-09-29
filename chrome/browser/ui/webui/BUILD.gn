@@ -946,7 +946,6 @@ if (!is_android) {
       "//chrome/browser/resource_coordinator",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/webui/tracked_element:browser_tests",

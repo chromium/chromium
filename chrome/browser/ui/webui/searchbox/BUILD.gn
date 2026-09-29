@@ -314,7 +314,6 @@ if (enable_webui_ntp && !is_android) {
       "//chrome/browser/contextual_search",
       "//chrome/browser/signin",
       "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/frame:contents_web_view",

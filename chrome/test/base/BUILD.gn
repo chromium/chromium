@@ -814,7 +814,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile_test_util",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:toolbar_controller_util",
       "//chrome/browser/ui:ui_features",

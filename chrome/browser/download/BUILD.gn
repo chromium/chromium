@@ -296,7 +296,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser/image_decoder",
       "//chrome/browser/policy:path_parser",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:scoped_tabbed_browser_displayer",
@@ -579,7 +578,6 @@ if (!is_android) {
       "//base",
       "//chrome/browser/subresource_filter:test_support",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/web_applications:web_applications_test_support",
