@@ -25,9 +25,42 @@ $../../
 -services/shape_detection/internal/barhopper/
 -testing/iossim/
 -third_party/
++third_party/angle/
 +third_party/blink/
 +third_party/jni_zero/
 +third_party/ipcz/
 +third_party/liburlpattern/
 -tools/
 -v8/
+
+# Support for ANGLE repository:
+# These directories are excluded
+-third_party/angle/build/
+-third_party/angle/samples/
+-third_party/angle/src/third_party/
+-third_party/angle/src/common/third_party/
+-third_party/angle/src/tests/capture_tests/
+-third_party/angle/src/tests/capture_replay_tests/
+-third_party/angle/src/tests/restricted_traces/
+-third_party/angle/testing/
+-third_party/angle/third_party/
+-third_party/angle/tools/
+# These generated files are excluded until templates are updated.
+-third_party/angle/src/common/Float16ToFloat32.cpp
+-third_party/angle/src/common/spirv/spirv_instruction_builder_autogen.cpp
+-third_party/angle/src/common/spirv/spirv_instruction_parser_autogen.cpp
+-third_party/angle/src/compiler/preprocessor/preprocessor_lex_autogen.cpp
+-third_party/angle/src/compiler/preprocessor/preprocessor_tab_autogen.cpp
+-third_party/angle/src/compiler/translator/glslang_lex_autogen.cpp
+-third_party/angle/src/compiler/translator/glslang_tab_autogen.cpp
+-third_party/angle/src/compiler/translator/hlsl/emulated_builtin_functions_hlsl_autogen.cpp
+-third_party/angle/src/libANGLE/renderer/vulkan/vk_internal_shaders_autogen.cpp
+-third_party/angle/src/libGLESv2/egl_stubs_getprocaddress_autogen.cpp
+-third_party/angle/util/autogen/angle_features_autogen.cpp
+-third_party/angle/util/capture/frame_capture_replay_autogen.cpp
+-third_party/angle/util/capture/trace_egl_loader_autogen.cpp
+-third_party/angle/util/capture/trace_gles_loader_autogen.cpp
+-third_party/angle/util/capture/trace_interpreter_autogen.cpp
+-third_party/angle/util/egl_loader_autogen.cpp
+-third_party/angle/util/gles_loader_autogen.cpp
+-third_party/angle/util/windows/wgl_loader_autogen.cpp
