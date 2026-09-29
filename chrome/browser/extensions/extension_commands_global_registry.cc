@@ -118,7 +118,15 @@ ExtensionCommandsGlobalRegistry* ExtensionCommandsGlobalRegistry::Get(
 
 ui::GlobalAcceleratorListener*
 ExtensionCommandsGlobalRegistry::GetGlobalAcceleratorListener() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Global extension commands are not supported on ChromeOS (see also
+  // IsGlobalShortcutEnabled() in extensions_ui.cc). The ChromeOS
+  // GlobalAcceleratorListener only exists for browser features, e.g. the Glic
+  // hotkey, so don't use it for extension commands.
+  return nullptr;
+#else
   return ui::GlobalAcceleratorListener::GetInstance();
+#endif
 }
 
 bool ExtensionCommandsGlobalRegistry::IsRegistered(
