@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class AtMemoryGranularFillItem;
+@class UIView;
 class Browser;
 
 namespace autofill {
@@ -76,5 +77,9 @@ NSString* GetAtMemorySearchResultCellAccessibilityIdentifier(NSString* title);
 // corresponding to `title`.
 NSString* GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(
     NSString* title);
+
+// Performs a crossfade transition animation on `view` while executing
+// `animations`.
+void PerformCrossfadeTransition(UIView* view, void (^animations)(void));
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UTILS_ATMEMORY_UI_UTIL_H_

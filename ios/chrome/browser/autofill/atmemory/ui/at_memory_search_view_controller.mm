@@ -464,8 +464,20 @@ enum class ItemIdentifier {
 }
 
 - (void)setFetchingSubtitle:(NSString*)subtitle {
+  if ([_fetchingSubtitle isEqualToString:subtitle]) {
+    return;
+  }
   _fetchingSubtitle = [subtitle copy];
-  [self updateSnapshotForItemIdentifier:ItemIdentifier::kFetchingItem];
+
+  NSIndexPath* indexPath = [_dataSource
+      indexPathForItemIdentifier:@(static_cast<int>(
+                                     ItemIdentifier::kFetchingItem))];
+  UITableViewCell* cell =
+      indexPath ? [self.tableView cellForRowAtIndexPath:indexPath] : nil;
+  __weak __typeof(self) weakSelf = self;
+  PerformCrossfadeTransition(cell.contentView, ^{
+    [weakSelf updateSnapshotForItemIdentifier:ItemIdentifier::kFetchingItem];
+  });
 }
 
 - (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills {

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/atmemory/ui/at_memory_empty_view.h"
 
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_constants.h"
+#import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -48,7 +49,8 @@ constexpr CGFloat kEmptyViewImageCenterYOffset = -45.0;
 
     [self setUpSubviewsWithImage:image];
     [self setupConstraints];
-    [self updateMessage:message];
+    _messageLabel.text = message;
+    self.viewAccessibilityLabel = message;
   }
   return self;
 }
@@ -56,7 +58,13 @@ constexpr CGFloat kEmptyViewImageCenterYOffset = -45.0;
 #pragma mark - Public
 
 - (void)updateMessage:(NSString*)message {
-  _messageLabel.text = message;
+  if ([_messageLabel.text isEqualToString:message]) {
+    return;
+  }
+  UILabel* messageLabel = _messageLabel;
+  PerformCrossfadeTransition(messageLabel, ^{
+    messageLabel.text = message;
+  });
   // Route through the property setter so `viewAccessibilityLabel` remains the
   // only writer of the label's accessibility label.
   self.viewAccessibilityLabel = message;

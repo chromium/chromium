@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/atmemory/utils/atmemory_ui_util.h"
 
+#import <UIKit/UIKit.h>
+
 #import <variant>
 
 #import "base/strings/sys_string_conversions.h"
@@ -15,6 +17,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
+
+namespace {
+// Duration of the crossfade transition when updating subtitle messages.
+constexpr NSTimeInterval kMessageCrossfadeDuration = 0.15;
+}  // namespace
 
 using autofill::AutofillClientIOS;
 using autofill::Suggestion;
@@ -120,4 +127,19 @@ NSString* GetAtMemorySearchResultInfoButtonAccessibilityIdentifier(
       stringWithFormat:
           @"%@%@", kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix,
           title];
+}
+
+void PerformCrossfadeTransition(UIView* view, void (^animations)(void)) {
+  if (!animations) {
+    return;
+  }
+  if (!view) {
+    animations();
+    return;
+  }
+  [UIView transitionWithView:view
+                    duration:kMessageCrossfadeDuration
+                     options:UIViewAnimationOptionTransitionCrossDissolve
+                  animations:animations
+                  completion:nil];
 }
