@@ -67,6 +67,7 @@ class CORE_EXPORT HTMLGeolocationElement final
                            GeolocationRequestInProgress);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            MetricsRequestInitiationFlow);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, MetricsAccuracyMode);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, MetricsResultAndLatency);
 
   // HTMLCapabilityElementBase:

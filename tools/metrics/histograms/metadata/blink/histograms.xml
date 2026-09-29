@@ -676,6 +676,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CapabilityElement.Geolocation.AccuracyMode"
+    enum="CapabilityElementGeolocationAccuracyMode" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the accuracy mode requested when a geolocation element requests
+    location. Recorded once per geolocation request when the element initiates a
+    geolocation query.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CapabilityElement.Geolocation.PositionError.Reason"
     enum="CapabilityElementGeolocationPositionErrorReason"
     expires_after="2027-04-01">

@@ -326,6 +326,18 @@ void HTMLGeolocationElement::RequestGeolocation() {
     return;
   }
 
+  CapabilityElementGeolocationAccuracyMode accuracy_mode =
+      CapabilityElementGeolocationAccuracyMode::kDefault;
+  const AtomicString& mode = FastGetAttribute(html_names::kAccuracymodeAttr);
+  if (!mode.IsNull()) {
+    if (EqualIgnoringAsciiCase(mode, "precise")) {
+      accuracy_mode = CapabilityElementGeolocationAccuracyMode::kPrecise;
+    } else if (EqualIgnoringAsciiCase(mode, "approximate")) {
+      accuracy_mode = CapabilityElementGeolocationAccuracyMode::kApproximate;
+    }
+  }
+  RecordGeolocationAccuracyMode(accuracy_mode);
+
   location_request_start_time_ = base::TimeTicks::Now();
 
   if (FastHasAttribute(html_names::kWatchAttr)) {

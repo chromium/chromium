@@ -114,4 +114,10 @@ void RecordGeolocationTimeToError(base::TimeDelta duration) {
       "Blink.CapabilityElement.Geolocation.TimeToError", duration);
 }
 
+void RecordGeolocationAccuracyMode(
+    CapabilityElementGeolocationAccuracyMode mode) {
+  base::UmaHistogramEnumeration(
+      "Blink.CapabilityElement.Geolocation.AccuracyMode", mode);
+}
+
 }  // namespace blink

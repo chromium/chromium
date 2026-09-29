@@ -129,6 +129,16 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Software Composited Direct 2D (deprecated)"/>
 </enum>
 
+<!-- LINT.IfChange(CapabilityElementGeolocationAccuracyMode) -->
+
+<enum name="CapabilityElementGeolocationAccuracyMode">
+  <int value="0" label="Default"/>
+  <int value="1" label="Precise"/>
+  <int value="2" label="Approximate"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationAccuracyMode) -->
+
 <!-- LINT.IfChange(CapabilityElementGeolocationPositionErrorReason) -->
 
 <enum name="CapabilityElementGeolocationPositionErrorReason">
