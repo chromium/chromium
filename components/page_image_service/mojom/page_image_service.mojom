@@ -23,6 +23,9 @@ enum ClientId {
 
   // Tracked at launch/4341062.
   HistoryEmbeddings,
+
+  // TODO(crbug.com/526680930): Needs launch approval.
+  ContextHubTopics,
 };
 
 // Options for image fetching.

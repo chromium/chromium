@@ -76,6 +76,8 @@ chromium-metrics-reviews@google.com.
 <variants name="PageImageServiceClientId">
   <variant name="" summary="all requests"/>
   <variant name=".Bookmarks" summary="from Bookmarks"/>
+  <variant name=".ContextHubTopics"
+      summary="from the topic details page in Context Hub"/>
   <variant name=".HistoryEmbeddings"
       summary="from the AI results inside History"/>
   <variant name=".Journeys" summary="from Journeys inside History"/>

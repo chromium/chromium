@@ -405,6 +405,8 @@ bool ShouldContextResponsePopulateHintCache(
       return false;
     case proto::RequestContext::CONTEXT_FILTER_EXECUTION:
       return false;
+    case proto::RequestContext::CONTEXT_CONTEXT_HUB:
+      return false;
   }
   NOTREACHED();
 }

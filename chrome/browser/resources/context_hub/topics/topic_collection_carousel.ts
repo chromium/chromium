@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
@@ -9,6 +10,8 @@ import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+
+import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_collection_carousel.css.js';
 import {getHtml} from './topic_collection_carousel.html.js';
@@ -45,12 +48,16 @@ export class TopicCollectionCarouselElement extends CrLitElement {
       collection: {type: Object},
       canScrollBack_: {type: Boolean, state: true},
       canScrollForward_: {type: Boolean, state: true},
+      imageUrls_: {type: Object, state: true},
     };
   }
 
   accessor collection: Collection|null = null;
   protected accessor canScrollBack_: boolean = false;
   protected accessor canScrollForward_: boolean = false;
+  // Image URLs of the cards' pages, keyed by page URL. Pages without one, or
+  // whose image failed to load, show their favicon instead.
+  protected accessor imageUrls_: Map<string, string> = new Map();
 
   private resizeObserver_: ResizeObserver|null = null;
 
@@ -70,6 +77,14 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     this.resizeObserver_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('collection')) {
+      this.imageUrls_ = new Map();
+      this.fetchImages_();
+    }
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('collection')) {
@@ -77,13 +92,24 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     }
   }
 
-  // TODO(crbug.com/558572977): Show the page's image from `PageImageService`
-  // (see `cr-history-embeddings-result-image`), keeping the favicon as the
-  // fallback. That needs a new `ClientId`, which needs launch approval.
+  protected getImageUrl_(url: string): string {
+    return this.imageUrls_.get(url) || '';
+  }
+
   protected getFavicon_(url: string): string {
     return getFaviconForPageURL(
         url, /*isSyncedUrlForHistoryUi=*/ false, /*remoteIconUrlForUma=*/ '',
         CARD_FAVICON_SIZE);
+  }
+
+  // Falls back to the favicon when a page's image can't be loaded.
+  protected onCardImageError_(e: Event) {
+    const url = (e.currentTarget as HTMLElement).dataset['url'];
+    if (url && this.imageUrls_.has(url)) {
+      const imageUrls = new Map(this.imageUrls_);
+      imageUrls.delete(url);
+      this.imageUrls_ = imageUrls;
+    }
   }
 
   protected onCardClick_(e: Event) {
@@ -135,6 +161,29 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     this.canScrollBack_ = scrolled > 1;
     this.canScrollForward_ =
         scrolled + cards.clientWidth < cards.scrollWidth - 1;
+  }
+
+  // Requests the image of each card's page and applies them all in a single
+  // update. Replies for a collection that has since been replaced are dropped.
+  private async fetchImages_() {
+    const collection = this.collection;
+    if (!collection) {
+      return;
+    }
+    const handler = browserProxyFactory.getInstance().handler;
+    const urls = [...new Set(collection.items.map(item => item.url))];
+    const replies =
+        await Promise.all(urls.map(url => handler.getTopicPageImageUrl(url)));
+    if (this.collection !== collection) {
+      return;
+    }
+    const imageUrls = new Map<string, string>();
+    replies.forEach(({imageUrl}, i) => {
+      if (imageUrl) {
+        imageUrls.set(urls[i]!, imageUrl);
+      }
+    });
+    this.imageUrls_ = imageUrls;
   }
 }
 

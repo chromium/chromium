@@ -443,6 +443,12 @@ interface PageHandler {
   [RuntimeFeature=kTopics]
   GetTopic(string id) => (Topic? topic);
 
+  // Returns the URL of a representative image for `page_url`, a page in one of
+  // a Topic's collections, or null if there is none or `page_url` is not a web
+  // URL.
+  [RuntimeFeature=kTopics]
+  GetTopicPageImageUrl(url.mojom.Url page_url) => (url.mojom.Url? image_url);
+
   // Opens the specified topic (by topic ID or full URL) in a new tab.
   [RuntimeFeature=kTopics]
   OpenTopic(TopicIdOrUrl topic_id_or_url);

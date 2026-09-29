@@ -79,6 +79,8 @@ std::string_view GetStringNameForRequestContext(
       return "GlicZeroStateSuggestions";
     case proto::RequestContext::CONTEXT_FILTER_EXECUTION:
       return "FilterExecution";
+    case proto::RequestContext::CONTEXT_CONTEXT_HUB:
+      return "ContextHub";
   }
   NOTREACHED();
 }

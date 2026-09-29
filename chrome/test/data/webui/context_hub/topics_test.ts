@@ -309,6 +309,8 @@ suite('TopicDetails', () => {
     handler.setResultFor('getTopic', Promise.resolve({topic: createTopic()}));
     handler.setResultFor(
         'openUrlsInTabGroup', Promise.resolve({success: true}));
+    handler.setResultFor(
+        'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
@@ -525,10 +527,20 @@ suite('TopicDetails', () => {
 
 suite('TopicCollectionCarousel', () => {
   let carousel: TopicCollectionCarouselElement;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let openWindowProxy: TestOpenWindowProxy;
+
+  // A bundled image, so that it loads in the test without a network request
+  // and doesn't trigger the favicon fallback on its own.
+  const IMAGE_URL = 'chrome://resources/images/add.svg';
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    handler = TestMock.fromClass(PageHandlerRemote);
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
+    handler.setResultFor(
+        'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
@@ -557,6 +569,11 @@ suite('TopicCollectionCarousel', () => {
     return carousel.shadowRoot.querySelector<HTMLElement>(selector);
   }
 
+  function getCardImages(): HTMLElement[] {
+    return Array.from(
+        carousel.shadowRoot.querySelectorAll<HTMLElement>('.card-image'));
+  }
+
   test('renders the title and a card per item', async () => {
     await createCarousel({title: 'Collection title', items: createItems(2)});
 
@@ -567,6 +584,55 @@ suite('TopicCollectionCarousel', () => {
         'Page 1', cards[1]!.querySelector('.card-title')!.textContent.trim());
     assertEquals(
         'Site 1', cards[1]!.querySelector('.card-site')!.textContent.trim());
+  });
+
+  test('shows the page image, or the favicon without one', async () => {
+    handler.setResultMapperFor(
+        'getTopicPageImageUrl',
+        (url: string) => Promise.resolve(
+            {imageUrl: url === 'https://site0.com/' ? IMAGE_URL : null}));
+    await createCarousel({title: 'Collection title', items: createItems(2)});
+    await microtasksFinished();
+
+    assertDeepEquals(
+        ['https://site0.com/', 'https://site1.com/'],
+        handler.getArgs('getTopicPageImageUrl'));
+    const [withImage, withoutImage] = getCardImages();
+    assertEquals(
+        IMAGE_URL,
+        withImage!.querySelector('.card-page-image')!.getAttribute('auto-src'));
+    assertFalse(!!withImage!.querySelector('.card-favicon'));
+    assertFalse(!!withoutImage!.querySelector('.card-page-image'));
+    assertTrue(!!withoutImage!.querySelector('.card-favicon'));
+  });
+
+  test('falls back to the favicon when the image fails', async () => {
+    handler.setResultFor(
+        'getTopicPageImageUrl', Promise.resolve({imageUrl: IMAGE_URL}));
+    await createCarousel({title: 'Collection title', items: createItems(1)});
+    await microtasksFinished();
+
+    const cardImage = getCardImages()[0]!;
+    cardImage.querySelector('.card-page-image')!.dispatchEvent(
+        new Event('error'));
+    await microtasksFinished();
+    assertFalse(!!cardImage.querySelector('.card-page-image'));
+    assertTrue(!!cardImage.querySelector('.card-favicon'));
+  });
+
+  test('ignores images for a replaced collection', async () => {
+    const resolver = new PromiseResolver<{imageUrl: string | null}>();
+    handler.setResultFor('getTopicPageImageUrl', resolver.promise);
+    await createCarousel({title: 'Collection 1', items: createItems(1)});
+
+    handler.setResultFor(
+        'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
+    carousel.collection = {title: 'Collection 2', items: createItems(1)};
+    await microtasksFinished();
+    resolver.resolve({imageUrl: IMAGE_URL});
+    await microtasksFinished();
+    assertEquals(2, handler.getCallCount('getTopicPageImageUrl'));
+    assertFalse(!!query('.card-page-image'));
   });
 
   test('clicking a card opens its page', async () => {

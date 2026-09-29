@@ -219,6 +219,7 @@ void ImageServiceImpl::GetConsentToFetchImage(
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
     case mojom::ClientId::HistoryEmbeddings:
+    case mojom::ClientId::ContextHubTopics:
     case mojom::ClientId::NtpQuests:
     case mojom::ClientId::NtpTabResumption: {
       return history_consent_helper_->EnqueueRequest(std::move(callback),
@@ -347,6 +348,10 @@ void ImageServiceImpl::ProcessAllBatchedOptimizationGuideRequests(
     case mojom::ClientId::JourneysSidePanel:
     case mojom::ClientId::HistoryEmbeddings: {
       request_context = optimization_guide::proto::CONTEXT_JOURNEYS;
+      break;
+    }
+    case mojom::ClientId::ContextHubTopics: {
+      request_context = optimization_guide::proto::CONTEXT_CONTEXT_HUB;
       break;
     }
     case mojom::ClientId::NtpQuests:

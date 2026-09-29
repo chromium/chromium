@@ -83,13 +83,19 @@
   outline-offset: -2px;
 }
 
-/* Stands in for the page's image: its favicon on a tinted background. */
+/* The page's image, or its favicon on a tinted background when it has none. */
 .card-image {
   align-items: center;
   background-color: var(--cr-fallback-color-secondary-container);
   display: flex;
   height: 98px;
   justify-content: center;
+  width: 100%;
+}
+
+.card-page-image {
+  height: 100%;
+  object-fit: cover;
   width: 100%;
 }
 

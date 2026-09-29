@@ -65,6 +65,9 @@ enum RequestContext {
   // Requesting metadata for a filter execution strategy (e.g., the target URL
   // with filter parameters) to apply a Magic Filters suggestion.
   CONTEXT_FILTER_EXECUTION = 17;
+
+  // Requesting metadata for a user when visiting the Context Hub surface.
+  CONTEXT_CONTEXT_HUB = 18;
 }
 
 message FieldTrial {

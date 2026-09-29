@@ -28,9 +28,16 @@ export function getHtml(this: TopicCollectionCarouselElement) {
     <li>
       <button class="card" data-index="${index}" @click="${this.onCardClick_}">
         <span class="card-image" aria-hidden="true">
-          <span class="card-favicon"
-              style="background-image: ${this.getFavicon_(item.url)}">
-          </span>
+          ${this.getImageUrl_(item.url) ? html`
+            <img class="card-page-image" is="cr-auto-img"
+                auto-src="${this.getImageUrl_(item.url)}"
+                data-url="${item.url}" alt=""
+                @error="${this.onCardImageError_}">
+          ` : html`
+            <span class="card-favicon"
+                style="background-image: ${this.getFavicon_(item.url)}">
+            </span>
+          `}
         </span>
         <span class="card-text">
           <span class="card-title" title="${item.title}">

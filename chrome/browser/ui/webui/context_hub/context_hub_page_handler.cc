@@ -23,11 +23,14 @@
 #include "chrome/browser/context_hub/context_hub_service_factory.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/page_image_service/image_service.h"
+#include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -924,6 +927,31 @@ void ContextHubPageHandler::GetTopic(const std::string& id,
           },
           std::move(callback)),
       &topics_task_tracker_);
+}
+
+void ContextHubPageHandler::GetTopicPageImageUrl(
+    const GURL& page_url,
+    GetTopicPageImageUrlCallback callback) {
+  page_image_service::ImageService* image_service =
+      page_image_service::ImageServiceFactory::GetForBrowserContext(profile_);
+  if (!image_service || !page_url.is_valid() ||
+      !page_url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // The reply does not touch this handler, and the service always replies, so
+  // there is nothing to cancel if the handler goes away first.
+  image_service->FetchImageFor(
+      page_image_service::mojom::ClientId::ContextHubTopics, page_url,
+      page_image_service::mojom::Options(),
+      base::BindOnce(
+          [](GetTopicPageImageUrlCallback callback, const GURL& image_url) {
+            std::move(callback).Run(image_url.is_valid()
+                                        ? std::make_optional(image_url)
+                                        : std::nullopt);
+          },
+          std::move(callback)));
 }
 
 void ContextHubPageHandler::OpenTopic(

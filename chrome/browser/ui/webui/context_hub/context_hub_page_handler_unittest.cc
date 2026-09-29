@@ -2491,6 +2491,15 @@ TEST_F(ContextHubPageHandlerTest, GetTopic_EmptyId_DoesNotQueryHistory) {
   EXPECT_FALSE(future.Get());
 }
 
+TEST_F(ContextHubPageHandlerTest, GetTopicPageImageUrl_NonWebUrl) {
+  for (const GURL& url : {GURL("chrome://settings"), GURL("file:///a"),
+                          GURL("javascript:alert(1)"), GURL()}) {
+    base::test::TestFuture<const std::optional<GURL>&> future;
+    handler_->GetTopicPageImageUrl(url, future.GetCallback());
+    EXPECT_FALSE(future.Get()) << url;
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextHubPageHandlerTest, OpenUrlsInTabGroup_OnlyOpensWebUrls) {
   std::vector<GURL> opened_urls;

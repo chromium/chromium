@@ -148,6 +148,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                           OpenUrlsInTabGroupCallback callback) override;
   void GetTopics(GetTopicsCallback callback) override;
   void GetTopic(const std::string& id, GetTopicCallback callback) override;
+  void GetTopicPageImageUrl(const GURL& page_url,
+                            GetTopicPageImageUrlCallback callback) override;
   void OpenTopic(
       browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
   void OpenGlicPanel(const std::vector<std::string>& prompts) override;
