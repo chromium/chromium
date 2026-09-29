@@ -210,9 +210,6 @@ public class AwContents implements SmartClipProvider {
     // Unique id given to each AwContents object, starting from 1.
     private final int mId;
 
-    @VisibleForTesting
-    public static final String LOAD_URL_SCHEME_HISTOGRAM_NAME = "Android.WebView.LoadUrl.UrlScheme";
-
     // Permit any number of slashes, since chromium seems to canonicalize bad values.
     private static final Pattern sFileAndroidAssetPattern =
             Pattern.compile("^file:/*android_(asset|res).*");
@@ -2514,8 +2511,6 @@ public class AwContents implements SmartClipProvider {
             throw new IllegalStateException("Called navigate on a destroyed WebView.");
         }
 
-        recordLoadUrlScheme(schemeForUrl(params.url));
-
         if (params.url == null) {
             throw new IllegalArgumentException("Navigate called with null URL.");
         }
@@ -2592,11 +2587,6 @@ public class AwContents implements SmartClipProvider {
 
     private static boolean isBase64Encoded(String encoding) {
         return "base64".equals(encoding);
-    }
-
-    private static void recordLoadUrlScheme(@UrlScheme int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                LOAD_URL_SCHEME_HISTOGRAM_NAME, value, UrlScheme.COUNT);
     }
 
     /** WebView.loadData. */
@@ -2737,12 +2727,6 @@ public class AwContents implements SmartClipProvider {
         // Drain any pending prefetch requests from the queue.
         // TODO (crbug.com/363939616) Clean this up once prefetch infra supports bg thread.
         mBrowserContext.getPrefetchManager().executeQueuedPrefetchRequests();
-
-        if (params.getBaseUrl() == null) {
-            // Don't record the URL if this was loaded via loadDataWithBaseURL(). That API is
-            // tracked separately under Android.WebView.LoadDataWithBaseUrl.BaseUrl.
-            recordLoadUrlScheme(schemeForUrl(params.getUrl()));
-        }
 
         if (params.getLoadUrlType() == LoadURLType.DATA && !params.isBaseUrlDataScheme()) {
             // This allows data URLs with a non-data base URL access to file:///android_asset/ and

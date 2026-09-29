@@ -8175,21 +8175,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.LoadUrl.UrlScheme" enum="WebViewUrlScheme"
-    expires_after="2024-06-13">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>torne@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the scheme for the URL loaded by a browser-initiated navigation.
-    Specifically, this is the scheme of the URL passed to loadUrl() (and its
-    overloads), postUrl(), and loadData() (this is implicitly
-    &quot;data:&quot;). also records if this value is &quot;empty&quot;, which
-    means either null or &quot;about:blank&quot;. This intentionally excludes
-    loadDataWithBaseURL().
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.MediaIntegrity.ApiStatusV2"
     enum="AndroidWebViewMediaIntegrityApiStatus" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
