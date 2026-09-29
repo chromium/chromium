@@ -14,9 +14,11 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sync_socket.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -24,6 +26,7 @@
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -64,6 +67,7 @@ class MockReadAloudPlaybackControllerClient
   // read_aloud::mojom::ReadAloudPlaybackControllerClient:
   void OnPlaybackStateChanged(read_aloud::mojom::PlaybackState state) override {
     last_state_ = state;
+    state_history_.push_back(state);
     if (state_callback_) {
       state_callback_.Run(state);
     }
@@ -117,6 +121,12 @@ class MockReadAloudPlaybackControllerClient
 
   void ClearLastState() { last_state_.reset(); }
 
+  void ClearStateHistory() { state_history_.clear(); }
+
+  const std::vector<read_aloud::mojom::PlaybackState>& state_history() const {
+    return state_history_;
+  }
+
   void WaitForStateChange(read_aloud::mojom::PlaybackState expected_state) {
     if (last_state_.has_value() && last_state_.value() == expected_state)
       return;
@@ -162,6 +172,7 @@ class MockReadAloudPlaybackControllerClient
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerClient>
       receiver_{this};
   std::optional<read_aloud::mojom::PlaybackState> last_state_;
+  std::vector<read_aloud::mojom::PlaybackState> state_history_;
   std::optional<read_aloud::mojom::PlaybackState> expected_state_to_wait_for_;
   base::OnceClosure state_changed_closure_;
   StateCallback state_callback_;
@@ -169,6 +180,33 @@ class MockReadAloudPlaybackControllerClient
   base::OnceClosure chunks_closure_;
   SpeechSynthesisHandler synthesis_handler_;
   uint32_t synthesis_request_count_ = 0;
+};
+
+// Records the commands the controller issues on its audio output stream.
+class FakeAudioOutputStream : public media::mojom::AudioOutputStream {
+ public:
+  enum class Command { kPlay, kPause, kFlush };
+
+  void Bind(mojo::PendingReceiver<media::mojom::AudioOutputStream> receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
+  void ClearCommands() { commands_.clear(); }
+
+  // Dispatches every command already sent on the stream pipe.
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  const std::vector<Command>& commands() const { return commands_; }
+
+  // media::mojom::AudioOutputStream:
+  void Play() override { commands_.push_back(Command::kPlay); }
+  void Pause() override { commands_.push_back(Command::kPause); }
+  void Flush() override { commands_.push_back(Command::kFlush); }
+  void SetVolume(double /*volume*/) override {}
+
+ private:
+  mojo::Receiver<media::mojom::AudioOutputStream> receiver_{this};
+  std::vector<Command> commands_;
 };
 
 }  // namespace
@@ -189,6 +227,16 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
   }
 
   void TearDown() override {
+    // Answer any responses held by HoldSynthesisResponses() while the pipes
+    // are still connected, so they are never dropped unrun, even when a test
+    // exits early on a fatal assertion.
+    if (mock_client_) {
+      mock_client_->set_synthesis_handler({});
+    }
+    for (auto& callback : held_synthesis_callbacks_) {
+      std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+    }
+    held_synthesis_callbacks_.clear();
     ResetRemotes();
   }
 
@@ -283,6 +331,46 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
     FlushAll();
   }
 
+  void SetSingleTextSegment(const std::u16string& text) {
+    std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+    read_aloud::mojom::TextSegmentPtr segment =
+        read_aloud::mojom::TextSegment::New();
+    segment->segment_index = 0;
+    segment->text = text;
+    segments.push_back(std::move(segment));
+    controller_remote_->SetTextContent(std::move(segments));
+    controller_remote_.FlushForTesting();
+  }
+
+  // Makes every synthesis request fail, so no audio is ever produced.
+  void SetFailingSynthesisResponse() {
+    mock_client_->set_synthesis_handler(base::BindRepeating(
+        [](const std::u16string&, read_aloud::mojom::Speaker, uint64_t,
+           read_aloud::mojom::ReadAloudPlaybackControllerClient::
+               RequestSpeechSynthesisCallback callback) {
+          std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
+        }));
+  }
+
+  // Holds synthesis responses back, so playback stays pumping in kBuffering
+  // with a deterministic state history. Held responses are released in
+  // TearDown().
+  void HoldSynthesisResponses() {
+    mock_client_->set_synthesis_handler(base::BindLambdaForTesting(
+        [this](const std::u16string&, read_aloud::mojom::Speaker, uint64_t,
+               read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                   RequestSpeechSynthesisCallback callback) {
+          held_synthesis_callbacks_.push_back(std::move(callback));
+        }));
+  }
+
+  // Binds `fake_stream_` to the stream handed to the controller by the last
+  // InitializeAudioForTesting() call, so stream commands can be observed.
+  void BindFakeStream() {
+    ASSERT_TRUE(stream_receiver_.is_valid());
+    fake_stream_.Bind(std::move(stream_receiver_));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_{
@@ -294,6 +382,10 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
   std::unique_ptr<MockReadAloudPlaybackControllerClient> mock_client_;
   std::unique_ptr<ReadAloudPlaybackController> controller_impl_;
   mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver_;
+  FakeAudioOutputStream fake_stream_;
+  std::vector<read_aloud::mojom::ReadAloudPlaybackControllerClient::
+                  RequestSpeechSynthesisCallback>
+      held_synthesis_callbacks_;
   std::unique_ptr<base::CancelableSyncSocket> local_socket_;
 };
 
@@ -1187,6 +1279,139 @@ TEST_F(ReadAloudPlaybackControllerTest,
   controller.FlushForTesting();
 
   mock_renderer = nullptr;
+}
+
+// Regression test for b/562011435: claiming kPlaying before any audio frame is
+// buffered dismisses the browser's loading UI over silence.
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayWithEmptyAudioQueueEmitsBufferingNotPlaying) {
+  CreateSession();
+  HoldSynthesisResponses();
+  SetSingleTextSegment(u"Buffering state sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  FlushAll();
+  mock_client_->ClearStateHistory();
+
+  controller_remote_->Play();
+  FlushAll();
+
+  EXPECT_THAT(
+      mock_client_->state_history(),
+      testing::ElementsAre(read_aloud::mojom::PlaybackState::kBuffering));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, PauseEmitsPausedState) {
+  CreateSession();
+  HoldSynthesisResponses();
+  SetSingleTextSegment(u"Paused state sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  controller_remote_->Play();
+  FlushAll();
+  // Pausing must be observed from an active state, otherwise dedupe would hide
+  // the notification.
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kBuffering);
+  mock_client_->ClearStateHistory();
+
+  controller_remote_->Pause();
+  FlushAll();
+
+  EXPECT_THAT(mock_client_->state_history(),
+              testing::ElementsAre(read_aloud::mojom::PlaybackState::kPaused));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       DocumentThatNeverProducesAudioEmitsErrorState) {
+  CreateSession();
+  SetFailingSynthesisResponse();
+  SetSingleTextSegment(u"First sentence. Second sentence. Third sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  FlushAll();
+  mock_client_->ClearStateHistory();
+
+  // Every chunk fails, so the timeline is consumed without ever producing
+  // audio and playback can never recover.
+  controller_remote_->Play();
+  FastForwardAndFlush(base::Seconds(5));
+
+  EXPECT_THAT(mock_client_->state_history(),
+              testing::ElementsAre(read_aloud::mojom::PlaybackState::kBuffering,
+                                   read_aloud::mojom::PlaybackState::kError));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, RepeatedPauseNotifiesClientOnce) {
+  CreateSession();
+
+  controller_remote_->Pause();
+  FlushAll();
+  controller_remote_->Pause();
+  FlushAll();
+
+  // The second Pause() resolves to the same state and must be deduped away.
+  EXPECT_THAT(mock_client_->state_history(),
+              testing::ElementsAre(read_aloud::mojom::PlaybackState::kPaused));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       DocumentThatNeverProducesAudioPausesStream) {
+  CreateSession();
+  SetFailingSynthesisResponse();
+  SetSingleTextSegment(u"First sentence. Second sentence. Third sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  controller_remote_->Play();
+  FastForwardAndFlush(base::Seconds(5));
+  fake_stream_.FlushForTesting();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kError);
+
+  // kError must pause the output stream rather than leave it running.
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPlay,
+                                   FakeAudioOutputStream::Command::kPause));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekWhileNotPumpingPausesStream) {
+  CreateSession();
+  SetSingleTextSegment(u"Seek while idle sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  controller_remote_->SeekToWord(/*segment_index=*/0, /*character_offset=*/0);
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  // Audio decoded for the new position must not be rendered before Play().
+  EXPECT_THAT(fake_stream_.commands(),
+              testing::ElementsAre(FakeAudioOutputStream::Command::kPause));
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SeekWhilePumpingDoesNotPauseStream) {
+  CreateSession();
+  HoldSynthesisResponses();
+  SetSingleTextSegment(u"Seek while playing sentence.");
+  ASSERT_NO_FATAL_FAILURE(InitializeAudioForTesting());
+  ASSERT_NO_FATAL_FAILURE(BindFakeStream());
+
+  controller_remote_->Play();
+  FlushAll();
+  // Deliver the Play() command before clearing, so it cannot leak into the
+  // post-seek expectation below.
+  fake_stream_.FlushForTesting();
+  ASSERT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kBuffering);
+  fake_stream_.ClearCommands();
+
+  controller_remote_->SeekToWord(/*segment_index=*/0, /*character_offset=*/0);
+  FlushAll();
+  fake_stream_.FlushForTesting();
+
+  // Positive controls: the seek was accepted and playback is still active.
+  ASSERT_TRUE(controller_remote_.is_connected());
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kBuffering);
+  EXPECT_THAT(fake_stream_.commands(), testing::IsEmpty());
 }
 
 }  // namespace readaloud

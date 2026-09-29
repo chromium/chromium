@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -60,6 +61,26 @@ class ReadAloudDecoderSequencer {
   // operations).
   void SetNextChunkToDecode(uint32_t chunk_index);
 
+  // Outcome of a replenish cycle, from the renderer's point of view.
+  enum class PumpStatus {
+    // Decoded audio is buffered and ready to be rendered.
+    kFlowing,
+    // The renderer queue is dry, but timeline chunks are still pending, so
+    // audio is expected to arrive.
+    kStarved,
+    // The whole timeline has been consumed and at least some audio was
+    // produced along the way, i.e. playback reached the end of the document.
+    kDrained,
+    // The whole timeline has been consumed without ever producing a single
+    // audio segment, so this session can never produce sound.
+    kFailed,
+  };
+
+  // Callback invoked at the end of every replenish cycle, but only while the
+  // pump timer is running (i.e. while playback is active).
+  using PumpStatusCallback = base::RepeatingCallback<void(PumpStatus status)>;
+  void SetPumpStatusCallback(PumpStatusCallback callback);
+
   uint32_t next_chunk_to_decode() const { return next_chunk_to_decode_; }
   bool is_decoding() const { return is_decoding_; }
   bool is_pumping() const { return pump_timer_.IsRunning(); }
@@ -70,13 +91,26 @@ class ReadAloudDecoderSequencer {
       uint32_t chunk_index,
       std::vector<scoped_refptr<DecodedAudioSegment>> decoded_segments);
 
+  PumpStatus EvaluatePumpStatus() const;
+
+  // Evaluates the current pump status and forwards it to
+  // `pump_status_callback_`. No-op when not pumping, so that replenish cycles
+  // driven by late synthesis or decode responses after a pause cannot
+  // resurrect an active playback state.
+  void NotifyPumpStatus();
+
   const raw_ptr<PrefetchManager> prefetch_manager_;
   const raw_ptr<OpusDecoderHelper> decoder_helper_;
   raw_ptr<AudioSegmentQueue> audio_segment_queue_ = nullptr;
 
+  PumpStatusCallback pump_status_callback_;
+
   uint32_t next_chunk_to_decode_ = 0;
   bool is_decoding_ = false;
   bool is_replenishing_ = false;
+  // True once any decoded segment has been pushed to the queue in this
+  // session. Distinguishes a finished timeline from a totally failed one.
+  bool produced_audio_ = false;
 
   base::RepeatingTimer pump_timer_;
 

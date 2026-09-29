@@ -41,6 +41,11 @@ ReadAloudPlaybackController::ReadAloudPlaybackController(
   receiver_.set_disconnect_handler(
       base::BindOnce(&ReadAloudPlaybackController::OnReceiverDisconnected,
                      factory_weak_factory_.GetWeakPtr()));
+  // `decoder_sequencer_` is owned by `this`, so it cannot outlive the callback
+  // target.
+  decoder_sequencer_.SetPumpStatusCallback(
+      base::BindRepeating(&ReadAloudPlaybackController::OnPumpStatusChanged,
+                          base::Unretained(this)));
 }
 
 ReadAloudPlaybackController::~ReadAloudPlaybackController() {
@@ -210,10 +215,10 @@ void ReadAloudPlaybackController::SetTextContent(
   // Setting new text content invalidates pending audio synthesis buffers from
   // the previous document segment, so FlushBuffers() resets internal queues.
   FlushBuffers();
-  if (!MaybePlayOnReady() && client_.is_bound()) {
+  if (!MaybePlayOnReady()) {
     // When new text content is loaded, playback defaults to paused until the
     // user explicitly triggers Play(). Notify client to synchronize UI state.
-    client_->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
+    SetPlaybackState(read_aloud::mojom::PlaybackState::kPaused);
   }
 }
 
@@ -238,9 +243,8 @@ void ReadAloudPlaybackController::OnPlayOnReadyTimeout() {
   play_on_ready_ = false;
 
   // Defensive Guard: Do not emit kPaused if playback is actively pumping audio.
-  if (client_.is_bound() && !decoder_sequencer_.is_pumping()) {
-    client_->OnPlaybackStateChanged(
-        read_aloud::mojom::PlaybackState::kPaused);
+  if (!decoder_sequencer_.is_pumping()) {
+    SetPlaybackState(read_aloud::mojom::PlaybackState::kPaused);
   }
 }
 
@@ -269,6 +273,11 @@ bool ReadAloudPlaybackController::PlayIfReady() {
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Play();
   }
+  // Deliberately does not report kPlaying here. Per b/562011435 the utility
+  // must not claim playback has started until audio frames are actually ready,
+  // otherwise the browser dismisses its loading UI over silence. StartPumping()
+  // replenishes synchronously and resolves the state through
+  // OnPumpStatusChanged() based on what is genuinely buffered.
   decoder_sequencer_.StartPumping();
   return true;
 }
@@ -281,14 +290,73 @@ bool ReadAloudPlaybackController::MaybePlayOnReady() {
   return false;
 }
 
-void ReadAloudPlaybackController::Pause() {
+void ReadAloudPlaybackController::SetPlaybackState(
+    read_aloud::mojom::PlaybackState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (playback_state_ == state) {
+    return;
+  }
+  playback_state_ = state;
+  if (client_.is_bound()) {
+    client_->OnPlaybackStateChanged(state);
+  }
+}
+
+void ReadAloudPlaybackController::OnPumpStatusChanged(
+    ReadAloudDecoderSequencer::PumpStatus status) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (status) {
+    case ReadAloudDecoderSequencer::PumpStatus::kFlowing:
+      SetPlaybackState(read_aloud::mojom::PlaybackState::kPlaying);
+      return;
+    case ReadAloudDecoderSequencer::PumpStatus::kStarved:
+      SetPlaybackState(read_aloud::mojom::PlaybackState::kBuffering);
+      return;
+    case ReadAloudDecoderSequencer::PumpStatus::kDrained:
+      // The document finished normally. Nothing is left to decode, so stop
+      // pumping. Report kPaused rather than a terminal state so the Read Aloud
+      // UI stays open and the user can replay. The output stream is
+      // intentionally left running and the queue is not flushed, so the
+      // segment the renderer just popped still plays out.
+      //
+      // TODO(b/565419447): Drive this from a real end-of-stream signal rather
+      // than inferring it from the segment queue draining. Draining only means
+      // the renderer has taken the last segment, not that it has played it:
+      // audio still held in the renderer algorithm buffer and the output
+      // stream buffer is audible, so kPaused lands early, while the 250ms pump
+      // period pushes detection late. The net error is on the order of a few
+      // hundred milliseconds. A precise signal needs end-of-stream detection
+      // inside ReadAloudAudioRenderer, which zero-fills on underflow today.
+      // Once available, this should call HaltPlayback(kPaused) instead.
+      decoder_sequencer_.StopPumping();
+      SetPlaybackState(read_aloud::mojom::PlaybackState::kPaused);
+      return;
+    case ReadAloudDecoderSequencer::PumpStatus::kFailed:
+      // The entire timeline was consumed without ever yielding a single audio
+      // segment, so this session can no longer produce sound.
+      HaltPlayback(read_aloud::mojom::PlaybackState::kError);
+      return;
+  }
+}
+
+void ReadAloudPlaybackController::HaltPlayback(
+    read_aloud::mojom::PlaybackState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   play_on_ready_ = false;
   play_on_ready_timer_.Stop();
   if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
     audio_resources_->audio_output_stream->Pause();
   }
+  // Stop pumping before reporting so that no in-flight pump status can
+  // overwrite `state`, and so that a later seek cannot silently resume
+  // playback.
   decoder_sequencer_.StopPumping();
+  SetPlaybackState(state);
+}
+
+void ReadAloudPlaybackController::Pause() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HaltPlayback(read_aloud::mojom::PlaybackState::kPaused);
 }
 
 void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
@@ -309,6 +377,16 @@ void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
     controller_receiver_.ReportBadMessage(
         "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
     return;
+  }
+  // When not actively playing (paused, drained or errored), make sure the
+  // stream is paused too, so that audio decoded for the new position is not
+  // rendered until the next Play().
+  // TODO(b/565419447): Remove once end of document is driven by a real
+  // end-of-stream signal that pauses the audio output stream. The stream is
+  // then paused whenever the pump is stopped, making this guard redundant.
+  if (!decoder_sequencer_.is_pumping() && audio_resources_ &&
+      audio_resources_->audio_output_stream.is_bound()) {
+    audio_resources_->audio_output_stream->Pause();
   }
   decoder_sequencer_.SetNextChunkToDecode(segment_index);
 }
@@ -390,6 +468,9 @@ void ReadAloudPlaybackController::ResetSession() {
   segments_.clear();
   playback_rate_ = 1.0f;
   playback_mode_ = read_aloud::mojom::PlaybackMode::kClassic;
+  // A new session starts with no state reported yet, so the first transition
+  // is always forwarded to the newly bound client.
+  playback_state_.reset();
   play_on_ready_ = false;
   play_on_ready_timer_.Stop();
   session_weak_factory_.InvalidateWeakPtrs();
@@ -427,6 +508,10 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
     mojo_base::BigBuffer response_bytes,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // A single failed or undecodable chunk is recoverable: the sequencer skips
+  // it and keeps playing the rest of the document, so no error state is
+  // reported here. Only a document that never produces any audio at all is
+  // surfaced as kError, via OnPumpStatusChanged().
   if (!success) {
     prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index, nullptr,
                                           {});

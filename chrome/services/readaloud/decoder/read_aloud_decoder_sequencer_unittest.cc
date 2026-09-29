@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
@@ -62,7 +63,14 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
   ReadAloudDecoderSequencerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         audio_queue_(std::make_unique<AudioSegmentQueue>()),
-        sequencer_(&prefetch_manager_, &fake_decoder_, audio_queue_.get()) {}
+        sequencer_(&prefetch_manager_, &fake_decoder_, audio_queue_.get()) {
+    // `sequencer_` is destroyed before `pump_reports_`, so the callback never
+    // outlives the vector it writes to.
+    sequencer_.SetPumpStatusCallback(base::BindLambdaForTesting(
+        [this](ReadAloudDecoderSequencer::PumpStatus status) {
+          pump_reports_.push_back(status);
+        }));
+  }
 
   void SetUpTimeline(size_t chunk_count) {
     std::vector<read_aloud::mojom::TextSegmentPtr> segments;
@@ -94,6 +102,8 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
   PrefetchManager prefetch_manager_;
   FakeOpusDecoderHelper fake_decoder_;
   std::unique_ptr<AudioSegmentQueue> audio_queue_;
+  // Every PumpStatus reported by `sequencer_`, in order.
+  std::vector<ReadAloudDecoderSequencer::PumpStatus> pump_reports_;
   ReadAloudDecoderSequencer sequencer_;
 };
 
@@ -350,6 +360,146 @@ TEST_F(ReadAloudDecoderSequencerTest, ReentrancyGuardPreventsRecursiveReplenish)
   // Additional call to ReplenishBuffer while is_decoding is true should return early
   sequencer_.ReplenishBuffer();
   EXPECT_EQ(fake_decoder_.decode_call_count(), 1u);
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, PumpingWithEmptyQueueReportsStarved) {
+  SetUpTimeline(/*chunk_count=*/2);
+
+  // Nothing has been synthesized yet, so the renderer queue is dry.
+  sequencer_.StartPumping();
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kStarved));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, DecodedAudioReportsFlowing) {
+  SetUpTimeline(/*chunk_count=*/2);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  sequencer_.StartPumping();
+  fake_decoder_.DeliverDecodedSegments(
+      {base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2))});
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kStarved,
+                           ReadAloudDecoderSequencer::PumpStatus::kFlowing));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, ReplenishWhileNotPumpingReportsNothing) {
+  SetUpTimeline(/*chunk_count=*/2);
+
+  // Replenish cycles triggered outside of active playback must stay silent.
+  sequencer_.ReplenishBuffer();
+
+  EXPECT_THAT(pump_reports_, testing::IsEmpty());
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, TimelineWithNoUsableAudioReportsFailed) {
+  SetUpTimeline(/*chunk_count=*/2);
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+  InsertCachedSegment(/*chunk_index=*/1, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+
+  // Every chunk is skipped, so the timeline is consumed without ever
+  // producing a single audio segment.
+  sequencer_.StartPumping();
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kFailed));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       TrailingChunkFailureAfterAudioReportsDrained) {
+  SetUpTimeline(/*chunk_count=*/2);
+  // Chunk 0 decodes fine, the last chunk is unusable.
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+  InsertCachedSegment(/*chunk_index=*/1, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+
+  sequencer_.StartPumping();
+  fake_decoder_.DeliverDecodedSegments(
+      {base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2))});
+  ASSERT_TRUE(audio_queue_->Pop());
+  sequencer_.ReplenishBuffer();
+
+  // Some audio was produced before the bad chunk was skipped, so exhausting
+  // the timeline is a normal end of document rather than a total failure.
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kStarved,
+                           ReadAloudDecoderSequencer::PumpStatus::kFlowing,
+                           ReadAloudDecoderSequencer::PumpStatus::kDrained));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       ExhaustedTimelineWithAudioReportsDrained) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  sequencer_.StartPumping();
+  fake_decoder_.DeliverDecodedSegments(
+      {base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2))});
+  // The renderer consuming the last segment after the timeline is exhausted is
+  // a normal end of document, not a failure.
+  ASSERT_TRUE(audio_queue_->Pop());
+  sequencer_.ReplenishBuffer();
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kStarved,
+                           ReadAloudDecoderSequencer::PumpStatus::kFlowing,
+                           ReadAloudDecoderSequencer::PumpStatus::kDrained));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest, PumpTicksAfterDrainKeepReportingDrained) {
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+
+  sequencer_.StartPumping();
+  fake_decoder_.DeliverDecodedSegments(
+      {base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2))});
+  ASSERT_TRUE(audio_queue_->Pop());
+  pump_reports_.clear();
+
+  // The sequencer keeps no memory of having already announced the end of the
+  // document, so every subsequent tick repeats kDrained. Collapsing those into
+  // a single client notification is the controller's dedupe responsibility.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::AllOf(
+          testing::SizeIs(testing::Gt(1u)),
+          testing::Each(ReadAloudDecoderSequencer::PumpStatus::kDrained)));
+}
+
+TEST_F(ReadAloudDecoderSequencerTest,
+       ResetClearsProducedAudioSoTotalFailureReportsFailed) {
+  // First document plays to completion and produces audio.
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, CreateDummyBuffer());
+  sequencer_.StartPumping();
+  fake_decoder_.DeliverDecodedSegments(
+      {base::MakeRefCounted<DecodedAudioSegment>(base::Seconds(2))});
+  ASSERT_TRUE(audio_queue_->Pop());
+
+  // Second document, whose only chunk fails, must not inherit the first
+  // document's audio and be mistaken for a normal end of document.
+  sequencer_.Reset();
+  SetUpTimeline(/*chunk_count=*/1);
+  InsertCachedSegment(/*chunk_index=*/0, /*opus_buffer=*/nullptr,
+                      SynthesisResultStatus::kSynthesisError);
+  pump_reports_.clear();
+
+  sequencer_.StartPumping();
+
+  EXPECT_THAT(
+      pump_reports_,
+      testing::ElementsAre(ReadAloudDecoderSequencer::PumpStatus::kFailed));
 }
 
 }  // namespace readaloud

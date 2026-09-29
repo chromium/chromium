@@ -4,7 +4,6 @@
 
 #include "chrome/services/readaloud/decoder/read_aloud_decoder_sequencer.h"
 
-#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -43,6 +42,12 @@ void ReadAloudDecoderSequencer::SetNextChunkToDecode(uint32_t chunk_index) {
   ReplenishBuffer();
 }
 
+void ReadAloudDecoderSequencer::SetPumpStatusCallback(
+    PumpStatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pump_status_callback_ = std::move(callback);
+}
+
 void ReadAloudDecoderSequencer::StartPumping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pump_timer_.IsRunning()) {
@@ -66,6 +71,7 @@ void ReadAloudDecoderSequencer::Reset() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   is_decoding_ = false;
   next_chunk_to_decode_ = 0;
+  produced_audio_ = false;
   pump_timer_.Stop();
 }
 
@@ -121,6 +127,35 @@ void ReadAloudDecoderSequencer::ReplenishBuffer() {
       prefetch_manager_->SchedulePrefetch(idx);
     }
   }
+
+  // Step 3: Report the renderer-facing pump status. Note that
+  // `is_replenishing_` is still set here, so a reentrant ReplenishBuffer() from
+  // the callback is safely suppressed.
+  NotifyPumpStatus();
+}
+
+ReadAloudDecoderSequencer::PumpStatus
+ReadAloudDecoderSequencer::EvaluatePumpStatus() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!audio_segment_queue_->GetBufferedDuration().is_zero()) {
+    return PumpStatus::kFlowing;
+  }
+  if (next_chunk_to_decode_ < prefetch_manager_->GetTimelineChunkCount()) {
+    return PumpStatus::kStarved;
+  }
+  // The timeline is fully consumed. Whether that is a normal end of document
+  // or a total synthesis/decode washout depends on whether any audio ever
+  // reached the queue.
+  return produced_audio_ ? PumpStatus::kDrained : PumpStatus::kFailed;
+}
+
+void ReadAloudDecoderSequencer::NotifyPumpStatus() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pump_status_callback_ || !pump_timer_.IsRunning() ||
+      !audio_segment_queue_) {
+    return;
+  }
+  pump_status_callback_.Run(EvaluatePumpStatus());
 }
 
 void ReadAloudDecoderSequencer::OnAudioDecoded(
@@ -137,8 +172,8 @@ void ReadAloudDecoderSequencer::OnAudioDecoded(
     return;
   }
   for (auto& segment : decoded_segments) {
-    if (segment) {
-      std::ignore = audio_segment_queue_->Push(std::move(segment));
+    if (segment && audio_segment_queue_->Push(std::move(segment))) {
+      produced_audio_ = true;
     }
   }
   next_chunk_to_decode_++;
