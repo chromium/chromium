@@ -158,6 +158,7 @@ proto::UnscannedFileEvent::UnscannedReason ToProtoUnscannedReason(
   NOTREACHED();
 }
 
+// TODO(crbug.com/567468504): Clean up this function.
 proto::DataTransferEventTrigger ToProtoDataTransferEventTrigger(
     const std::string& trigger) {
   if (trigger == kFileDownloadDataTransferEventTrigger) {
@@ -174,6 +175,9 @@ proto::DataTransferEventTrigger ToProtoDataTransferEventTrigger(
   }
   if (trigger == kClipboardCopyDataTransferEventTrigger) {
     return proto::DataTransferEventTrigger::CLIPBOARD_COPY;
+  }
+  if (trigger == kNetworkRequestDataTransferEventTrigger) {
+    return proto::DataTransferEventTrigger::NETWORK_REQUEST;
   }
   if (trigger == kUrlVisitedDataTransferEventTrigger) {
     return proto::DataTransferEventTrigger::URL_VISITED;

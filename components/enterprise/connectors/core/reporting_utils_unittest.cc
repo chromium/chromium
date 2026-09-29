@@ -468,6 +468,82 @@ TEST(ReportingUtilsTest, GetDangerousDownloadEvent) {
   ASSERT_EQ(event.iframe_urls()[1], "https://frame2.com/");
 }
 
+TEST(ReportingUtilsTest, NetworkRequestDlpSensitiveDataEvent) {
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+
+  FrameUrlChain frame_url_chain;
+  *frame_url_chain.Add() = "https://frame1.com/";
+  *frame_url_chain.Add() = "https://frame2.com/";
+
+  ContentAnalysisResponse::Result result;
+  result.set_tag("dlp");
+  result.set_status(ContentAnalysisResponse::Result::SUCCESS);
+  auto* rule = result.add_triggered_rules();
+  rule->set_action(TriggeredRule::REPORT_ONLY);
+  rule->set_rule_name("fake rule");
+  rule->set_rule_id("12345");
+  rule->set_url_category("test rule category");
+
+  auto event = GetDlpSensitiveDataEvent(
+      /*url=*/GURL("https://request.com/"),
+      /*tab_url=*/GURL("https://tab.com/"),
+      /*source=*/"", /*destination=*/"https://request.com/",
+      /*file_name=*/"", /*download_digest_sha256=*/"", /*mime_type=*/"",
+      /*trigger=*/kNetworkRequestDataTransferEventTrigger, /*scan_id=*/"123",
+      /*content_transfer_method=*/"", /*source_active_user_email=*/"",
+      /*content_area_account_email=*/"content@gmail.com",
+      /*profile_identifier=*/"identifier",
+      /*profile_username=*/"profile_username",
+      /*user_justification*/ std::nullopt, /*content_size=*/100,
+      /*result=*/result, /*referrer_chain=*/referrer_chain,
+      /*frame_url_chain=*/frame_url_chain,
+      /*event_result=*/EventResult::ALLOWED);
+
+  ASSERT_EQ(event.url(), "https://request.com/");
+  ASSERT_EQ(event.tab_url(), "https://tab.com/");
+  ASSERT_EQ(event.source(), "");
+  ASSERT_EQ(event.destination(), "https://request.com/");
+  ASSERT_TRUE(event.file_name().empty());
+  ASSERT_TRUE(event.download_digest_sha_256().empty());
+  ASSERT_TRUE(event.content_type().empty());
+  ASSERT_EQ(event.trigger(), chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::NETWORK_REQUEST);
+  ASSERT_EQ(event.scan_id(), "123");
+  ASSERT_EQ(event.content_transfer_method(),
+            chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_UNKNOWN);
+  ASSERT_TRUE(event.source_web_app_signed_in_account().empty());
+  ASSERT_EQ(event.web_app_signed_in_account(), "content@gmail.com");
+  ASSERT_EQ(event.profile_identifier(), "identifier");
+  ASSERT_EQ(event.profile_user_name(), "profile_username");
+  ASSERT_TRUE(event.user_justification().empty());
+  ASSERT_EQ(event.content_size(), 100u);
+  ASSERT_EQ(event.event_result(),
+            chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+  ASSERT_FALSE(event.clicked_through());
+
+  ASSERT_EQ(event.triggered_rule_info_size(), 1);
+  auto triggered_rule = event.triggered_rule_info()[0];
+  ASSERT_EQ(triggered_rule.rule_id(), 12345);
+  ASSERT_EQ(triggered_rule.url_category(), "test rule category");
+  ASSERT_EQ(triggered_rule.rule_name(), "fake rule");
+  ASSERT_EQ(triggered_rule.action(),
+            chrome::cros::reporting::proto::TriggeredRuleInfo::REPORT_ONLY);
+
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    auto referrer = event.referrers()[0];
+    ASSERT_EQ(referrer.url(), "https://referrer.com");
+    ASSERT_EQ(referrer.ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
+
+  ASSERT_EQ(event.iframe_urls_size(), 2);
+  ASSERT_EQ(event.iframe_urls()[0], "https://frame1.com/");
+  ASSERT_EQ(event.iframe_urls()[1], "https://frame2.com/");
+}
+
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 TEST(ReportingUtilsTest, GetDataControlsSensitiveDataEvent) {
   data_controls::Verdict::TriggeredRules triggered_rules = {
