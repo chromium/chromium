@@ -780,6 +780,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
   }
 
+  select_file_dialog_automation_receivers_.Clear();
   fake_file_dialog_factory_.reset();
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -2159,6 +2160,25 @@ void WebTestControlHost::BindWebTestControlHostForRenderer(
 void WebTestControlHost::BindNonAssociatedWebTestControlHost(
     mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver) {
   non_associated_receiver_bindings_.Add(this, std::move(receiver));
+}
+
+void WebTestControlHost::BindSelectFileDialogAutomation(
+    mojo::PendingReceiver<blink::test::mojom::SelectFileDialogAutomation>
+        receiver) {
+  select_file_dialog_automation_receivers_.Add(this, std::move(receiver));
+}
+
+void WebTestControlHost::SetSelectFileDialogResult(
+    const std::optional<std::vector<base::FilePath>>& paths,
+    SetSelectFileDialogResultCallback callback) {
+  if (paths.has_value() && paths->empty()) {
+    select_file_dialog_automation_receivers_.ReportBadMessage(
+        "paths must not be empty");
+    std::move(callback).Run();
+    return;
+  }
+  fake_file_dialog_factory_.emplace(paths);
+  std::move(callback).Run();
 }
 
 mojo::AssociatedRemote<mojom::WebTestRenderFrame>&

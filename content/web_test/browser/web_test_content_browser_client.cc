@@ -94,6 +94,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom.h"
+#include "third_party/blink/public/test/mojom/select_file_dialog/select_file_dialog_automation.test-mojom.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -599,6 +600,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
       base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
                           base::Unretained(this)));
+  map->Add<blink::test::mojom::SelectFileDialogAutomation>(base::BindRepeating(
+      &WebTestContentBrowserClient::BindSelectFileDialogAutomation,
+      base::Unretained(this)));
   map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
       &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
       base::Unretained(this)));
@@ -678,6 +682,16 @@ void WebTestContentBrowserClient::BindFedCmAutomation(
         receiver) {
   fedcm_managers_.Add(std::make_unique<WebTestFedCmManager>(render_frame_host),
                       std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindSelectFileDialogAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::SelectFileDialogAutomation>
+        receiver) {
+  if (WebTestControlHost::Get()) {
+    WebTestControlHost::Get()->BindSelectFileDialogAutomation(
+        std::move(receiver));
+  }
 }
 
 void WebTestContentBrowserClient::BindWebSensorProviderAutomation(

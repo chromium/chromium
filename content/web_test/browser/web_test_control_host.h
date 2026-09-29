@@ -41,6 +41,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
+#include "third_party/blink/public/test/mojom/select_file_dialog/select_file_dialog_automation.test-mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 class SkBitmap;
@@ -114,11 +115,13 @@ class WebTestResultPrinter {
   bool encode_binary_data_ = false;
 };
 
-class WebTestControlHost : public WebContentsObserver,
-                           public RenderProcessHostObserver,
-                           public GpuDataManagerObserver,
-                           public mojom::WebTestControlHost,
-                           public mojom::NonAssociatedWebTestControlHost {
+class WebTestControlHost
+    : public WebContentsObserver,
+      public RenderProcessHostObserver,
+      public GpuDataManagerObserver,
+      public mojom::WebTestControlHost,
+      public mojom::NonAssociatedWebTestControlHost,
+      public blink::test::mojom::SelectFileDialogAutomation {
  public:
   static WebTestControlHost* Get();
 
@@ -160,6 +163,15 @@ class WebTestControlHost : public WebContentsObserver,
 
   void BindNonAssociatedWebTestControlHost(
       mojo::PendingReceiver<mojom::NonAssociatedWebTestControlHost> receiver);
+
+  void BindSelectFileDialogAutomation(
+      mojo::PendingReceiver<blink::test::mojom::SelectFileDialogAutomation>
+          receiver);
+
+  // blink::test::mojom::SelectFileDialogAutomation:
+  void SetSelectFileDialogResult(
+      const std::optional<std::vector<base::FilePath>>& paths,
+      SetSelectFileDialogResultCallback callback) override;
 
   const WebTestRuntimeFlags& web_test_runtime_flags() const {
     return web_test_runtime_flags_;
@@ -464,6 +476,9 @@ class WebTestControlHost : public WebContentsObserver,
 
   mojo::ReceiverSet<mojom::NonAssociatedWebTestControlHost>
       non_associated_receiver_bindings_;
+
+  mojo::ReceiverSet<blink::test::mojom::SelectFileDialogAutomation>
+      select_file_dialog_automation_receivers_;
 
   base::ScopedTempDir writable_directory_for_tests_;
 

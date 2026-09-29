@@ -1,0 +1,18 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Provides a way for tests to configure mock file dialog results within the
+// content_shell test environment.
+// This interface is bound per RenderFrameHost.
+interface SelectFileDialogAutomation {
+  // Configures the mock result for subsequent file dialog requests.
+  // Passing an array of paths simulates a user selecting those files.
+  // Passing null simulates a user canceling the dialog.
+  // Passing an empty array is invalid.
+  SetSelectFileDialogResult(array<mojo_base.mojom.FilePath>? paths) => ();
+};

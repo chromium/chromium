@@ -225,11 +225,16 @@ ui::SelectFileDialog* FakeSelectFileDialogFactory::Create(
 }
 
 ScopedSelectFileDialogFactory::ScopedSelectFileDialogFactory(
-    std::vector<base::FilePath> result,
+    std::optional<std::vector<base::FilePath>> result,
     SelectFileDialogParams* out_params) {
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<FakeSelectFileDialogFactory>(std::move(result),
-                                                    out_params));
+  if (result.has_value()) {
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(std::move(*result),
+                                                      out_params));
+  } else {
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<CancellingSelectFileDialogFactory>(out_params));
+  }
 }
 ScopedSelectFileDialogFactory::ScopedSelectFileDialogFactory(
     std::vector<ui::SelectedFileInfo> result,

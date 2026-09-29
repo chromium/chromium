@@ -23,6 +23,7 @@
 #include "third_party/blink/public/test/mojom/cookie_manager/cookie_manager_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/device_posture/device_posture_provider_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/permissions/permission_automation.test-mojom-forward.h"
+#include "third_party/blink/public/test/mojom/select_file_dialog/select_file_dialog_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/sensor/web_sensor_provider_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/storage_access/storage_access_automation.test-mojom-forward.h"
 #include "third_party/blink/public/test/mojom/webid/federated_auth_request_automation.test-mojom-forward.h"
@@ -175,6 +176,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void BindFedCmAutomation(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::test::mojom::FederatedAuthRequestAutomation>
+          receiver);
+
+  void BindSelectFileDialogAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::SelectFileDialogAutomation>
           receiver);
 
   void BindWebSensorProviderAutomation(

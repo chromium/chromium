@@ -22,10 +22,14 @@ mojom("core_test_automation") {
   testonly = true
   sources = [
     "cookie_manager/cookie_manager_automation.test-mojom",
+    "select_file_dialog/select_file_dialog_automation.test-mojom",
     "storage_access/storage_access_automation.test-mojom",
   ]
 
-  public_deps = [ "//services/network/public/mojom:cookies_mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:cookies_mojom",
+  ]
 
   overridden_deps = [ "//services/network/public/mojom:cookies_mojom" ]
   component_deps = [ "//third_party/blink/public/common" ]
