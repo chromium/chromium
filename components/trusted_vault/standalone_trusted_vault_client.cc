@@ -225,18 +225,24 @@ IdentityManagerObserver::GetPrimaryAccountRefreshTokenErrorState() const {
 // used to post notifications from the backend sequence to the UI thread.
 class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
  public:
-  explicit BackendDelegate(
+  BackendDelegate(
+      SecurityDomainId security_domain,
       const base::RepeatingClosure& notify_recoverability_degraded_cb)
-      : notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb) {}
+      : security_domain_(security_domain),
+        notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb) {}
 
   ~BackendDelegate() override = default;
 
   // StandaloneTrustedVaultBackend::Delegate implementation.
-  void NotifyRecoverabilityDegradedChanged() override {
-    notify_recoverability_degraded_cb_.Run();
+  void NotifyRecoverabilityDegradedChanged(
+      SecurityDomainId security_domain) override {
+    if (security_domain == security_domain_) {
+      notify_recoverability_degraded_cb_.Run();
+    }
   }
 
  private:
+  const SecurityDomainId security_domain_;
   const base::RepeatingClosure notify_recoverability_degraded_cb_;
 };
 
@@ -250,7 +256,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : backend_task_runner_(
+    : security_domain_(security_domain),
+      backend_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
       access_token_fetcher_frontend_(identity_manager) {
   std::unique_ptr<TrustedVaultConnection> connection;
@@ -267,14 +274,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
 #if BUILDFLAG(IS_MAC)
       icloud_keychain_access_group_prefix,
 #endif
-      security_domain,
       std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
           std::make_unique<LegacyStandaloneTrustedVaultStorage>(
               base_dir, security_domain)),
-      std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
-          base::BindRepeating(&StandaloneTrustedVaultClient::
-                                  NotifyRecoverabilityDegradedChanged,
-                              weak_ptr_factory_.GetWeakPtr()))),
+      std::make_unique<BackendDelegate>(
+          security_domain,
+          base::BindPostTaskToCurrentDefault(
+              base::BindRepeating(&StandaloneTrustedVaultClient::
+                                      NotifyRecoverabilityDegradedChanged,
+                                  weak_ptr_factory_.GetWeakPtr()))),
       std::move(connection));
   backend_task_runner_->PostTask(
       FROM_HERE,
@@ -318,7 +326,7 @@ void StandaloneTrustedVaultClient::FetchKeys(
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::FetchKeys, backend_,
-                     account_info,
+                     account_info, security_domain_,
                      base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
@@ -330,8 +338,9 @@ void StandaloneTrustedVaultClient::StoreKeys(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backend_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys,
-                                backend_, gaia_id, keys, last_key_version));
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys, backend_,
+                     gaia_id, security_domain_, keys, last_key_version));
   NotifyTrustedVaultKeysChanged(trigger);
 }
 
@@ -343,7 +352,7 @@ void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::MarkLocalKeysAsStale,
-                     backend_, account_info),
+                     backend_, account_info, security_domain_),
       std::move(cb));
 }
 
@@ -356,7 +365,8 @@ void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
       FROM_HERE,
       base::BindOnce(
           &StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded, backend_,
-          account_info, base::BindPostTaskToCurrentDefault(std::move(cb))));
+          account_info, security_domain_,
+          base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
 void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -369,7 +379,8 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
-                     backend_, gaia_id, public_key, method_type_hint,
+                     backend_, gaia_id, security_domain_, public_key,
+                     method_type_hint,
                      base::BindPostTaskToCurrentDefault(std::move(cb))));
 }
 
@@ -415,7 +426,7 @@ void StandaloneTrustedVaultClient::FetchIsDeviceRegisteredForTesting(
       FROM_HERE,
       base::BindOnce(
           &StandaloneTrustedVaultBackend::IsDeviceRegisteredForTesting,
-          backend_, gaia_id),
+          backend_, gaia_id, security_domain_),
       std::move(callback));
 }
 
@@ -441,7 +452,7 @@ void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
       FROM_HERE,
       base::BindOnce(
           &StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting, backend_,
-          gaia_id),
+          gaia_id, security_domain_),
       std::move(callback));
 }
 

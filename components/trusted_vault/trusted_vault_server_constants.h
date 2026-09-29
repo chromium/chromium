@@ -35,6 +35,11 @@ static_assert(static_cast<int>(SecurityDomainId::kMaxValue) ==
               "Update kAllSecurityDomainIdValues when adding SecurityDomainId "
               "enum values");
 
+// TODO(crbug.com/542895033): Support kPasskeys once multi-domain storage is
+// available.
+inline constexpr auto kSupportedSecurityDomainIdValues =
+    base::MakeFixedFlatSet<SecurityDomainId>({SecurityDomainId::kChromeSync});
+
 // Returns whether pre-enrollment with a constant key is supported for `domain`.
 inline constexpr bool SupportsConstantKeyPreEnrollment(
     SecurityDomainId domain) {

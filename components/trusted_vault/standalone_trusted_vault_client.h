@@ -99,6 +99,8 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
       std::optional<TrustedVaultUserActionTriggerForUMA> trigger);
   void NotifyRecoverabilityDegradedChanged();
 
+  const SecurityDomainId security_domain_;
+
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
