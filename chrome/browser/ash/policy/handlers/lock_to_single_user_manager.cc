@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/lock_to_single_user_manager.h"
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +16,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 
 using RebootOnSignOutPolicy =
@@ -135,7 +137,9 @@ void LockToSingleUserManager::AddVmStartingObservers(user_manager::User* user) {
 void LockToSingleUserManager::LockToSingleUser() {
   cryptohome::AccountIdentifier account_id =
       cryptohome::CreateAccountIdentifierFromAccountId(
-          user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetPrimarySession())
+              .account_id());
   RebootOnSignOutRequest request;
   request.mutable_account_id()->CopyFrom(account_id);
   ash::CryptohomeMiscClient::Get()->LockToSingleUserMountUntilReboot(

@@ -15,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
@@ -107,8 +107,9 @@ bool DeviceLocalAccountExternalCache::IsRollbackAllowed() const {
 bool DeviceLocalAccountExternalCache::CanRollbackNow() const {
   // Allow immediate rollback only if current user is not this device local
   // account.
-  if (auto* user = user_manager::UserManager::Get()->GetPrimaryUser()) {
-    return user_id_ != user->GetAccountId().GetUserEmail();
+  if (const session_manager::Session* session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    return user_id_ != session->account_id().GetUserEmail();
   }
   return true;
 }

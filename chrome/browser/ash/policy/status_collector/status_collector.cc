@@ -14,6 +14,7 @@
 #include "ash/constants/ash_policy_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -26,7 +27,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/user_manager/user.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "device_management_backend.pb.h"
 
@@ -44,14 +46,14 @@ std::unique_ptr<DeviceLocalAccount> GetCurrentKioskDeviceLocalAccount(
   if (!user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return nullptr;
   }
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetActiveUser();
+  const AccountId& account_id =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession())
+          .account_id();
   const std::vector<DeviceLocalAccount> accounts =
       GetDeviceLocalAccounts(settings);
 
   for (const auto& device_local_account : accounts) {
-    if (AccountId::FromUserEmail(device_local_account.user_id) ==
-        user->GetAccountId()) {
+    if (AccountId::FromUserEmail(device_local_account.user_id) == account_id) {
       return std::make_unique<DeviceLocalAccount>(device_local_account);
     }
   }

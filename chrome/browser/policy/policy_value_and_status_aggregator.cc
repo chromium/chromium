@@ -26,6 +26,7 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -34,6 +35,8 @@
 #include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/policy/status_provider/device_local_account_policy_status_provider.h"
 #include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider_chromeos.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/policy/status_provider/user_cloud_policy_status_provider.h"
@@ -103,7 +106,9 @@ std::unique_ptr<policy::PolicyStatusProvider> GetUserPolicyStatusProvider(
       profile->GetUserCloudPolicyManagerAsh();
   if (local_account_service) {
     return std::make_unique<DeviceLocalAccountPolicyStatusProvider>(
-        user_manager->GetActiveUser()->GetAccountId().GetUserEmail(),
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession())
+            .account_id()
+            .GetUserEmail(),
         local_account_service);
   } else if (user_cloud_policy) {
     return std::make_unique<UserCloudPolicyStatusProviderChromeOS>(
