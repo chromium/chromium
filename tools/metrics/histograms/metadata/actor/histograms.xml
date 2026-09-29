@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Download.DirectDownloadTriggered" enum="Boolean"
-    expires_after="2026-10-29">
+    expires_after="2027-09-28">
   <owner>masnoble@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Download.SaveAsDialogTriggered" enum="Boolean"
-    expires_after="2026-10-29">
+    expires_after="2027-09-28">
   <owner>masnoble@google.com</owner>
   <owner>johannhof@google.com</owner>
   <summary>
@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.EventDispatcher.ComputedTargetResult"
-    enum="ComputedTargetResult" expires_after="2026-10-11">
+    enum="ComputedTargetResult" expires_after="2027-09-28">
   <owner>kmg@google.com</owner>
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.EventDispatcher.ModelPageTargetType"
-    enum="ModelPageTargetType" expires_after="2026-10-11">
+    enum="ModelPageTargetType" expires_after="2027-09-28">
   <owner>kmg@google.com</owner>
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
@@ -865,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Task.Count.{StoppedReason}.{GlicInvocationSource}"
-    units="count" expires_after="2026-10-11">
+    units="count" expires_after="2027-09-28">
   <owner>yuhengh@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -949,7 +949,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Actor.Task.Duration.WallClock.{StoppedReason}.{GlicInvocationSource}"
-    units="ms" expires_after="2026-10-11">
+    units="ms" expires_after="2027-09-28">
   <owner>yuhengh@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
