@@ -1,7 +1,7 @@
 Name: google-java-format
 URL: https://github.com/google/google-java-format
-Version: 1.28.0
-Revision: d6b1bcc610a1aadfcbddaa22b9d3fbe1b4c429d7
+Version: 1.36.1
+Revision: a95a5290336acd179d42c6baf0557d590f5839d0
 Update Mechanism: Manual
 License: NCSA, Apache-2.0
 License File: LICENSE
@@ -15,14 +15,9 @@ Google Java Style (https://google.github.io/styleguide/javaguide.html).
 Local Modifications:
 - Customized import order to match Chromium style guide.
 - Tell it treat our @Nullable as TYPE_USE
-To see changes: diff -ur originals local_modifications
+- These customizations are embedded directly in 3pp.py
 
 Update instructions:
-- Note: 3pp/3pp.py now compiles the Chromium overrides directly into
-  google-java-format.jar (and the native google-java-format binary). Once the
-  updated CIPD package rolls in, delete chromium-overrides.jar, originals/,
-  local_modifications/, and recreate_*.sh, and update the google-java-format
-  wrapper script.
 - Find latest version available via https://chrome-infra-packages.appspot.com/p/chromium/third_party/google-java-format
 - Update DEPS Instance ID
 - Update the Version in this file

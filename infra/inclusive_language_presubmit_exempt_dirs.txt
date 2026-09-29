@@ -463,8 +463,6 @@ third_party/google-closure-library/doc/js
 third_party/google-closure-library/scripts
 third_party/google-closure-library/scripts/ci
 third_party/google-java-format
-third_party/google-java-format/local_modifications/java/com/google/googlejavaformat/java
-third_party/google-java-format/originals/java/com/google/googlejavaformat/java
 third_party/google_input_tools/src/chrome/os/sounds
 third_party/google_input_tools/third_party/closure_library/closure/goog/html
 third_party/googletest

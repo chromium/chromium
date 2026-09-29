@@ -60,7 +60,7 @@
 /glslang/src
 /gn/
 /gnu_binutils/
-/google-java-format/cipd/*.jar
+/google-java-format/cipd/
 /google-truth/src/
 /googlefonts_testdata/data
 /guava/lib/

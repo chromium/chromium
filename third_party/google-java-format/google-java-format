@@ -2,6 +2,14 @@
 
 THIS_DIR=$(dirname "$0")
 
+# Use GOOGLE_JAVA_FORMAT_ARGS=--skip-javadoc-formatting to skip javadoc.
+ARGS=($GOOGLE_JAVA_FORMAT_ARGS --aosp "$@")
+
+# Prefer the native (GraalVM) binary on Linux x64, since it starts much faster.
+if [[ $(uname) = Linux && $(uname -m) = x86_64 ]]; then
+  exec "$THIS_DIR/cipd/google-java-format" "${ARGS[@]}"
+fi
+
 if [[ -n "$JAVA_HOME" ]]; then
   JAVA="$JAVA_HOME/bin/java"
 elif [[ $(uname) = Linux ]]; then
@@ -12,16 +20,13 @@ else
 fi
 
 # Exports list taken from cipd/google-java-format.jar/META-INF/MANIFEST.MG
-# Use GOOGLE_JAVA_FORMAT_ARGS=--skip-javadoc-formatting to skip javadoc.
 exec "$JAVA" \
     -Xms512M \
-    -cp "$THIS_DIR/chromium-overrides.jar:$THIS_DIR/cipd/google-java-format.jar" \
+    -cp "$THIS_DIR/cipd/google-java-format.jar" \
     --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
     --add-exports jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED \
-    com.google.googlejavaformat.java.Main $GOOGLE_JAVA_FORMAT_ARGS \
-    --aosp \
-    "$@"
+    com.google.googlejavaformat.java.Main "${ARGS[@]}"
