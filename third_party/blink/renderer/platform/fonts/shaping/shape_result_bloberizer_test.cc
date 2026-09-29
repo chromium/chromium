@@ -63,9 +63,9 @@ struct ExpectedRun {
 using ExpectedBlob = std::vector<ExpectedRun>;
 
 struct ExpectedRange {
-  unsigned from;
-  unsigned to;
-  unsigned length() { return to - from; }
+  wtf_size_t from;
+  wtf_size_t to;
+  wtf_size_t length() { return to - from; }
 };
 
 void CheckBlobBuffer(const ShapeResultBloberizer::BlobBuffer& blob_buffer,

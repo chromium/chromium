@@ -101,7 +101,7 @@ TextRunLayoutUnit ShapeResultSpacing::NextExpansion() {
   return expansion_per_opportunity_;
 }
 
-TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(unsigned index,
+TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(wtf_size_t index,
                                                      bool is_cursive_script) {
   DCHECK(has_spacing_);
   UChar32 character = text_[index];
@@ -141,7 +141,7 @@ TextRunLayoutUnit ShapeResultSpacing::ComputeSpacing(unsigned index,
 
 std::pair<TextRunLayoutUnit, TextRunLayoutUnit>
 ShapeResultSpacing::ComputeExpansion(TextJustify method,
-                                     unsigned index,
+                                     wtf_size_t index,
                                      bool is_cursive_script) {
   if (!HasExpansion() || index >= text_.length()) {
     return {TextRunLayoutUnit(), TextRunLayoutUnit()};

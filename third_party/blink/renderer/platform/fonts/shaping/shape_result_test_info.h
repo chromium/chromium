@@ -15,21 +15,21 @@ namespace blink {
 
 class PLATFORM_EXPORT ShapeResultTestInfo : public ShapeResult {
  public:
-  unsigned NumberOfRunsForTesting() const;
-  ShapeResultRun& RunInfoForTesting(unsigned run_index) const;
-  bool RunInfoForTesting(unsigned run_index,
-                         unsigned& start_index,
-                         unsigned& num_glyphs,
+  wtf_size_t NumberOfRunsForTesting() const;
+  ShapeResultRun& RunInfoForTesting(wtf_size_t run_index) const;
+  bool RunInfoForTesting(wtf_size_t run_index,
+                         wtf_size_t& start_index,
+                         wtf_size_t& num_glyphs,
                          hb_script_t&) const;
-  bool RunInfoForTesting(unsigned run_index,
-                         unsigned& start_index,
-                         unsigned& num_characters,
-                         unsigned& num_glyphs,
+  bool RunInfoForTesting(wtf_size_t run_index,
+                         wtf_size_t& start_index,
+                         wtf_size_t& num_characters,
+                         wtf_size_t& num_glyphs,
                          hb_script_t&) const;
-  uint16_t GlyphForTesting(unsigned run_index, unsigned glyph_index) const;
-  float AdvanceForTesting(unsigned run_index, unsigned glyph_index) const;
-  SimpleFontData* FontDataForTesting(unsigned run_index) const;
-  Vector<unsigned> CharacterIndexesForTesting() const;
+  uint16_t GlyphForTesting(wtf_size_t run_index, wtf_size_t glyph_index) const;
+  float AdvanceForTesting(wtf_size_t run_index, wtf_size_t glyph_index) const;
+  SimpleFontData* FontDataForTesting(wtf_size_t run_index) const;
+  Vector<wtf_size_t> CharacterIndexesForTesting() const;
 };
 
 class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
@@ -41,7 +41,7 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
                   const SimpleFontData* font_data,
                   CanvasRotationInVertical canvas_rotation,
                   float h_offset,
-                  unsigned character_index) {
+                  wtf_size_t character_index) {
     bloberizer.Add(glyph, font_data, canvas_rotation, h_offset,
                    character_index);
   }
@@ -51,7 +51,7 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
                   const SimpleFontData* font_data,
                   CanvasRotationInVertical canvas_rotation,
                   const gfx::Vector2dF& offset,
-                  unsigned character_index) {
+                  wtf_size_t character_index) {
     bloberizer.Add(glyph, font_data, canvas_rotation, offset, character_index);
   }
 
@@ -90,13 +90,13 @@ class PLATFORM_EXPORT ShapeResultBloberizerTestInfo {
 };
 
 struct PLATFORM_EXPORT ShapeResultTestGlyphInfo {
-  unsigned character_index;
+  wtf_size_t character_index;
   Glyph glyph;
   float advance;
 };
 
 void PLATFORM_EXPORT AddGlyphInfo(void* context,
-                                  unsigned character_index,
+                                  wtf_size_t character_index,
                                   Glyph,
                                   gfx::Vector2dF glyph_offset,
                                   float advance,
@@ -110,8 +110,8 @@ void PLATFORM_EXPORT ComputeGlyphResults(const ShapeResult&,
 bool PLATFORM_EXPORT
 CompareResultGlyphs(const Vector<ShapeResultTestGlyphInfo>& test,
                     const Vector<ShapeResultTestGlyphInfo>& reference,
-                    unsigned reference_start,
-                    unsigned num_glyphs);
+                    wtf_size_t reference_start,
+                    wtf_size_t num_glyphs);
 
 }  // namespace blink
 

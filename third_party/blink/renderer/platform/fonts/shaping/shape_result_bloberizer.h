@@ -61,7 +61,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
            float h_offset,
-           unsigned character_index) {
+           wtf_size_t character_index) {
     // cannot mix x-only/xy offsets
     DCHECK(!HasPendingVerticalOffsets());
 
@@ -87,7 +87,7 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
            const SimpleFontData* font_data,
            CanvasRotationInVertical canvas_rotation,
            const gfx::Vector2dF& offset,
-           unsigned character_index) {
+           wtf_size_t character_index) {
     // cannot mix x-only/xy offsets
     DCHECK(pending_glyphs_.empty() || HasPendingVerticalOffsets());
 
@@ -117,14 +117,14 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   // Whether the FillFastHorizontalGlyphs or AddFastHorizontalGlyphToBloberizer
   // can be used. Only applies for full runs with no vertical offsets, no text
   // intercepts, and not emitting text.
-  bool CanUseFastPath(unsigned from,
-                      unsigned to,
-                      unsigned length,
+  bool CanUseFastPath(wtf_size_t from,
+                      wtf_size_t to,
+                      wtf_size_t length,
                       bool has_vertical_offsets);
-  bool CanUseFastPath(unsigned from, unsigned to, const ShapeResultView*);
+  bool CanUseFastPath(wtf_size_t from, wtf_size_t to, const ShapeResultView*);
   float FillFastHorizontalGlyphs(const ShapeResult*, float advance = 0);
   static void AddFastHorizontalGlyphToBloberizer(void* context,
-                                                 unsigned,
+                                                 wtf_size_t,
                                                  Glyph,
                                                  gfx::Vector2dF glyph_offset,
                                                  float advance,
@@ -134,12 +134,12 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
 
   float FillGlyphsForResult(const ShapeResult*,
                             const StringView&,
-                            unsigned from,
-                            unsigned to,
+                            wtf_size_t from,
+                            wtf_size_t to,
                             float initial_advance,
-                            unsigned run_offset);
+                            wtf_size_t run_offset);
   static void AddGlyphToBloberizer(void* context,
-                                   unsigned character_index,
+                                   wtf_size_t character_index,
                                    Glyph,
                                    gfx::Vector2dF glyph_offset,
                                    float advance,
@@ -154,18 +154,18 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
                        float letter_spacing);
   static void AddEmphasisMarkToBloberizer(
       void* context,
-      unsigned character_index,
+      wtf_size_t character_index,
       float advance_so_far,
-      unsigned graphemes_in_cluster,
+      wtf_size_t graphemes_in_cluster,
       float cluster_advance,
       CanvasRotationInVertical canvas_rotation);
 
-  bool IsSkipInkException(const StringView& text, unsigned character_index);
+  bool IsSkipInkException(const StringView& text, wtf_size_t character_index);
 
   void SetText(const StringView& text,
-               unsigned from,
-               unsigned to,
-               base::span<const unsigned> cluster_starts);
+               wtf_size_t from,
+               wtf_size_t to,
+               base::span<const wtf_size_t> cluster_starts);
   void CommitText();
   void CommitPendingRun();
   void CommitPendingBlob();
@@ -192,9 +192,9 @@ class PLATFORM_EXPORT ShapeResultBloberizer {
   // Allowing this class to grow larger than ~7k impacts user perf.
   Vector<uint8_t, 64> pending_utf8_;
   Vector<uint32_t, 64> pending_utf8_character_indexes_;
-  Vector<unsigned, 64> current_character_indexes_;
-  Vector<unsigned, 64> cluster_ends_;
-  unsigned cluster_ends_offset_ = 0;
+  Vector<wtf_size_t, 64> current_character_indexes_;
+  Vector<wtf_size_t, 64> cluster_ends_;
+  wtf_size_t cluster_ends_offset_ = 0;
   StringView current_text_;
 
   float pending_vertical_baseline_x_offset_ = 0;
@@ -208,8 +208,8 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphsNG
     : public ShapeResultBloberizer {
   FillGlyphsNG(const FontDescription&,
                const StringView&,
-               unsigned from,
-               unsigned to,
+               wtf_size_t from,
+               wtf_size_t to,
                const ShapeResultView*,
                Type);
 };
@@ -217,8 +217,8 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillTextEmphasisGlyphsNG
     : public ShapeResultBloberizer {
   FillTextEmphasisGlyphsNG(const FontDescription&,
                            const StringView&,
-                           unsigned from,
-                           unsigned to,
+                           wtf_size_t from,
+                           wtf_size_t to,
                            const ShapeResultView*,
                            const GlyphData& emphasis_data);
 };
@@ -235,8 +235,8 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
   void FillGlyphsSlow(StringView text,
                       TextDirection direction,
                       const ShapeList& list,
-                      unsigned from,
-                      unsigned to);
+                      wtf_size_t from,
+                      wtf_size_t to);
 };
 
 void DrawTextBlobs(const ShapeResultBloberizer::BlobBuffer& blobs,

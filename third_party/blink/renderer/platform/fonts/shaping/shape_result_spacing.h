@@ -43,7 +43,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
     return is_word_spacing_applied_;
   }
   bool HasExpansion() const { return expansion_opportunity_count_; }
-  unsigned ExpansionOppotunityCount() const {
+  wtf_size_t ExpansionOppotunityCount() const {
     return expansion_opportunity_count_;
   }
 
@@ -80,7 +80,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // This function returns space amount to be added after the glyph.
   //
   // The `index` is for the string given in the constructor.
-  TextRunLayoutUnit ComputeSpacing(unsigned index,
+  TextRunLayoutUnit ComputeSpacing(wtf_size_t index,
                                    bool is_cursive_script = false);
 
   // Compute spacings to justify a glyph at the specified `index`.
@@ -93,7 +93,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // counts consumed justification opportunities.
   std::pair<TextRunLayoutUnit, TextRunLayoutUnit> ComputeExpansion(
       TextJustify method,
-      unsigned index,
+      wtf_size_t index,
       bool is_cursive_script = false);
   // Compute spacings to justify the specified character.
   // This function returns a pair of
@@ -115,7 +115,7 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   TextRunLayoutUnit word_spacing_;
   InlineLayoutUnit expansion_;
   TextRunLayoutUnit expansion_per_opportunity_;
-  unsigned expansion_opportunity_count_ = 0;
+  wtf_size_t expansion_opportunity_count_ = 0;
   JustificationContext justification_context_;
   bool has_spacing_ = false;
   bool is_letter_spacing_applied_ = false;

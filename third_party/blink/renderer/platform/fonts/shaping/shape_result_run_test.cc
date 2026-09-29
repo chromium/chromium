@@ -12,8 +12,8 @@ namespace blink {
 
 namespace {
 
-ShapeResultRun* CreateTestShapeResultRun(unsigned num_glyphs,
-                                         unsigned num_characters,
+ShapeResultRun* CreateTestShapeResultRun(wtf_size_t num_glyphs,
+                                         wtf_size_t num_characters,
                                          const SimpleFontData* font = nullptr) {
   return MakeGarbageCollected<ShapeResultRun>(
       font, hb_direction_t::HB_DIRECTION_LTR,
@@ -26,12 +26,12 @@ ShapeResultRun* CreateTestShapeResultRun(unsigned num_glyphs,
 class ShapeResultRunTest : public testing::Test {
  protected:
   ShapeResultRun* CreateConstantAdvanceRun(
-      unsigned num_glyphs,
-      unsigned num_characters,
+      wtf_size_t num_glyphs,
+      wtf_size_t num_characters,
       const SimpleFontData* font = nullptr) {
     ShapeResultRun* run =
         CreateTestShapeResultRun(num_glyphs, num_characters, font);
-    for (unsigned i = 0; i < num_glyphs; ++i) {
+    for (wtf_size_t i = 0; i < num_glyphs; ++i) {
       HarfBuzzRunGlyphData& glyph = run->glyph_data_.MutableGlyphAt(i);
       glyph.glyph = 42 + i;
       glyph.character_index = i;
@@ -42,8 +42,8 @@ class ShapeResultRunTest : public testing::Test {
     return run;
   }
 
-  ShapeResultRun* CreateCompactRun(unsigned num_glyphs,
-                                   unsigned num_characters) {
+  ShapeResultRun* CreateCompactRun(wtf_size_t num_glyphs,
+                                   wtf_size_t num_characters) {
     ShapeResultRun* run = CreateConstantAdvanceRun(num_glyphs, num_characters);
     EXPECT_TRUE(run->glyph_data_.TryMakeCompact());
     return run;
@@ -51,7 +51,7 @@ class ShapeResultRunTest : public testing::Test {
 };
 TEST_F(ShapeResultRunTest, GlyphDataCopyConstructor) {
   ShapeResultRun* run = CreateTestShapeResultRun(2, 2);
-  auto* graphemes = MakeGarbageCollected<GCedHeapVector<unsigned>>(2);
+  auto* graphemes = MakeGarbageCollected<GCedHeapVector<wtf_size_t>>(2);
   run->glyph_data_.SetGraphemes(graphemes);
 
   ShapeResultRun* run2 = MakeGarbageCollected<ShapeResultRun>(*run);

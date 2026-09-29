@@ -10,9 +10,9 @@ namespace blink {
 
 namespace {
 
-unsigned ExpansionOpportunityCount(const String& text,
-                                   TextJustify method,
-                                   InlineLayoutUnit expansion) {
+wtf_size_t ExpansionOpportunityCount(const String& text,
+                                     TextJustify method,
+                                     InlineLayoutUnit expansion) {
   ShapeResultSpacing spacing(text);
   {
     ShapeResultSpacing::ExpansionSetup setup(
