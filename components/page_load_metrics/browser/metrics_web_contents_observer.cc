@@ -1442,9 +1442,20 @@ PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTrackerIfValid(
   // subframe's timing update.
   PageLoadTracker* tracker = GetPageLoadTrackerLegacy(render_frame_host);
   // We may receive notifications from frames that have been navigated away
-  // from. In that case the PageLoadTracker is already destroyed in
-  // DidFinishNavigation (unless it's stored in bfcache). We simply ignore them.
-  if (!tracker && !render_frame_host->GetMainFrame()->IsActive()) {
+  // from or have not yet committed. In that case the PageLoadTracker is
+  // already destroyed in DidFinishNavigation (unless it's stored in bfcache),
+  // or the frame itself is not active. We simply ignore them.
+  const bool is_prerendering_or_bfcached_or_unloading =
+      render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPrerendering) ||
+      render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kInBackForwardCache) ||
+      render_frame_host->IsInLifecycleState(
+          content::RenderFrameHost::LifecycleState::kPendingDeletion);
+  const bool is_valid_frame =
+      render_frame_host->IsActive() ||
+      (tracker && is_prerendering_or_bfcached_or_unloading);
+  if (!is_valid_frame) {
     RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
     return nullptr;
   }
