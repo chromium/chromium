@@ -20,6 +20,7 @@ using TimeTicksLowResolutionNowFunction =
     decltype(&TimeTicks::LowResolutionNow);
 using LiveTicksNowFunction = decltype(&LiveTicks::Now);
 using ThreadTicksNowFunction = decltype(&ThreadTicks::Now);
+using RealTicksNowFunction = decltype(&time_internal::RealTicks::Now);
 
 // Time overrides should be used with extreme caution. Discuss with //base/time
 // OWNERS before adding a new one.
@@ -44,7 +45,8 @@ class BASE_EXPORT ScopedTimeClockOverrides {
                            ThreadTicksNowFunction thread_ticks_override,
                            LiveTicksNowFunction live_ticks_override = nullptr,
                            TimeTicksLowResolutionNowFunction
-                               time_ticks_low_resolution_override = nullptr);
+                               time_ticks_low_resolution_override = nullptr,
+                           RealTicksNowFunction real_ticks_override = nullptr);
 
   ScopedTimeClockOverrides(const ScopedTimeClockOverrides&) = delete;
   ScopedTimeClockOverrides& operator=(const ScopedTimeClockOverrides&) = delete;
@@ -68,6 +70,7 @@ BASE_EXPORT Time TimeNowFromSystemTimeIgnoringOverride();
 BASE_EXPORT TimeTicks TimeTicksNowIgnoringOverride();
 BASE_EXPORT LiveTicks LiveTicksNowIgnoringOverride();
 BASE_EXPORT ThreadTicks ThreadTicksNowIgnoringOverride();
+BASE_EXPORT time_internal::RealTicks RealTicksNowIgnoringOverride();
 BASE_EXPORT TimeTicks TimeTicksLowResolutionNowIgnoringOverride();
 
 #if BUILDFLAG(IS_POSIX)
@@ -94,6 +97,7 @@ extern std::atomic<TimeTicksNowFunction>
     g_time_ticks_low_resolution_now_function;
 extern std::atomic<LiveTicksNowFunction> g_live_ticks_now_function;
 extern std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function;
+extern std::atomic<RealTicksNowFunction> g_real_ticks_now_function;
 
 }  // namespace internal
 

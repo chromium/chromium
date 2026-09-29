@@ -87,6 +87,18 @@ int64_t ComputeCurrentTicks() {
   return MachTimeToMicroseconds(mach_absolute_time());
 }
 
+int64_t ComputeCurrentRealTicks() {
+  // `mach_continuous_time()` is guaranteed to advance in lockstep with
+  // `mach_absolute_time()` (the backing source for `TimeTicks` and `LiveTicks`)
+  // while the system is awake. Both calls query the same underlying hardware
+  // counter using the same `mach_timebase_info`, with `mach_continuous_time()`
+  // adding a sleep offset that is updated only upon system sleep/wake
+  // transitions. See:
+  // https://developer.apple.com/documentation/kernel/1646199-mach_continuous_time
+  // https://github.com/apple-oss-distributions/xnu/blob/main/osfmk/kern/clock.c
+  return MachTimeToMicroseconds(mach_continuous_time());
+}
+
 int64_t ComputeThreadTicks() {
   struct timespec ts = {};
   CHECK(clock_gettime(CLOCK_THREAD_CPUTIME_ID, &ts) == 0);
@@ -170,6 +182,10 @@ TimeTicks TimeTicksNowIgnoringOverride() {
 TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
   return TimeTicks() + Microseconds(MachTimeToMicroseconds(
                            clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW_APPROX)));
+}
+
+time_internal::RealTicks RealTicksNowIgnoringOverride() {
+  return time_internal::RealTicks() + Microseconds(ComputeCurrentRealTicks());
 }
 }  // namespace subtle
 

@@ -764,6 +764,27 @@ LiveTicks LiveTicksNowIgnoringOverride() {
 }
 }  // namespace subtle
 
+// RealTicks ------------------------------------------------------------------
+
+namespace subtle {
+// On Windows, `QueryInterruptTimePrecise()` and
+// `QueryUnbiasedInterruptTimePrecise()` (which backs `LiveTicks`) read the same
+// kernel interrupt-time clock in system time units of 100 nanoseconds. The
+// biased version includes time spent in sleep or hibernation, whereas the
+// unbiased version excludes it. While the system is awake, the sleep bias is
+// constant, guaranteeing that `RealTicks` and `LiveTicks` advance in exact
+// lockstep. See:
+// https://learn.microsoft.com/en-us/windows/win32/api/realtimeapiset/nf-realtimeapiset-queryinterrupttimeprecise
+// https://learn.microsoft.com/en-us/windows/win32/api/realtimeapiset/nf-realtimeapiset-queryunbiasedinterrupttimeprecise
+time_internal::RealTicks RealTicksNowIgnoringOverride() {
+  ULONGLONG interrupt_time;
+  QueryInterruptTimePrecise(&interrupt_time);
+  // QueryInterruptTimePrecise gets the interrupt time in system time units of
+  // 100 nanoseconds.
+  return time_internal::RealTicks() + Nanoseconds(interrupt_time * 100);
+}
+}  // namespace subtle
+
 // ThreadTicks ----------------------------------------------------------------
 
 namespace subtle {

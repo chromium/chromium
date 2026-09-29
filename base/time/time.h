@@ -1326,6 +1326,10 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, TimeTicks time_ticks);
 // Behaves similarly to `TimeTicks` (a monotonically non-decreasing clock time)
 // with the main difference being that `LiveTicks` is guaranteed not to advance
 // while the system is suspended.
+//
+// TODO(crbug.com/567134137): Fully define "while the system is suspended",
+// e.g. how LiveTicks behaves in intermediate low-power modes like Windows
+// "Modern Standby".
 class BASE_EXPORT LiveTicks : public time_internal::TimeBase<LiveTicks> {
  public:
   constexpr LiveTicks() : TimeBase(0) {}
@@ -1341,6 +1345,51 @@ class BASE_EXPORT LiveTicks : public time_internal::TimeBase<LiveTicks> {
 
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, LiveTicks live_ticks);
+
+namespace time_internal {
+
+// RealTicks ------------------------------------------------------------------
+
+// Behaves similarly to `TimeTicks` (a monotonically non-decreasing clock time)
+// with the main difference being that `RealTicks` always returns clock ticks
+// since the system booted, continuing to advance while the system is suspended.
+//
+// IMPORTANT: `RealTicks` is GUARANTEED to advance in lockstep with `LiveTicks`
+// as long as the system is awake (not suspended). On all platforms, both clocks
+// are derived from the exact same underlying time source with an identical
+// ticking rate; they never drift relative to each other while awake, differing
+// solely by an offset representing cumulative time spent in system suspension.
+//
+// This is internal to base (e.g. for `ElapsedNoSleepTimer`).
+class BASE_EXPORT RealTicks : public TimeBase<RealTicks> {
+ public:
+  constexpr RealTicks() : TimeBase(0) {}
+  static RealTicks Now();
+
+ private:
+  friend class TimeBase<RealTicks>;
+
+  // Please use Now() to create a new object. This is for internal use
+  // and testing.
+  constexpr explicit RealTicks(int64_t us) : TimeBase(us) {}
+};
+
+// For logging use only.
+BASE_EXPORT std::ostream& operator<<(std::ostream& os, RealTicks real_ticks);
+
+struct BASE_EXPORT LiveAndRealTicks {
+  LiveTicks live;
+  RealTicks real;
+  // Upper bound on sampling error resulting from non-atomic clock reads and
+  // independent microsecond truncation.
+  TimeDelta max_error;
+};
+
+// Reads LiveTicks and RealTicks, making a best effort to be atomic without
+// locking.
+BASE_EXPORT LiveAndRealTicks SampleLiveAndRealTicks();
+
+}  // namespace time_internal
 
 // ThreadTicks ----------------------------------------------------------------
 

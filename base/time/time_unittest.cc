@@ -1772,6 +1772,87 @@ TEST(LiveTicks, NowOverride) {
   EXPECT_LT(subtle::LiveTicksNowIgnoringOverride(), LiveTicks::Max());
 }
 
+class RealTicksOverride {
+ public:
+  static time_internal::RealTicks Now() {
+    now_ticks_ += Seconds(1);
+    return now_ticks_;
+  }
+
+  static time_internal::RealTicks now_ticks_;
+};
+
+// static
+time_internal::RealTicks RealTicksOverride::now_ticks_;
+
+TEST(RealTicks, NowOverride) {
+  RealTicksOverride::now_ticks_ = time_internal::RealTicks::Min();
+
+  // Override is not active. All Now() methods should return a sensible value.
+  time_internal::RealTicks initial_real_ticks = time_internal::RealTicks::Now();
+  EXPECT_LE(initial_real_ticks, time_internal::RealTicks::Now());
+  EXPECT_LT(time_internal::RealTicks::Now(), time_internal::RealTicks::Max());
+  EXPECT_LE(initial_real_ticks, subtle::RealTicksNowIgnoringOverride());
+  EXPECT_LT(subtle::RealTicksNowIgnoringOverride(),
+            time_internal::RealTicks::Max());
+
+  {
+    // Set override.
+    subtle::ScopedTimeClockOverrides overrides(
+        nullptr, nullptr, nullptr, nullptr, nullptr, &RealTicksOverride::Now);
+
+    // Overridden value is returned and incremented when Now() is called.
+    EXPECT_EQ(time_internal::RealTicks::Min() + Seconds(1),
+              time_internal::RealTicks::Now());
+    EXPECT_EQ(time_internal::RealTicks::Min() + Seconds(2),
+              time_internal::RealTicks::Now());
+
+    // NowIgnoringOverride() still returns real ticks.
+    EXPECT_LE(initial_real_ticks, subtle::RealTicksNowIgnoringOverride());
+    EXPECT_LT(subtle::RealTicksNowIgnoringOverride(),
+              time_internal::RealTicks::Max());
+
+    // IgnoringOverride methods didn't call NowOverrideTickClock::NowTicks().
+    EXPECT_EQ(time_internal::RealTicks::Min() + Seconds(3),
+              time_internal::RealTicks::Now());
+  }
+
+  // All methods return real ticks again.
+  EXPECT_LE(initial_real_ticks, time_internal::RealTicks::Now());
+  EXPECT_LT(time_internal::RealTicks::Now(), time_internal::RealTicks::Max());
+  EXPECT_LE(initial_real_ticks, subtle::RealTicksNowIgnoringOverride());
+  EXPECT_LT(subtle::RealTicksNowIgnoringOverride(),
+            time_internal::RealTicks::Max());
+}
+
+TEST(RealTicks, AdvancesInLockstepWithLiveTicks) {
+  // When the system is not sleeping, LiveTicks and RealTicks must advance in
+  // lockstep.
+  const time_internal::LiveAndRealTicks start =
+      time_internal::SampleLiveAndRealTicks();
+
+  PlatformThread::Sleep(Milliseconds(20));
+
+  const time_internal::LiveAndRealTicks end =
+      time_internal::SampleLiveAndRealTicks();
+
+  const TimeDelta live_delta = end.live - start.live;
+  const TimeDelta real_delta = end.real - start.real;
+  EXPECT_GE(live_delta, Milliseconds(10));
+  EXPECT_GE(real_delta, Milliseconds(10));
+
+  // The sampling uncertainty between the two clocks in each sample is bounded
+  // by `max_error`, which accounts for both non-atomic reads and independent
+  // microsecond truncation. Across both `start` and `end` samples, the maximum
+  // difference between `live_delta` and `real_delta` cannot exceed the sum of
+  // their individual error bounds. Deriving the error margin dynamically from
+  // these measured durations guarantees the most discriminant possible
+  // criterion for detecting drift between the two clocks without risking false
+  // failures.
+  const TimeDelta error_margin = start.max_error + end.max_error;
+  EXPECT_LE((live_delta - real_delta).magnitude(), error_margin);
+}
+
 TEST(TimeDelta, FromAndIn) {
   // static_assert also checks that the contained expression is a constant
   // expression, meaning all its components are suitable for initializing global

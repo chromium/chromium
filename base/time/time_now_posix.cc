@@ -129,6 +129,28 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   return true;
 }
 
+// RealTicks ------------------------------------------------------------------
+
+namespace subtle {
+// In Linux and Android, `CLOCK_BOOTTIME` is identical to `CLOCK_MONOTONIC`
+// (which backs `TimeTicks` and `LiveTicks`), except that it includes time spent
+// in system suspension. Both clocks are derived from the same kernel timekeeper
+// and frequency adjustments (NTP), differing only by `offs_boot` which is
+// updated solely when resuming from suspend. Therefore, `CLOCK_BOOTTIME` is
+// guaranteed to advance in exact lockstep with `CLOCK_MONOTONIC` while awake.
+// See:
+// https://man7.org/linux/man-pages/man2/clock_gettime.2.html
+// https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/time/timekeeping.c
+//
+// Note: `CLOCK_BOOTTIME` is not available or equivalent on all POSIX systems,
+// but it is consistent for all platforms that use this implementation (Linux,
+// ChromeOS, and Android). Apple platforms use an alternate implementation in
+// time_apple.mm.
+time_internal::RealTicks RealTicksNowIgnoringOverride() {
+  return time_internal::RealTicks() + Microseconds(ClockNow(CLOCK_BOOTTIME));
+}
+}  // namespace subtle
+
 // ThreadTicks ----------------------------------------------------------------
 
 namespace subtle {

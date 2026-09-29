@@ -86,6 +86,25 @@ zx_time_t TimeTicks::ToZxTime() const {
   return (*this - TimeTicks()).InNanoseconds();
 }
 
+// RealTicks ------------------------------------------------------------------
+
+namespace subtle {
+// In Fuchsia Zircon, `zx_clock_get_boot()` returns the number of nanoseconds
+// since boot including suspended time, while `zx_clock_get_monotonic()` (which
+// backs `TimeTicks` and `LiveTicks`) excludes suspended time. Both clocks are
+// linear transformations of the same underlying hardware counter
+// (`zx_ticks_get_boot()` and `zx_ticks_get()`). While the system is awake, the
+// boot offset is static, ensuring `zx_clock_get_boot()` and
+// `zx_clock_get_monotonic()` advance at the identical rate of 1 ns per ns. See:
+// https://fuchsia.dev/reference/syscalls/clock_get_boot
+// https://fuchsia.dev/reference/syscalls/clock_get_monotonic
+time_internal::RealTicks RealTicksNowIgnoringOverride() {
+  const zx_time_t nanos_since_boot = zx_clock_get_boot();
+  CHECK_NE(0, nanos_since_boot);
+  return time_internal::RealTicks() + Nanoseconds(nanos_since_boot);
+}
+}  // namespace subtle
+
 // ThreadTicks ----------------------------------------------------------------
 
 namespace subtle {
