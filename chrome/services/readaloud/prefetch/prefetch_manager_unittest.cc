@@ -647,12 +647,13 @@ TEST_F(PrefetchManagerTest,
   EXPECT_EQ(chunks[1].text, u"Second sentence!");
   EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
 
-  // Segment 1 chunks must have base_offset equal to segment 0 length (32).
+  // Segment 1 continues one separator after segment 0's last chunk:
+  // 16 + len("Second sentence!") + 1 = 33.
   EXPECT_EQ(chunks[2].text, u"Third sentence?");
-  EXPECT_EQ(chunks[2].start_code_unit_offset, 32u);
+  EXPECT_EQ(chunks[2].start_code_unit_offset, 33u);
 
   EXPECT_EQ(chunks[3].text, u"Fourth sentence.");
-  EXPECT_EQ(chunks[3].start_code_unit_offset, 48u);
+  EXPECT_EQ(chunks[3].start_code_unit_offset, 49u);
 }
 
 TEST_F(PrefetchManagerTest, SetTextContentInterleavedNullSegment) {
@@ -681,7 +682,7 @@ TEST_F(PrefetchManagerTest, SetTextContentInterleavedNullSegment) {
   EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
 
   EXPECT_EQ(chunks[1].text, u"Second sentence.");
-  EXPECT_EQ(chunks[1].start_code_unit_offset, 15u);
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
 }
 
 TEST_F(PrefetchManagerTest, SetTextContentInterleavedEmptySegment) {
@@ -713,7 +714,7 @@ TEST_F(PrefetchManagerTest, SetTextContentInterleavedEmptySegment) {
   EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
 
   EXPECT_EQ(chunks[1].text, u"Second sentence.");
-  EXPECT_EQ(chunks[1].start_code_unit_offset, 15u);
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
 }
 
 TEST_F(PrefetchManagerTest, SetTextContentInterleavedWhitespaceSegment) {
@@ -743,10 +744,49 @@ TEST_F(PrefetchManagerTest, SetTextContentInterleavedWhitespaceSegment) {
   EXPECT_EQ(chunks[0].text, u"First sentence.");
   EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
 
-  // Segment 1 (whitespace, 8 code units) accumulates into document_offset,
-  // even though it yields 0 chunks. seg0 length (15) + seg_ws length (8) = 23.
+  // Segment 1 is whitespace only: it yields no chunks and contributes nothing,
+  // so seg1 follows seg0 with a single separator: len("First sentence.") + 1.
   EXPECT_EQ(chunks[1].text, u"Second sentence.");
-  EXPECT_EQ(chunks[1].start_code_unit_offset, 23u);
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
+}
+
+// Chunk offsets live in the highlighter's coordinate space: the trimmed chunks
+// joined by exactly one separator. Whitespace trimmed by the chunker, including
+// whole whitespace-only segments, must not contribute.
+TEST_F(PrefetchManagerTest, SetTextContentAssignsJoinedTrimmedOffsets) {
+  PrefetchManager manager;
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+
+  read_aloud::mojom::TextSegmentPtr seg0 =
+      read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"  First sentence.   Second one!  ";
+  segments.push_back(std::move(seg0));
+
+  read_aloud::mojom::TextSegmentPtr seg_ws =
+      read_aloud::mojom::TextSegment::New();
+  seg_ws->segment_index = 1;
+  seg_ws->text = u"   \t\n   ";
+  segments.push_back(std::move(seg_ws));
+
+  read_aloud::mojom::TextSegmentPtr seg1 =
+      read_aloud::mojom::TextSegment::New();
+  seg1->segment_index = 2;
+  seg1->text = u"\nThird.";
+  segments.push_back(std::move(seg1));
+
+  manager.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  const std::vector<TextChunk>& chunks = manager.GetTimelineChunks();
+  ASSERT_EQ(chunks.size(), 3u);
+  EXPECT_EQ(chunks[0].text, u"First sentence.");
+  EXPECT_EQ(chunks[0].start_code_unit_offset, 0u);
+  EXPECT_EQ(chunks[1].text, u"Second one!");
+  // len("First sentence.") + 1 separator.
+  EXPECT_EQ(chunks[1].start_code_unit_offset, 16u);
+  EXPECT_EQ(chunks[2].text, u"Third.");
+  // 16 + len("Second one!") + 1 separator.
+  EXPECT_EQ(chunks[2].start_code_unit_offset, 28u);
 }
 
 TEST_F(PrefetchManagerTest, CancelInflightRequestsClearsQueuesAndInvalidatesSequenceId) {

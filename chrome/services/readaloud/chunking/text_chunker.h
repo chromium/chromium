@@ -27,9 +27,11 @@ enum class ChunkingMode {
 struct TextChunk {
   // A zero-copy string view referencing a slice of the original text.
   std::u16string_view text;
-  // The 0-based code unit offset of this chunk relative to the original text.
+  // The 0-based code unit offset of this chunk relative to the original text
+  // with whitespace trimmed.
   // NOTE: This offset is measured in 16-bit code units (char16_t), NOT Unicode
-  // code points (UChar32). Take care not to split surrogate pairs across offsets.
+  // code points (UChar32). Take care not to split surrogate pairs across
+  // offsets.
   size_t start_code_unit_offset = 0;
   read_aloud::mojom::Speaker speaker = read_aloud::mojom::Speaker::kSpeaker1;
 
@@ -40,15 +42,13 @@ struct TextChunk {
 // Leading and trailing whitespace is trimmed from each resulting chunk.
 // `locale_tag` specifies the optional BCP-47 LanguageTag for sentence
 // breaking. If omitted, defaults to the system ICU locale.
-// `base_offset` specifies an offset in 16-bit code units (char16_t) added to
-// each chunk's `start_code_unit_offset` (e.g. for document-wide character
-// offsets).
+// The first chunk's `start_code_unit_offset` is 0; each later chunk follows
+// the previous one plus one separator code unit to match highlighter.js.
 // Returns an empty vector if `text` is empty or contains only whitespace.
 std::vector<TextChunk> ChunkText(
     std::u16string_view text,
     ChunkingMode mode = ChunkingMode::kSpeed,
-    std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt,
-    size_t base_offset = 0);
+    std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt);
 
 }  // namespace readaloud
 

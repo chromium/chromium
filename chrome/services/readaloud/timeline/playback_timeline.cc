@@ -82,8 +82,7 @@ void PlaybackTimeline::SetTextContent(
     // Always use ChunkingMode::kSpeed so PlaybackTimeline preserves the
     // canonical atomic sentence boundaries (0...N-1) rather than prosody
     // multi-sentence groups.
-    chunks_ = ChunkText(document_text_, ChunkingMode::kSpeed, locale_tag,
-                        /*base_offset=*/0);
+    chunks_ = ChunkText(document_text_, ChunkingMode::kSpeed, locale_tag);
   }
 
   base::TimeDelta cumulative_est_time;

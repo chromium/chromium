@@ -384,6 +384,46 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetUsesSynthesizedWordTimings) {
   EXPECT_EQ(pos_world->global_char.start_offset, 6u);
 }
 
+// Word timings carry offsets in the same space as `start_code_unit_offset`
+// (trimmed chunks joined by one separator), so the in-chunk offset is still
+// recovered correctly for a later chunk whose source had extra whitespace.
+TEST_F(PlaybackTimelineTest,
+       ResolveTimeOffsetUsesWordTimingsInLaterChunkWithCollapsedWhitespace) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  auto seg0 = read_aloud::mojom::TextSegment::New();
+  seg0->segment_index = 0;
+  seg0->text = u"First.   Second word.";
+  segments.push_back(std::move(seg0));
+
+  timeline_.SetTextContent(segments);
+  ASSERT_EQ(timeline_.GetChunkCount(), 2u);
+  // The three spaces count as one separator: len("First.") + 1.
+  EXPECT_EQ(timeline_.chunks()[1].start_code_unit_offset, 7u);
+
+  std::vector<WordTiming> timings = {
+      {.start_time = base::Milliseconds(0),
+       .end_time = base::Milliseconds(300),
+       .start_character_offset = 7u,
+       .end_character_offset = 13u},
+      {.start_time = base::Milliseconds(300),
+       .end_time = base::Milliseconds(600),
+       .start_character_offset = 14u,
+       .end_character_offset = 18u},
+  };
+  timeline_.UpdateSentenceDuration(/*sentence_index=*/1,
+                                   base::Milliseconds(600), timings);
+
+  // 400 ms into the second chunk falls inside "word". Chunk 0 ("First.") keeps
+  // its estimated duration.
+  std::optional<TimelinePosition> pos = timeline_.ResolveTimeOffset(
+      6 * PlaybackTimeline::kEstimatedDurationPerChar +
+      base::Milliseconds(400));
+  ASSERT_TRUE(pos.has_value());
+  EXPECT_EQ(pos->chunk.index, 1u);
+  EXPECT_EQ(pos->chunk.start_char_offset, 7u);
+  EXPECT_EQ(pos->global_char.start_offset, 14u);
+}
+
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetNegativeOrMaxReturnsNullopt) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg0 = read_aloud::mojom::TextSegment::New();

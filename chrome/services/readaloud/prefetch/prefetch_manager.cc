@@ -61,12 +61,21 @@ void PrefetchManager::SetTextContent(
     // are not sent as standalone network synthesis requests. In
     // ChunkingMode::kQuality, retain them within paragraph groupings for
     // natural prosody and pauses.
-    std::vector<TextChunk> sentence_chunks = ChunkText(
-        segment->text, GetChunkingMode(), locale_tag, document_offset);
+    std::vector<TextChunk> sentence_chunks =
+        ChunkText(segment->text, GetChunkingMode(), locale_tag);
+    // ChunkText() counts from 0 within the segment. Shift the chunks so the
+    // document's canonical offsets continue across segments, with one
+    // separator after the previous segment's last chunk, as between any two
+    // chunks. highlighter.js depends on this; see
+    // `TextChunk::start_code_unit_offset`.
     for (TextChunk& chunk : sentence_chunks) {
+      chunk.start_code_unit_offset += document_offset;
       chunk.speaker = segment->speaker;
     }
-    document_offset += segment->text.size();
+    if (!sentence_chunks.empty()) {
+      const TextChunk& last = sentence_chunks.back();
+      document_offset = last.start_code_unit_offset + last.text.size() + 1;
+    }
     timeline_.insert(timeline_.end(),
                      std::make_move_iterator(sentence_chunks.begin()),
                      std::make_move_iterator(sentence_chunks.end()));
