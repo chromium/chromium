@@ -37,6 +37,7 @@ import java.lang.annotation.Target;
 @NullMarked
 public class VerticalTabUtils {
     private static @Nullable Boolean sIsVerticalTabsEligibleForTesting;
+    private static boolean sIsTabLayoutSwitchingInProgress;
 
     /** The width of the vertical tabs SideUiContainer in dp. */
     public static final int SIDE_UI_CONTAINER_WIDTH_DP = 240;
@@ -413,8 +414,19 @@ public class VerticalTabUtils {
         return WindowWidthBoundary.FULLY_EXPANDABLE;
     }
 
+    /** Sets whether a tab layout switch between horizontal and vertical is in progress. */
+    public static void setTabLayoutSwitchingInProgress(boolean inProgress) {
+        sIsTabLayoutSwitchingInProgress = inProgress;
+    }
+
+    /** Returns whether a tab layout switch between horizontal and vertical is in progress. */
+    public static boolean isTabLayoutSwitchingInProgress() {
+        return sIsTabLayoutSwitchingInProgress;
+    }
+
     /** Resets Vertical Tabs SharedPreferences. For testing use only. */
     public static void resetSharedPrefsForTesting() {
+        sIsTabLayoutSwitchingInProgress = false;
         ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);

@@ -41,22 +41,42 @@ import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTe
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS})
 public class TabPositionSettingsFragmentTest {
+    private static final int WIDE_WINDOW_WIDTH_DP = 800;
+    private static final int NARROW_WINDOW_WIDTH_DP = 400;
+
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsTestRule =
             new BlankUiTestActivitySettingsTestRule();
 
     private TabPositionSettingsFragment mSettings;
+    private int mOriginalScreenWidthDp;
 
     @Before
     public void setUp() {
         VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeSharedPreferences.getInstance()
+                                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
     }
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance().removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mSettingsTestRule.getActivity() != null && mOriginalScreenWidthDp > 0) {
+                        mSettingsTestRule
+                                        .getActivity()
+                                        .getResources()
+                                        .getConfiguration()
+                                        .screenWidthDp =
+                                mOriginalScreenWidthDp;
+                    }
+                    ChromeSharedPreferences.getInstance()
+                            .removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED);
+                });
     }
 
     private void launchSettings() {
@@ -64,6 +84,21 @@ public class TabPositionSettingsFragmentTest {
                 TabPositionSettingsFragment.class,
                 null,
                 fragment -> mSettings = (TabPositionSettingsFragment) fragment);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mOriginalScreenWidthDp =
+                            mSettingsTestRule
+                                    .getActivity()
+                                    .getResources()
+                                    .getConfiguration()
+                                    .screenWidthDp;
+                    mSettingsTestRule
+                                    .getActivity()
+                                    .getResources()
+                                    .getConfiguration()
+                                    .screenWidthDp =
+                            WIDE_WINDOW_WIDTH_DP;
+                });
     }
 
     @Test
@@ -106,6 +141,124 @@ public class TabPositionSettingsFragmentTest {
                         .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
 
         // Select Horizontal.
+        ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
+        assertFalse(cardPref.isVerticalTabsSelected());
+        assertTrue(horizontalOption.isSelected());
+        assertFalse(verticalOption.isSelected());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleTabPositionBlockedWhileSwitchingInProgress() {
+        launchSettings();
+
+        CriteriaHelper.pollUiThread(() -> mSettings.getCardPreferenceForTesting() != null);
+        TabPositionCardPreference cardPref = mSettings.getCardPreferenceForTesting();
+        assertNotNull(cardPref);
+
+        CriteriaHelper.pollUiThread(() -> cardPref.getHorizontalOptionForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> cardPref.getVerticalOptionForTesting() != null);
+
+        View horizontalOption = cardPref.getHorizontalOptionForTesting();
+        View verticalOption = cardPref.getVerticalOptionForTesting();
+
+        // Simulate an in-progress tab layout transition.
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(true);
+
+        // Clicking Vertical should be ignored while switching is in progress.
+        ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
+        assertFalse(cardPref.isVerticalTabsSelected());
+        assertTrue(horizontalOption.isSelected());
+        assertFalse(verticalOption.isSelected());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+
+        // Once switching finishes, clicking Vertical should succeed.
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
+        ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
+        assertTrue(cardPref.isVerticalTabsSelected());
+        assertFalse(horizontalOption.isSelected());
+        assertTrue(verticalOption.isSelected());
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+
+        // Clicking Horizontal while switching is in progress should also be ignored.
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(true);
+        ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
+        assertTrue(cardPref.isVerticalTabsSelected());
+        assertFalse(horizontalOption.isSelected());
+        assertTrue(verticalOption.isSelected());
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+
+        // Once switching finishes, clicking Horizontal should succeed.
+        VerticalTabUtils.setTabLayoutSwitchingInProgress(false);
+        ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
+        assertFalse(cardPref.isVerticalTabsSelected());
+        assertTrue(horizontalOption.isSelected());
+        assertFalse(verticalOption.isSelected());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleTabPositionBlockedWhenWindowTooNarrow() {
+        launchSettings();
+
+        CriteriaHelper.pollUiThread(() -> mSettings.getCardPreferenceForTesting() != null);
+        TabPositionCardPreference cardPref = mSettings.getCardPreferenceForTesting();
+        assertNotNull(cardPref);
+
+        CriteriaHelper.pollUiThread(() -> cardPref.getHorizontalOptionForTesting() != null);
+        CriteriaHelper.pollUiThread(() -> cardPref.getVerticalOptionForTesting() != null);
+
+        View horizontalOption = cardPref.getHorizontalOptionForTesting();
+        View verticalOption = cardPref.getVerticalOptionForTesting();
+
+        // Simulate a narrow window width where Vertical Tabs is not showable / auto-hidden.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSettings.getResources().getConfiguration().screenWidthDp =
+                                NARROW_WINDOW_WIDTH_DP);
+
+        // Clicking Vertical when Horizontal is selected should be ignored on a narrow window.
+        ThreadUtils.runOnUiThreadBlocking(verticalOption::performClick);
+        assertFalse(cardPref.isVerticalTabsSelected());
+        assertTrue(horizontalOption.isSelected());
+        assertFalse(verticalOption.isSelected());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+
+        // Simulate Vertical Tabs already enabled and in the auto-hide state on a narrow window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeSharedPreferences.getInstance()
+                                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, true));
+        CriteriaHelper.pollUiThread(cardPref::isVerticalTabsSelected);
+
+        // Clicking Horizontal while Vertical Tabs is in auto-hide state should also be ignored.
+        ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
+        assertTrue(cardPref.isVerticalTabsSelected());
+        assertFalse(horizontalOption.isSelected());
+        assertTrue(verticalOption.isSelected());
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+
+        // Once the window is wide enough, clicking Horizontal should succeed.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mSettings.getResources().getConfiguration().screenWidthDp =
+                                WIDE_WINDOW_WIDTH_DP);
         ThreadUtils.runOnUiThreadBlocking(horizontalOption::performClick);
         assertFalse(cardPref.isVerticalTabsSelected());
         assertTrue(horizontalOption.isSelected());

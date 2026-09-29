@@ -889,6 +889,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     .unregisterOnSharedPreferenceChangeListener(mVerticalTabsPreferenceListener);
             mVerticalTabsPreferenceListener = null;
         }
+        setTabLayoutSwitchingInProgress(false);
         maybeClearPendingTabStripUnsuppression();
         if (mOpenInAppEntryPoint != null) {
             mOpenInAppEntryPoint.destroy();
@@ -2524,7 +2525,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (transitionCoordinator != null) {
             transitionCoordinator.addObserver(
                     success -> {
-                        if (!success || mVerticalTabsSideUiCoordinator == null) return;
+                        if (!success || mVerticalTabsSideUiCoordinator == null) {
+                            setTabLayoutSwitchingInProgress(false);
+                            return;
+                        }
 
                         boolean active = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
                         // Defer the request here to let SideUiCoordinatorImpl finish processing
@@ -2541,6 +2545,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     if (TextUtils.equals(key, ChromePreferenceKeys.VERTICAL_TABS_ENABLED)) {
                         boolean shouldShowVerticalTabs =
                                 VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+                        setTabLayoutSwitchingInProgress(true);
                         if (shouldShowVerticalTabs) {
                             if (mPendingUnsuppressTabStripObserver != null) {
                                 maybeClearPendingTabStripUnsuppression();
@@ -2622,11 +2627,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 });
     }
 
+    private void setTabLayoutSwitchingInProgress(boolean inProgress) {
+        if (ApplicationStatus.getLastTrackedFocusedActivity() == mActivity) {
+            VerticalTabUtils.setTabLayoutSwitchingInProgress(inProgress);
+        }
+    }
+
     private void onVerticalTabsActiveChanged(boolean active) {
         var transitionCoordinator =
                 assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
         assumeNonNull(transitionCoordinator);
         maybeClearPendingTabStripUnsuppression();
+        setTabLayoutSwitchingInProgress(false);
         if (active) {
             transitionCoordinator.suppressTabStrip(true);
         } else {
@@ -3361,7 +3373,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public BooleanSupplier canActivateTabLayoutToggleMenu() {
         return () ->
                 mVerticalTabsSideUiCoordinator != null
-                        && mVerticalTabsSideUiCoordinator.canActivateTabLayoutToggleMenu();
+                        && mVerticalTabsSideUiCoordinator.canActivateTabLayoutToggleMenu()
+                        && !VerticalTabUtils.isTabLayoutSwitchingInProgress();
     }
 
     @Nullable GlicPromoCoordinator getGlicPromoCoordinatorForTesting() {

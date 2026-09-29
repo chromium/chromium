@@ -21,6 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -619,6 +621,95 @@ public class TabbedRootUiCoordinatorTest {
         verify(mUmaSessionStatsJniMock)
                 .registerSyntheticFieldTrial(
                         "VerticalTabsAndroid", "Disabled", SyntheticTrialAnnotationMode.NEXT_LOG);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testCanActivateTabLayoutToggleMenu_SwitchingInProgress() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mTabbedRootUiCoordinator
+                                    .canActivateTabLayoutToggleMenu()
+                                    .getAsBoolean());
+
+                    // 1. Toggle ON: HT -> VT. Immediately after starting, switching is in progress.
+                    mTabbedRootUiCoordinator.toggleTabStrip();
+                    assertFalse(
+                            mTabbedRootUiCoordinator
+                                    .canActivateTabLayoutToggleMenu()
+                                    .getAsBoolean());
+                });
+
+        // Wait for the transition to Vertical Tabs to complete.
+        CriteriaHelper.pollUiThread(
+                () -> mTabbedRootUiCoordinator.canActivateTabLayoutToggleMenu().getAsBoolean());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // 2. Toggle OFF: VT -> HT. Immediately after starting, switching is in
+                    // progress.
+                    mTabbedRootUiCoordinator.toggleTabStrip();
+                    assertFalse(
+                            mTabbedRootUiCoordinator
+                                    .canActivateTabLayoutToggleMenu()
+                                    .getAsBoolean());
+                });
+
+        // Wait for the transition back to Horizontal Tabs to complete.
+        CriteriaHelper.pollUiThread(
+                () -> mTabbedRootUiCoordinator.canActivateTabLayoutToggleMenu().getAsBoolean());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.ONLY_TABLET})
+    @EnableFeatures(ChromeFeatureList.ANDROID_VERTICAL_TABS)
+    public void testCanActivateTabLayoutToggleMenu_NonForegroundActivity() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        Activity otherActivity = ThreadUtils.runOnUiThreadBlocking(Activity::new);
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        // Simulate another Activity in multi-window mode becoming the focused
+                        // foreground Activity.
+                        ApplicationStatus.onStateChangeForTesting(
+                                otherActivity, ActivityState.CREATED);
+                        ApplicationStatus.onStateChangeForTesting(
+                                otherActivity, ActivityState.RESUMED);
+
+                        // A non-foreground Activity should not set switching in progress when the
+                        // preference changes.
+                        mTabbedRootUiCoordinator.toggleTabStrip();
+                        assertTrue(
+                                mTabbedRootUiCoordinator
+                                        .canActivateTabLayoutToggleMenu()
+                                        .getAsBoolean());
+                    });
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ApplicationStatus.onStateChangeForTesting(
+                                otherActivity, ActivityState.DESTROYED);
+                        ApplicationStatus.onStateChangeForTesting(
+                                mPage.getActivity(), ActivityState.RESUMED);
+                    });
+        }
     }
 
     @Test

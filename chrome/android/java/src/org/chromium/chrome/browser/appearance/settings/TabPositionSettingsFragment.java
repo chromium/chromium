@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
@@ -49,6 +50,12 @@ public class TabPositionSettingsFragment extends ChromeBaseSettingsFragment
         mCardPreference = NullUtil.assertNonNull(findPreference(PREF_TAB_POSITION_CARD_SELECTOR));
         mCardPreference.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
+                    int widthDp = getResources().getConfiguration().screenWidthDp;
+                    if (VerticalTabUtils.isTabLayoutSwitchingInProgress()
+                            || VerticalTabUtils.getWindowWidthBoundary(widthDp)
+                                    == WindowWidthBoundary.NOT_SHOWABLE) {
+                        return false;
+                    }
                     VerticalTabUtils.setVerticalTabsEnabled((boolean) newValue);
                     // TODO(crbug.com/559165430): Record layout toggle histogram when Settings
                     // entry point is added.
