@@ -13,12 +13,13 @@
 namespace views {
 
 ViewShadow::ViewShadow(View* view, int elevation)
-    : view_(view), decoration_(ui::Decoration::CreateShadow(elevation)) {
+    : view_(view), shadow_(std::make_unique<ui::Shadow>()) {
   if (!view_->layer()) {
     view_->SetPaintToLayer();
   }
-  view_->AddLayerToRegion(decoration_->layer(), LayerRegion::kBelow);
-  decoration_->SetContentBounds(view_->layer()->bounds());
+  shadow_->Init(elevation);
+  view_->AddLayerToRegion(shadow_->layer(), LayerRegion::kBelow);
+  shadow_->SetContentBounds(view_->layer()->bounds());
   view_observation_.Observe(view_);
 }
 
@@ -29,19 +30,19 @@ ViewShadow::~ViewShadow() {
 }
 
 void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
-  SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
+  shadow_->SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
 }
 
 void ViewShadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
-  decoration_->SetRoundedCorners(radii);
+  shadow_->SetRoundedCorners(radii);
 }
 
 void ViewShadow::OnViewLayerBoundsSet(View* view) {
-  decoration_->SetContentBounds(view_->layer()->bounds());
+  shadow_->SetContentBounds(view->layer()->bounds());
 }
 
 void ViewShadow::OnViewIsDeleting(View* view) {
-  decoration_.reset();
+  shadow_.reset();
   view_observation_.Reset();
   view_ = nullptr;
 }

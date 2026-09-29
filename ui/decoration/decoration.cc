@@ -18,7 +18,6 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_not_drawn.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -57,20 +56,6 @@ std::unique_ptr<Decoration> Decoration::Create(
     std::unique_ptr<decoration::DecorationSource> source,
     std::string_view debug_name) {
   return std::make_unique<Decoration>(std::move(source), debug_name);
-}
-
-// static
-std::unique_ptr<Decoration> Decoration::CreateShadow(
-    int elevation,
-    ui::decoration::Shadow::Style style,
-    ui::decoration::Shadow::ElevationToColorsMap color_map) {
-  auto decoration = Create(std::make_unique<ui::decoration::Shadow>(
-                               elevation, style, std::move(color_map)),
-                           /*debug_name=*/"Shadow");
-  // Historically, shadows frame content with slightly rounded corners unless
-  // told otherwise.
-  decoration->SetRoundedCorners(gfx::RoundedCornersF(2.f));
-  return decoration;
 }
 
 Decoration::Decoration(std::unique_ptr<decoration::DecorationSource> source,

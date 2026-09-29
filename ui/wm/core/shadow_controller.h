@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/decoration/decoration.h"
 #include "ui/decoration/shadow.h"
 #include "ui/wm/public/activation_change_observer.h"
 
@@ -22,6 +21,7 @@ class Window;
 
 namespace ui {
 class ColorProvider;
+class Shadow;
 }
 
 namespace wm {
@@ -36,11 +36,10 @@ class ShadowControllerDelegate;
 class COMPONENT_EXPORT(UI_WM) ShadowController
     : public ActivationChangeObserver {
  public:
-  // Returns the shadow decoration for the |window|, or NULL if no shadow
-  // exists.
-  static ui::Decoration* GetShadowDecorationForWindow(aura::Window* window);
+  // Returns the shadow for the |window|, or NULL if no shadow exists.
+  static ui::Shadow* GetShadowForWindow(aura::Window* window);
   // Generate an elevation to shadow colors map with given color provider.
-  static ui::decoration::Shadow::ElevationToColorsMap GenerateShadowColorsMap(
+  static ui::Shadow::ElevationToColorsMap GenerateShadowColorsMap(
       const ui::ColorProvider* color_provider);
 
   ShadowController(ActivationClient* activation_client,

@@ -34,20 +34,19 @@ TEST_F(WmShadowControllerDelegateTest,
 
   // Before entering Overview, the shadow should have a same rounded corner
   // radius with its window.
-  auto* shadow_decoration =
-      shadow_controller->GetShadowDecorationForWindow(window.get());
+  auto* shadow = shadow_controller->GetShadowForWindow(window.get());
   EXPECT_TRUE(window_rounded_corner);
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
+  EXPECT_EQ(shadow->rounded_corners().upper_left(),
             window_rounded_corner->upper_left());
 
   // Enter Overview, the shadow's rounded corner radius becomes 0.
   ToggleOverview();
-  EXPECT_EQ(shadow_decoration->rounded_corners(), gfx::RoundedCornersF());
+  EXPECT_EQ(shadow->rounded_corners(), gfx::RoundedCornersF());
 
   // Exit Overview, the shadow's rounded corner radius is reset to window
   // rounded corner radius.
   ToggleOverview();
-  EXPECT_EQ(shadow_decoration->rounded_corners().upper_left(),
+  EXPECT_EQ(shadow->rounded_corners().upper_left(),
             window_rounded_corner->upper_left());
 }
 
@@ -63,16 +62,15 @@ TEST_F(WmShadowControllerDelegateTest,
                   ->Contains(window.get()));
   auto* shadow_controller = Shell::Get()->shadow_controller();
   shadow_controller->UpdateShadowForWindow(window.get());
-  auto* shadow_decoration =
-      shadow_controller->GetShadowDecorationForWindow(window.get());
-  ASSERT_TRUE(shadow_decoration);
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  auto* shadow = shadow_controller->GetShadowForWindow(window.get());
+  ASSERT_TRUE(shadow);
+  EXPECT_TRUE(shadow->layer()->visible());
 
   EnterOverview();
-  EXPECT_FALSE(shadow_decoration->layer()->visible());
+  EXPECT_FALSE(shadow->layer()->visible());
 
   ExitOverview();
-  EXPECT_TRUE(shadow_decoration->layer()->visible());
+  EXPECT_TRUE(shadow->layer()->visible());
 }
 
 TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
@@ -88,35 +86,32 @@ TEST_F(WmShadowControllerDelegateTest, HideShadowForOccludedWindow) {
   auto window3 = CreateWindowWithAppType(AppType::SYSTEM_APP, kBoundsB);
   window3->SetName("w3");
 
-  auto* shadow_decoration1 =
-      shadow_controller->GetShadowDecorationForWindow(window1.get());
-  auto* shadow_decoration2 =
-      shadow_controller->GetShadowDecorationForWindow(window2.get());
-  auto* shadow_decoration3 =
-      shadow_controller->GetShadowDecorationForWindow(window3.get());
+  auto* shadow1 = shadow_controller->GetShadowForWindow(window1.get());
+  auto* shadow2 = shadow_controller->GetShadowForWindow(window2.get());
+  auto* shadow3 = shadow_controller->GetShadowForWindow(window3.get());
 
   // window2 occludes window1
-  EXPECT_FALSE(shadow_decoration1->layer()->visible());
-  EXPECT_TRUE(shadow_decoration2->layer()->visible());
-  EXPECT_TRUE(shadow_decoration3->layer()->visible());
+  EXPECT_FALSE(shadow1->layer()->visible());
+  EXPECT_TRUE(shadow2->layer()->visible());
+  EXPECT_TRUE(shadow3->layer()->visible());
 
   // Bring the window 1 to the front.
   wm::ActivateWindow(window1.get());
 
-  EXPECT_TRUE(shadow_decoration1->layer()->visible());
-  EXPECT_FALSE(shadow_decoration2->layer()->visible());
-  EXPECT_TRUE(shadow_decoration3->layer()->visible());
+  EXPECT_TRUE(shadow1->layer()->visible());
+  EXPECT_FALSE(shadow2->layer()->visible());
+  EXPECT_TRUE(shadow3->layer()->visible());
 
   // Move window1 on top of window3.
   window1->SetBounds(kBoundsB);
-  EXPECT_TRUE(shadow_decoration1->layer()->visible());
-  EXPECT_TRUE(shadow_decoration2->layer()->visible());
-  EXPECT_FALSE(shadow_decoration3->layer()->visible());
+  EXPECT_TRUE(shadow1->layer()->visible());
+  EXPECT_TRUE(shadow2->layer()->visible());
+  EXPECT_FALSE(shadow3->layer()->visible());
 
   // Hide window1.
   window1->Hide();
-  EXPECT_TRUE(shadow_decoration2->layer()->visible());
-  EXPECT_TRUE(shadow_decoration3->layer()->visible());
+  EXPECT_TRUE(shadow2->layer()->visible());
+  EXPECT_TRUE(shadow3->layer()->visible());
 }
 
 TEST_F(WmShadowControllerDelegateTest, ContainerShouldHaveNoShadow) {

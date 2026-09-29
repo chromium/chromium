@@ -136,7 +136,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
-#include "ui/decoration/decoration.h"
+#include "ui/decoration/shadow.h"
 #include "ui/display/display.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
@@ -1710,11 +1710,10 @@ TEST_P(DesksTest, DragWindowToDesk) {
   wm::ActivateWindow(win1.get());
   EXPECT_EQ(win1.get(), window_util::GetActiveWindow());
 
-  ui::Decoration* shadow_decoration =
-      ::wm::ShadowController::GetShadowDecorationForWindow(win1.get());
-  ASSERT_TRUE(shadow_decoration);
-  ASSERT_TRUE(shadow_decoration->layer());
-  EXPECT_TRUE(shadow_decoration->layer()->GetTargetVisibility());
+  ui::Shadow* shadow = ::wm::ShadowController::GetShadowForWindow(win1.get());
+  ASSERT_TRUE(shadow);
+  ASSERT_TRUE(shadow->layer());
+  EXPECT_TRUE(shadow->layer()->GetTargetVisibility());
 
   auto* overview_controller = OverviewController::Get();
   EnterOverview();
@@ -1723,7 +1722,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_EQ(2u, overview_grid->GetNumWindows());
 
   // While in overview mode, the window's shadow is hidden.
-  EXPECT_FALSE(shadow_decoration->layer()->GetTargetVisibility());
+  EXPECT_FALSE(shadow->layer()->GetTargetVisibility());
 
   auto* overview_session = overview_controller->overview_session();
   auto* overview_item = overview_session->GetOverviewItemForWindow(win1.get());
@@ -1782,7 +1781,7 @@ TEST_P(DesksTest, DragWindowToDesk) {
 
   // After the window is dropped onto another desk, its shadow should be
   // restored properly.
-  EXPECT_TRUE(shadow_decoration->layer()->GetTargetVisibility());
+  EXPECT_TRUE(shadow->layer()->GetTargetVisibility());
 }
 
 // Tests that theme change during drag to close does not trigger any crashes.

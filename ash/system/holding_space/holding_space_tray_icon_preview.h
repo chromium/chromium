@@ -17,9 +17,9 @@
 #include "ui/views/view_observer.h"
 
 namespace ui {
-class Decoration;
 class Layer;
 class LayerSolidColor;
+class Shadow;
 }  // namespace ui
 
 namespace ash {
@@ -138,9 +138,9 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
   // space item is not in-progress.
   std::unique_ptr<ProgressIndicator> progress_indicator_;
 
-  // Owns the `ui::Decoration` which paints the shadow for the
-  // holding space tray icon preview.
-  std::unique_ptr<ui::Decoration> shadow_decoration_;
+  // Owns the `ui::Shadow` which paints the shadow for the holding space tray
+  // icon preview.
+  std::unique_ptr<ui::Shadow> shadow_;
 
   // Owns the `ui::LayerSolidColor` which paints the background for the holding
   // space tray icon preview.

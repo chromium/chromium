@@ -5,24 +5,24 @@
 #ifndef UI_DECORATION_SHADOW_H_
 #define UI_DECORATION_SHADOW_H_
 
+#include <memory>
 #include <optional>
 
-#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "ui/decoration/decoration_source.h"
+#include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_nine_patch.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/decoration/decoration_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/shadow_value.h"
 
-namespace ui::decoration {
+namespace ui {
 
-// DecorationSource that draws a drop shadow around the content it frames.
-class Shadow : public DecorationSource {
+// Simple class that draws a drop shadow around content at given bounds.
+class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
  public:
-  DECLARE_SAFE_CAST_TARGET()
-
   // The shadow style for different UI components.
   enum class Style {
     // The MD style is mainly used for view's shadow.
@@ -52,18 +52,34 @@ class Shadow : public DecorationSource {
       std::optional<ElevationColors> colors = std::nullopt,
       bool is_pill_shaped = false);
 
-  explicit Shadow(int elevation,
-                  Style style = Style::kMaterialDesign,
-                  ElevationToColorsMap color_map = {});
+  Shadow();
 
   Shadow(const Shadow&) = delete;
   Shadow& operator=(const Shadow&) = delete;
 
   ~Shadow() override;
 
+  // Initialize for the the given shadow |elevation|. This is passed to
+  // ui::Shadow::MakeShadowValues() and controls the y-offset and blur for the
+  // shadow style.
+  void Init(int elevation);
+
+  // Moves and resizes the shadow layer to frame |content_bounds|.
+  // This should be used to adjust the shadow's size and position (rather than
+  // applying transformations to the `layer()` of this Shadow).
+  void SetContentBounds(const gfx::Rect& content_bounds);
+  const gfx::Rect& content_bounds() const { return content_bounds_; }
+
   // Sets the shadow's appearance, animating opacity as necessary.
   void SetElevation(int elevation);
   int elevation() const { return elevation_; }
+
+  // Sets the radii for the rounded corners to take into account when
+  // adjusting the shadow layer to frame |content_bounds|.
+  void SetRoundedCorners(const gfx::RoundedCornersF& radii);
+  const gfx::RoundedCornersF& rounded_corners() const {
+    return rounded_corners_;
+  }
 
   // Set shadow style.
   void SetStyle(Style style);
@@ -73,21 +89,69 @@ class Shadow : public DecorationSource {
   void SetColorMap(const ElevationToColorsMap& color_map);
   const ElevationToColorsMap& color_map() const { return color_map_; }
 
-  // DecorationSource:
-  std::optional<Details> GetDetails(
-      const gfx::Rect& content_bounds,
-      const gfx::RoundedCornersF& rounded_corners) override;
+  // ui::ImplicitAnimationObserver overrides:
+  void OnImplicitAnimationsCompleted() override;
 
-  const ShadowDetails* details_for_testing() const {
+  const decoration::ShadowDetails* details_for_testing() const {
     return details_ ? &details_.value() : nullptr;
   }
 
+  ui::LayerNinePatch* shadow_layer_for_testing() { return shadow_layer(); }
+  ui::LayerNinePatch* fading_layer_for_testing() { return fading_layer(); }
+
  private:
+  // A shadow layer owner that correctly updates the nine patch layer details
+  // when it gets recreated.
+  class ShadowLayerOwner : public ui::LayerOwner {
+   public:
+    explicit ShadowLayerOwner(Shadow* owner,
+                              std::unique_ptr<Layer> layer = nullptr);
+
+    ShadowLayerOwner(const ShadowLayerOwner&) = delete;
+    ShadowLayerOwner& operator=(const ShadowLayerOwner&) = delete;
+
+    ~ShadowLayerOwner() override;
+
+    // ui::LayerOwner:
+    std::unique_ptr<Layer> RecreateLayer() override;
+
+   private:
+    const raw_ptr<Shadow> owner_shadow_;
+  };
+
+  ui::LayerNinePatch* shadow_layer() {
+    ui::Layer* layer = shadow_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
+
+  ui::LayerNinePatch* fading_layer() {
+    ui::Layer* layer = fading_layer_owner_.layer();
+    return layer ? layer->AsNinePatch() : nullptr;
+  }
+
+  // Updates the shadow layer and its image to reflect |desired_elevation_|.
+  void RecreateShadowLayer();
+
+  // Updates the shadow appearance based on the inteior inset, the current
+  // |content_bounds_|, shadow style, and colors.
+  void UpdateShadowAppearance();
+
+  // Clears the bounds of all shadow layers to empty.
+  void ClearLayerBounds();
+
   // The goal elevation, set when the transition animation starts. The elevation
   // dictates the shadow's display characteristics and is proportional to the
   // size of the blur and its offset. This may not match reality if the window
   // isn't big enough to support it.
   int elevation_ = 0;
+
+  // Rounded corners are drawn on top of the window's content layer,
+  // we need to exclude them from the occlusion area.
+  gfx::RoundedCornersF rounded_corners_{2};
+
+  // The details of the shadow image that's currently set on |shadow_layer()|.
+  // This will be nullopt until a positive elevation has been set.
+  std::optional<decoration::ShadowDetails> details_;
 
   // The style of shadow. Use MD style by default.
   Style style_ = Style::kMaterialDesign;
@@ -95,11 +159,20 @@ class Shadow : public DecorationSource {
   // The customized key and ambient shadows color map for certain elevations.
   ElevationToColorsMap color_map_;
 
-  // The details of the shadow image that's currently set on the decoration
-  // layer. This will be nullopt until a positive elevation has been set.
-  std::optional<ShadowDetails> details_;
+  // The owner of the actual shadow layer corresponding to a cc::NinePatchLayer.
+  ShadowLayerOwner shadow_layer_owner_;
+
+  // When the elevation changes, the old shadow cross-fades with the new one.
+  // When non-null, this owns an old |shadow_layer()| that's being animated out.
+  ui::LayerOwner fading_layer_owner_;
+
+  // Bounds of the content that the shadow encloses.
+  gfx::Rect content_bounds_;
+
+  // The layer bounds since content bounds were last set.
+  gfx::Rect last_layer_bounds_;
 };
 
-}  // namespace ui::decoration
+}  // namespace ui
 
 #endif  // UI_DECORATION_SHADOW_H_

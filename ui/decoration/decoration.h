@@ -16,7 +16,6 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/decoration/decoration_source.h"
-#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -42,14 +41,6 @@ class Decoration final : public ui::ImplicitAnimationObserver,
   static std::unique_ptr<Decoration> Create(
       std::unique_ptr<decoration::DecorationSource> source,
       std::string_view debug_name = {});
-
-  // Creates an initialized decoration that draws a drop shadow with the given
-  // `elevation`, `style` and `color_map`.
-  static std::unique_ptr<Decoration> CreateShadow(
-      int elevation,
-      ui::decoration::Shadow::Style style =
-          ui::decoration::Shadow::Style::kMaterialDesign,
-      ui::decoration::Shadow::ElevationToColorsMap color_map = {});
 
   explicit Decoration(std::unique_ptr<decoration::DecorationSource> source,
                       std::string_view debug_name = {});

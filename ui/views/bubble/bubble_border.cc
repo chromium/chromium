@@ -51,19 +51,19 @@ using ShadowCacheKey = std::tuple<int, SkColor, BubbleBorder::Shadow>;
 // The shadow type for default shadow colors.
 constexpr int kDefaultShadowType = -1;
 
-ui::decoration::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
+ui::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
     BubbleBorder::Shadow shadow,
     const ui::ColorProvider* color_provider) {
-  ui::decoration::Shadow::ElevationToColorsMap colors_map;
+  ui::Shadow::ElevationToColorsMap colors_map;
   if (color_provider) {
     switch (shadow) {
       case BubbleBorder::Shadow::STANDARD_SHADOW:
-        colors_map[3] = ui::decoration::Shadow::ElevationColors{
+        colors_map[3] = ui::Shadow::ElevationColors{
             .key_color = color_provider->GetColor(
                 ui::kColorShadowValueKeyShadowElevationThree),
             .ambient_color = color_provider->GetColor(
                 ui::kColorShadowValueAmbientShadowElevationThree)};
-        colors_map[16] = ui::decoration::Shadow::ElevationColors{
+        colors_map[16] = ui::Shadow::ElevationColors{
             .key_color = color_provider->GetColor(
                 ui::kColorShadowValueKeyShadowElevationSixteen),
             .ambient_color = color_provider->GetColor(
@@ -83,7 +83,7 @@ ui::decoration::Shadow::ElevationToColorsMap ShadowElevationToColorsMap(
   const SkColor default_color =
       color_provider ? color_provider->GetColor(ui::kColorShadowBase)
                      : gfx::kPlaceholderColor;
-  colors_map[kDefaultShadowType] = ui::decoration::Shadow::ElevationColors{
+  colors_map[kDefaultShadowType] = ui::Shadow::ElevationColors{
       .key_color = default_color, .ambient_color = default_color};
   return colors_map;
 }

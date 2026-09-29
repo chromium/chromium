@@ -17,7 +17,7 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
   std::vector<ShadowDetails> details;
   // Add first shadow details.
   details.emplace_back(ShadowDetails::Get(
-      gfx::RoundedCornersF(2), Shadow::MakeShadowValues(/*elevation=*/4)));
+      gfx::RoundedCornersF(2), ui::Shadow::MakeShadowValues(/*elevation=*/4)));
   EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
   EXPECT_EQ(details[0].aperture_insets,
             ShadowGenerator::GetNineboxApertureInsets(details[0].spec,
@@ -27,25 +27,25 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
   // Add second shadow details with a different elevation.
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(2),
-      Shadow::MakeShadowValues(/*elevation=*/5)));
+      ui::Shadow::MakeShadowValues(/*elevation=*/5)));
   EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
 
   // Add third shadow details with a different rounded corner radius.
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(3),
-      Shadow::MakeShadowValues(/*elevation=*/5)));
+      ui::Shadow::MakeShadowValues(/*elevation=*/5)));
   EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
 
   // Add a same shadow details will not increase the cache.
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(2),
-      Shadow::MakeShadowValues(/*elevation=*/4)));
+      ui::Shadow::MakeShadowValues(/*elevation=*/4)));
   EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
 
   // Add fourth shadow details with variable rounded corner radii.
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(1, 2, 3, 4),
-      Shadow::MakeShadowValues(/*elevation=*/5)));
+      ui::Shadow::MakeShadowValues(/*elevation=*/5)));
   EXPECT_EQ(4u, ShadowDetails::GetDetailsCacheSizeForTest());
 
   // Add fifth shadow details with a different key shadow blur than the first
@@ -72,8 +72,8 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
   // first details.
   details.emplace_back(ShadowDetails::Get(
       /*rounded_corners=*/gfx::RoundedCornersF(2),
-      Shadow::MakeShadowValues(
-          /*elevation=*/4, Shadow::Style::kMaterialDesign,
+      ui::Shadow::MakeShadowValues(
+          /*elevation=*/4, ui::Shadow::Style::kMaterialDesign,
           /*colors=*/std::nullopt,
           /*is_pill_shaped=*/true)));
   EXPECT_EQ(7u, ShadowDetails::GetDetailsCacheSizeForTest());

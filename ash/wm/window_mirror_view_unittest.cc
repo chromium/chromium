@@ -9,7 +9,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
-#include "ui/decoration/decoration.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -169,11 +169,10 @@ TEST_F(WindowMirrorViewTest, ExcludeShadow) {
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ::wm::SetShadowElevation(window, ::wm::kShadowElevationActiveWindow);
 
-  ui::Decoration* shadow_decoration =
-      ::wm::ShadowController::GetShadowDecorationForWindow(window);
-  ASSERT_TRUE(shadow_decoration);
-  ASSERT_EQ(2u, shadow_decoration->layer()->children().size());
-  ASSERT_EQ(2, CountNinePatchLayers(shadow_decoration->layer()));
+  ui::Shadow* shadow = ::wm::ShadowController::GetShadowForWindow(window);
+  ASSERT_TRUE(shadow);
+  ASSERT_EQ(2u, shadow->layer()->children().size());
+  ASSERT_EQ(2, CountNinePatchLayers(shadow->layer()));
 
   auto mirror_widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

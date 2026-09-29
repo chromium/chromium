@@ -161,7 +161,7 @@ bool WidgetTest::IsNativeWindowTransparent(gfx::NativeWindow window) {
 // static
 bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
   aura::Window* window = widget->GetNativeWindow();
-  if (wm::ShadowController::GetShadowDecorationForWindow(window)) {
+  if (wm::ShadowController::GetShadowForWindow(window)) {
     return true;
   }
 
@@ -169,8 +169,7 @@ bool WidgetTest::WidgetHasInProcessShadow(Widget* widget) {
   // DesktopWindowTreeHost, then giving the root window a shadow also has the
   // effect of drawing a shadow around the window.
   if (window->parent() == window->GetRootWindow()) {
-    return wm::ShadowController::GetShadowDecorationForWindow(
-        window->GetRootWindow());
+    return wm::ShadowController::GetShadowForWindow(window->GetRootWindow());
   }
 
   return false;

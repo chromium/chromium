@@ -20,10 +20,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/compositor/layer.h"
-#include "ui/decoration/decoration.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace {
@@ -117,22 +115,21 @@ void ChromeKeyboardUI::SetShadowAroundKeyboard() {
   aura::Window* contents_window = GetKeyboardWindow();
   DCHECK(contents_window);
 
-  if (!shadow_decoration_) {
-    shadow_decoration_ =
-        ui::Decoration::CreateShadow(kShadowElevationVirtualKeyboard);
-    shadow_decoration_->layer()->SetVisible(true);
-    contents_window->layer()->Add(shadow_decoration_->layer());
+  if (!shadow_) {
+    shadow_ = std::make_unique<ui::Shadow>();
+    shadow_->Init(kShadowElevationVirtualKeyboard);
+    shadow_->layer()->SetVisible(true);
+    contents_window->layer()->Add(shadow_->layer());
   }
 
-  shadow_decoration_->SetContentBounds(
-      gfx::Rect(contents_window->bounds().size()));
+  shadow_->SetContentBounds(gfx::Rect(contents_window->bounds().size()));
 
   // In floating mode, make the shadow layer invisible because the shadows are
   // drawn manually by the IME extension.
   // TODO(https://crbug.com/856195): Remove this when we figure out how ChromeOS
   // can draw custom shaped shadows, or how overscrolling can account for
   // shadows drawn by IME.
-  shadow_decoration_->layer()->SetVisible(
+  shadow_->layer()->SetVisible(
       keyboard_controller()->GetActiveContainerType() ==
       keyboard::ContainerType::kFullWidth);
 }

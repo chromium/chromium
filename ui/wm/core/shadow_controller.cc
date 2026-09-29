@@ -31,8 +31,8 @@
 
 using std::make_pair;
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(ui::Decoration*)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Decoration, kShadowDecorationKey)
+DEFINE_UI_CLASS_PROPERTY_TYPE(ui::Shadow*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::Shadow, kShadowLayerKey)
 
 namespace wm {
 
@@ -132,9 +132,9 @@ class ShadowController::Impl :
   // necessary).
   void HandlePossibleShadowVisibilityChange(aura::Window* window);
 
-  // Creates a new shadow for |window| and stores it with the
-  // |kShadowDecorationKey| key. The shadow's bounds are initialized and it is
-  // added to the window's layer.
+  // Creates a new shadow for |window| and stores it with the |kShadowLayerKey|
+  // key.
+  // The shadow's bounds are initialized and it is added to the window's layer.
   void CreateShadowForWindow(aura::Window* window);
 
   bool IsObservingWindowForTest(aura::Window* window) const;  // IN-TEST
@@ -159,8 +159,8 @@ ShadowController::Impl* ShadowController::Impl::GetInstance(aura::Env* env) {
 bool ShadowController::Impl::IsShadowVisibleForWindow(aura::Window* window) {
   if (!observation_manager_.IsObservingSource(window))
     return false;
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  return shadow_decoration && shadow_decoration->layer()->visible();
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  return shadow && shadow->layer()->visible();
 }
 
 void ShadowController::Impl::UpdateShadowForWindow(aura::Window* window) {
@@ -243,15 +243,13 @@ void ShadowController::Impl::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (shadow_decoration &&
-      window->GetProperty(aura::client::kUseWindowBoundsForShadow)) {
-    shadow_decoration->SetContentBounds(gfx::Rect(new_bounds.size()));
-  }
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  if (shadow && window->GetProperty(aura::client::kUseWindowBoundsForShadow))
+    shadow->SetContentBounds(gfx::Rect(new_bounds.size()));
 }
 
 void ShadowController::Impl::OnWindowDestroyed(aura::Window* window) {
-  window->ClearProperty(kShadowDecorationKey);
+  window->ClearProperty(kShadowLayerKey);
   observation_manager_.RemoveObservation(window);
 }
 
@@ -259,19 +257,15 @@ void ShadowController::Impl::OnWindowActivated(ActivationReason reason,
                                                aura::Window* gained_active,
                                                aura::Window* lost_active) {
   if (gained_active) {
-    ui::Decoration* shadow_decoration =
-        GetShadowDecorationForWindow(gained_active);
-    if (shadow_decoration) {
-      shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
-          GetShadowElevationForActiveState(gained_active));
-    }
+    ui::Shadow* shadow = GetShadowForWindow(gained_active);
+    if (shadow)
+      shadow->SetElevation(GetShadowElevationForActiveState(gained_active));
   }
   if (lost_active) {
-    ui::Decoration* shadow_decoration =
-        GetShadowDecorationForWindow(lost_active);
-    if (shadow_decoration && GetShadowElevationConvertDefault(lost_active) ==
-                                 kShadowElevationInactiveWindow) {
-      shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+    ui::Shadow* shadow = GetShadowForWindow(lost_active);
+    if (shadow && GetShadowElevationConvertDefault(lost_active) ==
+                      kShadowElevationInactiveWindow) {
+      shadow->SetElevation(
           GetShadowElevationForWindowLosingActive(lost_active, gained_active));
     }
   }
@@ -301,8 +295,8 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
 }
 
 void ShadowController::Impl::OnWindowOcclusionChanged(aura::Window* window) {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (!shadow_decoration) {
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  if (!shadow) {
     return;
   }
   HandlePossibleShadowVisibilityChange(window);
@@ -310,11 +304,11 @@ void ShadowController::Impl::OnWindowOcclusionChanged(aura::Window* window) {
 
 void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
     aura::Window* window) const {
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  CHECK(shadow_decoration);
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  CHECK(shadow);
 
   if (delegate_ && !delegate_->ShouldRoundShadowForWindow(window)) {
-    shadow_decoration->SetRoundedCorners(gfx::RoundedCornersF());
+    shadow->SetRoundedCorners(gfx::RoundedCornersF());
     return;
   }
 
@@ -325,7 +319,7 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
   // unspecified radius. i.e window server may want to apply rounded corners
   // implicitly.
   if (rounded_corners) {
-    shadow_decoration->SetRoundedCorners(
+    shadow->SetRoundedCorners(
         gfx::RoundedCornersF(rounded_corners->upper_left()));
   }
 }
@@ -333,13 +327,12 @@ void ShadowController::Impl::MaybeSetShadowRadiusForWindow(
 void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
     aura::Window* window) {
   const bool should_show = ShouldShowShadowForWindow(window);
-  ui::Decoration* shadow_decoration = GetShadowDecorationForWindow(window);
-  if (shadow_decoration) {
-    shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
-        GetShadowElevationForActiveState(window));
+  ui::Shadow* shadow = GetShadowForWindow(window);
+  if (shadow) {
+    shadow->SetElevation(GetShadowElevationForActiveState(window));
     MaybeSetShadowRadiusForWindow(window);
-    if (shadow_decoration->layer()->GetTargetVisibility() != should_show) {
-      shadow_decoration->layer()->SetVisible(should_show);
+    if (shadow->layer()->GetTargetVisibility() != should_show) {
+      shadow->layer()->SetVisible(should_show);
     }
   } else if (should_show) {
     CreateShadowForWindow(window);
@@ -348,21 +341,18 @@ void ShadowController::Impl::HandlePossibleShadowVisibilityChange(
 
 void ShadowController::Impl::CreateShadowForWindow(aura::Window* window) {
   DCHECK(!window->IsRootWindow());
-  ui::decoration::Shadow::Style style =
-      ui::decoration::Shadow::Style::kMaterialDesign;
-#if BUILDFLAG(IS_CHROMEOS)
-  style = ui::decoration::Shadow::Style::kChromeOSSystemUI;
-#endif
-  ui::Decoration* shadow_decoration =
-      window->SetProperty(kShadowDecorationKey,
-                          ui::Decoration::CreateShadow(
-                              GetShadowElevationForActiveState(window), style));
+  ui::Shadow* shadow =
+      window->SetProperty(kShadowLayerKey, std::make_unique<ui::Shadow>());
 
-  shadow_decoration->SetContentBounds(gfx::Rect(window->bounds().size()));
   MaybeSetShadowRadiusForWindow(window);
-  shadow_decoration->layer()->SetVisible(ShouldShowShadowForWindow(window));
-  window->layer()->Add(shadow_decoration->layer());
-  window->layer()->StackAtBottom(shadow_decoration->layer());
+  shadow->Init(GetShadowElevationForActiveState(window));
+#if BUILDFLAG(IS_CHROMEOS)
+  shadow->SetStyle(ui::Shadow::Style::kChromeOSSystemUI);
+#endif
+  shadow->SetContentBounds(gfx::Rect(window->bounds().size()));
+  shadow->layer()->SetVisible(ShouldShowShadowForWindow(window));
+  window->layer()->Add(shadow->layer());
+  window->layer()->StackAtBottom(shadow->layer());
 
   window->TrackOcclusionState();
 
@@ -396,32 +386,28 @@ ShadowController::Impl::GetInstances() {
 
 // ShadowController ------------------------------------------------------------
 
-ui::Decoration* ShadowController::GetShadowDecorationForWindow(
-    aura::Window* window) {
-  return window->GetProperty(kShadowDecorationKey);
+ui::Shadow* ShadowController::GetShadowForWindow(aura::Window* window) {
+  return window->GetProperty(kShadowLayerKey);
 }
 
-ui::decoration::Shadow::ElevationToColorsMap
-ShadowController::GenerateShadowColorsMap(
+ui::Shadow::ElevationToColorsMap ShadowController::GenerateShadowColorsMap(
     const ui::ColorProvider* color_provider) {
-  ui::decoration::Shadow::ElevationToColorsMap color_map;
-  color_map[kShadowElevationPopup] = ui::decoration::Shadow::ElevationColors{
+  ui::Shadow::ElevationToColorsMap color_map;
+  color_map[kShadowElevationPopup] = ui::Shadow::ElevationColors{
       .key_color =
           color_provider->GetColor(ui::kColorShadowValueKeyShadowElevationFour),
       .ambient_color = color_provider->GetColor(
           ui::kColorShadowValueAmbientShadowElevationFour)};
-  color_map[kShadowElevationInactiveWindow] =
-      ui::decoration::Shadow::ElevationColors{
-          .key_color = color_provider->GetColor(
-              ui::kColorShadowValueKeyShadowElevationTwelve),
-          .ambient_color = color_provider->GetColor(
-              ui::kColorShadowValueAmbientShadowElevationTwelve)};
-  color_map[kShadowElevationActiveWindow] =
-      ui::decoration::Shadow::ElevationColors{
-          .key_color = color_provider->GetColor(
-              ui::kColorShadowValueKeyShadowElevationTwentyFour),
-          .ambient_color = color_provider->GetColor(
-              ui::kColorShadowValueAmbientShadowElevationTwentyFour)};
+  color_map[kShadowElevationInactiveWindow] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwelve),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwelve)};
+  color_map[kShadowElevationActiveWindow] = ui::Shadow::ElevationColors{
+      .key_color = color_provider->GetColor(
+          ui::kColorShadowValueKeyShadowElevationTwentyFour),
+      .ambient_color = color_provider->GetColor(
+          ui::kColorShadowValueAmbientShadowElevationTwentyFour)};
   return color_map;
 }
 
