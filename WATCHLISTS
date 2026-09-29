@@ -1918,11 +1918,6 @@
                   '|PageZoom' \
                   '|zoom'
     },
-    'panels': {
-      'filepath': 'chrome/browser/ui/panels'\
-                  '|chrome/browser/ui/cocoa/panels'\
-                  '|chrome/browser/ui/views/panels'
-    },
     'partition_alloc': {
       'filepath': 'base/allocator/partition_allocator/'
     },
@@ -2579,14 +2574,6 @@
     'zlib': {
       'filepath': 'third_party/zlib'
     },
-    'zoom': {
-      'filepath': 'chrome/browser/ui/zoom/' \
-                  '|components/ui/zoom/' \
-                  '|content/browser/host_zoom_' \
-                  '|content/browser/storage_partition_impl' \
-                  '|content/public/browser/host_zoom_map.h' \
-                  '|content/public/browser/storage_partition.h'
-    },
   },
 
   ##############################################################################
@@ -2725,8 +2712,7 @@
                         'dibyapal+watch-webapps@chromium.org'],
     'banners': ['pkotwicz+watch@chromium.org'],
     'base_allocator': ['wfh+watch@chromium.org',
-                       'lizeb+watch@chromium.org',
-                       'bartekn+watch@chromium.org'],
+                       'lizeb+watch@chromium.org'],
     'base_android': ['agrieve+watch@chromium.org',
                      'lizeb+watch@chromium.org',
                      'nyquist+watch@chromium.org',
@@ -3310,11 +3296,8 @@
                            'speed-metrics-dev+watchlist@chromium.org'],
     'page_load_metrics_abandoned_navigations': ['suzukikeita+watch@chromium.org'],
     'page_zoom': ['mschillaci+watchzoom@google.com'],
-    'panels': ['jennb@chromium.org',
-               'jianli@chromium.org'],
     'partition_alloc': ['haraken@chromium.org',
-                        'lizeb+pa@chromium.org',
-                        'bartekn+watch@chromium.org'],
+                        'lizeb+pa@chromium.org'],
     'password_manager': ['gcasto+watchlist@chromium.org'],
     'payments': ['slobodan+watch@chromium.org'],
     'pdf': ['pdf-reviews@chromium.org'],
@@ -3546,6 +3529,5 @@
     'wpt_webdriver': ['sadym@chromium.org'],
     'x11': ['sadrul@chromium.org'],
     'zlib': ['cblume+zlib@chromium.org', 'hans@chromium.org'],
-    'zoom': ['wjmaclean@chromium.org'],
   },
 }
