@@ -71,8 +71,18 @@ public class AwNonembeddedUmaReplayerTest {
                         .setMax(max)
                         .setNumBuckets(numBuckets)
                         .build();
+        HistogramRecord missingArgsProto =
+                HistogramRecord.newBuilder()
+                        .setRecordType(RecordType.HISTOGRAM_EXPONENTIAL)
+                        .setHistogramName(histogramName)
+                        .setSample(sample)
+                        .build();
+        HistogramRecord missingNumBucketsProto =
+                recordProto.toBuilder().clearNumBuckets().build();
         AwNonembeddedUmaReplayer.replayMethodCall(recordProto);
-        verify(mUmaRecorder)
+        AwNonembeddedUmaReplayer.replayMethodCall(missingArgsProto);
+        AwNonembeddedUmaReplayer.replayMethodCall(missingNumBucketsProto);
+        verify(mUmaRecorder, times(1))
                 .recordExponentialHistogram(histogramName, sample, min, max, numBuckets);
     }
 
@@ -92,8 +102,16 @@ public class AwNonembeddedUmaReplayerTest {
                         .setMax(max)
                         .setNumBuckets(numBuckets)
                         .build();
+        HistogramRecord missingArgsProto =
+                HistogramRecord.newBuilder()
+                        .setRecordType(RecordType.HISTOGRAM_LINEAR)
+                        .setHistogramName(histogramName)
+                        .setSample(sample)
+                        .build();
         AwNonembeddedUmaReplayer.replayMethodCall(recordProto);
-        verify(mUmaRecorder).recordLinearHistogram(histogramName, sample, min, max, numBuckets);
+        AwNonembeddedUmaReplayer.replayMethodCall(missingArgsProto);
+        verify(mUmaRecorder, times(1))
+                .recordLinearHistogram(histogramName, sample, min, max, numBuckets);
     }
 
     @Test

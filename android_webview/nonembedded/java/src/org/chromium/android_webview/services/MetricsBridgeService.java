@@ -238,7 +238,9 @@ public final class MetricsBridgeService extends Service {
 
     @Override
     public void onDestroy() {
-        closeMetricsLogOutputStream();
+        // Post to sSequencedTaskRunner since mFileOutputStream is not guarded by a lock and may be
+        // actively written to on sSequencedTaskRunner when onDestroy() runs on the main thread.
+        sSequencedTaskRunner.execute(this::closeMetricsLogOutputStream);
     }
 
     /**

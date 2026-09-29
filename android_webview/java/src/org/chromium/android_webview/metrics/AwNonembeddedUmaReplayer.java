@@ -37,12 +37,24 @@ public class AwNonembeddedUmaReplayer {
                 .recordBooleanHistogram(proto.getHistogramName(), proto.getSample() != 0);
     }
 
+    private static boolean hasAllRangeHistogramFields(HistogramRecord proto) {
+        return proto.hasHistogramName()
+                && proto.hasMin()
+                && proto.hasMax()
+                && proto.hasNumBuckets();
+    }
+
     /**
      * Extract method arguments from the given {@link HistogramRecord} and call {@link
      * org.chromium.base.metrics.UmaRecorder#recordExponentialHistogram}.
      */
     private static void replayExponentialHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_EXPONENTIAL;
+
+        if (!hasAllRangeHistogramFields(proto)) {
+            Log.d(TAG, "Missing histogram fields for %s", proto.getHistogramName());
+            return;
+        }
 
         UmaRecorderHolder.get()
                 .recordExponentialHistogram(
@@ -59,6 +71,11 @@ public class AwNonembeddedUmaReplayer {
      */
     private static void replayLinearHistogram(HistogramRecord proto) {
         assert proto.getRecordType() == RecordType.HISTOGRAM_LINEAR;
+
+        if (!hasAllRangeHistogramFields(proto)) {
+            Log.d(TAG, "Missing histogram fields for %s", proto.getHistogramName());
+            return;
+        }
 
         UmaRecorderHolder.get()
                 .recordLinearHistogram(

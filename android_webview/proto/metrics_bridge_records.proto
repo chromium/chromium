@@ -15,6 +15,10 @@ option java_package = "org.chromium.android_webview.proto";
 //
 // Next tag: 9
 message HistogramRecord {
+  // Fields are marked as optional so that generated Java classes expose has*()
+  // methods to verify that fields were actually read from disk rather than
+  // silently defaulting to 0 if the log file was truncated mid-record.
+
   // Next tag: 5
   enum RecordType {
     HISTOGRAM_BOOLEAN = 0;
@@ -23,14 +27,14 @@ message HistogramRecord {
     HISTOGRAM_SPARSE = 3;
     USER_ACTION = 4;
   }
-  RecordType record_type = 1;
+  optional RecordType record_type = 1;
 
   // The name of the histogram
-  string histogram_name = 2;
+  optional string histogram_name = 2;
 
   // The sample to be recorded, for HISTOGRAM_BOOLEAN it's either 0 for false
   // and 1 for true.
-  int32 sample = 3;
+  optional int32 sample = 3;
 
   // The following fields are only used by HISTOGRAM_EXPONENTIAL and
   // HISTOGRAM_LINEAR See the docs for
@@ -39,23 +43,23 @@ message HistogramRecord {
 
   // the smallest value recorded in the first bucket; should be greater than
   // zero.
-  int32 min = 4;
+  optional int32 min = 4;
   // the smallest value recorded in the overflow bucket.
-  int32 max = 5;
+  optional int32 max = 5;
   // number of histogram buckets: Two buckets are used for underflow and
   // overflow, and the remaining buckets cover the range [min, max);
   // numBuckets should be 100 or less.
-  int32 num_buckets = 6;
+  optional int32 num_buckets = 6;
 
   // Metadata for the histogram record.
   // Next tag: 2
   message Metadata {
     // The time in millis when the histogram is received by the
     // AwNonEmbeddedUmaRecorder
-    int64 time_recorded = 1;
+    optional int64 time_recorded = 1;
   }
-  Metadata metadata = 7;
+  optional Metadata metadata = 7;
 
   // Used for |record_type| == USER_ACTION only.
-  int64 elapsed_realtime_millis = 8;
+  optional int64 elapsed_realtime_millis = 8;
 }
