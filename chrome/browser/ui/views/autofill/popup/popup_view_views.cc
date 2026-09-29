@@ -283,7 +283,7 @@ class PopupRowContainerBuilder {
       }
       visible_height_ += height_factor * MaxHeightOfRow(new_view);
     } else if constexpr (kIsRelevantEntry) {
-      has_fully_hidden_entry = true;
+      has_fully_hidden_entry_ = true;
     }
 
     rows_.push_back(new_view);
@@ -293,13 +293,16 @@ class PopupRowContainerBuilder {
   // Returns the desired maximum height of the built container for clipping the
   // height on a surrounding scroll area, or `std::nullopt` if no height limit
   // is necessary.
-  std::optional<int> GetScrollClippingHeight() const {
-    if (!has_fully_hidden_entry ||
+  std::optional<int> GetScrollClippingHeight(
+      FillingProduct filling_product) const {
+    if (!has_fully_hidden_entry_ ||
+        !HasFillingProductHeightLimit(filling_product) ||
         !base::FeatureList::IsEnabled(
             features::kAutofillEnableEntryLimitInPopup)) {
-      // Do not apply a height limit when the scrollbar would be very small
-      // (less than one full entry). This also serves as a safeguard to avoid
-      // returning a minimally too small height limit.
+      // Do not apply a height limit for certain filling products or when the
+      // scrollbar would be very small (less than one full entry). This also
+      // serves as a safeguard to avoid returning a minimally too small height
+      // limit.
       return std::nullopt;
     }
     return visible_height_;
@@ -334,6 +337,30 @@ class PopupRowContainerBuilder {
     return height;
   }
 
+  // Returns whether `filling_product` should have a popup height limit.
+  static bool HasFillingProductHeightLimit(FillingProduct filling_product) {
+    switch (filling_product) {
+      case FillingProduct::kNone:
+      case FillingProduct::kAddress:
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kMerchantPromoCode:
+      case FillingProduct::kIban:
+      case FillingProduct::kPassword:
+      case FillingProduct::kCompose:
+      case FillingProduct::kAutofillAi:
+      case FillingProduct::kLoyaltyCard:
+      case FillingProduct::kIdentityCredential:
+      case FillingProduct::kOneTimePassword:
+      case FillingProduct::kPasskey:
+      case FillingProduct::kAtMemory:
+        return true;
+      case FillingProduct::kAutocomplete:
+      case FillingProduct::kDataList:
+        return false;
+    }
+    NOTREACHED();
+  }
+
   // Container owned by this builder that is currently being constructed.
   std::unique_ptr<views::BoxLayoutView> container_;
   // Collection of all added rows.
@@ -347,7 +374,7 @@ class PopupRowContainerBuilder {
   int visible_height_ = 0;
   // Indicator if there is at least one relevant entry that is entirely out of
   // view after restricting the height to `visible_height_`.
-  bool has_fully_hidden_entry = false;
+  bool has_fully_hidden_entry_ = false;
   // Minimum width the popup can have.
   const int popup_min_width_;
 };
@@ -1418,7 +1445,8 @@ void PopupViewViews::CreateSuggestionViews() {
     current_visible_body_entries = body_builder.visible_entries();
     current_body_visible_height = body_builder.visible_height();
     std::optional<int> scroll_clipping_height =
-        body_builder.GetScrollClippingHeight();
+        body_builder.GetScrollClippingHeight(
+            controller_->GetMainFillingProduct());
     auto [body_container, rows] = std::move(body_builder).Build();
     rows_ = std::move(rows);
     std::unique_ptr<views::ScrollView> scroll_view =
@@ -1493,7 +1521,8 @@ void PopupViewViews::CreateSuggestionViews() {
     }
   }
   std::optional<int> scroll_clipping_height =
-      footer_builder.GetScrollClippingHeight();
+      footer_builder.GetScrollClippingHeight(
+          controller_->GetMainFillingProduct());
   auto [footer_container, rows] = std::move(footer_builder).Build();
   base::Extend(rows_, std::move(rows));
 

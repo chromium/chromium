@@ -3739,6 +3739,26 @@ TEST_F(PopupViewViewsHeightLimitTest, LimitPopupSizeForManySuggestions) {
   EXPECT_EQ(new_height, initial_height);
 }
 
+// Tests that the popup height limit is not applied for datalists since web
+// developers experience changes to the popup as regressions.
+TEST_F(PopupViewViewsHeightLimitTest, DoNotLimitPopupSizeForDatalist) {
+  // Limit must be exceeded by at least one full entry.
+  std::vector<SuggestionType> suggestions(
+      std::ceil(PopupViewViews::kAutofillPopupMaxVisibleEntries) + 1,
+      SuggestionType::kDatalistEntry);
+  CreateAndShowView(suggestions);
+  ASSERT_EQ(controller().GetMainFillingProduct(), FillingProduct::kDataList);
+  const int initial_height = view().GetPreferredSize().height();
+  view().Hide();
+
+  suggestions.resize(suggestions.size() + 1, SuggestionType::kDatalistEntry);
+  CreateAndShowView(suggestions);
+  const int new_height = view().GetPreferredSize().height();
+
+  // Height should increase even when exceeding the limit.
+  EXPECT_GT(new_height, initial_height);
+}
+
 // Tests that separators are not considered entries for the limitation of
 // visible entries in the popup.
 TEST_F(PopupViewViewsHeightLimitTest, IgnoreSeparatorsInPopupSuggestionLimit) {
