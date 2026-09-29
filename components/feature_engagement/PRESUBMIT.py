@@ -377,7 +377,7 @@ def _CheckNewFlagsHaveMetrics(input_api, output_api):
   if not added_flags:
     return []
 
-  affected_paths = {f.LocalPath() for f in input_api.AffectedFiles()}
+  affected_paths = {f.UnixLocalPath() for f in input_api.change.AffectedFiles()}
   missing_files = []
   if ACTIONS_XML_PATH not in affected_paths:
     missing_files.append(ACTIONS_XML_PATH)

@@ -12,13 +12,24 @@ import os
 sys.path.append(os.path.dirname(__file__))
 import PRESUBMIT
 
+class MockChange(object):
+  def __init__(self, input_api):
+    self._input_api = input_api
+
+  def AffectedFiles(self):
+    return self._input_api.files
+
 class MockInputApi(object):
   def __init__(self):
     self.re = re
     self.files = []
+    self.change = MockChange(self)
 
   def AffectedFiles(self):
-    return self.files
+    return [
+        f for f in self.files
+        if f.UnixLocalPath().startswith('components/feature_engagement/')
+    ]
 
 class MockOutputApi(object):
   class PresubmitResult(object):
@@ -42,6 +53,9 @@ class MockFile(object):
 
   def LocalPath(self):
     return self._local_path
+
+  def UnixLocalPath(self):
+    return self._local_path.replace('\\', '/')
 
   def NewContents(self):
     return self._new_contents
