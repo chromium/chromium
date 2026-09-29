@@ -191,7 +191,7 @@ BASE_FEATURE(kContextualTasksWindowTracking, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,
              base::FEATURE_DISABLED_BY_DEFAULT);

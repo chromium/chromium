@@ -893,6 +893,12 @@ TEST_F(ContextualTasksUiTest, AreUrlsEqual) {
 }
 
 TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
+  // The feature is enabled by default; disable it so this test covers the
+  // platform voice search path regardless of the device's form factor.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::kContextualTasksWebUiVoiceSearchDesktopAndroid);
+
   base::DictValue load_time_data =
       ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
 
@@ -904,7 +910,8 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
   ASSERT_TRUE(android_speech_recognition.has_value());
   EXPECT_FALSE(android_speech_recognition.value());
 
-  // By default Android delegates to the platform voice recognition activity.
+  // With the feature disabled, Android delegates to the platform voice
+  // recognition activity.
   std::optional<bool> is_system_voice_search_enabled =
       load_time_data.FindBool("isSystemVoiceSearchEnabled");
   ASSERT_TRUE(is_system_voice_search_enabled.has_value());
