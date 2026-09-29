@@ -391,6 +391,21 @@ message AttemptOtpFillingAction {
   }
 }
 
+// Special change password action. Fills in the old password
+// and generates a new password on a change password page.
+// It also updates the stored passwords.
+//
+// This is NOT SAFE to use and should never be exposed to the user
+// through the chat panel. Instead, the underlying tool should only be used
+// in the specialized Automated Password Change flow.
+//
+// This action is only here to allow testing from the chat panel.
+// Next ID: 2
+message ChangePasswordAction {
+  // The tab ID in which to perform password change.
+  int32 tab_id = 1 [features = { field_presence: EXPLICIT }];
+}
+
 // Scrolls the DOM element into viewport.
 // Next ID: 5
 message ScrollToAction {
@@ -510,7 +525,7 @@ message ClickToUploadAction {
 
 // All of the actions that can be taken.
 // Only one of these is allowed per action.
-// Next ID: 27
+// Next ID: 28
 message Action {
 
   oneof action {
@@ -565,6 +580,8 @@ message Action {
     TranslatePageAction translate_page = 25;
 
     ClickToUploadAction click_to_upload = 26;
+
+    ChangePasswordAction change_password = 27;
   }
 }
 
