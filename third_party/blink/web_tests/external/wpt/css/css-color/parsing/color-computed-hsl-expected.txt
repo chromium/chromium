@@ -1,24 +1,24 @@
 This is a testharness.js-based test.
 Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'hsl(none none none)'
-  assert_equals: expected "hsl(none none none)" but got "rgb(0, 0, 0)"
+  Colors do not match.\nActual:   rgb(0, 0, 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] Property color value 'hsl(none none none / none)'
-  assert_equals: expected "hsl(none none none / none)" but got "rgba(0, 0, 0, 0)"
+  Colors do not match.\nActual:   rgba(0, 0, 0, 0)\nExpected: hsl(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
 [FAIL] Property color value 'hsla(none none none)'
-  assert_equals: expected "hsl(none none none)" but got "rgb(0, 0, 0)"
+  Colors do not match.\nActual:   rgb(0, 0, 0)\nExpected: hsl(none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] Property color value 'hsla(none none none / none)'
-  assert_equals: expected "hsl(none none none / none)" but got "rgba(0, 0, 0, 0)"
+  Colors do not match.\nActual:   rgba(0, 0, 0, 0)\nExpected: hsl(none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
 [FAIL] Property color value 'hsl(120 none none)'
-  assert_equals: expected "hsl(120 none none)" but got "rgb(0, 0, 0)"
+  Colors do not match.\nActual:   rgb(0, 0, 0)\nExpected: hsl(120 none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 1 got 3
 [FAIL] Property color value 'hsl(120 80% none)'
-  assert_equals: expected "hsl(120 80% none)" but got "rgb(0, 0, 0)"
+  Colors do not match.\nActual:   rgb(0, 0, 0)\nExpected: hsl(120 80% none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'hsl(120 none 50%)'
-  assert_equals: expected "hsl(120 none 50%)" but got "rgb(128, 128, 128)"
+  Colors do not match.\nActual:   rgb(128, 128, 128)\nExpected: hsl(120 none 50%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'hsl(120 100% 50% / none)'
-  assert_equals: expected "hsl(120 100% 50% / none)" but got "rgba(0, 255, 0, 0)"
+  Colors do not match.\nActual:   rgba(0, 255, 0, 0)\nExpected: hsl(120 100% 50% / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] Property color value 'hsl(none 100% 50%)'
-  assert_equals: expected "hsl(none 100% 50%)" but got "rgb(255, 0, 0)"
+  Colors do not match.\nActual:   rgb(255, 0, 0)\nExpected: hsl(none 100% 50%).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] Property color value 'hsla(calc(50deg + (sign(2cqw - 10px) * 10deg)), 100%, 37.5%, 52%)'
-  assert_equals: expected "rgba(191, 128, 0, 0.52)" but got "rgba(191, 127, 0, 0.52)"
+  Colors do not match.\nActual:   rgba(191, 127, 0, 0.52)\nExpected: rgba(191, 128, 0, 0.52).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 128 +/- 0.01, expected 128 but got 127
 Harness: the test ran to completion.
 

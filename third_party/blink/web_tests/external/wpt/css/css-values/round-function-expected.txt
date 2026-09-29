@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] round(infinity, NaN) should be used-value-equivalent to calc(NaN)
+  assert_equals: round(infinity, NaN) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1.79769e+308"
+[FAIL] calc(-1 * round(infinity, NaN)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * round(infinity, NaN)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1.79769e+308"
+Harness: the test ran to completion.
+

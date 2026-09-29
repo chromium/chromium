@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] setLocalDescription({type: "pranswer"}) creates an answer to use
+  assert_equals: expected "have-local-pranswer" but got "stable"
+[FAIL] setLocalDescription without sdp works for repeated pranswers and the final answer
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': The type of the description does not match the expected signaling state."
+[FAIL] Parameterless setLocalDescription() in "have-local-pranswer" is a final answer
+  assert_equals: expected "stable" but got "have-local-offer"
+Harness: the test ran to completion.
+

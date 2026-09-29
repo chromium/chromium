@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] When both documents enforce Trusted Types, navigating another same-origin frame to a javascript: URL should use the default policy of the document that initiated the navigation.
+  assert_equals: expected "source" but got "target"
+[FAIL] Navigating another same-origin frame to a javascript: URL should run the pre-navigation check when the initiating document enforces Trusted Types, even though the navigated document does not.
+  assert_equals: expected "source" but got "original"
+[FAIL] Navigating another same-origin frame to a javascript: URL should not run the pre-navigation check when the initiating document does not enforce Trusted Types, even though the navigated document does.
+  assert_equals: expected "original" but got "target"
+Harness: the test ran to completion.
+

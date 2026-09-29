@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Picking an option that is already selected sets its dirtiness.
+  assert_false: Select should be closed after picking an option. expected false got true
+[FAIL] Picking an option that is not selected sets its dirtiness.
+  assert_false: Select should be closed after picking an option. expected false got true
+Harness: the test ran to completion.
+

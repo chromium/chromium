@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 527 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
   assert_true: javascript:alert(1).isEqual() fails. Path: <DIV> / <A>. expected true got false
 [FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-navigating-url-attributes-list/0, "<a href="javascript:alert(1)"></a>"
@@ -84,54 +84,6 @@ Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
 [FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase built-in-navigating-url-attributes-list/6, "<svg><a xlink:href="javascript:alert(1)"></a></svg>"
   assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/0, "<math><mrow href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/1, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/2, "<math><mtext href="javascript:alert(1)">Test</mtext></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
-[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
-[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml/3, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
-  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
 [FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
   assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
 [FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase built-in-animating-url-attributes-list/0, "<svg><animate attributeName="href"></svg>"
@@ -300,6 +252,774 @@ Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: <DIV> / <svg>. expected true got false
 [FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase url-normalization/7, "<svg><a xlink:href="java&#9;script:alert(1)"></a></svg>"
   assert_true: [object SVGSVGElement].isEqual([object SVGSVGElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <svg>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/0, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/1, "<math><a xlink:href="javascript:alert(1)"></a></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/2, "<math><annotation href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/3, "<math><annotation xlink:href="javascript:alert(1)"></annotation></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/4, "<math><annotation-xml href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/5, "<math><annotation-xml xlink:href="javascript:alert(1)"></annotation-xml></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/6, "<math><maction href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/7, "<math><maction xlink:href="javascript:alert(1)"></maction></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/8, "<math><menclose href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/9, "<math><menclose xlink:href="javascript:alert(1)"></menclose></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/10, "<math><merror href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/11, "<math><merror xlink:href="javascript:alert(1)"></merror></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/12, "<math><mfrac href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/13, "<math><mfrac xlink:href="javascript:alert(1)"></mfrac></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/14, "<math><mi href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/15, "<math><mi xlink:href="javascript:alert(1)"></mi></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/16, "<math><mmultiscripts href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/17, "<math><mmultiscripts xlink:href="javascript:alert(1)"></mmultiscripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/18, "<math><mn href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/19, "<math><mn xlink:href="javascript:alert(1)"></mn></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/20, "<math><mo href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/21, "<math><mo xlink:href="javascript:alert(1)"></mo></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/22, "<math><mover href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/23, "<math><mover xlink:href="javascript:alert(1)"></mover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/24, "<math><mpadded href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/25, "<math><mpadded xlink:href="javascript:alert(1)"></mpadded></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/26, "<math><mphantom href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/27, "<math><mphantom xlink:href="javascript:alert(1)"></mphantom></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/28, "<math><mprescripts href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/29, "<math><mprescripts xlink:href="javascript:alert(1)"></mprescripts></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/30, "<math><mroot href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/31, "<math><mroot xlink:href="javascript:alert(1)"></mroot></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/32, "<math><mrow href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/33, "<math><mrow xlink:href="javascript:alert(1)"></mrow></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/34, "<math><ms href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/35, "<math><ms xlink:href="javascript:alert(1)"></ms></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/36, "<math><mspace href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/37, "<math><mspace xlink:href="javascript:alert(1)"></mspace></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/38, "<math><msqrt href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/39, "<math><msqrt xlink:href="javascript:alert(1)"></msqrt></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/40, "<math><mstyle href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/41, "<math><mstyle xlink:href="javascript:alert(1)"></mstyle></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/42, "<math><msub href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/43, "<math><msub xlink:href="javascript:alert(1)"></msub></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/44, "<math><msubsup href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/45, "<math><msubsup xlink:href="javascript:alert(1)"></msubsup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/46, "<math><msup href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/47, "<math><msup xlink:href="javascript:alert(1)"></msup></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/48, "<math><mtable href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/49, "<math><mtable xlink:href="javascript:alert(1)"></mtable></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/50, "<math><mtd href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/51, "<math><mtd xlink:href="javascript:alert(1)"></mtd></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/52, "<math><mtext href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/53, "<math><mtext xlink:href="javascript:alert(1)"></mtext></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/54, "<math><mtr href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/55, "<math><mtr xlink:href="javascript:alert(1)"></mtr></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/56, "<math><munder href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/57, "<math><munder xlink:href="javascript:alert(1)"></munder></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/58, "<math><munderover href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/59, "<math><munderover xlink:href="javascript:alert(1)"></munderover></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/60, "<math><none href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/61, "<math><none xlink:href="javascript:alert(1)"></none></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/62, "<math><semantics href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: { javascriptURLs: false } } testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({ javascriptURLs: false }) } testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: <DIV> / <math>. expected true got false
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer({}) } after removeUnsafe() testcase mathml-all-elements/63, "<math><semantics xlink:href="javascript:alert(1)"></semantics></math>"
+  assert_true: [object MathMLElement].isEqual([object MathMLElement]) fails. Path: [object HTMLDocument] / <HTML> / <BODY> / <math>. expected true got false
 [FAIL] setHTMLUnsafe { sanitizer: "default" } default configuration, "<a href="javascript:alert(1)"></a>"
   assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
 [FAIL] parseHTMLUnsafe { sanitizer: "default" } default configuration, "<a href="javascript:alert(1)"></a>"
@@ -319,6 +1039,16 @@ Found 162 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
   assert_equals: javascript: URL is removed expected (object) null but got (string) "javascript:alert(1)"
 [FAIL] setJavascriptURLs(true) on the default configuration, "<svg><a href="javascript:alert(1)"></a></svg>"
+  sanitizer.setJavascriptURLs is not a function
+[FAIL] setHTMLUnsafe { sanitizer: "default" } default configuration, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_not_equals: javascript: URL is removed (math a is kept) got disallowed value null
+[FAIL] parseHTMLUnsafe { sanitizer: "default" } default configuration, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_not_equals: javascript: URL is removed (math a is kept) got disallowed value null
+[FAIL] setHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_not_equals: javascript: URL is removed (math a is kept) got disallowed value null
+[FAIL] parseHTMLUnsafe { sanitizer: new Sanitizer() } default configuration, "<math><a href="javascript:alert(1)"></a></math>"
+  assert_not_equals: javascript: URL is removed (math a is kept) got disallowed value null
+[FAIL] setJavascriptURLs(true) on the default configuration, "<math><a href="javascript:alert(1)"></a></math>"
   sanitizer.setJavascriptURLs is not a function
 [FAIL] sanitizer.setJavascriptURLs() controls URL preservation in setHTMLUnsafe
   s.setJavascriptURLs is not a function

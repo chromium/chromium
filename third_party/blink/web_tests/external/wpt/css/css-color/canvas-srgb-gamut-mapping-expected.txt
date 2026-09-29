@@ -1,0 +1,29 @@
+This is a testharness.js-based test.
+[FAIL] oklch(90% 0.35 0) painted on an sRGB canvas
+  assert_equals: read back [255,50,213]; gamut mapped is [255,205,220] ± 6, clipped is [255,50,213] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 30) painted on an sRGB canvas
+  assert_equals: read back [255,0,0]; gamut mapped is [255,159,142] ± 8, clipped is [255,0,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 0) painted on an sRGB canvas
+  assert_equals: read back [255,0,181]; gamut mapped is [255,152,186] ± 8, clipped is [255,0,181] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 300) painted on an sRGB canvas
+  assert_equals: read back [230,100,255]; gamut mapped is [202,170,255] ± 4, clipped is [230,100,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.3 240) painted on an sRGB canvas
+  assert_equals: read back [0,236,255]; gamut mapped is [185,228,255] ± 11, clipped is [0,236,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.3 0) painted on an sRGB canvas
+  assert_equals: read back [255,104,214]; gamut mapped is [255,205,220] ± 6, clipped is [255,104,214] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(40% 0.35 210) painted on an sRGB canvas
+  assert_equals: read back [0,95,172]; gamut mapped is [0,82,94] ± 5, clipped is [0,95,172] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(60% 0.35 60) painted on an sRGB canvas
+  assert_equals: read back [255,0,0]; gamut mapped is [190,102,0] ± 7, clipped is [255,0,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(40% 0.35 90) painted on an sRGB canvas
+  assert_equals: read back [139,14,0]; gamut mapped is [90,69,0] ± 4, clipped is [139,14,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(50% 0.35 210) painted on an sRGB canvas
+  assert_equals: read back [0,130,206]; gamut mapped is [0,113,128] ± 6, clipped is [0,130,206] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(50% 0.3 60) painted on an sRGB canvas
+  assert_equals: read back [205,0,0]; gamut mapped is [149,78,0] ± 6, clipped is [205,0,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.3 300) painted on an sRGB canvas
+  assert_equals: read back [255,160,255]; gamut mapped is [228,213,255] ± 4, clipped is [255,160,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.2 240) painted on an sRGB canvas
+  assert_equals: read back [37,236,255]; gamut mapped is [185,228,255] ± 11, clipped is [37,236,255] expected "gamut mapped" but got "clipped"
+Harness: the test ran to completion.
+

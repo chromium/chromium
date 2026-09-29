@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextTrack interface: attribute inBandMetadataTrackDispatchType
   assert_true: The prototype object must have a property "inBandMetadataTrackDispatchType" expected true got false
 [FAIL] TextTrack interface: document.createElement("track").track must inherit property "inBandMetadataTrackDispatchType" with the proper type
@@ -16,6 +16,12 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "duration" missing
 [FAIL] Location interface: stringifier
   assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
+[FAIL] Sanitizer interface: operation setJavascriptURLs(boolean)
+  assert_own_property: interface prototype object missing non-static operation expected property "setJavascriptURLs" missing
+[FAIL] Sanitizer interface: new Sanitizer({}) must inherit property "setJavascriptURLs(boolean)" with the proper type
+  assert_inherits: property "setJavascriptURLs" not found in prototype chain
+[FAIL] Sanitizer interface: calling setJavascriptURLs(boolean) on new Sanitizer({}) with too few arguments must throw TypeError
+  assert_inherits: property "setJavascriptURLs" not found in prototype chain
 [FAIL] Navigator interface: operation taintEnabled()
   assert_own_property: interface prototype object missing non-static operation expected property "taintEnabled" missing
 [FAIL] Navigator interface: attribute oscpu
@@ -64,6 +70,26 @@ Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "onunhandledrejection" expected true got false
 [FAIL] SVGSVGElement interface: attribute onunload
   assert_true: The prototype object must have a property "onunload" expected true got false
+[FAIL] SVGAElement interface: attribute origin
+  assert_true: The prototype object must have a property "origin" expected true got false
+[FAIL] SVGAElement interface: attribute protocol
+  assert_true: The prototype object must have a property "protocol" expected true got false
+[FAIL] SVGAElement interface: attribute username
+  assert_true: The prototype object must have a property "username" expected true got false
+[FAIL] SVGAElement interface: attribute password
+  assert_true: The prototype object must have a property "password" expected true got false
+[FAIL] SVGAElement interface: attribute host
+  assert_true: The prototype object must have a property "host" expected true got false
+[FAIL] SVGAElement interface: attribute hostname
+  assert_true: The prototype object must have a property "hostname" expected true got false
+[FAIL] SVGAElement interface: attribute port
+  assert_true: The prototype object must have a property "port" expected true got false
+[FAIL] SVGAElement interface: attribute pathname
+  assert_true: The prototype object must have a property "pathname" expected true got false
+[FAIL] SVGAElement interface: attribute search
+  assert_true: The prototype object must have a property "search" expected true got false
+[FAIL] SVGAElement interface: attribute hash
+  assert_true: The prototype object must have a property "hash" expected true got false
 [FAIL] MathMLAnchorElement interface: attribute origin
   assert_own_property: self does not have own property "MathMLAnchorElement" expected property "MathMLAnchorElement" missing
 [FAIL] MathMLAnchorElement interface: attribute protocol

@@ -1,0 +1,50 @@
+This is a testharness.js-based test.
+Found 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] e.style['color'] = "rgb(from rgb(none none none) r g b)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgb(0, 0, 0) r g b)\nExpected: rgb(from color(srgb none none none) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "rgb(from rgb(none none none / none) r g b / alpha)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgba(0, 0, 0, 0) r g b / alpha)\nExpected: rgb(from color(srgb none none none / none) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] e.style['color'] = "rgb(from rgb(20% none 60%) r g b)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgb(51, 0, 153) r g b)\nExpected: rgb(from color(srgb 0.2 none 0.6) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "rgb(from rgb(20% 40% 60% / none) r g b / alpha)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgba(51, 102, 153, 0) r g b / alpha)\nExpected: rgb(from color(srgb 0.2 0.4 0.6 / none) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "rgba(from rgb(none none none) r g b)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgb(0, 0, 0) r g b)\nExpected: rgb(from color(srgb none none none) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "rgba(from rgb(none none none / none) r g b / alpha)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgba(0, 0, 0, 0) r g b / alpha)\nExpected: rgb(from color(srgb none none none / none) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] e.style['color'] = "rgba(from rgb(20% none 60%) r g b)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgb(51, 0, 153) r g b)\nExpected: rgb(from color(srgb 0.2 none 0.6) r g b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
+[FAIL] e.style['color'] = "rgba(from rgb(20% 40% 60% / none) r g b / alpha)" should set the property value
+  Colors do not match.\nActual:   rgb(from rgba(51, 102, 153, 0) r g b / alpha)\nExpected: rgb(from color(srgb 0.2 0.4 0.6 / none) r g b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsl(from hsl(none none none) h s l)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgb(0, 0, 0) h s l)\nExpected: hsl(from hsl(none none none) h s l).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hsl(from hsl(none none none / none) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(0, 0, 0, 0) h s l / alpha)\nExpected: hsl(from hsl(none none none / none) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] e.style['color'] = "hsl(from hsl(120deg none 50% / .5) h s l)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(128, 128, 128, 0.5) h s l)\nExpected: hsl(from hsl(120 none 50% / 0.5) h s l).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsl(from hsl(120deg 20% 50% / none) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(102, 153, 102, 0) h s l / alpha)\nExpected: hsl(from hsl(120 20% 50% / none) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsl(from hsl(none 20% 50% / .5) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(153, 102, 102, 0.5) h s l / alpha)\nExpected: hsl(from hsl(none 20% 50% / 0.5) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsla(from hsl(none none none) h s l)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgb(0, 0, 0) h s l)\nExpected: hsl(from hsl(none none none) h s l).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hsla(from hsl(none none none / none) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(0, 0, 0, 0) h s l / alpha)\nExpected: hsl(from hsl(none none none / none) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] e.style['color'] = "hsla(from hsl(120deg none 50% / .5) h s l)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(128, 128, 128, 0.5) h s l)\nExpected: hsl(from hsl(120 none 50% / 0.5) h s l).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / none) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(102, 153, 102, 0) h s l / alpha)\nExpected: hsl(from hsl(120 20% 50% / none) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hsla(from hsl(none 20% 50% / .5) h s l / alpha)" should set the property value
+  Colors do not match.\nActual:   hsl(from rgba(153, 102, 102, 0.5) h s l / alpha)\nExpected: hsl(from hsl(none 20% 50% / 0.5) h s l / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hwb(from hwb(none none none) h w b)" should set the property value
+  Colors do not match.\nActual:   hwb(from rgb(255, 0, 0) h w b)\nExpected: hwb(from hwb(none none none) h w b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
+[FAIL] e.style['color'] = "hwb(from hwb(none none none / none) h w b / alpha)" should set the property value
+  Colors do not match.\nActual:   hwb(from rgba(255, 0, 0, 0) h w b / alpha)\nExpected: hwb(from hwb(none none none / none) h w b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 4
+[FAIL] e.style['color'] = "hwb(from hwb(120deg none 50% / .5) h w b)" should set the property value
+  Colors do not match.\nActual:   hwb(from rgba(0, 128, 0, 0.5) h w b)\nExpected: hwb(from hwb(120 none 50% / 0.5) h w b).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hwb(from hwb(120deg 20% 50% / none) h w b / alpha)" should set the property value
+  Colors do not match.\nActual:   hwb(from rgba(51, 128, 51, 0) h w b / alpha)\nExpected: hwb(from hwb(120 20% 50% / none) h w b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+[FAIL] e.style['color'] = "hwb(from hwb(none 20% 50% / .5) h w b / alpha)" should set the property value
+  Colors do not match.\nActual:   hwb(from rgba(128, 51, 51, 0.5) h w b / alpha)\nExpected: hwb(from hwb(none 20% 50% / 0.5) h w b / alpha).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
+Harness: the test ran to completion.
+

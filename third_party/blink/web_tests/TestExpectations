@@ -2523,8 +2523,24 @@ crbug.com/526677153 external/wpt/intersection-observer/transformed-iframe-004-cr
 
 # Floating point output likely flaky
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
+external/wpt/svg/text/scripted/lengthadjust-char-positions.html [ Failure ]
+virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/triangular.https.any.html?cpu [ Failure ]
+virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/triangular.https.any.html?gpu [ Failure ]
+virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/triangular.https.any.html?npu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-grid/grid-lanes/item-placement/column-negative-margin-003.html [ Failure ]
+external/wpt/css/css-inline/text-box-trim/text-box-trim-fieldset-001.html [ Failure ]
+external/wpt/css/css-viewport/zoom/translate-matrix-zoom-anim-accumulate.html [ Failure ]
+external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-close.tentative.sub.window.html [ Failure ]
+external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-option-hover-while-dragging.optional.html [ Failure ]  # Flaky output
+external/wpt/svg/styling/css-linked-parameters/link-parameters-currentcolor-typed.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-currentcolor-untyped.html [ Failure ]
+external/wpt/svg/styling/css-linked-parameters/link-parameters-invalid-typed-value.html [ Failure ]
+external/wpt/svg/types/scripted/SVGGraphicsElement.getBBox-02.html [ Timeout ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/image_size.py [ Failure ]
+external/wpt/webdriver/tests/bidi/browsing_context/start_screencast/destination_folder.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/permissions/set_permission/set_permission.py [ Failure ]
 crbug.com/563060354 external/wpt/geolocation/getCurrentPosition-accuracyMode-cache.https.html [ Failure ]
 crbug.com/563046526 external/wpt/svg/render/order/z-index.tentative.svg [ Failure ]
 crbug.com/562529671 external/wpt/css/css-overflow/line-clamp/line-clamp-auto-062.html [ Failure ]

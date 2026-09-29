@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] :has(> .foo-*) invalidates the :has() subject when a direct child gains/loses a matching class
+  assert_equals: expected "rgb(1, 2, 3)" but got "rgb(0, 0, 0)"
+[FAIL] :has(.foo-*) invalidates the :has() subject when a descendant at any depth gains/loses a matching class
+  assert_equals: expected "rgb(4, 5, 6)" but got "rgb(0, 0, 0)"
+[FAIL] :has(+ .foo-*) invalidates the :has() subject when its immediately following sibling gains/loses a matching class
+  assert_equals: expected "rgb(7, 8, 9)" but got "rgb(0, 0, 0)"
+[FAIL] :has(~ .foo-*) invalidates the :has() subject when a later (non-adjacent) sibling gains/loses a matching class
+  assert_equals: expected "rgb(10, 11, 12)" but got "rgb(0, 0, 0)"
+[FAIL] :has(~ .bar > .foo-*) invalidates the :has() subject when a direct child of a later ".bar" sibling gains/loses a matching class
+  assert_equals: expected "rgb(13, 14, 15)" but got "rgb(0, 0, 0)"
+[FAIL] :has(~ .bar .foo-*) invalidates the :has() subject when a descendant, at any depth, of a later ".bar" sibling gains/loses a matching class
+  assert_equals: expected "rgb(16, 17, 18)" but got "rgb(0, 0, 0)"
+[FAIL] :has(.foo-*) in non-subject (ancestor) position invalidates a separate descendant of the :has() bearer
+  assert_equals: expected "rgb(19, 20, 21)" but got "rgb(0, 0, 0)"
+[FAIL] :has(> .foo-*) in non-subject (parent) position invalidates a sibling child of the :has() bearer
+  assert_equals: expected "rgb(22, 23, 24)" but got "rgb(0, 0, 0)"
+Harness: the test ran to completion.
+

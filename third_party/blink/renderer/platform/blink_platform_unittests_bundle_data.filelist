@@ -166,6 +166,7 @@
 ../../web_tests/external/wpt/jpegxl/resources/conformance_cmyk_layers.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_patches.jxl
 ../../web_tests/external/wpt/jpegxl/resources/conformance_sunset_logo.jxl
+../../web_tests/external/wpt/jpegxl/resources/custom-primaries-icc-overflow.jxl
 ../../web_tests/external/wpt/jpegxl/resources/gray-32x32.jxl
 ../../web_tests/external/wpt/jpegxl/resources/gray-with-icc.jxl
 ../../web_tests/external/wpt/jpegxl/resources/green-32x32.jxl

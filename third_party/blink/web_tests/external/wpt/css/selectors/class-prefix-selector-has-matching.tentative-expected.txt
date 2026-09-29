@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] :has(.foo-*) matches an element with a descendant, at any depth, whose class matches the prefix
+  Failed to execute 'matches' on 'Element': ':has(.foo-*)' is not a valid selector.
+[FAIL] :has(> .foo-*) only matches a direct child, unlike the plain descendant form
+  Failed to execute 'matches' on 'Element': ':has(> .foo-*)' is not a valid selector.
+[FAIL] :has(+ .foo-*) matches when the immediately following sibling matches the prefix
+  Failed to execute 'matches' on 'Element': ':has(+ .foo-*)' is not a valid selector.
+[FAIL] :has(~ .foo-*) matches a later sibling that is not the immediately following one
+  Failed to execute 'matches' on 'Element': ':has(+ .foo-*)' is not a valid selector.
+[FAIL] :has(~ .bar > .foo-*) matches when a later sibling has a matching direct child
+  Failed to execute 'matches' on 'Element': ':has(~ .bar > .foo-*)' is not a valid selector.
+[FAIL] :has(~ .bar .foo-*) matches at any depth under a later sibling, unlike the direct-child form
+  Failed to execute 'matches' on 'Element': ':has(~ .bar > .foo-*)' is not a valid selector.
+[FAIL] class prefix selector works inside :has() used as a :not() argument
+  Failed to execute 'matches' on 'Element': ':not(:has(.foo-*))' is not a valid selector.
+[FAIL] a class prefix selector on the same compound as :has() still matches normally
+  Failed to execute 'matches' on 'Element': '.foo-*:has(.bar)' is not a valid selector.
+Harness: the test ran to completion.
+

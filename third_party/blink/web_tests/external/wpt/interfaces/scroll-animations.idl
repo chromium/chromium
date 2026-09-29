@@ -17,13 +17,13 @@ dictionary ScrollTimelineOptions {
 
 [Exposed=Window]
 interface ScrollTimeline : AnimationTimeline {
-  constructor(optional ScrollTimelineOptions options = {});
+  constructor(ViewTimelineOptions options);
   readonly attribute Element? source;
   readonly attribute ScrollAxis axis;
 };
 
 dictionary ViewTimelineOptions {
-  Element subject;
+  required Element subject;
   ScrollAxis axis = "block";
   (DOMString or sequence<(CSSNumericValue or CSSKeywordValue)>) inset = "auto";
 };

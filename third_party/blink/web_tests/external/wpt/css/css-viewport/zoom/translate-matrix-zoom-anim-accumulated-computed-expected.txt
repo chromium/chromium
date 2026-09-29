@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Computed transform accounts for zoom during matrix animation accumulation
+  assert_equals: X translation expected 20 but got 17.5
+Harness: the test ran to completion.
+

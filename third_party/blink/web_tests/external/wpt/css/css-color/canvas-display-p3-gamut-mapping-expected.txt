@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] oklch(90% 0.3 240) painted on a display-p3 canvas
+  assert_equals: read back [0,231,255]; gamut mapped is [191,227,255] ± 9, clipped is [0,231,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(60% 0.35 60) painted on a display-p3 canvas
+  assert_equals: read back [236,0,0]; gamut mapped is [185,102,0] ± 5, clipped is [236,0,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.35 30) painted on a display-p3 canvas
+  assert_equals: read back [255,104,72]; gamut mapped is [255,206,195] ± 7, clipped is [255,104,72] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.35 300) painted on a display-p3 canvas
+  assert_equals: read back [247,146,255]; gamut mapped is [226,213,255] ± 4, clipped is [247,146,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(50% 0.35 60) painted on a display-p3 canvas
+  assert_equals: read back [200,0,0]; gamut mapped is [145,78,0] ± 5, clipped is [200,0,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 300) painted on a display-p3 canvas
+  assert_equals: read back [214,108,255]; gamut mapped is [198,169,255] ± 4, clipped is [215,108,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 30) painted on a display-p3 canvas
+  assert_equals: read back [255,52,22]; gamut mapped is [255,154,134] ± 8, clipped is [255,52,22] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(30% 0.35 210) painted on a display-p3 canvas
+  assert_equals: read back [0,56,134]; gamut mapped is [0,54,65] ± 5, clipped is [0,56,134] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(30% 0.3 90) painted on a display-p3 canvas
+  assert_equals: read back [90,2,0]; gamut mapped is [58,44,0] ± 3, clipped is [90,2,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(30% 0.35 240) painted on a display-p3 canvas
+  assert_equals: read back [0,0,191]; gamut mapped is [0,48,87] ± 8, clipped is [0,0,191] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(80% 0.35 0) painted on a display-p3 canvas
+  assert_equals: read back [255,42,179]; gamut mapped is [255,145,184] ± 8, clipped is [255,42,179] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(50% 0.35 210) painted on a display-p3 canvas
+  assert_equals: read back [0,125,199]; gamut mapped is [0,114,135] ± 5, clipped is [0,125,199] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.25 60) painted on a display-p3 canvas
+  assert_equals: read back [255,180,0]; gamut mapped is [255,210,166] ± 14, clipped is [255,180,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.3 60) painted on a display-p3 canvas
+  assert_equals: read back [255,166,0]; gamut mapped is [255,210,166] ± 14, clipped is [255,166,0] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(90% 0.35 270) painted on a display-p3 canvas
+  assert_equals: read back [149,185,255]; gamut mapped is [209,220,255] ± 5, clipped is [149,185,255] expected "gamut mapped" but got "clipped"
+[FAIL] oklch(40% 0.35 90) painted on a display-p3 canvas
+  assert_equals: read back [128,30,0]; gamut mapped is [89,69,0] ± 3, clipped is [128,30,0] expected "gamut mapped" but got "clipped"
+Harness: the test ran to completion.
+

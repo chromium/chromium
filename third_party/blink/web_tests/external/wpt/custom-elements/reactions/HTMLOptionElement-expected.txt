@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] selected on HTMLOptionElement must enqueue connectedCallback when cloning a custom element into selectedcontent
+  assert_array_equals: lengths differ, expected array ["constructed", "connected"] length 2, got [] length 0
+Harness: the test ran to completion.
+

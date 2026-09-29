@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] overflow: hidden
+  assert_equals: scrollHeight expected 100 but got 120
+[FAIL] overflow: auto
+  assert_equals: scrollHeight expected 100 but got 120
+[FAIL] overflow: scroll
+  assert_equals: scrollHeight expected 100 but got 120
+Harness: the test ran to completion.
+

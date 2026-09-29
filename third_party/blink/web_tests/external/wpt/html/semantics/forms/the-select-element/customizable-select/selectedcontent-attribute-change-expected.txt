@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Removing an option's disabled attribute updates selectedcontent.
+  assert_equals: selectedcontent should be updated when enabling an option. expected "C" but got ""
+[FAIL] Removing an optgroup's disabled attribute updates selectedcontent.
+  assert_equals: selectedcontent should be updated when enabling an optgroup. expected "D" but got ""
+Harness: the test ran to completion.
+

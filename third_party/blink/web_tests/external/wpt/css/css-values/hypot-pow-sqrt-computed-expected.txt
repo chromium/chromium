@@ -1,0 +1,36 @@
+This is a testharness.js-based test.
+Found 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] pow(-1, infinity) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(-1, infinity) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(-1, infinity)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(-1, infinity)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] pow(1, infinity) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(1, infinity) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(1, infinity)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(1, infinity)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] pow(-1, -infinity) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(-1, -infinity) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(-1, -infinity)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(-1, -infinity)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] pow(1, -infinity) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(1, -infinity) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(1, -infinity)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(1, -infinity)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] pow(NaN, 0) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(NaN, 0) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(NaN, 0)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(NaN, 0)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] pow(1, NaN) should be used-value-equivalent to calc(NaN)
+  assert_equals: pow(1, NaN) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1"
+[FAIL] calc(-1 * pow(1, NaN)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * pow(1, NaN)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1"
+[FAIL] hypot(infinity, NaN) should be used-value-equivalent to calc(NaN)
+  assert_equals: hypot(infinity, NaN) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1.79769e+308"
+[FAIL] calc(-1 * hypot(infinity, NaN)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * hypot(infinity, NaN)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1.79769e+308"
+[FAIL] hypot(NaN, infinity) should be used-value-equivalent to calc(NaN)
+  assert_equals: hypot(NaN, infinity) and calc(NaN) serialize to the same thing in used values. expected "0" but got "1.79769e+308"
+[FAIL] calc(-1 * hypot(NaN, infinity)) should be used-value-equivalent to calc(NaN)
+  assert_equals: calc(-1 * hypot(NaN, infinity)) and calc(NaN) serialize to the same thing in used values. expected "0" but got "-1.79769e+308"
+Harness: the test ran to completion.
+

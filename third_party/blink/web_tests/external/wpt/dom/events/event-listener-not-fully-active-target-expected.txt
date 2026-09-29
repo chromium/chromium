@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] dispatchEvent() on an EventTarget in a removed iframe returns true
+  assert_true: expected true got false
+[FAIL] Dispatch still happens for an EventTarget in a removed iframe, only the listeners are skipped
+  assert_equals: target expected object "[object EventTarget]" but got null
+Harness: the test ran to completion.
+

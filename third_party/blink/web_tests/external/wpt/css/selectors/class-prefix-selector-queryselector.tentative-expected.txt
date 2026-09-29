@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] querySelectorAll(".foo-*") returns matching elements in document order and excludes non-matches (foobar, foo-)
+  Failed to execute 'querySelectorAll' on 'Document': '.foo-*' is not a valid selector.
+[FAIL] querySelector(".foo-*") returns the first matching element in document order
+  Failed to execute 'querySelector' on 'Document': '.foo-*' is not a valid selector.
+[FAIL] querySelectorAll with a selector list containing a class prefix selector does not duplicate an element that matches more than one branch
+  Failed to execute 'querySelectorAll' on 'Document': '.foo-*, .bar-*' is not a valid selector.
+[FAIL] Element.closest() finds an ancestor via the class prefix selector
+  Failed to execute 'closest' on 'Element': '.foo-*' is not a valid selector.
+[FAIL] Element.closest() matches the element itself first
+  Failed to execute 'closest' on 'Element': '.foo-*' is not a valid selector.
+[FAIL] Element.closest() returns null when no ancestor matches the class prefix selector
+  Failed to execute 'closest' on 'Element': '.bar-*' is not a valid selector.
+Harness: the test ran to completion.
+
