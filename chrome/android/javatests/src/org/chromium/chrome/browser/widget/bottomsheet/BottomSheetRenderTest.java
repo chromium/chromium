@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.widget.bottomsheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -304,9 +305,46 @@ public class BottomSheetRenderTest {
         mRenderTestRule.render(mViewport, "standard_sheet_edge_to_edge_inset_with_keyboard");
     }
 
-    private void initController(boolean enableLargeFormFactorUi) {
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStandard_ResizeContent_EdgeToEdgeBottomInset() throws IOException {
+        DeviceInfo.setIsDesktopForTesting(false);
+        initController(/* enableLargeFormFactorUi= */ false, /* edgeToEdgeBottomInsetDp= */ 48);
+        RenderSheetContent content =
+                runOnUiThreadBlocking(
+                        () -> {
+                            TextView card = new TextView(mActivity);
+                            card.setText("Standard Sheet With Resize Content");
+                            card.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+                            card.setBackgroundColor(
+                                    SemanticColorUtils.getColorPrimaryContainer(mActivity));
+                            card.setLayoutParams(
+                                    new ViewGroup.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.MATCH_PARENT));
+                            RenderSheetContent sheetContent =
+                                    new RenderSheetContent(mActivity, card);
+                            sheetContent.setFullHeightRatio(HeightMode.RESIZE_CONTENT);
+                            return sheetContent;
+                        });
+        showSheet(content, SheetState.FULL);
         runOnUiThreadBlocking(
                 () -> {
+                    View contentContainer = mSheetContainer.findViewById(R.id.bottom_sheet_content);
+                    assertEquals(0, contentContainer.getPaddingBottom());
+                });
+        mRenderTestRule.render(mViewport, "standard_sheet_resize_content_edge_to_edge_inset");
+    }
+
+    private void initController(boolean enableLargeFormFactorUi) {
+        initController(enableLargeFormFactorUi, /* edgeToEdgeBottomInsetDp= */ 0);
+    }
+
+    private void initController(boolean enableLargeFormFactorUi, int edgeToEdgeBottomInsetDp) {
+        runOnUiThreadBlocking(
+                () -> {
+                    mEdgeToEdgeBottomInsetSupplier.set(edgeToEdgeBottomInsetDp);
                     if (enableLargeFormFactorUi) {
                         mActivity
                                 .getTheme()
