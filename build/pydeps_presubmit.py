@@ -3,9 +3,13 @@
 # found in the LICENSE file.
 """Presubmit check for .pydeps files."""
 
+from collections.abc import Mapping
 import difflib
 import os
+import re
 import shlex
+
+_MISSING = object()
 
 
 class PydepsChecker:
@@ -43,22 +47,158 @@ class PydepsChecker:
                 ret.setdefault(path, []).append(pydep_local_path)
         return ret
 
+    @staticmethod
+    def _GetGclientEval():
+        try:
+            import gclient_eval
+        except ImportError:
+            import find_depot_tools
+
+            find_depot_tools.add_depot_tools_to_path()
+            import gclient_eval
+        return gclient_eval
+
+    @staticmethod
+    def _DiffDictKeys(old_dict, new_dict):
+        if not isinstance(old_dict, Mapping) or not isinstance(
+            new_dict, Mapping
+        ):
+            return set()
+        return {
+            key
+            for key in old_dict.keys() | new_dict.keys()
+            if old_dict.get(key, _MISSING) != new_dict.get(key, _MISSING)
+        }
+
+    @staticmethod
+    def _FindChangedDeps(old_eval, new_eval):
+        changed = PydepsChecker._DiffDictKeys(
+            old_eval.get('deps') or {}, new_eval.get('deps') or {}
+        )
+        old_deps_os = old_eval.get('deps_os') or {}
+        new_deps_os = new_eval.get('deps_os') or {}
+        for os_name in set(old_deps_os) | set(new_deps_os):
+            changed.update(
+                PydepsChecker._DiffDictKeys(
+                    old_deps_os.get(os_name) or {},
+                    new_deps_os.get(os_name) or {},
+                )
+            )
+        return changed
+
+    @staticmethod
+    def _ExtractConditions(eval_dict):
+        if not isinstance(eval_dict, Mapping):
+            return
+        deps = eval_dict.get('deps') or {}
+        if isinstance(deps, Mapping):
+            for val in deps.values():
+                if isinstance(val, Mapping):
+                    cond = val.get('condition')
+                    if isinstance(cond, str):
+                        yield cond
+        deps_os = eval_dict.get('deps_os') or {}
+        if isinstance(deps_os, Mapping):
+            for os_deps in deps_os.values():
+                if isinstance(os_deps, Mapping):
+                    for val in os_deps.values():
+                        if isinstance(val, Mapping):
+                            cond = val.get('condition')
+                            if isinstance(cond, str):
+                                yield cond
+
+    @staticmethod
+    def _IsVarReferencedInConditions(changed_vars, *eval_dicts):
+        patterns = [re.compile(rf'\b{re.escape(v)}\b') for v in changed_vars]
+        for eval_dict in eval_dicts:
+            for cond in PydepsChecker._ExtractConditions(eval_dict):
+                if any(p.search(cond) for p in patterns):
+                    return True
+        return False
+
+    @staticmethod
+    def _NormalizeChangedDeps(raw_deps):
+        """Converts DEPS paths (e.g. 'src/third_party/foo') to repo-relative
+        paths (e.g. 'third_party/foo'). Returns None if a dep affects repo
+        root ('src').
+        """
+        changed_deps = set()
+        for dep in raw_deps:
+            norm = dep
+            if norm == 'src' or norm.startswith('src/'):
+                norm = norm[3:].lstrip('/')
+            norm = norm.rstrip('/')
+            if not norm:
+                return None
+            changed_deps.add(norm)
+        return changed_deps
+
+    @staticmethod
+    def _GetChangedDeps(f):
+        """Returns changed dep paths from DEPS, or None if repo root or config
+        changed.
+        """
+        old_contents = '\n'.join(f.OldContents())
+        new_contents = '\n'.join(f.NewContents())
+        if not old_contents or not new_contents:
+            return None
+
+        gclient_eval = PydepsChecker._GetGclientEval()
+        old_eval = gclient_eval.Exec(old_contents)
+        new_eval = gclient_eval.Exec(new_contents)
+        if not isinstance(old_eval, Mapping) or not isinstance(
+            new_eval, Mapping
+        ):
+            return None
+
+        changed_top_level = PydepsChecker._DiffDictKeys(old_eval, new_eval)
+        if changed_top_level - {'deps', 'deps_os', 'vars'}:
+            return None
+
+        raw_deps = PydepsChecker._FindChangedDeps(old_eval, new_eval)
+        changed_vars = PydepsChecker._DiffDictKeys(
+            old_eval.get('vars') or {}, new_eval.get('vars') or {}
+        )
+        if changed_vars:
+            if not raw_deps or PydepsChecker._IsVarReferencedInConditions(
+                changed_vars, old_eval, new_eval
+            ):
+                return None
+
+        return PydepsChecker._NormalizeChangedDeps(raw_deps)
+
     def ComputeAffectedPydeps(self):
         """Returns a set of .pydeps files that might need regenerating."""
         affected_pydeps = set()
         file_to_pydeps_map = None
         for f in self._input_api.AffectedFiles(include_deletes=True):
             local_path = f.LocalPath()
-            # Changes to DEPS can lead to .pydeps changes if any .py files are
-            # in subrepositories. We can't figure out which files change, so
-            # re-check all files.
             # Changes to print_python_deps.py or pydeps_presubmit.py affect all
             # .pydeps.
-            if local_path == 'DEPS' or local_path.endswith(
+            if local_path.endswith(
                 ('print_python_deps.py', 'pydeps_presubmit.py')
             ):
                 return set(self._pydeps_files)
-            if local_path.endswith('.pydeps'):
+            if local_path == 'DEPS':
+                try:
+                    changed_deps = self._GetChangedDeps(f)
+                except Exception:
+                    changed_deps = None
+                if changed_deps is None:
+                    return set(self._pydeps_files)
+                if not changed_deps:
+                    continue
+                if file_to_pydeps_map is None:
+                    file_to_pydeps_map = self._CreateFilesToPydepsMap()
+                prefixes = tuple(f'{d}/' for d in changed_deps)
+                for path, pydeps in file_to_pydeps_map.items():
+                    norm_path = path.replace('\\', '/')
+                    if (
+                        norm_path.startswith(prefixes)
+                        or norm_path in changed_deps
+                    ):
+                        affected_pydeps.update(pydeps)
+            elif local_path.endswith('.pydeps'):
                 if local_path in self._pydeps_files:
                     affected_pydeps.add(local_path)
             elif local_path.endswith('.py'):

@@ -138,14 +138,6 @@ class PydepsPresubmitTest(unittest.TestCase):
         results = self._RunCheck()
         self.assertEqual(0, len(results), 'Unexpected results: %r' % results)
 
-    def testDepsTriggersAllPydeps(self):
-        self.mock_input_api.files = [
-            MockAffectedFile('DEPS', []),
-        ]
-        self.assertEqual(
-            set(self.mock_all_pydeps), self.checker.ComputeAffectedPydeps()
-        )
-
     def testPydepsPresubmitTriggersAllPydeps(self):
         self.mock_input_api.files = [
             MockAffectedFile('build/pydeps_presubmit.py', []),
@@ -280,6 +272,268 @@ class PydepsPresubmitTest(unittest.TestCase):
         self.assertEqual(1, len(results))
         self.assertIn('Command failed:', str(results[0]))
         self.assertIn('ImportError: foo', str(results[0]))
+
+    def testDepsChangeDoesNotAffectUnrelatedPydeps(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nthird_party/catapult/telemetry.py\n'
+        )
+        old_deps = ['deps = {"src/third_party/catapult": "v1"}']
+        new_deps = [
+            'deps = {',
+            '    "src/third_party/catapult": "v1",',
+            '    "src/third_party/skia": "v2",',
+            '}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(set(), set(self.checker.ComputeAffectedPydeps()))
+
+    def testDepsChangeAffectsSubrepoPydeps(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nthird_party/catapult/telemetry.py\n'
+        )
+        old_deps = ['deps = {"src/third_party/catapult": "v1"}']
+        new_deps = ['deps = {"src/third_party/catapult": "v2"}']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDepsChangeWithVariableUnderscore(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\n'
+            'third_party/devtools-frontend/src/front_end.py\n'
+        )
+        old_deps = [
+            'vars = {"devtools_frontend_revision": "v1"}',
+            'deps = {',
+            '    "src/third_party/devtools-frontend/src": '
+            'Var("devtools_frontend_revision"),',
+            '}',
+        ]
+        new_deps = [
+            'vars = {"devtools_frontend_revision": "v2"}',
+            'deps = {',
+            '    "src/third_party/devtools-frontend/src": '
+            'Var("devtools_frontend_revision"),',
+            '}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDepsChangeOutsideThirdParty(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nbuild/custom_tool/tool.py\n'
+        )
+        old_deps = ['deps = {"src/build/custom_tool": "v1"}']
+        new_deps = ['deps = {"src/build/custom_tool": "v2"}']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDepsChangeMultilineHashOnly(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nthird_party/catapult/telemetry.py\n'
+        )
+        old_deps = [
+            'deps = {',
+            '    "src/third_party/catapult": {',
+            '        "url": "https://catapult.git" + "@" +',
+            '               "1111",',
+            '    },',
+            '}',
+        ]
+        new_deps = [
+            'deps = {',
+            '    "src/third_party/catapult": {',
+            '        "url": "https://catapult.git" + "@" +',
+            '               "2222",',
+            '    },',
+            '}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDepsChangeParseFailureFallsBackToAllPydeps(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', ['invalid syntax {{{{'], action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsOsChangeAffectsSubrepoPydeps(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nthird_party/catapult/telemetry.py\n'
+        )
+        old_deps = [
+            'deps_os = {',
+            '    "android": {',
+            '        "src/third_party/catapult": "v1",',
+            '    },',
+            '}',
+        ]
+        new_deps = [
+            'deps_os = {',
+            '    "android": {',
+            '        "src/third_party/catapult": "v2",',
+            '    },',
+            '}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDepsChangeRootSrcFallsBackToAllPydeps(self):
+        old_deps = ['deps = {"src": "v1"}']
+        new_deps = ['deps = {"src": "v2"}']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsMalformedDictFallsBackToAllPydeps(self):
+        old_deps = ['deps = None']
+        new_deps = ['deps = {"src/third_party/catapult": "v1"}']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsOsMalformedFallsBackToAllPydeps(self):
+        old_deps = ['deps_os = "invalid"']
+        new_deps = ['deps_os = None']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsAndDepsOsIndependentComparison(self):
+        self.checker._file_cache['A.pydeps'] = (
+            '# CMD --output A.pydeps A\nthird_party/catapult/telemetry.py\n'
+        )
+        old_deps = [
+            'deps = {"src/third_party/catapult": "v1"}',
+            'deps_os = {"android": {"src/third_party/catapult": "v_static"}}',
+        ]
+        new_deps = [
+            'deps = {"src/third_party/catapult": "v2"}',
+            'deps_os = {"android": {"src/third_party/catapult": "v_static"}}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            {'A.pydeps'}, set(self.checker.ComputeAffectedPydeps())
+        )
+
+    def testDiffDictKeys(self):
+        diff = pydeps_presubmit.PydepsChecker._DiffDictKeys
+        self.assertEqual(set(), diff({}, {}))
+        self.assertEqual({'a'}, diff({'a': 1}, {'a': 2}))
+        self.assertEqual({'b'}, diff({'a': 1}, {'a': 1, 'b': 2}))
+        self.assertEqual({'a'}, diff({'a': 1}, {}))
+        self.assertEqual({'a'}, diff({'a': None}, {}))
+        self.assertEqual({'a'}, diff({}, {'a': None}))
+        self.assertEqual(set(), diff({'a': None}, {'a': None}))
+        self.assertEqual({'a'}, diff({'a': None}, {'a': 1}))
+
+    def testDepsTriggersAllPydepsWhenEmpty(self):
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', []),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps), self.checker.ComputeAffectedPydeps()
+        )
+
+    def testDepsTopLevelKeyOutsideDepsVarsFallsBackToAllPydeps(self):
+        old_deps = ['hooks = [{"action": ["foo"]}]']
+        new_deps = ['hooks = [{"action": ["bar"]}]']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsVarsConditionFlagChangeFallsBackToAllPydeps(self):
+        old_deps = ['vars = {"checkout_android": False}']
+        new_deps = ['vars = {"checkout_android": True}']
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testDepsVarsReferencedInConditionFallsBackToAllPydeps(self):
+        old_deps = [
+            'vars = {"use_telemetry": "v1"}',
+            'deps = {',
+            '    "src/third_party/catapult": {',
+            '        "url": "https://catapult.git@v1",',
+            '        "condition": "use_telemetry == \\"v1\\"",',
+            '    },',
+            '}',
+        ]
+        new_deps = [
+            'vars = {"use_telemetry": "v2"}',
+            'deps = {',
+            '    "src/third_party/catapult": {',
+            '        "url": "https://catapult.git@v2",',
+            '        "condition": "use_telemetry == \\"v2\\"",',
+            '    },',
+            '}',
+        ]
+        self.mock_input_api.files = [
+            MockAffectedFile('DEPS', new_deps, old_deps, action='M'),
+        ]
+        self.assertEqual(
+            set(self.mock_all_pydeps),
+            set(self.checker.ComputeAffectedPydeps()),
+        )
+
+    def testNormalizeChangedDeps(self):
+        norm = pydeps_presubmit.PydepsChecker._NormalizeChangedDeps
+        self.assertEqual(
+            {'third_party/catapult'},
+            norm(['src/third_party/catapult/']),
+        )
+        self.assertEqual(
+            {'build/custom'},
+            norm(['build/custom']),
+        )
+        self.assertIsNone(norm(['src']))
+        self.assertIsNone(norm(['src/']))
 
 
 if __name__ == '__main__':
