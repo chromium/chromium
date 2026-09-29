@@ -41,6 +41,7 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/page_criteria.h"
 #include "components/offline_pages/core/request_header/offline_page_header.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -581,7 +582,9 @@ void OfflinePageBridge::WillCloseTab(content::WebContents* web_contents) {
   if (!web_contents)
     return;
 
-  RecentTabHelper* tab_helper = RecentTabHelper::FromWebContents(web_contents);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  RecentTabHelper* tab_helper = tab ? RecentTabHelper::From(tab) : nullptr;
   if (tab_helper)
     tab_helper->WillCloseTab();
 }

@@ -24,6 +24,7 @@
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -95,6 +96,7 @@ class RecentTabHelperTest
   ~RecentTabHelperTest() override = default;
 
   void SetUp() override;
+  void TearDown() override;
   const std::vector<OfflinePageItem>& GetAllPages();
 
   void FailLoad(const GURL& url);
@@ -119,7 +121,9 @@ class RecentTabHelperTest
 
   ClientId NewDownloadClientId();
 
-  RecentTabHelper* recent_tab_helper() const { return recent_tab_helper_; }
+  RecentTabHelper* recent_tab_helper() const {
+    return recent_tab_helper_.get();
+  }
 
   OfflinePageModel* model() const { return model_; }
 
@@ -163,7 +167,8 @@ class RecentTabHelperTest
 
   void OnGetAllPagesDone(const std::vector<OfflinePageItem>& result);
 
-  raw_ptr<RecentTabHelper> recent_tab_helper_;   // Owned by WebContents.
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<RecentTabHelper> recent_tab_helper_;
   raw_ptr<OfflinePageModel> model_;              // Keyed service.
   raw_ptr<TestDelegate> default_test_delegate_;  // Created at SetUp.
   size_t page_added_count_;
@@ -202,7 +207,6 @@ bool TestDelegate::GetTabId(content::WebContents* web_contents, int* tab_id) {
 RecentTabHelperTest::RecentTabHelperTest()
     : ChromeRenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-      recent_tab_helper_(nullptr),
       model_(nullptr),
       default_test_delegate_(nullptr),
       page_added_count_(0),
@@ -221,8 +225,7 @@ void RecentTabHelperTest::SetUp() {
       profile(), base::BindRepeating(&BuildTestRequestCoordinator));
   RunUntilIdle();
 
-  RecentTabHelper::CreateForWebContents(web_contents());
-  recent_tab_helper_ = RecentTabHelper::FromWebContents(web_contents());
+  recent_tab_helper_ = std::make_unique<RecentTabHelper>(tab_, web_contents());
 
   std::unique_ptr<TestDelegate> test_delegate(
       new TestDelegate(this, kTabId, true));
@@ -233,6 +236,12 @@ void RecentTabHelperTest::SetUp() {
   model_->AddObserver(this);
 
   histogram_tester_ = std::make_unique<base::HistogramTester>();
+}
+
+void RecentTabHelperTest::TearDown() {
+  default_test_delegate_ = nullptr;
+  recent_tab_helper_.reset();
+  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 void RecentTabHelperTest::FailLoad(const GURL& url) {

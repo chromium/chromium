@@ -32,6 +32,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
+#include "components/offline_pages/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/buildflags.h"
@@ -314,6 +315,12 @@ class ChromeRLZTrackerWebContentsObserver;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PluginObserver;
+#endif
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+namespace offline_pages {
+class RecentTabHelper;
+}  // namespace offline_pages
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -935,6 +942,10 @@ class TabFeatures {
 
   std::unique_ptr<SupervisedUserNavigationObserver>
       supervised_user_navigation_observer_;
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
+#endif
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

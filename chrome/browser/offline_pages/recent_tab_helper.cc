@@ -22,6 +22,7 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -56,6 +57,8 @@ class DefaultRecentTabHelperDelegate
 }  // namespace
 
 namespace offline_pages {
+
+DEFINE_USER_DATA(RecentTabHelper);
 
 using PageQuality = SnapshotController::PageQuality;
 
@@ -93,14 +96,24 @@ struct RecentTabHelper::SnapshotProgressInfo {
   std::string origin;
 };
 
-RecentTabHelper::RecentTabHelper(content::WebContents* web_contents)
+RecentTabHelper::RecentTabHelper(tabs::TabInterface& tab,
+                                 content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<RecentTabHelper>(*web_contents),
-      delegate_(new DefaultRecentTabHelperDelegate()) {
+      delegate_(new DefaultRecentTabHelperDelegate()),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-RecentTabHelper::~RecentTabHelper() = default;
+RecentTabHelper::~RecentTabHelper() {
+  if (web_contents()) {
+    WebContentsDestroyed();
+  }
+}
+
+// static
+RecentTabHelper* RecentTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void RecentTabHelper::SetDelegate(
     std::unique_ptr<RecentTabHelper::Delegate> delegate) {
@@ -547,7 +560,5 @@ void RecentTabHelper::CancelInFlightSnapshots() {
   downloads_latest_saved_snapshot_info_.reset();
   last_n_ongoing_snapshot_info_.reset();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(RecentTabHelper);
 
 }  // namespace offline_pages

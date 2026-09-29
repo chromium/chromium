@@ -13,11 +13,15 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/snapshot_controller.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
 class NavigationHandle;
 }
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace offline_pages {
 
@@ -25,15 +29,19 @@ namespace offline_pages {
 // loaded to proper degree and then makes a snapshot of the page. Removes the
 // oldest snapshot in the 'ring buffer'. As a result, there is always up to N
 // snapshots of recent pages on the device.
-class RecentTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<RecentTabHelper>,
-      public SnapshotController::Client {
+class RecentTabHelper : public content::WebContentsObserver,
+                        public SnapshotController::Client {
  public:
+  DECLARE_USER_DATA(RecentTabHelper);
+
+  RecentTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
+
   RecentTabHelper(const RecentTabHelper&) = delete;
   RecentTabHelper& operator=(const RecentTabHelper&) = delete;
 
   ~RecentTabHelper() override;
+
+  static RecentTabHelper* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -92,9 +100,6 @@ class RecentTabHelper
 
  private:
   struct SnapshotProgressInfo;
-
-  explicit RecentTabHelper(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<RecentTabHelper>;
 
   void WebContentsWasHidden();
   void WebContentsWasShown();
@@ -166,9 +171,9 @@ class RecentTabHelper
   // process of being closed.
   bool tab_is_closing_ = false;
 
-  base::WeakPtrFactory<RecentTabHelper> weak_ptr_factory_{this};
+  ui::ScopedUnownedUserData<RecentTabHelper> scoped_unowned_user_data_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  base::WeakPtrFactory<RecentTabHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace offline_pages

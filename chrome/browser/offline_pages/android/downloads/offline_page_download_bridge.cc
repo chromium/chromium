@@ -47,6 +47,7 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_page_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
@@ -202,8 +203,10 @@ void SavePageIfNotNavigatedAway(const GURL& url,
   // the tab. If unsuccessful, it'll enable the already-queued request for
   // background offliner. Same will happen if Chrome is terminated since
   // 'disabled' status of the request is RAM-stored info.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
   offline_pages::RecentTabHelper* tab_helper =
-      RecentTabHelper::FromWebContents(web_contents);
+      tab ? RecentTabHelper::From(tab) : nullptr;
   if (!tab_helper) {
     if (request_id != OfflinePageModel::kInvalidOfflineId &&
         request_coordinator) {

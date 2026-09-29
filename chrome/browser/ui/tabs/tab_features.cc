@@ -252,6 +252,10 @@
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #endif
 
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+#include "chrome/browser/offline_pages/recent_tab_helper.h"
+#endif
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
@@ -1001,6 +1005,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab, tab, tab.GetContents());
   }
 #endif
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  recent_tab_helper_ =
+      GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
+          tab, tab, tab.GetContents());
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1384,6 +1394,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
             *tab, *tab, new_contents);
   }
+
+#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+  recent_tab_helper_.reset();
+  recent_tab_helper_ =
+      GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
+          *tab, *tab, new_contents);
+#endif
 }
 
 customize_chrome::SidePanelController*
