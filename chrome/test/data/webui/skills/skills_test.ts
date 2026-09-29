@@ -123,9 +123,10 @@ suite('SkillsAppPage', function() {
   test('BrowseSkillsButtonNavigatesToDiscoverSkills', async function() {
     navigateTo('/yourSkills');
     await microtasksFinished();
-    const button = app.$.userSkillsPage.$['browseSkillsButton'];
+    const button = app.$.userSkillsPage.shadowRoot.querySelector<HTMLElement>(
+        '#browseSkillsButton');
     assertTrue(!!button);
-    (button as HTMLElement).click();
+    button.click();
     await microtasksFinished();
     assertEquals('/browse', CrRouter.getInstance().getPath());
     const selectedTab =

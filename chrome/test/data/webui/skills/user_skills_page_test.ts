@@ -4,6 +4,7 @@
 
 import 'chrome://skills/user_skills_page.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
@@ -59,12 +60,12 @@ suite('UserSkillsPage', function() {
   }
 
   test('InitialPageLoadsCorrectly', function() {
-    const title = page.$['skillsTitle'];
+    const title = page.shadowRoot.querySelector('#skillsTitle');
     assertTrue(!!title);
     assertEquals(
         loadTimeData.getString('userSkillsTitle'), title.textContent.trim());
 
-    const emptyState = page.$['emptyState'];
+    const emptyState = page.shadowRoot.querySelector('#emptyState');
     assertTrue(!!emptyState);
     const notice = page.shadowRoot.querySelector('.body-text');
     assertTrue(!!notice);
@@ -74,9 +75,10 @@ suite('UserSkillsPage', function() {
   });
 
   test('AddSkillButtonTriggersDialog', async function() {
-    const addButton = page.$['addSkillButton'];
+    const addButton =
+        page.shadowRoot.querySelector<HTMLElement>('#addSkillButton');
     assertTrue(!!addButton);
-    (addButton as HTMLElement).click();
+    addButton.click();
     const [dialogType, skill] =
         await browserProxy.handler.whenCalled('openSkillsDialog');
     assertEquals(SkillsDialogType.kAdd, dialogType);
@@ -154,7 +156,8 @@ suite('UserSkillsPage', function() {
     // start the timer.
     const mockTimer = new MockTimer();
     mockTimer.install();
-    const addButton = page.$['addSkillButton'] as HTMLButtonElement;
+    const addButton =
+        page.shadowRoot.querySelector<CrButtonElement>('#addSkillButton');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
     addButton.click();

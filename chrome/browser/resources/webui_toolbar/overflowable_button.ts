@@ -174,7 +174,8 @@ export const OverflowableButtonMixin =
 
           // Otherwise, return information about this button. Even disabled
           // buttons should be shown on the menu, if they've overflowed.
-          const innerControl = this.$['button'] as HTMLElement;
+          const innerControl =
+              this.shadowRoot.querySelector<HTMLElement>('#button')!;
           // Most controls register their own element with
           // TrackedElementManager, but the Avatar button registers its button
           // element instead, so we have to handle both cases here.

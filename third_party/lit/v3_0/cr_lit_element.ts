@@ -17,7 +17,6 @@ export class CrLitElement extends LitElement {
   // used with a ShadowRoot in the vast majority of cases (possibly all).
   declare readonly shadowRoot: ShadowRoot;
 
-  $: ElementCache;
   private willUpdatePending_: boolean = false;
 
   // Properties for which a '<property-name>-changed' event should be fired
@@ -35,8 +34,11 @@ export class CrLitElement extends LitElement {
     // has been called or within firstUpdated() itself. Children accessed this
     // way are expected to exist in the DOM for the full lifetime of this
     // element (never removed).
+    //
+    // Also, purposefully not declaring '$' as a property of CrLitElement, to
+    // force subclasses to use it only if they also explicitly declare it.
     const self = this;
-    this.$ = new Proxy({}, {
+    (this as unknown as {$: ElementCache}).$ = new Proxy({}, {
       get(cache: ElementCache, id: string): HTMLElement|SVGElement {
         if (!self.hasUpdated && !self.isConnected) {
           const description = self.tagName + (self.id ? `#${self.id}` : '');
