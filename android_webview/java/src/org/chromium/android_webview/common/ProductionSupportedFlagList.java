@@ -1527,6 +1527,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_IGNORE_DEFAULT_VIDEO_POSTER,
                 "Use Chromium's usual video poster logic instead of"
                         + " WebChromeClient.getDefaultVideoPoster()"),
+        Flag.baseFeature(
+                GpuFeatures.VULKAN_IMAGINATION_MSAA,
+                "Enables Ganesh/Vulkan MSAA support on Imagination (PowerVR) GPUs."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
