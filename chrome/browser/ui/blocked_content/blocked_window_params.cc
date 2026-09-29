@@ -15,6 +15,7 @@
 
 BlockedWindowParams::BlockedWindowParams(
     const GURL& target_url,
+    std::optional<content::GlobalRenderFrameHostToken> initiator_frame_token,
     const url::Origin& initiator_origin,
     content::SiteInstance* source_site_instance,
     const content::Referrer& referrer,
@@ -24,6 +25,7 @@ BlockedWindowParams::BlockedWindowParams(
     bool user_gesture,
     bool opener_suppressed)
     : target_url_(target_url),
+      initiator_frame_token_(initiator_frame_token),
       initiator_origin_(initiator_origin),
       source_site_instance_(source_site_instance),
       referrer_(referrer),
@@ -46,6 +48,10 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   NavigateParams nav_params(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()), popup_url,
       ui::PAGE_TRANSITION_LINK);
+  if (initiator_frame_token_.has_value()) {
+    nav_params.initiator_process_id = initiator_frame_token_->child_id;
+    nav_params.initiator_frame_token = initiator_frame_token_->frame_token;
+  }
   nav_params.initiator_origin = initiator_origin_;
   nav_params.source_site_instance = source_site_instance_;
   nav_params.referrer = referrer_;

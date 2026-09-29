@@ -4572,9 +4572,10 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  BlockedWindowParams blocked_params(
-      target_url, source_origin, opener->GetSiteInstance(), referrer,
-      frame_name, disposition, features, user_gesture, opener_suppressed);
+  const BlockedWindowParams blocked_params(
+      target_url, opener->GetGlobalFrameToken(), source_origin,
+      opener->GetSiteInstance(), referrer, frame_name, disposition, features,
+      user_gesture, opener_suppressed);
   NavigateParams nav_params =
       blocked_params.CreateNavigateParams(opener->GetProcess(), web_contents);
   return !blocked_content::ConsiderForPopupBlocking(disposition) ||

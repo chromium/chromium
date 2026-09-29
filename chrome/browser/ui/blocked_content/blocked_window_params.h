@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_BLOCKED_CONTENT_BLOCKED_WINDOW_PARAMS_H_
 #define CHROME_BROWSER_UI_BLOCKED_CONTENT_BLOCKED_WINDOW_PARAMS_H_
 
+#include <optional>
+#include <string>
+
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/common/referrer.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -21,15 +25,17 @@ class WebContents;
 
 class BlockedWindowParams {
  public:
-  BlockedWindowParams(const GURL& target_url,
-                      const url::Origin& initiator_origin,
-                      content::SiteInstance* source_site_instance,
-                      const content::Referrer& referrer,
-                      const std::string& frame_name_,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& features,
-                      bool user_gesture,
-                      bool opener_suppressed);
+  BlockedWindowParams(
+      const GURL& target_url,
+      std::optional<content::GlobalRenderFrameHostToken> initiator_frame_token,
+      const url::Origin& initiator_origin,
+      content::SiteInstance* source_site_instance,
+      const content::Referrer& referrer,
+      const std::string& frame_name_,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& features,
+      bool user_gesture,
+      bool opener_suppressed);
   BlockedWindowParams(const BlockedWindowParams& other);
   ~BlockedWindowParams();
 
@@ -41,6 +47,7 @@ class BlockedWindowParams {
 
  private:
   GURL target_url_;
+  std::optional<content::GlobalRenderFrameHostToken> initiator_frame_token_;
   url::Origin initiator_origin_;
   scoped_refptr<content::SiteInstance> source_site_instance_;
   content::Referrer referrer_;

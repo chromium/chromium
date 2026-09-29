@@ -1414,10 +1414,10 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
       content_setting_bubble_model->bubble_content().list_items;
   EXPECT_EQ(0U, list_items.size());
 
-  BlockedWindowParams params(GURL("about:blank"), url::Origin(), nullptr,
-                             content::Referrer(), std::string(),
-                             WindowOpenDisposition::NEW_POPUP,
-                             blink::mojom::WindowFeatures(), false, true);
+  const BlockedWindowParams params(
+      GURL("about:blank"), std::nullopt, url::Origin(), nullptr,
+      content::Referrer(), std::string(), WindowOpenDisposition::NEW_POPUP,
+      blink::mojom::WindowFeatures(), false, true);
   constexpr size_t kItemCount = 3;
   for (size_t i = 1; i <= kItemCount; i++) {
     NavigateParams navigate_params =
@@ -1440,10 +1440,10 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItemsSpoofing) {
   // Malicious URL
   GURL spoof_url("http://google.com:VeryLongString@evil.com");
 
-  BlockedWindowParams params(spoof_url, url::Origin(), nullptr,
-                             content::Referrer(), std::string(),
-                             WindowOpenDisposition::NEW_POPUP,
-                             blink::mojom::WindowFeatures(), false, true);
+  const BlockedWindowParams params(spoof_url, std::nullopt, url::Origin(),
+                                   nullptr, content::Referrer(), std::string(),
+                                   WindowOpenDisposition::NEW_POPUP,
+                                   blink::mojom::WindowFeatures(), false, true);
 
   NavigateParams navigate_params =
       params.CreateNavigateParams(process(), web_contents());
