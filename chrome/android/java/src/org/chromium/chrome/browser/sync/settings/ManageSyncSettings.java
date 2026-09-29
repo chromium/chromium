@@ -176,6 +176,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_ENCRYPTION = "encryption";
 
     @VisibleForTesting
+    public static final String PREF_SEARCH_AI_MODE_CONNECTED_APPS = "search_ai_mode_connected_apps";
+
+    @VisibleForTesting
+    public static final String SEARCH_AI_MODE_CONNECTED_APPS_URL =
+            "https://myactivity.google.com/search-services/apps";
+
+    @VisibleForTesting
     public static final String PREF_ACCOUNT_DATA_DASHBOARD = "account_data_dashboard";
 
     @VisibleForTesting
@@ -376,6 +383,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
             setupSyncDisabledByAdministrator();
         }
+        setupSearchAiModeConnectedAppsPreference();
         setupReviewSyncDataPreference(PREF_ACCOUNT_DATA_DASHBOARD);
         setupAccountManagementPreferences();
         setupSwitchToIncognitoPreference(profile);
@@ -461,6 +469,18 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 findPreference(PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
         settingsSyncDisabledByAdministrator.setDividerAllowedAbove(false);
         settingsSyncDisabledByAdministrator.setVisible(true);
+    }
+
+    private void setupSearchAiModeConnectedAppsPreference() {
+        Preference connectedApps = findPreference(PREF_SEARCH_AI_MODE_CONNECTED_APPS);
+        connectedApps.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(
+                        this,
+                        () ->
+                                new ChromeAsyncTabLauncher(/* incognito= */ false)
+                                        .launchUrl(
+                                                SEARCH_AI_MODE_CONNECTED_APPS_URL,
+                                                TabLaunchType.FROM_CHROME_UI)));
     }
 
     private void setupReviewSyncDataPreference(String preference) {

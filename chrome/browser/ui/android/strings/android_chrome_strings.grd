@@ -2392,6 +2392,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ADDRESSES_CANCEL" desc="Button in a dialog to enable saving addresses to the Google Account. This is shown to users who have chosen to encrypt their data with a custom passphrase. The dialog informs users that newly saved addresses will not be encrypted with their passphrase.">
         Cancel
       </message>
+      <message name="IDS_ACCOUNT_SEARCH_AI_MODE_CONNECTED_APPS_TITLE" desc="Title for the preference in Account settings that opens a web page where the user can manage the connection between Google Search AI Mode and Google Workspace connected apps. 'Google Search' and 'AI Mode' are product names.">
+        Google Search AI Mode and connected apps
+      </message>
+      <message name="IDS_ACCOUNT_SEARCH_AI_MODE_CONNECTED_APPS_SUMMARY" desc="Summary for the preference in Account settings that opens a web page where the user can manage the connection between Google Search services and their Google Workspace apps (like Google Drive). 'Google Workspace' and 'Google Drive' are product names.">
+        Manage the connection between search services and Google Workspace apps, like Google Drive
+      </message>
       <message name="IDS_ACCOUNT_DATA_DASHBOARD_TITLE" desc="Title for the cell to open 'Chrome and ChromeOS data in your account' web page where the user can control all their data data from sync.">
         Chrome data in your account
       </message>
