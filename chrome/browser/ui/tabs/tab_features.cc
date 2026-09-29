@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
@@ -745,6 +746,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   new_tab_page_preload_pipeline_manager_ =
       std::make_unique<NewTabPagePreloadPipelineManager>(tab.GetContents());
+
+  child_tab_alert_helper_ =
+      GetUserDataFactory().CreateInstance<ChildTabAlertHelper>(tab, tab);
 
   tab_alert_controller_ =
       GetUserDataFactory().CreateInstance<TabAlertController>(tab, tab);

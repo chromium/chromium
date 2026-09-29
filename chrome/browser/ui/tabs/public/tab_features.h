@@ -327,6 +327,7 @@ class FilterUiController;
 
 namespace tabs {
 
+class ChildTabAlertHelper;
 class ContextHighlightTabFeature;
 class InactiveWindowMouseEventController;
 class PageContextEligibilityHelper;
@@ -696,6 +697,8 @@ class TabFeatures {
   std::unique_ptr<TabResourceUsageTabHelper> resource_usage_helper_;
 
   std::unique_ptr<MemorySaverChipTabHelper> memory_saver_chip_helper_;
+
+  std::unique_ptr<ChildTabAlertHelper> child_tab_alert_helper_;
 
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 

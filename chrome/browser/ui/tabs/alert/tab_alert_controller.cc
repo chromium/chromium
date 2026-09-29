@@ -23,6 +23,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_alert.h"
@@ -124,6 +125,13 @@ TabAlertController::TabAlertController(TabInterface& tab)
     callback_subscriptions_.emplace_back(
         glic_tab_indicator_helper->RegisterGlicAccessingStateChange(
             base::BindRepeating(&TabAlertController::OnGlicAccessingStateChange,
+                                base::Unretained(this))));
+  }
+
+  if (auto* child_alert_helper = ChildTabAlertHelper::From(&tab)) {
+    callback_subscriptions_.emplace_back(
+        child_alert_helper->RegisterChildAlertsStateChange(
+            base::BindRepeating(&TabAlertController::OnChildAlertsStateChange,
                                 base::Unretained(this))));
   }
 }
@@ -464,6 +472,11 @@ void TabAlertController::OnRecentlyAudibleStateChanged(bool was_audible) {
                    was_audible && tab().GetContents()->IsAudioMuted());
 }
 
+void TabAlertController::OnChildAlertsStateChange() {
+  ScopedAlertNotifier notifier(this);
+  UpdateMediaAlert();
+}
+
 void TabAlertController::UpdateAlertState(TabAlert alert, bool is_active) {
   if (alert == TabAlert::kAudioRecording ||
       alert == TabAlert::kVideoRecording) {
@@ -483,11 +496,18 @@ void TabAlertController::UpdateMediaAlert() {
           ->GetMediaStreamCaptureIndicator()
           .get();
   content::WebContents* const web_contents = tab().GetContents();
+  const auto* child_alert_helper = ChildTabAlertHelper::From(&tab());
+  auto is_child_alert_active = [&](TabAlert alert) {
+    return child_alert_helper && child_alert_helper->IsChildAlertActive(alert);
+  };
+  const bool child_media = is_child_alert_active(TabAlert::kMediaRecording);
 
   const bool is_capturing_audio =
-      media_stream_capture_indicator->IsCapturingAudio(web_contents);
+      media_stream_capture_indicator->IsCapturingAudio(web_contents) ||
+      is_child_alert_active(TabAlert::kAudioRecording) || child_media;
   const bool is_capturing_video =
-      media_stream_capture_indicator->IsCapturingVideo(web_contents);
+      media_stream_capture_indicator->IsCapturingVideo(web_contents) ||
+      is_child_alert_active(TabAlert::kVideoRecording) || child_media;
 
   active_alerts_.erase(TabAlert::kMediaRecording);
   active_alerts_.erase(TabAlert::kVideoRecording);

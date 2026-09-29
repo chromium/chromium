@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,6 +62,7 @@ class TabAlertControllerTest : public testing::Test {
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(user_data_host_));
 
+    child_tab_alert_helper_ = std::make_unique<ChildTabAlertHelper>(*mock_tab_);
     tab_alert_controller_ = std::make_unique<TabAlertController>(*mock_tab_);
   }
 
@@ -67,6 +70,7 @@ class TabAlertControllerTest : public testing::Test {
     // Explicitly reset the pointers to prevent them from causing the
     // BrowserTaskEnvironment to time out on destruction.
     tab_alert_controller_.reset();
+    child_tab_alert_helper_.reset();
     mock_tab_.reset();
     web_contents_.reset();
     profile_.reset();
@@ -74,6 +78,10 @@ class TabAlertControllerTest : public testing::Test {
 
   TabAlertController* tab_alert_controller() {
     return tab_alert_controller_.get();
+  }
+
+  ChildTabAlertHelper* child_tab_alert_helper() {
+    return ChildTabAlertHelper::From(mock_tab_.get());
   }
 
   TabInterface* tab_interface() { return mock_tab_.get(); }
@@ -87,7 +95,7 @@ class TabAlertControllerTest : public testing::Test {
     return &task_environment_;
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -96,6 +104,7 @@ class TabAlertControllerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<MockTabInterface> mock_tab_;
+  std::unique_ptr<ChildTabAlertHelper> child_tab_alert_helper_;
   std::unique_ptr<TabAlertController> tab_alert_controller_;
 };
 
@@ -345,6 +354,178 @@ TEST_F(TabAlertControllerTest, DesktopCapturingUpdates) {
   // video stream stopped.
   second_video_stream_ui.reset();
   EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_ActiveWhileAlive) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  base::ScopedClosureRunner child_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kVideoRecording);
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kVideoRecording));
+
+  child_alert.RunAndReset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_FALSE(
+      tab_alert_controller()->IsAlertActive(TabAlert::kVideoRecording));
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_MultipleActiveAlerts) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  base::ScopedClosureRunner child_alert1 =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kVideoRecording);
+
+  base::ScopedClosureRunner child_alert2 =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kVideoRecording);
+
+  child_alert1.RunAndReset();
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kVideoRecording));
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kVideoRecording);
+
+  child_alert2.RunAndReset();
+  EXPECT_FALSE(
+      tab_alert_controller()->IsAlertActive(TabAlert::kVideoRecording));
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_CombinesWithTabAudio) {
+  scoped_refptr<MediaStreamCaptureIndicator> indicator =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  // Simulate audio capture on the main tab.
+  blink::mojom::StreamDevices audio_device;
+  audio_device.audio_device = blink::MediaStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "audio_device",
+      "audio_device");
+  std::unique_ptr<content::MediaStreamUI> audio_stream_ui =
+      indicator->RegisterMediaStream(tab_interface()->GetContents(),
+                                     audio_device);
+  audio_stream_ui->OnStarted(base::DoNothing(), base::DoNothing(),
+                             std::string(), {}, base::DoNothing());
+
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kAudioRecording);
+
+  // When child video recording starts while tab is capturing audio, alert
+  // should combine into kMediaRecording (both audio & video).
+  base::ScopedClosureRunner video_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kMediaRecording);
+
+  // Releasing the child video alert should drop back to audio recording only.
+  video_alert.RunAndReset();
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kAudioRecording);
+
+  audio_stream_ui.reset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_CombinesAudioAndVideo) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  base::ScopedClosureRunner audio_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kAudioRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kAudioRecording);
+
+  base::ScopedClosureRunner video_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kMediaRecording);
+
+  video_alert.RunAndReset();
+  EXPECT_EQ(tab_alert_controller()->GetAllActiveAlerts().size(), 1u);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kAudioRecording);
+
+  audio_alert.RunAndReset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_DirectMediaRecording) {
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+
+  base::ScopedClosureRunner child_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kMediaRecording);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kMediaRecording);
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kMediaRecording));
+
+  child_alert.RunAndReset();
+  EXPECT_FALSE(tab_alert_controller()->GetAlertToShow().has_value());
+  EXPECT_FALSE(
+      tab_alert_controller()->IsAlertActive(TabAlert::kMediaRecording));
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_NotifiesObserversOnStateChange) {
+  base::MockCallback<TabAlertController::AlertToShowChangedCallback>
+      mock_callback;
+  base::CallbackListSubscription subscription =
+      tab_alert_controller()->AddAlertToShowChangedCallback(
+          mock_callback.Get());
+
+  // 0 -> 1 transition notifies observers.
+  EXPECT_CALL(mock_callback, Run(testing::Optional(TabAlert::kVideoRecording)))
+      .Times(1);
+  base::ScopedClosureRunner child_alert_1 =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(),
+            TabAlert::kVideoRecording);
+
+  // 1 -> 2 transition suppresses redundant observer notification.
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  base::ScopedClosureRunner child_alert_2 =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // 2 -> 1 transition suppresses redundant observer notification.
+  EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
+  child_alert_1.RunAndReset();
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  // 1 -> 0 transition notifies observers.
+  EXPECT_CALL(mock_callback, Run(testing::Eq(std::nullopt))).Times(1);
+  child_alert_2.RunAndReset();
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+  EXPECT_EQ(tab_alert_controller()->GetAlertToShow(), std::nullopt);
+}
+
+TEST_F(TabAlertControllerTest, ChildMediaAlert_SafeAfterTabDestroyed) {
+  base::ScopedClosureRunner child_alert =
+      child_tab_alert_helper()->CreateChildMediaAlert(
+          TabAlert::kVideoRecording);
+  EXPECT_TRUE(tab_alert_controller()->IsAlertActive(TabAlert::kVideoRecording));
+
+  // Explicitly reset the controller and helper before `child_alert` goes out
+  // of scope.
+  tab_alert_controller_.reset();
+  child_tab_alert_helper_.reset();
+  child_alert.RunAndReset();
 }
 
 }  // namespace tabs

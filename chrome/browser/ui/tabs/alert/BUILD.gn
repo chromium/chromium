@@ -8,6 +8,7 @@ import("//chrome/common/features.gni")
 
 source_set("tab_alert") {
   public = [
+    "child_tab_alert_helper.h",
     "tab_alert_controller.h",
     "tab_alert_icon.h",
   ]
@@ -16,6 +17,7 @@ source_set("tab_alert") {
     "//base",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/vr",
+    "//components/tabs:public",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
   ]
@@ -29,6 +31,7 @@ source_set("tab_alert") {
 
 source_set("impl") {
   sources = [
+    "child_tab_alert_helper.cc",
     "tab_alert_controller.cc",
     "tab_alert_icon.cc",
   ]

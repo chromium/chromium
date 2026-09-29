@@ -113,6 +113,7 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   void OnActorTabIndicatorStateChanged(
       actor::ui::TabIndicatorStatus tab_indicator_state);
   void OnRecentlyAudibleStateChanged(bool was_audible);
+  void OnChildAlertsStateChange();
 
   // Adds `alert` to the set of already active alerts for this tab if it isn't
   // currently active. Otherwise, removes `alert` from the set and is considered
