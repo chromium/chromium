@@ -361,6 +361,20 @@ void ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin(
     tab_helper->OnSigninFlowComplete();
   }
 
+  // The sign-in flow applies to the primary account. A concurrent sign-in flow
+  // may have made a different account primary in the meantime, in which case
+  // this flow must not proceed. See crbug.com/552764207.
+  const bool matches_primary_account =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+      account_info.account_id;
+  base::UmaHistogramBoolean(
+      "Signin.EnableSyncHeader.AccountMatchesPrimaryAccount",
+      matches_primary_account);
+  if (!matches_primary_account) {
+    // Deliberately no `Redirect()`: the sign-in flow did not succeed.
+    return;
+  }
+
   if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
     if (!ShouldEnableHistorySync()) {
       return;

@@ -1746,6 +1746,51 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
       syncer::UserSelectableType::kSavedTabGroups));
 }
 
+// Regression test for crbug.com/552764207.
+// Tests that the history sync optin dialog is not shown (and the browser does
+// not crash) when a concurrent sign-in flow made a different account primary
+// while this Gaia sign-in flow was in progress.
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
+                       NoHistorySyncOptinForNonPrimaryAccount) {
+  base::HistogramTester histogram_tester;
+
+  // Signin from the settings page.
+  signin_metrics::AccessPoint access_point =
+      signin_metrics::AccessPoint::kSettings;
+  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
+      access_point,
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      /*email_hint=*/std::string());
+
+  // Receive token.
+  SendRefreshTokenResponse();
+
+  // Simulate a concurrent sign-in flow completing with another account, which
+  // becomes the primary account while this flow is still in progress.
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), kSecondaryEmail,
+                                      signin::ConsentLevel::kSignin);
+  ASSERT_EQ(GetSecondaryAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                         signin::ConsentLevel::kSignin));
+
+  // Receive ENABLE_SYNC for the account of this flow, which is not the primary
+  // account.
+  SendEnableSyncResponse();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return histogram_tester.GetBucketCount(
+               "Signin.EnableSyncHeader.AccountMatchesPrimaryAccount",
+               /*sample=*/false) == 1;
+  }));
+
+  // The history sync optin flow is not started and the primary account is
+  // unchanged.
+  EXPECT_EQ(GetSecondaryAccountID(), GetIdentityManager()->GetPrimaryAccountId(
+                                         signin::ConsentLevel::kSignin));
+  EXPECT_EQ(nullptr, HistorySyncOptinServiceFactory::GetForProfile(
+                         browser()->GetProfile())
+                         ->GetHistorySyncOptinHelperForTesting());
+  EXPECT_FALSE(SigninViewController::From(browser())->ShowsModalDialog());
+}
+
 // Regression test for crbug.com/454921096.
 // Tests that if the entry point for a sign in tab is updated to a value
 // that should not offer the history sync optin flow, then the initialized

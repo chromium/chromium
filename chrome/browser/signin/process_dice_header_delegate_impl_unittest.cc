@@ -132,17 +132,18 @@ class ProcessDiceHeaderDelegateImplTest
 
   ~ProcessDiceHeaderDelegateImplTest() override = default;
 
-  void AddAccount(bool is_primary) {
+  void AddAccount(const std::string& email,
+                  bool is_primary,
+                  const GaiaId& gaia_id = GaiaId()) {
     if (!identity_test_environment_profile_adaptor_) {
       InitializeIdentityTestEnvironment();
     }
+    signin::SimpleAccountAvailabilityOptions options{.gaia_id = gaia_id};
     if (is_primary) {
-      identity_test_environment_profile_adaptor_->identity_test_env()
-          ->SetPrimaryAccount(email_, signin::ConsentLevel::kSignin);
-    } else {
-      identity_test_environment_profile_adaptor_->identity_test_env()
-          ->MakeAccountAvailable(email_);
+      options.primary_account_consent_level = signin::ConsentLevel::kSignin;
     }
+    identity_test_environment_profile_adaptor_->identity_test_env()
+        ->MakeAccountAvailable(email, options);
   }
 
   void InitializeIdentityTestEnvironment() {
@@ -284,6 +285,7 @@ class ProcessDiceHeaderDelegateImplTest
 // Check that sync is enabled if the tab is closed during signin.
 TEST_F(ProcessDiceHeaderDelegateImplTest,
        CloseTabWhileCompletingProfileSignIn) {
+  AddAccount(account_info_.email, /*is_primary=*/false, account_info_.gaia);
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
@@ -320,6 +322,59 @@ TEST_F(ProcessDiceHeaderDelegateImplTest,
   EXPECT_FALSE(show_error_called_);
 }
 
+// Regression test for https://crbug.com/552764207: a concurrent sign-in flow
+// may make a different account primary while this Gaia flow is in progress. As
+// the history sync opt-in applies to the primary account, it must not be
+// offered for the account of the Gaia header.
+TEST_F(ProcessDiceHeaderDelegateImplTest,
+       EnableSyncHeaderForNonPrimaryAccount) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+  base::HistogramTester histogram_tester;
+
+  // Another account than `account_info_` is the primary account.
+  AddAccount(email_, /*is_primary=*/true);
+
+  const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+                                        /*redirect_url=*/kNtpUrl);
+
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
+
+  EXPECT_FALSE(history_sync_optin_started_);
+  EXPECT_FALSE(enable_sync_called_);
+  EXPECT_FALSE(show_error_called_);
+  // The flow did not succeed, there is no redirect.
+  EXPECT_EQ(signin_url_, web_contents()->GetVisibleURL());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.EnableSyncHeader.AccountMatchesPrimaryAccount", false, 1);
+}
+
+// The history sync opt-in is offered when the account of the Gaia header is
+// the primary account.
+TEST_F(ProcessDiceHeaderDelegateImplTest, EnableSyncHeaderForPrimaryAccount) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+  base::HistogramTester histogram_tester;
+
+  AddAccount(account_info_.email, /*is_primary=*/true, account_info_.gaia);
+
+  const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
+                                        /*redirect_url=*/kNtpUrl);
+
+  delegate->CompleteChromeSignInAfterGaiaSignin(account_info_);
+
+  EXPECT_TRUE(history_sync_optin_started_);
+  EXPECT_FALSE(enable_sync_called_);
+  EXPECT_FALSE(show_error_called_);
+  EXPECT_EQ(kNtpUrl, web_contents()->GetVisibleURL());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.EnableSyncHeader.AccountMatchesPrimaryAccount", true, 1);
+}
+
 // Check that the error is still shown if the tab is closed before the error is
 // received.
 TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileFailingSignin) {
@@ -338,6 +393,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileFailingSignin) {
 
 // Tests that there is no redirect when `redirect_url` is empty.
 TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
+  AddAccount(account_info_.email, /*is_primary=*/false, account_info_.gaia);
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
@@ -360,6 +416,7 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
 // Check that a Dice header can still be processed in a reused tab.
 // Regression test for https://crbug.com/40069069
 TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
+  AddAccount(account_info_.email, /*is_primary=*/false, account_info_.gaia);
   // Complete a first signin flow.
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(/*is_chrome_signin_tab=*/true,
@@ -464,8 +521,9 @@ TestConfiguration kEnableSyncTestCases[] = {
     {  false,      false,       false,            false},
     {  false,      true,        true,             true},
     {  true,       false,       false,            false},
-    // If the user is already syncing, the callback is called, but the flow
-    // aborts before actually showing the dialog.
+    // The user is already signed in with the account of the Gaia header: the
+    // primary account is not set again, and the history sync opt-in is still
+    // offered.
     {  true,       true,        true,             true},
     // clang-format on
 };
@@ -481,9 +539,8 @@ class ProcessDiceHeaderDelegateImplTestEnableSync
 
 // Test the EnableSync() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
-  if (GetParam().signed_in) {
-    AddAccount(/*is_primary=*/true);
-  }
+  AddAccount(account_info_.email, /*is_primary=*/GetParam().signed_in,
+             account_info_.gaia);
   const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
@@ -532,7 +589,7 @@ class ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure
 TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
        HandleTokenExchangeFailure) {
   if (GetParam().signed_in) {
-    AddAccount(/*is_primary=*/true);
+    AddAccount(email_, /*is_primary=*/true);
   }
   const GURL& kNtpUrl = chrome::ChromeUINewTabURLAsGURL();
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
@@ -590,7 +647,7 @@ class ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess
 TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeSuccess,
        HandleTokenExchangeSuccess) {
   if (GetParam().is_reauth) {
-    AddAccount(/*is_primary=*/false);
+    AddAccount(email_, /*is_primary=*/false);
   }
   std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
       CreateDelegateAndNavigateToSignin(

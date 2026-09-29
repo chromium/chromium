@@ -2109,6 +2109,19 @@ prefs when the profile is loaded.  -->
   <summary>Outcome of the token fetch in Dice signin.</summary>
 </histogram>
 
+<histogram name="Signin.EnableSyncHeader.AccountMatchesPrimaryAccount"
+    enum="Boolean" expires_after="2027-09-30">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records whether the account of a Gaia ENABLE_SYNC header matches the primary
+    account, when the header completes the Chrome sign-in. This is false when a
+    concurrent sign-in flow made a different account primary while this flow was
+    in progress, in which case the flow is aborted and neither sync nor the
+    history sync opt-in is offered. Recorded on desktop platforms only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
     enum="BooleanCreated" expires_after="2027-06-17">
   <owner>ydago@chromium.org</owner>
