@@ -37,6 +37,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
+#include "chrome/browser/net/disk_cache_dir_util.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -1379,8 +1380,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     // Configure the HTTP cache path and size.
     base::FilePath base_cache_path;
     chrome::GetUserCacheDirectory(path, &base_cache_path);
-    base::FilePath disk_cache_dir =
-        local_state->GetFilePath(prefs::kDiskCacheDir);
+    const base::FilePath disk_cache_dir =
+        chrome_browser_net::GetDiskCacheDir(local_state);
     if (!disk_cache_dir.empty()) {
       base_cache_path = disk_cache_dir.Append(base_cache_path.BaseName());
     }

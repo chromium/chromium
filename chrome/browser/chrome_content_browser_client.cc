@@ -128,6 +128,7 @@
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
+#include "chrome/browser/net/disk_cache_dir_util.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -3898,8 +3899,8 @@ ChromeContentBrowserClient::GetGeneratedCodeCacheSettings(
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
     size_in_bytes = local_state->GetInteger(prefs::kDiskCacheSize);
-    base::FilePath disk_cache_dir =
-        local_state->GetFilePath(prefs::kDiskCacheDir);
+    const base::FilePath disk_cache_dir =
+        chrome_browser_net::GetDiskCacheDir(local_state);
     if (!disk_cache_dir.empty()) {
       cache_path = disk_cache_dir.Append(cache_path.BaseName());
     }
@@ -5850,18 +5851,18 @@ void ChromeContentBrowserClient::InitOnUIThread() {
   DCHECK(!cache_dir.empty());
   // On some platforms, the cache is a child of the user_data_dir so only
   // return the one path.
-  if (!user_data_dir.IsParent(cache_dir)) {
+  if (cache_dir != user_data_dir && !user_data_dir.IsParent(cache_dir)) {
     network_contexts_parent_directory_.push_back(cache_dir);
   }
 
-  // If the cache location has been overridden by a switch or preference,
-  // include that as well.
-  if (auto* local_state = g_browser_process->local_state()) {
-    base::FilePath pref_cache_dir =
-        local_state->GetFilePath(prefs::kDiskCacheDir);
-    if (!pref_cache_dir.empty() && !user_data_dir.IsParent(cache_dir)) {
-      network_contexts_parent_directory_.push_back(pref_cache_dir);
-    }
+  // If the cache location has been overridden by a switch or policy to a
+  // directory outside `user_data_dir` and `cache_dir`, include that as well.
+  const base::FilePath pref_cache_dir =
+      chrome_browser_net::GetDiskCacheDir(g_browser_process->local_state());
+  if (!pref_cache_dir.empty() && pref_cache_dir != user_data_dir &&
+      !user_data_dir.IsParent(pref_cache_dir) && pref_cache_dir != cache_dir &&
+      !cache_dir.IsParent(pref_cache_dir)) {
+    network_contexts_parent_directory_.push_back(pref_cache_dir);
   }
 }
 

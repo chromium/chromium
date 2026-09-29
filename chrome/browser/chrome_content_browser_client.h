@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -1260,6 +1261,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   virtual std::unique_ptr<HttpAuthCoordinator> CreateHttpAuthCoordinator();
 
  private:
+  friend class ChromeContentBrowserClientDiskCacheDirTest;
   friend class DisableWebRtcEncryptionFlagTest;
   friend class InProcessBrowserTest;
 
