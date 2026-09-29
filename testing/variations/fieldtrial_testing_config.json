@@ -7524,6 +7524,23 @@
             ]
         }
     ],
+    "EnableGlicAiAvatarRingInFloatyDesktop": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260928",
+                    "enable_features": [
+                        "EnableGlicAiAvatarRing"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableHangWatcher": [
         {
             "platforms": [
