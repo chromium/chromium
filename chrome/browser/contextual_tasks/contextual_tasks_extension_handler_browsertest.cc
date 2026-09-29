@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
@@ -243,10 +244,38 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     }
     composebox_handler_remote_.reset();
     handler_ = nullptr;
+    if (side_panel_task_id_.has_value()) {
+      ContextualTasksPanelController::From(browser())->DetachWebContentsForTask(
+          *side_panel_task_id_);
+      side_panel_task_id_.reset();
+    }
     mock_session_handle_ = nullptr;
     mock_controller_.reset();
     web_contents_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void EmbedHandlerInSidePanel() {
+    side_panel_task_id_ = base::Uuid::GenerateRandomV4();
+    auto panel_contents = content::WebContents::Create(
+        content::WebContents::CreateParams(web_contents_->GetBrowserContext()));
+    content::WebContents* raw_panel_contents = panel_contents.get();
+    ContextualTasksPanelController::From(browser())->TransferWebContentsFromTab(
+        *side_panel_task_id_, std::move(panel_contents));
+
+    content::RenderFrameHost* rfh = raw_panel_contents->GetPrimaryMainFrame();
+    ContextualTasksExtensionHandler::CreateForCurrentDocument(rfh);
+    handler_ = ContextualTasksExtensionHandler::GetForCurrentDocument(rfh);
+    ASSERT_NE(handler_, nullptr);
+
+    composebox_handler_remote_.reset();
+    mock_searchbox_page_.receiver_.reset();
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_receiver;
+    static_cast<composebox::mojom::PageHandlerFactory*>(handler_)
+        ->CreatePageHandler(
+            composebox_handler_remote_.BindNewPipeAndPassReceiver(),
+            mock_searchbox_page_.BindAndGetRemote(),
+            std::move(searchbox_receiver));
   }
 
  protected:
@@ -257,6 +286,7 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<ContextualTasksExtensionHandler> handler_ = nullptr;
+  std::optional<base::Uuid> side_panel_task_id_;
   NiceMock<MockContextualTasksExtensionPage> mock_page_;
   NiceMock<MockSearchboxPage> mock_searchbox_page_;
   raw_ptr<contextual_search::MockContextualSearchSessionHandle>
@@ -316,6 +346,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                        HandleLensButtonClick) {
+  EmbedHandlerInSidePanel();
   base::UserActionTester user_action_tester;
 
   ASSERT_TRUE(mock_lens_controller_);
@@ -338,9 +369,27 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                    "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       HandleLensButtonClick_NotInSidePanel_DoesNothing) {
+  base::UserActionTester user_action_tester;
+
+  ASSERT_TRUE(mock_lens_controller_);
+  ASSERT_TRUE(composebox_handler_remote_.is_bound());
+
+  EXPECT_CALL(*mock_lens_controller_, OpenLensOverlay(_, _)).Times(0);
+  EXPECT_CALL(*mock_lens_controller_, CloseLensAsync(_)).Times(0);
+
+  composebox_handler_remote_->HandleLensButtonClick();
+  composebox_handler_remote_.FlushForTesting();
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     HandleLensButtonClick_OverlayOpenFromComposebox_ClosesOverlay) {
+  EmbedHandlerInSidePanel();
   base::UserActionTester user_action_tester;
 
   ASSERT_TRUE(mock_lens_controller_);
@@ -368,6 +417,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     HandleLensButtonClick_OverlayOpenFromOtherSource_UpdatesInvocationSourceAndOpens) {
+  EmbedHandlerInSidePanel();
   base::UserActionTester user_action_tester;
 
   ASSERT_TRUE(mock_lens_controller_);

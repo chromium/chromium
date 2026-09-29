@@ -17,6 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -35,6 +38,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -91,6 +95,8 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
@@ -3357,6 +3363,194 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksInteractiveUiTestWithChips,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
+
+class ContextualTasksExtensionLensButtonInteractiveUiTest
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  ContextualTasksExtensionLensButtonInteractiveUiTest() {
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+  ~ContextualTasksExtensionLensButtonInteractiveUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    enabled.push_back({kContextualTasksRearchitecture, {}});
+    enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
+    enabled.push_back({extensions_features::kApiContextualTasksPrivate, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled,
+                                                GetDefaultDisabledFeatures());
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksInteractiveUiTest::SetUpOnMainThread();
+    ContextualTasksExtensionBridge::Get(browser()->GetProfile());
+  }
+
+  static content::RenderFrameHost* MountAndWaitForLensButtonFrame(
+      content::WebContents* host_contents) {
+    EXPECT_TRUE(content::ExecJs(host_contents, R"(
+      (() => {
+        let iframe = document.getElementById('lens-button-iframe');
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'lens-button-iframe';
+          document.body.appendChild(iframe);
+        }
+      })();
+    )"));
+    const GURL lens_button_url(
+        base::StringPrintf("chrome-extension://%s/lens_button.html?cs=0",
+                           extension_misc::kContextualTasksExtensionId));
+    EXPECT_TRUE(content::NavigateIframeToURL(
+        host_contents, "lens-button-iframe", lens_button_url));
+
+    content::RenderFrameHost* button_rfh = nullptr;
+    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+      button_rfh = content::FrameMatchingPredicateOrNullptr(
+          host_contents->GetPrimaryPage(),
+          base::BindRepeating([](content::RenderFrameHost* rfh) {
+            return rfh->GetLastCommittedURL().ExtractFileName() ==
+                   "lens_button.html";
+          }));
+      return button_rfh != nullptr;
+    }));
+    if (!button_rfh) {
+      return nullptr;
+    }
+
+    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+      auto result = content::EvalJs(button_rfh, R"(
+        (() => {
+          const app = document.querySelector('lens-button-app');
+          if (!app || !app.shadowRoot) return false;
+          const btn = app.shadowRoot.querySelector('#lensButton');
+          return Boolean(btn && !btn.disabled);
+        })();
+      )");
+      return result.is_ok() && result.ExtractBool();
+    }));
+    return button_rfh;
+  }
+};
+
+// This tests the following CUJ:
+// 1. User navigates a regular browser tab to a Google page that embeds the
+//    Contextual Tasks extension's lens_button.html iframe.
+// 2. User clicks the embedded Lens button in the regular tab; because the
+//    button is not embedded in the Contextual Tasks side panel, nothing happens
+//    and the Lens overlay does not open.
+// 3. User opens the Contextual Tasks side panel, which embeds lens_button.html,
+//    and clicks the Lens button; the Lens overlay opens.
+IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionLensButtonInteractiveUiTest,
+                       LensButtonClickOnlyWorksInSidePanel) {
+  SkipIfIncognito(
+      "Contextual Tasks component extension is not enabled in Incognito.");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  const GURL kRegularTabUrl("https://www.google.com/search?q=regular_tab");
+  const GURL kAimUrl("https://www.google.com/search?udm=50");
+  base::UserActionTester user_action_tester;
+
+  RunTestSequence(
+      // 1. Navigate the regular tab to a Google page and embed
+      // lens_button.html.
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      NavigateWebContents(kPrimaryTab, kRegularTabUrl),
+      WaitForWebContentsPainted(kPrimaryTab),
+      WaitForWebContentsReady(kPrimaryTab, kRegularTabUrl),
+
+      // 2. Click the Lens button inside the regular tab's iframe and verify it
+      // is a no-op.
+      Do([&]() {
+        content::WebContents* tab_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        ASSERT_NE(tab_contents, nullptr);
+        content::RenderFrameHost* tab_button_rfh =
+            MountAndWaitForLensButtonFrame(tab_contents);
+        ASSERT_NE(tab_button_rfh, nullptr);
+
+        // Click #lensButton and perform a round-trip call on the same
+        // composebox::mojom::PageHandler remote pipe so HandleLensButtonClick()
+        // is guaranteed to have been processed on the browser UI thread.
+        EXPECT_EQ(true, content::EvalJs(tab_button_rfh, R"(
+          (async () => {
+            const app = document.querySelector('lens-button-app');
+            const btn = app.shadowRoot.querySelector('#lensButton');
+            btn.click();
+            await app.getPageHandler_().getSmartTabSharingActive();
+            return !app.active;
+          })();
+        )"));
+
+        auto* search_controller =
+            LensSearchController::FromTabWebContents(tab_contents);
+        ASSERT_NE(search_controller, nullptr);
+        EXPECT_TRUE(search_controller->IsOff());
+        EXPECT_FALSE(search_controller->IsShowingUI());
+        EXPECT_EQ(
+            0, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+      }),
+      EnsureNotPresent(LensOverlayController::kOverlayId),
+
+      // 3. Open the Contextual Tasks side panel and embed lens_button.html
+      // inside the side panel WebContents.
+      Do([&]() {
+        ContextualTasksUiService* ui_service =
+            ContextualTasksUiServiceFactory::GetForBrowserContext(
+                browser()->GetProfile());
+        tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+        ui_service->StartTaskUiInSidePanel(browser(), tab, kAimUrl, nullptr);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+
+      // 4. Click the Lens button inside the side panel's iframe and verify the
+      // Lens overlay opens.
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        content::RenderFrameHost* panel_button_rfh =
+            MountAndWaitForLensButtonFrame(side_panel_contents);
+        ASSERT_NE(panel_button_rfh, nullptr);
+
+        EXPECT_EQ(true, content::EvalJs(panel_button_rfh, R"(
+          (() => {
+            const app = document.querySelector('lens-button-app');
+            const btn = app.shadowRoot.querySelector('#lensButton');
+            btn.click();
+            return true;
+          })();
+        )"));
+      }),
+      WaitForShow(LensOverlayController::kOverlayId), Do([&]() {
+        content::WebContents* tab_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+        auto* search_controller =
+            LensSearchController::FromTabWebContents(tab_contents);
+        ASSERT_NE(search_controller, nullptr);
+        EXPECT_TRUE(search_controller->IsShowingUI());
+        EXPECT_EQ(
+            1, user_action_tester.GetActionCount(
+                   "ContextualTasks.Composebox.UserAction.LensButtonClicked"));
+      }));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksExtensionLensButtonInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),

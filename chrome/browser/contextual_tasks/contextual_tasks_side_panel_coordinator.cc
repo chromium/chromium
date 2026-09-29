@@ -333,6 +333,29 @@ ContextualTasksPanelController* ContextualTasksPanelController::From(
       window->GetUnownedUserDataHost());
 }
 
+// static
+bool ContextualTasksPanelController::IsWebContentsInPanel(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (!browser) {
+    return false;
+  }
+  auto* controller = From(browser);
+  if (!controller) {
+    return false;
+  }
+  for (auto* wc : controller->GetPanelWebContentsList()) {
+    if (wc == web_contents) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void ContextualTasksSidePanelCoordinator::RecordTimeToFirstContentfulPaint(
     content::WebContents* web_contents) {
   if (!web_contents) {
