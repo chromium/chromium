@@ -24,6 +24,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
+#include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "components/sessions/core/session_id.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/headless_web_contents_manager.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -152,6 +154,10 @@ using ui::ActorUiStateManagerInterface;
 
 ActorKeyedService::ActorKeyedService(Profile* profile) : profile_(profile) {
   actor_ui_state_manager_ = std::make_unique<ui::ActorUiStateManager>(*this);
+  headless_web_contents_manager_ =
+      std::make_unique<HeadlessWebContentsManager>(profile_);
+  surface_registry_ = std::make_unique<ActorSurfaceRegistry>(
+      headless_web_contents_manager_.get());
   profile_observation_.Observe(profile_);
   actor::InitActionBlocklist(profile_);
 
@@ -219,6 +225,8 @@ void ActorKeyedService::Shutdown() {
   // Ensure tasks get deleted synchronously to avoid dangling refs.
   CHECK(active_tasks_.empty());
   pending_delete_tasks_.clear();
+  surface_registry_.reset();
+  headless_web_contents_manager_.reset();
   trace_file_serializer_.reset();
 }
 

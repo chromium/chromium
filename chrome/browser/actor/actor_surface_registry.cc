@@ -12,7 +12,12 @@
 
 namespace actor {
 
-ActorSurfaceRegistry::ActorSurfaceRegistry() = default;
+ActorSurfaceRegistry::ActorSurfaceRegistry(
+    HeadlessWebContentsManager* headless_manager)
+    : headless_manager_(headless_manager) {
+  CHECK(headless_manager_);
+  headless_manager_observation_.Observe(headless_manager_.get());
+}
 
 ActorSurfaceRegistry::~ActorSurfaceRegistry() = default;
 
@@ -47,6 +52,10 @@ ActorSurface* ActorSurfaceRegistry::GetOrCreateForTab(tabs::TabHandle tab) {
   surfaces_.emplace(id, std::make_unique<ActorSurfaceImpl>(id, tab));
   StartTrackingTab(id, tab);
   return Get(id);
+}
+
+ActorSurface* ActorSurfaceRegistry::CreateHeadlessWebContents() {
+  return CreateForHeadless(headless_manager_->Create());
 }
 
 ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
@@ -91,8 +100,18 @@ void ActorSurfaceRegistry::DestroySurface(ActorSurfaceId id) {
   }
   if (std::optional<tabs::TabHandle> tab = surface->GetTabHandle()) {
     StopTrackingTab(*tab);
+    surfaces_.erase(id);
+  } else {
+    content::WebContents* contents = surface->GetWebContents();
+    surfaces_.erase(id);
+    headless_manager_->Destroy(contents);
   }
-  surfaces_.erase(id);
+}
+
+void ActorSurfaceRegistry::OnHeadlessContentsWillBeDestroyed(
+    content::WebContents* contents) {
+  // Intentionally empty: the registry drops headless surfaces in
+  // DestroySurface() before asking the manager to destroy the WebContents.
 }
 
 ActorSurfaceImpl* ActorSurfaceRegistry::GetImpl(ActorSurfaceId id) const {

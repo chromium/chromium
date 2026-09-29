@@ -50,8 +50,10 @@ class ActorUiStateManagerInterface;
 class UiEventDispatcher;
 }
 
+class ActorSurfaceRegistry;
 class EnterprisePolicyChecker;
 class ActorTaskMetadata;
+class HeadlessWebContentsManager;
 class ToolRequest;
 class TabObservationStrategy;
 
@@ -314,6 +316,12 @@ class ActorKeyedService : public KeyedService,
   // Note: This field should not be used directly, use the
   // ActorUiStateManagerInterface* passed in via CreateTaskImpl instead.
   std::unique_ptr<ui::ActorUiStateManager> actor_ui_state_manager_;
+
+  // Declared before `surface_registry_` so the manager outlives the registry
+  // that uses it, and before `active_tasks_` so tasks are destroyed before
+  // surfaces.
+  std::unique_ptr<HeadlessWebContentsManager> headless_web_contents_manager_;
+  std::unique_ptr<ActorSurfaceRegistry> surface_registry_;
 
   std::map<TaskId, std::unique_ptr<ActorTask>> active_tasks_;
 
