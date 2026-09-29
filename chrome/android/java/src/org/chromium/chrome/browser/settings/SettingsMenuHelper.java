@@ -126,7 +126,7 @@ public class SettingsMenuHelper {
 
     /**
      * Removes menu items whose action view is a {@link SearchView}. Used when the fragment's search
-     * UI is hosted somewhere else (see MultiColumnTitleUpdater), to avoid showing a duplicate
+     * UI is hosted somewhere else (see DetailedPaneSearchController), to avoid showing a duplicate
      * search icon in the toolbar.
      */
     private static void removeSearchMenuItems(Menu menu) {
@@ -143,7 +143,7 @@ public class SettingsMenuHelper {
 
     /**
      * Returns whether the detailed page title hosts the fragment's own search UI. In that case the
-     * search icon lives next to the page title (see MultiColumnTitleUpdater) and must not be
+     * search icon lives next to the page title (see DetailedPaneSearchController) and must not be
      * duplicated in the toolbar. The detailed page title is only visible in two-column layouts.
      */
     private static boolean isSearchShownInDetailedPageTitle(
@@ -177,7 +177,7 @@ public class SettingsMenuHelper {
             mainFragment.onCreateOptionsMenu(menu, activity.getMenuInflater());
             mainFragment.onPrepareOptionsMenu(menu);
 
-            // The search icon is handled by MultiColumnTitleUpdater because it appears next to
+            // The search icon is handled by DetailedPaneSearchController because it appears next to
             // the detailed page title in two-column layouts.
             if (isSearchShownInDetailedPageTitle(mainFragment, delegate)) {
                 removeSearchMenuItems(menu);
