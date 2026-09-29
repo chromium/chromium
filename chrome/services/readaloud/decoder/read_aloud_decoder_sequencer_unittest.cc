@@ -327,7 +327,8 @@ TEST_F(ReadAloudDecoderSequencerTest,
   std::vector<uint32_t> dispatched_indices;
   prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
       [](std::vector<uint32_t>* out, uint32_t chunk_index,
-         std::u16string_view text) { out->push_back(chunk_index); },
+         std::u16string_view text,
+         read_aloud::mojom::Speaker speaker) { out->push_back(chunk_index); },
       &dispatched_indices));
 
   // Insert failed synthesis response for chunk 0 and valid buffer for chunk 1

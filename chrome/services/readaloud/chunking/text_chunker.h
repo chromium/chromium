@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/i18n/language_tag.h"
+#include "chrome/common/readaloud/read_aloud.mojom-shared.h"
 
 namespace readaloud {
 
@@ -30,6 +31,7 @@ struct TextChunk {
   // NOTE: This offset is measured in 16-bit code units (char16_t), NOT Unicode
   // code points (UChar32). Take care not to split surrogate pairs across offsets.
   size_t start_code_unit_offset = 0;
+  read_aloud::mojom::Speaker speaker = read_aloud::mojom::Speaker::kSpeaker1;
 
   friend bool operator==(const TextChunk&, const TextChunk&) = default;
 };

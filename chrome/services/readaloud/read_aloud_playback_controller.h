@@ -97,7 +97,8 @@ class ReadAloudPlaybackController
   // Invoked by `prefetch_manager_` when an in-flight synthesis request is
   // dispatched.
   void OnPrefetchSynthesisRequest(uint32_t chunk_index,
-                                  std::u16string_view text);
+                                  std::u16string_view text,
+                                  read_aloud::mojom::Speaker speaker);
 
   // Invoked by `prefetch_manager_` when text content is chunked.
   void OnTextChunked(const std::vector<std::u16string>& chunks);
@@ -109,9 +110,12 @@ class ReadAloudPlaybackController
                                  bool success);
 
   // Maximum duration a Play request will remain deferred before timing out.
-  static constexpr base::TimeDelta kPlayOnReadyTimeout = base::Seconds(10);
+  static constexpr base::TimeDelta kClassicPlayOnReadyTimeout =
+      base::Seconds(10);
+  static constexpr base::TimeDelta kOverviewPlayOnReadyTimeout =
+      kOverviewGenerationTimeout;
 
-  // Triggered if play_on_ready_ remains true beyond kPlayOnReadyTimeout.
+  // Triggered if play_on_ready_ remains true beyond the mode-specific timeout.
   void OnPlayOnReadyTimeout();
 
   // Evaluates whether all prerequisites for audio playback are satisfied.

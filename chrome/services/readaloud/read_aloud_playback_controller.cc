@@ -226,10 +226,14 @@ void ReadAloudPlaybackController::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!PlayIfReady()) {
     play_on_ready_ = true;
-    // Restart watchdog timer on each Play() call to grant a fresh 10s window
+    base::TimeDelta timeout =
+        (playback_mode_ == read_aloud::mojom::PlaybackMode::kOverview)
+            ? kOverviewPlayOnReadyTimeout
+            : kClassicPlayOnReadyTimeout;
+    // Restart watchdog timer on each Play() call to grant a fresh window
     // from the last click.
     play_on_ready_timer_.Start(
-        FROM_HERE, kPlayOnReadyTimeout,
+        FROM_HERE, timeout,
         base::BindOnce(&ReadAloudPlaybackController::OnPlayOnReadyTimeout,
                        base::Unretained(this)));
   }
@@ -478,7 +482,8 @@ void ReadAloudPlaybackController::ResetSession() {
 
 void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
     uint32_t chunk_index,
-    std::u16string_view text) {
+    std::u16string_view text,
+    read_aloud::mojom::Speaker speaker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const uint64_t sequence_id = prefetch_manager_.GetCurrentSequenceId();
   if (!client_.is_bound()) {
@@ -486,9 +491,8 @@ void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
                                           {});
     return;
   }
-  // TODO(b/559821661): Thread speaker through PrefetchManager in follow-up CL.
   client_->RequestSpeechSynthesis(
-      std::u16string(text), read_aloud::mojom::Speaker::kSpeaker1, sequence_id,
+      std::u16string(text), speaker, sequence_id,
       base::BindOnce(&ReadAloudPlaybackController::OnSpeechSynthesisResponse,
                      session_weak_factory_.GetWeakPtr(), sequence_id,
                      chunk_index));

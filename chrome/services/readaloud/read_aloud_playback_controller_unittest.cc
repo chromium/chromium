@@ -128,8 +128,9 @@ class MockReadAloudPlaybackControllerClient
   }
 
   void WaitForStateChange(read_aloud::mojom::PlaybackState expected_state) {
-    if (last_state_.has_value() && last_state_.value() == expected_state)
+    if (last_state_.has_value() && last_state_.value() == expected_state) {
       return;
+    }
     expected_state_to_wait_for_ = expected_state;
     while (!last_state_.has_value() || last_state_.value() != expected_state) {
       base::RunLoop run_loop;
@@ -150,8 +151,9 @@ class MockReadAloudPlaybackControllerClient
   }
 
   void WaitForDisconnect() {
-    if (!receiver_.is_bound())
+    if (!receiver_.is_bound()) {
       return;
+    }
     base::RunLoop run_loop;
     receiver_.set_disconnect_handler(run_loop.QuitClosure());
     run_loop.Run();
@@ -277,7 +279,7 @@ class ReadAloudPlaybackControllerTest : public testing::Test {
       const media::AudioParameters& params,
       base::CancelableSyncSocket* local_socket) {
     uint32_t buffer_size = media::ComputeAudioOutputBufferSize(params);
-    base::UnsafeSharedMemoryRegion shared_memory_region =
+    auto shared_memory_region =
         base::UnsafeSharedMemoryRegion::Create(buffer_size);
     if (!shared_memory_region.IsValid()) {
       return nullptr;
@@ -395,27 +397,32 @@ TEST_F(ReadAloudPlaybackControllerTest, CreateControllerSuccessfulBinding) {
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, CreateControllerBothHandlesInvalidReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       CreateControllerBothHandlesInvalidReportsBadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
   factory_remote_->CreateController(
       mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackController>(),
-      mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>());
+      mojo::PendingRemote<
+          read_aloud::mojom::ReadAloudPlaybackControllerClient>());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "ReadAloudPlaybackController: CreateController requires both "
             "controller and client handles to be valid");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, CreateControllerOneHandleInvalidReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       CreateControllerOneHandleInvalidReportsBadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
   factory_remote_->CreateController(
       controller_remote_.BindNewPipeAndPassReceiver(),
-      mojo::PendingRemote<read_aloud::mojom::ReadAloudPlaybackControllerClient>());
+      mojo::PendingRemote<
+          read_aloud::mojom::ReadAloudPlaybackControllerClient>());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
             "ReadAloudPlaybackController: CreateController requires both "
             "controller and client handles to be valid");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, ClientDisconnectResetsControllerAndState) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       ClientDisconnectResetsControllerAndState) {
   CreateSession();
   controller_remote_->SetPlaybackRate(3.0f);
   controller_remote_.FlushForTesting();
@@ -424,11 +431,13 @@ TEST_F(ReadAloudPlaybackControllerTest, ClientDisconnectResetsControllerAndState
   mock_client_->ResetReceiver();
   controller_remote_.FlushForTesting();
 
-  // The controller receiver in utility process should disconnect when client drops.
+  // The controller receiver in utility process should disconnect when client
+  // drops.
   EXPECT_FALSE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, ControllerDisconnectResetsClientAndState) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       ControllerDisconnectResetsClientAndState) {
   CreateSession();
   controller_remote_.reset();
   mock_client_->WaitForDisconnect();
@@ -464,7 +473,8 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentRoutesOnTextChunkedIPC) {
               testing::ElementsAre(u"First sentence.", u"Second sentence!"));
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotMonotonicallyIncreasingReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentNotMonotonicallyIncreasingReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   {
@@ -483,7 +493,8 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentNotMonotonicallyIncreasing
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->SetTextContent(std::move(segments));
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: segment_index must be monotonically increasing "
+            "ReadAloudPlaybackController: segment_index must be monotonically "
+            "increasing "
             "in SetTextContent");
 }
 
@@ -518,7 +529,8 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentGapsAreValid) {
             "ReadAloudPlaybackController: Invalid segment_index in SeekToWord");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SeekToWordEmptyTextDoesNotCrashOnZeroOffset) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToWordEmptyTextDoesNotCrashOnZeroOffset) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
@@ -546,13 +558,15 @@ TEST_F(ReadAloudPlaybackControllerTest, SeekToWordEndOfStringIsValid) {
   controller_remote_->SetTextContent(std::move(segments));
   controller_remote_.FlushForTesting();
 
-  // Seeking to offset 8 (end of segment of length 8) is valid and must not disconnect.
+  // Seeking to offset 8 (end of segment of length 8) is valid and must not
+  // disconnect.
   controller_remote_->SeekToWord(0, 8);
   controller_remote_.FlushForTesting();
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SeekToWordOutOfBoundsReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SeekToWordOutOfBoundsReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
@@ -565,16 +579,19 @@ TEST_F(ReadAloudPlaybackControllerTest, SeekToWordOutOfBoundsReportsBadMessage) 
 
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->SeekToWord(0, 100);  // strictly > text size (8)
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateInvalidOrNegativeReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetPlaybackRateInvalidOrNegativeReportsBadMessage) {
   CreateSession();
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->SetPlaybackRate(-1.0f);
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: Invalid playback rate (must be finite and > 0.0)");
+            "ReadAloudPlaybackController: Invalid playback rate (must be "
+            "finite and > 0.0)");
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateNaNReportsBadMessage) {
@@ -582,7 +599,8 @@ TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateNaNReportsBadMessage) {
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->SetPlaybackRate(std::numeric_limits<float>::quiet_NaN());
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: Invalid playback rate (must be finite and > 0.0)");
+            "ReadAloudPlaybackController: Invalid playback rate (must be "
+            "finite and > 0.0)");
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateClampsBelowMinimum) {
@@ -639,11 +657,13 @@ TEST_F(ReadAloudPlaybackControllerTest,
   mock_client_->WaitForDisconnect();
 
   // Disconnect factory remote; OnReceiverDisconnected should STILL fire cleanly
-  // because it uses factory_weak_factory_ (which is not invalidated by session resets).
+  // because it uses factory_weak_factory_ (which is not invalidated by session
+  // resets).
   factory_remote_.reset();
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentTooManySegmentsReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentTooManySegmentsReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   // kMaxTextSegments is 1,000. Let's create 1,001 segments.
@@ -660,12 +680,14 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentTooManySegmentsReportsBadM
             "ReadAloudPlaybackController: Too many segments in SetTextContent");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentSegmentTooLongReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentSegmentTooLongReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
   seg->segment_index = 0;
-  // kMaxTextLengthPerSegment is 65,536. Let's create a segment with 65,537 characters.
+  // kMaxTextLengthPerSegment is 65,536. Let's create a segment with 65,537
+  // characters.
   seg->text = std::u16string(65537, u'A');
   segments.push_back(std::move(seg));
 
@@ -676,12 +698,13 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentSegmentTooLongReportsBadMe
             "SetTextContent");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentTotalPayloadExceedsLimitReportsBadMessage) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentTotalPayloadExceedsLimitReportsBadMessage) {
   CreateSession();
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   // kMaxMojoPayloadSizeBytes is 512,000 bytes (256,000 UTF-16 characters).
-  // We bypass the 65,536 limit per segment by sending 6 segments of 50,000 characters.
-  // Total: 300,000 characters (600,000 bytes).
+  // We bypass the 65,536 limit per segment by sending 6 segments of 50,000
+  // characters. Total: 300,000 characters (600,000 bytes).
   for (size_t i = 0; i < 5; ++i) {
     auto seg = read_aloud::mojom::TextSegment::New();
     seg->segment_index = i;
@@ -697,9 +720,10 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentTotalPayloadExceedsLimitRe
 
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->SetTextContent(std::move(segments));
-  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: Total text payload exceeds safety limit "
-            "in SetTextContent");
+  EXPECT_EQ(
+      bad_message_observer.WaitForBadMessage(),
+      "ReadAloudPlaybackController: Total text payload exceeds safety limit "
+      "in SetTextContent");
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, InitializeAudioSuccess) {
@@ -951,7 +975,7 @@ TEST_F(ReadAloudPlaybackControllerTest,
   ASSERT_GT(required_buffer_size, 0u);
 
   uint32_t smaller_buffer_size = required_buffer_size - 1;
-  base::UnsafeSharedMemoryRegion shared_memory_region =
+  auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(smaller_buffer_size);
   ASSERT_TRUE(shared_memory_region.IsValid());
 
@@ -960,10 +984,9 @@ TEST_F(ReadAloudPlaybackControllerTest,
   ASSERT_TRUE(
       base::CancelableSyncSocket::CreatePair(&local_socket, &foreign_socket));
 
-  media::mojom::ReadWriteAudioDataPipePtr data_pipe =
-      media::mojom::ReadWriteAudioDataPipe::New(
-          std::move(shared_memory_region),
-          mojo::PlatformHandle(foreign_socket.Take()));
+  auto data_pipe = media::mojom::ReadWriteAudioDataPipe::New(
+      std::move(shared_memory_region),
+      mojo::PlatformHandle(foreign_socket.Take()));
 
   mojo::test::BadMessageObserver bad_message_observer;
   controller_remote_->InitializeAudio(std::move(stream), std::move(data_pipe),
@@ -976,7 +999,8 @@ TEST_F(ReadAloudPlaybackControllerTest,
           std::string::npos);
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseValidProtobufDecodesAndTriggersWordBoundaries) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       OnSpeechSynthesisResponseValidProtobufDecodesAndTriggersWordBoundaries) {
   CreateSession();
 
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
@@ -990,7 +1014,7 @@ TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseValidProtobufDe
 
   optimization_guide::proto::ReadAloudSynthesizeResponse response;
   response.set_audio_bytes("fake_opus_audio_data");
-  auto* timing1 = response.add_timings();
+  optimization_guide::proto::WordTiming* timing1 = response.add_timings();
   timing1->set_start_offset(0);
   timing1->set_end_offset(14);
   timing1->set_time_offset_ms(0);
@@ -1006,7 +1030,8 @@ TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseValidProtobufDe
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseMalformedProtobufRecoversWithoutStalling) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       OnSpeechSynthesisResponseMalformedProtobufRecoversWithoutStalling) {
   CreateSession();
 
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
@@ -1027,7 +1052,8 @@ TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseMalformedProtob
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseOutOfOrderResponsesDeliveredInOrder) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       OnSpeechSynthesisResponseOutOfOrderResponsesDeliveredInOrder) {
   CreateSession();
 
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
@@ -1057,7 +1083,8 @@ TEST_F(ReadAloudPlaybackControllerTest, OnSpeechSynthesisResponseOutOfOrderRespo
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, SetTextContentEmptySegmentsValidateSequenceCorrectly) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetTextContentEmptySegmentsValidateSequenceCorrectly) {
   CreateSession();
 
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
@@ -1077,10 +1104,12 @@ TEST_F(ReadAloudPlaybackControllerTest, SetTextContentEmptySegmentsValidateSeque
   controller_remote_.FlushForTesting();
 
   EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
-            "ReadAloudPlaybackController: segment_index must be monotonically increasing in SetTextContent");
+            "ReadAloudPlaybackController: segment_index must be monotonically "
+            "increasing in SetTextContent");
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeSetTextContentDefersUntilTextSet) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayCalledBeforeSetTextContentDefersUntilTextSet) {
   CreateSession();
   InitializeAudioForTesting();
 
@@ -1104,14 +1133,17 @@ TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeSetTextContentDefersUnti
   mock_client_->FlushForTesting();
 
   EXPECT_TRUE(controller_remote_.is_connected());
-  // Verify playback intent was fulfilled (SetTextContent did NOT default state to kPaused).
-  EXPECT_NE(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
+  // Verify playback intent was fulfilled (SetTextContent did NOT default state
+  // to kPaused).
+  EXPECT_NE(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPaused);
 }
 
 TEST_F(ReadAloudPlaybackControllerTest, PauseClearsPlayOnReady) {
   CreateSession();
 
-  // Call Play() BEFORE SetTextContent() has been called (sets play_on_ready_ = true).
+  // Call Play() BEFORE SetTextContent() has been called (sets play_on_ready_ =
+  // true).
   controller_remote_->Play();
   controller_remote_.FlushForTesting();
 
@@ -1122,7 +1154,8 @@ TEST_F(ReadAloudPlaybackControllerTest, PauseClearsPlayOnReady) {
   controller_remote_.FlushForTesting();
 
   // Now supply text content via SetTextContent().
-  // Playback should NOT start automatically because Pause() cleared play_on_ready_.
+  // Playback should NOT start automatically because Pause() cleared
+  // play_on_ready_.
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
   seg->segment_index = 0;
@@ -1133,10 +1166,12 @@ TEST_F(ReadAloudPlaybackControllerTest, PauseClearsPlayOnReady) {
   controller_remote_.FlushForTesting();
 
   EXPECT_TRUE(controller_remote_.is_connected());
-  EXPECT_EQ(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPaused);
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeInitializeAudioDefersUntilAudioInitialized) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayCalledBeforeInitializeAudioDefersUntilAudioInitialized) {
   CreateSession();
 
   // Load text content first.
@@ -1160,13 +1195,15 @@ TEST_F(ReadAloudPlaybackControllerTest, PlayCalledBeforeInitializeAudioDefersUnt
   EXPECT_TRUE(controller_remote_.is_connected());
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, PlayOnReadyTimeoutResetsPendingPlayState) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayOnReadyTimeoutResetsPendingPlayState) {
   CreateSession();
 
   base::test::TestFuture<read_aloud::mojom::PlaybackState> state_future;
   mock_client_->set_state_callback(state_future.GetRepeatingCallback());
 
-  // Call Play() without setting text content (play_on_ready_ = true, timer started).
+  // Call Play() without setting text content (play_on_ready_ = true, timer
+  // started).
   controller_remote_->Play();
 
   EXPECT_TRUE(controller_remote_.is_connected());
@@ -1181,8 +1218,9 @@ TEST_F(ReadAloudPlaybackControllerTest, PlayOnReadyTimeoutResetsPendingPlayState
   EXPECT_TRUE(controller_remote_.is_connected());
   EXPECT_EQ(state_future.Take(), read_aloud::mojom::PlaybackState::kPaused);
 
-  // Verify play_on_ready_ was reset: now supply text content and initialize audio.
-  // Playback MUST NOT auto-start because the pending play intent was cleared by timeout.
+  // Verify play_on_ready_ was reset: now supply text content and initialize
+  // audio. Playback MUST NOT auto-start because the pending play intent was
+  // cleared by timeout.
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
   auto seg = read_aloud::mojom::TextSegment::New();
   seg->segment_index = 0;
@@ -1192,10 +1230,12 @@ TEST_F(ReadAloudPlaybackControllerTest, PlayOnReadyTimeoutResetsPendingPlayState
   InitializeAudioForTesting();
 
   EXPECT_TRUE(controller_remote_.is_connected());
-  EXPECT_EQ(mock_client_->last_state(), read_aloud::mojom::PlaybackState::kPaused);
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPaused);
 }
 
-TEST_F(ReadAloudPlaybackControllerTest, PlayCalledRepeatedlyResetsWatchdogTimer) {
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayCalledRepeatedlyResetsWatchdogTimer) {
   CreateSession();
 
   base::test::TestFuture<read_aloud::mojom::PlaybackState> state_future;
@@ -1212,12 +1252,13 @@ TEST_F(ReadAloudPlaybackControllerTest, PlayCalledRepeatedlyResetsWatchdogTimer)
   // (granting a fresh 10s window until t=17s).
   controller_remote_->Play();
 
-  // Fast forward by 5 seconds (t=12s total). Original timer would have fired at 10s,
-  // but new timer is only at 5s, so state is NOT timed out yet.
+  // Fast forward by 5 seconds (t=12s total). Original timer would have fired at
+  // 10s, but new timer is only at 5s, so state is NOT timed out yet.
   task_environment_.FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(state_future.IsReady());
 
-  // Fast forward remaining 5 seconds (t=17s total). The reset timer now expires.
+  // Fast forward remaining 5 seconds (t=17s total). The reset timer now
+  // expires.
   task_environment_.FastForwardBy(base::Seconds(5));
 
   EXPECT_EQ(state_future.Take(), read_aloud::mojom::PlaybackState::kPaused);
@@ -1255,10 +1296,12 @@ TEST_F(ReadAloudPlaybackControllerTest,
   factory.FlushForTesting();
 
   mojo::PendingRemote<media::mojom::AudioOutputStream> stream;
-  auto stream_receiver = stream.InitWithNewPipeAndPassReceiver();
+  mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver =
+      stream.InitWithNewPipeAndPassReceiver();
   const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayoutConfig::Mono(), 48000, 480);
+      media::ChannelLayoutConfig::Mono(), /*sample_rate=*/48000,
+      /*frames_per_buffer=*/480);
   base::CancelableSyncSocket local_socket;
   media::mojom::ReadWriteAudioDataPipePtr data_pipe =
       CreateValidDataPipe(params, &local_socket);
@@ -1412,6 +1455,33 @@ TEST_F(ReadAloudPlaybackControllerTest, SeekWhilePumpingDoesNotPauseStream) {
   EXPECT_EQ(mock_client_->last_state(),
             read_aloud::mojom::PlaybackState::kBuffering);
   EXPECT_THAT(fake_stream_.commands(), testing::IsEmpty());
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       PlayOnReadyOverviewModeAllowsLongerTimeout) {
+  CreateSession();
+
+  base::test::TestFuture<read_aloud::mojom::PlaybackState> state_future;
+  mock_client_->set_state_callback(state_future.GetRepeatingCallback());
+
+  // Set Overview mode before playing.
+  controller_remote_->SetPlaybackMode(
+      read_aloud::mojom::PlaybackMode::kOverview);
+  controller_remote_->Play();
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+
+  // Fast forward by 30 seconds (exceeds classic 10s timeout, but within 200s
+  // overview timeout).
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_FALSE(state_future.IsReady());
+
+  // Fast forward remaining 170 seconds to reach 200s overview timeout
+  // threshold.
+  task_environment_.FastForwardBy(base::Seconds(170));
+
+  EXPECT_TRUE(controller_remote_.is_connected());
+  EXPECT_EQ(state_future.Take(), read_aloud::mojom::PlaybackState::kPaused);
 }
 
 }  // namespace readaloud

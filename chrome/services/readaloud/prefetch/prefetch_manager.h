@@ -64,7 +64,8 @@ class PrefetchManager {
   // Invoked when an in-flight prefetch request is dispatched.
   using RequestSynthesisCallback =
       base::RepeatingCallback<void(uint32_t chunk_index,
-                                   std::u16string_view text)>;
+                                   std::u16string_view text,
+                                   read_aloud::mojom::Speaker speaker)>;
 
   using OnTextChunkedCallback =
       base::RepeatingCallback<void(const std::vector<std::u16string>& chunks)>;

@@ -63,6 +63,9 @@ void PrefetchManager::SetTextContent(
     // natural prosody and pauses.
     std::vector<TextChunk> sentence_chunks = ChunkText(
         segment->text, GetChunkingMode(), locale_tag, document_offset);
+    for (TextChunk& chunk : sentence_chunks) {
+      chunk.speaker = segment->speaker;
+    }
     document_offset += segment->text.size();
     timeline_.insert(timeline_.end(),
                      std::make_move_iterator(sentence_chunks.begin()),
@@ -245,7 +248,8 @@ void PrefetchManager::MaybeIssueSynthesisRequest() {
     inflight_requests_.insert(next_index);
     // Dispatch the synthesis request to the controller via the registered
     // callback.
-    request_synthesis_callback_.Run(next_index, timeline_[next_index].text);
+    request_synthesis_callback_.Run(next_index, timeline_[next_index].text,
+                                    timeline_[next_index].speaker);
   }
 }
 
