@@ -6,6 +6,9 @@ source_set("tools") {
   sources = [
     "ttc_actuation_data_types.h",
     "ttc_actuation_data_types.mm",
+    "ttc_actuation_handler+Testing.h",
+    "ttc_actuation_handler.h",
+    "ttc_actuation_handler.mm",
     "ttc_tool_definitions.h",
     "ttc_tool_definitions.mm",
     "ttc_tool_validator.h",
@@ -14,6 +17,13 @@ source_set("tools") {
   deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/sessions:session_id",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
     "//url",
   ]
   public_deps = [ "//components/actor/public/mojom:mojo_bindings" ]
@@ -23,14 +33,27 @@ source_set("tools") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ttc_actuation_handler_unittest.mm",
     "ttc_tool_definitions_unittest.mm",
     "ttc_tool_validator_unittest.mm",
   ]
   deps = [
     ":tools",
     "//base",
+    "//base/test:test_support",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/sessions:session_id",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",
   ]

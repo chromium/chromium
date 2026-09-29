@@ -2,6 +2,23 @@ include_rules = [
   # keep-sorted start
   "+components/actor/public/mojom",
   "+components/optimization_guide/proto/features/actions_data.pb.h",
+  "+components/sessions/core",
+  "+ios/chrome/browser/intelligence/actor/model",
+  "+ios/chrome/browser/intelligence/actor/public",
+  "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/shared/model/web_state_list",
+  "+ios/web/public",
   # keep-sorted end
 ]
 
+specific_include_rules = {
+  # Unit tests
+  ".*_unittest\\.mm": [
+    "+ios/chrome/browser/shared/model/browser",
+    "+ios/chrome/browser/shared/model/browser/test",
+    "+ios/chrome/browser/shared/model/profile/test",
+    "+ios/chrome/browser/shared/model/web_state_list/test",
+    "+ios/web/public/test",
+  ],
+}
