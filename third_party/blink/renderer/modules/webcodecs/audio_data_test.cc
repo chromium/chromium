@@ -391,7 +391,7 @@ TEST_F(AudioDataTest, CopyTo_UnalignedConversion) {
   // Verify the data.
   std::vector<int16_t> actual_data(total_samples);
   base::as_writable_byte_span(actual_data)
-      .copy_from_nonoverlapping(AsSpan<uint8_t>(dest));
+      .copy_from_nonoverlapping(AsSpan(dest));
 
   for (int i = 0; i < kFrames; ++i) {
     for (int ch = 0; ch < kChannels; ++ch) {

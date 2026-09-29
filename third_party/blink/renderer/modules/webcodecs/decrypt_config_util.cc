@@ -20,15 +20,12 @@ std::unique_ptr<media::DecryptConfig> CreateMediaDecryptConfig(
     return nullptr;
   }
 
-  auto iv = base::as_string_view(
-      AsSpan<const uint8_t>(js_config.initializationVector()));
+  auto iv = base::as_string_view(AsSpan(js_config.initializationVector()));
   if (iv.size() != media::DecryptConfig::kDecryptionKeySize) {
     return nullptr;
   }
   std::string iv_str(iv);
-
-  auto key_id = base::as_string_view(AsSpan<const uint8_t>(js_config.keyId()));
-  std::string key_id_str(key_id);
+  std::string key_id_str(base::as_string_view(AsSpan(js_config.keyId())));
 
   std::vector<media::SubsampleEntry> subsamples;
   for (const auto& entry : js_config.subsampleLayout()) {

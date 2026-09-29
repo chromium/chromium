@@ -988,7 +988,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   }
 
   // Validate data.
-  auto buffer = AsSpan<const uint8_t>(data);
+  base::span<const uint8_t> buffer = AsSpan(data);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("data is detached.");
     return nullptr;
@@ -1400,7 +1400,7 @@ VideoFrame::CopyToPromise VideoFrame::CopyToAsync(
 
 VideoFrame::CopyToPromise VideoFrame::copyTo(
     ScriptState* script_state,
-    const AllowSharedBufferSource* destination,
+    AllowSharedBufferSource* destination,
     VideoFrameCopyToOptions* options,
     ExceptionState& exception_state) {
   auto local_frame = handle_->frame();
@@ -1418,7 +1418,7 @@ VideoFrame::CopyToPromise VideoFrame::copyTo(
   }
 
   // Validate destination buffer.
-  auto buffer = AsSpan<uint8_t>(destination);
+  base::span<uint8_t> buffer = AsSpan(destination);
   if (!buffer.data()) {
     exception_state.ThrowTypeError("destination is detached.");
     return CopyToPromise();

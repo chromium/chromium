@@ -47,7 +47,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   int64_t timestamp() const;
 
   uint32_t allocationSize(AudioDataCopyToOptions*, ExceptionState&);
-  void copyTo(const AllowSharedBufferSource* destination,
+  void copyTo(AllowSharedBufferSource* destination,
               AudioDataCopyToOptions*,
               ExceptionState&);
 

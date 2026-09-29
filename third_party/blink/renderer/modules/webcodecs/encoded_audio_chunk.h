@@ -33,7 +33,7 @@ class MODULES_EXPORT EncodedAudioChunk final : public ScriptWrappable {
   int64_t timestamp() const;
   uint64_t byteLength() const;
   std::optional<uint64_t> duration() const;
-  void copyTo(const AllowSharedBufferSource* destination,
+  void copyTo(AllowSharedBufferSource* destination,
               ExceptionState& exception_state);
 
   scoped_refptr<media::DecoderBuffer> buffer() const { return buffer_; }

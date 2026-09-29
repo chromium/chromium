@@ -122,7 +122,7 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   copy->setCodec(config.codec());
 
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.data()) {
       // Checked by IsValidVideoDecoderConfig.
       NOTREACHED();
@@ -368,7 +368,7 @@ std::optional<media::VideoType> VideoDecoder::IsValidVideoDecoderConfig(
     return std::nullopt;
 
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.data()) {
       *js_error_message = "Invalid config, description is detached.";
       return std::nullopt;
@@ -451,7 +451,7 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.data()) {
       // Checked by IsValidVideoDecoderConfig().
       NOTREACHED();

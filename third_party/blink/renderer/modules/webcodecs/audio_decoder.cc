@@ -59,7 +59,7 @@ bool VerifyDescription(const AudioDecoderConfig& config,
   }
 
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
 
     // Detached buffers are already rejected in `IsValidAudioDecoderConfig()`,
     // which is called before `VerifyDescription()`.
@@ -99,7 +99,7 @@ AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
   copy->setSampleRate(config.sampleRate());
   copy->setNumberOfChannels(config.numberOfChannels());
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.empty()) {
       DOMArrayBuffer* buffer_copy = DOMArrayBuffer::Create(desc_wrapper);
       copy->setDescription(
@@ -252,7 +252,7 @@ std::optional<media::AudioType> AudioDecoder::IsValidAudioDecoderConfig(
     return std::nullopt;
   }
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.data()) {
       *js_error_message = "Invalid config; description is detached.";
       return std::nullopt;
@@ -297,7 +297,7 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
 
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    auto desc_wrapper = AsSpan<const uint8_t>(config.description());
+    base::span<const uint8_t> desc_wrapper = AsSpan(config.description());
     if (!desc_wrapper.empty()) {
       extra_data.assign(base::to_address(desc_wrapper.begin()),
                         base::to_address(desc_wrapper.end()));

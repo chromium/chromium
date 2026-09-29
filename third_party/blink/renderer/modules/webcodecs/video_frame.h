@@ -108,7 +108,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 
   CopyToPromise copyTo(ScriptState* script_state,
-                       const AllowSharedBufferSource* destination,
+                       AllowSharedBufferSource* destination,
                        VideoFrameCopyToOptions* options,
                        ExceptionState& exception_state);
 

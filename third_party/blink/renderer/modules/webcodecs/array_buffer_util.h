@@ -21,8 +21,7 @@ using AllowSharedBufferSource =
     V8UnionArrayBufferAllowSharedOrArrayBufferViewAllowShared;
 
 // Helper function for turning various DOMArray-like things into a pointer+size.
-template <typename T>
-base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
+inline base::span<uint8_t> AsSpan(AllowSharedBufferSource* buffer_union) {
   switch (buffer_union->GetContentType()) {
     case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared:
       return buffer_union->GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
@@ -30,6 +29,11 @@ base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
       return buffer_union->GetAsArrayBufferViewAllowShared()
           ->ByteSpanMaybeShared();
   }
+}
+
+inline base::span<const uint8_t> AsSpan(
+    const AllowSharedBufferSource* buffer_union) {
+  return AsSpan(const_cast<AllowSharedBufferSource*>(buffer_union));
 }
 
 // Ensures that the underlying memory for `buffer_union` remains valid
