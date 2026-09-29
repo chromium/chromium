@@ -3711,6 +3711,28 @@ TEST_F(ChromeShelfControllerTest, BrowserMenuGeneration) {
   std::u16string two_menu_items[] = {title1, title2};
   CheckAppMenu(shelf_controller_.get(), item_browser, 2, two_menu_items);
 
+  // Each menu item maps to the window of its browser.
+  ash::ShelfItemDelegate* item_delegate =
+      model_->GetShelfItemDelegate(item_browser.id);
+  ASSERT_TRUE(item_delegate);
+  EXPECT_EQ(browser()->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+
+  // With shift, the menu lists tabs. Only active tabs map to the window of
+  // their browser.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_EQ(3U, item_delegate
+                    ->GetAppMenuItems(ui::EF_SHIFT_DOWN, base::NullCallback())
+                    .size());
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser()->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(2));
+
   // Apparently we have to close all tabs we have.
   chrome::CloseTab(browser2.get());
 }
@@ -4301,6 +4323,44 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
   }
 }
 
+// Checks that only the app menu item for the active tab maps to the window of
+// the browser hosting the tab, and that a tab destroyed while the menu is open
+// maps to no window.
+TEST_F(ChromeShelfControllerTest, V1AppMenuItemWindow) {
+  InitShelfControllerWithBrowser();
+  StartPrefSyncService(syncer::SyncDataList());
+
+  // Add Gmail to the shelf and add two items.
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+  NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), u"Test1");
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), u"Test2");
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  ASSERT_EQ(2U,
+            shelf_controller_->GetAppMenuItemsForTesting(item_gmail).size());
+
+  ash::ShelfItemDelegate* item_delegate =
+      model_->GetShelfItemDelegate(gmail_id);
+  ASSERT_TRUE(item_delegate);
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
+  ASSERT_TRUE(browser_window);
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(-1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+
+  // Destroy the second tab while the menu is still open. The first tab becomes
+  // active.
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(1));
+}
+
 // Verify that the shelf item positions are persisted and restored.
 TEST_F(ChromeShelfControllerTest, PersistShelfItemPositions) {
   InitShelfController();
@@ -4639,6 +4699,9 @@ TEST_F(ChromeShelfControllerWithArcTest, ShelfItemWithMultipleWindows) {
   // opposite order. Last created goes in front.
   auto items = item_delegate->GetAppMenuItems(0, base::NullCallback());
   ASSERT_EQ(items.size(), 2U);
+  EXPECT_EQ(window2->GetNativeWindow(), item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(window1->GetNativeWindow(), item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
 
   // Execute command 1 to activate the first window.
   item_delegate->ExecuteCommand(false, 1, ui::EF_NONE,

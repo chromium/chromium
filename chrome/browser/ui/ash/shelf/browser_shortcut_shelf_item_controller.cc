@@ -334,6 +334,28 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   return items;
 }
 
+aura::Window* BrowserShortcutShelfItemController::GetAppMenuItemWindow(
+    int command_id) {
+  if (command_id < 0 ||
+      static_cast<size_t>(command_id) >= app_menu_items_.size()) {
+    return nullptr;
+  }
+  ash::BrowserDelegate* browser = app_menu_items_[command_id].first;
+  if (!browser) {
+    return nullptr;
+  }
+  // The browser window only shows its active tab, so other tabs have no window
+  // to preview.
+  const std::optional<size_t> tab_index = app_menu_items_[command_id].second;
+  if (tab_index.has_value()) {
+    content::WebContents* tab = browser->GetWebContentsAt(*tab_index);
+    if (!tab || tab != browser->GetActiveWebContents()) {
+      return nullptr;
+    }
+  }
+  return browser->GetNativeWindow();
+}
+
 void BrowserShortcutShelfItemController::GetContextMenu(
     int64_t display_id,
     GetContextMenuCallback callback) {

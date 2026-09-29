@@ -50,6 +50,7 @@ class BrowserShortcutShelfItemController
   AppMenuItems GetAppMenuItems(
       int event_flags,
       const ItemFilterPredicate& filter_predicate) override;
+  aura::Window* GetAppMenuItemWindow(int command_id) override;
   void GetContextMenu(int64_t display_id,
                       GetContextMenuCallback callback) override;
   void ExecuteCommand(bool from_context_menu,
