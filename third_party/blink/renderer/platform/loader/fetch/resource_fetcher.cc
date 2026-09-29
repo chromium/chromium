@@ -2010,6 +2010,9 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
     case Resource::MatchStatus::kPreventAllCrossWorldForCspReuse:
       builder.Append("because it is a cross-world-for-csp resource mismatch.");
       break;
+    case Resource::MatchStatus::kPreventAllCrossTargetWorldReuse:
+      builder.Append("because it is a cross-target-world resource mismatch.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

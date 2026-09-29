@@ -183,6 +183,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails because cross-`WorldForCsp()` reuse is prevented.
     kPreventAllCrossWorldForCspReuse,
+
+    // Match fails because cross-`TargetWorld()` reuse is prevented.
+    kPreventAllCrossTargetWorldReuse,
   };
 
   Resource(const Resource&) = delete;

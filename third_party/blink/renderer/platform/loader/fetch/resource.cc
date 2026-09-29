@@ -90,6 +90,10 @@ BASE_FEATURE(kPreventCrossWorldServiceWorkerResourceReuse,
 BASE_FEATURE(kPreventAllCrossWorldForCspReuse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature that prevents all `TargetWorld()` mismatch cases.
+BASE_FEATURE(kPreventAllCrossTargetWorldReuse,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Feature that prevents resources from being reused if the Service Worker skip
 // policy differs between the existing and new requests.
 BASE_FEATURE(kPreventDifferentSkipServiceWorkerResourceReuse,
@@ -920,6 +924,12 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
     if (base::FeatureList::IsEnabled(kPreventAllCrossWorldForCspReuse)) {
       return MatchStatus::kPreventAllCrossWorldForCspReuse;
     }
+  }
+
+  // Catch-all rejection for sharing across different target worlds.
+  if (options_.TargetWorld() != new_options.TargetWorld() &&
+      base::FeatureList::IsEnabled(kPreventAllCrossTargetWorldReuse)) {
+    return MatchStatus::kPreventAllCrossTargetWorldReuse;
   }
 
   if (base::FeatureList::IsEnabled(
