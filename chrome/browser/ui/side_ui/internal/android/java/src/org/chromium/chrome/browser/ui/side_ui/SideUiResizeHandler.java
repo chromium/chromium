@@ -103,6 +103,7 @@ import java.lang.annotation.RetentionPolicy;
     private final SideUiContainer mContainer;
     private final @AnchorSide int mAnchorSide;
     private final ViewGroup mAnchorContainer;
+    private final ViewGroup mAnchorContainerParent;
     private final SideUiCoordinator mSideUiCoordinator;
 
     private @Nullable View mHandleView;
@@ -133,16 +134,20 @@ import java.lang.annotation.RetentionPolicy;
     /**
      * @param context The {@link Context} used to create the handle {@link View}.
      * @param anchorContainer The anchor container that hosts the handle.
+     * @param anchorContainerParent The parent of the anchor containers. It covers the web contents,
+     *     and shows the resize pointer icon while a drag moves the pointer off the handle.
      * @param container The {@link SideUiContainer} this handler serves.
      * @param sideUiCoordinator The {@link SideUiCoordinator} notified after each drag event.
      */
     /* package */ SideUiResizeHandler(
             Context context,
             ViewGroup anchorContainer,
+            ViewGroup anchorContainerParent,
             SideUiContainer container,
             SideUiCoordinator sideUiCoordinator) {
         mContext = context;
         mAnchorContainer = anchorContainer;
+        mAnchorContainerParent = anchorContainerParent;
         mContainer = container;
         mAnchorSide = container.getAnchorSide();
         mSideUiCoordinator = sideUiCoordinator;
@@ -202,6 +207,10 @@ import java.lang.annotation.RetentionPolicy;
                 mLastMoveWithoutDragRecordTimeMs = NO_MOVE_RECORDED;
                 mDragStartRawX = event.getRawX();
                 mDragStartWidthPx = mContainer.getView().getWidth();
+                // Pointer icons are resolved from the view under the pointer. The anchor container
+                // parent covers the web contents and falls back to its own icon when no child
+                // provides one, so it keeps the resize icon while the drag moves off the handle.
+                mAnchorContainerParent.setPointerIcon(getResizePointerIcon(mContext));
                 // Make sure no ancestor steals the gesture halfway through the drag.
                 if (view.getParent() != null) {
                     view.getParent().requestDisallowInterceptTouchEvent(true);
@@ -278,6 +287,7 @@ import java.lang.annotation.RetentionPolicy;
     private void clearDragState() {
         mDragStartRawX = null;
         mDragStartWidthPx = null;
+        mAnchorContainerParent.setPointerIcon(null);
     }
 
     /** Returns the width implied by the pointer position of {@code event}, without clamping. */
@@ -290,6 +300,10 @@ import java.lang.annotation.RetentionPolicy;
 
     private static void recordTouchState(@TouchState int state) {
         RecordHistogram.recordEnumeratedHistogram(TOUCH_STATE_HISTOGRAM, state, TouchState.COUNT);
+    }
+
+    private static PointerIcon getResizePointerIcon(Context context) {
+        return PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW);
     }
 
     // TODO(crbug.com/559262619): Add touch support. The resize pointer icon is only shown on hover,
@@ -313,8 +327,7 @@ import java.lang.annotation.RetentionPolicy;
         if (contentDescriptionRes != Resources.ID_NULL) {
             handleView.setContentDescription(context.getString(contentDescriptionRes));
         }
-        handleView.setPointerIcon(
-                PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HORIZONTAL_DOUBLE_ARROW));
+        handleView.setPointerIcon(getResizePointerIcon(context));
         handleView.setOnTouchListener(onTouchListener);
         return handleView;
     }

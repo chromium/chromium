@@ -228,6 +228,7 @@ final class SideUiCoordinatorImpl
                 new SideUiResizeHandler(
                         mParentActivity,
                         assumeNonNull(mAnchorContainers.get(anchorSide)),
+                        mAnchorContainerParent,
                         sideUiContainer,
                         /* sideUiCoordinator= */ this));
     }
