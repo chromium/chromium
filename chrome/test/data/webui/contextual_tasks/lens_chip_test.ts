@@ -64,8 +64,19 @@ suite('LensChipTest', () => {
         'Remove selected region', closeButton.getAttribute('aria-label'));
     assertEquals('Remove selected region', closeButton.getAttribute('title'));
     assertEquals('8px', getComputedStyle(app).borderRadius);
-    assertEquals('0', getComputedStyle(closeButton).opacity);
-    assertEquals('none', getComputedStyle(closeButton).pointerEvents);
+
+    // The chip fills the whole test page, so on bots where the mouse pointer
+    // happens to rest inside the browser window, `.chip:hover` applies and
+    // reveals the close button (the opacity transition may still be in
+    // flight). Only assert the resting styles while the chip is neither
+    // hovered nor focused.
+    const closeButtonStyle = getComputedStyle(closeButton);
+    if (chipRoot.matches(':hover, :focus-within')) {
+      assertEquals('auto', closeButtonStyle.pointerEvents);
+    } else {
+      assertEquals('0', closeButtonStyle.opacity);
+      assertEquals('none', closeButtonStyle.pointerEvents);
+    }
   });
 
   test(
