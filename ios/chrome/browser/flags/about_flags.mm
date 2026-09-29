@@ -476,38 +476,6 @@ const FeatureEntry::FeatureVariation
         {"Shortcuts", kDefaultBrowserPromoShortcutsParam, nullptr},
 };
 
-// Uses int values from Lens filters ablation mode enum.
-const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
-    {kLensFiltersAblationMode, "0"}};
-const FeatureEntry::FeatureParam kLensFiltersAblationModePostCapture[] = {
-    {kLensFiltersAblationMode, "1"}};
-const FeatureEntry::FeatureParam kLensFiltersAblationModeLVF[] = {
-    {kLensFiltersAblationMode, "2"}};
-const FeatureEntry::FeatureParam kLensFiltersAblationModeAlways[] = {
-    {kLensFiltersAblationMode, "3"}};
-
-const FeatureEntry::FeatureVariation kLensFiltersAblationModeVariations[] = {
-    {"(Disabled)", kLensFiltersAblationModeDisabled, nullptr},
-    {"(Post Capture)", kLensFiltersAblationModePostCapture, nullptr},
-    {"(LVF)", kLensFiltersAblationModeLVF, nullptr},
-    {"(Always)", kLensFiltersAblationModeAlways, nullptr}};
-
-// Uses int values from Lens translate toggle mode enum.
-const FeatureEntry::FeatureParam kLensTranslateToggleModeDisabled[] = {
-    {kLensTranslateToggleMode, "0"}};
-const FeatureEntry::FeatureParam kLensTranslateToggleModePostCapture[] = {
-    {kLensTranslateToggleMode, "1"}};
-const FeatureEntry::FeatureParam kLensTranslateToggleModeLVF[] = {
-    {kLensTranslateToggleMode, "2"}};
-const FeatureEntry::FeatureParam kLensTranslateToggleModeAlways[] = {
-    {kLensTranslateToggleMode, "3"}};
-
-const FeatureEntry::FeatureVariation kLensTranslateToggleModeVariations[] = {
-    {"(Disabled)", kLensTranslateToggleModeDisabled, nullptr},
-    {"(Post Capture)", kLensTranslateToggleModePostCapture, nullptr},
-    {"(LVF)", kLensTranslateToggleModeLVF, nullptr},
-    {"(Always)", kLensTranslateToggleModeAlways, nullptr}};
-
 const FeatureEntry::FeatureParam kEnableLensOnIPadSidePanel[] = {
     {kEnableLensOnIPadPresentationStyleParam,
      kEnableLensOnIPadPresentationStyleSidePanel}};
@@ -1683,20 +1651,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSendTabToSelfEnhancedHandoffName,
      flag_descriptions::kSendTabToSelfEnhancedHandoffDescription,
      flags_ui::kOsIos, MULTI_VALUE_TYPE(kSendTabToSelfEnhancedHandoffChoices)},
-    {"lens-filters-ablation-mode-enabled",
-     flag_descriptions::kLensFiltersAblationModeEnabledName,
-     flag_descriptions::kLensFiltersAblationModeEnabledDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kLensFiltersAblationModeEnabled,
-                                    kLensFiltersAblationModeVariations,
-                                    "LensFiltersAblationMode")},
-    {"lens-translate-toogle-mode-enabled",
-     flag_descriptions::kLensTranslateToggleModeEnabledName,
-     flag_descriptions::kLensTranslateToggleModeEnabledDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kLensTranslateToggleModeEnabled,
-                                    kLensTranslateToggleModeVariations,
-                                    "LensTranslateToggleMode")},
     {"omnibox-mia-zps", flag_descriptions::kOmniboxMiaZpsName,
      flag_descriptions::kOmniboxMiaZpsDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
@@ -1868,10 +1822,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,
      flag_descriptions::kDataSharingDebugLogsDescription, flags_ui::kOsIos,
      SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
-    {"lens-fetch-srp-api-enabled",
-     flag_descriptions::kLensFetchSrpApiEnabledName,
-     flag_descriptions::kLensFetchSrpApiEnabledDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kLensFetchSrpApiEnabled)},
     {"feed-swipe-iph", flag_descriptions::kFeedSwipeInProductHelpName,
      flag_descriptions::kFeedSwipeInProductHelpDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFeedSwipeInProductHelp,
@@ -2551,10 +2501,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAssistantAimMinimizedStateName,
      flag_descriptions::kAssistantAimMinimizedStateDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAssistantAimMinimizedState)},
-    {"lens-filter-toggle-enabled",
-     flag_descriptions::kLensFilterToggleEnabledName,
-     flag_descriptions::kLensFilterToggleEnabledDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kLensFilterToggleEnabled)},
     {"lens-followups-full-height-enabled",
      flag_descriptions::kLensFollowupsFullHeightEnabledName,
      flag_descriptions::kLensFollowupsFullHeightEnabledDescription,

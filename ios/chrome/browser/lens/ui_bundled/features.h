@@ -7,27 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Whether to enable the filters ablation mode.
-BASE_DECLARE_FEATURE(kLensFiltersAblationModeEnabled);
-
-// The feature parameter that indicates the filters ablation mode.
-extern const char kLensFiltersAblationMode[];
-
-// Integer that maps to the filters ablation mode enum.
-int LensFiltersAblationMode();
-
-// Whether to enable the translate toggle mode.
-BASE_DECLARE_FEATURE(kLensTranslateToggleModeEnabled);
-
-// The feature parameter that indicates the translate toggle mode.
-extern const char kLensTranslateToggleMode[];
-
-// Integer that maps to the translate toggle mode enum.
-int LensTranslateToggleMode();
-
-// Whether to enable the fetch srp API.
-BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
-
 // Whether to make unused still outputs optional in Lens camera.
 BASE_DECLARE_FEATURE(kLensCameraNoStillOutputRequired);
 
@@ -48,9 +27,6 @@ BASE_DECLARE_FEATURE(kLensOmnientShaderV2Enabled);
 
 // Whether to enable the stream service web channel transport.
 BASE_DECLARE_FEATURE(kLensStreamServiceWebChannelTransportEnabled);
-
-// Whether to enable the filter toggle in the Lens overlay.
-BASE_DECLARE_FEATURE(kLensFilterToggleEnabled);
 
 // Whether to enable followups full height in the Lens overlay.
 BASE_DECLARE_FEATURE(kLensFollowupsFullHeightEnabled);

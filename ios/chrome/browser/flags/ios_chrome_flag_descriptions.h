@@ -1240,21 +1240,6 @@ inline constexpr char kLensContinuousZoomEnabledName[] =
 inline constexpr char kLensContinuousZoomEnabledDescription[] =
     "When enabled, Lens camera supports continuous zoom.";
 
-inline constexpr char kLensFetchSrpApiEnabledName[] =
-    "Lens fetch SRP API enabled";
-inline constexpr char kLensFetchSrpApiEnabledDescription[] =
-    "Enables the fetch SRP API.";
-
-inline constexpr char kLensFilterToggleEnabledName[] =
-    "Lens filter toggle enabled";
-inline constexpr char kLensFilterToggleEnabledDescription[] =
-    "Enables the filter toggle in Lens camera.";
-
-inline constexpr char kLensFiltersAblationModeEnabledName[] =
-    "Lens filters ablation mode enabled";
-inline constexpr char kLensFiltersAblationModeEnabledDescription[] =
-    "Enables the filters ablation mode.";
-
 inline constexpr char kLensFollowupsFullHeightEnabledName[] =
     "Lens followups full height enabled";
 inline constexpr char kLensFollowupsFullHeightEnabledDescription[] =
@@ -1297,11 +1282,6 @@ inline constexpr char kLensStreamServiceWebChannelTransportEnabledName[] =
 inline constexpr char
     kLensStreamServiceWebChannelTransportEnabledDescription[] =
         "When enabled, uses web channel transport for the stream service.";
-
-inline constexpr char kLensTranslateToggleModeEnabledName[] =
-    "Lens translate toggle mode enabled";
-inline constexpr char kLensTranslateToggleModeEnabledDescription[] =
-    "Enables the translate toggle mode.";
 
 inline constexpr char kLensTripleCameraEnabledName[] =
     "Enable Lens triple camera";

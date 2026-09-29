@@ -6696,23 +6696,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "lens-fetch-srp-api-enabled",
-    "owners": ["cmyang@google.com", "brandonli@google.com"],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "lens-filter-toggle-enabled",
-    "owners": [
-      "cmyang@google.com"
-    ],
-    "expiry_milestone": 153
-  },
-  {
-    "name": "lens-filters-ablation-mode-enabled",
-    "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "lens-followups-full-height-enabled",
     "owners": [
       "cmyang@google.com"
@@ -6781,11 +6764,6 @@
     "name": "lens-stream-service-web-channel-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 165
-  },
-  {
-    "name": "lens-translate-toogle-mode-enabled",
-    "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
-    "expiry_milestone": 145
   },
   {
     "name": "lens-triple-camera-enabled",
