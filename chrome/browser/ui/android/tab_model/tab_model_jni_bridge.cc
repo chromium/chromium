@@ -863,8 +863,7 @@ void TabModelJniBridge::SetTabGroupVisualData(
   // Java.
   Java_TabModelJniBridge_setTabGroupVisualData(
       env, jobj, group_id.token(), visual_data.title(),
-      std::to_underlying(visual_data.color()), visual_data.is_collapsed(),
-      /*animate=*/false);
+      std::to_underlying(visual_data.color()), visual_data.is_collapsed());
 }
 
 std::optional<tab_groups::TabGroupId> TabModelJniBridge::AddTabsToGroup(

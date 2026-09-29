@@ -112,7 +112,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
-        when(mTabCollectionTabModelImplJni.init(any(), eq(mProfile)))
+        when(mTabCollectionTabModelImplJni.init(eq(mProfile)))
                 .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
 
         mTabs = new ArrayList<>();
@@ -908,7 +908,8 @@ public class TabCollectionsTabModelObserversUnitTest {
                         eq(TAB_COLLECTION_TAB_MODEL_IMPL_PTR), eq(groupId)))
                 .thenReturn("Old Title");
 
-        mTabModel.setTabGroupVisualData(groupId, "New Title", TabGroupColorId.BLUE, true, false);
+        mTabModel.setTabGroupVisualData(
+                groupId, "New Title", TabGroupColorId.BLUE, /* isCollapsed= */ true);
         verify(mTabModelObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 

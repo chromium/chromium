@@ -34,9 +34,6 @@
 // This JNI header is generated from TabCollectionTabModelImpl.java.
 #include "chrome/android/chrome_jni_headers/TabCollectionTabModelImpl_jni.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-using base::android::TokenAndroid;
 using tab_groups::TabGroupColorId;
 using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
@@ -62,12 +59,8 @@ size_t ClampIfMovingToHigherIndex(const std::optional<size_t>& current_index,
 
 }  // namespace
 
-TabCollectionTabModelImpl::TabCollectionTabModelImpl(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& java_object,
-    Profile* profile)
-    : java_object_(env, java_object),
-      profile_(profile),
+TabCollectionTabModelImpl::TabCollectionTabModelImpl(Profile* profile)
+    : profile_(profile),
       tab_strip_collection_(std::make_unique<TabStripCollection>()) {}
 
 TabCollectionTabModelImpl::~TabCollectionTabModelImpl() = default;
@@ -290,7 +283,7 @@ std::u16string TabCollectionTabModelImpl::GetTabGroupTitle(
     return std::u16string();
   }
   const TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataChecked(group_id, /*allow_detached=*/true);
+      GetTabGroupVisualDataChecked(group_id);
   return visual_data->title();
 }
 
@@ -302,7 +295,7 @@ int32_t TabCollectionTabModelImpl::GetTabGroupColor(
     return kInvalidTabGroupColorId;
   }
   const TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataChecked(group_id, /*allow_detached=*/true);
+      GetTabGroupVisualDataChecked(group_id);
   return static_cast<int32_t>(visual_data->color());
 }
 
@@ -314,7 +307,7 @@ bool TabCollectionTabModelImpl::GetTabGroupCollapsed(
     return false;
   }
   const TabGroupVisualData* visual_data =
-      GetTabGroupVisualDataChecked(group_id, /*allow_detached=*/true);
+      GetTabGroupVisualDataChecked(group_id);
   return visual_data->is_collapsed();
 }
 
@@ -538,7 +531,7 @@ std::optional<TabGroupId> TabCollectionTabModelImpl::GetGroupIdAt(
   }
 }
 
-TabGroupTabCollection* TabCollectionTabModelImpl::GetTabGroupCollectionChecked(
+TabGroup* TabCollectionTabModelImpl::GetTabGroupChecked(
     const TabGroupId& tab_group_id,
     bool allow_detached) const {
   TabGroupTabCollection* group_collection =
@@ -547,14 +540,6 @@ TabGroupTabCollection* TabCollectionTabModelImpl::GetTabGroupCollectionChecked(
     group_collection = tab_strip_collection_->GetDetachedTabGroup(tab_group_id);
   }
   CHECK(group_collection);
-  return group_collection;
-}
-
-TabGroup* TabCollectionTabModelImpl::GetTabGroupChecked(
-    const TabGroupId& tab_group_id,
-    bool allow_detached) const {
-  TabGroupTabCollection* group_collection =
-      GetTabGroupCollectionChecked(tab_group_id, allow_detached);
   TabGroup* group = group_collection->GetTabGroup();
   CHECK(group);
   return group;
@@ -562,9 +547,8 @@ TabGroup* TabCollectionTabModelImpl::GetTabGroupChecked(
 
 const TabGroupVisualData*
 TabCollectionTabModelImpl::GetTabGroupVisualDataChecked(
-    const TabGroupId& tab_group_id,
-    bool allow_detached) const {
-  TabGroup* group = GetTabGroupChecked(tab_group_id, allow_detached);
+    const TabGroupId& tab_group_id) const {
+  TabGroup* group = GetTabGroupChecked(tab_group_id, /*allow_detached=*/true);
   const TabGroupVisualData* visual_data = group->visual_data();
   CHECK(visual_data);
   return visual_data;
@@ -575,12 +559,10 @@ bool TabCollectionTabModelImpl::HasTabGroup(const TabGroupId& group_id) const {
          tab_strip_collection_->GetDetachedTabGroup(group_id);
 }
 
-static int64_t JNI_TabCollectionTabModelImpl_Init(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_java_object,
-    Profile* profile) {
+static int64_t JNI_TabCollectionTabModelImpl_Init(JNIEnv* env,
+                                                  Profile* profile) {
   TabCollectionTabModelImpl* tab_collection_tab_model_impl =
-      new TabCollectionTabModelImpl(env, j_java_object, profile);
+      new TabCollectionTabModelImpl(profile);
   return reinterpret_cast<intptr_t>(tab_collection_tab_model_impl);
 }
 

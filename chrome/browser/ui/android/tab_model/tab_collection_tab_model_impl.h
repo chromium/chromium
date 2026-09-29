@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_COLLECTION_TAB_MODEL_IMPL_H_
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_COLLECTION_TAB_MODEL_IMPL_H_
 
+#include <jni.h>
+
 #include <memory>
 #include <optional>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
 
 class Profile;
@@ -26,7 +27,6 @@ class TabGroupVisualData;
 }  // namespace tab_groups
 
 namespace tabs {
-class TabGroupTabCollection;
 class TabStripCollection;
 class TabInterface;
 
@@ -36,9 +36,7 @@ class TabInterface;
 // launches, it may be prudent to merge the C++ objects.
 class TabCollectionTabModelImpl {
  public:
-  TabCollectionTabModelImpl(JNIEnv* env,
-                            const jni_zero::JavaRef<jobject>& java_object,
-                            Profile* profile);
+  explicit TabCollectionTabModelImpl(Profile* profile);
   ~TabCollectionTabModelImpl();
   // Called by Java to destroy this object. Do not call directly in C++.
   void Destroy(JNIEnv* env);
@@ -46,9 +44,6 @@ class TabCollectionTabModelImpl {
   TabCollectionTabModelImpl(const TabCollectionTabModelImpl&) = delete;
   TabCollectionTabModelImpl& operator=(const TabCollectionTabModelImpl&) =
       delete;
-
-  // Returns the recursive index of the given tab, or -1 if not found.
-  int GetIndexOfTabRecursive(TabAndroid* tab_android) const;
 
   // Moves a tab updating its group or pinned state if applicable. Returns the
   // final index of the tab.
@@ -165,21 +160,18 @@ class TabCollectionTabModelImpl {
                       size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;
+  // Returns the recursive index of the given tab, or -1 if not found.
+  int GetIndexOfTabRecursive(TabAndroid* tab_android) const;
   std::optional<tab_groups::TabGroupId> GetGroupIdAt(size_t index) const;
-  TabGroupTabCollection* GetTabGroupCollectionChecked(
-      const tab_groups::TabGroupId& tab_group_id,
-      bool allow_detached = false) const;
   TabGroup* GetTabGroupChecked(const tab_groups::TabGroupId& tab_group_id,
                                bool allow_detached = false) const;
   const tab_groups::TabGroupVisualData* GetTabGroupVisualDataChecked(
-      const tab_groups::TabGroupId& tab_group_id,
-      bool allow_detached = false) const;
+      const tab_groups::TabGroupId& tab_group_id) const;
 
   // Returns true if the tab group is in either the tab strip or the detached
   // list.
   bool HasTabGroup(const tab_groups::TabGroupId& tab_group_id) const;
 
-  JavaObjectWeakGlobalRef java_object_;
   raw_ptr<Profile> profile_;
 
   // Always valid until destroyed.

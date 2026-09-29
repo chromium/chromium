@@ -1834,7 +1834,6 @@ public class TabCollectionTabModelImplTest {
         final String newTitle = "Visual Data Title";
         final int newColor = TabGroupColorId.RED;
         final boolean newCollapsed = true;
-        final boolean newAnimate = false;
 
         CallbackHelper titleCallback = new CallbackHelper();
         CallbackHelper colorCallback = new CallbackHelper();
@@ -1864,7 +1863,7 @@ public class TabCollectionTabModelImplTest {
                         if (!tabGroupId.equals(groupCollapsedId)) return;
 
                         assertEquals(newCollapsed, isCollapsed);
-                        assertEquals(newAnimate, animate);
+                        assertFalse(animate);
                         collapsedCallback.notifyCalled();
                     }
                 };
@@ -1872,8 +1871,7 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.addTabGroupObserver(observer);
 
         try {
-            mCollectionModel.setTabGroupVisualData(
-                    tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+            mCollectionModel.setTabGroupVisualData(tabGroupId, newTitle, newColor, newCollapsed);
 
             assertEquals(newTitle, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
             assertEquals(newColor, TabGroupVisualDataStore.getTabGroupColor(tabGroupId));
@@ -1904,8 +1902,7 @@ public class TabCollectionTabModelImplTest {
         final int color = TabGroupColorId.BLUE;
         final boolean collapsed = false;
 
-        mCollectionModel.setTabGroupVisualData(
-                tabGroupId, title, color, collapsed, /* animate= */ false);
+        mCollectionModel.setTabGroupVisualData(tabGroupId, title, color, collapsed);
 
         CallbackHelper callbackHelper = new CallbackHelper();
         TabGroupObserver observer =
@@ -1929,8 +1926,7 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.addTabGroupObserver(observer);
 
         try {
-            mCollectionModel.setTabGroupVisualData(
-                    tabGroupId, title, color, collapsed, /* animate= */ false);
+            mCollectionModel.setTabGroupVisualData(tabGroupId, title, color, collapsed);
             assertEquals(
                     "Observers should not be called when values are unchanged",
                     0,
@@ -2099,7 +2095,6 @@ public class TabCollectionTabModelImplTest {
         final String newTitle = "Visual Data Title";
         final int newColor = TabGroupColorUtils.INVALID_COLOR_ID;
         final boolean newCollapsed = true;
-        final boolean newAnimate = false;
 
         CallbackHelper colorCallback = new CallbackHelper();
 
@@ -2117,8 +2112,7 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.addTabGroupObserver(observer);
 
         try {
-            mCollectionModel.setTabGroupVisualData(
-                    tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+            mCollectionModel.setTabGroupVisualData(tabGroupId, newTitle, newColor, newCollapsed);
 
             assertEquals(
                     TabGroupColorUtils.INVALID_COLOR_ID,
@@ -2146,7 +2140,6 @@ public class TabCollectionTabModelImplTest {
         final String newTitle = "";
         final int newColor = TabGroupColorId.RED;
         final boolean newCollapsed = true;
-        final boolean newAnimate = false;
 
         CallbackHelper titleCallback = new CallbackHelper();
 
@@ -2164,8 +2157,7 @@ public class TabCollectionTabModelImplTest {
         mCollectionModel.addTabGroupObserver(observer);
 
         try {
-            mCollectionModel.setTabGroupVisualData(
-                    tabGroupId, newTitle, newColor, newCollapsed, newAnimate);
+            mCollectionModel.setTabGroupVisualData(tabGroupId, newTitle, newColor, newCollapsed);
 
             assertEquals(
                     UNSET_TAB_GROUP_TITLE, TabGroupVisualDataStore.getTabGroupTitle(tabGroupId));
@@ -2199,8 +2191,7 @@ public class TabCollectionTabModelImplTest {
         TabGroupVisualDataStore.cacheGroups(new TabGroupCollectionData[] {mTabGroupCollectionData});
 
         try {
-            mCollectionModel.setTabGroupVisualData(
-                    tabGroupId, title, color, collapsed, /* animate= */ false);
+            mCollectionModel.setTabGroupVisualData(tabGroupId, title, color, collapsed);
 
             assertFalse(TabGroupVisualDataStore.isTabGroupCachedForRestore(tabGroupId));
 
@@ -4762,8 +4753,7 @@ public class TabCollectionTabModelImplTest {
                                 tabGroupId.get(),
                                 "Other Title",
                                 TabGroupColorId.RED,
-                                /* isCollapsed= */ false,
-                                /* animate= */ false));
+                                /* isCollapsed= */ false));
 
         // The callback is called.
         onTabGroupVisualsChanged.waitForNext();

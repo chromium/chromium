@@ -224,16 +224,13 @@ void GlicTabObserverAndroid::TabRemoved(TabAndroid* tab) {
   callback_.Run(TabMutationEvent{});
 }
 
-void GlicTabObserverAndroid::DidMoveTab(TabAndroid* tab,
-                                        int new_index,
-                                        int old_index) {
+void GlicTabObserverAndroid::DidMoveTab(TabAndroid* tab) {
   ResetLastActiveTab(TabModelList::GetTabModelForTabAndroid(tab));
   callback_.Run(TabMutationEvent{});
 }
 
 void GlicTabObserverAndroid::OnTabClosePending(
-    const std::vector<TabAndroid*>& tabs,
-    TabModel::TabClosingSource source) {
+    const std::vector<TabAndroid*>& tabs) {
   for (auto* tab : tabs) {
     ResetLastActiveTab(TabModelList::GetTabModelForTabAndroid(tab));
   }

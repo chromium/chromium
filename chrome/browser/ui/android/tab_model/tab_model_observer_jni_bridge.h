@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
@@ -18,7 +17,6 @@
 
 class TabAndroid;
 class TabModel;
-class TabAndroid;
 
 namespace base {
 class Token;
@@ -39,8 +37,6 @@ class TabModelObserverJniBridge {
       delete;
 
   ~TabModelObserverJniBridge();
-
-  void Destroy(JNIEnv* env);
 
   // The following functions are called by JNI.
 
@@ -71,9 +67,7 @@ class TabModelObserverJniBridge {
 
   void DidMoveTab(JNIEnv* env, TabAndroid* tab, int new_index, int cur_index);
 
-  void OnTabClosePending(JNIEnv* env,
-                         const std::vector<TabAndroid*>& tabs,
-                         int source);
+  void OnTabClosePending(JNIEnv* env, const std::vector<TabAndroid*>& tabs);
 
   void TabClosureUndone(JNIEnv* env, TabAndroid* tab, int index);
 

@@ -26,8 +26,6 @@ class WebContents;
 class TabModelList {
  public:
   using TabModelVector = std::vector<raw_ptr<TabModel, VectorExperimental>>;
-  using iterator = TabModelVector::iterator;
-  using const_iterator = TabModelVector::const_iterator;
 
   TabModelList(const TabModelList& other) = delete;
   TabModelList& operator=(const TabModelList& other) = delete;

@@ -140,10 +140,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     public abstract @JniType("std::vector<TabAndroid*>") List<Tab> getOrderedMultiSelectedTabs();
 
-    @Override
-    @CalledByNative
-    public abstract @JniType("TabAndroid*") @Nullable Tab getTabById(int id);
-
     @CalledByNative
     public boolean hasTab(@JniType("TabAndroid*") @Nullable Tab tab) {
         if (tab == null) return false;
@@ -261,15 +257,13 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * Closes the Tab at a particular index.
      *
      * @param index Index of the tab to close.
-     * @return Whether the was successfully closed.
      */
     @CalledByNative
-    private boolean closeTabAt(int index) {
+    private void closeTabAt(int index) {
         Tab tab = getTabAt(index);
-        if (tab == null) return false;
+        if (tab == null) return;
 
         closeTab(tab);
-        return true;
     }
 
     /**
@@ -630,13 +624,20 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token createTabGroup(
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
+    /**
+     * Sets the visual data for the specified tab group.
+     *
+     * @param tabGroupId The ID of the tab group.
+     * @param title The title to assign to the tab group.
+     * @param colorId The {@link TabGroupColorId} to assign to the tab group.
+     * @param isCollapsed Whether the tab group is collapsed.
+     */
     @CalledByNative
     protected abstract void setTabGroupVisualData(
             @JniType("base::Token") Token tabGroupId,
             @JniType("std::u16string") String title,
             @TabGroupColorId int colorId,
-            boolean isCollapsed,
-            boolean animate);
+            boolean isCollapsed);
 
     @CalledByNative
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(

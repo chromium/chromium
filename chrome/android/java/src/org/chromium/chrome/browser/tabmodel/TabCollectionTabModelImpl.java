@@ -921,8 +921,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             @TabModelType int tabModelType) {
         super.initializeNative(activityType, customTabProfileType, tabModelType);
         assert mNativeTabCollectionTabModelImplPtr == 0;
-        mNativeTabCollectionTabModelImplPtr =
-                TabCollectionTabModelImplJni.get().init(this, getProfile());
+        mNativeTabCollectionTabModelImplPtr = TabCollectionTabModelImplJni.get().init(getProfile());
         invalidateCache();
     }
 
@@ -1072,12 +1071,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @Override
     protected void setTabGroupVisualData(
-            Token tabGroupId,
-            String title,
-            @TabGroupColorId int colorId,
-            boolean isCollapsed,
-            boolean animate) {
-        updateTabGroupVisualData(tabGroupId, title, colorId, isCollapsed, animate);
+            Token tabGroupId, String title, @TabGroupColorId int colorId, boolean isCollapsed) {
+        updateTabGroupVisualData(tabGroupId, title, colorId, isCollapsed, /* animate= */ false);
     }
 
     /**
@@ -2761,7 +2756,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
     @NativeMethods
     interface Natives {
-        long init(TabCollectionTabModelImpl javaObject, @JniType("Profile*") Profile profile);
+        long init(@JniType("Profile*") Profile profile);
 
         void destroy(long nativeTabCollectionTabModelImpl);
 

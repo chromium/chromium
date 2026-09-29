@@ -39,12 +39,10 @@ void TabModelObserver::OnTabCloseCommitted(
 void TabModelObserver::DidAddTab(TabAndroid* tab,
                                  TabModel::TabLaunchType type) {}
 
-void TabModelObserver::DidMoveTab(TabAndroid* tab,
-                                  int new_index,
-                                  int old_index) {}
+void TabModelObserver::DidMoveTab(TabAndroid* tab) {}
 
-void TabModelObserver::OnTabClosePending(const std::vector<TabAndroid*>& tabs,
-                                         TabModel::TabClosingSource source) {}
+void TabModelObserver::OnTabClosePending(const std::vector<TabAndroid*>& tabs) {
+}
 
 void TabModelObserver::TabClosureUndone(TabAndroid* tab) {}
 

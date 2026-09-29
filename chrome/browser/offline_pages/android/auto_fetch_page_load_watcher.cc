@@ -344,8 +344,7 @@ class AutoFetchPageLoadWatcher::TabWatcher : public TabModelListObserver,
   }
 
   // TabModelObserver.
-  void OnTabClosePending(const std::vector<TabAndroid*>& tabs,
-                         TabModel::TabClosingSource source) override {
+  void OnTabClosePending(const std::vector<TabAndroid*>& tabs) override {
     for (TabAndroid* tab : tabs) {
       impl_->TabClosed(tab->GetAndroidId());
     }

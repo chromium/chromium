@@ -121,8 +121,6 @@ class TabModelJniBridge : public TabModel {
   tabs::TabStripCollection* GetTabStripCollection(
       base::PassKey<tabs_api::AndroidTabStripModelAdapter>) override;
 
-  tabs::TabInterface* DuplicateTab(TabAndroid* tab);
-
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
   void ActivateTab(tabs::TabHandle tab) override;
@@ -178,15 +176,15 @@ class TabModelJniBridge : public TabModel {
   // Returns a corresponding Java Class object.
   static jclass GetClazz(JNIEnv* env);
 
-  static TabModel* GetArchivedTabModelPtr();
-
   static bool IsTabLaunchedInForeground(TabLaunchType type,
                                         bool is_new_tab_incognito,
                                         bool is_current_model_incognito);
 
   static TabModel* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
 
- protected:
+ private:
+  tabs::TabInterface* DuplicateTab(TabAndroid* tab);
+
   JavaObjectWeakGlobalRef java_object_;
 
   // The observer bridge. This exists as long as there are registered observers.
@@ -194,7 +192,6 @@ class TabModelJniBridge : public TabModel {
   // Java TabModelJniBridge.
   std::unique_ptr<TabModelObserverJniBridge> observer_bridge_;
 
-  bool is_archived_tab_model_;
   // Cannot use a conventional member variable because this is initialized after
   // the constructor.
   std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
@@ -206,14 +203,6 @@ template <>
 inline TabModel* FromJniType<TabModel*>(JNIEnv* env,
                                         const JavaRef<jobject>& j_tab_model) {
   return TabModelJniBridge::FromJavaObject(j_tab_model);
-}
-
-template <>
-inline TabModelJniBridge* FromJniType<TabModelJniBridge*>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_tab_model) {
-  return static_cast<TabModelJniBridge*>(
-      TabModelJniBridge::FromJavaObject(j_tab_model));
 }
 
 template <>

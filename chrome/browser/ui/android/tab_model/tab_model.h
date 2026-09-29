@@ -14,8 +14,6 @@
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/android_live_tab_context.h"
-#include "components/omnibox/browser/location_bar_model.h"
-#include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -356,8 +354,6 @@ class TabModel : public TabListInterface {
   // Instructs the TabModel to broadcast a notification that all tabs are now
   // loaded from storage.
   void BroadcastSessionRestoreComplete();
-
-  LocationBarModel* GetLocationBarModel();
 
   // Sets the `SessionID`.
   //

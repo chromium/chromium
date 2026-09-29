@@ -105,7 +105,7 @@ public class TabCollectionTabModelImplUnitTest {
                 .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
 
         TabCollectionTabModelImplJni.setInstanceForTesting(mTabCollectionTabModelImplJni);
-        when(mTabCollectionTabModelImplJni.init(any(), eq(mProfile)))
+        when(mTabCollectionTabModelImplJni.init(eq(mProfile)))
                 .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
 
         mTabs = new ArrayList<>();
@@ -502,7 +502,7 @@ public class TabCollectionTabModelImplUnitTest {
         // Mock a profile that is incognito.
         doReturn(true).when(mOtrProfile).isOffTheRecord();
         doReturn(true).when(mOtrProfile).isIncognitoBranded();
-        when(mTabCollectionTabModelImplJni.init(any(), eq(mOtrProfile)))
+        when(mTabCollectionTabModelImplJni.init(eq(mOtrProfile)))
                 .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
 
         TabCollectionTabModelImpl incognitoModel =

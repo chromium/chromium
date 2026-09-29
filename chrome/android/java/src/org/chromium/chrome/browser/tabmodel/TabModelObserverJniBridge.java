@@ -154,7 +154,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
             List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get()
-                .onTabClosePending(mNativeTabModelObserverJniBridge, tabs, closingSource);
+                .onTabClosePending(mNativeTabModelObserverJniBridge, tabs);
     }
 
     @Override
@@ -252,9 +252,6 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 .onTabGroupVisualsChanged(mNativeTabModelObserverJniBridge, groupId);
     }
 
-    @Override
-    public void restoreCompleted() {}
-
     /**
      * Creates an observer bridge for the given tab model. The native counterpart to this object
      * will hold a global reference to the Java endpoint and manage its lifetime. This is private as
@@ -348,8 +345,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
 
         void onTabClosePending(
                 long nativeTabModelObserverJniBridge,
-                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
-                int source);
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
 
         void allTabsClosureCommitted(long nativeTabModelObserverJniBridge);
 

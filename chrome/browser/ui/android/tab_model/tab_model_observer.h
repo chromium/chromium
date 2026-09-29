@@ -63,13 +63,12 @@ class TabModelObserver {
 
   // Called after a |tab| has been moved from one position in the TabModel to
   // another.
-  virtual void DidMoveTab(TabAndroid* tab, int new_index, int old_index);
+  virtual void DidMoveTab(TabAndroid* tab);
 
   // Called when tabs are pending closure (ie, the user has just closed it, but
   // it can still be undone). At this point the tabs have been removed from the
   // TabModel.
-  virtual void OnTabClosePending(const std::vector<TabAndroid*>& tabs,
-                                 TabModel::TabClosingSource source);
+  virtual void OnTabClosePending(const std::vector<TabAndroid*>& tabs);
 
   // Called when all |tabs| closure is undone.
   virtual void OnTabCloseUndone(const std::vector<TabAndroid*>& tabs);
