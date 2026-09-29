@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,16 +20,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/run_until.h"
-#include "base/test/test_future.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "components/value_store/test_value_store_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/fake_local_frame.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,6 +61,18 @@ class AlarmDelegate : public AlarmManager::Delegate {
   }
   std::vector<std::string> alarms_seen;
   base::OnceClosure quit_closure_;
+};
+
+// Counts the number of times each extension's alarms are written to storage.
+class AlarmsStorageWriteCounter : public StateStore::TestObserver {
+ public:
+  void WillSetExtensionValue(const ExtensionId& extension_id,
+                             const std::string& key) override {
+    if (key == "alarms") {
+      ++write_counts[extension_id];
+    }
+  }
+  std::map<ExtensionId, int> write_counts;
 };
 
 }  // namespace
@@ -946,6 +962,50 @@ TEST_F(ExtensionAlarmsSchedulingTest, PerExtensionLastPollTime) {
   EXPECT_EQ("ext2_alarm", alarm_delegate_->alarms_seen[1]);
   EXPECT_EQ(base::Time::UnixEpoch() + base::Milliseconds(10500),
             alarm_manager_->last_poll_times_[extension2->id()]);
+}
+
+// Test that a poll writes each extension's alarms to storage once, no matter
+// how many of its alarms fire.
+TEST_F(ExtensionAlarmsSchedulingTest, PollWritesToStorageOncePerExtension) {
+  test_clock_.SetNow(base::Time::UnixEpoch());
+
+  scoped_refptr<const Extension> extension1(extension_ref());
+  scoped_refptr<const Extension> extension2 = ExtensionBuilder("Test2").Build();
+  scoped_refptr<const Extension> extension3 = ExtensionBuilder("Test3").Build();
+
+  // Extension 1 has a repeating alarm, so its alarm list outlives the poll.
+  set_extension(extension1);
+  CreateAlarm("[\"a\", {\"when\": 10000}]");
+  CreateAlarm("[\"b\", {\"when\": 10000, \"periodInMinutes\": 1}]");
+  CreateAlarm("[\"c\", {\"when\": 10000}]");
+
+  // Extension 2 has only one-shot alarms, so its alarm list is removed.
+  set_extension(extension2);
+  CreateAlarm("[\"d\", {\"when\": 10000}]");
+  CreateAlarm("[\"e\", {\"when\": 10000}]");
+
+  // Extension 3 has only an alarm that has not elapsed by the poll.
+  set_extension(extension3);
+  CreateAlarm("[\"f\", {\"when\": 25000}]");
+
+  // Install the StateStore after the alarms are created, so that only the
+  // writes made by the poll are counted.
+  extension_system()->SetStateStore(std::make_unique<StateStore>(
+      browser_context(),
+      base::MakeRefCounted<value_store::TestValueStoreFactory>(),
+      StateStore::BackendType::STATE, /*deferred_load=*/false));
+  AlarmsStorageWriteCounter write_counter;
+  base::ScopedObservation<StateStore, StateStore::TestObserver>
+      write_observation(&write_counter);
+  write_observation.Observe(extension_system()->state_store());
+
+  test_clock_.Advance(base::Seconds(10));
+  alarm_manager_->PollAlarms();
+
+  EXPECT_EQ(5u, alarm_delegate_->alarms_seen.size());
+  EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
+  EXPECT_EQ(1, write_counter.write_counts[extension2->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
 }
 
 }  // namespace extensions

@@ -307,8 +307,7 @@ void AlarmManager::RemoveAlarmIterator(const AlarmIterator& iter) {
 void AlarmManager::OnAlarm(AlarmIterator it) {
   CHECK(it.first != alarms_.end());
   Alarm& alarm = *it.second;
-  ExtensionId extension_id_copy(it.first->first);
-  delegate_->OnAlarm(extension_id_copy, alarm);
+  delegate_->OnAlarm(it.first->first, alarm);
 
   // Update our scheduled time for the next alarm.
   if (alarm.js_alarm->period_in_minutes) {
@@ -329,7 +328,6 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
   } else {
     RemoveAlarmIterator(it);
   }
-  WriteToStorage(extension_id_copy);
 }
 
 void AlarmManager::AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm) {
@@ -444,6 +442,10 @@ void AlarmManager::PollAlarms() {
       continue;
     }
 
+    // Copy the ID, since firing the last alarm may erase `cur_extension`.
+    const ExtensionId extension_id = cur_extension->first;
+    bool alarm_fired = false;
+
     // Iterate (a) backwards so that removing elements doesn't affect
     // upcoming iterations, and (b) with indices so that if the last
     // iteration destroys the AlarmList, I'm not about to use the end
@@ -454,9 +456,16 @@ void AlarmManager::PollAlarms() {
           cur_alarm->js_alarm->scheduled_time);
 
       if (cur_alarm_time <= now) {
-        last_poll_times_[cur_extension->first] = now;
+        last_poll_times_[extension_id] = now;
         OnAlarm(make_pair(cur_extension, cur_alarm));
+        alarm_fired = true;
       }
+    }
+
+    // Persist the extension's alarms once, after all of its elapsed alarms
+    // have fired, rather than once per alarm.
+    if (alarm_fired) {
+      WriteToStorage(extension_id);
     }
   }
 

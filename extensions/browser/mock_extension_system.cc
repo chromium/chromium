@@ -4,7 +4,10 @@
 
 #include "extensions/browser/mock_extension_system.h"
 
+#include <utility>
+
 #include "components/value_store/value_store_factory.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 
@@ -18,6 +21,11 @@ MockExtensionSystem::~MockExtensionSystem() = default;
 
 void MockExtensionSystem::SetReady() {
   ready_.Signal();
+}
+
+void MockExtensionSystem::SetStateStore(
+    std::unique_ptr<StateStore> state_store) {
+  state_store_ = std::move(state_store);
 }
 
 void MockExtensionSystem::InitForRegularProfile(bool extensions_enabled) {}
@@ -39,7 +47,7 @@ UserScriptManager* MockExtensionSystem::user_script_manager() {
 }
 
 StateStore* MockExtensionSystem::state_store() {
-  return nullptr;
+  return state_store_.get();
 }
 
 StateStore* MockExtensionSystem::rules_store() {

@@ -154,6 +154,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
                            PerExtensionLastPollTime);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            PollFrequencyFromStoredAlarm);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
+                           PollWritesToStorageOncePerExtension);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsTest, OldPersistentAlarmFromStorage);
   friend class BrowserContextKeyedAPIFactory<AlarmManager>;
 
@@ -201,7 +203,8 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // must be valid.
   void RemoveAlarmIterator(const AlarmIterator& iter);
 
-  // Callback for when an alarm fires.
+  // Callback for when an alarm fires. Does not write to storage; the caller
+  // is responsible for calling WriteToStorage() afterwards.
   void OnAlarm(AlarmIterator iter);
 
   // Internal helper to add an alarm and start the timer with the given delay.
