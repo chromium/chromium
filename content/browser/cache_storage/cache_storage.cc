@@ -1327,7 +1327,9 @@ void CacheStorage::MatchAllCachesImpl(
   size_t idx = 0;
   for (const auto& cache_metadata : cache_index_->ordered_cache_metadata()) {
     CacheStorageCacheHandle cache_handle = GetLoadedCache(cache_metadata.name);
-    CHECK(cache_handle.value(), base::NotFatalUntil::M158);
+    // TODO(crbug.com/567223150): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(cache_handle.value());
 
     CacheStorageCache* cache_ptr = cache_handle.value();
     cache_ptr->Match(
