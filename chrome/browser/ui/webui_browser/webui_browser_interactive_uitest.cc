@@ -17,7 +17,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -31,8 +30,7 @@ class WebUIBrowserInteractiveTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWebium,
-                              features::kAttachUnownedInnerWebContents},
+        /*enabled_features=*/{features::kWebium},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
