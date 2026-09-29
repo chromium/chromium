@@ -87,7 +87,8 @@
   },
   "audio": {
     "dependencies": ["permission:audio"],
-    "contexts": ["privileged_extension"]
+    "contexts": ["privileged_extension"],
+    "platforms": ["chromeos"]
   },
   "automationInternal": {
     "internal": true,

@@ -96,14 +96,12 @@
     {
       "channel": "dev",
       "extension_types": ["platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"]
+      "platforms": ["chromeos"]
     },
     {
       "channel": "stable",
       "extension_types": ["platform_app"],
-      // "desktop_android" is not supported.
-      "platforms": ["chromeos", "linux", "mac", "win"],
+      "platforms": ["chromeos"],
       "allowlist": [
         "8C3741E3AF0B93B6E8E0DDD499BB0B74839EA578",
         "E703483CEF33DEC18B4B6DD84B5C776FB9182BDB",

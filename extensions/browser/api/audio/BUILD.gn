@@ -6,6 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
 
 source_set("audio") {
   sources = [
@@ -14,6 +15,7 @@ source_set("audio") {
     "audio_device_id_calculator.cc",
     "audio_device_id_calculator.h",
     "audio_service.h",
+    "audio_service_chromeos.cc",
     "pref_names.cc",
     "pref_names.h",
   ]
@@ -27,14 +29,8 @@ source_set("audio") {
   ]
 
   deps = [
+    "//chromeos/ash/components/audio",
     "//components/prefs",
     "//content/public/browser",
   ]
-
-  if (!is_chromeos) {
-    sources += [ "audio_service.cc" ]
-  } else {
-    sources += [ "audio_service_chromeos.cc" ]
-    deps += [ "//chromeos/ash/components/audio" ]
-  }
 }

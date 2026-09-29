@@ -425,9 +425,11 @@ source_set("impl") {
   if (enable_extensions) {
     deps += [
       "//chrome/browser/apps/platform_apps",
-      "//extensions/browser/api/audio",
       "//extensions/browser/api/runtime",
     ]
+    if (is_chromeos) {
+      deps += [ "//extensions/browser/api/audio" ]
+    }
   }
 
   if (enable_extensions_core) {
