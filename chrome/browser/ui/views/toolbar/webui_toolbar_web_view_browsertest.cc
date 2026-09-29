@@ -1515,8 +1515,11 @@ class WebUIToolbarWebViewRaceTest : public InProcessBrowserTest {
 // Regression test for crbug.com/478033216. Tests that an attempt to bind to
 // `TrackedElementHandler` while the window is being closed does not cause a
 // crash.
+// TODO(crbug.com/567216381): Flaky. The test doesn't wait for the toolbar's
+// initial navigation, so WebUIToolbarUI::Init() (which registers the
+// TrackedElementHandler config) may not have run before GetOrCreate().
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewRaceTest,
-                       BindInterfaceAfterCloseRace) {
+                       DISABLED_BindInterfaceAfterCloseRace) {
   // 1. Setup: Create a new browser window.
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   ui_test_utils::WaitForBrowserSetLastActive(new_browser);
