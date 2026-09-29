@@ -91,6 +91,15 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 equalTo(
                         mActivity.getString(
                                 R.string.autofill_churned_users_bubble_convenience_title)));
+        TextView descriptionView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_description);
+        assertThat(
+                descriptionView.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_convenience_description)));
     }
 
     @Test
@@ -109,6 +118,15 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                 equalTo(
                         mActivity.getString(
                                 R.string.autofill_churned_users_bubble_security_title)));
+        TextView descriptionView =
+                securityCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_description);
+        assertThat(
+                descriptionView.getText().toString(),
+                equalTo(
+                        mActivity.getString(
+                                R.string.autofill_churned_users_bubble_security_description)));
         securityCoordinator.destroy();
     }
 

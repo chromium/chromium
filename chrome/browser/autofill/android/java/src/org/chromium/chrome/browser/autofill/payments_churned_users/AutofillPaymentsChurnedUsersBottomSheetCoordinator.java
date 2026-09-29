@@ -44,6 +44,9 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
                         .with(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE,
                                 context.getString(getTitleResId(treatmentArm)))
+                        .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION,
+                                context.getString(getDescriptionResId(treatmentArm)))
                         .build();
 
         mMediator =
@@ -68,6 +71,23 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
             default:
                 assert false : "Unhandled treatment arm: " + treatmentArm;
                 return R.string.autofill_churned_users_bubble_security_title;
+        }
+    }
+
+    private static @StringRes int getDescriptionResId(
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
+        switch (treatmentArm) {
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
+                return R.string.autofill_churned_users_bubble_security_description;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
+                return R.string.autofill_churned_users_bubble_convenience_description;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
+            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
+            // rather than this bottom sheet, so the bottom sheet should never be created for
+            // this arm.
+            default:
+                assert false : "Unhandled treatment arm: " + treatmentArm;
+                return R.string.autofill_churned_users_bubble_security_description;
         }
     }
 

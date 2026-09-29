@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.autofill.R;
 /*package*/ class AutofillPaymentsChurnedUsersBottomSheetView {
     private final View mContentView;
     private final TextView mTitleText;
+    private final TextView mDescriptionText;
 
     AutofillPaymentsChurnedUsersBottomSheetView(Context context) {
         mContentView =
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.autofill.R;
                                 R.layout.autofill_payments_churned_users_bottom_sheet,
                                 /* root= */ null);
         mTitleText = mContentView.findViewById(R.id.payments_churned_users_title);
+        mDescriptionText = mContentView.findViewById(R.id.payments_churned_users_description);
     }
 
     View getContentView() {
@@ -33,5 +35,9 @@ import org.chromium.chrome.browser.autofill.R;
 
     TextView getTitleText() {
         return mTitleText;
+    }
+
+    TextView getDescriptionText() {
+        return mDescriptionText;
     }
 }

@@ -50,6 +50,10 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
         assertThat(mView.getContentView(), notNullValue());
         assertThat(mView.getTitleText(), notNullValue());
         assertThat(mView.getTitleText().getId(), equalTo(R.id.payments_churned_users_title));
+        assertThat(mView.getDescriptionText(), notNullValue());
+        assertThat(
+                mView.getDescriptionText().getId(),
+                equalTo(R.id.payments_churned_users_description));
     }
 
     @Test
@@ -60,6 +64,17 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
                         AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE, testTitle));
 
         assertThat(mView.getTitleText().getText().toString(), equalTo(testTitle));
+    }
+
+    @Test
+    public void testDescription() {
+        String testDescription = "Turn on autofill to safely check out online.";
+        bind(
+                mModelBuilder.with(
+                        AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION,
+                        testDescription));
+
+        assertThat(mView.getDescriptionText().getText().toString(), equalTo(testDescription));
     }
 
     private void bind(PropertyModel.Builder modelBuilder) {

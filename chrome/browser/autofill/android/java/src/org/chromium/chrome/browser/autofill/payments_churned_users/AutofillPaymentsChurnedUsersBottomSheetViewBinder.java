@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel;
             PropertyKey propertyKey) {
         if (propertyKey == TITLE) {
             view.getTitleText().setText(model.get(TITLE));
+        } else if (propertyKey == DESCRIPTION) {
+            view.getDescriptionText().setText(model.get(DESCRIPTION));
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }

@@ -13,8 +13,10 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 /*package*/ class AutofillPaymentsChurnedUsersBottomSheetProperties {
 
     static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>("title");
+    static final ReadableObjectPropertyKey<String> DESCRIPTION =
+            new ReadableObjectPropertyKey<>("description");
 
-    static final PropertyKey[] ALL_KEYS = {TITLE};
+    static final PropertyKey[] ALL_KEYS = {TITLE, DESCRIPTION};
 
     private AutofillPaymentsChurnedUsersBottomSheetProperties() {}
 }
