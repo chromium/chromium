@@ -244,23 +244,20 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   DCHECK(style.HasVisualOverflowingEffect());
+  const PhysicalRect border_box_rect = PhysicalBorderBoxRect();
 
   PhysicalBoxStrut outsets = style.BoxDecorationOutsets();
-
-  PhysicalRect border_rect(PhysicalOffset(), StitchedSize());
-  std::optional<BorderShapeReferenceRects> border_shape_rects;
-
   if (style.HasBorderShape()) {
-    border_shape_rects =
-        ComputeBorderShapeReferenceRects(border_rect, style, *this);
+    const std::optional<BorderShapeReferenceRects> border_shape_rects =
+        ComputeBorderShapeReferenceRects(border_box_rect, style, *this);
     const PhysicalRect outer_reference_rect =
-        border_shape_rects ? border_shape_rects->outer : border_rect;
+        border_shape_rects ? border_shape_rects->outer : border_box_rect;
     const PhysicalRect inner_reference_rect =
-        border_shape_rects ? border_shape_rects->inner : border_rect;
+        border_shape_rects ? border_shape_rects->inner : border_box_rect;
     // VisualOutsets() returns the complete border-shape overflow: both the
     // border path's visual extent and the precise box-shadow extent.
     outsets.Unite(BorderShapePainter::VisualOutsets(
-        style, border_rect, outer_reference_rect, inner_reference_rect));
+        style, border_box_rect, outer_reference_rect, inner_reference_rect));
   }
 
   if (style.HasOutline()) {
@@ -269,15 +266,15 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
         OutlineRects(&info, PhysicalOffset(),
                      style.OutlineRectsShouldIncludeBlockInkOverflow());
     PhysicalRect rect = UnionRect(outline_rects);
-    PhysicalSize size = StitchedSize();
-    bool outline_affected = rect.size != size;
+    bool outline_affected = rect.size != border_box_rect.size;
     SetOutlineMayBeAffectedByDescendants(outline_affected);
 
     if (!style.HasBorderShape() || style.OutlineStyleIsAuto()) {
       rect.Inflate(
           LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-      outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - size.width,
-                                     rect.Bottom() - size.height, -rect.X()));
+      outsets.Unite(PhysicalBoxStrut(
+          -rect.Y(), rect.Right() - border_box_rect.Width(),
+          rect.Bottom() - border_box_rect.Height(), -rect.X()));
     }
   }
 
