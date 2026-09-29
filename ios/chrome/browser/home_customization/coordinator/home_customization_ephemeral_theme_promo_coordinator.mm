@@ -8,6 +8,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_ephemeral_theme_promo_mediator.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_ephemeral_theme_promo_view_controller.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
@@ -115,7 +116,12 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [_mediator applyEphemeralTheme];
+  HomeBackgroundCustomizationService* backgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
+  if (!backgroundCustomizationService->GetCurrentCustomBackground() &&
+      !backgroundCustomizationService->GetCurrentColorTheme()) {
+    [_mediator applyEphemeralTheme];
+  }
   _openCustomizationMenuOnDismiss = YES;
   [self hidePromo];
 }
