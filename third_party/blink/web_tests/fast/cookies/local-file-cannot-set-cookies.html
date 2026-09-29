@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Local file cannot set cookies</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+// file:// cookies were disabled when the --enable-file-cookies flag was
+// removed. See crbug.com/40411059.
+test(() => {
+  assert_equals(location.protocol, 'file:',
+                'This test must be loaded from a file:// URL');
+  document.cookie = 'ppkcookie1=testcookie';
+  assert_false(document.cookie.includes('ppkcookie1=testcookie'),
+               'Writing document.cookie from a file:// page has no effect');
+}, 'A file:// document cannot set cookies');
+</script>

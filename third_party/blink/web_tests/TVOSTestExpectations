@@ -1992,7 +1992,6 @@ crbug.com/554992299 [ tvOS26-simulator ] fast/borders/border-radius-mask-video-s
 crbug.com/554992299 [ tvOS26-simulator ] fast/borders/border-radius-mask-video.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/canvas/downsample-quality.html [ Failure ]
-crbug.com/554992299 [ tvOS26-simulator ] fast/cookies/local-file-can-set-cookies.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/css-intrinsic-dimensions/width-avoid-floats.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/css/outline-narrowLine.html [ Failure ]
 crbug.com/554992299 [ tvOS26-simulator ] fast/css/outline-offset-large.html [ Failure ]
