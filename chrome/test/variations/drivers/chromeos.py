@@ -192,6 +192,24 @@ class CrOSDriverFactory(DriverFactory):
   def wait_for_screenshot(self):
     time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
 
+  def _collect_crash_logs(self):
+    if not (self.vm_started and self.device and self.device.remote):
+      return
+    session_folder = self.get_driver_session_folder(self.driver_session_counter)
+    remote_device = self.device.remote
+    logging.info('Collecting VM logs from remote device to %s.', session_folder)
+    try:
+      if remote_device.IfFileExists('/var/log/chrome'):
+        remote_device.CopyFromDevice(src='/var/log/chrome',
+                                      dest=session_folder,
+                                      mode='scp')
+      if remote_device.IfFileExists('/var/log/messages'):
+        remote_device.CopyFromDevice(src='/var/log/messages',
+                                      dest=session_folder,
+                                      mode='scp')
+    except Exception as e:
+      logging.warning('Failed to collect remote crash logs: %s', e)
+
   @contextmanager
   def _driver_context(
     self,
@@ -225,6 +243,10 @@ class CrOSDriverFactory(DriverFactory):
         driver = self.get_driver(options)
         self.wait_for_window(driver)
         yield driver
+    except WebDriverException:
+      logging.exception('WebDriver exception, collecting remote logs.')
+      self._collect_crash_logs()
+      raise
     finally:
       if driver:
         driver.quit()
