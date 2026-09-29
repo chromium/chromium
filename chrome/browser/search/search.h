@@ -57,8 +57,6 @@ bool IsSplitViewNewTabPage(const GURL& url);
 // Returns the New Tab page URL for the given |profile|.
 GURL GetNewTabPageURL(Profile* profile);
 
-#if !BUILDFLAG(IS_ANDROID)
-
 // Returns true if |url| should be rendered in the Instant renderer process.
 // Use this version for navigation URLs (before effective URL translation),
 // e.g. in GetEffectiveURL where the URL has not yet been converted to a
@@ -111,8 +109,6 @@ bool HandleNewTabURLRewrite(GURL* url,
 // Reverses the operation from HandleNewTabURLRewrite.
 bool HandleNewTabURLReverseRewrite(GURL* url,
                                    content::BrowserContext* browser_context);
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace search
 

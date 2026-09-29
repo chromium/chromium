@@ -9,10 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error "Instant is only used on desktop";
-#endif
-
 namespace content {
 class WebContents;
 }

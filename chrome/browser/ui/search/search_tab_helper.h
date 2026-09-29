@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service_observer.h"
-#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/search/search_ipc_router.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/ntp_logging_events.h"
@@ -24,8 +23,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error "Instant is only used on desktop";
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #endif
 
 namespace content {
@@ -48,8 +47,15 @@ class SkBitmap;
 class SearchTabHelper : public content::WebContentsObserver,
                         public content::WebContentsUserData<SearchTabHelper>,
                         public InstantServiceObserver,
-                        public SearchIPCRouter::Delegate,
-                        public OmniboxTabHelper::Observer {
+                        public SearchIPCRouter::Delegate
+// TODO(b/565031232): Support OmniboxTabHelper for SearchTabHelper on Android.
+// Right now, Android does not require it to get embeddedSearch API running
+// yet, but will be required to support certain APIs.
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                        public OmniboxTabHelper::Observer
+#endif
+{
  public:
   SearchTabHelper(const SearchTabHelper&) = delete;
   SearchTabHelper& operator=(const SearchTabHelper&) = delete;
@@ -93,12 +99,14 @@ class SearchTabHelper : public content::WebContentsObserver,
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Overridden from OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override;
   void OnOmniboxInputInProgress(bool in_progress) override {}
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
   void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
+#endif
 
   void OnBitmapFetched(int match_index,
                        const std::string& image_url,

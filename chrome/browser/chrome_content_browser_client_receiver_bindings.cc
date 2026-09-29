@@ -60,6 +60,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/widevine/cdm/buildflags.h"
+#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/plugins/plugin_observer_android.h"
@@ -106,7 +107,6 @@
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/password_manager/remote_actor/remote_actor_credential_sharing_impl.h"
 #include "chrome/browser/record_replay/chrome_record_replay_client.h"
-#include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing_policy.h"
@@ -139,6 +139,10 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
+#endif
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/browser/ui/search/search_tab_helper.h"
 #endif
 
 namespace {
@@ -613,7 +617,7 @@ void ChromeContentBrowserClient::
         &render_frame_host));
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   associated_registry.AddInterface<search::mojom::EmbeddedSearchConnector>(
       base::BindRepeating(
           [](content::RenderFrameHost* render_frame_host,
@@ -623,7 +627,7 @@ void ChromeContentBrowserClient::
                                                          render_frame_host);
           },
           &render_frame_host));
-#endif  //  !BUILDFLAG(IS_ANDROID)
+#endif
 #if BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
       base::BindRepeating(

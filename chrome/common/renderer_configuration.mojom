@@ -47,7 +47,6 @@ struct DynamicParams {
 
 // The renderer configuration parameters are set during the process lock update
 // and remain unchanged afterward.
-[EnableIfNot=is_android]
 struct StaticParams {
     bool is_instant_process = false;
 };
@@ -114,6 +113,5 @@ interface RendererConfiguration {
 
   // Update the renderer configuration with settings that won't
   // change after being set.
-  [EnableIfNot=is_android]
   SetConfigurationOnProcessLockUpdate(StaticParams params);
 };

@@ -34,6 +34,7 @@ source_set("impl") {
     "//components/ntp_tiles",
     "//content/public/browser",
     "//services/data_decoder/public/cpp",
+    "//ui/webui:buildflags",
   ]
 
   if (is_android) {

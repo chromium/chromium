@@ -25,16 +25,7 @@
 #include "chrome/browser/search/instant_service_observer.h"
 #include "chrome/browser/search/most_visited_iframe_source.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/common/search/search.mojom.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/tile_type.h"
@@ -47,11 +38,23 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/url_data_source.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/grit/theme_resources.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#endif
 
 InstantService::InstantService(Profile* profile)
     : profile_(profile),
@@ -72,6 +75,7 @@ InstantService::InstantService(Profile* profile)
         this, ntp_tiles::kMaxNumMostVisited);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Listen for theme installation.
   ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
 
@@ -81,6 +85,7 @@ InstantService::InstantService(Profile* profile)
   // used and then the following can be removed.
   content::URLDataSource::Add(profile_,
                               std::make_unique<ThemeSource>(profile_));
+#endif
 
   // Set up the data sources that Instant uses on the NTP.
   content::URLDataSource::Add(
@@ -120,10 +125,12 @@ void InstantService::OnNewTabPageOpened() {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void InstantService::OnThemeChanged() {
   theme_ = nullptr;
   UpdateNtpTheme();
 }
+#endif
 
 void InstantService::DeleteMostVisitedItem(const GURL& url) {
   if (most_visited_sites_) {
@@ -166,7 +173,9 @@ void InstantService::Shutdown() {
     most_visited_sites_.reset();
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
+#endif
 }
 
 void InstantService::RenderProcessHostDestroyed(
@@ -221,12 +230,14 @@ void InstantService::BuildNtpTheme() {
   // Get theme information from theme service.
   theme_ = std::make_unique<NtpTheme>();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Get if the current theme is the default theme.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   theme_->using_default_theme = theme_service->UsingDefaultTheme();
 
   SetNtpElementsNtpTheme();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (theme_service->UsingExtensionTheme()) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)
@@ -281,6 +292,10 @@ void InstantService::BuildNtpTheme() {
       }
     }
   }
+#endif
+#else
+  theme_->using_default_theme = true;
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -303,9 +318,11 @@ bool InstantService::ShouldServiceRequest(
 }
 
 void InstantService::SetNtpElementsNtpTheme() {
+#if !BUILDFLAG(IS_ANDROID)
   NtpTheme* theme = GetInitializedNtpTheme();
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile_);
   theme->logo_alternate = theme_provider.GetDisplayProperty(
                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
+#endif
 }

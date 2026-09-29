@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -16,6 +17,7 @@ source_set("search") {
   public_deps = []
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
@@ -29,6 +31,7 @@ source_set("search") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:buildflags",
     "//content/public/browser",
+    "//ui/webui:buildflags",
     "//url",
   ]
   if (is_android) {
@@ -38,10 +41,8 @@ source_set("search") {
     ]
     public_deps += [ "//components/policy/core/browser" ]
     deps += [ "//components/prefs" ]
-    if (enable_webui_ntp) {
-      public_deps += [ "//chrome/browser/ui/webui/new_tab_page" ]
-    }
-  } else {
+  }
+  if (enable_webui_ntp) {
     sources += [
       "instant_service.cc",
       "instant_service.h",
@@ -59,7 +60,6 @@ source_set("search") {
       "//chrome/browser/ntp_tiles",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/webui/new_tab_page",
-      "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/common",
       "//components/history/core/browser",
       "//components/keyed_service/core",
@@ -86,13 +86,26 @@ source_set("search") {
       "//components/policy:policy_code_generate",
       "//components/policy/core/common",
       "//components/sync_preferences",
-      "//extensions/browser",
-      "//extensions/common",
       "//mojo/public/cpp/bindings",
       "//ui/base",
       "//ui/gfx:color_utils",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     ]
+    if (enable_extensions_core) {
+      deps += [
+        "//extensions/browser",
+        "//extensions/common",
+      ]
+    }
+
+    # TODO(b/562623656, b/559771711): Support ThemeService and Fallback 3P
+    # WebUI NTP for Desktop Android.
+    if (!is_android) {
+      public_deps += [
+        "//chrome/browser/themes",
+        "//chrome/browser/ui/webui/new_tab_page_third_party",
+      ]
+    }
 
     # InstantService constructs ThemeSource while theme_source.cc includes
     # instant_service.h (InstantService::ShouldServiceRequest) — a genuine

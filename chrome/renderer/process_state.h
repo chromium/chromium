@@ -22,13 +22,11 @@ void SetIsIncognitoProcess(bool is_incognito_process);
 // as an instant process.
 bool IsInstantProcess();
 
-#if !BUILDFLAG(IS_ANDROID)
 // Sets whether this renderer process is an instant process. This
 // value is only used when kInstantUsesSpareRenderer feature is
 // enabled; otherwise instant process status is determined by
 // cmdline switches.
 void SetIsInstantProcess(bool is_instant_process);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace process_state
 

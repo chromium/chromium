@@ -225,7 +225,6 @@ void ChromeRenderThreadObserver::SetConfiguration(
   dynamic_params_ = std::move(params);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeRenderThreadObserver::SetConfigurationOnProcessLockUpdate(
     chrome::mojom::StaticParamsPtr params) {
   // Ensure static renderer configuration parameters are set once.
@@ -233,7 +232,6 @@ void ChromeRenderThreadObserver::SetConfigurationOnProcessLockUpdate(
   static_renderer_params_set_ = true;
   process_state::SetIsInstantProcess(params->is_instant_process);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ChromeRenderThreadObserver::OnRendererConfigurationAssociatedRequest(
     mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>

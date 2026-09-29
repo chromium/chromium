@@ -7,11 +7,21 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "components/search/search.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
 
 // static
 InstantService* InstantServiceFactory::GetForProfile(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  // Unlike Desktop platforms, InstantService is not supported by default on
+  // Android devices unless it is explicitly enabled.
+  if (!search::IsInstantExtendedAPIEnabled()) {
+    return nullptr;
+  }
+#endif
   DCHECK(search::IsInstantExtendedAPIEnabled());
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
               "InstantServiceFactory::GetForProfile");
@@ -37,7 +47,10 @@ InstantServiceFactory::InstantServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
+  // TODO(b/562623656): Support ThemeService for on Desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(ThemeServiceFactory::GetInstance());
+#endif
 }
 
 InstantServiceFactory::~InstantServiceFactory() = default;

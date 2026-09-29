@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ntp_tiles/most_visited_sites.h"
@@ -30,8 +29,8 @@
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#error "Instant is only used on desktop";
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service_observer.h"
 #endif
 
 class InstantServiceObserver;
@@ -56,8 +55,13 @@ class RenderProcessHost;
 class InstantService : public KeyedService,
                        public content::RenderProcessHostObserver,
                        public ntp_tiles::MostVisitedSites::Observer,
-                       public ui::NativeThemeObserver,
-                       public ThemeServiceObserver {
+                       public ui::NativeThemeObserver
+// TODO(b/562623656): Support ThemeService for on Desktop Android.
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                       public ThemeServiceObserver
+#endif
+{
  public:
   explicit InstantService(Profile* profile);
 
@@ -91,8 +95,10 @@ class InstantService : public KeyedService,
   // items.
   void OnNewTabPageOpened();
 
+#if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver implementation.
   void OnThemeChanged() override;
+#endif
 
   // Most visited item APIs.
   //

@@ -458,6 +458,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/switches.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -583,8 +584,6 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -816,6 +815,11 @@
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/40147906
+#endif
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/instant_service_factory.h"
 #endif
 
 #include "base/win/windows_h_disallowed.h"
@@ -1167,7 +1171,7 @@ GetNoStatePrefetchCanceler(
   return canceler;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
 GetRendererConfiguration(content::RenderProcessHost* render_process_host) {
   IPC::ChannelProxy* channel = render_process_host->GetChannel();
@@ -1176,7 +1180,7 @@ GetRendererConfiguration(content::RenderProcessHost* render_process_host) {
   channel->GetRemoteAssociatedInterface(&renderer_configuration);
   return renderer_configuration;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 bool ShouldHonorPolicies() {
   bool management_check_required = false;
@@ -1896,7 +1900,7 @@ std::optional<GURL> ChromeContentBrowserClient::GetEffectiveURL(
     return std::nullopt;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // If the input |url| should be assigned to the Instant renderer, make its
   // effective URL distinct from other URLs on the search provider's domain.
   // This needs to happen even if |url| corresponds to an isolated origin; see
@@ -1922,7 +1926,7 @@ std::optional<GURL> ChromeContentBrowserClient::GetEffectiveURL(
 void ChromeContentBrowserClient::OnRendererProcessLockedStateUpdated(
     content::RenderProcessHost* host,
     const GURL& site_url) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // If the feature `kInstantUsesSpareRenderer` is not enabled, we continue
   // relying on the `kInstantProcess` command line switch to handle instant
   // process related logic.
@@ -1944,7 +1948,7 @@ void ChromeContentBrowserClient::OnRendererProcessLockedStateUpdated(
   auto renderer_configuration = GetRendererConfiguration(host);
   renderer_configuration->SetConfigurationOnProcessLockUpdate(
       std::move(params));
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 }
 
 bool ChromeContentBrowserClient::
@@ -1989,7 +1993,7 @@ bool ChromeContentBrowserClient::ShouldUseProcessPerSite(
     }
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   if (search::ShouldUseProcessPerSiteForSecurityPrincipal(security_principal,
                                                           profile)) {
     return true;
@@ -2060,7 +2064,7 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
     return false;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Instant renderers passed by command line should not use a spare process,
   // because they require passing switches::kInstantProcess to the renderer
   // process when it launches. A spare process is launched earlier, before
@@ -2452,7 +2456,7 @@ bool ChromeContentBrowserClient::IsSuitableHost(
     return true;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Instant URLs should only be in the instant process and instant process
   // should only have Instant URLs.
   InstantService* instant_service =
@@ -2591,7 +2595,7 @@ void ChromeContentBrowserClient::SiteInstanceGotProcessAndSite(
                                              std::make_unique<NTPUserData>());
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Remember the ID of the Instant process to signal the renderer process
   // on startup in |AppendExtraCommandLineSwitches| below.
   if (search::ShouldAssignSecurityPrincipalToInstantRenderer(
@@ -3108,7 +3112,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kNtpProcess);
       }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
       if (instant_service &&
@@ -3116,7 +3120,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
           !base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
         command_line->AppendSwitch(switches::kInstantProcess);
       }
-
+#endif
+#if !BUILDFLAG(IS_ANDROID)
       // Enable SharedArrayBuffer on desktop if allowed by Enterprise Policy.
       // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is
       // complete.
@@ -6624,10 +6629,9 @@ void AddChromeSchemeFactories(
     content::WebContents* web_contents,
     const extensions::Extension* extension,
     ChromeContentBrowserClient::NonNetworkURLLoaderFactoryMap* factories) {
-  // Android does not support instant.
-#if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(profile);
   // The test below matches when a remote 3P NTP is loaded. The effective
@@ -6643,7 +6647,7 @@ void AddChromeSchemeFactories(
                            frame_host, chrome::kChromeSearchScheme,
                            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
   extensions::ExtensionWebContentsObserver* web_observer =
       extensions::ExtensionWebContentsObserver::GetForWebContents(web_contents);

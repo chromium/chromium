@@ -17,6 +17,7 @@ import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
 
 assert(enable_supervised_users)
 
@@ -151,6 +152,7 @@ static_library("renderer") {
     "//components/content_settings/renderer",
     "//components/continuous_search/renderer",
     "//components/country_codes",
+    "//components/crx_file",
     "//components/dom_distiller/content/renderer",
     "//components/facilitated_payments/content/renderer",
     "//components/facilitated_payments/core/features",
@@ -236,6 +238,7 @@ static_library("renderer") {
     "//third_party/re2",
     "//third_party/widevine/cdm:buildflags",
     "//ui/gfx/geometry",
+    "//ui/webui:buildflags",
     "//v8",
   ]
 
@@ -385,16 +388,11 @@ static_library("renderer") {
       "media/chrome_speech_recognition_client.h",
       "password_manager/remote_actor_credential_sharing_extension.cc",
       "password_manager/remote_actor_credential_sharing_extension.h",
-      "searchbox/searchbox.cc",
-      "searchbox/searchbox.h",
-      "searchbox/searchbox_extension.cc",
-      "searchbox/searchbox_extension.h",
     ]
 
     deps += [
       "//chrome/common/read_anything:mojo_bindings",
       "//chrome/renderer/webui_browser",
-      "//components/crx_file",
       "//components/record_replay/content/renderer",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",
@@ -431,6 +429,15 @@ static_library("renderer") {
       "indigo/indigo_agent.h",
       "indigo/onboarding_agent.cc",
       "indigo/onboarding_agent.h",
+    ]
+  }
+
+  if (enable_webui_ntp) {
+    sources += [
+      "searchbox/searchbox.cc",
+      "searchbox/searchbox.h",
+      "searchbox/searchbox_extension.cc",
+      "searchbox/searchbox_extension.h",
     ]
   }
 }

@@ -26,23 +26,21 @@
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "ui/webui/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#endif
-
 namespace {
 
 bool ShouldCreateCustomLinksManager() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  return true;
+#else
   return base::FeatureList::IsEnabled(
       chrome::android::kMostVisitedTilesCustomization);
-#else
-  return true;
 #endif
 }
 

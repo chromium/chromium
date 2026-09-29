@@ -1423,6 +1423,7 @@ source_set("tab_helpers_impl") {
     "//pdf:buildflags",
     "//printing/buildflags",
     "//ui/accessibility:ax_base",
+    "//ui/webui:buildflags",
   ]
 
   if (is_android) {
@@ -1443,11 +1444,14 @@ source_set("tab_helpers_impl") {
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/read_anything",
-      "//chrome/browser/ui/search",
       "//components/image_fetcher/core",
       "//components/omnibox/browser",
       "//components/web_modal",
     ]
+  }
+
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/ui/search" ]
   }
 
   if (is_chromeos) {
@@ -1802,6 +1806,7 @@ static_library("ui") {
     "//components/qr_code_generator:bitmap_generator",
     "//components/resources",
     "//components/safe_browsing/content/browser",
+    "//components/search",
     "//components/search_engines",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/signin/public/identity_manager",
@@ -1844,6 +1849,7 @@ static_library("ui") {
     "//ui/shell_dialogs",
     "//ui/strings",
     "//ui/webui",
+    "//ui/webui:buildflags",
   ]
 
   allow_circular_includes_from = [

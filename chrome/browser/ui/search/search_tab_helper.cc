@@ -12,36 +12,18 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/location_bar/location_bar.h"
-#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/search/search_ipc_router_policy_impl.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/common/url_constants.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/google/core/common/google_util.h"
 #include "components/navigation_metrics/navigation_metrics.h"
-#include "components/profile_metrics/browser_profile_type.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
-#include "components/search_engines/template_url_service.h"
-#include "components/sessions/content/session_tab_helper.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/user_selectable_type.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -51,12 +33,14 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
-#include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/search/omnibox_utils.h"
+#endif
 
 namespace {
 
@@ -123,17 +107,21 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
     instant_service_->AddObserver(this);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   OmniboxTabHelper::CreateForWebContents(web_contents, profile());
   OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
+#endif
 }
 
 SearchTabHelper::~SearchTabHelper() {
   if (instant_service_) {
     instant_service_->RemoveObserver(this);
   }
+#if !BUILDFLAG(IS_ANDROID)
   if (auto* helper = OmniboxTabHelper::FromWebContents(&GetWebContents())) {
     helper->RemoveObserver(this);
   }
+#endif
 }
 
 void SearchTabHelper::BindEmbeddedSearchConnecter(
@@ -244,7 +232,9 @@ void SearchTabHelper::MostVisitedInfoChanged(
 }
 
 void SearchTabHelper::FocusOmnibox(bool focus) {
+#if !BUILDFLAG(IS_ANDROID)
   search::FocusOmnibox(focus, web_contents());
+#endif
 }
 
 void SearchTabHelper::OnDeleteMostVisitedItem(const GURL& url) {
@@ -267,6 +257,7 @@ void SearchTabHelper::OnUndoAllMostVisitedDeletions() {
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void SearchTabHelper::OnOmniboxInputStateChanged() {
   ipc_router_.SetInputInProgress(IsInputInProgress());
 }
@@ -282,13 +273,18 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
     ipc_router_.SetInputInProgress(IsInputInProgress());
   }
 }
+#endif
 
 Profile* SearchTabHelper::profile() const {
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 }
 
 bool SearchTabHelper::IsInputInProgress() const {
+#if !BUILDFLAG(IS_ANDROID)
   return search::IsOmniboxInputInProgress(web_contents());
+#else
+  return false;
+#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchTabHelper);
