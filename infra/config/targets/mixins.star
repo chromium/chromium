@@ -1445,7 +1445,7 @@ targets.mixin(
             "os": "Mac-26",
         },
         optional_dimensions = {
-            30: {
+            180: {
                 "cpu": "Apple_(Virtual)",
             },
         },
