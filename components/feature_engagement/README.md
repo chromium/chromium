@@ -460,7 +460,7 @@ it:
 *   Use a command line flag to manually enable the feature, e.g.:
 
     ```sh
-    chrome --enable-features=IPH_GoatTeleportationFeature
+    chrome --enable-features=IPH_GoatTeleportation
     ```
 
 *   Use a field trial configuration to enable the feature, either using a
@@ -520,7 +520,7 @@ something like this:
             "event_used": "name:goat_teleportation_used;comparator:any;window:0;storage:360",
             "event_1": "name:related_fun_thing_happened;comparator:>=1;window:360;storage:360"
           },
-          "enable_features": ["IPH_GoatTeleportationFeature"],
+          "enable_features": ["IPH_GoatTeleportation"],
           "disable_features": []
         }
       ]
@@ -578,8 +578,8 @@ How to select a feature or features is described below.
 1.  Go to chrome://flags
 2.  Find “In-Product Help Demo Mode” (#in-product-help-demo-mode-choice)
 3.  Select the feature you want with the "Enabled " prefix, for example for
-    `IPH_GoatTeleportationFeature` you would select:
-    *   Enabled IPH_GoatTeleportationFeature
+    `kIPHGoatTeleportationFeature` you would select:
+    *   Enabled IPH_GoatTeleportation
 4.  Restart Chrome
 
 
@@ -1155,9 +1155,9 @@ switch:
 
  * `chrome --propagate-iph-for-testing`
    - disables all IPH
- * `chrome --propagate-iph-for-testing=IPH_GoatTeleportationFeature,IPH_FlyingCowFeature`
-   - disables all IPH except for "IPH_GoatTeleportationFeature" and
-   "IPH_FlyingCowFeature".
+ * `chrome --propagate-iph-for-testing=IPH_GoatTeleportation,IPH_FlyingCow`
+   - disables all IPH except for "IPH_GoatTeleportation" and
+   "IPH_FlyingCow".
 
 ## Development of `//components/feature_engagement`
 
