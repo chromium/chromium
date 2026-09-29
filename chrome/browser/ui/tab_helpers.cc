@@ -31,7 +31,6 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
 #include "chrome/browser/history/history_tab_helper.h"
-#include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
@@ -91,8 +90,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
-#include "components/history/content/browser/web_contents_top_sites_observer.h"
-#include "components/history/core/browser/top_sites.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
@@ -368,8 +365,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   FileSystemAccessPermissionRequestManager::CreateForWebContents(web_contents);
   FileSystemAccessTabHelper::CreateForWebContents(web_contents);
   FindBarState::ConfigureWebContents(web_contents);
-  history::WebContentsTopSitesObserver::CreateForWebContents(
-      web_contents, TopSitesFactory::GetForProfile(profile).get());
   if (!profile->IsOffTheRecord()) {
     auto* history_tab_helper =
         HistoryTabHelper::GetOrCreateForWebContents(web_contents);

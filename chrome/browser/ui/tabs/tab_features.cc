@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/suggestions/contextual_cueing_helper.h"
 #include "chrome/browser/glic/suggestions/glic_cue_tab_state.h"
 #include "chrome/browser/glic/suggestions/glic_cue_target.h"
+#include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
@@ -146,6 +147,8 @@
 #include "components/download/content/public/download_navigation_observer.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
 #include "components/enterprise/net/content/enterprise_proxy_tab_helper.h"
+#include "components/history/content/browser/web_contents_top_sites_observer.h"
+#include "components/history/core/browser/top_sites.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/payments/core/features.h"
 #include "components/skills/features.h"
@@ -946,6 +949,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       std::make_unique<download::DownloadNavigationObserver>(
           tab.GetContents(), download::NavigationMonitorFactory::GetForKey(
                                  profile->GetProfileKey()));
+
+  web_contents_top_sites_observer_ =
+      std::make_unique<history::WebContentsTopSitesObserver>(
+          tab.GetContents(), TopSitesFactory::GetForProfile(profile).get());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1295,6 +1302,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       std::make_unique<download::DownloadNavigationObserver>(
           new_contents, download::NavigationMonitorFactory::GetForKey(
                             profile->GetProfileKey()));
+
+  web_contents_top_sites_observer_ =
+      std::make_unique<history::WebContentsTopSitesObserver>(
+          new_contents, TopSitesFactory::GetForProfile(profile).get());
 }
 
 customize_chrome::SidePanelController*

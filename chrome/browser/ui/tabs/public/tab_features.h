@@ -192,6 +192,10 @@ class SelectionOverlayController;
 class GlicPageFeaturesManager;
 }  // namespace glic
 
+namespace history {
+class WebContentsTopSitesObserver;
+}  // namespace history
+
 namespace memory_saver {
 class MemorySaverChipController;
 }  // namespace memory_saver
@@ -907,6 +911,9 @@ class TabFeatures {
 
   std::unique_ptr<download::DownloadNavigationObserver>
       download_navigation_observer_;
+
+  std::unique_ptr<history::WebContentsTopSitesObserver>
+      web_contents_top_sites_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

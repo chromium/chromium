@@ -15,12 +15,9 @@ namespace history {
 WebContentsTopSitesObserver::WebContentsTopSitesObserver(
     content::WebContents* web_contents,
     TopSites* top_sites)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WebContentsTopSitesObserver>(*web_contents),
-      top_sites_(top_sites) {}
+    : content::WebContentsObserver(web_contents), top_sites_(top_sites) {}
 
-WebContentsTopSitesObserver::~WebContentsTopSitesObserver() {
-}
+WebContentsTopSitesObserver::~WebContentsTopSitesObserver() = default;
 
 void WebContentsTopSitesObserver::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
@@ -34,7 +31,5 @@ void WebContentsTopSitesObserver::NavigationEntryCommitted(
     top_sites_->OnNavigationCommitted(load_details.entry->GetVirtualURL());
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsTopSitesObserver);
 
 }  // namespace history

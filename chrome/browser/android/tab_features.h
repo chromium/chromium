@@ -71,6 +71,10 @@ class GlicMarketingPageTabHelper;
 class GlicSidePanelCoordinator;
 }  // namespace glic
 
+namespace history {
+class WebContentsTopSitesObserver;
+}  // namespace history
+
 namespace offline_pages {
 class AutoFetchNavigationObserver;
 }  // namespace offline_pages
@@ -253,6 +257,8 @@ class TabFeatures {
   std::unique_ptr<HistoryEmbeddingsTabHelper> history_embeddings_tab_helper_;
   std::unique_ptr<download::DownloadNavigationObserver>
       download_navigation_observer_;
+  std::unique_ptr<history::WebContentsTopSitesObserver>
+      web_contents_top_sites_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
