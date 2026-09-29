@@ -140,6 +140,9 @@ DataTransfer* CreateBeforeInputDataTransfer(
 
 bool ClipboardCommands::CanReadClipboard(LocalFrame& frame,
                                          EditorCommandSource source) {
+  if (frame.GetDocument() && frame.GetDocument()->IsPrerendering()) {
+    return false;
+  }
   if (source == EditorCommandSource::kMenuOrKeyBinding)
     return true;
   Settings* const settings = frame.GetSettings();
@@ -153,6 +156,9 @@ bool ClipboardCommands::CanReadClipboard(LocalFrame& frame,
 
 bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
                                           EditorCommandSource source) {
+  if (frame.GetDocument() && frame.GetDocument()->IsPrerendering()) {
+    return false;
+  }
   if (source == EditorCommandSource::kMenuOrKeyBinding)
     return true;
   Settings* const settings = frame.GetSettings();
