@@ -180,8 +180,11 @@ class PaymentsFormDataImporter {
   //   `candidate`, if one exists.
   // - If `candidate` compares with a masked server card, this function returns
   //   an existing masked server card which has the same last four digits and
-  //   the same expiration date as `candidate`, if one exists.
-  // additionally, set `credit_card_import_type_` set to `kServerCard`.
+  //   the same expiration date as `candidate`, if one exists, with the
+  //   user-entered CVC and valid cardholder name (if missing on the server
+  //   card) copied from `candidate`, and sets `credit_card_import_type_` to
+  //   `kServerCard` (or `kDuplicateLocalServerCard` if a local card was also
+  //   extracted).
   // Or returns the `candidate`:
   // - If there is no matching existing server card.
   // or returns nullopt:

@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -496,10 +497,21 @@ PaymentsFormDataImporter::TryMatchingExistingServerCard(
           AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED);
 
       // Return that we found a masked server card with matching last four
-      // digits and copy over the user entered CVC so that future processing
-      // logic check if CVC upload save should be offered.
+      // digits and copy over the user entered CVC and cardholder name (if
+      // missing on the server card) so that future processing logic can check
+      // if CVC upload save or cardholder name fix flow should be offered.
       CreditCard server_card_with_cvc = *server_card;
       server_card_with_cvc.set_cvc(candidate.cvc());
+      if (!server_card->HasNameOnCard() && candidate.HasNameOnCard()) {
+        std::u16string candidate_name =
+            candidate.GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale());
+        if (IsValidNameOnCard(candidate_name) &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableCardholderNameFixFlow)) {
+          server_card_with_cvc.SetInfo(CREDIT_CARD_NAME_FULL, candidate_name,
+                                       client_->GetAppLocale());
+        }
+      }
 
       // If `credit_card_import_type_` was local card, then a local card was
       // extracted from the form. If a server card is now also extracted from

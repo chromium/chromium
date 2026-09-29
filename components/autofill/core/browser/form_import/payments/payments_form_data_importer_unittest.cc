@@ -1439,6 +1439,107 @@ TEST_F(PaymentsFormDataImporterTest, DuplicateMaskedServerCard) {
   ASSERT_TRUE(extracted_data.extracted_credit_card);
 }
 
+// Tests that when an extracted card matches an existing masked server card that
+// is missing a cardholder name, the valid cardholder name extracted from the
+// form is copied onto the returned card while the stored server card remains
+// unchanged.
+TEST_F(PaymentsFormDataImporterTest,
+       DuplicateMaskedServerCard_MissingCardholderName_CopiesValidName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableCardholderNameFixFlow);
+
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&server_card, /*name_on_card=*/"", "1881" /* Visa */,
+                          "01", "2999", "");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  payments_data_manager().AddServerCreditCard(server_card);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(CreateFullCreditCardForm(
+          "John Dillinger", "4012888888881881", "01", "2999"));
+  std::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(*form_structure);
+  ASSERT_TRUE(extracted_credit_card);
+  EXPECT_EQ(extracted_credit_card->record_type(),
+            CreditCard::RecordType::kMaskedServerCard);
+  EXPECT_EQ(extracted_credit_card->GetInfo(CREDIT_CARD_NAME_FULL, kLocale),
+            u"John Dillinger");
+  EXPECT_FALSE(payments_data_manager().GetCreditCards()[0]->HasNameOnCard());
+}
+
+// Tests that when an extracted card matches an existing masked server card that
+// already has a cardholder name, the existing name is preserved and not
+// overwritten by a different name from the form.
+TEST_F(PaymentsFormDataImporterTest,
+       DuplicateMaskedServerCard_ExistingCardholderName_DoesNotOverwrite) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableCardholderNameFixFlow);
+
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&server_card, "Clyde Barrow", "1881" /* Visa */, "01",
+                          "2999", "");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  payments_data_manager().AddServerCreditCard(server_card);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(CreateFullCreditCardForm(
+          "John Dillinger", "4012888888881881", "01", "2999"));
+  std::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(*form_structure);
+  ASSERT_TRUE(extracted_credit_card);
+  EXPECT_EQ(extracted_credit_card->GetInfo(CREDIT_CARD_NAME_FULL, kLocale),
+            u"Clyde Barrow");
+}
+
+// Tests that an invalid cardholder name (e.g. containing digits, prohibited
+// punctuation, or exceeding 26 characters) is not copied onto a matched server
+// card that is missing a cardholder name.
+TEST_F(PaymentsFormDataImporterTest,
+       DuplicateMaskedServerCard_MissingCardholderName_IgnoresInvalidName) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableCardholderNameFixFlow);
+
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&server_card, /*name_on_card=*/"", "1881" /* Visa */,
+                          "01", "2999", "");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  payments_data_manager().AddServerCreditCard(server_card);
+
+  for (const char* invalid_name :
+       {"John 123", "John@Doe", "ABCDEFGHIJKLMNOPQRSTUVWXYZ!"}) {
+    std::unique_ptr<FormStructure> form_structure =
+        ConstructFormStructureFromFormData(CreateFullCreditCardForm(
+            invalid_name, "4012888888881881", "01", "2999"));
+    std::optional<CreditCard> extracted_credit_card =
+        ExtractCreditCard(*form_structure);
+    ASSERT_TRUE(extracted_credit_card);
+    EXPECT_FALSE(extracted_credit_card->HasNameOnCard());
+  }
+}
+
+// Tests that when `kAutofillEnableCardholderNameFixFlow` is disabled, a
+// cardholder name from the form is not copied onto a matched server card.
+TEST_F(PaymentsFormDataImporterTest,
+       DuplicateMaskedServerCard_MissingCardholderName_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableCardholderNameFixFlow);
+
+  CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  test::SetCreditCardInfo(&server_card, /*name_on_card=*/"", "1881" /* Visa */,
+                          "01", "2999", "");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
+  payments_data_manager().AddServerCreditCard(server_card);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(CreateFullCreditCardForm(
+          "John Dillinger", "4012888888881881", "01", "2999"));
+  std::optional<CreditCard> extracted_credit_card =
+      ExtractCreditCard(*form_structure);
+  ASSERT_TRUE(extracted_credit_card);
+  EXPECT_FALSE(extracted_credit_card->HasNameOnCard());
+}
+
 // Tests that a credit card form that is hidden after receiving input still
 // imports the card.
 TEST_F(PaymentsFormDataImporterTest,
