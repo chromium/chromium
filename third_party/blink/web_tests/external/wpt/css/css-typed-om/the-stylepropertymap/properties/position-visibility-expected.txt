@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 [FAIL] Can set 'position-visibility' to the 'anchor-valid' keyword: anchor-valid
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'position-visibility' to the 'anchor-visible' keyword: anchor-visible
-  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+  assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'position-visibility' to the 'no-overflow' keyword: no-overflow
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 Harness: the test ran to completion.

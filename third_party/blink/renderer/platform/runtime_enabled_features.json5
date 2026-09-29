@@ -4916,7 +4916,7 @@
       // `position-visibility` property: `anchor-valid` and `anchor-visible`.
       // See crbug.com/526682332.
       name: "PositionVisibilitySingularValues",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PotentialPermissionsPolicyReporting",
