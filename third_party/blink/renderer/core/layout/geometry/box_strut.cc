@@ -77,6 +77,13 @@ PhysicalBoxStrut::PhysicalBoxStrut(const PhysicalSize& outer_size,
       bottom(outer_size.height - inner_rect.Bottom()),
       left(inner_rect.offset.left) {}
 
+PhysicalBoxStrut::PhysicalBoxStrut(const PhysicalRect& outer_rect,
+                                   const PhysicalRect& inner_rect)
+    : top(inner_rect.offset.top - outer_rect.offset.top),
+      right(outer_rect.Right() - inner_rect.Right()),
+      bottom(outer_rect.Bottom() - inner_rect.Bottom()),
+      left(inner_rect.offset.left - outer_rect.offset.left) {}
+
 PhysicalBoxStrut& PhysicalBoxStrut::Unite(const PhysicalBoxStrut& other) {
   top = std::max(top, other.top);
   right = std::max(right, other.right);

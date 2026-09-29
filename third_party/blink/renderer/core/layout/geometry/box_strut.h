@@ -175,6 +175,10 @@ struct CORE_EXPORT PhysicalBoxStrut {
   PhysicalBoxStrut(const PhysicalSize& outer_size,
                    const PhysicalRect& inner_rect);
 
+  // Create a strut based on an outer and inner rectangle (insets are inwards).
+  PhysicalBoxStrut(const PhysicalRect& outer_rect,
+                   const PhysicalRect& inner_rect);
+
   // Creates new PhysicalBoxStrut instance from the specified `outsets`.
   // A data member of `outsets` is rounded up to the minimum LayoutUnit value
   // which is equal or lager than the data member.

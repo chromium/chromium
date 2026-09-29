@@ -272,9 +272,7 @@ PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
     if (!style.HasBorderShape() || style.OutlineStyleIsAuto()) {
       rect.Inflate(
           LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
-      outsets.Unite(PhysicalBoxStrut(
-          -rect.Y(), rect.Right() - border_box_rect.Width(),
-          rect.Bottom() - border_box_rect.Height(), -rect.X()));
+      outsets.Unite(PhysicalBoxStrut(rect, border_box_rect));
     }
   }
 

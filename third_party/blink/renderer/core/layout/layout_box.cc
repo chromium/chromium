@@ -3491,12 +3491,10 @@ void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
   if (!VisualOverflowIsSet())
     return;
 
-  const PhysicalRect overflow_rect =
+  const PhysicalRect border_box_rect = PhysicalBorderBoxRect();
+  const PhysicalRect self_overflow_rect =
       overflow_->visual_overflow->SelfVisualOverflowRect();
-  const PhysicalSize box_size = StitchedSize();
-  const PhysicalBoxStrut outsets(
-      -overflow_rect.Y(), overflow_rect.Right() - box_size.width,
-      overflow_rect.Bottom() - box_size.height, -overflow_rect.X());
+  const PhysicalBoxStrut outsets(self_overflow_rect, border_box_rect);
   UpdateHasSubpixelVisualEffectOutsets(outsets);
 
   // |OutlineMayBeAffectedByDescendants| is set whenever outline style
