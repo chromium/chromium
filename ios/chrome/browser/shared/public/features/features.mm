@@ -1021,6 +1021,15 @@ bool IsPlusButtonMenuInFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kPlusButtonMenuInFakebox);
 }
 
+// Enables the submenu with more options in the plus menu.
+BASE_FEATURE(kPlusButtonMenuMoreOptionsSubmenu,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns true if the submenu groupping is enabled in the plus menu.
+bool IsPlusButtonMenuMoreOptionsSubmenu() {
+  return base::FeatureList::IsEnabled(kPlusButtonMenuMoreOptionsSubmenu);
+}
+
 BASE_FEATURE(kAssistantAimMinimizedState, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAssistantAimMinimizedStateEnabled() {

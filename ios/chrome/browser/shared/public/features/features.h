@@ -841,6 +841,12 @@ bool IsPlusButtonInFakeboxEnabled();
 // Returns true if the plus button contextual menu in NTP fakebox is enabled
 bool IsPlusButtonMenuInFakeboxEnabled();
 
+// Enables the submenu with more options in the plus menu.
+BASE_DECLARE_FEATURE(kPlusButtonMenuMoreOptionsSubmenu);
+
+// Returns true if the submenu groupping is enabled in the plus menu.
+bool IsPlusButtonMenuMoreOptionsSubmenu();
+
 // Enables the `AssistantAimMinimizedState` feature.
 BASE_DECLARE_FEATURE(kAssistantAimMinimizedState);
 

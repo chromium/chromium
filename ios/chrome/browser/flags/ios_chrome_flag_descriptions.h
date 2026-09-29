@@ -1684,6 +1684,12 @@ inline constexpr char kPlusButtonMenuInFakeboxDescription[] =
     "When enabled, the fakebox plus button will display the context menu"
     "instead of opening the composebox first";
 
+inline constexpr char kPlusButtonMenuMoreOptionsSubmenuName[] =
+    "Group the complete list of plus menu options in a submenu.";
+inline constexpr char kPlusButtonMenuMoreOptionsSubmenuDescription[] =
+    "When enabled, the full list of options in the plus menu is grouped in a "
+    "submenu.";
+
 inline constexpr char kPrepopulatedEnginesShadowVariantsName[] =
     "Prepopulated Engines Shadow Variants";
 inline constexpr char kPrepopulatedEnginesShadowVariantsDescription[] =
