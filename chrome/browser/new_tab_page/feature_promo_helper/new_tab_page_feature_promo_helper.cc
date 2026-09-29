@@ -114,13 +114,6 @@ NTPCustomizeChromePromoEligibility CanShowCustomizeChromePromo(
     return NTPCustomizeChromePromoEligibility::kCustomizeChromeOpenedByUser;
   }
 
-  // If no max auto open count is set, then we are showing a different variation
-  // of the promo (not involving auto opening of the Side Panel), for which the
-  // user is considered eligible at this point.
-  if (ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get() == 0) {
-    return NTPCustomizeChromePromoEligibility::kCanShowPromo;
-  }
-
   if (ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get() <= 0 ||
       ntp_features::kNtpCustomizeChromeAutoShownSessionMaxCount.Get() <= 0) {
     return NTPCustomizeChromePromoEligibility::kFeatureConfigMismatch;
@@ -224,14 +217,6 @@ void NewTabPageFeaturePromoHelper::MaybeTriggerAutomaticCustomizeChromePromo(
   if (promo_eligibility != NTPCustomizeChromePromoEligibility::kCanShowPromo ||
       !base::FeatureList::IsEnabled(
           ntp_features::kNtpCustomizeChromeAutoOpen)) {
-    return;
-  }
-
-  // Variation where we do not open the Side Panel automatically; instead we
-  // show a tutorial.
-  if (ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get() == 0) {
-    interface->MaybeShowFeaturePromo(
-        feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature);
     return;
   }
 

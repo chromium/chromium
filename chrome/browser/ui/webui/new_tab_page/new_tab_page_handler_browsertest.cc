@@ -284,49 +284,6 @@ IN_PROC_BROWSER_TEST_F(
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
 }
 
-class NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest
-    : public InteractiveFeaturePromoTestMixin<
-          NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest> {
- protected:
-  NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest()
-      : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
-            {feature_engagement::
-                 kIPHDesktopCustomizeChromeExperimentFeature})) {
-    scoped_feature_list_iph_only_.InitAndEnableFeatureWithParameters(
-        ntp_features::kNtpCustomizeChromeAutoOpen,
-        // These params enables the tutorial variation.
-        {{"max_customize_chrome_auto_shown_count", "0"},
-         {"max_customize_chrome_auto_shown_session_count", "0"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_iph_only_;
-};
-
-// TODO(crbug.com/519385225): Fix and re-enable the test.
-IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest,
-                       DISABLED_DontOpenPanelWhenTutorialShouldBeShown) {
-  OpenNewTabPageInForeground();
-
-  RunTestSequence(
-      InstrumentTab(kNewTabPageElementId),
-      InAnyContext(WaitForShow(
-          CustomizeButtonsHandler::kCustomizeChromeButtonElementId)),
-      CheckPromoRequested(
-          feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
-          true),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-  EXPECT_FALSE(IsCustomizeChromeEntryShowing());
-
-  histogram_tester_.ExpectBucketCount(
-      "NewTabPage.CustomizeChromePromoEligibility",
-      NTPCustomizeChromePromoEligibility::kCanShowPromo, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "SidePanel.OpenTrigger",
-      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
-}
-
 class NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest
     : public InteractiveFeaturePromoTestMixin<
           NewTabPageHandlerWithCustomizeChromePromoBaseBrowserTest> {

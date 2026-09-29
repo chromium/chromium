@@ -4424,22 +4424,6 @@ const FeatureEntry::FeatureVariation
         {" - Shopping", kMobilePromoOnDesktopShopping, nullptr},
 };
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS)
-
-const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenOnFirstNTPOnly[] = {
-    {"max_customize_chrome_auto_shown_count", "5"},
-    {"max_customize_chrome_auto_shown_session_count", "1"}};
-const FeatureEntry::FeatureParam kNtpCustomizeChromeAutoOpenIPHOnly[] = {
-    {"max_customize_chrome_auto_shown_count", "0"},
-    {"max_customize_chrome_auto_shown_session_count", "0"}};
-const FeatureEntry::FeatureVariation kNtpCustomizeChromeAutoOpenVariations[] = {
-    {"- First NTP only", kNtpCustomizeChromeAutoOpenOnFirstNTPOnly, nullptr},
-    {"- IPH only", kNtpCustomizeChromeAutoOpenIPHOnly, nullptr}};
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-        // BUILDFLAG(IS_CHROMEOS)
-
 const FeatureEntry::FeatureParam kPolicyRegistrationDelay2m[] = {
     {"PolicyRegistrationDelay", "2m"}};
 const FeatureEntry::FeatureParam kPolicyRegistrationDelay1h[] = {
@@ -7534,9 +7518,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-customize-chrome-auto-open",
      flag_descriptions::kNtpCustomizeChromeAutoOpenName,
      flag_descriptions::kNtpCustomizeChromeAutoOpenDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCustomizeChromeAutoOpen,
-                                    kNtpCustomizeChromeAutoOpenVariations,
-                                    "NtpCustomizeChromeAutoOpen")},
+     FEATURE_VALUE_TYPE(ntp_features::kNtpCustomizeChromeAutoOpen)},
 #endif
 
     {"ntp-drive-module", flag_descriptions::kNtpDriveModuleName,
