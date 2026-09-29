@@ -10166,11 +10166,6 @@
     "expiry_milestone": 157
   },
   {
-    "name": "vertical-tabs-expand-on-hover",
-    "owners": ["top-chrome-desktop-ui@google.com", "dpenning@chromium.org", "agale@chromium.org", "corising@chromium.org", "dfried@chromium.org" ],
-    "expiry_milestone": 157
-  },
-  {
     "name": "viewport-segments",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

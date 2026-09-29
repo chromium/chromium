@@ -615,54 +615,6 @@ const FeatureEntry::FeatureVariation kDXGIWaitableSwapChainVariations[] = {
     {"Max 3 Frames", kDXGIWaitableSwapChain3Frames, nullptr}};
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kVerticalTabsExpandOnHover_NoClickDelay[] = {
-    {"expand_on_hover_delay", "350ms"},
-    {"expand_on_hover_click_delay", "0ms"},
-    {"expand_on_hover_default_enabled", "true"}};
-const FeatureEntry::FeatureParam kVerticalTabsExpandOnHover_AllowClickDelay[] =
-    {{"expand_on_hover_delay", "400ms"},
-     {"expand_on_hover_click_delay", "1500ms"},
-     {"expand_on_hover_default_enabled", "true"}};
-const FeatureEntry::FeatureParam
-    kVerticalTabsExpandOnHover_VelocityHeuristic_100VelocityThreshold[] = {
-        {"expand_on_hover_use_velocity_heuristic", "true"},
-        {"expand_on_hover_default_enabled", "true"},
-        {"expand_on_hover_velocity_heuristic_min_samples", "2"},
-        {"expand_on_hover_velocity_heuristic_threshold", "0.1"}};
-const FeatureEntry::FeatureParam
-    kVerticalTabsExpandOnHover_VelocityHeuristic_250VelocityThreshold[] = {
-        {"expand_on_hover_use_velocity_heuristic", "true"},
-        {"expand_on_hover_default_enabled", "true"},
-        {"expand_on_hover_velocity_heuristic_min_samples", "3"},
-        {"expand_on_hover_velocity_heuristic_threshold", "0.25"}};
-
-const FeatureEntry::FeatureParam
-    kVerticalTabsExpandOnHover_VelocityHeuristic_WithDelay[] = {
-        {"expand_on_hover_use_velocity_heuristic", "true"},
-        {"expand_on_hover_default_enabled", "true"},
-        {"expand_on_hover_velocity_heuristic_delay", "100ms"},
-        {"expand_on_hover_velocity_heuristic_min_samples", "3"},
-        {"expand_on_hover_velocity_heuristic_threshold", "0.25"},
-        {"expand_on_hover_velocity_heuristic_distance_from_edge", "12"},
-        {"expand_on_hover_velocity_heuristic_edge_delay", "200ms"},
-};
-
-const FeatureEntry::FeatureVariation kVerticalTabsExpandOnHoverVariations[] = {
-    {"with 350ms hover delay / 0 click delay",
-     kVerticalTabsExpandOnHover_NoClickDelay, nullptr},
-    {"with 400ms hover delay / 1500ms click delay",
-     kVerticalTabsExpandOnHover_AllowClickDelay, nullptr},
-    {"with 100dp/s velocity heuristic",
-     kVerticalTabsExpandOnHover_VelocityHeuristic_100VelocityThreshold,
-     nullptr},
-    {"with 250dp/s velocity heuristic",
-     kVerticalTabsExpandOnHover_VelocityHeuristic_250VelocityThreshold,
-     nullptr},
-    {"with 250dp/s velocity heuristic and small delay",
-     kVerticalTabsExpandOnHover_VelocityHeuristic_WithDelay, nullptr}};
-#endif
-
 #if BUILDFLAG(ENABLE_VR)
 const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -7265,13 +7217,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewHorizontalPinnedTabStylingName,
      flag_descriptions::kNewHorizontalPinnedTabStylingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kNewHorizontalPinnedTabStyling)},
-
-    {"vertical-tabs-expand-on-hover",
-     flag_descriptions::kVerticalTabsExpandOnHoverName,
-     flag_descriptions::kVerticalTabsExpandOnHoverDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kVerticalTabsExpandOnHover,
-                                    kVerticalTabsExpandOnHoverVariations,
-                                    "VerticalTabsExpandOnHover")},
 
     {"side-panel-flyover-animation",
      flag_descriptions::kSidePanelFlyoverAnimationName,

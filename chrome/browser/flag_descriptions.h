@@ -4474,11 +4474,6 @@ inline constexpr char kSplitViewHorizontalName[] = "Stacked Split Views";
 inline constexpr char kSplitViewHorizontalDescription[] =
     "Whether split views can be arranged in a stacked layout.";
 
-inline constexpr char kVerticalTabsExpandOnHoverName[] =
-    "Vertical Tabs Expand On Hover";
-inline constexpr char kVerticalTabsExpandOnHoverDescription[] =
-    "Vertical tabs (when enabled and collapsed) will expand on mouse hover.";
-
 inline constexpr char kSidePanelFlyoverAnimationName[] =
     "Side Panel Flyover Animation";
 inline constexpr char kSidePanelFlyoverAnimationDescription[] =
