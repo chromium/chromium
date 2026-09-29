@@ -14,9 +14,9 @@
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
-class GURL;
 class Profile;
 
 // Monitors omnibox navigations in order to trigger behaviors that depend on
@@ -45,23 +45,6 @@ class ChromeOmniboxNavigationObserverBase
     kFetchFailed,
   };
 
-  using ShowInfobarCallback =
-      base::OnceCallback<void(ChromeOmniboxNavigationObserverBase*)>;
-
-  static void Create(content::NavigationHandle* navigation,
-                     Profile* profile,
-                     const std::u16string& text,
-                     const AutocompleteMatch& match,
-                     const AutocompleteMatch& alternative_nav_match);
-
-  static void CreateForTesting(content::NavigationHandle* navigation,
-                               Profile* profile,
-                               const std::u16string& text,
-                               const AutocompleteMatch& match,
-                               const AutocompleteMatch& alternative_nav_match,
-                               network::mojom::URLLoaderFactory* loader_factory,
-                               ShowInfobarCallback show_infobar);
-
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -69,31 +52,33 @@ class ChromeOmniboxNavigationObserverBase
 
   void OnAlternativeLoaderDone(bool success);
 
-  // Shows the alternate navigation infobar for `web_contents`. Dispatches to
-  // the centralized infobar framework when migrated, or falls back to
-  // AlternateNavInfoBarDelegate.
-  static void ShowAlternativeNavInfoBar(content::WebContents* web_contents,
-                                        const std::u16string& text,
-                                        const AutocompleteMatch& match,
-                                        const GURL& search_url);
-
- private:
+ protected:
   ChromeOmniboxNavigationObserverBase(
       content::NavigationHandle& navigation,
       Profile* profile,
       const std::u16string& text,
       const AutocompleteMatch& match,
       const AutocompleteMatch& alternative_nav_match,
-      network::mojom::URLLoaderFactory* loader_factory,
-      ShowInfobarCallback show_infobar);
+      network::mojom::URLLoaderFactory* loader_factory);
 
   ~ChromeOmniboxNavigationObserverBase() override;
 
+  // Records an omnibox navigation that committed successfully. Platforms
+  // differ in which services they update, so this is left to the subclass.
+  virtual void OnSuccessfulNavigation() = 0;
+
+  const std::u16string& text() const { return text_; }
+  const AutocompleteMatch& match() const { return match_; }
+  const AutocompleteMatch& alternative_nav_match() const {
+    return alternative_nav_match_;
+  }
+  Profile* profile() const { return profile_; }
+  AlternativeFetchState fetch_state() const { return fetch_state_; }
+
+ private:
   friend class base::RefCounted<ChromeOmniboxNavigationObserverBase>;
 
   class AlternativeNavigationURLLoader;
-
-  void ShowAlternativeNavInfoBar();
 
   const std::u16string text_;
   const AutocompleteMatch match_;
@@ -101,11 +86,7 @@ class ChromeOmniboxNavigationObserverBase
   const int64_t navigation_id_;
   const raw_ptr<Profile> profile_;
 
-  // Callback to allow tests to inject custom behaviour.
-  ShowInfobarCallback show_infobar_;
-
-  // URLLoader responsible for fetching the alternative match and showing the
-  // infobar if it succeeds.
+  // URLLoader responsible for fetching the alternative match.
   std::unique_ptr<AlternativeNavigationURLLoader> loader_;
   AlternativeFetchState fetch_state_ = AlternativeFetchState::kFetchNotComplete;
 };
