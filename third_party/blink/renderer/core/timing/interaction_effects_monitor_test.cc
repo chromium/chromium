@@ -99,6 +99,10 @@ class InteractionEffectsMonitorTest : public testing::Test {
     return task_state ? task_state->GetSoftNavigationContext() : nullptr;
   }
 
+  void SetContextForTest(SoftNavigationContext* context, Node* node) {
+    GetSoftNavigationHeuristics()->SetContextForTest(context, node);
+  }
+
  private:
   PerformanceTimelineEntryIdGenerator id_generator_;
   test::TaskEnvironment task_environment_;
@@ -118,15 +122,15 @@ TEST_F(InteractionEffectsMonitorTest, CreateMonitor) {
   EXPECT_EQ(monitor.InteractionCount(), 1);
 
   Node* node1 = CreateNodeForTest();
-  context->AddPaintedArea(CreateTextRecordForTest(node1, 200, 50, context));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node1);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node1, 200, 50)});
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 200u * 50u);
   EXPECT_EQ(observer.TotalPaintedArea(), monitor.TotalPaintedArea());
 
   Node* node2 = CreateNodeForTest();
-  context->AddPaintedArea(CreateTextRecordForTest(node2, 100, 30, context));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node2);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node2, 100, 30)});
   EXPECT_EQ(observer.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer.TotalPaintedArea(), (200u * 50u) + (100u * 30u));
   EXPECT_EQ(observer.TotalPaintedArea(), monitor.TotalPaintedArea());
@@ -136,26 +140,30 @@ TEST_F(InteractionEffectsMonitorTest, CreateMonitorMultipleContextsSameFrame) {
   TestObserver observer;
   WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
   EXPECT_EQ(monitor.InteractionCount(), 0);
+  TextRecord* record1 = nullptr;
   {
     SoftNavigationContext* context = SimulateInteraction();
     EXPECT_EQ(monitor.InteractionCount(), 1);
     ASSERT_TRUE(context);
     Node* node = CreateNodeForTest();
-    context->AddPaintedArea(CreateTextRecordForTest(node, 200, 50, context));
+    SetContextForTest(context, node);
+    record1 = CreateTextRecordForTest(node, 200, 50);
   }
 
+  TextRecord* record2 = nullptr;
   {
     SoftNavigationContext* context = SimulateInteraction();
     ASSERT_TRUE(context);
     EXPECT_EQ(monitor.InteractionCount(), 2);
     Node* node = CreateNodeForTest();
-    context->AddPaintedArea(CreateTextRecordForTest(node, 100, 30, context));
+    SetContextForTest(context, node);
+    record2 = CreateTextRecordForTest(node, 100, 30);
   }
 
   EXPECT_EQ(observer.NumContentfulPaints(), 0u);
   EXPECT_EQ(observer.TotalPaintedArea(), 0u);
 
-  GetSoftNavigationHeuristics()->OnPaintFinished();
+  GetSoftNavigationHeuristics()->OnPaintFinished({}, {record1, record2});
 
   EXPECT_EQ(observer.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer.TotalPaintedArea(), (200u * 50u) + (100u * 30u));
@@ -175,9 +183,8 @@ TEST_F(InteractionEffectsMonitorTest, ObserverStopsOnMonitorDestruction) {
     ASSERT_TRUE(context);
     EXPECT_EQ(monitor.InteractionCount(), 1);
     Node* node = CreateNodeForTest();
-    context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-
-    heuristics->OnPaintFinished();
+    SetContextForTest(context, node);
+    heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
     EXPECT_EQ(observer.NumContentfulPaints(), 1u);
     EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
     EXPECT_EQ(observer.TotalPaintedArea(), monitor.TotalPaintedArea());
@@ -186,9 +193,8 @@ TEST_F(InteractionEffectsMonitorTest, ObserverStopsOnMonitorDestruction) {
   SoftNavigationContext* context = SimulateInteraction();
   ASSERT_TRUE(context);
   Node* node = CreateNodeForTest();
-  context->AddPaintedArea(CreateTextRecordForTest(node, 1000, 20, context));
-
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 1000, 20)});
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
 }
@@ -206,8 +212,8 @@ TEST_F(InteractionEffectsMonitorTest, SubsequentObservers) {
     EXPECT_EQ(monitor.InteractionCount(), 1);
 
     Node* node = CreateNodeForTest();
-    context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-    heuristics->OnPaintFinished();
+    SetContextForTest(context, node);
+    heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
     EXPECT_EQ(observer.NumContentfulPaints(), 1u);
     EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
     EXPECT_EQ(observer.TotalPaintedArea(), monitor.TotalPaintedArea());
@@ -225,8 +231,9 @@ TEST_F(InteractionEffectsMonitorTest, ObserveNonBodyKeyEvents) {
   ASSERT_TRUE(context);
   EXPECT_EQ(monitor.InteractionCount(), 1);
 
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  GetSoftNavigationHeuristics()->OnPaintFinished();
+  SetContextForTest(context, node);
+  GetSoftNavigationHeuristics()->OnPaintFinished(
+      {}, {CreateTextRecordForTest(node, 100, 10)});
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
   EXPECT_EQ(observer.TotalPaintedArea(), monitor.TotalPaintedArea());
@@ -240,8 +247,9 @@ TEST_F(InteractionEffectsMonitorTest, NewInteractionsOnly) {
   WebInteractionEffectsMonitor monitor(&GetFrame(), &observer);
 
   Node* node = CreateNodeForTest();
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  GetSoftNavigationHeuristics()->OnPaintFinished();
+  SetContextForTest(context, node);
+  GetSoftNavigationHeuristics()->OnPaintFinished(
+      {}, {CreateTextRecordForTest(node, 100, 10)});
   EXPECT_EQ(monitor.InteractionCount(), 0);
   EXPECT_EQ(observer.NumContentfulPaints(), 0u);
   EXPECT_EQ(observer.TotalPaintedArea(), 0u);
@@ -267,8 +275,8 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
   ASSERT_TRUE(context);
 
   Node* node = CreateNodeForTest();
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 1000u);
@@ -283,8 +291,7 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
   // Add a second monitor, which should only observe new interactions.
   monitor2->StartMonitoring(&observer2);
 
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  heuristics->OnPaintFinished();
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 2u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 2000u);
@@ -299,8 +306,8 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
   // Simulate a second interaction, which both monitors should observe.
   context = SimulateInteraction();
   ASSERT_TRUE(context);
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 3u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 3000u);
@@ -318,8 +325,8 @@ TEST_F(InteractionEffectsMonitorTest, ConcurrentMonitors) {
 
   context = SimulateInteraction();
   ASSERT_TRUE(context);
-  context->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context, node);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node, 100, 10)});
 
   EXPECT_EQ(observer1.NumContentfulPaints(), 3u);
   EXPECT_EQ(observer1.TotalPaintedArea(), 3000u);
@@ -344,12 +351,12 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
   monitor->StartMonitoring(&observer);
   EXPECT_EQ(monitor->InteractionCount(), 0);
 
-  Node* node = CreateNodeForTest();
+  Node* node1 = CreateNodeForTest();
 
   SoftNavigationContext* context1 = SimulateInteraction();
   ASSERT_TRUE(context1);
-  context1->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context1));
-  heuristics->OnPaintFinished();
+  SetContextForTest(context1, node1);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node1, 100, 10)});
 
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
@@ -360,8 +367,9 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
 
   SoftNavigationContext* context2 = SimulateInteraction();
   ASSERT_TRUE(context2);
-  context2->AddPaintedArea(CreateTextRecordForTest(node, 100, 10, context2));
-  heuristics->OnPaintFinished();
+  Node* node2 = CreateNodeForTest();
+  SetContextForTest(context2, node2);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node2, 100, 10)});
 
   EXPECT_EQ(observer.NumContentfulPaints(), 1u);
   EXPECT_EQ(observer.TotalPaintedArea(), 1000u);
@@ -373,10 +381,11 @@ TEST_F(InteractionEffectsMonitorTest, RestartMonitor) {
 
   SoftNavigationContext* context3 = SimulateInteraction();
   ASSERT_TRUE(context3);
-  context1->AddPaintedArea(CreateTextRecordForTest(node, 50, 5, context1));
-  context2->AddPaintedArea(CreateTextRecordForTest(node, 30, 10, context2));
-  context3->AddPaintedArea(CreateTextRecordForTest(node, 20, 5, context3));
-  heuristics->OnPaintFinished();
+  Node* node3 = CreateNodeForTest();
+  SetContextForTest(context3, node3);
+  heuristics->OnPaintFinished({}, {CreateTextRecordForTest(node1, 50, 5),
+                                   CreateTextRecordForTest(node2, 30, 10),
+                                   CreateTextRecordForTest(node3, 20, 5)});
 
   // `observer` is cumulative since we didn't reset it, but `monitor` starts
   // over when restarting it.

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -1426,6 +1427,37 @@ TEST_P(ImagePaintTimingDetectorTest, LargestIgnoredImageRemovedBeforePaint) {
 
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(CountImageRecords(), 0u);
+}
+
+// Ensure that when changing a <video>'s src between notifying paint timing and
+// the subsequent frame, and GCing the corresponding `VideoTiming`, that the
+// first video frame is ignored and doesn't cause a CHECK failure. Regression
+// test for crbug.com/562498378.
+TEST_P(ImagePaintTimingDetectorTest,
+       VideoSourceChangedBetweenFirstFrameAndMainFrame) {
+  SetMainFrameBodyContent(R"HTML(
+    <video id="target" width=300 height=200 elementtiming="foo"></video>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  WeakPersistent<VideoTiming> video_timing =
+      MakeGarbageCollected<VideoTiming>();
+  video_timing->SetFirstVideoFrameTime(NowTicks());
+  video_timing->SetIsSufficientContentLoadedForPaint();
+  video_timing->SetIsCorsSameOrigin(true);
+  video_timing->SetUrl(KURL("http://test.com/video"));
+  video_timing->SetContentSizeForEntropy(1024 * 1024);
+  SimulateFirstVideoFrame(GetElementById("target"), video_timing, 300, 100);
+
+  // In production, the `video_timing` is kept alive by the <video> element.
+  // Since `ImageRecord` holds `video_timing` weakly, changing the video src and
+  // rendering the new first frame between the initial first video frame
+  // notification and subsequent main frame makes the `video_timing` eligible
+  // for GC, leaving the `ImageRecord` with a null `MediaTiming` at the end of
+  // paint. Simulate this by GCing the `video_timing` before the next paint.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_FALSE(video_timing);
+  SimulateRenderingAndPresentationTime();
   EXPECT_EQ(LargestPaintedImage(), nullptr);
 }
 
@@ -1440,7 +1472,7 @@ class ImagePaintTimingDetectorTransparentPlaceholderImageTest
       // Create a TaskEnvironment for the garbage collection below.
       task_environment = std::make_unique<base::test::TaskEnvironment>();
     }
-    WebHeap::CollectAllGarbageForTesting();
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
  protected:
@@ -1571,11 +1603,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, ImageRenderingSequence) {
   // Simulate a paint with the first frame painted.
   timing->SetIsPaintedFirstFrame();
   SimulateImagePaint(target, timing, 100, 100);
-  // The image should be pending, recorded, and queued for paint time for the
-  // first image frame (regardless of the feature), and queued for paint time
-  // for being sufficiently loaded (with the feature).
-  EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+  // The image should be recorded, queued for paint time for the first image
+  // frame (regardless of the feature), and either pending (without the feature)
+  // or queued for paint time for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(), 3u);
   SimulateRendering();
 
   // Simulate presentation time. This should set the first animated frame time
@@ -1605,10 +1636,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, ImageRenderingSequence) {
   // record to be reported without.
   timing->SetIsSufficientContentLoadedForPaint();
   SimulateImagePaint(target, timing, 100, 100);
-  // There should be 1 entry if the feature is enabled (recorded) and 3 if not
-  // (recorded, pending, and queued for paint time).
+  // There should be 1 entry if the feature is enabled (recorded) and 2 if not
+  // (recorded and queued for paint time).
   EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 3u);
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 1u : 2u);
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(ContainerTotalSize(), 1u);
   record = LargestImage();
@@ -1633,11 +1664,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
 
   // Simulate a paint with the first animated frame painted.
   SimulateImagePaint(target, timing, 100, 100);
-  // The image should be pending, recorded, and queued for paint time for the
-  // first image frame (regardless of the feature), and queued for paint time
-  // for being sufficiently loaded (with the feature).
-  EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 4u : 3u);
+  // The image should be recorded, queued for paint time for the first image
+  // frame (regardless of the feature), and either pending (without the feature)
+  // or queued for paint time for being sufficiently loaded (with the feature).
+  EXPECT_EQ(ContainerTotalSize(), 3u);
   SimulateRendering();
   // For LCP, the largest pending should be set, but the largest should not be.
   EXPECT_TRUE(LargestImage());
@@ -1654,10 +1684,10 @@ TEST_P(ImagePaintTimingDetectorAnimatedImageTest, DelayedPresentationFeedback) {
   SimulateImagePaint(target, timing, 100, 100);
   // With the feature enabled, the count should stay the same, but without the
   // feature, there's a second entry queued for first frame since the other is
-  // still pending, an entry queued for sufficiently loaded (also counted by the
-  // client observer), less one since it's removed from pending.
+  // still pending, and an entry queued for sufficiently loaded, less one since
+  // it's removed from pending.
   EXPECT_EQ(ContainerTotalSize(),
-            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 2u : 4u);
+            IsReportFirstFrameTimeAsRenderTimeEnabled() ? 2u : 3u);
   SimulateRendering();
 
   // Rendering will take the image records queued for paint time, so the count

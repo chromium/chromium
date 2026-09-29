@@ -253,11 +253,11 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // Simulate a paint in a separate task.
   {
-    TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000, context);
+    heuristics->SetContextForTest(context, node1);
+    TextRecord* record = CreateTextRecordForTest(node1, 1000, 1000);
     record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
                          /*info=*/DOMPaintTimingInfo());
-    context->AddPaintedArea(record);
-    heuristics->OnPaintFinished();
+    heuristics->OnPaintFinished({}, {record});
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
     EXPECT_TRUE(context->HasFirstContentfulPaint());
     EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
@@ -279,11 +279,11 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
 
   // And another paint
   {
-    TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000, context);
+    heuristics->SetContextForTest(context, node2);
+    TextRecord* record = CreateTextRecordForTest(node2, 1000, 1000);
     record->SetPaintTime(/*paint_time=*/base::TimeTicks::Now(),
                          /*info=*/DOMPaintTimingInfo());
-    context->AddPaintedArea(record);
-    heuristics->OnPaintFinished();
+    heuristics->OnPaintFinished({}, {record});
     EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
     // Should still just have one single soft-nav because a single context
     // with a single Interaction should only emit once, even if it e.g.

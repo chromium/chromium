@@ -553,19 +553,6 @@ void LargestContentfulPaintCalculator::ReportNoMetricsImageCandidateToTrace() {
                std::move(value), "frame", GetFrameIdForTracing(frame));
 }
 
-bool LargestContentfulPaintCalculator::ShouldTrackForPaintTiming(
-    const ImageRecord& record) const {
-  if (!IsEligibleForLcp(record)) {
-    return false;
-  }
-  // TODO(crbug.com/454067883): The `largest_painted_image_` isn't updated until
-  // presentation time for hard navs, so we end up getting more timings than
-  // needed. This probably isn't a big deal, but it's some extra work. Instead,
-  // we may want to track the size of the current largest candidate, and work
-  // off that. We may need that anyway when emitting candidates more frequently.
-  return record.IsEffectiveSizeLargerThan(largest_painted_image_);
-}
-
 void LargestContentfulPaintCalculator::OnImageFirstPaint(ImageRecord* record) {
   if (record->IsEffectiveSizeLargerThan(largest_pending_image_)) {
     largest_pending_image_ = record;
@@ -657,6 +644,17 @@ bool LargestContentfulPaintCalculator::IsEligibleForLcp(
     return false;
   }
 
+  // First video frame records are queued outside of paint, so the associated
+  // `Node` or `MediaTiming` can be removed and GCed before the next paint.
+  // Ignore these records.
+  //
+  // TODO(crbug.com/562498378): We should keep a strong reference to the
+  // `VideoTiming` rather than ignoring these records since the behavior depends
+  // on garbage collection.
+  if (!record.GetMediaTiming() || record.WasNodeRemoved()) {
+    return false;
+  }
+
   // Only apply the minimum entropy check to CORS-same-origin resources to
   // prevent cross-origin size leaks (crbug.com/502288792).
   if (base::FeatureList::IsEnabled(kLcpEntropyGatedOnCors) &&
@@ -667,7 +665,6 @@ bool LargestContentfulPaintCalculator::IsEligibleForLcp(
   // The first video frame often fails to meet the entropy check, e.g. due to
   // being a solid color or blank frame. This is problematic for ICP, so we
   // ignore the entropy check in that case.
-  CHECK(record.GetMediaTiming());
   if (!record.GetMediaTiming()->GetFirstVideoFrameTime().is_null() &&
       (!delegate_->IsHardNavigation() ||
        RuntimeEnabledFeatures::EntropyIgnoredForFirstVideoFrameLCPEnabled())) {

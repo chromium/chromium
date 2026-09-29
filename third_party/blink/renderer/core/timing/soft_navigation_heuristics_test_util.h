@@ -19,13 +19,10 @@ PerformanceEventTiming* CreatePerformanceEventTimingForTest(
     EventTarget* target,
     DOMWindow* source);
 
-// Creates a `TextRecord` associated with `context` and `node` with the given
-// dimensions. The `width` and `height` are used for all relevant gfx::Rect
-// objects, as well as the recorded size.
-TextRecord* CreateTextRecordForTest(Node* node,
-                                    int width,
-                                    int height,
-                                    SoftNavigationContext* context);
+// Creates a `TextRecord` associated with `node` with the given dimensions.
+// The `width` and `height` are used for all relevant gfx::Rect objects,
+// as well as the recorded size.
+TextRecord* CreateTextRecordForTest(Node* node, int width, int height);
 
 }  // namespace blink
 

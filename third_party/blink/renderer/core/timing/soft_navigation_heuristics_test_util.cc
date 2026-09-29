@@ -35,15 +35,10 @@ PerformanceEventTiming* CreatePerformanceEventTimingForTest(
       /*navigation_id=*/1, PerformanceTimelineEntryIdInfo(1, 1));
 }
 
-TextRecord* CreateTextRecordForTest(Node* node,
-                                    int width,
-                                    int height,
-                                    SoftNavigationContext* context) {
-  auto* record = MakeGarbageCollected<TextRecord>(
+TextRecord* CreateTextRecordForTest(Node* node, int width, int height) {
+  return MakeGarbageCollected<TextRecord>(
       node, width * height, gfx::RectF(width, height), gfx::Rect(width, height),
       gfx::RectF(width, height));
-  record->SetSoftNavigationContext(context);
-  return record;
 }
 
 }  // namespace blink

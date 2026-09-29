@@ -197,6 +197,13 @@ void SoftNavigationPaintAttributionTracker::
   text_paint_timing_detector_->ResetPaintTrackingOnInteraction(object);
 }
 
+void SoftNavigationPaintAttributionTracker::SetContextForTest(
+    SoftNavigationContext* context,
+    Node* node) {
+  propagated_node_state_.Set(
+      node, MakeGarbageCollected<NodeState>(context, /*modification_id=*/0));
+}
+
 SoftNavigationPaintAttributionTracker::NodeState::NodeState(
     SoftNavigationContext* context,
     uint64_t modification_id)
