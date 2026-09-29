@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -15,10 +16,6 @@
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
-#include "chrome/browser/actor/tools/history_tool_request.h"
-#include "chrome/browser/actor/tools/navigate_tool_request.h"
-#include "chrome/browser/actor/tools/perform_search_tool_request.h"
-#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/ttc_actor_ui_state_manager.h"
@@ -26,6 +23,13 @@
 #include "chrome/common/actor/action_result.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/open_known_page_tool_request.h"
+#include "chrome/browser/actor/tools/perform_search_tool_request.h"
+#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
+#include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -62,29 +66,32 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
     OpenUrl(tool_request.arguments, std::move(callback));
     return;
   }
-
   if (tool_request.name == "perform_search") {
     PerformSearch(tool_request.arguments, std::move(callback));
     return;
   }
-
   if (tool_request.name == "close_current_tab") {
     CloseCurrentTab(std::move(callback));
     return;
   }
-
   if (tool_request.name == "go_back") {
     GoBack(std::move(callback));
     return;
   }
-
   if (tool_request.name == "go_forward") {
     GoForward(std::move(callback));
     return;
   }
-
   if (tool_request.name == "reload_page") {
     ReloadPage(std::move(callback));
+    return;
+  }
+  if (tool_request.name == "switch_tab") {
+    SwitchTab(tool_request.arguments, std::move(callback));
+    return;
+  }
+  if (tool_request.name == "open_known_page") {
+    OpenKnownPage(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -182,6 +189,48 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   reload_page.behavior = ToolDefinition::Behavior::kBlocking;
   reload_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(reload_page));
+
+  ToolDefinition switch_tab;
+  switch_tab.name = "switch_tab";
+  switch_tab.description =
+      "Switches to an open tab in the current browser window matching the "
+      "query.";
+  switch_tab.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "query",
+                   base::DictValue()
+                       .Set("type", "string")
+                       .Set("description",
+                            "The search query to match against open tab "
+                            "titles and URLs.")))
+          .Set("required", base::ListValue().Append("query"));
+  switch_tab.behavior = ToolDefinition::Behavior::kBlocking;
+  switch_tab.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(switch_tab));
+
+  ToolDefinition open_known_page;
+  open_known_page.name = "open_known_page";
+  open_known_page.description =
+      "Opens a known page matching the query by searching open tabs, "
+      "browsing history, and bookmarks.";
+  open_known_page.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "query",
+                   base::DictValue()
+                       .Set("type", "string")
+                       .Set("description",
+                            "The search query to match against open tabs, "
+                            "browsing history, and bookmarks.")))
+          .Set("required", base::ListValue().Append("query"));
+  open_known_page.behavior = ToolDefinition::Behavior::kBlocking;
+  open_known_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(open_known_page));
 #endif
 
   return tools;
@@ -324,19 +373,53 @@ void ToolController::PerformActionOnActiveTab(
     return;
   }
 
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(GetProfile());
-  CHECK(actor_service);
-  EnsureTaskCreated(actor_service);
-
   tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
   if (!active_tab) {
     std::move(callback).Run(ToolResponse::Error(
         actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
     return;
   }
+
+  PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
+}
+
+void ToolController::SwitchTab(const base::DictValue& arguments,
+                               ToolResponseCallback callback) {
+  const std::string* query = arguments.FindString("query");
+  if (!query || query->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty query argument"));
+    return;
+  }
+
+  PerformAction(std::make_unique<actor::SwitchTabToolRequest>(*query),
+                std::move(callback));
+}
+
+void ToolController::OpenKnownPage(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  const std::string* query = arguments.FindString("query");
+  if (!query || query->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty query argument"));
+    return;
+  }
+
+  PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
+                std::move(callback));
+}
+
+void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
+                                   ToolResponseCallback callback) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(GetProfile());
+  CHECK(actor_service);
+  EnsureTaskCreated(actor_service);
+
   std::vector<std::unique_ptr<actor::ToolRequest>> actions;
-  actions.push_back(create_action(active_tab->GetHandle()));
+  actions.push_back(std::move(action));
 
   actor_service->PerformActions(
       task_id_, std::move(actions), actor::ActorTaskMetadata(),

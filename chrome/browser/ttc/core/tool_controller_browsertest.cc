@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ttc/core/tool_controller.h"
 
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -14,6 +18,7 @@
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ttc/app/public/tool_types.h"
@@ -30,12 +35,16 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -292,6 +301,110 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), url);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTab) {
+  // Navigate tab 0 to a page with title "Title Of Awesomeness".
+  const GURL target_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), target_url));
+
+  // Open tab 1 in the foreground so tab 0 is in the background.
+  const GURL active_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "switch_tab";
+  tool_request.arguments.Set("query", "Awesomeness");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), target_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTabInvalidArguments) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "switch_tab";
+  tool_request.arguments.Set("query", "");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+
+  // Add a bookmark matching "Awesomeness" (with no second tab open, verifying
+  // that OpenKnownPageTool's bookmark fallback is executed).
+  const GURL bookmark_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  ASSERT_TRUE(bookmark_model);
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  bookmark_model->AddURL(bookmark_model->other_node(), 0,
+                         u"Title Of Awesomeness", bookmark_url);
+
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "open_known_page";
+  tool_request.arguments.Set("query", "Awesomeness");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TRUE(response.Ok());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), bookmark_url);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       OpenKnownPageInvalidArguments) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "open_known_page";
+  tool_request.arguments.Set("query", "");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(response.error().code,
+            actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -319,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 6u);
+  ASSERT_EQ(tools.size(), 8u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -413,6 +526,37 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
 
   // The tool takes no arguments.
   EXPECT_TRUE(reload_page.parameters_json_schema.empty());
+
+  constexpr std::pair<size_t, std::string_view> kQueryTools[] = {
+      {6u, "switch_tab"},
+      {7u, "open_known_page"},
+  };
+  for (const auto& [index, expected_name] : kQueryTools) {
+    const ToolDefinition& tool = tools[index];
+    EXPECT_EQ(tool.name, expected_name);
+    EXPECT_FALSE(tool.description.empty());
+    EXPECT_EQ(tool.behavior, ToolDefinition::Behavior::kBlocking);
+    EXPECT_EQ(tool.verbalization, ToolDefinition::Verbalization::kSilentAction);
+
+    const base::DictValue& tool_schema = tool.parameters_json_schema;
+    const std::string* tool_schema_type = tool_schema.FindString("type");
+    ASSERT_TRUE(tool_schema_type);
+    EXPECT_EQ(*tool_schema_type, "object");
+
+    const std::string* tool_query_type =
+        tool_schema.FindStringByDottedPath("properties.query.type");
+    ASSERT_TRUE(tool_query_type);
+    EXPECT_EQ(*tool_query_type, "string");
+
+    const std::string* query_description =
+        tool_schema.FindStringByDottedPath("properties.query.description");
+    ASSERT_TRUE(query_description);
+    EXPECT_FALSE(query_description->empty());
+
+    const base::ListValue* tool_required = tool_schema.FindList("required");
+    ASSERT_TRUE(tool_required);
+    EXPECT_EQ(*tool_required, base::ListValue().Append("query"));
+  }
 }
 
 class ToolControllerActorDisabledBrowserTest

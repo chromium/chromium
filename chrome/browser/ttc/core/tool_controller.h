@@ -21,6 +21,10 @@
 
 class Profile;
 
+namespace actor {
+class ToolRequest;
+}  // namespace actor
+
 namespace ttc {
 
 class SessionControllerImpl;
@@ -51,6 +55,10 @@ class ToolController {
   void GoBack(ToolResponseCallback callback);
   void GoForward(ToolResponseCallback callback);
   void ReloadPage(ToolResponseCallback callback);
+  void SwitchTab(const base::DictValue& arguments,
+                 ToolResponseCallback callback);
+  void OpenKnownPage(const base::DictValue& arguments,
+                     ToolResponseCallback callback);
 
   // Runs the tool request returned by `create_action` against the session's
   // active tab, replying to `callback` with the result. Replies with an error
@@ -61,6 +69,8 @@ class ToolController {
           create_action,
       ToolResponseCallback callback);
 
+  void PerformAction(std::unique_ptr<actor::ToolRequest> action,
+                     ToolResponseCallback callback);
   void OnActionsFinished(
       ToolResponseCallback callback,
       std::vector<actor::ActionResultWithLatencyInfo> results,
