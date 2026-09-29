@@ -43,8 +43,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperWindows
 
   // Methods used by the XrRuntimeProvider to determine if an OpenXr session
   // could be created/supported.
-  bool IsHardwareAvailable();
-  bool IsApiAvailable();
+  bool IsHardwareAvailable() override;
+  bool IsApiAvailable() override;
 
   // Called by the D3D11 GraphicsBinding to set up the texture helper and also
   // used when creating the XRDeviceData.

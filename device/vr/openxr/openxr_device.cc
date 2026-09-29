@@ -234,7 +234,11 @@ void OpenXrDevice::OnRequestSessionResult(
   session_result->session = std::move(session);
   session_result->controller =
       exclusive_controller_receiver_.BindNewPipeAndPassRemote();
+#if !BUILDFLAG(IS_LINUX)
+  // The in-headset overlay UI is not implemented on Linux; leaving the overlay
+  // unset tells the browser to skip the VrUiHost.
   session_result->overlay = std::move(overlay);
+#endif
 
   std::move(request_session_callback_).Run(std::move(session_result));
 

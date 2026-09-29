@@ -14,14 +14,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
-#include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
+#include "device/vr/openxr/openxr_platform_helper.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
-#endif
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 namespace device {
 class OpenXrDevice;
 }  // namespace device
@@ -50,7 +48,7 @@ class IsolatedXRRuntimeProvider final
   void PollForDeviceChanges();
   void SetupPollingForDeviceChanges();
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
   bool IsOpenXrHardwareAvailable();
   void SetOpenXrRuntimeStatus(RuntimeStatus status);
   void CreateContextProviderAsync(
@@ -58,8 +56,8 @@ class IsolatedXRRuntimeProvider final
 
   bool should_check_openxr_ = false;
 
-  // Must outlive OpenXrDevice
-  std::unique_ptr<device::OpenXrPlatformHelperWindows> openxr_platform_helper_;
+  // Must outlive OpenXrDevice.
+  std::unique_ptr<device::OpenXrPlatformHelper> openxr_platform_helper_;
 
   std::unique_ptr<device::OpenXrDevice> openxr_device_;
 

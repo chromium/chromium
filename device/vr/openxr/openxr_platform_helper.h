@@ -126,6 +126,12 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // features.
   virtual device::mojom::XRDeviceData GetXRDeviceData() = 0;
 
+  // Whether the OpenXR API/hardware can currently serve a session. Desktop
+  // platforms override these to poll the externally-installed runtime; on
+  // Android the runtime ships with the OS image, so they default to true.
+  virtual bool IsApiAvailable();
+  virtual bool IsHardwareAvailable();
+
   bool IsArBlendModeSupported(XrInstance instance);
 
  protected:

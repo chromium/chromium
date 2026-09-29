@@ -14,11 +14,16 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/features.h"
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
 #include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/openxr/openxr_device.h"
-#include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
+#elif BUILDFLAG(IS_LINUX)
+#include "device/vr/openxr/linux/openxr_platform_helper_linux.h"
+#endif
 #endif
 
 enum class IsolatedXRRuntimeProvider::RuntimeStatus {
@@ -98,7 +103,7 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   // 'preferred_device_enabled' being unused, thus [[maybe_unused]].
   [[maybe_unused]] bool preferred_device_enabled = false;
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
   if (!preferred_device_enabled && IsOpenXrHardwareAvailable()) {
     SetOpenXrRuntimeStatus(RuntimeStatus::kEnable);
     preferred_device_enabled = true;
@@ -122,11 +127,16 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   // If none of the following runtimes are enabled, we'll get an error for
   // 'command_line' being unused, thus [[maybe_unused]].
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
   if (IsEnabled(command_line, device::features::kOpenXR,
                 switches::kWebXrRuntimeOpenXr)) {
+#if BUILDFLAG(IS_WIN)
     openxr_platform_helper_ =
         std::make_unique<device::OpenXrPlatformHelperWindows>();
+#elif BUILDFLAG(IS_LINUX)
+    openxr_platform_helper_ =
+        std::make_unique<device::OpenXrPlatformHelperLinux>();
+#endif
     should_check_openxr_ = openxr_platform_helper_->EnsureInitialized() &&
                            openxr_platform_helper_->IsApiAvailable();
     any_runtimes_available |= should_check_openxr_;
@@ -148,7 +158,7 @@ void IsolatedXRRuntimeProvider::RequestDevices(
   client_->OnDevicesEnumerated();
 }
 
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
 bool IsolatedXRRuntimeProvider::IsOpenXrHardwareAvailable() {
   return should_check_openxr_ && openxr_platform_helper_->IsHardwareAvailable();
 }
@@ -192,16 +202,28 @@ void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
         viz_gpu_->EstablishGpuChannelSync();
   }
 
+#if BUILDFLAG(IS_WIN)
   scoped_refptr<viz::ContextProvider> context_provider =
       viz::ContextProviderCommandBuffer::CreateForGL(
           viz_gpu_->GetGpuChannel(), content::kGpuStreamIdDefault,
           content::kGpuStreamPriorityUI, GURL("chrome://gpu/XrRuntime"),
           viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
+#else
+  // The GPU service rejects CONTEXT_TYPE_OPENGLES2 from a non-host channel
+  // outside Windows, so use the stock WebGL2 factory (WEBGL2 is still
+  // permitted; plain GLES3 is not serializable).
+  scoped_refptr<viz::ContextProvider> context_provider =
+      viz::ContextProviderCommandBuffer::CreateForWebGL(
+          viz_gpu_->GetGpuChannel(), GURL("chrome://gpu/XrRuntime"),
+          viz::WebGLContextType::kWebGL2,
+          /*prefer_low_power_gpu=*/false,
+          /*fail_if_major_performance_caveat=*/false);
+#endif
 
   std::move(viz_context_provider_callback).Run(context_provider);
 }
 
-#endif  // BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
 
 IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
     mojo::PendingRemote<device::mojom::XRDeviceServiceHost> device_service_host,
@@ -210,7 +232,7 @@ IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
       io_task_runner_(std::move(io_task_runner)) {}
 
 IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() {
-#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_DESKTOP_OPENXR)
   // Ensure that the OpenXrPlatformHelper outlives the OpenXrDevice
   openxr_device_.reset();
   openxr_platform_helper_.reset();

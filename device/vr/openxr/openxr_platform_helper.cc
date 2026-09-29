@@ -282,6 +282,14 @@ XrResult OpenXrPlatformHelper::DestroyInstance(XrInstance& instance) {
   return result;
 }
 
+bool OpenXrPlatformHelper::IsApiAvailable() {
+  return true;
+}
+
+bool OpenXrPlatformHelper::IsHardwareAvailable() {
+  return true;
+}
+
 bool OpenXrPlatformHelper::IsArBlendModeSupported(XrInstance instance) {
   XrSystemId system;
 

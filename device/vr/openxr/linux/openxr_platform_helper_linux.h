@@ -37,10 +37,10 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelperLinux : public OpenXrPlatformHelper {
   void PrepareForSessionShutdown(
       base::OnceClosure shutdown_ready_callback) override;
 
-  // Parallel to OpenXrPlatformHelperWindows — not virtual on the base.
-  // Called from xr_runtime_provider.cc's Linux-specific block.
-  bool IsApiAvailable();
-  bool IsHardwareAvailable();
+  // Poll the externally-installed desktop runtime; called by the
+  // XrRuntimeProvider before creating a device.
+  bool IsApiAvailable() override;
+  bool IsHardwareAvailable() override;
 
   // Override to destroy any cached polling instance before creating a new
   // session instance (base class CHECKs xr_instance_ == NULL).
