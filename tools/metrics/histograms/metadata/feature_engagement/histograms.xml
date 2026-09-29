@@ -531,12 +531,6 @@ chromium-metrics-reviews@google.com.
       summary="showing the tab groups promo on desktop"/>
   <variant name="IPH_iOSWelcomeBack"
       summary="shows returning users features they may be interested in"/>
-  <variant name="IPH_KeyboardAccessoryAddressFilling"
-      summary="address autofill suggestions"/>
-  <variant name="IPH_KeyboardAccessoryPasswordFilling"
-      summary="password autofill suggestions"/>
-  <variant name="IPH_KeyboardAccessoryPaymentFilling"
-      summary="payments autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPaymentOffer"
       summary="payments autofill suggestions that have an offer"/>
   <variant name="IPH_LauncherSearchHelpUi"

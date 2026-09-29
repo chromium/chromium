@@ -64,13 +64,9 @@ class KeyboardAccessoryProperties {
             new ReadableBooleanPropertyKey("skip_all_animations_for_testing");
     static final WritableObjectPropertyKey<KeyboardAccessoryStyle> STYLE =
             new WritableObjectPropertyKey<>("style");
-    static final WritableObjectPropertyKey<Callback<Integer>> OBFUSCATED_CHILD_AT_CALLBACK =
-            new WritableObjectPropertyKey<>("obfuscated_child_at_callback");
     static final PropertyModel.WritableObjectPropertyKey<Callback<Boolean>>
             ON_TOUCH_EVENT_CALLBACK =
                     new PropertyModel.WritableObjectPropertyKey<>("on_touch_event_handler");
-    static final WritableBooleanPropertyKey SHOW_SWIPING_IPH =
-            new WritableBooleanPropertyKey("show_swiping_iph");
     static final WritableBooleanPropertyKey HAS_SUGGESTIONS =
             new WritableBooleanPropertyKey("has_suggestions");
     static final WritableBooleanPropertyKey HAS_STICKY_LAST_ITEM =
@@ -93,9 +89,7 @@ class KeyboardAccessoryProperties {
                         STYLE,
                         SHEET_OPENER_ITEM,
                         DISMISS_ITEM,
-                        OBFUSCATED_CHILD_AT_CALLBACK,
                         ON_TOUCH_EVENT_CALLBACK,
-                        SHOW_SWIPING_IPH,
                         HAS_SUGGESTIONS,
                         HAS_STICKY_LAST_ITEM,
                         SELECTED_SUGGESTION_INDEX,
@@ -106,7 +100,6 @@ class KeyboardAccessoryProperties {
                 .with(VISIBLE, false)
                 .with(SKIP_CLOSING_ANIMATION, false)
                 .with(DISABLE_ANIMATIONS_FOR_TESTING, false)
-                .with(SHOW_SWIPING_IPH, false)
                 .with(HAS_SUGGESTIONS, false)
                 .with(SELECTED_SUGGESTION_INDEX, null)
                 .with(ANIMATE_SUGGESTIONS_FROM_TOP, false);

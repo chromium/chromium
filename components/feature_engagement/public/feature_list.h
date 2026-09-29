@@ -147,14 +147,6 @@ DEFINE_VARIATION_PARAM(kIPHIncognitoIndicatorCloseAllWindows,
                        "IPH_IncognitoIndicatorCloseAllWindows");
 DEFINE_VARIATION_PARAM(kIPHInstanceSwitcherFeature, "IPH_InstanceSwitcher");
 DEFINE_VARIATION_PARAM(kIPHRecentTabsFeature, "IPH_RecentTabs");
-DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryAddressFillingFeature,
-                       "IPH_KeyboardAccessoryAddressFilling");
-DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryBarSwipingFeature,
-                       "IPH_KeyboardAccessoryBarSwiping");
-DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPasswordFillingFeature,
-                       "IPH_KeyboardAccessoryPasswordFilling");
-DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentFillingFeature,
-                       "IPH_KeyboardAccessoryPaymentFilling");
 DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentOfferFeature,
                        "IPH_KeyboardAccessoryPaymentOffer");
 DEFINE_VARIATION_PARAM(kIPHMicToolbarFeature, "IPH_MicToolbar");
@@ -719,10 +711,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHIdentityDiscFeature),
         VARIATION_ENTRY(kIPHIncognitoIndicatorCloseAllWindows),
         VARIATION_ENTRY(kIPHInstanceSwitcherFeature),
-        VARIATION_ENTRY(kIPHKeyboardAccessoryAddressFillingFeature),
-        VARIATION_ENTRY(kIPHKeyboardAccessoryBarSwipingFeature),
-        VARIATION_ENTRY(kIPHKeyboardAccessoryPasswordFillingFeature),
-        VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentFillingFeature),
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentOfferFeature),
         VARIATION_ENTRY(kIPHMenuAddToGroup),
         VARIATION_ENTRY(kIPHMicToolbarFeature),

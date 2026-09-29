@@ -11505,72 +11505,6 @@
             ]
         }
     ],
-    "KeyboardAccessoryAddressIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Address_IPH_Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_address_filling_iph_trigger;comparator:<10;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_address_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_KeyboardAccessoryAddressFilling"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
-    "KeyboardAccessoryPasswordIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Password_IPH_Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_password_filling_iph_trigger;comparator:<10;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_password_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_KeyboardAccessoryPasswordFilling"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
-    "KeyboardAccessoryPaymentIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Payment_IPH_Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_payment_filling_iph_trigger;comparator:<10;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_payment_suggestion_accepted;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_KeyboardAccessoryPaymentFilling"
-                    ],
-                    "disable_features": []
-                }
-            ]
-        }
-    ],
     "KeyboardAccessoryPaymentOffer": [
         {
             "platforms": [
@@ -11584,34 +11518,12 @@
                         "event_trigger": "name:keyboard_accessory_payment_offer_iph_trigger;comparator:<3;window:90;storage:360",
                         "event_used": "name:keyboard_accessory_payment_suggestion_accepted;comparator:<2;window:90;storage:360",
                         "session_rate": "any",
-                        "session_rate_impact": "IPH_KeyboardAccessoryBarSwiping"
+                        "session_rate_impact": "none"
                     },
                     "enable_features": [
                         "AutofillEnableOffersInClankKeyboardAccessory",
                         "IPH_KeyboardAccessoryPaymentOffer"
                     ]
-                }
-            ]
-        }
-    ],
-    "KeyboardAccessorySwipingIPH": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Swiping_IPH_Enabled",
-                    "params": {
-                        "availability": "any",
-                        "event_trigger": "name:keyboard_accessory_bar_swiping_iph_trigger;comparator:<10;window:90;storage:360",
-                        "event_used": "name:keyboard_accessory_bar_swiped;comparator:<2;window:90;storage:360",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_KeyboardAccessoryBarSwiping"
-                    ],
-                    "disable_features": []
                 }
             ]
         }

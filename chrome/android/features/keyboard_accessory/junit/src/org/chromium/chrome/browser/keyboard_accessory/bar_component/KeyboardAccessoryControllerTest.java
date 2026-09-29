@@ -40,10 +40,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -67,7 +65,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -770,50 +767,6 @@ public class KeyboardAccessoryControllerTest {
     }
 
     @Test
-    public void testCreatesAddressItemWithIph() {
-        AutofillSuggestion addressSuggestion =
-                new AutofillSuggestion.Builder()
-                        .setLabel("John")
-                        .setSubLabel("Main Str")
-                        .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
-                        .setFeatureForIph("")
-                        .build();
-        mCoordinator.setSuggestions(
-                List.of(addressSuggestion, addressSuggestion, addressSuggestion),
-                mMockAutofillDelegate);
-
-        // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
-        // mCoordinator.prepareUserEducation();
-        assertThat(
-                getAutofillItemAt(0).getFeatureForIph(),
-                is(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE));
-        assertThat(getAutofillItemAt(1).getFeatureForIph(), is(nullValue()));
-        assertThat(getAutofillItemAt(2).getFeatureForIph(), is(nullValue()));
-    }
-
-    @Test
-    public void testCreatesPaymentItemWithIph() {
-        AutofillSuggestion paymentSuggestion =
-                new AutofillSuggestion.Builder()
-                        .setLabel("John")
-                        .setSubLabel("4828 ****")
-                        .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
-                        .setFeatureForIph("")
-                        .build();
-        mCoordinator.setSuggestions(
-                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion),
-                mMockAutofillDelegate);
-
-        // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
-        // mCoordinator.prepareUserEducation();
-        assertThat(
-                getAutofillItemAt(0).getFeatureForIph(),
-                is(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE));
-        assertThat(getAutofillItemAt(1).getFeatureForIph(), is(nullValue()));
-        assertThat(getAutofillItemAt(2).getFeatureForIph(), is(nullValue()));
-    }
-
-    @Test
     public void testIphFeatureSetForAutofillSuggestion() {
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
@@ -835,35 +788,6 @@ public class KeyboardAccessoryControllerTest {
         // Other suggestions also have explicit IPH strings, but only the first suggestion's string
         // is shown.
         assertThat(getAutofillItemAt(1).getFeatureForIph(), is(nullValue()));
-        assertThat(getAutofillItemAt(2).getFeatureForIph(), is(nullValue()));
-    }
-
-    @Test
-    public void testCreatesIphForSecondPasswordItem() {
-        AutofillSuggestion passwordSuggestion1 =
-                new AutofillSuggestion.Builder()
-                        .setLabel("John")
-                        .setSubLabel("****")
-                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
-                        .setFeatureForIph("")
-                        .build();
-        AutofillSuggestion passwordSuggestion2 =
-                new AutofillSuggestion.Builder()
-                        .setLabel("Eva")
-                        .setSubLabel("*******")
-                        .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
-                        .setFeatureForIph("")
-                        .build();
-        mCoordinator.setSuggestions(
-                List.of(passwordSuggestion1, passwordSuggestion2, passwordSuggestion2),
-                mMockAutofillDelegate);
-
-        // assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
-        // mCoordinator.prepareUserEducation();
-        assertThat(getAutofillItemAt(0).getFeatureForIph(), is(nullValue()));
-        assertThat(
-                getAutofillItemAt(1).getFeatureForIph(),
-                is(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE));
         assertThat(getAutofillItemAt(2).getFeatureForIph(), is(nullValue()));
     }
 
@@ -899,26 +823,6 @@ public class KeyboardAccessoryControllerTest {
         assertTrue(mModel.get(SKIP_CLOSING_ANIMATION));
         mCoordinator.show();
         assertFalse(mModel.get(SKIP_CLOSING_ANIMATION));
-    }
-
-    @Test
-    public void testShowSwipingIphUntilVisibilityIsReset() {
-        // By default, no IPH is shown but the model holds a callback to notify the mediator.
-        mCoordinator.show();
-        Callback<Integer> obfuscatedChildAt = mModel.get(OBFUSCATED_CHILD_AT_CALLBACK);
-        assertThat(obfuscatedChildAt, notNullValue());
-        assertFalse(mModel.get(SHOW_SWIPING_IPH));
-
-        // Notify the mediator to show the IPH because at least one of three items is not visible.
-        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
-        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
-        mModel.get(BAR_ITEMS).add(mock(BarItem.class));
-        obfuscatedChildAt.onResult(1);
-        assertTrue(mModel.get(SHOW_SWIPING_IPH));
-
-        // Any change that changes the visibility should reset the swiping IPH.
-        mModel.set(VISIBLE, false);
-        assertFalse(mModel.get(SHOW_SWIPING_IPH));
     }
 
     @Test

@@ -205,9 +205,6 @@
       <message name="IDS_KEYBOARD_ACCESSORY_DISMISS_BUTTON" desc="Title of the button that closes the keyboard accessory.">
         Dismiss
       </message>
-      <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_WITH_CHROME" desc="Text in In-Product-Help bubble suggesting to use an autofill suggestion provided by Chrome.">
-        Use Chrome autofill suggestion
-      </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_AT_MEMORY" desc="Text in the In-Product-Help bubble for a feature to help users find and fill saved autofill information.">
         Enhanced autofill can now find and fill your info from apps like Gmail and Photos
       </message>
@@ -216,9 +213,6 @@
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION" desc="Text in the In-Product-Help bubble for a home or work Autofill profile suggestion.">
         Autofill your home and work addresses from your Google Account
-      </message>
-      <message name="IDS_IPH_KEYBOARD_ACCESSORY_SWIPE_FOR_MORE" desc="Text in In-Product-Help bubble suggesting to scroll the accessory to reveal more suggestions.">
-        Swipe to see more suggestions
       </message>
       <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON" desc="Text for the button used to generate a password.">
         Suggest strong password

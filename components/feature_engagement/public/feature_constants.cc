@@ -544,18 +544,6 @@ BASE_FEATURE(kIPHInstanceSwitcherFeature,
 BASE_FEATURE(kIPHRecentTabsFeature,
              "IPH_RecentTabs",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHKeyboardAccessoryAddressFillingFeature,
-             "IPH_KeyboardAccessoryAddressFilling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHKeyboardAccessoryBarSwipingFeature,
-             "IPH_KeyboardAccessoryBarSwiping",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHKeyboardAccessoryPasswordFillingFeature,
-             "IPH_KeyboardAccessoryPasswordFilling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHKeyboardAccessoryPaymentFillingFeature,
-             "IPH_KeyboardAccessoryPaymentFilling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHKeyboardAccessoryPaymentOfferFeature,
              "IPH_KeyboardAccessoryPaymentOffer",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -173,19 +173,12 @@ public final class EventConstants {
     public static final String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_AUTOFILLED =
             "account_name_email_create_suggestion_feature_used";
 
-    /** The keyboard accessory was used to fill address data into a form. */
-    public static final String KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED =
-            "keyboard_accessory_address_suggestion_accepted";
-
     /** The keyboard accessory At Memory feature was used. */
     public static final String KEYBOARD_ACCESSORY_AT_MEMORY_USED = "autofill_at_memory_iph_used";
 
     /** The keyboard accessory was used to fill autofill valuables data into a form. */
     public static final String KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_AUTOFILLED =
             "autofill_ai_valuables_feature_used";
-
-    /** The keyboard accessory was swiped to reveal more suggestions. */
-    public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
 
     /** The keyboard accessory was used to fill home and work address data into a form. */
     public static final String KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED =
@@ -194,10 +187,6 @@ public final class EventConstants {
     /** The keyboard accessory was used to fill loyalty card info into a form. */
     public static final String KEYBOARD_ACCESSORY_LOYALTY_CARDS_AUTOFILLED =
             "keyboard_accessory_loyalty_cards_autofilled";
-
-    /** The keyboard accessory was used to fill a password form. */
-    public static final String KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED =
-            "keyboard_accessory_password_suggestion_accepted";
 
     /** The keyboard accessory was used to fill payment data into a form. */
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =

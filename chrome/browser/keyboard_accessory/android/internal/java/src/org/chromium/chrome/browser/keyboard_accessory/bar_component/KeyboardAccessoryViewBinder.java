@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.hasShownAnyAutofillIphBefore;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
@@ -14,11 +13,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -667,29 +664,8 @@ class KeyboardAccessoryViewBinder {
             view.setStyle(model.get(STYLE));
         } else if (propertyKey == ANIMATION_LISTENER) {
             view.setAnimationListener(model.get(ANIMATION_LISTENER));
-        } else if (propertyKey == OBFUSCATED_CHILD_AT_CALLBACK) {
-            view.setObfuscatedLastChildAt(model.get(OBFUSCATED_CHILD_AT_CALLBACK));
         } else if (propertyKey == ON_TOUCH_EVENT_CALLBACK) {
             view.setOnTouchEventCallback(model.get(ON_TOUCH_EVENT_CALLBACK));
-        } else if (propertyKey == SHOW_SWIPING_IPH) {
-            RectProvider swipingIphRectProvider = view.getSwipingIphRect();
-            if (model.get(SHOW_SWIPING_IPH)
-                    && swipingIphRectProvider != null
-                    && hasShownAnyAutofillIphBefore(view.getFeatureEngagementTracker())) {
-                boolean isIphShown =
-                        showHelpBubble(
-                                view.getFeatureEngagementTracker(),
-                                FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
-                                swipingIphRectProvider,
-                                view.getContext(),
-                                view.mBarItemsView,
-                                () -> view.setAllowClicksWhileObscured(false));
-                // Only set to true to prevent overriding a true value set during another view's bind
-                // call. An IPH bubble can be shown from different views (e.g., from a ChipView or
-                // KeyboardAccessoryButtonGroupView). The value is reset to false when the IPH is
-                // dismissed via the callback provided above.
-                if (isIphShown) view.setAllowClicksWhileObscured(true);
-            }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));
         } else if (propertyKey == HAS_STICKY_LAST_ITEM) {

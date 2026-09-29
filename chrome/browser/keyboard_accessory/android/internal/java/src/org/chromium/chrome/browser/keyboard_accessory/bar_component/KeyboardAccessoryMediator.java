@@ -12,11 +12,9 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DISMISS_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ON_TOUCH_EVENT_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SELECTED_SUGGESTION_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHEET_OPENER_ITEM;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SHOW_SWIPING_IPH;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.STYLE;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
@@ -70,7 +68,6 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Confir
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogDismissType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DismissHandler;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -136,7 +133,6 @@ class KeyboardAccessoryMediator
                         : null;
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
-        mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
         mModel.set(ON_TOUCH_EVENT_CALLBACK, this::onTouchEvent);
         mModel.set(SHEET_OPENER_ITEM, new SheetOpenerBarItem(sheetOpenerCallbacks));
         mModel.set(DISMISS_ITEM, new DismissBarItem(dismissRunnable));
@@ -396,20 +392,15 @@ class KeyboardAccessoryMediator
                             mProfile));
         }
 
-        // Annotates the first suggestion in with an in-product help bubble. For password
-        // suggestions, the first suggestion is usually autofilled and therefore, the second
-        // element is annotated.
-        // This doesn't necessary mean that the IPH bubble will be shown - a final check will be
+        // Annotates the first suggestion that has an in-product help feature defined.
+        // This doesn't necessarily mean that the IPH bubble will be shown - a final check will be
         // performed right before the bubble can be displayed.
-        boolean skippedFirstPasswordItem = false;
         for (AutofillBarItem barItem : barItems) {
-            if (!skippedFirstPasswordItem && containsPasswordInfo(barItem.getSuggestion())) {
-                // For password suggestions, we want to educate about the 2nd entry.
-                skippedFirstPasswordItem = true;
-                continue;
+            String feature = barItem.getSuggestion().getFeatureForIph();
+            if (feature != null && !feature.isEmpty()) {
+                barItem.setFeatureForIph(feature);
+                break; // Only set IPH for one suggestion in the bar.
             }
-            barItem.setFeatureForIph(getFeatureBySuggestionId(barItem.getSuggestion()));
-            break; // Only set IPH for one suggestions in the bar.
         }
 
         return barItems;
@@ -619,7 +610,6 @@ class KeyboardAccessoryMediator
             PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
         // Update the visibility only if we haven't set it just now.
         if (propertyKey == VISIBLE) {
-            mModel.set(SHOW_SWIPING_IPH, false); // Reset IPH if visibility changes.
             // When the accessory just (dis)appeared, there should be no active tab.
             mTabSwitcher.closeActiveTab();
             if (!mModel.get(VISIBLE)) {
@@ -637,8 +627,6 @@ class KeyboardAccessoryMediator
                 || propertyKey == DISMISS_ITEM
                 || propertyKey == SKIP_CLOSING_ANIMATION
                 || propertyKey == DISABLE_ANIMATIONS_FOR_TESTING
-                || propertyKey == OBFUSCATED_CHILD_AT_CALLBACK
-                || propertyKey == SHOW_SWIPING_IPH
                 || propertyKey == HAS_SUGGESTIONS
                 || propertyKey == HAS_STICKY_LAST_ITEM
                 || propertyKey == SELECTED_SUGGESTION_INDEX
@@ -656,11 +644,6 @@ class KeyboardAccessoryMediator
             return;
         }
         mSheetVisibilityDelegate.onChangeAccessorySheet(activeTab);
-    }
-
-    private void onSuggestionObfuscatedAt(Integer indexOfLast) {
-        // Show IPH if at least one entire item (suggestion or fallback) can be revealed by swiping.
-        mModel.set(SHOW_SWIPING_IPH, indexOfLast <= mModel.get(BAR_ITEMS).size() - 2);
     }
 
     private void onTouchEvent(boolean eventFiltered) {
@@ -718,36 +701,6 @@ class KeyboardAccessoryMediator
 
     PropertyModel getModelForTesting() {
         return mModel;
-    }
-
-    private static @Nullable String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
-        // If the suggestion has an explicit IPH feature defined, prefer that over the default IPH
-        // features.
-        if (suggestion.getFeatureForIph() != null && !suggestion.getFeatureForIph().isEmpty()) {
-            return suggestion.getFeatureForIph();
-        }
-        if (containsPasswordInfo(suggestion)) {
-            return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;
-        }
-        if (containsCreditCardInfo(suggestion)) {
-            return FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE;
-        }
-        if (containsAddressInfo(suggestion)) {
-            return FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE;
-        }
-        return null;
-    }
-
-    private static boolean containsPasswordInfo(AutofillSuggestion suggestion) {
-        return suggestion.getSuggestionType() == SuggestionType.PASSWORD_ENTRY;
-    }
-
-    private static boolean containsCreditCardInfo(AutofillSuggestion suggestion) {
-        return suggestion.getSuggestionType() == SuggestionType.CREDIT_CARD_ENTRY;
-    }
-
-    private static boolean containsAddressInfo(AutofillSuggestion suggestion) {
-        return suggestion.getSuggestionType() == SuggestionType.ADDRESS_ENTRY;
     }
 
     /**

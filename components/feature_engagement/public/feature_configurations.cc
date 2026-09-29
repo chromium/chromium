@@ -1982,8 +1982,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate_impact.affected_features.emplace();
     config.session_rate_impact.affected_features->push_back(
         "IPH_AutofillVirtualCardSuggestion");
-    config.session_rate_impact.affected_features->push_back(
-        "IPH_KeyboardAccessoryBarSwiping");
 
     return config;
   }
@@ -2091,8 +2089,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // This promo blocks specific promos in the same session.
     config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
     config.session_rate_impact.affected_features.emplace();
-    config.session_rate_impact.affected_features->push_back(
-        "IPH_KeyboardAccessoryBarSwiping");
     config.session_rate_impact.affected_features->push_back(
         "IPH_AutofillVirtualCardSuggestion");
 
@@ -2274,7 +2270,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
       feature->name) {
     // Externally created account profile suggestion IPH is shown:
     // * once for an installation, 10-year window is used as the maximum
-    // * if there was no address keyboard accessory IPH in the last 2 weeks
     // * if such a suggestion was not already accepted
     FeatureConfig config;
     config.valid = true;
@@ -2286,12 +2281,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used =
         EventConfig("autofill_external_account_profile_suggestion_accepted",
                     Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
-
-#if BUILDFLAG(IS_ANDROID)
-    config.event_configs.insert(
-        EventConfig("keyboard_accessory_address_filling_iph_trigger",
-                    Comparator(EQUAL, 0), 14, k10YearsInDays));
-#endif  // BUILDFLAG(IS_ANDROID)
 
     return config;
   }
@@ -2313,12 +2302,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(LESS_THAN, 2), 90, 360);
 
 #if BUILDFLAG(IS_ANDROID)
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
-    std::vector<std::string> affected_features;
-    affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
-    session_rate_impact.affected_features = affected_features;
-    config.session_rate_impact = session_rate_impact;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
 #endif  // BUILDFLAG(IS_ANDROID)
 
     return config;
@@ -2349,10 +2333,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate_impact.affected_features.emplace();
     config.session_rate_impact.affected_features->push_back(
         "IPH_AutofillVirtualCardSuggestion");
-#if BUILDFLAG(IS_ANDROID)
-    config.session_rate_impact.affected_features->push_back(
-        "IPH_KeyboardAccessoryBarSwiping");
-#endif  // BUILDFLAG(IS_ANDROID)
 
     return config;
   }

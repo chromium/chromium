@@ -701,14 +701,6 @@ should be able to be added at any place in this file.
   <variant name="_iOSTabGroupsDesktop"
       summary="For iOSTabGroupsDesktopFeature"/>
   <variant name="_iOSWelcomeBack" summary="For iOSWelcomeBack feature"/>
-  <variant name="_KeyboardAccessoryAddressFilling"
-      summary="For KeyboardAccessoryAddressFilling feature."/>
-  <variant name="_KeyboardAccessoryBarSwiping"
-      summary="For KeyboardAccessoryBarSwiping feature."/>
-  <variant name="_KeyboardAccessoryPasswordFilling"
-      summary="For KeyboardAccessoryPasswordFilling feature."/>
-  <variant name="_KeyboardAccessoryPaymentFilling"
-      summary="For KeyboardAccessoryPaymentFilling feature."/>
   <variant name="_KeyboardAccessoryPaymentOffer"
       summary="For KeyboardAccessoryPaymentOffer feature."/>
   <variant name="_LauncherSearchHelpUi"
