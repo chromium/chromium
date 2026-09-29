@@ -307,6 +307,13 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return autofill_progress_dialog_shown_;
   }
 
+  // Simulates the user cancelling the autofill progress dialog by running the
+  // `cancel_callback` that was passed to ShowAutofillProgressDialog().
+  void CancelAutofillProgressDialog() {
+    CHECK(autofill_progress_dialog_cancel_callback_);
+    std::move(autofill_progress_dialog_cancel_callback_).Run();
+  }
+
   void set_payments_network_interface(
       std::unique_ptr<PaymentsNetworkInterface> payments_network_interface) {
     payments_network_interface_ = std::move(payments_network_interface);
@@ -424,6 +431,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       multiple_request_payments_network_interface_;
 
   bool autofill_progress_dialog_shown_ = false;
+
+  base::OnceClosure autofill_progress_dialog_cancel_callback_;
 
   bool autofill_error_dialog_shown_ = false;
 

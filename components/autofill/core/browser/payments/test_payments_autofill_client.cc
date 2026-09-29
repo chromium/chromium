@@ -192,6 +192,7 @@ void TestPaymentsAutofillClient::ShowAutofillProgressDialog(
     base::OnceClosure cancel_callback) {
   autofill_progress_dialog_shown_ = true;
   autofill_progress_dialog_type_ = autofill_progress_dialog_type;
+  autofill_progress_dialog_cancel_callback_ = std::move(cancel_callback);
 }
 
 void TestPaymentsAutofillClient::CloseAutofillProgressDialog(

@@ -70,6 +70,10 @@ class CreditCardAccessManager
       public CreditCardOtpAuthenticator::Requester,
       public CreditCardRiskBasedAuthenticator::Requester {
  public:
+  // Timeout to wait for unmask details from Google Payments.
+  static constexpr base::TimeDelta kUnmaskDetailsResponseTimeout =
+      base::Seconds(3);
+
   class Observer : public base::CheckedObserver {
    public:
     // Signals that `ccam` is about to be destroyed.
@@ -302,6 +306,14 @@ class CreditCardAccessManager
   // `unmasked_card_cache_`.
   std::string GetKeyForUnmaskedCardsCache(const CreditCard& card) const;
 
+  // Returns whether FetchMaskedServerCard() has to wait for the
+  // GetUnmaskDetails() preflight call response before starting the
+  // authentication. `get_unmask_details_returned` is whether the response has
+  // already arrived, and `risk_based_auth_available` is whether risk-based
+  // authentication will handle the card.
+  bool ShouldWaitForPreflightCallResponse(bool get_unmask_details_returned,
+                                          bool risk_based_auth_available);
+
   // Helper function to fetch masked server cards.
   void FetchMaskedServerCard();
 
@@ -327,6 +339,12 @@ class CreditCardAccessManager
   // return. If OnDidGetUnmaskDetails() has been invoked,
   // |get_unmask_details_returned| should be set to true.
   void OnStopWaitingForUnmaskDetails(bool get_unmask_details_returned);
+
+  // Callback function invoked when the user has cancelled the masked server
+  // card unmasking from the progress dialog. The cancellation is handled by
+  // `this` while waiting for the preflight call, and is forwarded to
+  // CreditCardRiskBasedAuthenticator once it has taken over the flow.
+  void OnMaskedServerCardUnmaskCancelled();
 
   // Callback function invoked when the user has accepted the authentication
   // selection dialog and chosen an auth method to use.
@@ -468,6 +486,19 @@ class CreditCardAccessManager
   // True only if currently waiting on unmask details. This avoids making
   // unnecessary calls to payments.
   bool unmask_details_request_in_progress_ = false;
+
+  // True only while the masked server card flow is blocked on the preflight
+  // call response (`ready_to_start_authentication_`) with the unmask progress
+  // dialog shown. Determines whether a cancellation from that dialog is handled
+  // by `this` or forwarded to CreditCardRiskBasedAuthenticator.
+  //
+  // This tracks the flow, not the request, so it cannot be replaced by
+  // `unmask_details_request_in_progress_` above: that one is true whenever the
+  // GetUnmaskDetails() call is in flight, which happens without any card
+  // having been selected, continues after this flow stopped waiting because it
+  // timed out, and is still false while the wait is gated on the preceding
+  // IsUserVerifiable() call.
+  bool waiting_for_preflight_call_response_ = false;
 
   // Callback to notify the caller of the access manager when fetching the
   // card has finished. Only has a meaningful value when an authentication is in
