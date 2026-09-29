@@ -129,7 +129,6 @@ class LocalRecoveryFactorsFactoryImpl
       const LocalRecoveryFactorsFactoryImpl&) = delete;
 
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
-      SecurityDomainId security_domain_id,
       StandaloneTrustedVaultStorage* storage,
       TrustedVaultThrottlingConnection* connection,
       const CoreAccountInfo& primary_account) override {
@@ -147,7 +146,7 @@ class LocalRecoveryFactorsFactoryImpl
     // first.
     local_recovery_factors.emplace_back(
         std::make_unique<ICloudKeychainRecoveryFactor>(
-            icloud_keychain_access_group_prefix_, security_domain_id,
+            icloud_keychain_access_group_prefix_,
             /*registration_storage=*/storage, /*key_storage=*/storage,
             connection, primary_account));
 #endif
@@ -392,8 +391,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     // passing raw pointers is ok.
     local_recovery_factors_ =
         local_recovery_factors_factory_->CreateLocalRecoveryFactors(
-            security_domain_id_, storage_.get(), connection_.get(),
-            *primary_account_);
+            storage_.get(), connection_.get(), *primary_account_);
 
     degraded_recoverability_handler_ =
         std::make_unique<TrustedVaultDegradedRecoverabilityHandler>(

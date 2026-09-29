@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_ICLOUD_KEYCHAIN_RECOVERY_FACTOR_H_
 #define COMPONENTS_TRUSTED_VAULT_ICLOUD_KEYCHAIN_RECOVERY_FACTOR_H_
 
+#include <memory>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/local_recovery_factor.h"
@@ -27,13 +29,12 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
   // and must outlive this object.
   ICloudKeychainRecoveryFactor(
       const std::string& icloud_keychain_access_group_prefix,
-      const SecurityDomainId security_domain_id,
       RecoveryFactorRegistrationStorage* registration_storage,
       KeyStorage* key_storage,
       TrustedVaultThrottlingConnection* connection,
       CoreAccountInfo primary_account);
   ICloudKeychainRecoveryFactor(const ICloudKeychainRecoveryFactor&) = delete;
-  ICloudKeychainRecoveryFactor& operator=(ICloudKeychainRecoveryFactor&) =
+  ICloudKeychainRecoveryFactor& operator=(const ICloudKeychainRecoveryFactor&) =
       delete;
   ~ICloudKeychainRecoveryFactor() override;
 
@@ -50,52 +51,87 @@ class ICloudKeychainRecoveryFactor : public LocalRecoveryFactor {
       RegisterCallback cb) override;
 
  private:
+  // Holds all in-flight state for an ongoing AttemptRecovery() request for a
+  // given security domain. Destroying an instance (e.g. by erasing it from
+  // `ongoing_recoveries_` or during class destruction) cancels any active
+  // network request via RAII and invalidates pending Keychain worker thread
+  // callbacks via `weak_ptr_factory`, without invoking `callback`.
+  struct OngoingRecovery {
+    OngoingRecovery(ICloudKeychainRecoveryFactor* parent,
+                    AttemptRecoveryCallback cb);
+    OngoingRecovery(OngoingRecovery&&);
+    OngoingRecovery& operator=(OngoingRecovery&&);
+    ~OngoingRecovery();
+
+    AttemptRecoveryCallback callback;
+    std::unique_ptr<TrustedVaultConnection::Request> request;
+    std::unique_ptr<base::WeakPtrFactory<ICloudKeychainRecoveryFactor>>
+        weak_ptr_factory;
+  };
+
+  // Holds all in-flight state for an ongoing MaybeRegister() request for a
+  // given security domain. Destroying an instance (e.g. by erasing it from
+  // `ongoing_registrations_` or during class destruction) cancels any active
+  // network request via RAII and invalidates pending Keychain worker thread
+  // callbacks via `weak_ptr_factory`, without invoking `callback`.
+  struct OngoingRegistration {
+    OngoingRegistration(ICloudKeychainRecoveryFactor* parent,
+                        RegisterCallback cb);
+    OngoingRegistration(OngoingRegistration&&);
+    OngoingRegistration& operator=(OngoingRegistration&&);
+    ~OngoingRegistration();
+
+    RegisterCallback callback;
+    std::unique_ptr<TrustedVaultConnection::Request> request;
+    std::unique_ptr<base::WeakPtrFactory<ICloudKeychainRecoveryFactor>>
+        weak_ptr_factory;
+  };
+
   void OnICloudKeysRetrievedForRecovery(
-      AttemptRecoveryCallback cb,
+      SecurityDomainId security_domain_id,
       std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys);
   void OnRecoveryFactorStateDownloadedForRecovery(
-      AttemptRecoveryCallback cb,
+      SecurityDomainId security_domain_id,
       std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys,
       DownloadAuthenticationFactorsRegistrationStateResult result);
+  void FulfillOngoingRecoveryWithFailure(
+      SecurityDomainId security_domain_id,
+      TrustedVaultDownloadKeysStatusForUMA status_for_uma);
   void FulfillRecoveryWithFailure(
+      SecurityDomainId security_domain_id,
       TrustedVaultDownloadKeysStatusForUMA status_for_uma,
       AttemptRecoveryCallback cb);
 
-  void MarkAsRegistered();
+  void MarkAsRegistered(SecurityDomainId security_domain_id);
 
   void OnICloudKeysRetrievedForRegistration(
+      SecurityDomainId security_domain_id,
       std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys);
   void OnRecoveryFactorStateDownloadedForRegistration(
+      SecurityDomainId security_domain_id,
       std::vector<std::unique_ptr<ICloudRecoveryKey>> local_icloud_keys,
       DownloadAuthenticationFactorsRegistrationStateResult result);
   void OnICloudKeyCreatedForRegistration(
+      SecurityDomainId security_domain_id,
       std::unique_ptr<ICloudRecoveryKey> local_icloud_key);
-  void OnRegistered(TrustedVaultRegistrationStatus status, int key_version);
-  void FulfillRegistrationWithFailure(TrustedVaultRegistrationStatus status,
+  void OnRegistered(SecurityDomainId security_domain_id,
+                    TrustedVaultRegistrationStatus status,
+                    int key_version);
+  void FulfillOngoingRegistrationWithFailure(
+      SecurityDomainId security_domain_id,
+      TrustedVaultRegistrationStatus status);
+  void FulfillRegistrationWithFailure(SecurityDomainId security_domain_id,
+                                      TrustedVaultRegistrationStatus status,
                                       RegisterCallback cb);
 
   const std::string icloud_keychain_access_group_;
-  const SecurityDomainId security_domain_id_;
   const raw_ptr<RecoveryFactorRegistrationStorage> registration_storage_;
   const raw_ptr<KeyStorage> key_storage_;
   const raw_ptr<TrustedVaultThrottlingConnection> connection_;
   const CoreAccountInfo primary_account_;
 
-  // Destroying this will cancel the ongoing request.
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_download_registration_state_request_for_recovery_;
-  // Destroying this will cancel the ongoing request.
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_download_registration_state_request_for_registration_;
-  // Destroying this will cancel the ongoing request.
-  std::unique_ptr<TrustedVaultConnection::Request>
-      ongoing_registration_request_;
-  RegisterCallback ongoing_registration_callback_;
-
-  base::WeakPtrFactory<ICloudKeychainRecoveryFactor> recovery_weak_ptr_factory_{
-      this};
-  base::WeakPtrFactory<ICloudKeychainRecoveryFactor>
-      registration_weak_ptr_factory_{this};
+  base::flat_map<SecurityDomainId, OngoingRecovery> ongoing_recoveries_;
+  base::flat_map<SecurityDomainId, OngoingRegistration> ongoing_registrations_;
 };
 
 }  // namespace trusted_vault

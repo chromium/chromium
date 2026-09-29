@@ -318,7 +318,6 @@ class TestLocalRecoveryFactorsFactory
   ~TestLocalRecoveryFactorsFactory() override = default;
 
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
-      SecurityDomainId security_domain_id,
       StandaloneTrustedVaultStorage* storage,
       TrustedVaultThrottlingConnection* connection,
       const CoreAccountInfo& account) override {

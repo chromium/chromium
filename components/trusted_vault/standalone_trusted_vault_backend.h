@@ -67,8 +67,7 @@ class StandaloneTrustedVaultBackend
     // Note that the returned LocalRecoveryFactor's will keep a reference to
     // |storage| and |connection|.
     virtual std::vector<std::unique_ptr<LocalRecoveryFactor>>
-    CreateLocalRecoveryFactors(SecurityDomainId security_domain_id,
-                               StandaloneTrustedVaultStorage* storage,
+    CreateLocalRecoveryFactors(StandaloneTrustedVaultStorage* storage,
                                TrustedVaultThrottlingConnection* connection,
                                const CoreAccountInfo& primary_account) = 0;
   };
