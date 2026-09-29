@@ -91,10 +91,6 @@ external/wpt/css/css-tables/tentative/baseline-td.html
 external/wpt/css/css-tables/tentative/colgroup-col.html
 external/wpt/css/css-tables/tentative/table-quirks.html
 external/wpt/css/css-text/boundary-shaping/boundary-shaping-010.html
-external/wpt/css/css-text-decor/invalidation/text-decoration-thickness.html
-external/wpt/css/css-text-decor/text-decoration-propagation-display-contents.html
-external/wpt/css/css-text-decor/text-decoration-subelements-002.html
-external/wpt/css/css-text-decor/text-shadow/standards-decor-noblur-2.html
 external/wpt/css/css-text/hyphens/hyphenate-limit-chars-001.html
 external/wpt/css/css-text/hyphens/hyphens-auto-003.html
 external/wpt/css/css-text/hyphens/hyphens-auto-004.html
@@ -129,18 +125,6 @@ external/wpt/css/css-text/white-space/white-space-collapse-002.html
 external/wpt/css/css-text/white-space/white-space-intrinsic-size-021.html
 external/wpt/css/css-text/white-space/white-space-pre-wrap-justify-004.html
 external/wpt/css/css-text/white-space/white-space-vs-joiners-002.html
-external/wpt/css/css-transforms/2d-rotate-001.html
-external/wpt/css/css-transforms/backface-visibility-001.html
-external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
-external/wpt/css/css-transforms/css-skew-002.html
-external/wpt/css/css-transforms/transform-generated-001.html
-external/wpt/css/css-transforms/preserve3d-and-filter-with-perspective.html
-external/wpt/css/css-transforms/transform-display-002.html
-external/wpt/css/css-transforms/transform-display-004.html
-external/wpt/css/css-transforms/transform-percent-001.html
-external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html
-external/wpt/css/css-transforms/ttwf-transform-skewx-001.html
-external/wpt/css/css-transforms/ttwf-transform-skewy-001.html
 external/wpt/css/css-transitions/transition-behavior.html
 external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
 external/wpt/css/css-ui/outline-020.html
@@ -573,9 +557,6 @@ external/wpt/html/semantics/popovers/popover-focus-2.html
 # there is some kind of headless focus problem.
 external/wpt/html/semantics/interestfor/interestfor-invoker-descendants.tentative.html
 
-virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-001.html
-virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-animated-002.html
-virtual/backface-visibility-interop/external/wpt/css/css-transforms/ttwf-css-3d-polygon-cycle.html
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
 virtual/dark-color-scheme/external/wpt/css/css-color/system-color-consistency.html
