@@ -70,6 +70,7 @@
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/feature_engagement_tracker_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/history_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/identity_manager_provider_impl.h"
+#include "chrome/browser/ash/browser_delegate/keyed_service_provider/media_device_salt_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/supervised_user_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/sync_service_provider_impl.h"
 #include "chrome/browser/ash/browser_delegate/keyed_service_provider/template_url_service_provider_impl.h"
@@ -973,6 +974,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       std::make_unique<FeatureEngagementTrackerProviderImpl>();
   history_service_provider_ = std::make_unique<HistoryServiceProviderImpl>();
   identity_manager_provider_ = std::make_unique<IdentityManagerProviderImpl>();
+  media_device_salt_service_provider_ =
+      std::make_unique<MediaDeviceSaltServiceProviderImpl>();
   supervised_user_service_provider_ =
       std::make_unique<SupervisedUserServiceProviderImpl>();
   sync_service_provider_ = std::make_unique<SyncServiceProviderImpl>();
@@ -1887,6 +1890,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   template_url_service_provider_.reset();
   sync_service_provider_.reset();
   supervised_user_service_provider_.reset();
+  media_device_salt_service_provider_.reset();
   identity_manager_provider_.reset();
   history_service_provider_.reset();
   feature_engagement_tracker_provider_.reset();

@@ -82,6 +82,7 @@ class FaviconServiceProvider;
 class FeatureEngagementTrackerProvider;
 class HistoryServiceProvider;
 class IdentityManagerProvider;
+class MediaDeviceSaltServiceProvider;
 class SupervisedUserServiceProvider;
 class SyncServiceProvider;
 class TemplateURLServiceProvider;
@@ -234,6 +235,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       feature_engagement_tracker_provider_;
   std::unique_ptr<HistoryServiceProvider> history_service_provider_;
   std::unique_ptr<IdentityManagerProvider> identity_manager_provider_;
+  std::unique_ptr<MediaDeviceSaltServiceProvider>
+      media_device_salt_service_provider_;
   std::unique_ptr<SupervisedUserServiceProvider>
       supervised_user_service_provider_;
   std::unique_ptr<SyncServiceProvider> sync_service_provider_;

@@ -26,8 +26,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/fixed_array.h"
-#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -762,9 +764,18 @@ void XuCameraService::GetDevicePath(
 
   url::Origin security_origin = frame_host->GetLastCommittedOrigin();
 
-  if (media_device_salt::MediaDeviceSaltService* salt_service =
-          MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-              browser_context)) {
+  // This is reached only for a live renderer frame; requests without one return
+  // early via the `!host_id` and null-`frame_host` checks above. The
+  // mojom::XuCamera interface is bound only for the Chromebox for Meetings app
+  // extension (matched by its hashed app id in
+  // chrome_extensions_browser_interface_binders.cc), which runs in the device's
+  // kiosk session. So `browser_context` is a device-local-account profile that
+  // always has an account; it is never a guest or off-the-record profile.
+  const AccountId* account_id = AnnotatedAccountId::Get(browser_context);
+  CHECK(account_id);
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      MediaDeviceSaltServiceProvider::Get().Find(*account_id);
+  if (salt_service) {
     salt_service->GetSalt(
         frame_host->GetStorageKey(),
         base::BindOnce(&TranslateDeviceId, hashed_device_id,
