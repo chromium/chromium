@@ -30,4 +30,8 @@ specific_include_rules = {
   "mirroring_gpu_factories_factory_unittest\.cc": [
     "+ui/gl/gl_implementation.h",
   ],
+  "cast_streaming_e2e_test\.cc": [
+    "+third_party/libyuv",
+    "+ui/gfx/codec",
+  ],
 }

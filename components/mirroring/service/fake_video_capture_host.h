@@ -59,18 +59,28 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
                              GetDeviceFormatsInUseCallback callback) override {}
 
   // Create one video frame and send it to |observer_|.
-  void SendOneFrame(const gfx::Size& size, base::TimeTicks capture_time);
+  void SendOneFrame(const gfx::Size& size,
+                    base::TimeTicks capture_time,
+                    media::VideoPixelFormat format = media::PIXEL_FORMAT_I420,
+                    int start_value = 0);
 
   // Get the most recent capture parameters passed to Start().
   media::VideoCaptureParams GetVideoCaptureParams() const;
 
   bool paused() { return paused_; }
 
+  using OnStartedCallback = base::OnceClosure;
+  void set_on_started_callback(OnStartedCallback cb) {
+    on_started_cb_ = std::move(cb);
+  }
+
  private:
   mojo::Receiver<media::mojom::VideoCaptureHost> receiver_;
   mojo::Remote<media::mojom::VideoCaptureObserver> observer_;
   media::VideoCaptureParams last_params_;
   bool paused_ = false;
+  int32_t next_buffer_id_ = 0;
+  OnStartedCallback on_started_cb_;
 };
 
 }  // namespace mirroring

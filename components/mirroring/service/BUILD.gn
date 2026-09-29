@@ -83,17 +83,19 @@ source_set("unittests") {
   sources = [
     "audio_capturing_callback_unittest.cc",
     "captured_audio_input_unittest.cc",
+    "cast_streaming_e2e_test.cc",
     "fake_socket_factory.cc",
     "fake_socket_factory.h",
     "fake_video_capture_host.cc",
     "fake_video_capture_host.h",
     "media_remoter_unittest.cc",
     "mirroring_gpu_factories_factory_unittest.cc",
-    "openscreen_message_port_unittest.cc",
     "openscreen_rpc_dispatcher_unittest.cc",
     "openscreen_session_host_unittest.cc",
     "openscreen_stats_client_unittest.cc",
     "remoting_sender_unittest.cc",
+    "test_receiver_session_helpers.cc",
+    "test_receiver_session_helpers.h",
     "video_capture_client_unittest.cc",
   ]
 
@@ -124,8 +126,11 @@ source_set("unittests") {
     "//services/viz/public/cpp/gpu",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libyuv",
     "//third_party/openscreen/src/cast/streaming:common",
+    "//third_party/openscreen/src/cast/streaming:receiver",
     "//third_party/openscreen/src/cast/streaming:sender",
+    "//ui/gfx/codec",
     "//ui/gl",
   ]
 

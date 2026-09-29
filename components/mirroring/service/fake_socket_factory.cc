@@ -60,6 +60,9 @@ void MockUdpSocket::SendTo(
   sending_packet_ =
       std::make_unique<media::cast::Packet>(data.begin(), data.end());
   std::move(callback).Run(net::OK);
+  if (packet_callback_) {
+    packet_callback_.Run(*sending_packet_);
+  }
   OnSendTo();
 }
 
@@ -70,13 +73,17 @@ void MockUdpSocket::Send(
   sending_packet_ =
       std::make_unique<media::cast::Packet>(data.begin(), data.end());
   std::move(callback).Run(net::OK);
+  if (packet_callback_) {
+    packet_callback_.Run(*sending_packet_);
+  }
   OnSend();
 }
 
 void MockUdpSocket::OnReceivedPacket(const media::cast::Packet& packet) {
   if (num_ask_for_receive_) {
-    listener_->OnReceived(net::OK, std::nullopt,
-                          base::span<const uint8_t>(packet));
+    listener_->OnReceived(
+        net::OK, net::IPEndPoint(net::IPAddress::IPv4Localhost(), 1234),
+        base::span<const uint8_t>(packet));
     ASSERT_LT(0, num_ask_for_receive_);
     --num_ask_for_receive_;
   }
@@ -94,8 +101,11 @@ MockSocketFactory::~MockSocketFactory() = default;
 void MockSocketFactory::CreateUDPSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
-  udp_socket_ =
-      std::make_unique<MockUdpSocket>(std::move(receiver), std::move(listener));
+  udp_socket_ = std::make_unique<testing::NiceMock<MockUdpSocket>>(
+      std::move(receiver), std::move(listener));
+  if (on_udp_socket_created_cb_) {
+    on_udp_socket_created_cb_.Run(udp_socket_.get());
+  }
   OnUDPSocketCreated();
 }
 

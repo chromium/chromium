@@ -26,7 +26,7 @@ namespace mirroring {
 // operating system assigned to it.
 net::IPEndPoint GetFreeLocalPort();
 
-class MockUdpSocket final : public network::TestUDPSocket {
+class MockUdpSocket : public network::TestUDPSocket {
  public:
   MockUdpSocket(
       mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
@@ -61,10 +61,21 @@ class MockUdpSocket final : public network::TestUDPSocket {
 
   void VerifySendingPacket(const media::cast::Packet& packet);
 
+  using PacketCallback =
+      base::RepeatingCallback<void(const media::cast::Packet&)>;
+  // Sets a callback to be invoked whenever a packet is sent via Send() or
+  // SendTo(). This allows test harnesses to intercept, inspect, drop, or route
+  // outgoing UDP packets (e.g. to simulate network transmission or feed
+  // packets directly to a receiver).
+  void set_packet_callback(PacketCallback callback) {
+    packet_callback_ = std::move(callback);
+  }
+
  private:
   mojo::Receiver<network::mojom::UDPSocket> receiver_;
   mojo::Remote<network::mojom::UDPSocketListener> listener_;
   std::unique_ptr<media::cast::Packet> sending_packet_;
+  PacketCallback packet_callback_;
   int num_ask_for_receive_ = 0;
 };
 
@@ -96,9 +107,21 @@ class MockSocketFactory : public network::mojom::SocketFactory {
 
   MockUdpSocket* udp_socket() const { return udp_socket_.get(); }
 
+  using UdpSocketCreatedCallback =
+      base::RepeatingCallback<void(MockUdpSocket*)>;
+  // Sets a callback to be invoked when CreateUDPSocket() creates a new
+  // MockUdpSocket. The raw pointer is owned by this MockSocketFactory and is
+  // valid for the lifetime of MockSocketFactory. Callers can use this to
+  // configure socket behavior (such as packet interception callbacks) before
+  // streaming begins.
+  void set_udp_socket_created_callback(UdpSocketCreatedCallback callback) {
+    on_udp_socket_created_cb_ = std::move(callback);
+  }
+
  private:
   mojo::Receiver<network::mojom::SocketFactory> receiver_;
   std::unique_ptr<MockUdpSocket> udp_socket_;
+  UdpSocketCreatedCallback on_udp_socket_created_cb_;
 };
 
 }  // namespace mirroring
