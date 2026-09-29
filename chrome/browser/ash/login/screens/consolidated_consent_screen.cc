@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
@@ -424,10 +424,12 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
 void ConsolidatedConsentScreen::RecordConsents(
     const AccountId& account_id,
     const ConsentsParameters& params) {
+  // `account_id` is the just-onboarded user's, so it maps to a profile and
+  // hence a ConsentAuditor. The previous ConsentAuditorFactory lookup walked
+  // the same account-to-context mapping and would equally have crashed here.
   consent_auditor::ConsentAuditor* consent_auditor =
-      ConsentAuditorFactory::GetForProfile(Profile::FromBrowserContext(
-          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-              account_id)));
+      ash::ConsentAuditorProvider::Get().Find(account_id);
+  CHECK(consent_auditor);
   const GaiaId gaia_id = account_id.GetGaiaId();
 
   ArcPlayTermsOfServiceConsent play_consent;

@@ -23,12 +23,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
+#include "chromeos/ash/components/consent_auditor/consent_auditor_provider.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
@@ -398,8 +398,12 @@ void SyncConsentScreen::RecordConsent(
     ConsentGiven consent_given,
     const std::vector<int>& consent_description,
     int consent_confirmation) {
+  // Only reached for the signed-in user whose profile Init() resolved, so the
+  // account always maps back to a ConsentAuditor.
   consent_auditor::ConsentAuditor* consent_auditor =
-      ConsentAuditorFactory::GetForProfile(profile_);
+      ash::ConsentAuditorProvider::Get().Find(
+          CHECK_DEREF(user_.get()).GetAccountId());
+  CHECK(consent_auditor);
   // The user might not consent to browser sync, so use the "unconsented" ID.
   const GaiaId gaia_id =
       GetIdentityManagerForUser(CHECK_DEREF(user_.get()))
