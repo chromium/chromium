@@ -237,8 +237,10 @@ third party code, making it easier to manage updates and dependency hygiene
 long term.
 
 Any first party code or files you need for dependency management or
-interoperability should be added to the top level dependency directory, and the
-dependency source imported into the child src directory.
+integration should be added to the top level dependency directory, and the
+dependency source imported into the child `src/` directory. See
+[Crowbar workflow](https://chromium.googlesource.com/chromium/src/+/main/docs/managing-third-party/crowbar-workflow.md#Directory-Structure)
+as an example.
 
 **Recommended directory structure:**
 ```

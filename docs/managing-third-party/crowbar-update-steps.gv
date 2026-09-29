@@ -1,0 +1,55 @@
+digraph crowbar_lifecycle {
+  rankdir=LR;
+  splines=polyline;
+  node [shape=box, style="rounded,filled", fillcolor="#f8f9fa", fontsize=11, margin="0.2,0.1"];
+  edge [fontsize=10, color="#5f6368"];
+
+  // Lifecycle states
+  up_to_date     [label="Up to Date", fillcolor="#e6f4ea", color="#137333"];
+  pending_update [label="Pending Update", fillcolor="#e8f0fe", color="#1967d2"];
+
+  // Generated CLs and artifacts
+  node [shape=note, style="filled", fillcolor="#f1f3f4", color="#5f6368"];
+  reconcile_cl   [label="Reconcile CL", fillcolor="#fef7e0", color="#b06000"];
+  uprev_cl       [label="Uprev CL", fillcolor="#fef7e0", color="#b06000"];
+  cipd_package   [label="CIPD package"];
+
+  // Routing junction nodes
+  node [shape=point, width=0, height=0, label=""];
+  j_left;
+  j_branch;
+  j_mid;
+  j_right;
+  b_top;
+  b_mid;
+  b_bot;
+
+  { rank=same; j_left; up_to_date; }
+  { rank=same; j_branch; b_top; b_mid; b_bot; }
+  { rank=same; j_mid; reconcile_cl; pending_update; cipd_package; }
+  { rank=same; j_right; uprev_cl; }
+
+  // Enforce vertical order in each column
+  j_left -> up_to_date:n         [dir=forward, constraint=false];
+  j_branch -> b_top              [style=invis];
+  b_top -> b_mid                 [dir=none];
+  b_mid -> b_bot                 [dir=none];
+  j_mid -> reconcile_cl          [style=invis];
+  reconcile_cl -> pending_update [style=invis];
+  pending_update -> cipd_package [style=invis];
+  j_right -> uprev_cl            [style=invis];
+
+  // Joined top return path (right to left)
+  uprev_cl:n -> j_right       [dir=none, constraint=false];
+  reconcile_cl:n -> j_mid     [dir=none, constraint=false];
+  j_mid -> j_right            [dir=none, weight=10];
+  j_branch -> j_mid           [dir=none, weight=10, label="Owners review and merge the CL"];
+  j_left -> j_branch          [dir=none, weight=10];
+
+  // Forward paths
+  up_to_date -> b_mid          [dir=none, weight=10];
+  b_top -> reconcile_cl        [label="Builder detects\nout-of-band-changes", weight=10];
+  b_mid -> pending_update      [label="Resolver records\na new release", weight=10];
+  b_bot -> cipd_package        [label="Builder builds\nthe dependency", weight=10];
+  pending_update -> uprev_cl   [label="Promoter promotes\na valid upstream", weight=10];
+}
