@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
+
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
+
 #include "base/i18n/number_formatting.h"
-#include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +20,7 @@ const unsigned long kOriginMaxDisabledTrialTokens = 1024;
 class OriginTrialsSettingsStorageTest : public testing::Test {
  protected:
   OriginTrialsSettingsStorageTest()
-      : storage_(base::WrapUnique(new OriginTrialsSettingsStorage())) {}
+      : storage_(std::make_unique<OriginTrialsSettingsStorage>()) {}
 
   OriginTrialsSettingsStorage* storage() { return storage_.get(); }
 

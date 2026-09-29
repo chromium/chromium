@@ -7,7 +7,6 @@
 #include <cstring>
 #include <memory>
 
-#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
@@ -99,7 +98,7 @@ ForegroundEidGenerator::GenerateBackgroundScanFilter(
           scanning_device_beacon_seeds,
           timestamps->adjacent_period_start_timestamp_ms,
           timestamps->adjacent_period_end_timestamp_ms);
-  return base::WrapUnique(new EidData(*current_eid, std::move(adjacent_eid)));
+  return std::make_unique<EidData>(*current_eid, std::move(adjacent_eid));
 }
 
 std::unique_ptr<DataWithTimestamp>
@@ -203,9 +202,9 @@ ForegroundEidGenerator::GenerateAdvertisement(
 
   std::string full_advertisement = scanning_device_identifying_data->data +
                                    advertising_device_identifying_data->data;
-  return base::WrapUnique(new DataWithTimestamp(full_advertisement,
-                                                start_of_period_timestamp_ms,
-                                                end_of_period_timestamp_ms));
+  return std::make_unique<DataWithTimestamp>(full_advertisement,
+                                             start_of_period_timestamp_ms,
+                                             end_of_period_timestamp_ms);
 }
 
 std::unique_ptr<DataWithTimestamp>
@@ -233,8 +232,8 @@ ForegroundEidGenerator::GenerateEidDataWithTimestamp(
   std::string eid_data = raw_eid_generator_->GenerateEid(
       *eid_seed, start_of_period_timestamp_ms, extra_entropy);
 
-  return base::WrapUnique(new DataWithTimestamp(
-      eid_data, start_of_period_timestamp_ms, end_of_period_timestamp_ms));
+  return std::make_unique<DataWithTimestamp>(
+      eid_data, start_of_period_timestamp_ms, end_of_period_timestamp_ms);
 }
 
 std::unique_ptr<std::string> ForegroundEidGenerator::GetEidSeedForPeriod(
@@ -243,7 +242,7 @@ std::unique_ptr<std::string> ForegroundEidGenerator::GetEidSeedForPeriod(
   for (auto seed : scanning_device_beacon_seeds) {
     if (seed.start_time_millis() <= start_of_period_timestamp_ms &&
         start_of_period_timestamp_ms < seed.end_time_millis()) {
-      return base::WrapUnique(new std::string(seed.data()));
+      return std::make_unique<std::string>(seed.data());
     }
   }
 
@@ -301,9 +300,9 @@ ForegroundEidGenerator::GetEidPeriodTimestamps(
             end_of_eid_period_ms + kEidPeriod.InMilliseconds();
       }
 
-      return base::WrapUnique(new EidPeriodTimestamps{
+      return std::make_unique<EidPeriodTimestamps>(
           start_of_eid_period_ms, end_of_eid_period_ms,
-          start_of_adjacent_period_ms, end_of_adjacent_period_ms});
+          start_of_adjacent_period_ms, end_of_adjacent_period_ms);
     }
   }
 
@@ -329,7 +328,7 @@ ForegroundEidGenerator::GetBeaconSeedForCurrentPeriod(
 
     if (seed.start_time_millis() <= current_time_ms &&
         current_time_ms < seed.end_time_millis()) {
-      return base::WrapUnique(new cryptauth::BeaconSeed(seed));
+      return std::make_unique<cryptauth::BeaconSeed>(seed);
     }
   }
 
@@ -380,10 +379,10 @@ ForegroundEidGenerator::GetClosestPeriod(
     return nullptr;
   }
 
-  return base::WrapUnique(new EidPeriodTimestamps{
+  return std::make_unique<EidPeriodTimestamps>(
       kNoTimestamp,  // current_period_start_timestamp_ms is unused.
       kNoTimestamp,  // current_period_end_timestamp_ms is unused.
-      start_of_period_timestamp_ms, end_of_period_timestamp_ms});
+      start_of_period_timestamp_ms, end_of_period_timestamp_ms);
 }
 
 bool ForegroundEidGenerator::IsCurrentTimeAtStartOfEidPeriod(

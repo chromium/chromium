@@ -16,7 +16,7 @@ std::unique_ptr<SyncScheduler> TestEngineComponentsFactory::BuildScheduler(
     const std::string& name,
     SyncCycleContext* context,
     CancelationSignal* cancelation_signal) {
-  return std::unique_ptr<SyncScheduler>(new FakeSyncScheduler());
+  return std::make_unique<FakeSyncScheduler>();
 }
 
 std::unique_ptr<SyncCycleContext> TestEngineComponentsFactory::BuildContext(
