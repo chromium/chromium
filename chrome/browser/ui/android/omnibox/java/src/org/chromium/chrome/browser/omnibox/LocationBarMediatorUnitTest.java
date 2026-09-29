@@ -165,6 +165,7 @@ import java.lang.ref.WeakReference;
         shadows = {LocationBarMediatorUnitTest.ObjectAnimatorShadow.class},
         qualifiers = "w1000dp")
 @DisableFeatures({OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarMediatorUnitTest {
 
     @Implements(ObjectAnimator.class)

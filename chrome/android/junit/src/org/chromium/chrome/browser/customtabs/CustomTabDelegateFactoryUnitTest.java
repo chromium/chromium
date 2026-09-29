@@ -62,7 +62,8 @@ import java.util.HashMap;
 
 /** Tests for {@link CustomTabDelegateFactory} and its internal delegates. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("deprecation")
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"deprecation", "DoNotMock"})
 public class CustomTabDelegateFactoryUnitTest {
     private static final String TEST_WEBAPK_PACKAGE_NAME = "org.chromium.webapk.testpackage";
 

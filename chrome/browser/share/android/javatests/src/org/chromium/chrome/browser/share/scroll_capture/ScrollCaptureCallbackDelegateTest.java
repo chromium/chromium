@@ -62,6 +62,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /** Tests for the {@link ScrollCaptureCallbackDelegate} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ScrollCaptureCallbackDelegateTest {
     @Mock private Tab mTab;
     @Mock private WebContentsImpl mWebContents;

@@ -44,6 +44,7 @@ import java.util.List;
 
 /** Unit tests for {@link SuggestionsNavigationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionsNavigationDelegateUnitTest {
     private static final boolean IS_INCOGNITO_SELECTED = false;
 

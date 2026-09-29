@@ -66,6 +66,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link UploadImagePreviewCoordinator}. */
 @Features.EnableFeatures(ChromeFeatureList.FEED_CONTAINMENT)
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UploadImagePreviewCoordinatorUnitTest {
     private static final String TEST_FILE_ID_HASH = "test_file_id_hash";
     private static final Point PORTRAIT_POINT = new Point(1080, 1920);

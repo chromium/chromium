@@ -39,6 +39,7 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link ImmersiveVideoControlCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoControlCoordinatorTest {
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private ImmersiveVideoControlCoordinator.Delegate mDelegate;

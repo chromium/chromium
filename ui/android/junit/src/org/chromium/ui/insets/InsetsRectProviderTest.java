@@ -48,6 +48,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InsetsRectProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

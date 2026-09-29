@@ -34,6 +34,7 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link XrPanelEntityHolderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrPanelEntityHolderImplTest {
     private static final float DELTA = 0.01f;
 

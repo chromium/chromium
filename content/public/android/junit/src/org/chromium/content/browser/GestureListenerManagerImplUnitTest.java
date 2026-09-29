@@ -42,6 +42,7 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ContentFeatureList.CONTINUE_GESTURE_ON_LOSING_FOCUS})
 @EnableFeatures({ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GestureListenerManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

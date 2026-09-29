@@ -76,6 +76,7 @@ import java.util.function.Supplier;
 
 /** Tests for {@link TabbedModeTabModelOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedModeTabModelOrchestratorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeTabbedActivity mChromeActivity;

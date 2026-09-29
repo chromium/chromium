@@ -48,6 +48,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link AutoPictureInPicturePermissionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AutoPictureInPicturePermissionControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

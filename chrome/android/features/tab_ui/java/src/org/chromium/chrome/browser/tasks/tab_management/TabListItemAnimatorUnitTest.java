@@ -53,6 +53,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabListItemAnimator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListItemAnimatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

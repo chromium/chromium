@@ -71,6 +71,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NtpThemeCollectionBridge.Natives mNtpThemeCollectionBridgeJni;

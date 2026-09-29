@@ -148,6 +148,7 @@ import java.util.List;
     ChromeFeatureList.GLIC,
     ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripLayoutHelperManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabStripSceneLayer.Natives mTabStripSceneMock;

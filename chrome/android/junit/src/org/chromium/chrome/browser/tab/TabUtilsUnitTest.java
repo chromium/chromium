@@ -61,6 +61,7 @@ import org.chromium.ui.display.DisplayUtil;
 
 /** Unit tests for {@link TabUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabUtilsUnitTest {
     @Implements(WindowMetrics.class)
     public static class ShadowWindowMetrics {

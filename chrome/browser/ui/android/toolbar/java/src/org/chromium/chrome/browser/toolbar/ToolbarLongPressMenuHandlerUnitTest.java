@@ -95,6 +95,7 @@ import java.util.function.BooleanSupplier;
     ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS,
     ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ToolbarLongPressMenuHandlerUnitTest {
     private static final int URLBAR_LEFT = 100;
     private static final int URLBAR_TOP = 20;

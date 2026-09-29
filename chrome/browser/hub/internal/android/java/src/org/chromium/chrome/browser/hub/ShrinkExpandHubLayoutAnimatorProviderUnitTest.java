@@ -67,6 +67,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link ShrinkExpandHubLayoutAnimatorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShrinkExpandHubLayoutAnimatorProviderUnitTest {
     private static final int WIDTH = 100;
     private static final int HEIGHT = 1000;

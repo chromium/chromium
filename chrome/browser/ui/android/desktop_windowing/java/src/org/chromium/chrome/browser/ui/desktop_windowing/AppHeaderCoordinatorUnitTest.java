@@ -71,6 +71,7 @@ import java.util.List;
 /** Unit test for {@link AppHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AppHeaderCoordinatorUnitTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;

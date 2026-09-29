@@ -63,6 +63,7 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 /** Controller tests for the keyboard accessory bottom sheet component. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccessorySheetControllerTest {
     private static final int DEFAULT_BG_COLOR = Color.LTGRAY;
 

@@ -80,6 +80,7 @@ import java.util.function.Supplier;
 /** Unit tests for the TabSwitcherMessageManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherMessageManagerUnitTest {
     private static final int INITIAL_TAB_COUNT = 0;
     private static final int TAB1_ID = 456;

@@ -43,6 +43,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link ExtensionSidePanelContents}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionSidePanelContentsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

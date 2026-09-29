@@ -58,6 +58,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Tests {@link SafetyHubModuleDelegate} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SafetyHubModuleDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();

@@ -36,6 +36,7 @@ import java.util.List;
 
 /** Tests for {@link XrResizableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrResizableComponentImplTest {
     private static final float DELTA = 0.01f;
 

@@ -68,6 +68,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link FeedSurfaceMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedSurfaceMediatorTest {
     static final @Px int TOOLBAR_HEIGHT = 10;
     private static final int SPAN_COUNT_SMALL_WIDTH = 1;

@@ -37,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link DimensionCompat}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DimensionCompatUnitTest {
     private Activity mActivity;
     private static final int TEST_SCREEN_WIDTH = 1000;

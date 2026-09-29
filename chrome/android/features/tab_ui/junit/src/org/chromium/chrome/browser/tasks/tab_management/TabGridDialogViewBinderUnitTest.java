@@ -24,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Robolectric tests for {@link TabGridDialogViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGridDialogViewBinderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

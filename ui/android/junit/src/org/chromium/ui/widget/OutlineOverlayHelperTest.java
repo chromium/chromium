@@ -31,6 +31,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link OutlineOverlayHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OutlineOverlayHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

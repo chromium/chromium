@@ -67,6 +67,7 @@ import java.util.Map;
 
 /** Supports Robolectric and native unit tests relevant to {@link ChromeAndroidTask}. */
 @NullMarked
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ChromeAndroidTaskUnitTestSupport {
 
     /**

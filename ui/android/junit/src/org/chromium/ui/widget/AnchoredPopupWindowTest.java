@@ -50,6 +50,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
 /** Unit tests for {@link AnchoredPopupWindow}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowView.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class AnchoredPopupWindowTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

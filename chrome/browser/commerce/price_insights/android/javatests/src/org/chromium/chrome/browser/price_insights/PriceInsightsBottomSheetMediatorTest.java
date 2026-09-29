@@ -77,6 +77,7 @@ import java.util.Arrays;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(shadows = {ShadowToast.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PriceInsightsBottomSheetMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

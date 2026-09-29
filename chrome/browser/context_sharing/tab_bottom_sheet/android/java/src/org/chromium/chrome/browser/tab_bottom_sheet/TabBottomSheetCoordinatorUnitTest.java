@@ -87,6 +87,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBottomSheetCoordinatorUnitTest {
     private static final float FULL_HEIGHT_RATIO = 0.7f;
     private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;

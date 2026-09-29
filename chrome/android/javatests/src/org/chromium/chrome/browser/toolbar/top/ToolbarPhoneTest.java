@@ -115,6 +115,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @Restriction(DeviceFormFactor.PHONE)
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarPhoneTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

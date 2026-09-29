@@ -64,6 +64,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link ActorPictureInPictureController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorPictureInPictureControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;

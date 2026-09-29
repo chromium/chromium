@@ -37,6 +37,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** Unit tests for {@link NtpChromeColorsLayoutViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpChromeColorsLayoutViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

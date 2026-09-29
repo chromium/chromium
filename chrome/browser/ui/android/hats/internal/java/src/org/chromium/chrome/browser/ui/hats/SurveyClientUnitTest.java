@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SurveyClientUnitTest {
     private static final String TEST_SURVEY_TRIGGER = "test_survey_trigger";
     private static final String TEST_TRIGGER_ID = "triggerId1234";

@@ -58,6 +58,7 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionsAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeCollectionsAdapterUnitTest {
     private static final String THEME_COLLECTION_TITLE = "Theme Collection 1";
     private static final GURL PREVIEW_IMAGE_URL = JUnitTestGURLs.URL_1;

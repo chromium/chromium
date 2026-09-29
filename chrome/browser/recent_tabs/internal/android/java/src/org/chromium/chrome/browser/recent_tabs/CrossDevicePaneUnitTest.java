@@ -37,6 +37,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link CrossDevicePane}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CrossDevicePaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

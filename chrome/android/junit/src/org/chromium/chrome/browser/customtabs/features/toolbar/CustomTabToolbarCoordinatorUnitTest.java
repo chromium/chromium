@@ -58,6 +58,7 @@ import org.chromium.url.GURL;
 /** Tests for {@link CustomTabToolbarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({SHARE_CUSTOM_ACTIONS_IN_CCT})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabToolbarCoordinatorUnitTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;

@@ -33,6 +33,7 @@ import java.util.function.BooleanSupplier;
 
 /** Tests for {@link ContentGestureListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContentGestureListenerTest {
     private static final float DISTX = 0.f;
 

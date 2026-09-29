@@ -103,6 +103,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for ChromeActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeActivityUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     Activity mActivity;

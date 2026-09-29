@@ -24,6 +24,7 @@ import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Tests for @{@link ViewResizerUtil}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ViewResizerUtilTest {
 
     private Context mContext;

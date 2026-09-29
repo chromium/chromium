@@ -37,6 +37,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 /** Tests for WebApkUtils. */
 @RunWith(RobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebApkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mMockApplicationContext;

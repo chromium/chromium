@@ -35,6 +35,7 @@ import java.util.List;
 
 /** Tests for {@link XrMovableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrMovableComponentImplTest {
 
     @Mock private OnMoveListener mListener;

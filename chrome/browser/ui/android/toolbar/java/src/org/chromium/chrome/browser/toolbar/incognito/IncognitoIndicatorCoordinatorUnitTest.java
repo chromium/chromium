@@ -66,6 +66,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link IncognitoIndicatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoIndicatorCoordinatorUnitTest {
     private static final int BUTTON_WIDTH = 40;
 

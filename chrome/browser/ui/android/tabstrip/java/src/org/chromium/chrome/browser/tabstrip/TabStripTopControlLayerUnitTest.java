@@ -36,6 +36,7 @@ import org.chromium.ui.util.TokenHolder;
 
 /** Unit tests for {@link TabStripTopControlLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabStripTopControlLayerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

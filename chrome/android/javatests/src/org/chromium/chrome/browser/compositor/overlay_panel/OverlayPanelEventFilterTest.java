@@ -49,6 +49,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Class responsible for testing the OverlayPanelEventFilter. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelEventFilterTest {
     private static final float PANEL_ALMOST_MAXIMIZED_OFFSET_Y_DP = 50.f;
     private static final float BAR_HEIGHT_DP = 100.f;

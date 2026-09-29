@@ -50,6 +50,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit test for {@link CustomTabBottomBarDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabBottomBarDelegateUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

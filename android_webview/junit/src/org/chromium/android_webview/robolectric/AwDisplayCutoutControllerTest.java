@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Feature;
 
 /** JUnit tests for AwDisplayCutoutController. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AwDisplayCutoutControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit test for {@link EdgeToEdgeSystemBarColorHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeSystemBarColorHelperUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

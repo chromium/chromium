@@ -41,6 +41,7 @@ import java.util.Collection;
 
 /** Tests for password update dialog. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PasswordEditDialogControllerTest {
     private static final String[] USERNAMES = {"user1", "user2", "user3"};
     private static final int INITIAL_USERNAME_INDEX = 1;

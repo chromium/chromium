@@ -75,6 +75,7 @@ import org.chromium.url.JUnitTestGURLs;
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomBarMediatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

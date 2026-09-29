@@ -94,6 +94,7 @@ import java.util.List;
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
     ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MultiInstanceOrchestratorImplUnitTest {
     private static final int SOURCE_WINDOW_ID = 0;
     private static final int DEST_WINDOW_ID = 1;

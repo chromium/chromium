@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabBottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBottomSheetMediatorUnitTest {
     private static final int MAX_OFFSET = 1000;
     private static final float EPSILON = 0.001f;

@@ -41,6 +41,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Tests for {@link GroupSeparatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GroupSeparatorDecorationUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

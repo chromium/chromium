@@ -54,6 +54,7 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 
 /** Unit tests for {@link WebViewResizingHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebViewResizingHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

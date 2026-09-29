@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 
 /** Unit tests for {@link NtpThemeCollectionsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeCollectionsUtilsUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

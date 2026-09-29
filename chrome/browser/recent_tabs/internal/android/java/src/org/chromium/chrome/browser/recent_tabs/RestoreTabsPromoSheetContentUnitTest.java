@@ -36,6 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for the RestoreTabsPromoSheetContent class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RestoreTabsPromoSheetContentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private View mContentView;

@@ -23,6 +23,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DrivingRestrictionsManagerTest {
     private DrivingRestrictionsManager mManager;
     @Spy private DrivingRestrictionsDelegate mSpyDelegate;

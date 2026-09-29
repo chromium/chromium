@@ -59,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link AuthTabVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AuthTabVerifierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

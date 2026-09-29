@@ -215,6 +215,7 @@ import java.util.Set;
     ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM,
     ChromeFeatureList.ANDROID_VERTICAL_TABS
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean WIN_M = true; // in multi-window mode

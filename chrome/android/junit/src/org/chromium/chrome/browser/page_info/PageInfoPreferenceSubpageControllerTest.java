@@ -37,6 +37,7 @@ import org.chromium.components.page_info.PageInfoPreferenceSubpageController;
 
 /** Tests for PageInfoPreferenceSubpageController. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageInfoPreferenceSubpageControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

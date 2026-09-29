@@ -36,6 +36,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link TabBottomSheetUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBottomSheetUtilsUnitTest {
     private static final float EPSILON = 0.001f;
 

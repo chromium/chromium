@@ -49,6 +49,7 @@ import java.util.List;
 @Config(
         sdk = Build.VERSION_CODES.TIRAMISU,
         shadows = {ShadowGlobalSettings.class, ShadowSecureSettings.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AndroidStylusWritingHandlerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

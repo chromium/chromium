@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
  * both BaseSuggestionViewUnitTest and this file.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionLayoutUnitTest {
 
     @Rule

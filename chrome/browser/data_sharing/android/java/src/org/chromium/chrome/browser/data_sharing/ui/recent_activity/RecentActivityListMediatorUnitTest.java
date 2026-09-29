@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecentActivityListMediatorUnitTest {
     private static final String TEST_COLLABORATION_ID1 = "collaboration1";
     private static final String USER_DISPLAY_NAME1 = "User 1";

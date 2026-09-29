@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for SafeBrowsingPasswordReuseDialogBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SafeBrowsingPasswordReuseDialogBridgeTest {
     private static final String TITLE = "title";
     private static final String DETAILS = "details";

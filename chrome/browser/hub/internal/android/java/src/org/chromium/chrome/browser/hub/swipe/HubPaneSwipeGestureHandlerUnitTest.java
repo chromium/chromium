@@ -43,6 +43,7 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link HubPaneSwipeGestureHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubPaneSwipeGestureHandlerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

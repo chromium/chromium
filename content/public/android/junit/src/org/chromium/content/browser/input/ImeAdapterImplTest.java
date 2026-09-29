@@ -81,6 +81,7 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatureList.ANDROID_MEDIA_INSERTION,
     ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImeAdapterImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -39,6 +39,7 @@ import java.util.Arrays;
 
 /** Unit tests for {@link PreWarmingRecycledViewPool}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PreWarmingRecycledViewPoolUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

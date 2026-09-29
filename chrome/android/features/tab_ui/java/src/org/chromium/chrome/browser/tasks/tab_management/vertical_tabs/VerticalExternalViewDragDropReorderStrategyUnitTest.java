@@ -57,6 +57,7 @@ import java.util.List;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalExternalViewDragDropReorderStrategyUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

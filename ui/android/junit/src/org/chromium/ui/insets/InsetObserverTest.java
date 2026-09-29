@@ -52,6 +52,7 @@ import java.util.Collections;
 
 /** Tests for {@link InsetObserver} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InsetObserverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

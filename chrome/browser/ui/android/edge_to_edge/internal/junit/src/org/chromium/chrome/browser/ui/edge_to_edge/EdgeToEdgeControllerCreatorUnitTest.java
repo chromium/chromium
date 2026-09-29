@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @Config(sdk = VERSION_CODES.R)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeControllerCreatorUnitTest {
     private static final int TOP_STATUS_INSET = 150;
     private static final int NAVBAR_INSET = 100;

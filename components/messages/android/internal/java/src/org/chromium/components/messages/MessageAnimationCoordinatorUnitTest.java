@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link MessageAnimationCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageAnimationCoordinatorUnitTest {
     private final MessageQueueDelegate mQueueDelegate =
             Mockito.spy(

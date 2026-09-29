@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 /** Unit tests for {@link MostVisitedTilesCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.NTP_AURORA + ":padding_style/0"})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MostVisitedTilesCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

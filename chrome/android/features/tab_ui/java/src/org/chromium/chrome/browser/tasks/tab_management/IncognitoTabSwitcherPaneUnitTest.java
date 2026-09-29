@@ -83,6 +83,7 @@ import java.util.function.DoubleConsumer;
     SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoTabSwitcherPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

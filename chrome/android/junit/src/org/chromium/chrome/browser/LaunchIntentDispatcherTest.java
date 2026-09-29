@@ -107,6 +107,7 @@ import java.util.Arrays;
     ChromeFeatureList.GLIC_BACKGROUND_ACTUATION,
     ChromeFeatureList.ACTOR_NOTIFICATION_INTENT_ROUTING
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LaunchIntentDispatcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -47,6 +47,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ReadAloudIphControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

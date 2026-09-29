@@ -37,6 +37,7 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityView;
 
 /** Tests for {@link ImmersiveVideoPlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoPlayerCoordinatorTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private XrSceneCoreSessionManager mSessionManager;

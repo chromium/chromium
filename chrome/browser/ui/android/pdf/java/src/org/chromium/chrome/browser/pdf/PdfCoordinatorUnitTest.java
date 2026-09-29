@@ -134,6 +134,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
             PdfCoordinatorUnitTest.ShadowEditablePdfViewerFragment.class,
             PdfCoordinatorUnitTest.CustomShadowParcelFileDescriptor.class
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PdfCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

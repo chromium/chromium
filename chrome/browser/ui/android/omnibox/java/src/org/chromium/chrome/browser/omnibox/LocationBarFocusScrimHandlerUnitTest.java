@@ -37,6 +37,7 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link LocationBarFocusScrimHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarFocusScrimHandlerUnitTest {
     private static final int BOTTOM_CHIN_HEIGHT = 37;
 

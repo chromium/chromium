@@ -44,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MvtSettingsMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MvtSettingsMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

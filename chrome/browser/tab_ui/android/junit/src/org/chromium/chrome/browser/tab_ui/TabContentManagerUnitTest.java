@@ -44,6 +44,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabContentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabContentManagerUnitTest {
     private static final long NATIVE_PTR = 12345L;
 

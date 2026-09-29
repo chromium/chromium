@@ -33,6 +33,7 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link XrFactoryImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrFactoryImplTest {
     private static final float DELTA = 1e-5f;
 

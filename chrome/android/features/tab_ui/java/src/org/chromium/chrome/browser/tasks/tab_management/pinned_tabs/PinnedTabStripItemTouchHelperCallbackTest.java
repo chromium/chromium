@@ -53,6 +53,7 @@ import java.util.function.Supplier;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripItemTouchHelperCallbackTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;

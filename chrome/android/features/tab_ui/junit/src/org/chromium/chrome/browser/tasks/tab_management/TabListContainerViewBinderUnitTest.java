@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 
 /** Robolectric tests for {@link TabListContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListContainerViewBinderUnitTest {
     private static class MockViewHolder extends RecyclerView.ViewHolder {
         public MockViewHolder(@NonNull View itemView) {

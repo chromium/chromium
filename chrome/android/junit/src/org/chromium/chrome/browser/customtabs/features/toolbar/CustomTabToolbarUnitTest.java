@@ -87,6 +87,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests AMP url handling in the CustomTab Toolbar. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabToolbarUnitTest {
     private static final GURL TEST_URL = JUnitTestGURLs.INITIAL_URL;
     private static final GURL AMP_URL =

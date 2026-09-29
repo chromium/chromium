@@ -61,6 +61,7 @@ import java.util.ArrayList;
 
 /** Tests for {@link MostVisitedTilesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MostVisitedMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock UiConfig mUiConfig;

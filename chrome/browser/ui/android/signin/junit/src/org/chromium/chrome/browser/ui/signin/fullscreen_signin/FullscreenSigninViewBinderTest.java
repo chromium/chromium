@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link FullscreenSigninViewBinder} and {@link FullscreenSigninProperties}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenSigninViewBinderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 
 /** Unit tests for {@link BottomBarHostManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomBarHostManagerUnitTest {
     @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
 

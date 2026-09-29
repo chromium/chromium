@@ -76,6 +76,7 @@ import java.util.function.Supplier;
     BaseSwitches.DISABLE_NATIVE_INITIALIZATION
 })
 @EnableFeatures(ChromeFeatureList.CCT_REPORT_PRERENDER_EVENTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabMinimizationManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

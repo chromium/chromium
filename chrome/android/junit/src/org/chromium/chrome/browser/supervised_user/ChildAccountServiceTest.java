@@ -38,6 +38,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link ChildAccountService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChildAccountServiceTest {
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 

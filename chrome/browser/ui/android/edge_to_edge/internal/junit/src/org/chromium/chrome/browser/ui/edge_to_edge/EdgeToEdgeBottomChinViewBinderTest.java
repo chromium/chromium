@@ -32,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EdgeToEdgeBottomChinViewBinderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

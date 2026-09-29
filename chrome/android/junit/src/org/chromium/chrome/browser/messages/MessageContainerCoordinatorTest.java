@@ -28,6 +28,7 @@ import org.chromium.components.messages.MessageContainer;
 
 /** Unit tests for {@link MessageContainerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageContainerCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

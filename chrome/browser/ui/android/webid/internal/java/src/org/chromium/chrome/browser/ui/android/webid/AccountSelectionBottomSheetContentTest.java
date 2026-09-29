@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** JUnit tests for {@link AccountSelectionBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccountSelectionBottomSheetContentTest {
     private AccountSelectionBottomSheetContent mContent;
 

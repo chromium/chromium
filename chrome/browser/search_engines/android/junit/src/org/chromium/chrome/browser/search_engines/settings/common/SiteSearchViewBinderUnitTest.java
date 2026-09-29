@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link SiteSearchViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SiteSearchViewBinderUnitTest {
     private static final float TOLERANCE = 0.001f;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

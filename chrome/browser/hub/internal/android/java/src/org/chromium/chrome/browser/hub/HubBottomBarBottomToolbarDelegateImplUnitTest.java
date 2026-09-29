@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubBottomBarBottomToolbarDelegateImplUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -44,6 +44,7 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link DirectWritingTrigger}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DirectWritingTriggerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -80,6 +80,7 @@ import org.chromium.url.JUnitTestGURLs;
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the content layer of Custom Tabs code.
  */
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     public static final String INITIAL_URL = JUnitTestGURLs.INITIAL_URL.getSpec();
     public static final String SPECULATED_URL = "https://speculated.com";

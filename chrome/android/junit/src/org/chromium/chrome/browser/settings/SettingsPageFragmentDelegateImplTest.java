@@ -88,6 +88,7 @@ import java.util.function.Function;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
 @Config(qualifiers = "sw600dp")
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsPageFragmentDelegateImplTest {
     private static final int TAB_ID = 123;
     private static final int CONTAINER_ID = R.id.settings_content;

@@ -74,6 +74,7 @@ import java.util.List;
 
 /** Tests for {@link ExtensionsMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionsMenuMediatorTest {
     // Constants identifying elements used in the test environment.
     private static final int TAB_ID = 111;

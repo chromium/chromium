@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecentTabsPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

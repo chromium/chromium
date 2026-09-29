@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the {@link TabViewManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabImpl mTab;

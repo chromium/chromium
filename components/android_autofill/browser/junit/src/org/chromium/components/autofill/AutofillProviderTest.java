@@ -63,6 +63,7 @@ import java.util.Collections;
     AndroidAutofillFeatures.ANDROID_AUTOFILL_IMPROVED_VISIBILITY_DETECTION_NAME,
     AndroidAutofillFeatures.ANDROID_AUTOFILL_SUPPRESS_OFFSCREEN_DATALIST_NAME,
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AutofillProviderTest {
     private static final float EXPECTED_DIP_SCALE = 2;
     private static final int SCROLL_X = 15;

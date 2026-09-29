@@ -55,6 +55,7 @@ import java.util.Map.Entry;
 /** Unit tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DragAndDropLauncherActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ExpectedException exception = ExpectedException.none();

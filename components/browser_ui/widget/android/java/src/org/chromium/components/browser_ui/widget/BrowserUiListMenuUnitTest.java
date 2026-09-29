@@ -56,6 +56,7 @@ import java.util.List;
 /** Unit test for {@link BrowserUiListMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BrowserUiListMenuUnitTest {
 
     @Rule

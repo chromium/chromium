@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 /** Unit tests for {@link ActorNotificationFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorNotificationFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -45,6 +45,7 @@ import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuDialogUnitTest {
     private static final int DIALOG_SIZE_DIP = 50;
 

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 /** Unit tests for {@link PdfFragmentViewTrackerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PdfFragmentViewTrackerImplUnitTest {
     private static final int TAB_ID1 = 123;
     private static final int TAB_ID2 = 124;

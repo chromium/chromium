@@ -60,6 +60,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests logic in the OverlayPanelBase. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelBaseTest {
     private static final float UPWARD_VELOCITY = -1.0f;
     private static final float DOWNWARD_VELOCITY = 1.0f;

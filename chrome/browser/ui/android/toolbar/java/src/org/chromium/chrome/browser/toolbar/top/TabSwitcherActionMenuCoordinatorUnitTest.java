@@ -60,6 +60,7 @@ import java.util.Arrays;
 /** Unit tests for {@link TabSwitcherActionMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherActionMenuCoordinatorUnitTest {
     private static final int PADDING_PX = 10;
 

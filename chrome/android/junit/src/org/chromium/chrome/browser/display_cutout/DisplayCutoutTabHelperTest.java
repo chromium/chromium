@@ -36,6 +36,7 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DisplayCutoutTabHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -54,6 +54,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link OptionalNewTabButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class OptionalNewTabButtonControllerUnitTest {
     private static final int WIDTH_DELTA = 50;
 

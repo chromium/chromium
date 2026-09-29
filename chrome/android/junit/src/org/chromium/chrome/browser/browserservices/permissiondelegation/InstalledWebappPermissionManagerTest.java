@@ -52,6 +52,7 @@ import java.util.Collections;
 
 /** Tests for {@link InstalledWebappPermissionManager}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InstalledWebappPermissionManagerTest {
 
     @ParameterizedRobolectricTestRunner.Parameters

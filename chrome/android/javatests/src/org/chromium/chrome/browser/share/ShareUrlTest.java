@@ -35,6 +35,7 @@ import java.lang.ref.WeakReference;
 // TODO(crbug.com/40256418): Remove this test when share no longer depends on DOM distiller.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShareUrlTest {
     private static final String HTTP_URL = "http://www.google.com/";
     private static final String HTTPS_URL = "https://www.google.com/";

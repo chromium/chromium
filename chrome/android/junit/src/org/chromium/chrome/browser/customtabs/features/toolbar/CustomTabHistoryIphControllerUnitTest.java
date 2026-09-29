@@ -49,6 +49,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link CustomTabHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabHistoryIphControllerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =

@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 
 /** Tests for {@link FragmentDependencyProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FragmentDependencyProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

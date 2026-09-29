@@ -47,6 +47,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link ComposeplateViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ComposeplateViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ComposeplateView mViewMock;

@@ -39,6 +39,7 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link ViewResourceAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ViewResourceAdapterTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private int mViewWidth;

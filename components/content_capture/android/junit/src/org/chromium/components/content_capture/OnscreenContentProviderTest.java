@@ -32,6 +32,7 @@ import org.chromium.content_public.browser.WebContents;
 /** Unit tests for {@link OnscreenContentProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OnscreenContentProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

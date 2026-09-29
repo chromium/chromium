@@ -49,6 +49,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Tests public methods in NativePageFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NativePageFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PdfPage mPdfPage;

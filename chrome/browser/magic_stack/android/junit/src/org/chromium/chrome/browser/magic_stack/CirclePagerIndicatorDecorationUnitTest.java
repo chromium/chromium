@@ -46,6 +46,7 @@ import java.util.Locale;
 
 /** Unit tests for {@link CirclePagerIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CirclePagerIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();

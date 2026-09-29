@@ -57,6 +57,7 @@ import java.util.Collections;
 // TODO(crbug.com/503422619): Update to 37 once its available, and remove the delegate in
 //  HandoffController.java.
 @Config(sdk = 35)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HandoffControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

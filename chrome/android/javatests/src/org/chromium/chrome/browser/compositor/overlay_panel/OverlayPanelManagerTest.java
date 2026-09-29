@@ -52,6 +52,7 @@ import java.util.concurrent.TimeoutException;
 /** Class responsible for testing the OverlayPanelManager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelManagerTest {
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
 

@@ -36,6 +36,7 @@ import org.chromium.blink.mojom.DisplayMode;
 
 /** JUnit tests for AwDisplayModeController. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AwDisplayModeControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

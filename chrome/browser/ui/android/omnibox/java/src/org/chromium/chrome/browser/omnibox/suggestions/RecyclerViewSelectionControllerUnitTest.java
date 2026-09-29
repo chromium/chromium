@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Trave
 
 /** Tests for {@link RecyclerViewSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecyclerViewSelectionControllerUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

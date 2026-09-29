@@ -78,6 +78,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.GLIC)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorOverlayCoordinatorTest {
     @Mock private ViewStub mViewStub;
     @Mock private ViewStub mHandoffButtonStub;

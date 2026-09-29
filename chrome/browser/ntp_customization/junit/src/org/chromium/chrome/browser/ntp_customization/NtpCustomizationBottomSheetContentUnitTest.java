@@ -60,6 +60,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link NtpCustomizationBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class NtpCustomizationBottomSheetContentUnitTest {
     private static final float FLOATING_POINT_DELTA = 0.1f;
     private static final int CONTAINER_HEIGHT = 2000;

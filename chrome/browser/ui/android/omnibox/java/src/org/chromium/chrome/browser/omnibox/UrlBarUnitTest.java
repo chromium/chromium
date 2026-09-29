@@ -100,6 +100,7 @@ import java.util.List;
 /** Unit tests for {@link UrlBar}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w100dp-h50dp")
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UrlBarUnitTest {
     // UrlBar has 4 px of padding on the left and right. Set this to url bar width + padding so
     // getVisibleMeasuredViewportWidth() returns 100. This ensures NUMBER_OF_VISIBLE_CHARACTERS

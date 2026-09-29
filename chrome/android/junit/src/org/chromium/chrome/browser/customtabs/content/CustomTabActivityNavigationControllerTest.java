@@ -62,6 +62,7 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityNavigationControllerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  * turned on (HistoryContentManager::isScrollToLoadDisabled() == true).
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HistoryAdapterAccessibilityTest {
     public static final int PAGING = 2;
 

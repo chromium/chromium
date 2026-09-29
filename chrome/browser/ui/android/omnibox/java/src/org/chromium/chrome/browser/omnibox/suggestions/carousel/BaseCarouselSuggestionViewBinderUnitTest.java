@@ -46,6 +46,7 @@ import java.util.List;
 
 /** Tests for {@link BaseCarouselSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Rule

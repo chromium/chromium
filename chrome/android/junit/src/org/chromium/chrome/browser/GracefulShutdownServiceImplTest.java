@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
 /** Unit tests for {@link GracefulShutdownServiceImpl} and {@link GracefulShutdownService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GracefulShutdownServiceImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

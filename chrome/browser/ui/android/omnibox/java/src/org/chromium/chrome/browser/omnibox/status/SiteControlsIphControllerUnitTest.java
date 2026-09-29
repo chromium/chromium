@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 /** Unit tests for {@link SiteControlsIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SiteControlsIphControllerUnitTest {
 
     @Rule

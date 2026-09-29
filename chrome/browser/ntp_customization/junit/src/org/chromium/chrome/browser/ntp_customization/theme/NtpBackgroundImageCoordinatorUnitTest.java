@@ -51,6 +51,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NtpBackgroundImageCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpBackgroundImageCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 

@@ -73,6 +73,7 @@ import java.util.List;
 
 /** Unit tests for the {@link AdaptiveToolbarButtonController} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AdaptiveToolbarButtonControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -43,6 +43,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabListMergeAnimationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListMergeAnimationManagerUnitTest {
     private static final int FULL_HEIGHT = 100;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

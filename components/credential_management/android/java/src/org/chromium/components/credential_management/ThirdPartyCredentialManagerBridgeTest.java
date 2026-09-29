@@ -50,6 +50,7 @@ import java.util.concurrent.Executor;
 
 /** Tests for the ThirdPartyCredentialManagerBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ThirdPartyCredentialManagerBridgeTest {
 
     private static final String USERNAME = "username";

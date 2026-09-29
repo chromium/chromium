@@ -34,6 +34,7 @@ import java.util.Map;
 
 /** Tests for {@link ViewMarginAdjusterForSideUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ViewMarginAdjusterForSideUiTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

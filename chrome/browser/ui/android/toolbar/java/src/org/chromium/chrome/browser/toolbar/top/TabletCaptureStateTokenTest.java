@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TabletCaptureStateToken}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabletCaptureStateTokenTest {
     private static final Drawable DEFAULT_HOME_BUTTON_DRAWABLE = mock(Drawable.class);
     private static final Drawable DEFAULT_BACKWARD_BUTTON_DRAWABLE = mock(Drawable.class);

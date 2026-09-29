@@ -59,6 +59,7 @@ import java.util.List;
 
 /** Unit tests for {@link NestedLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NestedLayoutDelegateUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final int TAB1_ID = 11;

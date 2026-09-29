@@ -57,6 +57,7 @@ import java.util.List;
 /** Unit tests for the context menu mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuMediatorTest {
 
     // For submenu navigation tests

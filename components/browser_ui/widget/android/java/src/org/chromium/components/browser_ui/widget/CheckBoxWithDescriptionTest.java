@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Batch;
 /** Tests for {@link CheckBoxWithDescription}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CheckBoxWithDescriptionTest {
     private Context mContext;
 

@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UrlBarContextMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UrlBarContextMenuHelperUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

@@ -36,6 +36,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabGroupHoverCardPresenter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupHoverCardPresenterUnitTest {
     private static final int HEADER_TAB_ID = 100;
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);

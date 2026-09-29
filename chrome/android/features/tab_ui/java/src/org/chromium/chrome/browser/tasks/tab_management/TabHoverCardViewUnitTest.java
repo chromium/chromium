@@ -65,6 +65,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabHoverCardViewUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

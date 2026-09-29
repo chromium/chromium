@@ -94,6 +94,7 @@ import java.util.List;
 
 /** Tests for {@link ArchivedTabsDialogCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ArchivedTabsDialogCoordinatorUnitTest {
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();

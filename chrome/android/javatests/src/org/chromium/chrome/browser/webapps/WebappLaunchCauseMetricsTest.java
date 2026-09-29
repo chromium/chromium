@@ -38,6 +38,7 @@ import org.chromium.components.webapps.WebApkDistributor;
 /** Tests basic functionality of WebappLaunchCauseMetrics. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class WebappLaunchCauseMetricsTest {
     @Mock private Activity mActivity;
     @Mock private WebappInfo mWebappInfo;

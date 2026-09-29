@@ -42,6 +42,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeActivitySnackbarHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

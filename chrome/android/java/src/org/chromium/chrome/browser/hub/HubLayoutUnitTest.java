@@ -111,6 +111,7 @@ import java.util.function.Supplier;
  * tests.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubLayoutUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.

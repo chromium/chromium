@@ -81,6 +81,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
     ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     static class TestActivityTabWebContentsDelegateAndroid
             extends ActivityTabWebContentsDelegateAndroid {

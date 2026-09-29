@@ -27,6 +27,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit test for {@link SingleChildViewManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SingleChildViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

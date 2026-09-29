@@ -55,6 +55,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link AiModeActionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AiModeActionCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

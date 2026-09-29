@@ -51,6 +51,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsMenuHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

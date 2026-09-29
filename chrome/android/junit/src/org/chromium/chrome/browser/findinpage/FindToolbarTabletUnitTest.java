@@ -49,6 +49,7 @@ import java.util.Map;
 /** Unit tests for {@link FindToolbarTablet}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "sw600dp")
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FindToolbarTabletUnitTest {
     private static final int SIDE_UI_WIDTH_PX = 250;
     private static final int POPUP_WIDTH_PX = 100;

@@ -71,6 +71,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for LocationBarTablet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarTabletUnitTest {
 
     private static final float DIP_SCALE = 2.0f;

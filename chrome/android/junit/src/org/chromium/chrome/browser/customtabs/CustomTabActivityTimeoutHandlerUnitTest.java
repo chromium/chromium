@@ -51,6 +51,7 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.CCT_RESET_TIMEOUT_ALLOWED,
     ChromeFeatureList.CCT_RESET_TIMEOUT_SKIP_CONFIGURATION_CHANGES
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityTimeoutHandlerUnitTest {
     @Mock private Runnable mFinishRunnable;
     @Mock private PendingIntent mPendingIntent;

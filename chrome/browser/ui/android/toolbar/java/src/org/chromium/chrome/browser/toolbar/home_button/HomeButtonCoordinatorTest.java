@@ -40,6 +40,7 @@ import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HomeButtonCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -49,6 +49,7 @@ import java.util.function.Supplier;
 
 /** Tests for the Safety Hub Magic Stack mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SafetyHubMagicStackMediatorTest {
     private static final String DESCRIPTION = "description";
 

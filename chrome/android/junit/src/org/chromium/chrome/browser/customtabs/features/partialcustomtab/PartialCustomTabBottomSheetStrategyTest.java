@@ -72,6 +72,7 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link PartialCustomTabBottomSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PartialCustomTabBottomSheetStrategyTest {
     @Rule public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 

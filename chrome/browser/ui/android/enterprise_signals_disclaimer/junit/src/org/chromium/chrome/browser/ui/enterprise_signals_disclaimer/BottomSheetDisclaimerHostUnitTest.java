@@ -44,6 +44,7 @@ import java.util.function.IntSupplier;
 /** Unit tests for {@link BottomSheetDisclaimerHost}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

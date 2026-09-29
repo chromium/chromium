@@ -78,6 +78,7 @@ import java.util.List;
 
 /** Instrumentation Unit tests {@link ChromeProvidedSharingOptionsProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

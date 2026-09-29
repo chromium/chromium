@@ -41,6 +41,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /** Unit tests for {@link RecyclerViewScroller}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecyclerViewScrollerUnitTest {
     private static final int FULL_HEIGHT = 100;
     private static final int TARGET_INDEX = 0;

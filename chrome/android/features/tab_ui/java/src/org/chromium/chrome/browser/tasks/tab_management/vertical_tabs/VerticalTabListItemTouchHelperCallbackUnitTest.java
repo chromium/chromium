@@ -77,6 +77,7 @@ import java.util.function.Supplier;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabListItemTouchHelperCallbackUnitTest {
     private static final int THROTTLE_TOKEN = 123;
 

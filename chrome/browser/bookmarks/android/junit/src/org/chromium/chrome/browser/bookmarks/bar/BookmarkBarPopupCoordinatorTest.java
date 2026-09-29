@@ -46,6 +46,7 @@ import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit tests for the {@link BookmarkBarPopupCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarPopupCoordinatorTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

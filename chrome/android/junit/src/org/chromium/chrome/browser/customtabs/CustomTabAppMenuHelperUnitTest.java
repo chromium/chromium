@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabAppMenuHelperUnitTest {
     private static final String PACKAGE_NAME = "org.foo.bar";
 

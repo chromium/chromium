@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit test for {@link BrandingSecurityButtonAnimationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowLooper.class, ShadowDrawable.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BrandingSecurityButtonAnimationDelegateUnitTest {
     private static final @DrawableRes int ICON_16_DP =
             R.drawable.focused_outline_overlay_corners_16dp;

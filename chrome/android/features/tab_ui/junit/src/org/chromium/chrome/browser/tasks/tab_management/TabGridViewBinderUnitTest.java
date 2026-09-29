@@ -79,6 +79,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Junit Tests for {@link TabGridViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class TabGridViewBinderUnitTest {
     private static final int INIT_WIDTH = 100;
 

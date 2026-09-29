@@ -56,6 +56,7 @@ import java.util.Map;
 
 /** Test for {@link ChromeFeedbackCollector}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeFeedbackCollectorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;

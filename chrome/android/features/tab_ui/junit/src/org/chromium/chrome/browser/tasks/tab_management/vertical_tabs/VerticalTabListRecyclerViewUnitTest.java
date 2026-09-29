@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 
 /** Unit tests for {@link VerticalTabListRecyclerView}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabListRecyclerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final int DEFAULT_SCROLL_OFFSET = 12345;

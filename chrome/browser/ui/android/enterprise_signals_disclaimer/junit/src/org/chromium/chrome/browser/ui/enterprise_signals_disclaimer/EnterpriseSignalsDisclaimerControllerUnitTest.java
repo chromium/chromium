@@ -63,6 +63,7 @@ import java.util.function.Consumer;
 /** Unit tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EnterpriseSignalsDisclaimerControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

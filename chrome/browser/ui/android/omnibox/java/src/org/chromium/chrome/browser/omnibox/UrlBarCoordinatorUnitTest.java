@@ -41,6 +41,7 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Unit tests for {@link UrlBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UrlBarCoordinatorUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

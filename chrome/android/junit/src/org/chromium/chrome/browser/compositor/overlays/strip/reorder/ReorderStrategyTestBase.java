@@ -45,6 +45,7 @@ import org.chromium.components.tabs.TabAlert;
 import java.util.List;
 import java.util.function.Supplier;
 
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public abstract class ReorderStrategyTestBase {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

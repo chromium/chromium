@@ -39,6 +39,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 /** Tests for {@link ImmersiveModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveModeControllerTest {
     // Convenience constants to make the tests  more readable.
     private static final boolean NOT_STICKY = false;

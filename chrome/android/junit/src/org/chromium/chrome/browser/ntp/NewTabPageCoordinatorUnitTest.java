@@ -134,6 +134,7 @@ import java.util.function.Supplier;
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.ENABLE_ACCOUNT_PREVIEW_PREFERRED_ACCOUNT
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NewTabPageCoordinatorUnitTest {
     private static final String THIRD_PARTY_AI_MODE_NAVIGATION_URL =
             JUnitTestGURLs.EXAMPLE_URL.getSpec();

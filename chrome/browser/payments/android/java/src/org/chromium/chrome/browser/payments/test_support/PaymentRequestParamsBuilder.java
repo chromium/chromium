@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** The builder of the PaymentRequest parameters. */
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PaymentRequestParamsBuilder implements ChromePaymentRequestService.Delegate {
     private final PaymentRequestClient mClient;
     private final ChromePaymentRequestService.Delegate mDelegate;

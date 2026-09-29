@@ -44,6 +44,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGridItemLongPressOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGridItemLongPressOrchestratorUnitTest {
     private static class MockViewHolder extends ViewHolder {
         public MockViewHolder(View itemView) {

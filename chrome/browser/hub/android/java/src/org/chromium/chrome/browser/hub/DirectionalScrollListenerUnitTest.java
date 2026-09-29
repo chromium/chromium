@@ -23,6 +23,7 @@ import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link DirectionalScrollListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DirectionalScrollListenerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

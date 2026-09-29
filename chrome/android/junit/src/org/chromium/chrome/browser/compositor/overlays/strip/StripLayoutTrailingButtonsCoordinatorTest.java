@@ -97,6 +97,7 @@ import java.util.function.Supplier;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripLayoutTrailingButtonsCoordinatorTest {
     private static final float DEFAULT_AVAILABLE_SPACE_DP = 1000f;
 

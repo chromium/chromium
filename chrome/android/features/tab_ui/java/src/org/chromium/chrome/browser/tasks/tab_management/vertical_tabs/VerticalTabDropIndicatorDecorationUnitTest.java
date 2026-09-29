@@ -47,6 +47,7 @@ import org.chromium.ui.base.LocalizationUtils;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabDropIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -67,6 +67,7 @@ import java.util.List;
 /** Unit tests for {@link LocationBarDragDropHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(UiAndroidFeatures.CLIPBOARD_CONFUSED_DEPUTY_DEFENSE_FILES)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarDragDropHandlerUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

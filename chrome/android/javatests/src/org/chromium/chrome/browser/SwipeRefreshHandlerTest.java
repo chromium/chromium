@@ -50,6 +50,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableLeakChecks("crbug.com/527130930")
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SwipeRefreshHandlerTest {
     private static final int ACCESSIBILITY_SWIPE_REFRESH_STRING_ID =
             R.string.accessibility_swipe_refresh;

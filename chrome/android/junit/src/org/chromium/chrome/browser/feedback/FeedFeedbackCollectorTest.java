@@ -44,6 +44,7 @@ import java.util.Map;
 
 /** Test for {@link FeedFeedbackCollector}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedFeedbackCollectorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     // Enable the Features class, so we can override command line switches in the test.

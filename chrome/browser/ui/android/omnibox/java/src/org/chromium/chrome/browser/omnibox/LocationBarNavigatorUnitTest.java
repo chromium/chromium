@@ -65,6 +65,7 @@ import java.util.Map;
 
 /** Unit tests for {@link LocationBarNavigator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarNavigatorUnitTest {
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 

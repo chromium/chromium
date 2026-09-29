@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Feature;
 /** Tests for the inset code in AwViewAndroidDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AwInsetsTest {
     @Test
     @Feature({"AndroidWebView"})

@@ -44,6 +44,7 @@ import org.chromium.ui.test.util.MockitoHelper;
 /** Unit tests for {@link AppSpecificHistoryIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AppSpecificHistoryIphControllerUnitTest {
     @Rule
     public ActivityScenarioRule<ChromeTabbedActivity> mActivityScenarioRule =

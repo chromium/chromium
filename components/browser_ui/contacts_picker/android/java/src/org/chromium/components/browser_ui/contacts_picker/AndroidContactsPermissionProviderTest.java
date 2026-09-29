@@ -33,6 +33,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link AndroidContactsPermissionProviderImpl}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AndroidContactsPermissionProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link SpacingRecyclerViewItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SpacingRecyclerViewItemDecorationUnitTest {
     private static final int LEAD_IN_SPACE = 10;
     private static final int ELEMENT_SPACE = 17;

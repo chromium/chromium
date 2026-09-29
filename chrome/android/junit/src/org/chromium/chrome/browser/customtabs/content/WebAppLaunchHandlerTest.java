@@ -80,6 +80,7 @@ import java.util.Objects;
 
 /** Tests for {@link WebAppLaunchHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebAppLaunchHandlerTest {
     static final int WRONG_CLIENT_MODE = 65;
 

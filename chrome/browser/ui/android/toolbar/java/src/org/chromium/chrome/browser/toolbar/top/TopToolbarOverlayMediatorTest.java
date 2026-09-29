@@ -55,6 +55,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TopToolbarOverlayMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

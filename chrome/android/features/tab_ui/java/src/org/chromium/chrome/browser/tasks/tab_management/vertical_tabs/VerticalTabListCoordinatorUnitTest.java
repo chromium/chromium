@@ -189,6 +189,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW,
     ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabListCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

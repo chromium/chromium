@@ -41,6 +41,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for MessageQueueManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({MessageFeatureList.MESSAGES_ANDROID_EXTRA_HISTOGRAMS})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageQueueManagerTest {
 
     private final MessageQueueDelegate mEmptyDelegate =

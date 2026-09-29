@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for the ScreenshotBoundsManager */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ScrollCaptureManagerTest {
     @Mock private Tab mTab;
     @Mock private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;

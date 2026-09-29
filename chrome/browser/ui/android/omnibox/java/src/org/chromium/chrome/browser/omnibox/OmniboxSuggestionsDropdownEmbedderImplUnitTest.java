@@ -58,6 +58,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdownEmbedderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OmniboxSuggestionsDropdownEmbedderImplUnitTest {
     private static final int ANCHOR_WIDTH = 600;
     private static final int ANCHOR_HEIGHT = 80;

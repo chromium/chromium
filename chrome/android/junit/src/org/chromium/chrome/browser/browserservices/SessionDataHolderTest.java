@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 
 /** Unit tests for {@link SessionDataHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SessionDataHolderTest {
 
     private static final int TASK_ID_1 = 10;

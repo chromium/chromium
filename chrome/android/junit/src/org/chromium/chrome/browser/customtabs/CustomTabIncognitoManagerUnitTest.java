@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 /** Unit tests for {@link CustomTabIncognitoManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabIncognitoManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -44,6 +44,7 @@ import java.util.Arrays;
 
 /** Tests for PageInfoPermissionsController. */
 @RunWith(RobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageInfoPermissionsControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();

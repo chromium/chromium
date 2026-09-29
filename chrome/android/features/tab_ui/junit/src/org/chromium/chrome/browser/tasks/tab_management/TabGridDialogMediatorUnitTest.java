@@ -161,7 +161,8 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabGridDialogMediator}. */
-@SuppressWarnings({"ArraysAsListWithZeroOrOneArgument"})
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "DoNotMock"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGridDialogMediatorUnitTest {

@@ -32,6 +32,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for {@link ScreenshotShareSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ScreenshotShareSheetMediatorUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

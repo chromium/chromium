@@ -34,6 +34,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link StatusIndicatorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StatusIndicatorMediatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

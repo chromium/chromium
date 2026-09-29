@@ -159,6 +159,7 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
     ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ManualFillingControllerTest {
     private static final int sKeyboardHeightDp = 100;
     private static final int sAccessoryHeightDp = 48;

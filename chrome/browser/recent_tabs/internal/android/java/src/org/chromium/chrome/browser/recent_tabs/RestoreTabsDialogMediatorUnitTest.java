@@ -50,6 +50,7 @@ import java.util.List;
 
 /** Tests for RestoreTabsDialogMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RestoreTabsDialogMediatorUnitTest {
     private static final String TEST_CONTENT_DESRIPTION = "Test content description";
 

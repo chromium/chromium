@@ -32,6 +32,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Robolectric tests for {@link IncognitoReauthDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoReauthDialogTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ModalDialogManager mModalDialogManagerMock;

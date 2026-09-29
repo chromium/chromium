@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link DynamicSpacingRecyclerViewItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     private static final int CONTAINER_SIZE = 1000;
     private static final int LEAD_IN_SPACE = 10;

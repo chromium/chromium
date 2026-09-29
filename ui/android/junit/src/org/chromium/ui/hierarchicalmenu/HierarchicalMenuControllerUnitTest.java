@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link HierarchicalMenuControllerUnitTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HierarchicalMenuControllerUnitTest {
 
     private static final int TEST_MENU_ITEM_ID = 3; // Arbitrary int for testing

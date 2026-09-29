@@ -27,6 +27,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SensitiveContentClientUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -33,6 +33,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
 /** Unit tests for {@link TabbedRootUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedRootUiCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

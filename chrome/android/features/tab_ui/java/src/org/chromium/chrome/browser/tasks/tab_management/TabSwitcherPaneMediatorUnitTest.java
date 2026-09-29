@@ -80,6 +80,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabSwitcherPaneMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherPaneMediatorUnitTest {
     private static final int UNGROUPED_TAB_ID = 1;
     private static final int GROUPED_TAB_1_ID = 2;

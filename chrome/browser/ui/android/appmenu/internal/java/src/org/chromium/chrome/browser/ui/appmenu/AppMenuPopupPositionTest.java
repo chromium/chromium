@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.appmenu.internal.R;
 
 /** Tests AppMenu#getPopupPosition. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AppMenuPopupPositionTest {
 
     private final int[] mTempLocation = new int[2];

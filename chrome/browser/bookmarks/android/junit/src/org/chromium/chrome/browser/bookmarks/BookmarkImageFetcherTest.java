@@ -56,6 +56,7 @@ import java.util.Arrays;
 
 /** Unit tests for {@link BookmarkImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkImageFetcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -30,6 +30,7 @@ import java.util.List;
 
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeFeedbackCollectorTest {
     private static final String FEEDBACK_URL = "https://google.com";
     private static final String FEEDBACK_CONSTANT = "feedbackContext";

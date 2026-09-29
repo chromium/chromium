@@ -74,6 +74,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
 @EnableFeatures(ChromeFeatureList.PRICE_CHANGE_MODULE)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PriceChangeModuleMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

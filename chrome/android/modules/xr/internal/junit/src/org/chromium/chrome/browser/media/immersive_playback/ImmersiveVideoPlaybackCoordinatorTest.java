@@ -78,7 +78,8 @@ import java.util.function.Consumer;
 
 /** Tests for {@link ImmersiveVideoPlaybackCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("unchecked")
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"unchecked", "DoNotMock"})
 public class ImmersiveVideoPlaybackCoordinatorTest {
     static {
         XrModuleProviderImpl.initialize();

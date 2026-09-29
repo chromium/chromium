@@ -76,6 +76,7 @@ import java.util.function.BooleanSupplier;
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
  * to the Partial Custom Tabs logic.
  */
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PartialCustomTabTestRule implements TestRule {
     // Pixel 3 XL metrics
     static final float DENSITY = 1.25f;

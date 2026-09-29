@@ -73,6 +73,7 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for OptionalButtonView. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OptionalButtonViewTest {
     private Context mActivity;
 

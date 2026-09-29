@@ -38,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link WindowZOrderTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WindowZOrderTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

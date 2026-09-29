@@ -101,6 +101,7 @@ import java.util.function.Supplier;
     ChromeFeatureList.SENSITIVE_CONTENT,
     ChromeFeatureList.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NewTabAnimationLayoutUnitTest {
     private static final long FAKE_TIME = 0;
     private static final @TabId int CURRENT_TAB_ID = 321;

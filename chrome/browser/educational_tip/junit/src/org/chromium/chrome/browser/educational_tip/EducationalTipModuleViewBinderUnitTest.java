@@ -39,6 +39,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** Tests for {@link EducationalTipModuleViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class EducationalTipModuleViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;

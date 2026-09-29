@@ -72,6 +72,7 @@ import java.util.List;
 
 /** Unit tests for NfcImpl and NdefMessageUtils classes. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NFCTest {
     private TestNfcDelegate mDelegate;
     private int mNextWatchId;

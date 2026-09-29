@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final.
         })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BaseVerticalTabDropIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -39,6 +39,7 @@ import java.util.List;
 
 /** Unit tests for {@link ContainmentItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContainmentItemDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

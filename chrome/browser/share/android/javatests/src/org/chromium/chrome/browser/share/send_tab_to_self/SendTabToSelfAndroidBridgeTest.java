@@ -85,6 +85,7 @@ import java.util.function.Supplier;
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowToast.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SendTabToSelfAndroidBridgeTest {
     private static final String URL = "https://www.google.com";
     private static final String TITLE = "Google";

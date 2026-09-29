@@ -133,6 +133,7 @@ import java.util.List;
 @Features.DisableFeatures({
     ChromeFeatureList.AUTOFILL_AMBIENT_AUTOFILL_SUPPRESSION,
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardAccessoryControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

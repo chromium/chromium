@@ -62,6 +62,7 @@ import java.util.Set;
 /** Unit tests for {@link BookmarkBarVisibilityProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarVisibilityProviderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

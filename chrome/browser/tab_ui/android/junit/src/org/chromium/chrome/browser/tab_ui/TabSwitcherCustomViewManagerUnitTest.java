@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TabSwitcherCustomViewManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherCustomViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabSwitcherCustomViewManager.Delegate mDelegate;

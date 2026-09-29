@@ -43,6 +43,7 @@ import java.util.concurrent.Callable;
 
 /** Unit tests for {@link ThreadedInputConnectionFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ThreadedInputConnectionFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

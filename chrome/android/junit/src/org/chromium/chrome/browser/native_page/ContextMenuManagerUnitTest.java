@@ -48,6 +48,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit test for {@link ContextMenuManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowPopupWindow.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

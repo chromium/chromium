@@ -75,6 +75,7 @@ import java.util.Map;
 /** Unit tests for {@link PlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PlayerMediatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";

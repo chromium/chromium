@@ -43,6 +43,7 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItemDeco
 
 /** Unit tests for {@link SettingsContainmentHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsContainmentHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

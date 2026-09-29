@@ -46,6 +46,7 @@ import java.util.function.Consumer;
 /** Unit tests for {@link ModalDialogDisclaimerHost}. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ModalDialogDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

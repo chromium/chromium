@@ -43,6 +43,7 @@ import java.util.Map;
 
 /** Tests for {@link SceneOverlay} interactions. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SceneOverlayTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     @Mock private Context mContext;

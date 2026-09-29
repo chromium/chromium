@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHig
 
 /** Unit tests for {@link TabCardHighlightHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabCardHighlightHandlerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

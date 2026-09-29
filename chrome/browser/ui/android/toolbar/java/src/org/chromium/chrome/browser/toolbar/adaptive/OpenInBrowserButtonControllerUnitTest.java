@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link OpenInBrowserButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class OpenInBrowserButtonControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Context mContext;

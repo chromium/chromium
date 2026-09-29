@@ -46,6 +46,7 @@ import java.util.List;
 
 /** Unit tests for {@link DocumentPictureInPictureHeaderViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DocumentPictureInPictureHeaderViewBinderUnitTest {
     private Context mContext;
     private ViewGroup mHeaderView;

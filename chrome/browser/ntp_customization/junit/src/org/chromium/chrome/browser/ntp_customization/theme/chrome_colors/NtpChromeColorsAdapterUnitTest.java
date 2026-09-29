@@ -41,6 +41,7 @@ import java.util.List;
 
 /** Unit tests for {@link NtpChromeColorsAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpChromeColorsAdapterUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

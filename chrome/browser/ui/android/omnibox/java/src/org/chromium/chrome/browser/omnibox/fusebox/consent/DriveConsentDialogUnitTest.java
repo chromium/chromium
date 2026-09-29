@@ -36,6 +36,7 @@ import org.chromium.ui.widget.LoadingView;
 
 /** Unit tests for {@link DriveConsentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DriveConsentDialogUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);

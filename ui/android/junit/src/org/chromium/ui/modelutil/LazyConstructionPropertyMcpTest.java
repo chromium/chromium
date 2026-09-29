@@ -37,6 +37,7 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
 /** Unit tests for LazyConstructionPropertyMcp. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LazyConstructionPropertyMcpTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();

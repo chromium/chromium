@@ -76,6 +76,7 @@ import java.util.List;
 /** Unit tests for {@link StaticLayout}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StaticLayoutUnitTest {
 
     private static final int TAB1_ID = 0;

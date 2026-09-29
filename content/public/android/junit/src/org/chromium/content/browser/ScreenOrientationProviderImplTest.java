@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ScreenOrientationProviderImpl } */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ContentFeatures.RESTRICT_INTERACTIONS_IN_SWIPE_REGION_ON_FULLSCREEN)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ScreenOrientationProviderImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

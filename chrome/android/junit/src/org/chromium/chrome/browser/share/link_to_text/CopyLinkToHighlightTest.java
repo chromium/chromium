@@ -39,6 +39,7 @@ import java.util.List;
 /** Unit tests for Copy Link to Highlight menu item in {@link TextSelectionActionMenuDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CopyLinkToHighlightTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

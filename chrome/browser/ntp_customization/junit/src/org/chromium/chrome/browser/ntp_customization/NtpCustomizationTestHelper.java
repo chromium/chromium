@@ -17,6 +17,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 
 /** Helper class for NTP customization unit tests. */
 @NullMarked
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpCustomizationTestHelper {
     /**
      * Set up the Edge-to-Edge environment for the given WindowAndroid.

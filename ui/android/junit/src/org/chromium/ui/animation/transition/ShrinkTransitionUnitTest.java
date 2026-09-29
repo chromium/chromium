@@ -27,6 +27,7 @@ import java.util.List;
 
 /** Unit tests for {@link ShrinkTransition}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShrinkTransitionUnitTest {
     private static final float DELTA = 0.0001f;
 

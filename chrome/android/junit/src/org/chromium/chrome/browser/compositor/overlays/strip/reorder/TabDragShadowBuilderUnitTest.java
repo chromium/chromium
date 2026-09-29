@@ -37,6 +37,7 @@ import org.chromium.chrome.R;
 
 /** Unit tests for {@link TabDragShadowBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabDragShadowBuilderUnitTest {
     private static final int SHADOW_WIDTH = 300;
     private static final int SHADOW_HEIGHT = 200;

@@ -53,6 +53,7 @@ import java.util.function.Supplier;
 
 /** Unit tests for PageViewObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class PageViewObserverTest {
     private static final GURL STARTING_URL = JUnitTestGURLs.URL_1;
     private static final GURL STARTING_URL_WITH_PATH = JUnitTestGURLs.URL_1_WITH_PATH;

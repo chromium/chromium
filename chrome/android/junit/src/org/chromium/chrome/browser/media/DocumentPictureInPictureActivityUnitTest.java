@@ -53,6 +53,7 @@ import org.chromium.url.Origin;
 
 /** Unit tests for {@link DocumentPictureInPictureActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DocumentPictureInPictureActivityUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

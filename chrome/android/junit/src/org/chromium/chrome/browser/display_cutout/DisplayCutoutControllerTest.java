@@ -62,6 +62,7 @@ import java.lang.ref.WeakReference;
 
 /** Tests for {@link DisplayCutoutController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DisplayCutoutControllerTest {
     private static final Insets INITIAL_STATUS_BAR_INSETS = Insets.of(0, 80, 0, 0);
     private static final Insets INITIAL_NAV_BAR_INSETS = Insets.of(0, 0, 0, 24);

@@ -40,6 +40,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Unit tests for {@link ChromeSurveyController} and {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

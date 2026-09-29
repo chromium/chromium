@@ -54,6 +54,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link FeedSliceViewTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedSliceViewTrackerTest {
     // Mocking dependencies that are always present, but using a real FeedListContentManager.
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

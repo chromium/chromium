@@ -45,6 +45,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for TranslateMessage. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class TranslateMessageTest {
     private static final long NATIVE_TRANSLATE_MESSAGE = 1337;
     private static final int DISMISSAL_DURATION_SECONDS = 15;

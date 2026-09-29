@@ -38,6 +38,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Unit tests for {@link KeyboardFocusRowManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardFocusRowManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

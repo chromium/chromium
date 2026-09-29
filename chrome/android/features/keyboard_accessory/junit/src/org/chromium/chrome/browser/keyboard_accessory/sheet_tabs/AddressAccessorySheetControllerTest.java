@@ -45,6 +45,7 @@ import org.chromium.ui.modelutil.ListObservable;
 
 /** Controller tests for the address accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AddressAccessorySheetControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

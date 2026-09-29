@@ -28,6 +28,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 /** Unit tests for {@link StripTabModelActionListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class StripTabModelActionListenerUnitTest {
     private static final Token TAB_GROUP_ID = new Token(3478329L, 3489L);
 

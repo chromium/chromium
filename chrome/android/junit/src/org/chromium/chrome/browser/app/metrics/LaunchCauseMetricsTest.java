@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 /** Tests basic functionality of LaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.LAUNCH_CAUSE_SCREEN_OFF_FIX})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class LaunchCauseMetricsTest {
     @Mock private Activity mActivity;
 

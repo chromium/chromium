@@ -95,6 +95,7 @@ import java.util.List;
 /** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.CINNAMON_BUN)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PopupCreatorImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

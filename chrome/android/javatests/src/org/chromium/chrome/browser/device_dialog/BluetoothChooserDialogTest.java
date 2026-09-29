@@ -67,6 +67,7 @@ import java.util.concurrent.Callable;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344665244): Failing when batched, batch this again.
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BluetoothChooserDialogTest {
     public static final String DEVICE_DIALOG_BATCH_NAME = "device_dialog";
 

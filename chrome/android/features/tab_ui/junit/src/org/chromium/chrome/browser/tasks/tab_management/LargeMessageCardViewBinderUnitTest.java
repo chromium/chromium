@@ -35,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link LargeMessageCardViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LargeMessageCardViewBinderUnitTest {
     private static final String FAKE_DISPLAY_TEXT = "Fake Text";
     private static final int FAKE_ICON_WIDTH = 666;

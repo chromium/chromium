@@ -72,6 +72,7 @@ import java.util.List;
 /** Unit tests for the context menu. Use density=mdpi so the screen density is 1. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuCoordinatorTest {
     private static final int TOP_CONTENT_OFFSET_PX = 17;
     public static final String PARENT_LABEL = "Parent item";

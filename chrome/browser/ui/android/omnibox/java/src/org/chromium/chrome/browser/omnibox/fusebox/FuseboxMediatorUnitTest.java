@@ -151,6 +151,7 @@ import java.util.function.Function;
 
 /** Unit tests for {@link FuseboxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FuseboxMediatorUnitTest {
     private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 

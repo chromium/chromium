@@ -82,7 +82,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
-@SuppressWarnings({"ResultOfMethodCallIgnored", "DirectInvocationOnMock"})
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"ResultOfMethodCallIgnored", "DirectInvocationOnMock", "DoNotMock"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         instrumentedPackages = {

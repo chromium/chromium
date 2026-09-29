@@ -99,6 +99,7 @@ import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SearchActivityUnitTest {
     private static final String TEST_URL = "https://abc.xyz/";
     private static final String TEST_REFERRER = "com.package.name";

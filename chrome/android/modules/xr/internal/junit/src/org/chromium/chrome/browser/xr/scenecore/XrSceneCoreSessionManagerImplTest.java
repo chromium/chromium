@@ -46,6 +46,7 @@ import org.chromium.ui.xr.scenecore.XrSurfaceEntityShape;
 
 /** Tests for {@link XrSceneCoreSessionManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrSceneCoreSessionManagerImplTest {
     static {
         XrModuleProviderImpl.initialize();

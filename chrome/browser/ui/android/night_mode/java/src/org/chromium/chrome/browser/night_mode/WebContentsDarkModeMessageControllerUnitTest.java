@@ -63,6 +63,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebContentsDarkModeMessageControllerUnitTest {
     private boolean mIsFeatureEnabled;
 

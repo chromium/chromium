@@ -24,6 +24,7 @@ import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link CompositorViewHolderSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CompositorViewHolderSupplierUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

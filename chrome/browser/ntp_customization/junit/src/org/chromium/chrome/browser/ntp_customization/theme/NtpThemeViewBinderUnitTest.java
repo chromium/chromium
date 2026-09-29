@@ -33,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link NtpThemeViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeViewBinderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

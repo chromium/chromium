@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 
 /** Unit tests for {@link ChromeTabbedActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeTabbedActivityUnitTest {
     private static class TestChromeTabbedActivity extends ChromeTabbedActivity {
         private boolean mAreTabModelsInitialized;

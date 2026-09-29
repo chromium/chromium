@@ -39,6 +39,7 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 /** Test whether metrics are correctly recorded by {@link DefaultBrowserPromoManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DefaultBrowserPromoManagerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

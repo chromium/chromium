@@ -53,6 +53,7 @@ import org.chromium.ui.widget.LoadingView;
 
 /** Unit tests for the {@link LogoContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LogoContainerViewBinderUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;

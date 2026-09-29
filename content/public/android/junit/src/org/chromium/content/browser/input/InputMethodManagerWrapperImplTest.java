@@ -40,6 +40,7 @@ import java.lang.ref.WeakReference;
 
 /** A robolectric test for {@link InputMethodManagerWrapperImpl} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class InputMethodManagerWrapperImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

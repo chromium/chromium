@@ -34,6 +34,7 @@ import java.util.Map;
 
 /** Unit tests for {@link TextSuggestionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TextSuggestionPopupControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

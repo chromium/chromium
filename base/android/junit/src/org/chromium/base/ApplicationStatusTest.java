@@ -40,6 +40,7 @@ import java.util.List;
 /** Unit tests for {@link ApplicationStatus}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ApplicationStatusTest.TrackingShadowActivity.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ApplicationStatusTest {
     private static class WindowCallbackWrapper implements Window.Callback {
         final Window.Callback mWrapped;

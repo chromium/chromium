@@ -64,6 +64,7 @@ import java.util.Map.Entry;
 /** Unit tests for {@link TabReparentingDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabReparentingDelegateUnitTest {
     private static final int SOURCE_WINDOW_ID = 1;
     private static final int DEST_WINDOW_ID = 2;

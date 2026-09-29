@@ -68,6 +68,7 @@ import java.util.List;
     ContentFeatures.FED_CM_NATIVE_ID_PS,
     ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NativeAppTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

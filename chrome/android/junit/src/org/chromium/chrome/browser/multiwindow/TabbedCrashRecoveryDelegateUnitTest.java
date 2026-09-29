@@ -74,6 +74,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
 @EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedCrashRecoveryDelegateUnitTest {
     private static final int HOST_WINDOW_ID = 0;
 

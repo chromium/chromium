@@ -28,6 +28,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PointerLockTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -45,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabListEmptyCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListEmptyCoordinatorUnitTest {
     private static final int MESSAGE_CARD_HEIGHT = 50;
     private static final int MESSAGE_CARD_TOP = 5;

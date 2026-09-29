@@ -39,6 +39,7 @@ import java.util.List;
 
 /** Unit tests for {@link VerticalTabKeyboardHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabKeyboardHandlerUnitTest {
     private static final int TAB_ID_1 = 101;
     private static final int TAB_ID_2 = 102;

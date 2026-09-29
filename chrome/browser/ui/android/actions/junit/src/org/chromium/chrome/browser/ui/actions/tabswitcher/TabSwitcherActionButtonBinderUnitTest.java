@@ -25,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link TabSwitcherActionButtonBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherActionButtonBinderUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

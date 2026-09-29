@@ -66,6 +66,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabbedOpenInAppEntryPoint}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedOpenInAppEntryPointUnitTest {
     private static final String LABEL = "Label";
     private static final String PACKAGE = "com.example.package";

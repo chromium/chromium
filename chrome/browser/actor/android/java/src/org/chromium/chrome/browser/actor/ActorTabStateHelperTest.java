@@ -80,6 +80,7 @@ import java.util.List;
 
 /** Unit tests for {@link ActorTabStateHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorTabStateHelperTest {
     private static final int TAB_ID = 100;
     private static final boolean IS_PINNED = false;

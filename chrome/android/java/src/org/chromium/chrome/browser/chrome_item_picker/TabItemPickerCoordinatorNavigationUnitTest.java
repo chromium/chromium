@@ -71,6 +71,7 @@ import java.util.Set;
 
 /** Integration tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabItemPickerCoordinatorNavigationUnitTest {
     private static final int WINDOW_ID = 5;
 

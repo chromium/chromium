@@ -37,6 +37,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MiniPlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MiniPlayerMediatorUnitTest {
     private static final int HEIGHT_PX = 187;
 

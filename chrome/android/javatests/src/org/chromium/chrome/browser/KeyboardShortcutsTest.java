@@ -81,6 +81,7 @@ import java.util.Set;
     ChromeFeatureList.TASK_MANAGER_CLANK,
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardShortcutsTest {
 
     private static final int TAB_ID = 0;

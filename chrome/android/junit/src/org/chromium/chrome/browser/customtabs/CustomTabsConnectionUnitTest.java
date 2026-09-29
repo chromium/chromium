@@ -90,6 +90,7 @@ import java.io.IOException;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabsConnectionUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

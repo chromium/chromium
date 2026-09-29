@@ -35,6 +35,7 @@ import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /** Tests for {@link ImmersiveVideoFormatCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ImmersiveVideoFormatCoordinatorTest {
     @Mock private XrSceneCoreSessionManager mSessionManager;
     @Mock private ImmersiveVideoFormatCoordinator.Delegate mDelegate;

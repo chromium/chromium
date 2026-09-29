@@ -244,7 +244,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabListMediator}. */
-@SuppressWarnings({"ConstantConditions", "DirectInvocationOnMock"})
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"ConstantConditions", "DirectInvocationOnMock", "DoNotMock"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         instrumentedPackages = {

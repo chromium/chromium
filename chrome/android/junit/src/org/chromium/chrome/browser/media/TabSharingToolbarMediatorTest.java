@@ -46,6 +46,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link TabSharingToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSharingToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 

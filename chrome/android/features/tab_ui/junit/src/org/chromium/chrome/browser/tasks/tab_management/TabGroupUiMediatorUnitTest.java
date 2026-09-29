@@ -111,7 +111,8 @@ import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabGroupUiMediator}. */
-@SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
+// TODO(567604165): Remove mocking of Views / Activities
+@SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked", "DoNotMock"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupUiMediatorUnitTest {

@@ -53,6 +53,7 @@ import java.util.List;
 
 /** Unit tests for {@link FlyoutController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FlyoutControllerUnitTest {
 
     private static final int TEST_MENU_ITEM_ID = 3; // Arbitrary int for testing

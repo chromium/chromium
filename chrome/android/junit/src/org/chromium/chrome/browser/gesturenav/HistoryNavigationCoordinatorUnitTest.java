@@ -44,6 +44,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.insets.InsetObserver;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HistoryNavigationCoordinatorUnitTest {
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
 

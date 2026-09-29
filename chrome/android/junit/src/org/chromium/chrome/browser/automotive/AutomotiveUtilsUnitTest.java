@@ -29,6 +29,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Tests logic in the {@link AutomotiveUtils} class. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AutomotiveUtilsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

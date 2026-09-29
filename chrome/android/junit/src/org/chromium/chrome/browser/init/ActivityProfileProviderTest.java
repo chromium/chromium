@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /** Tests for ActivityProfileProviderInitializer. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityProfileProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mOriginalProfile;

@@ -71,6 +71,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubManagerImplUnitTest {
     private static final int TAB_ID = 8;
 

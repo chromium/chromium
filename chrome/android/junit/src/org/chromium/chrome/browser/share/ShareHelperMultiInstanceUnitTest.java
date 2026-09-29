@@ -55,6 +55,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPendingIntent.class, ShadowActivity.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShareHelperMultiInstanceUnitTest {
     private static final ComponentName COMPONENT_NAME_1 = new ComponentName("package", "one");
     private static final ComponentName COMPONENT_NAME_2 = new ComponentName("package", "two");

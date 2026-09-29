@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Robolectric tests for {@link TabSwitcherIncognitoReauthCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherIncognitoReauthCoordinatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContextMock;

@@ -41,6 +41,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 
 /** Unit tests for the {@link MissingDeviceLockMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MissingDeviceLockMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

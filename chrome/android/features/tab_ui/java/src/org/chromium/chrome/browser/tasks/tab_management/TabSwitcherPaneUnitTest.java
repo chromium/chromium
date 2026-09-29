@@ -123,6 +123,7 @@ import java.util.function.Supplier;
     SensitiveContentFeatures.SENSITIVE_CONTENT,
     SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;
 

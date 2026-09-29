@@ -39,6 +39,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit test for {@link SimpleEdgeToEdgePadAdjuster}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SimpleEdgeToEdgePadAdjusterUnitTest {
 
     @Rule

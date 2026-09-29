@@ -78,6 +78,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionActionListMediatorTest {
 
     /** An representation of an extension action. */

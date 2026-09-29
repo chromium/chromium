@@ -41,6 +41,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ActivityKeyboardVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityKeyboardVisibilityDelegateUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

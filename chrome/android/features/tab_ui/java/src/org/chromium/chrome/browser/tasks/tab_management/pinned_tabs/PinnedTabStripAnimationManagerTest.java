@@ -34,6 +34,7 @@ import org.chromium.ui.animation.AnimationHandler;
 
 /** Unit tests for {@link PinnedTabStripAnimationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripAnimationManagerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

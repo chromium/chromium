@@ -41,6 +41,7 @@ import java.util.List;
 /** Unit tests for {@link BottomBarButtonManager}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomBarButtonManagerUnitTest {
     private static final int HOME = ActionId.HOME_BUTTON;
     private static final int GLIC = ActionId.GLIC;

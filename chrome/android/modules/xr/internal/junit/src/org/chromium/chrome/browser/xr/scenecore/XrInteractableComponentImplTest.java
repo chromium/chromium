@@ -46,6 +46,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link XrInteractableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrInteractableComponentImplTest {
     static {
         XrModuleProviderImpl.initialize();

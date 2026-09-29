@@ -55,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 /** Test FullscreenVideoPictureInPictureController. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPackageManager.class, ShadowSystemClock.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;

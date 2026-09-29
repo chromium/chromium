@@ -64,6 +64,7 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DownloadPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

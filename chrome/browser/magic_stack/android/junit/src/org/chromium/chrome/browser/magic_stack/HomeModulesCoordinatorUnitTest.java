@@ -77,6 +77,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HomeModulesCoordinatorUnitTest {
     private static final int INITIAL_TOP_MARGIN = 12;
     private static final int SMALL_TOP_MARGIN = 8;

@@ -31,6 +31,7 @@ import java.util.List;
 
 /** Unit tests for MessageBannerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageBannerCoordinatorUnitTest {
     @Test
     public void testCreatePopupMenuShownListener() {

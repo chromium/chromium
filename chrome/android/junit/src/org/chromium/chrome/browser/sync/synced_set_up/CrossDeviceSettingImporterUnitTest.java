@@ -110,6 +110,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CrossDeviceSettingImporterUnitTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =

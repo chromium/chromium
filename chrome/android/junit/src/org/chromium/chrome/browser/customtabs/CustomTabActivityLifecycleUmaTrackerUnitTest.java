@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit test for {@link CustomTabActivityLifecycleUmaTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     private static final String PACKAGE_A = "com.example.test.package";
     private static final String PACKAGE_B = "org.test.mypackage";

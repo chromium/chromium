@@ -62,6 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for the {@link DeviceLockMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DeviceLockMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

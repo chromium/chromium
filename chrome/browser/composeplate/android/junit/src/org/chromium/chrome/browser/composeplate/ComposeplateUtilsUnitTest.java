@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for {@link ComposeplateUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ComposeplateUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

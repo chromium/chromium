@@ -53,6 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DragAndDropDelegateImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

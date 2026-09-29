@@ -88,6 +88,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BrowserControlsManagerUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

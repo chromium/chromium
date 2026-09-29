@@ -60,6 +60,7 @@ import java.io.IOException;
 /** Tests logic in the {@link EventForwarder} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(UiAndroidFeatures.HAS_CONTENT_URI)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EventForwarderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

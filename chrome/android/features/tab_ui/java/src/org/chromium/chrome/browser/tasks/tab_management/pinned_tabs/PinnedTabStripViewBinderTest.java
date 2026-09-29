@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link PinnedTabStripViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripViewBinderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

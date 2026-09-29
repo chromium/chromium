@@ -63,6 +63,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for the error message helper bridge. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PasswordManagerErrorMessageHelperBridgeTest {
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());

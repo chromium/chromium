@@ -34,6 +34,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabStripSnapshotter}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabStripSnapshotterTest {
     private static final PropertyKey[] PROPERTY_KEYS =
             new PropertyKey[] {

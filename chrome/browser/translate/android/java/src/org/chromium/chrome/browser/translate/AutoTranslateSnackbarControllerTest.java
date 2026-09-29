@@ -25,6 +25,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AutoTranslateSnackbarController} */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class AutoTranslateSnackbarControllerTest {
     private static final int NATIVE_SNACKBAR_VIEW = 1001;
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

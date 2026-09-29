@@ -45,6 +45,7 @@ import java.lang.ref.WeakReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344665244): Failing when batched, batch this again.
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UsbChooserDialogTest {
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =

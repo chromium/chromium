@@ -112,6 +112,7 @@ import java.util.List;
 /** Unit tests for {@link SelectionPopupController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures({ContentFeatures.NO_SELECTION_MENU_CACHING})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SelectionPopupControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;

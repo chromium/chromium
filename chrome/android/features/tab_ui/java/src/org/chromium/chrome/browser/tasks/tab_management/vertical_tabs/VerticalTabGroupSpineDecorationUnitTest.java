@@ -46,6 +46,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link VerticalTabGroupSpineDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabGroupSpineDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

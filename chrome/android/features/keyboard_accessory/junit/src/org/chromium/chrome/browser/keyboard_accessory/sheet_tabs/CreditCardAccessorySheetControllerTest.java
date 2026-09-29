@@ -48,6 +48,7 @@ import org.chromium.ui.modelutil.ListObservable;
 
 /** Controller tests for the credit card accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CreditCardAccessorySheetControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

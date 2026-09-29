@@ -144,6 +144,7 @@ import java.util.function.Consumer;
 /** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowLooper.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final long TEST_EVENT_TIME = 123L;

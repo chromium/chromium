@@ -42,6 +42,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link ScreenshotContentProviderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowContentResolver.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ScreenshotContentProviderImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

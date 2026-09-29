@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Unit tests for {@link SuggestionMetricsService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionMetricsServiceUnitTest {
     private static final int WINDOW_ID = 0;
 

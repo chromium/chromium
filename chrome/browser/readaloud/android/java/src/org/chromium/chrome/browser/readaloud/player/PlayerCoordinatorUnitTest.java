@@ -53,6 +53,7 @@ import org.chromium.components.prefs.PrefService;
 /** Unit tests for {@link PlayerCoordinator}. */
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PlayerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;

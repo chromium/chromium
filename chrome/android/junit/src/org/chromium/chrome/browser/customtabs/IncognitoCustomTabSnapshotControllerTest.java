@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 
 /** Robolectric tests for {@link IncognitoCustomTabSnapshotController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoCustomTabSnapshotControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

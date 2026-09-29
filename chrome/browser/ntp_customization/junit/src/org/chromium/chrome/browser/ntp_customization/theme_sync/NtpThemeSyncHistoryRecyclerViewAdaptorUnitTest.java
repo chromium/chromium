@@ -53,6 +53,7 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeSyncHistoryRecyclerViewAdaptor}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
     private static final String TEST_CONTENT_DESCRIPTION = "Test Content Description";
 

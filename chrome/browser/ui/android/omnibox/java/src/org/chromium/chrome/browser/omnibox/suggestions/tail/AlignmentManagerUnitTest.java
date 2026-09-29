@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link AlignmentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AlignmentManagerUnitTest {
     private static final int TEXT_AREA_WIDTH = 100;
 

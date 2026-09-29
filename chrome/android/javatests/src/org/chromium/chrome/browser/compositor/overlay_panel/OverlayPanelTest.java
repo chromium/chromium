@@ -52,6 +52,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 /** Tests logic in the OverlayPanel. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OverlayPanelTest {
     private static final int MOCK_VIEWPORT_WIDTH = 400;
     private static final int MOCK_VIEWPORT_HEIGHT = 1000;

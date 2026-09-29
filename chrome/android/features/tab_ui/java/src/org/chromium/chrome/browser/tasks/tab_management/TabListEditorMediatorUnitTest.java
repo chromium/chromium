@@ -63,6 +63,7 @@ import java.util.Set;
 
 /** Unit tests for {@link TabListEditorMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class TabListEditorMediatorUnitTest {
     private static final TabListEditorItemSelectionId TAB_ID_1 =
             TabListEditorItemSelectionId.createTabId(1);

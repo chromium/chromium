@@ -175,6 +175,7 @@ import java.util.function.Consumer;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkManagerMediatorTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)

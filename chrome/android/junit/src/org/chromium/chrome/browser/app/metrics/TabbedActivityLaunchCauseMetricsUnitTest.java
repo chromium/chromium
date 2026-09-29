@@ -35,6 +35,7 @@ import org.chromium.components.webapps.ShortcutSource;
 
 /** Unit tests for TabbedActivityLaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class TabbedActivityLaunchCauseMetricsUnitTest {
     @Mock private Activity mActivity;
 

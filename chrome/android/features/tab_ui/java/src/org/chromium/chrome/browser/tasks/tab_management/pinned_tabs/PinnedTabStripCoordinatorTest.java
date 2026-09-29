@@ -46,6 +46,7 @@ import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
 /** Unit tests for {@link PinnedTabStripCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripCoordinatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

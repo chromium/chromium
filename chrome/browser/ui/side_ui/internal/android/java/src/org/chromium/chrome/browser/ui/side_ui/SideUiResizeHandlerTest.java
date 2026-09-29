@@ -40,6 +40,7 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SideUiResizeHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SideUiResizeHandlerTest {
     private static final int CONTAINER_WIDTH_PX = 240;
     private static final int CONTAINER_HEIGHT_PX = 600;

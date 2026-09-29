@@ -58,6 +58,7 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for OptionalButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OptionalButtonCoordinatorTest {
     public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 6000;
 

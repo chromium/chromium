@@ -61,6 +61,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link SettingsInTabNavigationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsInTabNavigationDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mMockTab;

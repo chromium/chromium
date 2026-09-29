@@ -29,6 +29,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 
 /** Unit tests for {@link FeedStreamViewResizer}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class FeedStreamViewResizerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

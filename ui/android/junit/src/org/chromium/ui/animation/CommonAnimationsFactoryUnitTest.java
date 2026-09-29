@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link TranslationAnimatorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CommonAnimationsFactoryUnitTest {
     private static final long DURATION_MS = 10L;
     private static final float DELTA = 0.0001f;

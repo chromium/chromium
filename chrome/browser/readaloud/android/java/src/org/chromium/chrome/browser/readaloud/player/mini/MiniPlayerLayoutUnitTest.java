@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MiniPlayerLayoutUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Activity mActivity;

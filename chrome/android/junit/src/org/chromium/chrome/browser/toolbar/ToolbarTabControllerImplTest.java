@@ -59,6 +59,7 @@ import java.util.function.Supplier;
 /** Unit tests for ToolbarTabControllerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.GLIC)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarTabControllerImplTest {
     private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
         final LoadUrlParams mLoadUrlParams;

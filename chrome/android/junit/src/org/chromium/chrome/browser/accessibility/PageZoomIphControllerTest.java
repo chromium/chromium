@@ -33,6 +33,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Unit tests for {@link PageZoomIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageZoomIphControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -37,6 +37,7 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link TabBrowserControlsConstraintsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBrowserControlsConstraintsHelperTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final UserDataHost mUserDataHost = new UserDataHost();

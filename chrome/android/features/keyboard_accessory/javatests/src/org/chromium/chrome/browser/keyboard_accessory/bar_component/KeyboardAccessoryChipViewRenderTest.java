@@ -82,6 +82,7 @@ import java.util.List;
 @EnableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
 })
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardAccessoryChipViewRenderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

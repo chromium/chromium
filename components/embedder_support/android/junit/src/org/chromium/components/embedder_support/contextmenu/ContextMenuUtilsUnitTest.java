@@ -53,6 +53,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link ContextMenuUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextMenuUtilsUnitTest {
     Activity mActivity;
     @Mock WebContents mWebContentsMock;
