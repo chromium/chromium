@@ -1538,6 +1538,11 @@ TEST_F(ContextualSearchSessionHandleTest, IsTabDeselected_ClearsOnNavigation) {
   // Deselect the tab context.
   EXPECT_TRUE(local_handle->DeleteFile(token1));
 
+  // The deselected tab is tracked in the tab context state.
+  const TabContextState& state = local_handle->GetTabContextState();
+  ASSERT_TRUE(state.deselected.contains(session_id1));
+  EXPECT_EQ(GURL("https://google.com"), state.deselected.at(session_id1).first);
+
   // Tab is deselected for the old URL.
   EXPECT_TRUE(local_handle->IsTabDeselected(session_id1,
                                             GURL("https://google.com"), ""));
@@ -1546,6 +1551,7 @@ TEST_F(ContextualSearchSessionHandleTest, IsTabDeselected_ClearsOnNavigation) {
   // deselection).
   EXPECT_FALSE(local_handle->IsTabDeselected(
       session_id1, GURL("https://wikipedia.org"), ""));
+  EXPECT_TRUE(state.deselected.empty());
 
   // Verify that querying with the old URL again also returns false (since it
   // was cleared).
@@ -2325,6 +2331,27 @@ TEST_F(ContextualSearchSessionHandleTest,
   // Setting the same restored tabs is a no-op and does not notify.
   EXPECT_CALL(callback, Run(testing::_)).Times(0);
   local_handle->SetRestoredTabs({tab20, tab10});
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       DeselectedTabsUrlsAreStoredInTabContextState) {
+  auto local_handle = service_->CreateSessionForTesting(
+      std::make_unique<MockContextualSearchContextController>(), nullptr);
+
+  ContextualSearchSessionHandle::DeselectedTabsMap deselected;
+  deselected[SessionID::FromSerializedValue(7)] = {
+      GURL("https://example.com/a"), "Tab A"};
+  local_handle->set_deselected_tabs_urls(deselected);
+
+  const TabContextState& state = local_handle->GetTabContextState();
+  EXPECT_EQ(deselected, state.deselected);
+  EXPECT_EQ(deselected, local_handle->deselected_tabs_urls());
+
+  // Copies of the state include `deselected`.
+  TabContextState copy = state;
+  EXPECT_EQ(state, copy);
+  copy.deselected.clear();
+  EXPECT_NE(state, copy);
 }
 
 }  // namespace contextual_search
