@@ -1,7 +1,0 @@
-{
-  "ASAN Release BrpV2": {
-    "additional_compile_targets": [
-      "blackbox_fuzzing_targets"
-    ]
-  }
-}
