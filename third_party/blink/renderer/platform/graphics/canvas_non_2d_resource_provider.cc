@@ -583,14 +583,16 @@ CanvasNon2DResourceProvider::BeginExternalOverwrite(
     return nullptr;
   }
 
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
+  // End the internal write access before calling EnsureResourceReadyForDraw(),
+  // which has a precondition that there should be no current write access on
+  // the resource.
   EndWriteAccess();
 
-  // NOTE: Invoking WillDrawInternal() ensures that this invocation of
-  // EndAccess() will generate a new sync token.
-  auto access = WillDrawInternal();
+  EnsureResourceReadyForDraw();
+
+  // NOTE: Invoking BeginAccess() ensures that this invocation of EndAccess()
+  // will generate a new sync token.
+  auto access = resource_->BeginAccess(/*readonly=*/false);
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
   return resource_->GetSharedImage();
@@ -688,13 +690,6 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
   }
 }
 
-std::unique_ptr<gpu::RasterScopedAccess>
-CanvasNon2DResourceProvider::WillDrawInternal() {
-  EnsureResourceReadyForDraw();
-  return resource_->BeginAccess(/*readonly=*/false);
-}
-
-
 scoped_refptr<CanvasResource>
 CanvasNon2DResourceProvider::ProduceCanvasResource() {
   TRACE_EVENT0("blink", "CanvasNon2DResourceProvider::ProduceCanvasResource");
@@ -769,8 +764,8 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
     cached_snapshot_ = resource_->Bitmap();
 
     // We'll record its content_id to be used by the FlushForImageListener.
-    // This will be needed in WillDrawInternal, but we are doing it now, as we
-    // don't know if later on we will be in the same thread the
+    // This will be needed in EnsureResourceReadyForDraw(), but we are doing it
+    // now, as we don't know if later on we will be in the same thread the
     // cached_snapshot_ was created and we wouldn't be able to
     // PaintImageForCurrentFrame in AcceleratedStaticBitmapImage just to check
     // the content_id. ShouldReplaceTargetBuffer needs this ID in order to let
