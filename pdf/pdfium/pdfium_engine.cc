@@ -2147,6 +2147,9 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
       FORM_OnLButtonDoubleClick(form(), page, event.GetModifiers(),
                                 point_data.pdf_point.x(),
                                 point_data.pdf_point.y());
+      if (point_data.area == PDFiumPage::FORM_TEXT_AREA) {
+        SetFormSelectedText(form(), page);
+      }
     }
     if (point_data.form_type != FPDF_FORMFIELD_UNKNOWN) {
       return true;  // Return now before we get into the selection code.
@@ -4896,6 +4899,7 @@ void PDFiumEngine::SetFieldFocus(PDFiumEngineClient::FocusFieldType type) {
   // is set to `FocusFieldType::kText`, this is the Renderer. After it flips,
   // the MimeHandler is notified.
   if (focus_field_type_ == FocusFieldType::kText) {
+    selected_form_text_.clear();
     client_->SetSelectedText("");
   }
 

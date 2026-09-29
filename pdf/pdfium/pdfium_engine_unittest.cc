@@ -186,6 +186,7 @@ class MockTestClient : public TestClient {
               (override));
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
+  MOCK_METHOD(void, SetSelectedText, (const std::string&), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
   MOCK_METHOD(void, ScrollToX, (int, bool), (override));
   MOCK_METHOD(void, ScrollToY, (int, bool), (override));
@@ -2675,6 +2676,61 @@ TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
             GetFocusedElementType(engine.get()));
   EXPECT_EQ(0, GetLastFocusedPage(engine.get()));
   EXPECT_EQ(1u, GetSelectionSize(engine.get()));
+}
+
+TEST_P(PDFiumEngineTabbingTest, ReportFormTextSelectionOnDoubleClick) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({1024, 4096});
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(client, SetSelectedText(""));
+    EXPECT_CALL(client, SetSelectedText("Text"));
+  }
+
+  // Tab into the page's form fields.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
+  ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
+  ASSERT_EQ(PDFiumEngineClient::FocusFieldType::kText,
+            FormFocusFieldType(engine.get()));
+
+  // Double click the "Text Box" widget, which holds "Text".
+  constexpr gfx::PointF kTextBoxPosition(170, 250);
+  SimulateMultiClick(*engine, kTextBoxPosition, 2);
+}
+
+TEST_P(PDFiumEngineTabbingTest, ReportSameFormTextSelectionAfterRefocus) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({1024, 4096});
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(client, SetSelectedText(""));
+    EXPECT_CALL(client, SetSelectedText("Text"));
+    EXPECT_CALL(client, SetSelectedText("")).Times(2);
+    EXPECT_CALL(client, SetSelectedText("Text"));
+  }
+
+  constexpr gfx::PointF kTextBoxPosition(170, 250);
+  ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
+  ASSERT_TRUE(HandleTabEvent(engine.get(), 0));
+  SimulateMultiClick(*engine, kTextBoxPosition, 2);
+
+  // Leave and re-enter the plugin, as switching browser tabs does.
+  engine->UpdateFocus(/*has_focus=*/false);
+  ASSERT_EQ(PDFiumEngineClient::FocusFieldType::kNoFocus,
+            FormFocusFieldType(engine.get()));
+  engine->UpdateFocus(/*has_focus=*/true);
+  ASSERT_EQ(PDFiumEngineClient::FocusFieldType::kText,
+            FormFocusFieldType(engine.get()));
+
+  SimulateMultiClick(*engine, kTextBoxPosition, 2);
 }
 
 TEST_P(PDFiumEngineTabbingTest, TextDirectionOnFocusedFormField) {
