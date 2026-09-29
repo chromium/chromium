@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -87,6 +88,30 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   [[nodiscard]] bool WaitForTrackedElementHidden(
       ui::ElementIdentifier id,
       BrowserWindowInterface* browser_instance = nullptr);
+
+  // Evaluates `script_body` against a pinned toolbar action in the WebUI
+  // toolbar. `script_body` is run with `container` bound to the shadow root of
+  // the pinned toolbar actions container, `actionEl` bound to the
+  // `pinned-toolbar-action` element for `action`, and `btn` bound to
+  // `actionEl`'s `cr-icon-button`. Evaluates to false without running
+  // `script_body` if the container or `actionEl` cannot be found.
+  content::EvalJsResult EvalJsOnPinnedAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action,
+      const std::string& script_body);
+
+  // Returns whether the button for the pinned toolbar action `action` is
+  // visible. Built on top of EvalJsOnPinnedAction(), so also returns false when
+  // there's no pinned toolbar action container at all.
+  [[nodiscard]] bool IsPinnedActionVisible(
+      toolbar_ui_api::mojom::PinnedToolbarAction action);
+
+  // Waits until IsPinnedActionVisible() returns true.
+  [[nodiscard]] bool WaitForPinnedActionVisible(
+      toolbar_ui_api::mojom::PinnedToolbarAction action);
+
+  // Waits until IsPinnedActionVisible() returns false.
+  [[nodiscard]] bool WaitForPinnedActionHidden(
+      toolbar_ui_api::mojom::PinnedToolbarAction action);
 
   // Enables battery saver mode and waits until the button is visible.
   void EnableBatterySaverButton(

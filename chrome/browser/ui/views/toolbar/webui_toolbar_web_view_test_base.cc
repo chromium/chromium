@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_test_base.h"
 
+#include <string>
+#include <vector>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
@@ -139,6 +142,48 @@ bool WebUIToolbarWebViewTestBase::WaitForTrackedElementHidden(
     ui::ElementIdentifier id,
     BrowserWindowInterface* browser_instance) {
   return WaitForTrackedElements({}, {id}, browser_instance);
+}
+
+content::EvalJsResult WebUIToolbarWebViewTestBase::EvalJsOnPinnedAction(
+    toolbar_ui_api::mojom::PinnedToolbarAction action,
+    const std::string& script_body) {
+  const std::string container_js = GetButtonAppJS("#pinnedToolbarActions");
+  return content::EvalJs(
+      GetWebUIWebContents(),
+      base::StringPrintf(R"(
+            (() => {
+              const container = %s?.shadowRoot;
+              if (!container) {
+                 return false;
+              }
+              const actionEl = Array.from(container.querySelectorAll(
+                                       'pinned-toolbar-action'))
+                              .find(el => el.state && el.state.action === %d);
+              if (!actionEl) {
+                return false;
+              }
+              const btn = actionEl.shadowRoot.querySelector('cr-icon-button');
+              %s
+            })();
+          )",
+                         container_js.c_str(), static_cast<int>(action),
+                         script_body.c_str()));
+}
+
+bool WebUIToolbarWebViewTestBase::IsPinnedActionVisible(
+    toolbar_ui_api::mojom::PinnedToolbarAction action) {
+  return EvalJsOnPinnedAction(action, "return !!btn && btn.checkVisibility();")
+      .ExtractBool();
+}
+
+bool WebUIToolbarWebViewTestBase::WaitForPinnedActionVisible(
+    toolbar_ui_api::mojom::PinnedToolbarAction action) {
+  return base::test::RunUntil([&]() { return IsPinnedActionVisible(action); });
+}
+
+bool WebUIToolbarWebViewTestBase::WaitForPinnedActionHidden(
+    toolbar_ui_api::mojom::PinnedToolbarAction action) {
+  return base::test::RunUntil([&]() { return !IsPinnedActionVisible(action); });
 }
 
 void WebUIToolbarWebViewTestBase::EnableBatterySaverButton(

@@ -13,15 +13,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions_test_base.h"
-#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/actions/actions.h"
-#include "ui/views/controls/webview/webview.h"
 
 class WebUIPinnedToolbarActionsInteractiveUiTest
     : public WebUIPinnedToolbarActionsTestBase,
@@ -29,10 +26,6 @@ class WebUIPinnedToolbarActionsInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsInteractiveUiTest,
                        HighlightOnShowTranslateBubble) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  content::WebContents* web_ui_contents =
-      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-
   actions::ActionId action_id = kActionShowTranslate;
   toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
       toolbar_ui_api::mojom::PinnedToolbarAction::kShowTranslate;
@@ -48,7 +41,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsInteractiveUiTest,
 
   // Verify it's highlighted.
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+    return EvalJsOnPinnedAction(mojom_action,
                                 "return !!btn && "
                                 "btn.hasAttribute('is-menu-open');")
         .ExtractBool();
@@ -57,10 +50,6 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
                        ClickSuppressionOnTranslateBubble) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  content::WebContents* web_ui_contents =
-      webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-
   // Pin another action.
   PinAction(kActionCopyUrl,
             toolbar_ui_api::mojom::PinnedToolbarAction::kCopyUrl);
@@ -95,7 +84,7 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
     // Verify it's highlighted and action item is showing bubble.
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return action_item->GetIsShowingBubble() &&
-             EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+             EvalJsOnPinnedAction(mojom_action,
                                   "return !!btn && "
                                   "btn.hasAttribute('is-menu-open') && "
                                   "actionEl.trackedHighlighted;")
@@ -104,34 +93,34 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
 
     if (close_before_pointerdown) {
       ASSERT_TRUE(
-          EvalJsOnPinnedButton(
-              web_ui_contents, mojom_action,
+          EvalJsOnPinnedAction(
+              mojom_action,
               "window.beforeCloseTime = performance.now(); return true;")
               .ExtractBool());
       translate::test_utils::CloseCurrentBubble(browser());
       ASSERT_TRUE(base::test::RunUntil([&]() {
-        return EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+        return EvalJsOnPinnedAction(mojom_action,
                                     "return actionEl.lastUnhighlightedTime >= "
                                     "window.beforeCloseTime;")
             .ExtractBool();
       }));
       // Set lastUnhighlightedTime to 10s in the future in case of a slow bot.
-      ASSERT_TRUE(EvalJsOnPinnedButton(
-                      web_ui_contents, mojom_action,
+      ASSERT_TRUE(EvalJsOnPinnedAction(
+                      mojom_action,
                       "actionEl.lastUnhighlightedTime = performance.now() + "
                       "10000; return true;")
                       .ExtractBool());
     }
 
-    EXPECT_TRUE(EvalJsOnPinnedButton(
-                    web_ui_contents, mojom_action,
+    EXPECT_TRUE(EvalJsOnPinnedAction(
+                    mojom_action,
                     "btn.dispatchEvent(new PointerEvent('pointerdown', "
                     "{bubbles: true, cancelable: true, view: window, "
                     "button: 0, pointerType: 'mouse'}));"
                     "return true;")
                     .ExtractBool());
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+      return EvalJsOnPinnedAction(mojom_action,
                                   "return actionEl.skipNextClick_;")
           .ExtractBool();
     }));
@@ -141,7 +130,7 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
     }
 
     EXPECT_TRUE(
-        EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+        EvalJsOnPinnedAction(mojom_action,
                              "btn.dispatchEvent(new PointerEvent('click', "
                              "{bubbles: true, cancelable: true, view: window, "
                              "button: 0, pointerType: 'mouse'}));"
@@ -152,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
     // reopening.
     EXPECT_TRUE(base::test::RunUntil([&]() {
       return !action_item->GetIsShowingBubble() &&
-             EvalJsOnPinnedButton(web_ui_contents, mojom_action,
+             EvalJsOnPinnedAction(mojom_action,
                                   "return !!btn && "
                                   "!actionEl.trackedHighlighted;")
                  .ExtractBool();

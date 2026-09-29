@@ -173,41 +173,10 @@ WebUIPinnedToolbarActionsTestBase::GetPinnedToolbarActions() {
       webui_toolbar_view->GetPinnedToolbarActions());
 }
 
-content::EvalJsResult WebUIPinnedToolbarActionsTestBase::EvalJsOnPinnedButton(
-    content::WebContents* web_contents,
-    toolbar_ui_api::mojom::PinnedToolbarAction action,
-    const std::string& script_body) {
-  return content::EvalJs(
-      web_contents,
-      base::StringPrintf(R"(
-    (() => {
-      const container = %s?.shadowRoot;
-      if (!container) return false;
-      const actionEl = Array.from(container.querySelectorAll(
-                               'pinned-toolbar-action'))
-                      .find(el => el.state && el.state.action === %d);
-      if (!actionEl) return false;
-      const btn = actionEl.shadowRoot.querySelector('cr-icon-button');
-      %s
-    })();
-  )",
-                         GetButtonAppJS("#pinnedToolbarActions").c_str(),
-                         static_cast<int>(action), script_body.c_str()));
-}
-
-bool WebUIPinnedToolbarActionsTestBase::IsPinnedButtonVisible(
-    content::WebContents* web_contents,
+bool WebUIPinnedToolbarActionsTestBase::ClickPinnedAction(
     toolbar_ui_api::mojom::PinnedToolbarAction action) {
-  return EvalJsOnPinnedButton(web_contents, action,
-                              "return !!btn && btn.checkVisibility();")
-      .ExtractBool();
-}
-
-bool WebUIPinnedToolbarActionsTestBase::ClickPinnedButton(
-    content::WebContents* web_contents,
-    toolbar_ui_api::mojom::PinnedToolbarAction action) {
-  return EvalJsOnPinnedButton(
-             web_contents, action,
+  return EvalJsOnPinnedAction(
+             action,
              "if (!btn || !btn.checkVisibility()) return false; btn.click(); "
              "return true;")
       .ExtractBool();
@@ -240,7 +209,6 @@ views::BubbleAnchor WebUIPinnedToolbarActionsTestBase::GetToolbarBubbleAnchor(
 void WebUIPinnedToolbarActionsTestBase::PinAction(
     actions::ActionId action_id,
     toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
-  auto* web_contents = GetWebContents();
   auto* pinned_actions = GetPinnedToolbarActions();
   ui::ElementIdentifier id =
       pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
@@ -283,11 +251,10 @@ void WebUIPinnedToolbarActionsTestBase::PinAction(
         found_anchor = true;
       }));
   EXPECT_TRUE(found_anchor);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+  ASSERT_TRUE(WaitForPinnedActionVisible(mojom_action));
 
   // Verify it's not highlighted.
-  EXPECT_TRUE(EvalJsOnPinnedButton(web_contents, mojom_action,
+  EXPECT_TRUE(EvalJsOnPinnedAction(mojom_action,
                                    "return !!btn && "
                                    "!btn.hasAttribute('is-menu-open');")
                   .ExtractBool());
@@ -303,14 +270,12 @@ void WebUIPinnedToolbarActionsTestBase::PinAction(
 void WebUIPinnedToolbarActionsTestBase::UnpinAction(
     actions::ActionId action_id,
     toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
-  auto* web_contents = GetWebContents();
   auto* pinned_actions = GetPinnedToolbarActions();
   ui::ElementIdentifier id =
       pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
 
   model_->UpdatePinnedState(action_id, false);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !IsPinnedButtonVisible(web_contents, mojom_action); }));
+  ASSERT_TRUE(WaitForPinnedActionHidden(mojom_action));
 
   if (id) {
     EXPECT_TRUE(base::test::RunUntil([&]() {

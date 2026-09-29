@@ -6997,25 +6997,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledBrowserTest,
 
   // Show Customize Chrome side panel, which causes its pinned action button to
   // pop out and become visible.
+  constexpr toolbar_ui_api::mojom::PinnedToolbarAction kPoppedOutAction =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowCustomizeChrome;
   SidePanelUI::From(browser())->Show(SidePanelEntryId::kCustomizeChrome);
 
   // Wait until the pinned action button is visible.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(GetWebUIWebContents(), R"(
-          (() => {
-            const app = document.querySelector('toolbar-app');
-            const pinnedContainer = app?.$['pinnedToolbarActions'];
-            if (!pinnedContainer || !pinnedContainer.checkVisibility()) {
-              return false;
-            }
-            const actionButton = pinnedContainer.shadowRoot?.querySelector(
-                'pinned-toolbar-action');
-            return actionButton && actionButton.checkVisibility() &&
-                   !actionButton.classList.contains('overflow-display-none');
-          })();
-        )")
-        .ExtractBool();
-  }));
+  ASSERT_TRUE(WaitForPinnedActionVisible(kPoppedOutAction));
 
   // Add a spacer as wide as the toolbar window to force all overflowable
   // controls to overflow.

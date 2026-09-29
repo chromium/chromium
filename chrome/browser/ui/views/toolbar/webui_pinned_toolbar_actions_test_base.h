@@ -41,16 +41,7 @@ class WebUIPinnedToolbarActionsTestBase : public WebUIToolbarWebViewTestBase {
 
   WebUIPinnedToolbarActions* GetPinnedToolbarActions();
 
-  content::EvalJsResult EvalJsOnPinnedButton(
-      content::WebContents* web_contents,
-      toolbar_ui_api::mojom::PinnedToolbarAction action,
-      const std::string& script_body);
-
-  bool IsPinnedButtonVisible(content::WebContents* web_contents,
-                             toolbar_ui_api::mojom::PinnedToolbarAction action);
-
-  bool ClickPinnedButton(content::WebContents* web_contents,
-                         toolbar_ui_api::mojom::PinnedToolbarAction action);
+  bool ClickPinnedAction(toolbar_ui_api::mojom::PinnedToolbarAction action);
 
   void SetPinnableProperty(actions::ActionId id, bool pinnable);
 
