@@ -172,18 +172,36 @@ function createBookmark(nodes: NodeMap, action: CreateBookmarkAction): NodeMap {
   let parentIndex = action.parentIndex;
   const isPermanent = action.node.permanentFolderType !== undefined;
 
-  if (isPermanent && ACCOUNT_HEADING_NODE_ID in nodes) {
-    parentId =
-        action.node.isSynced ? ACCOUNT_HEADING_NODE_ID : LOCAL_HEADING_NODE_ID;
-    parentIndex = nodes[parentId]!.children!.length;
+  if (isPermanent) {
+    if (ACCOUNT_HEADING_NODE_ID in nodes) {
+      parentId = action.node.isSynced ? ACCOUNT_HEADING_NODE_ID :
+                                        LOCAL_HEADING_NODE_ID;
+      parentIndex = nodes[parentId]!.children!.length;
+    } else {
+      // TODO(crbug.com/565516225): The bookmarks API has a "true" UUID for the
+      // root node. Unfortunately, the current webui is using a hardcoded id for
+      // the root. This is problematic when the UI tries to create new permanent
+      // nodes, because the UUID returned by the browser does not match the
+      // hardcoded ROOT_NODE_ID. When we collapse the webui structure and remove
+      // the redux pattern, we can actually set the root node to the correct
+      // UUID, instead of this hack.
+      //
+      // This is assuming that we need to reroot, because the user is signing
+      // in.
+      parentId = ROOT_NODE_ID;
+    }
+  }
+
+  const parentNode = nodes[parentId];
+  if (!parentNode || !parentNode.children) {
+    return nodes;
   }
 
   const nodeModifications: NodeMap = {};
   nodeModifications[action.id] =
       Object.assign({}, action.node, {parentId: parentId});
 
-  const parentNode = nodes[parentId]!;
-  const newChildren = parentNode.children!.slice();
+  const newChildren = parentNode.children.slice();
   newChildren.splice(parentIndex, 0, action.id);
   nodeModifications[parentId] = Object.assign({}, parentNode, {
     children: newChildren,

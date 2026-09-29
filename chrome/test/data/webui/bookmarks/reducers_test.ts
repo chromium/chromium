@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {BookmarksPageState, FolderOpenState, NodeMap, SelectionState, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
-import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, reduceAction, refreshNodes, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
+import {ACCOUNT_HEADING_NODE_ID, changeFolderOpen, clearSearch, createBookmark, createEmptyState, deselectItems, editBookmark, getDisplayedList, isShowingSearch, LOCAL_HEADING_NODE_ID, moveBookmark, PermanentFolderType, reduceAction, refreshNodes, removeBookmark, reorderChildren, ROOT_NODE_ID, selectFolder, setSearchResults, setSearchTerm, updateAnchor, updateFolderOpenState, updateNodes, updateSelection} from 'chrome://bookmarks/bookmarks.js';
 import type {Action} from 'chrome://resources/js/store.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -515,6 +515,23 @@ suite('node state', function() {
     assertEquals('6', nodes['7']!.parentId);
     assertEquals(undefined, nodes['7']!.children);
     assertDeepEquals(['7'], nodes['6']!.children);
+  });
+
+  test('creates permanent node when headings do not exist', function() {
+    const permanentFolder = {
+      title: 'Managed Bookmarks',
+      id: 'managed',
+      parentId: 'root-mojo-uuid',
+      children: [],
+      permanentFolderType: PermanentFolderType.kManaged,
+      isSynced: false,
+    };
+
+    action = createBookmark('root-mojo-uuid', 0, permanentFolder);
+    nodes = updateNodes(nodes, action);
+
+    assertEquals(ROOT_NODE_ID, nodes['managed']!.parentId);
+    assertTrue(nodes[ROOT_NODE_ID]!.children!.includes('managed'));
   });
 
   test('updates when a node is deleted', function() {
