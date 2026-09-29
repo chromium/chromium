@@ -80,6 +80,11 @@ void ConvertToVariantFn::Apply(const MoveMouseToolRequest& tr) {
 void ConvertToVariantFn::Apply(const NavigateToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+void ConvertToVariantFn::Apply(const OpenKnownPageToolRequest& tr) {
+  var_ = ToolRequestVariant(tr);
+}
+#endif
 void ConvertToVariantFn::Apply(const PerformSearchToolRequest& tr) {
   var_ = ToolRequestVariant(tr);
 }

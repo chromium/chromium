@@ -43,6 +43,9 @@ using ToolRequestVariant = std::variant<
     MediaControlToolRequest,
     MoveMouseToolRequest,
     NavigateToolRequest,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+    OpenKnownPageToolRequest,
+#endif
     PerformSearchToolRequest,
     RemoveBookmarkToolRequest,
     ScriptToolRequest,
@@ -92,6 +95,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const MediaControlToolRequest&) override;
   void Apply(const MoveMouseToolRequest&) override;
   void Apply(const NavigateToolRequest&) override;
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+  void Apply(const OpenKnownPageToolRequest&) override;
+#endif
   void Apply(const PerformSearchToolRequest&) override;
   void Apply(const RemoveBookmarkToolRequest&) override;
   void Apply(const ScriptToolRequest&) override;
