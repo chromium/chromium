@@ -591,16 +591,6 @@ class CONTENT_EXPORT WebContentsDelegate {
                                          const GURL& url,
                                          bool user_gesture) {}
 
-  // Result of string search in the page. This includes the number of matches
-  // found and the selection rect (in screen coordinates) for the string found.
-  // If |final_update| is false, it indicates that more results follow.
-  virtual void FindReply(WebContents* web_contents,
-                         int request_id,
-                         int number_of_matches,
-                         const gfx::Rect& selection_rect,
-                         int active_match_ordinal,
-                         bool final_update) {}
-
 #if BUILDFLAG(IS_ANDROID)
   // Provides the rects of the current find-in-page matches.
   // Sent as a reply to RequestFindMatchRects.

@@ -45,12 +45,6 @@ class ReadAnythingImmersiveWebView : public views::WebView,
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override;
-  void FindReply(content::WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
 
  private:
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;

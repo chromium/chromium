@@ -46,6 +46,7 @@ enum class ViewportFit;
 }  // namespace blink
 
 namespace gfx {
+class Rect;
 class Size;
 }  // namespace gfx
 
@@ -436,13 +437,9 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // TODO(crbug.com/492228028): Fix this to guarantee that this is called once
   // with `final_update` set to true, even when the find session is dropped
   // because another client started a new one.
-  //
-  // Mirrors WebContentsDelegate::FindReply(), which only the single
-  // WebContentsDelegate (typically the find-in-page UI) receives. Use this
-  // instead when a caller other than the find-in-page UI needs to know when
-  // its own request completes, without displacing the real delegate.
   virtual void DidReceiveFindReply(int request_id,
                                    int number_of_matches,
+                                   const gfx::Rect& selection_rect,
                                    int active_match_ordinal,
                                    bool final_update) {}
 

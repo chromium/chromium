@@ -232,12 +232,6 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
                                  const std::string& protocol,
                                  const GURL& url,
                                  bool user_gesture) override;
-  void FindReply(content::WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

@@ -14,6 +14,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "content/public/browser/immersive_playback_options.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "url/origin.h"
 
@@ -38,10 +39,12 @@ namespace android {
 // the Chromium Android port but not to be shared with WebView.
 class TabWebContentsDelegateAndroid
     : public web_contents_delegate_android::WebContentsDelegateAndroid,
-      public find_in_page::FindResultObserver {
+      public find_in_page::FindResultObserver,
+      public content::WebContentsObserver {
  public:
   TabWebContentsDelegateAndroid(JNIEnv* env,
-                                const jni_zero::JavaRef<jobject>& obj);
+                                const jni_zero::JavaRef<jobject>& obj,
+                                content::WebContents* web_contents);
 
   TabWebContentsDelegateAndroid(const TabWebContentsDelegateAndroid&) = delete;
   TabWebContentsDelegateAndroid& operator=(
@@ -76,12 +79,6 @@ class TabWebContentsDelegateAndroid
   bool ShouldFocusLocationBarByDefault(content::WebContents* source) override;
   void NavigationStateChanged(content::WebContents* source,
                               content::InvalidateTypes changed_flags) override;
-  void FindReply(content::WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
   void FindMatchRectsReply(content::WebContents* web_contents,
                            int version,
                            const std::vector<gfx::RectF>& rects,
@@ -172,6 +169,16 @@ class TabWebContentsDelegateAndroid
   // find_in_page::FindResultObserver:
   void OnFindResultAvailable(content::WebContents* web_contents) override;
   void OnFindTabHelperDestroyed(find_in_page::FindTabHelper* helper) override;
+
+  // content::WebContentsObserver:
+  // Bring WebContentsObserver::BeforeUnloadFired(bool) into the scope so the
+  // WebContentsDelegate::BeforeUnloadFired() override below does not hide it.
+  using content::WebContentsObserver::BeforeUnloadFired;
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override;
 
   bool ShouldEnableEmbeddedMediaExperience() const;
   bool IsDocumentPictureInPictureBlockedBySystem() const override;

@@ -22,7 +22,8 @@ using content::WebContents;
 namespace find_in_page {
 
 FindTabHelper::FindTabHelper(WebContents* web_contents)
-    : content::WebContentsUserData<FindTabHelper>(*web_contents) {}
+    : content::WebContentsUserData<FindTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 FindTabHelper::~FindTabHelper() {
   for (auto& observer : observers_)
@@ -152,11 +153,11 @@ void FindTabHelper::RequestFindMatchRects(int current_version) {
 }
 #endif
 
-void FindTabHelper::HandleFindReply(int request_id,
-                                    int number_of_matches,
-                                    const gfx::Rect& selection_rect,
-                                    int active_match_ordinal,
-                                    bool final_update) {
+void FindTabHelper::DidReceiveFindReply(int request_id,
+                                        int number_of_matches,
+                                        const gfx::Rect& selection_rect,
+                                        int active_match_ordinal,
+                                        bool final_update) {
   // Ignore responses for requests that have been aborted.
   // Ignore responses for requests from previous sessions. That way we won't act
   // on stale results when the user has already typed in another query.

@@ -810,14 +810,11 @@ void WebViewGuest::CloseContents(WebContents* source) {
   GuestClose();
 }
 
-void WebViewGuest::FindReply(WebContents* source,
-                             int request_id,
-                             int number_of_matches,
-                             const gfx::Rect& selection_rect,
-                             int active_match_ordinal,
-                             bool final_update) {
-  GuestViewBase::FindReply(source, request_id, number_of_matches,
-                           selection_rect, active_match_ordinal, final_update);
+void WebViewGuest::DidReceiveFindReply(int request_id,
+                                       int number_of_matches,
+                                       const gfx::Rect& selection_rect,
+                                       int active_match_ordinal,
+                                       bool final_update) {
   find_helper_.FindReply(request_id, number_of_matches, selection_rect,
                          active_match_ordinal, final_update);
 }

@@ -232,7 +232,7 @@ class TabWebContentsDelegateBeforeUnloadTest : public TabAndroidTest {
   void SetUp() override {
     TabAndroidTest::SetUp();
     delegate_ = std::make_unique<android::TabWebContentsDelegateAndroid>(
-        env_, base::android::ScopedJavaLocalRef<jobject>());
+        env_, base::android::ScopedJavaLocalRef<jobject>(), nullptr);
   }
 
   void TearDown() override {
@@ -490,7 +490,7 @@ TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
 
   // Create the delegate with a null Java reference.
   auto delegate = std::make_unique<android::TabWebContentsDelegateAndroid>(
-      env_, base::android::ScopedJavaLocalRef<jobject>());
+      env_, base::android::ScopedJavaLocalRef<jobject>(), raw_web_contents);
 
   // Set the delegate on the web contents.
   raw_web_contents->SetDelegate(delegate.get());

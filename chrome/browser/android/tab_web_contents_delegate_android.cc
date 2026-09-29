@@ -265,8 +265,28 @@ namespace android {
 
 TabWebContentsDelegateAndroid::TabWebContentsDelegateAndroid(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
-    : WebContentsDelegateAndroid(env, obj) {}
+    const jni_zero::JavaRef<jobject>& obj,
+    content::WebContents* web_contents)
+    : WebContentsDelegateAndroid(env, obj),
+      content::WebContentsObserver(web_contents) {
+  // `web_contents` may be null if this delegate is being constructed before
+  // any WebContents exists yet, to be attached to one later via SetDelegate().
+  if (!web_contents) {
+    return;
+  }
+
+  // FindTabHelper may already exist if this delegate is replacing an earlier
+  // one on a WebContents that has already had its tab helpers attached (see
+  // TabAndroid::UpdateDelegates()). In that case, register with it right
+  // away: DidReceiveFindReply()'s lazy registration only works when this
+  // observer is added before FindTabHelper's own, which holds for the usual
+  // construction order (this delegate before AttachTabHelpers()) but not for
+  // a later re-attachment.
+  if (find_in_page::FindTabHelper* find_tab_helper =
+          find_in_page::FindTabHelper::FromWebContents(web_contents)) {
+    find_result_observations_.AddObservation(find_tab_helper);
+  }
+}
 
 TabWebContentsDelegateAndroid::~TabWebContentsDelegateAndroid() = default;
 
@@ -375,25 +395,6 @@ void TabWebContentsDelegateAndroid::NavigationStateChangedDeferred(
     WebContents* source,
     content::InvalidateTypes changed_flags) {
   WebContentsDelegateAndroid::NavigationStateChanged(source, changed_flags);
-}
-
-void TabWebContentsDelegateAndroid::FindReply(
-    WebContents* web_contents,
-    int request_id,
-    int number_of_matches,
-    const gfx::Rect& selection_rect,
-    int active_match_ordinal,
-    bool final_update) {
-  find_in_page::FindTabHelper* find_tab_helper =
-      find_in_page::FindTabHelper::FromWebContents(web_contents);
-  if (!find_result_observations_.IsObservingSource(find_tab_helper))
-    find_result_observations_.AddObservation(find_tab_helper);
-
-  find_tab_helper->HandleFindReply(request_id,
-                                   number_of_matches,
-                                   selection_rect,
-                                   active_match_ordinal,
-                                   final_update);
 }
 
 void TabWebContentsDelegateAndroid::FindMatchRectsReply(
@@ -776,6 +777,21 @@ void TabWebContentsDelegateAndroid::OnFindResultAvailable(
 void TabWebContentsDelegateAndroid::OnFindTabHelperDestroyed(
     find_in_page::FindTabHelper* helper) {
   find_result_observations_.RemoveObservation(helper);
+}
+
+void TabWebContentsDelegateAndroid::DidReceiveFindReply(
+    int request_id,
+    int number_of_matches,
+    const gfx::Rect& selection_rect,
+    int active_match_ordinal,
+    bool final_update) {
+  // FindTabHelper itself now handles the reply; this just lazily starts
+  // observing it for the higher-level OnFindResultAvailable() notification.
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents());
+  if (!find_result_observations_.IsObservingSource(find_tab_helper)) {
+    find_result_observations_.AddObservation(find_tab_helper);
+  }
 }
 
 bool TabWebContentsDelegateAndroid::ShouldEnableEmbeddedMediaExperience()

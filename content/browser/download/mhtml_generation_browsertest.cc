@@ -173,7 +173,8 @@ struct CompareResult {
 };
 
 // A dummy WebContentsDelegate which tracks the results of a find operation.
-class FindTrackingDelegate : public WebContentsDelegate {
+class FindTrackingDelegate : public WebContentsDelegate,
+                             public WebContentsObserver {
  public:
   explicit FindTrackingDelegate(const std::string& search) : search_(search) {}
 
@@ -184,6 +185,7 @@ class FindTrackingDelegate : public WebContentsDelegate {
   int Wait(WebContents* web_contents) {
     WebContentsDelegate* old_delegate = web_contents->GetDelegate();
     web_contents->SetDelegate(this);
+    Observe(web_contents);
 
     auto options = blink::mojom::FindOptions::New();
     options->run_synchronously_for_testing = true;
@@ -198,12 +200,11 @@ class FindTrackingDelegate : public WebContentsDelegate {
     return matches_;
   }
 
-  void FindReply(WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override {
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override {
     if (final_update) {
       matches_ = number_of_matches;
       run_loop_.Quit();

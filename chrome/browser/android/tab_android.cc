@@ -406,7 +406,7 @@ void TabAndroid::InitWebContents(
                                                        this);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
-          env, jweb_contents_delegate);
+          env, jweb_contents_delegate, web_contents_.get());
   web_contents_->SetDelegate(web_contents_delegate_.get());
   web_contents_->SetSelectionPopupDelegate(
       std::make_unique<android::ChromeSelectionDropdownMenuDelegate>());
@@ -546,7 +546,7 @@ void TabAndroid::UpdateDelegates(
       ->SetPopulatorFactory(jcontext_menu_populator_factory);
   web_contents_delegate_ =
       std::make_unique<android::TabWebContentsDelegateAndroid>(
-          env, jweb_contents_delegate);
+          env, jweb_contents_delegate, web_contents());
   web_contents()->SetDelegate(web_contents_delegate_.get());
 }
 

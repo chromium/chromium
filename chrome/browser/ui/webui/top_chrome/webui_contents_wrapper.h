@@ -127,12 +127,6 @@ class WebUIContentsWrapper
       content::WebContents* contents) override;
   void SetContentsBounds(content::WebContents* source,
                          const gfx::Rect& bounds) override;
-  void FindReply(content::WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
   content::WebContents* AddNewContents(
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
@@ -150,6 +144,11 @@ class WebUIContentsWrapper
   void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override;
 
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;

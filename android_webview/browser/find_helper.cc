@@ -14,7 +14,8 @@ using content::WebContents;
 namespace android_webview {
 
 FindHelper::FindHelper(WebContents* web_contents)
-    : content::WebContentsUserData<FindHelper>(*web_contents) {}
+    : content::WebContentsUserData<FindHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 FindHelper::~FindHelper() {
 }
@@ -44,16 +45,6 @@ void FindHelper::FindAllAsync(const std::u16string& search_string) {
                           current_request_id_ = request_id;
                           current_session_id_ = request_id;
                         });
-}
-
-void FindHelper::HandleFindReply(int request_id,
-                                 int match_count,
-                                 int active_ordinal,
-                                 bool finished) {
-  if (!async_find_started_ || request_id < current_session_id_)
-    return;
-
-  NotifyResults(active_ordinal, match_count, finished);
 }
 
 void FindHelper::FindNext(bool forward) {
@@ -89,6 +80,18 @@ bool FindHelper::MaybeHandleEmptySearch(const std::u16string& search_string) {
   GetWebContents().StopFinding(content::STOP_FIND_ACTION_CLEAR_SELECTION);
   NotifyResults(0, 0, true);
   return true;
+}
+
+void FindHelper::DidReceiveFindReply(int request_id,
+                                     int number_of_matches,
+                                     const gfx::Rect& selection_rect,
+                                     int active_match_ordinal,
+                                     bool final_update) {
+  if (!async_find_started_ || request_id < current_session_id_) {
+    return;
+  }
+
+  NotifyResults(active_match_ordinal, number_of_matches, final_update);
 }
 
 void FindHelper::StartNewSession(const std::u16string& search_string) {

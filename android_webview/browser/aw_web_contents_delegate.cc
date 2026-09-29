@@ -11,7 +11,6 @@
 #include "android_webview/browser/aw_contents_io_thread_client.h"
 #include "android_webview/browser/aw_javascript_dialog_manager.h"
 #include "android_webview/browser/aw_permission_manager.h"
-#include "android_webview/browser/find_helper.h"
 #include "android_webview/browser/permission/media_access_permission_request.h"
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/common/aw_features.h"
@@ -60,7 +59,7 @@ namespace android_webview {
 AwWebContentsDelegate::AwWebContentsDelegate(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj)
-    : WebContentsDelegateAndroid(env, obj), is_fullscreen_(false) {}
+    : WebContentsDelegateAndroid(env, obj) {}
 
 AwWebContentsDelegate::~AwWebContentsDelegate() = default;
 
@@ -99,20 +98,6 @@ AwWebContentsDelegate::GetJavaScriptDialogManager(WebContents* source) {
   static base::NoDestructor<AwJavaScriptDialogManager>
       javascript_dialog_manager;
   return javascript_dialog_manager.get();
-}
-
-void AwWebContentsDelegate::FindReply(WebContents* web_contents,
-                                      int request_id,
-                                      int number_of_matches,
-                                      const gfx::Rect& selection_rect,
-                                      int active_match_ordinal,
-                                      bool final_update) {
-  CHECK(web_contents);
-  FindHelper* find_helper = FindHelper::FromWebContents(web_contents);
-
-  CHECK(find_helper);
-  find_helper->HandleFindReply(request_id, number_of_matches,
-                               active_match_ordinal, final_update);
 }
 
 void AwWebContentsDelegate::RunFileChooser(

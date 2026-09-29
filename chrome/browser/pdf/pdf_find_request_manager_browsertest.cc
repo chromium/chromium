@@ -47,12 +47,14 @@ class PdfFindRequestManagerTest : public InProcessBrowserTest {
     // Swap the WebContents's delegate for our test delegate.
     normal_delegate_ = contents()->GetDelegate();
     contents()->SetDelegate(&test_delegate_);
+    test_delegate_.Observe(contents());
   }
 
   void TearDownOnMainThread() override {
     // Swap the WebContents's delegate back to its usual delegate.
     contents()->SetDelegate(normal_delegate_);
     normal_delegate_ = nullptr;
+    test_delegate_.Observe(nullptr);
   }
 
  protected:

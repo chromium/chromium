@@ -110,6 +110,7 @@ Response FindInPageHandler::Stop() {
 
 void FindInPageHandler::DidReceiveFindReply(int request_id,
                                             int number_of_matches,
+                                            const gfx::Rect& selection_rect,
                                             int active_match_ordinal,
                                             bool final_update) {
   if (!pending_callback_ || request_id != pending_request_id_ ||

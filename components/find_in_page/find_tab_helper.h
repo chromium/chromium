@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_notification_details.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/range/range.h"
 
@@ -20,7 +21,8 @@ class FindResultObserver;
 enum class SelectionAction;
 
 // Per-tab find manager. Handles dealing with the life cycle of find sessions.
-class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
+class FindTabHelper : public content::WebContentsUserData<FindTabHelper>,
+                      public content::WebContentsObserver {
  public:
   // The delegate tracks search text state.
   class Delegate {
@@ -124,12 +126,6 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   void RequestFindMatchRects(int current_version);
 #endif
 
-  void HandleFindReply(int request_id,
-                       int number_of_matches,
-                       const gfx::Rect& selection_rect,
-                       int active_match_ordinal,
-                       bool final_update);
-
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   // Used to determine if the find session is active for this WebContents.
@@ -201,6 +197,13 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   raw_ptr<Delegate> delegate_ = nullptr;
 
   base::ObserverList<FindResultObserver> observers_;
+
+  // WebContentsObserver override.
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

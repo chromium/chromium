@@ -30,12 +30,6 @@ class AwWebContentsDelegate
 
   content::JavaScriptDialogManager* GetJavaScriptDialogManager(
       content::WebContents* source) override;
-  void FindReply(content::WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -114,7 +108,7 @@ class AwWebContentsDelegate
   scoped_refptr<content::FileSelectListener> TakeFileSelectListener();
 
  private:
-  bool is_fullscreen_;
+  bool is_fullscreen_ = false;
 
   // Maintain a FileSelectListener instance passed to RunFileChooser() until
   // a callback is called.

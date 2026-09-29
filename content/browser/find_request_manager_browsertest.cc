@@ -74,12 +74,14 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
     // Swap the WebContents's delegate for our test delegate.
     normal_delegate_ = contents()->GetDelegate();
     contents()->SetDelegate(&test_delegate_);
+    test_delegate_.Observe(contents());
   }
 
   void TearDownOnMainThread() override {
     // Swap the WebContents's delegate back to its usual delegate.
     contents()->SetDelegate(normal_delegate_);
     normal_delegate_ = nullptr;
+    test_delegate_.Observe(nullptr);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1293,6 +1295,7 @@ class FindRequestManagerPrerenderingTest : public FindRequestManagerTest {
   void SetUpOnMainThread() override {
     FindRequestManagerTest::SetUpOnMainThread();
     contents()->SetDelegate(&delegate_);
+    delegate_.Observe(contents());
   }
 
   content::test::PrerenderTestHelper* prerender_helper() {
@@ -1549,6 +1552,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTestWithTestConfig,
                        MAYBE_NavigateFrameDuringFind) {
   WaitForFindTestWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
+  delegate.Observe(contents());
 
   // 1) Load a main frame with 5 matches.
   LoadAndWait("/find_in_simple_page.html");
@@ -1628,6 +1632,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache,
                        NavigateFrameDuringFind) {
   WaitForFindTestWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
+  delegate.Observe(contents());
 
   GURL url_a = embedded_test_server()->GetURL("a.com", "/find_in_page.html");
   GURL url_b =
@@ -1705,6 +1710,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTestWithBFCache,
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, CrashDuringFind) {
   WaitForFindTestWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
+  delegate.Observe(contents());
 
   // 1) Load a main frame with 2 matches and a subframe with 17 matches.
   LoadAndWait("/find_in_page.html");

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -29,10 +30,11 @@ struct FindResults {
 };
 
 // This test delegate is used during find-in-page tests, in order to directly
-// access find replies going through the WebContentsDelegate. Tests functions in
-// this delegate allow for waiting on specific or all find replies to come in,
-// and observe find results within them.
-class FindTestWebContentsDelegate : public WebContentsDelegate {
+// access find replies via WebContentsObserver::DidReceiveFindReply(). Tests
+// functions in this delegate allow for waiting on specific or all find
+// replies to come in, and observe find results within them.
+class FindTestWebContentsDelegate : public WebContentsDelegate,
+                                    public WebContentsObserver {
  public:
   FindTestWebContentsDelegate();
 
@@ -41,6 +43,11 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
       delete;
 
   ~FindTestWebContentsDelegate() override;
+
+  // WebContentsObserver::Observe() is protected; re-expose it so tests can
+  // call it to receive DidReceiveFindReply(), independently of whatever
+  // WebContents::SetDelegate() call this instance is also used for.
+  using WebContentsObserver::Observe;
 
   // Returns the current find results.
   const FindResults& GetFindResults() const;
@@ -94,13 +101,14 @@ class FindTestWebContentsDelegate : public WebContentsDelegate {
 #endif
   };
 
+  // WebContentsObserver override.
+  void DidReceiveFindReply(int request_id,
+                           int number_of_matches,
+                           const gfx::Rect& selection_rect,
+                           int active_match_ordinal,
+                           bool final_update) override;
+
   // WebContentsDelegate override.
-  void FindReply(WebContents* web_contents,
-                 int request_id,
-                 int number_of_matches,
-                 const gfx::Rect& selection_rect,
-                 int active_match_ordinal,
-                 bool final_update) override;
   bool IsBackForwardCacheSupported(WebContents& web_contents) override;
 
   // Uses |message_loop_runner_| to wait for various things.
