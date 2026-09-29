@@ -151,10 +151,12 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
     is_web_contents_in_side_panel_override_ = in_side_panel;
   }
 
+  using ContextualTasksUiService::HandleCitationClick;
   using ContextualTasksUiService::HandleNavigationImpl;
   using ContextualTasksUiService::HandleSidePanelExternalNavigation;
   using ContextualTasksUiService::IsAllowedSidePanelUrl;
   using ContextualTasksUiService::IsWebContentsInSidePanel;
+  using ContextualTasksUiService::ShouldHandleCitationClick;
   using ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation;
   bool HandleNavigationImpl(
       content::OpenURLParams url_params,

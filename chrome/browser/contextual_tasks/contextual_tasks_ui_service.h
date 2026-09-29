@@ -550,6 +550,21 @@ class ContextualTasksUiService : public KeyedService {
   // Captcha, or sign-in domain).
   virtual bool IsAllowedSidePanelUrl(const GURL& url);
 
+  // Returns whether the given navigation should be treated as a citation link
+  // click from within the side panel.
+  virtual bool ShouldHandleCitationClick(const GURL& url,
+                                         content::WebContents* source_contents);
+
+  // Handles a citation link click originating in the side panel.
+  // Routes video and PDF citations to the active tab, activates and scrolls
+  // existing tabs matching the citation URL using text fragments, or clobbers
+  // the active tab / opens a new adjacent tab.
+  virtual bool HandleCitationClick(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      const blink::mojom::WindowFeatures& window_features);
+
   // Returns whether the given navigation should be treated as an external link
   // clicked from within the side panel, routing to the browser tab strip.
   virtual bool ShouldHandleSidePanelExternalNavigation(

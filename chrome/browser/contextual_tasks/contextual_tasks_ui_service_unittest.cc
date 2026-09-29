@@ -30,6 +30,7 @@
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -3205,6 +3206,274 @@ TEST_F(
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
       /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleCitationClick_TextFragmentUrl) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL fragment_url("https://example.com/article#:~:text=sample+text");
+  EXPECT_TRUE(service_for_nav_->ShouldHandleCitationClick(fragment_url,
+                                                          web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleCitationClick_AllowedSearchUrl_NoFragment) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL srp_url("https://www.google.com/search?q=test");
+  EXPECT_FALSE(
+      service_for_nav_->ShouldHandleCitationClick(srp_url, web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldHandleCitationClick_ExternalUrl_NoFragmentOrTab_ReturnsFalse) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL external_url("https://example.com/page");
+  EXPECT_FALSE(service_for_nav_->ShouldHandleCitationClick(external_url,
+                                                           web_contents.get()));
+}
+
+TEST_F(ContextualTasksUiServiceTest, ShouldHandleCitationClick_NotInSidePanel) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelRearchitecture);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(false);
+
+  GURL fragment_url("https://example.com/article#:~:text=sample+text");
+  EXPECT_FALSE(service_for_nav_->ShouldHandleCitationClick(fragment_url,
+                                                           web_contents.get()));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_CitationLink_ExistingTab_HighlightsText) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {contextual_tasks::kContextualTasksClobberActiveTab});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  contextual_tasks_service_->AssociateTabWithTask(
+      task_id, sessions::SessionTabHelper::IdForTab(tab_contents.get()));
+
+  GURL panel_url = net::AppendOrReplaceQueryParameter(
+      GURL("https://www.google.com/search?udm=50"), "chrome_task_id",
+      task_id.AsLowercaseString());
+  content::WebContentsTester::For(panel_contents.get())
+      ->SetLastCommittedURL(panel_url);
+
+  GURL article_url("https://example.com/article");
+  content::WebContentsTester::For(tab_contents.get())
+      ->SetLastCommittedURL(article_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents).WillByDefault(Return(tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&mock_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&mock_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL citation_url("https://example.com/article#:~:text=sample+text");
+
+  // Since existing tab is found, it should NOT route to OpenUrl.
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(citation_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(
+             "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_CitationLink_ExistingTab_ClobberEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksClobberActiveTab},
+      {});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  contextual_tasks_service_->AssociateTabWithTask(
+      task_id, sessions::SessionTabHelper::IdForTab(tab_contents.get()));
+
+  GURL panel_url = net::AppendOrReplaceQueryParameter(
+      GURL("https://www.google.com/search?udm=50"), "chrome_task_id",
+      task_id.AsLowercaseString());
+  content::WebContentsTester::For(panel_contents.get())
+      ->SetLastCommittedURL(panel_url);
+
+  GURL article_url("https://example.com/article");
+  content::WebContentsTester::For(tab_contents.get())
+      ->SetLastCommittedURL(article_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents).WillByDefault(Return(tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&mock_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&mock_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL citation_url("https://example.com/article#:~:text=sample+text");
+
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(citation_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  // Active tab was clobbered to the citation URL.
+  EXPECT_EQ(citation_url, tab_contents->GetVisibleURL());
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(
+             "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_CitationLink_NoExistingTab_ClobberEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksClobberActiveTab},
+      {});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  base::HistogramTester histogram_tester;
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  GURL initial_url("https://start.com/");
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(initial_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&mock_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&mock_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL new_citation_url(
+      "https://new-citation.example.com/paper#:~:text=sample+citation");
+
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _)).Times(0);
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(new_citation_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  // Active tab was clobbered to the new citation URL.
+  EXPECT_EQ(new_citation_url, active_tab_contents->GetVisibleURL());
+  EXPECT_EQ(
+      1, histogram_tester.GetBucketCount(
+             "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true));
 }
 
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {

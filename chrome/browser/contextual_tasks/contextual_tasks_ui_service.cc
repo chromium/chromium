@@ -44,6 +44,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/tab_list/constants.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -752,7 +753,7 @@ static bool IsVideoCitation(const GURL& url,
 #endif
 
 // Checks if the current URL is already open in the tab list. If so, returns a
-// pointer to that tab. If there is not existing tab with the given url, returns
+// pointer to that tab. If there is no existing tab with the given url, returns
 // nullptr.
 static tabs::TabInterface* GetExistingTab(const GURL& url,
                                           TabListInterface* tab_list,
@@ -1399,6 +1400,12 @@ bool ContextualTasksUiService::HandleNavigationImplPostRearchitecture(
                                           source_contents);
   }
 
+  // Check if the navigation is a citation link or scroll-to-text link.
+  if (ShouldHandleCitationClick(url_params.url, source_contents)) {
+    return HandleCitationClick(std::move(url_params), source_contents, tab,
+                               window_features);
+  }
+
   // Check if the navigation is an external link from the side panel that should
   // be rerouted from the side panel to the browser strip.
   if (ShouldHandleSidePanelExternalNavigation(url_params.url,
@@ -1567,6 +1574,196 @@ bool ContextualTasksUiService::IsAllowedSidePanelUrl(const GURL& url) {
   }
   return IsAiUrl(url) || IsValidSearchResultsPage(url) ||
          IsGoogleCaptchaUrl(url) || IsSignInDomain(url);
+}
+
+bool ContextualTasksUiService::ShouldHandleCitationClick(
+    const GURL& url,
+    content::WebContents* source_contents) {
+  if (!IsWebContentsInSidePanel(source_contents)) {
+    return false;
+  }
+
+  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  // If the target URL contains text fragments (scroll-to-text directives), it
+  // is definitely a citation link.
+  if (!shared_highlighting::ExtractTextFragments(url.GetRef()).empty()) {
+    return true;
+  }
+
+  // If the URL matches an open tab in the task or is a video/PDF citation on
+  // the active tab, treat it as a citation link to allow focusing or scrolling
+  // that tab rather than navigating inside the side panel.
+  BrowserWindowInterface* browser_window =
+      webui::GetBrowserWindowInterface(source_contents);
+  if (browser_window) {
+    base::Uuid task_id =
+        GetTaskIdFromUrl(source_contents->GetLastCommittedURL());
+    if (!task_id.is_valid() && source_contents) {
+      if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+              source_contents)) {
+        if (helper->task_id().has_value() && helper->task_id()->is_valid()) {
+          task_id = *helper->task_id();
+        }
+      }
+    }
+    if (!task_id.is_valid()) {
+      if (auto* controller =
+              ContextualTasksPanelController::From(browser_window)) {
+        if (auto current_task = controller->GetCurrentTask()) {
+          task_id = current_task->GetTaskId();
+        }
+      }
+    }
+    TabListInterface* tab_list = TabListInterface::From(browser_window);
+    if (tab_list) {
+      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+      if (active_tab) {
+#if !BUILDFLAG(IS_ANDROID)
+        if (IsVideoCitation(url, active_tab, task_id,
+                            contextual_tasks_service_)) {
+          return true;
+        }
+#endif
+#if BUILDFLAG(ENABLE_PDF)
+        if (IsPdfCitation(url, active_tab, task_id,
+                          contextual_tasks_service_)) {
+          return true;
+        }
+#endif
+      }
+    }
+  }
+
+  return false;
+}
+
+bool ContextualTasksUiService::HandleCitationClick(
+    content::OpenURLParams url_params,
+    content::WebContents* source_contents,
+    tabs::TabInterface* tab,
+    const blink::mojom::WindowFeatures& window_features) {
+  const GURL url = url_params.url;
+  OMNIBOX_LOG("nav_trace") << "ContextualTasks HandleCitationClick: "
+                           << url.spec();
+
+  BrowserWindowInterface* browser_window =
+      webui::GetBrowserWindowInterface(source_contents);
+  if (!browser_window && tab) {
+    browser_window = tab->GetBrowserWindowInterface();
+  }
+
+  base::UmaHistogramBoolean(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel", true);
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.AiResponse.UserAction.LinkClicked.Panel"));
+
+  if (browser_window) {
+    if (auto* controller =
+            ContextualTasksPanelController::From(browser_window)) {
+      controller->OnAiInteraction();
+    }
+  }
+
+  base::Uuid task_id;
+  if (source_contents) {
+    task_id = GetTaskIdFromUrl(source_contents->GetLastCommittedURL());
+    if (!task_id.is_valid()) {
+      if (auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+              source_contents)) {
+        if (helper->task_id().has_value() && helper->task_id()->is_valid()) {
+          task_id = *helper->task_id();
+        }
+      }
+    }
+  }
+  if (!task_id.is_valid() && browser_window) {
+    if (auto* controller =
+            ContextualTasksPanelController::From(browser_window)) {
+      if (auto current_task = controller->GetCurrentTask()) {
+        task_id = current_task->GetTaskId();
+      }
+    }
+  }
+
+  TabListInterface* tab_list =
+      browser_window ? TabListInterface::From(browser_window) : nullptr;
+
+  if (tab_list) {
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    if (MaybeHandleVideoCitation(url, active_tab, task_id) ||
+        MaybeHandlePdfCitation(url, active_tab, task_id)) {
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks HandleCitationClick: citation handled on active "
+             "tab";
+      return true;
+    }
+  }
+
+  tabs::TabInterface* existing_tab = nullptr;
+  if (tab_list) {
+    existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
+  }
+
+  tabs::TabInterface* active_tab =
+      tab_list ? tab_list->GetActiveTab() : nullptr;
+
+  // Citation clobbering behavior matches pre-rearchitecture: if clobbering is
+  // enabled, load the URL into the active tab.
+  if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
+      active_tab && active_tab->GetContents()) {
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks HandleCitationClick: clobbering active tab: "
+        << url;
+    content::NavigationController::LoadURLParams load_params(url);
+    load_params.override_user_agent =
+        content::NavigationController::UA_OVERRIDE_TRUE;
+    load_params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+    active_tab->GetContents()->GetController().LoadURLWithParams(load_params);
+    return true;
+  }
+
+  if (existing_tab) {
+    OMNIBOX_LOG("nav_trace")
+        << "ContextualTasks HandleCitationClick: existing tab found";
+    std::vector<std::string> fragments =
+        shared_highlighting::ExtractTextFragments(url.GetRef());
+    if (!fragments.empty() && existing_tab->GetContents() &&
+        existing_tab->GetContents()->GetPrimaryMainFrame() &&
+        existing_tab->GetContents()
+            ->GetPrimaryMainFrame()
+            ->IsRenderFrameLive()) {
+      content::Page& page = existing_tab->GetContents()->GetPrimaryPage();
+      companion::TextFinderManager* text_finder_manager =
+          companion::TextFinderManager::GetOrCreateForPage(page);
+      text_finder_manager->CreateTextFinders(
+          fragments,
+          base::BindOnce(
+              &ContextualTasksUiService::OnTextFinderLookupComplete,
+              weak_ptr_factory_.GetWeakPtr(), existing_tab->GetWeakPtr(), url,
+              task_id,
+              browser_window ? browser_window->GetWeakPtr() : nullptr));
+    }
+    return true;
+  }
+
+  if (url_params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+    url_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
+  OMNIBOX_LOG("nav_trace")
+      << "ContextualTasks HandleCitationClick: routing to tab strip: "
+      << url.spec()
+      << ", disposition: " << static_cast<int>(url_params.disposition);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ContextualTasksUiService::OpenUrl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(url_params),
+                     window_features, browser_window));
+  return true;
 }
 
 bool ContextualTasksUiService::ShouldHandleSidePanelExternalNavigation(
@@ -1784,6 +1981,9 @@ void ContextualTasksUiService::OpenUrl(
                                   "clobbering active tab: "
                                << url;
       content::NavigationController::LoadURLParams load_params(url_params);
+      load_params.override_user_agent =
+          content::NavigationController::UA_OVERRIDE_TRUE;
+      load_params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
       active_tab->GetContents()->GetController().LoadURLWithParams(load_params);
       return;
     }
@@ -1837,6 +2037,27 @@ void ContextualTasksUiService::OpenUrl(
       nav_params.navigated_or_inserted_contents;
 
   if (new_contents_ptr) {
+    if (browser) {
+      if (auto* controller = ContextualTasksPanelController::From(browser)) {
+        if (auto current_task = controller->GetCurrentTask()) {
+          AssociateWebContentsToTask(new_contents_ptr,
+                                     current_task->GetTaskId());
+        }
+      }
+      TabListInterface* tab_list_interface = TabListInterface::From(browser);
+      tabs::TabInterface* active_tab =
+          tab_list_interface ? tab_list_interface->GetActiveTab() : nullptr;
+      if (tab_list_interface && active_tab) {
+        if (tabs::TabInterface* new_tab =
+                tabs::TabInterface::MaybeGetFromContents(new_contents_ptr)) {
+          if (tab_list_interface->GetIndexOfTab(new_tab->GetHandle()) !=
+              ::tab_list::kNoTabIndex) {
+            tab_list_interface->SetOpenerForTab(new_tab->GetHandle(),
+                                                active_tab->GetHandle());
+          }
+        }
+      }
+    }
     if (GetIsContextualTasksWindowTrackingEnabled() && tracker_manager_) {
       tracker_manager_->MatchAndAssociatePendingTracker(
           url, new_contents_ptr, std::move(message_proxy_web_contents));
