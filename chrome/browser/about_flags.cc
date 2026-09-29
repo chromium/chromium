@@ -7878,10 +7878,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsInTabUrlNavDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsInTabUrlNav)},
 
-    {"android-settings-containment",
-     flag_descriptions::kAndroidSettingsContainmentName,
-     flag_descriptions::kAndroidSettingsContainmentDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidSettingsContainment)},
     {"android-settings-url", flag_descriptions::kAndroidSettingsUrlName,
      flag_descriptions::kAndroidSettingsUrlDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSettingsUrl)},

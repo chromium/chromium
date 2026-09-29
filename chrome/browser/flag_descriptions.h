@@ -1405,11 +1405,6 @@ inline constexpr char kBorealisZinkGlDriverDescription[] =
     "Enables zink driver for GL rendering in Borealis. Can be enabled for "
     "recommended GL apps only or for all GL apps. Defaults to recommended.";
 
-inline constexpr char kAndroidSettingsContainmentName[] =
-    "Android Settings Containment";
-inline constexpr char kAndroidSettingsContainmentDescription[] =
-    "Enables the Android Settings Containment feature.";
-
 inline constexpr char kAndroidSettingsUrlName[] = "Android Settings URL";
 inline constexpr char kAndroidSettingsUrlDescription[] =
     "Enables the use of chrome://settings on Android.";

@@ -299,7 +299,6 @@ public abstract class ChromeFeatureList {
             "AndroidProgressBarVisualUpdate";
     public static final String ANDROID_SAVE_CARD_NON_BLOCKING_DIALOG =
             "AndroidSaveCardNonBlockingDialog";
-    public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
     public static final String ANDROID_SETTINGS_URL = "AndroidSettingsUrl";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
     public static final String ANDROID_STARTUP_IMPROVEMENTS = "AndroidStartupImprovements";
@@ -999,11 +998,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sAndroidSettingsContainment =
-            newCachedFlag(
-                    ANDROID_SETTINGS_CONTAINMENT,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidSetupList =
             newCachedFlag(
                     ANDROID_SETUP_LIST, /* defaultValue= */ true, /* defaultValueInTests= */ true);
@@ -1551,7 +1545,6 @@ public abstract class ChromeFeatureList {
                     sAndroidOpenIncognitoAsWindowRestrictions,
                     sAndroidPageInfoAsAppMenuItem,
                     sAndroidProgressBarVisualUpdate,
-                    sAndroidSettingsContainment,
                     sAndroidSetupList,
                     sAndroidStartupImprovements,
                     sAndroidSurfaceColorUpdate,

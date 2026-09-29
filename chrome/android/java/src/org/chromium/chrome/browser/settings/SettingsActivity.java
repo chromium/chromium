@@ -510,7 +510,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mSearchCoordinator != null) mSearchCoordinator.onTitleTapped(entryName);
     }
 
-    /** Returns true if the AndroidSettingsContainment feature is enabled. */
+    /** Returns true if the SettingsMultiColumn feature is enabled. */
     private static boolean isMultiColumnSettingEnabled() {
         return ChromeFeatureList.sSettingsMultiColumn.isEnabled();
     }
