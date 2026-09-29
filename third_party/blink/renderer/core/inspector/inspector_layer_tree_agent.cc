@@ -254,6 +254,7 @@ InspectorLayerTreeAgent::~InspectorLayerTreeAgent() = default;
 
 void InspectorLayerTreeAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
+  visitor->Trace(client_);
   InspectorBaseAgent::Trace(visitor);
 }
 

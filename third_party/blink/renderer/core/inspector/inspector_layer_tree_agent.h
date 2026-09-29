@@ -50,7 +50,7 @@ class PictureSnapshot;
 class CORE_EXPORT InspectorLayerTreeAgent final
     : public InspectorBaseAgent<protocol::LayerTree::Metainfo> {
  public:
-  class Client {
+  class Client : public GarbageCollectedMixin {
    public:
     virtual ~Client() = default;
     virtual bool IsInspectorLayer(const cc::Layer*) = 0;
@@ -115,7 +115,7 @@ class CORE_EXPORT InspectorLayerTreeAgent final
       std::unique_ptr<protocol::Array<protocol::LayerTree::Layer>>&);
 
   Member<InspectedFrames> inspected_frames_;
-  raw_ptr<Client, UnprotectedInRelease | DanglingUntriaged> client_;
+  Member<Client> client_;
 
   typedef HashMap<String, scoped_refptr<PictureSnapshot>> SnapshotById;
   SnapshotById snapshot_by_id_;

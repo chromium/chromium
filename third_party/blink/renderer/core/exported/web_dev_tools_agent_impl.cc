@@ -450,6 +450,7 @@ void WebDevToolsAgentImpl::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   visitor->Trace(resource_container_);
   visitor->Trace(node_to_inspect_);
+  InspectorLayerTreeAgent::Client::Trace(visitor);
 }
 
 void WebDevToolsAgentImpl::WillBeDestroyed() {
