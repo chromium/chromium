@@ -13,13 +13,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/organizer_panel/tab_groups.mojom.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class TabGroup;
+class TabStripModel;
 
 namespace content {
 class WebContents;
@@ -39,7 +44,8 @@ class MenuRunner;
 
 class TabGroupsOrganizerPageHandler
     : public organizer_panel::mojom::TabGroupsOrganizerPageHandler,
-      public tab_groups::TabGroupSyncService::Observer {
+      public tab_groups::TabGroupSyncService::Observer,
+      public TabStripModelObserver {
  public:
   TabGroupsOrganizerPageHandler(
       mojo::PendingReceiver<
@@ -72,9 +78,17 @@ class TabGroupsOrganizerPageHandler
       const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
   void OnWillBeDestroyed() override;
 
+  // TabStripModelObserver:
+  void OnTabGroupAdded(const tab_groups::TabGroupId& group_id) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+
  private:
   void OnContextMenuClosed();
   int GetAndIncrementLatestCommandId();
+  TabStripModel* GetTabStripModel() const;
+  const TabGroup* GetUnsavedTabGroup(
+      const tab_groups::TabGroupId& group_id) const;
+  bool IsGroupInSyncService(const tab_groups::TabGroupId& group_id) const;
 
   mojo::Receiver<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
       receiver_;
