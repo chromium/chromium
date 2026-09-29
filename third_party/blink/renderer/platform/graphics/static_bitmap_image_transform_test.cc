@@ -28,6 +28,8 @@ class StaticBitmapImageTransformTest : public ::testing::Test {
     InitializeSharedGpuContext(test_context_provider_.get());
   }
 
+  void TearDown() override { SharedGpuContext::Reset(); }
+
   scoped_refptr<AcceleratedStaticBitmapImage> CreateAccelerated(
       gfx::Size size,
       viz::SharedImageFormat format,
