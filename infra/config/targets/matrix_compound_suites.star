@@ -895,8 +895,8 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_api_scrape_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "gce",
+            variants = [
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(
@@ -1030,8 +1030,10 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "ondevice_api_scrape_tests_suite": targets.legacy_matrix_config(
-            mixins = [
-                "gce",
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "INTEL_UHD_630_OR_770",
+                "NVIDIA_GEFORCE_GTX_1660",
             ],
         ),
         "ondevice_stability_tests_suite": targets.legacy_matrix_config(

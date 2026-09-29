@@ -1705,14 +1705,14 @@
           "chromedriver",
           "--binary",
           "chrome",
-          "--use-xvfb"
+          "--no-xvfb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
         "module_scheme": "flat",
-        "name": "ondevice_api_scrape_tests",
+        "name": "ondevice_api_scrape_tests NVIDIA GeForce GTX 1660",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1720,14 +1720,15 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "1",
+            "gpu": "10de:2184",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_api_scrape_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "args": [
@@ -4204,21 +4205,80 @@
         },
         "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
         "module_scheme": "flat",
-        "name": "ondevice_api_scrape_tests",
+        "name": "ondevice_api_scrape_tests AMD Radeon RX 5500 XT",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "swarming": {
           "dimensions": {
-            "gce": "1",
+            "gpu": "1002:7340",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ondevice_api_scrape_tests",
-        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/"
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/",
+        "variant_id": "AMD Radeon RX 5500 XT"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests Intel UHD 630 or 770",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5|8086:4680",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/",
+        "variant_id": "Intel UHD 630 or 770"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//components/optimization_guide/internal/testing:ondevice_api_scrape_tests",
+        "module_scheme": "flat",
+        "name": "ondevice_api_scrape_tests NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_api_scrape_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_api_scrape_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
       },
       {
         "args": [

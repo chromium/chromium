@@ -2431,7 +2431,7 @@
           'chromedriver',
           '--binary',
           'chrome',
-          '--use-xvfb',
+          '--no-xvfb',
         ],
         'mac_args': [
           '--chromedriver',
@@ -3589,8 +3589,8 @@
         ],
       },
       'ondevice_api_scrape_tests_suite': {
-        'mixins': [
-          'gce',
+        'variants': [
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {
@@ -3698,8 +3698,10 @@
         ],
       },
       'ondevice_api_scrape_tests_suite': {
-        'mixins': [
-          'gce',
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630_OR_770',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'ondevice_stability_tests_suite': {

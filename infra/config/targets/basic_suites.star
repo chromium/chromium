@@ -1369,7 +1369,7 @@ targets.legacy_basic_suite(
                 "chromedriver",
                 "--binary",
                 "chrome",
-                "--use-xvfb",
+                "--no-xvfb",
             ],
             mac_args = [
                 "--chromedriver",
