@@ -79,7 +79,11 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
   ResourceLoaderOptions& operator=(ResourceLoaderOptions&& other);
   ~ResourceLoaderOptions();
 
-  void Trace(Visitor* visitor) const { visitor->Trace(world_for_csp); }
+  void Trace(Visitor* visitor) const { visitor->Trace(world_for_csp_); }
+
+  // The world in which this request initiated. This will be used for CSP checks
+  // if specified. If null, the CSP bound to the FetchContext is used.
+  const DOMWrapperWorld* WorldForCsp() const { return world_for_csp_.Get(); }
 
   FetchInitiatorInfo initiator_info;
 
@@ -93,10 +97,6 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
   ParserDisposition parser_disposition;
   CacheAwareLoadingEnabled cache_aware_loading_enabled;
 
-  // The world in which this request initiated. This will be used for CSP checks
-  // if specified. If null, the CSP bound to the FetchContext is used.
-  Member<const DOMWrapperWorld> world_for_csp;
-
   // If not null, this URLLoaderFactory should be used to load this resource
   // rather than whatever factory the system might otherwise use.
   // Used for example for loading blob: URLs.
@@ -107,6 +107,9 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
   // Used by DevTools to emulate unsupported image types. See crbug.com/1130556.
   scoped_refptr<base::RefCountedData<HashSet<String>>>
       unsupported_image_mime_types;
+
+ private:
+  Member<const DOMWrapperWorld> world_for_csp_;
 };
 
 }  // namespace blink

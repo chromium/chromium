@@ -906,8 +906,7 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
           kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
       CommonSchemeRegistry::IsExtensionScheme(
           current_request.Url().Protocol().Ascii()) &&
-      !AreSameWorld(options_.world_for_csp.Get(),
-                    new_options.world_for_csp.Get())) {
+      !AreSameWorld(options_.WorldForCsp(), new_options.WorldForCsp())) {
     return MatchStatus::kCrossWorldExtensionResourceMismatch;
   }
 
@@ -921,8 +920,7 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (base::FeatureList::IsEnabled(
           kPreventCrossWorldServiceWorkerResourceReuse) &&
       GetResponse().WasFetchedViaServiceWorker() &&
-      !AreSameWorld(options_.world_for_csp.Get(),
-                    new_options.world_for_csp.Get())) {
+      !AreSameWorld(options_.WorldForCsp(), new_options.WorldForCsp())) {
     return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
   }
 

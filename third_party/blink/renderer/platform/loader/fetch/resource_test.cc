@@ -596,10 +596,10 @@ TEST_F(ResourceTest, CanReuseServiceWorkerResource) {
   {
     ResourceRequest request(url);
     request.SetRequestorOrigin(origin);
-    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
     DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
         /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
-    params.MutableOptions().world_for_csp = isolated_world;
+    FetchParameters params(std::move(request),
+                           ResourceLoaderOptions(isolated_world));
 
     EXPECT_EQ(Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch,
               resource->CanReuse(params));

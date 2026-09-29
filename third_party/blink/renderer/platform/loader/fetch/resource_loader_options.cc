@@ -42,7 +42,7 @@ ResourceLoaderOptions::ResourceLoaderOptions(const DOMWrapperWorld* world)
       synchronous_policy(kRequestAsynchronously),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),
-      world_for_csp(world) {}
+      world_for_csp_(world) {}
 
 ResourceLoaderOptions::ResourceLoaderOptions(
     const ResourceLoaderOptions& other) = default;

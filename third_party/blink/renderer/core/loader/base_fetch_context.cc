@@ -188,7 +188,7 @@ BaseFetchContext::CheckCSPForRequestInternal(
   }
 
   ContentSecurityPolicy* csp =
-      GetContentSecurityPolicyForWorld(options.world_for_csp.Get());
+      GetContentSecurityPolicyForWorld(options.WorldForCsp());
 
   if (csp &&
       !csp->AllowRequest(request_context, request_destination, request_mode,
@@ -289,8 +289,8 @@ BaseFetchContext::CanRequestInternal(
         resource_request.GetKeepalive() || redirect_info.has_value());
 
   if (!IntegrityPolicy::AllowRequest(
-          GetExecutionContext(), options.world_for_csp.Get(),
-          request_destination, request_mode, options.integrity_metadata, url)) {
+          GetExecutionContext(), options.WorldForCsp(), request_destination,
+          request_mode, options.integrity_metadata, url)) {
     return ResourceRequestBlockedReason::kIntegrity;
   }
 

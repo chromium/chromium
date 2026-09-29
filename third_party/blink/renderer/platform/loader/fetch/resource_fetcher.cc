@@ -3233,7 +3233,7 @@ void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
   request.CopyHeadFrom(stale_resource->GetResourceRequest());
   FetchParameters params(
       std::move(request),
-      ResourceLoaderOptions(stale_resource->Options().world_for_csp.Get()));
+      ResourceLoaderOptions(stale_resource->Options().WorldForCsp()));
   params.SetStaleRevalidation(true);
   params.MutableResourceRequest().SetSkipServiceWorker(true);
   // Stale revalidation resource requests should be very low regardless of
@@ -3267,8 +3267,8 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
 
   // Resource timing entries that correspond to resources fetched by extensions
   // are precluded.
-  if (resource->Options().world_for_csp &&
-      resource->Options().world_for_csp->IsIsolatedWorld()) {
+  if (resource->Options().WorldForCsp() &&
+      resource->Options().WorldForCsp()->IsIsolatedWorld()) {
     return;
   }
 

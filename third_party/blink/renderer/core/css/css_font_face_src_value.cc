@@ -169,7 +169,7 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     resource = fetched_.Get();
   }
 
-  if (!resource || resource->Options().world_for_csp != world_) {
+  if (!resource || resource->Options().WorldForCsp() != world_) {
     const CSSUrlData& url_data = src_value_->UrlData();
     const CSSUrlRequestModifiers& modifiers = url_data.GetModifiers();
     const Referrer& referrer = url_data.GetReferrer();
