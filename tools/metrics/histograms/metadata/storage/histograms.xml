@@ -498,33 +498,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IndexedDB.GetUnacquirableLocksLongTimes" units="ms"
-    expires_after="2026-07-01">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the duration of PartitionedLockManager::GetUnacquirableLocks, but only
-    if it takes over 2ms to execute. This is intended to facilitate tracking
-    down performance issues. See crbug.com/384476946.
-
-    Warning: this histogram was expired from 2025/04 to 2025/06; data may be
-    missing.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.GetUnacquirableLocksRequestQueueSize" units="count"
-    expires_after="2026-10-02">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the number of queued lock requests that exist in the
-    PartitionedLockManager when GetUnacquirableLocks() takes over 2ms to
-    complete. This is intended to facilitate tracking down performance issues.
-    See crbug.com/384476946
-  </summary>
-</histogram>
-
 <histogram
     name="IndexedDB.IdleTasksCompletionToNextActivity.{IndexedDBBackingStoreType}"
     units="ms" expires_after="2027-09-18">
@@ -564,31 +537,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of tombstones entries which were found during the LevelDB
     cleanup task. Recorded when the LevelDbTombstoneSweeper is destroyed.
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.LockRequestCancelledLongTimes" units="ms"
-    expires_after="2026-10-02">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the duration of PartitionedLockManager::LockRequestCancelled, but only
-    if it takes over 2ms to execute. This is intended to facilitate tracking
-    down performance issues. See crbug.com/384476946
-  </summary>
-</histogram>
-
-<histogram name="IndexedDB.LockRequestCancelledRequestQueueSize" units="count"
-    expires_after="2026-10-02">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the number of queued lock requests that exist in the
-    PartitionedLockManager when LockRequestCancelled() takes over 2ms to
-    complete. This is intended to facilitate tracking down performance issues.
-    See crbug.com/384476946
   </summary>
 </histogram>
 
