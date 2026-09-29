@@ -246,7 +246,7 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                           actor::ActorTaskStoppedReason::kStoppedByUser);
 }
 
-- (void)didTapInterventionButton {
+- (void)didTriggerInterventionAction:(ActuationInterventionAction)action {
   [self resolvePendingIntervention];
 }
 

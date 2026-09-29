@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 
+#import <optional>
+
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_header_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_task_card_view.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
@@ -11,12 +13,14 @@
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_mutator.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/intelligence/actor/ui/test/actor_ui_test_utils.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 @interface FakeActuationWorklogMutator : NSObject <ActuationWorklogMutator>
-@property(nonatomic, assign) BOOL interventionButtonTapped;
+@property(nonatomic, assign) std::optional<ActuationInterventionAction>
+    triggeredAction;
 @property(nonatomic, assign) BOOL stopActuationCalled;
 @end
 
@@ -25,8 +29,8 @@
   _stopActuationCalled = YES;
 }
 
-- (void)didTapInterventionButton {
-  _interventionButtonTapped = YES;
+- (void)didTriggerInterventionAction:(ActuationInterventionAction)action {
+  _triggeredAction = action;
 }
 @end
 
@@ -105,9 +109,9 @@ TEST_F(ActuationWorklogViewControllerTest, TestResetClearsContent) {
   EXPECT_TRUE(CGPointEqualToPoint(scroll_view.contentOffset, CGPointZero));
 }
 
-// Test setting intervention presents card, dispatches action, and reset clears
-// it.
-TEST_F(ActuationWorklogViewControllerTest, TestInterventionCardFlow) {
+// Test setting an intervention forwards it to the intervention view, routes the
+// triggered action to the mutator, and reset clears it.
+TEST_F(ActuationWorklogViewControllerTest, TestInterventionFlow) {
   ActuationWorklogViewController* view_controller =
       [[ActuationWorklogViewController alloc] init];
   FakeActuationWorklogMutator* fake_mutator =
@@ -119,24 +123,29 @@ TEST_F(ActuationWorklogViewControllerTest, TestInterventionCardFlow) {
   // Force view load.
   EXPECT_NE(view_controller.view, nil);
 
-  ActuationTaskCardView* card_view =
-      static_cast<ActuationTaskCardView*>(FindViewByAccessibilityIdentifier(
-          view_controller.view,
-          kActuationInterventionCardAccessibilityIdentifier));
+  UIView* card_view = FindViewByAccessibilityIdentifier(
+      view_controller.view, kActuationInterventionCardAccessibilityIdentifier);
   ASSERT_NE(card_view, nil);
   EXPECT_TRUE(card_view.hidden);
 
-  ActuationInterventionData* intervention =
-      [ActuationInterventionData cardItemWithTitle:@"Intervention Title"
-                                          subtitle:@"Intervention Subtitle"
-                                 primaryButtonText:@"Continue"];
-  [consumer setIntervention:intervention];
+  [consumer setIntervention:[ActuationInterventionData
+                                cardItemWithTitle:@"Intervention Title"
+                                         subtitle:@"Intervention Subtitle"
+                                primaryButtonText:@"Continue"]];
   EXPECT_FALSE(card_view.hidden);
 
-  // Verify mutator dispatch on button tap.
-  ASSERT_NE(card_view.delegate, nil);
-  [card_view.delegate taskCardViewDidTapActionButton:card_view];
-  EXPECT_TRUE(fake_mutator.interventionButtonTapped);
+  // Verify mutator dispatch on button tap. A card intervention renders the
+  // card's own action button, not the standalone intervention button.
+  ChromeButton* action_button =
+      static_cast<ChromeButton*>(FindViewByAccessibilityIdentifier(
+          view_controller.view,
+          kActuationTaskCardActionButtonAccessibilityIdentifier));
+  ASSERT_NE(action_button, nil);
+  EXPECT_NSEQ(action_button.title, @"Continue");
+  [action_button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  ASSERT_TRUE(fake_mutator.triggeredAction.has_value());
+  EXPECT_EQ(*fake_mutator.triggeredAction,
+            ActuationInterventionAction::kPrimary);
 
   // Reset clears intervention.
   [consumer reset];
