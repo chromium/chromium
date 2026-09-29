@@ -61,7 +61,7 @@ constexpr std::array<std::string_view, 171> kDefaultEnabledCountries = {
     "za", "zm", "zw"};
 
 // Default enabled locales for PageActionMenu. Locales are
-// matching Bluebird in chrome/browser/glic/public/glic_enabling.cc.
+// matching desktop in chrome/browser/glic/public/glic_enabling.cc.
 // All locales have been converted to lower case with '-' where it's
 // applicable.
 constexpr std::array<std::string_view, 51> kDefaultEnabledLocales = {
@@ -71,6 +71,11 @@ constexpr std::array<std::string_view, 51> kDefaultEnabledLocales = {
     "mr", "ms",     "nl",    "no",    "pl",    "pt-br", "pt-pt", "ro", "ru",
     "sk", "sl",     "sr",    "sv",    "sw",    "ta",    "te",    "th", "tr",
     "uk", "vi",     "zh-cn", "zh-tw", "en-gb", "en-us"};
+
+// Default enabled locales that are iOS-specific. These are not shared with the
+// desktop list as iOS locales have slight differences.
+constexpr std::array<std::string_view, 3> kDefaultEnabledLocalesiOSOnly = {
+    "es-mx", "pt", "nb"};
 
 const char kPageActionMenuDirectEntryPointParam[] =
     "PageActionMenuDirectEntryPoint";
@@ -102,7 +107,8 @@ bool IsPageActionMenuEnabled() {
   bool is_launched_country =
       std::ranges::contains(kDefaultEnabledCountries, country);
   bool is_launched_locale =
-      std::ranges::contains(kDefaultEnabledLocales, normalized_locale);
+      std::ranges::contains(kDefaultEnabledLocales, normalized_locale) ||
+      std::ranges::contains(kDefaultEnabledLocalesiOSOnly, normalized_locale);
 
   if (is_launched_country && is_launched_locale) {
     return true;
