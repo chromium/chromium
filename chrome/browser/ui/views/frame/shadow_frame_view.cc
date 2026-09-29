@@ -12,6 +12,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view_shadow.h"
 
 BEGIN_METADATA(ShadowFrameView)
@@ -32,7 +33,7 @@ void ShadowFrameView::SetShadowVisible(bool visible) {
 
   if (visible) {
     view_shadow_ = std::make_unique<views::ViewShadow>(this, shadow_elevation_);
-    view_shadow_->SetRoundedCornerRadius(corner_radius_);
+    view_shadow_->SetRoundedCorners(corners_);
     view_shadow_->shadow()->layer()->SetOpacity(shadow_opacity_);
     UpdateShadowColors();
   } else {
@@ -56,13 +57,27 @@ void ShadowFrameView::SetShadowOpacity(double opacity) {
 }
 
 void ShadowFrameView::SetShadowCornerRadius(int corner_radius) {
-  if (corner_radius_ == corner_radius) {
+  gfx::RoundedCornersF corners(corner_radius);
+  if (corners_ == corners) {
     return;
   }
-  corner_radius_ = corner_radius;
+  corners_ = corners;
 
   if (view_shadow_) {
-    view_shadow_->SetRoundedCornerRadius(corner_radius_);
+    view_shadow_->SetRoundedCornerRadius(corner_radius);
+    SchedulePaint();
+  }
+}
+
+void ShadowFrameView::SetShadowCorners(const gfx::RoundedCornersF& corners) {
+  if (corners_ == corners) {
+    return;
+  }
+
+  corners_ = corners;
+
+  if (view_shadow_) {
+    view_shadow_->SetRoundedCorners(corners);
     SchedulePaint();
   }
 }
