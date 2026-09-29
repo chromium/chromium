@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_tile_view.h"
 
 #import "base/apple/foundation_util.h"
+#import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/public/most_visited_tiles_constants.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_plus_button_item.h"
@@ -21,16 +22,17 @@
   self = [super initWithConfiguration:config];
   if (self) {
     self.imageBackgroundView.clipsToBounds = YES;
-    if (IsNewTabPageUICleanupEnabled()) {
+    self.imageBackgroundView.layer.cornerRadius =
+        MostVisitedIconContainerCornerRadius();
+
+    if (IsNewTabPageUICleanupEnabled() ||
+        ntp_tiles::GetAimButtonRefactorArm() ==
+            ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
       self.titleLabel.numberOfLines = 1;
-      self.imageBackgroundView.layer.cornerRadius =
-          kMostVisitedTileImageContainerSquareCornerRadius;
-      [self setImageBackgroundSize:kMagicStackImageContainerWidth];
+      [self setImageBackgroundSize:MostVisitedIconContainerSize()];
       [self setTitleSpacing:MostVisitedIconTitleSpacing()];
-    } else {
-      self.imageBackgroundView.layer.cornerRadius =
-          kMagicStackImageContainerWidth / 2;
     }
+
     [self addGestureRecognizer:[[UITapGestureRecognizer alloc]
                                    initWithTarget:self
                                            action:@selector(handleTap)]];
@@ -48,13 +50,17 @@
 
   NewTabPageColorPalette* colorPalette =
       [self.traitCollection objectForNewTabPageTrait];
+  BOOL hasBackground = ntp_tiles::GetAimButtonRefactorArm() !=
+                       ntp_tiles::AimButtonRefactorArm::kAimAsModule;
 
   if (colorPalette) {
-    self.imageBackgroundView.tintColor = colorPalette.primaryColor;
+    self.imageBackgroundView.tintColor =
+        hasBackground ? colorPalette.primaryColor : UIColor.clearColor;
     self.iconView.tintColor = colorPalette.monogramColor;
   } else {
     self.imageBackgroundView.tintColor =
-        [UIColor colorNamed:kNTPRedesignTileBackgroundColor];
+        hasBackground ? [UIColor colorNamed:kNTPRedesignTileBackgroundColor]
+                      : UIColor.clearColor;
     self.iconView.tintColor = [UIColor colorNamed:kBlue600Color];
   }
 }

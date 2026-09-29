@@ -60,9 +60,7 @@ constexpr CGFloat kAimIconSize = 20.0;
                      tileType:ContentSuggestionsTileType::kMostVisited];
   if (self) {
     self.imageContainerView.layer.cornerRadius =
-        IsNewTabPageUICleanupEnabled()
-            ? kMostVisitedTileImageContainerSquareCornerRadius
-            : MostVisitedIconContainerSize() / 2;
+        MostVisitedIconContainerCornerRadius();
     self.imageContainerView.layer.masksToBounds = NO;
     self.imageContainerView.clipsToBounds = YES;
     if (IsNewTabPageUICleanupEnabled()) {

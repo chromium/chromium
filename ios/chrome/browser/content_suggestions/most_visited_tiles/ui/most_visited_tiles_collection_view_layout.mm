@@ -13,7 +13,8 @@
 namespace {
 
 constexpr NSUInteger kMaximumVisibleItemsOnScreen = 4;
-constexpr NSUInteger kMaximumVisibleItemsOnScreenWithAimModule = 3;
+constexpr NSUInteger kMaximumVisibleItemsOnScreenWithAimModule =
+    kMaximumVisibleItemsOnScreen - 1;
 
 /// Maximum number of items that should be fully visible on the screen.
 NSUInteger MaximumVisibleItemsOnScreen() {
