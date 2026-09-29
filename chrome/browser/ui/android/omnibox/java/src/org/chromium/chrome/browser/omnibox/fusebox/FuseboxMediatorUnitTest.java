@@ -23,7 +23,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +42,7 @@ import android.provider.MediaStore;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.core.app.ApplicationProvider;
@@ -151,7 +151,6 @@ import java.util.function.Function;
 
 /** Unit tests for {@link FuseboxMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FuseboxMediatorUnitTest {
     private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
@@ -979,10 +978,12 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ true);
-        ConstraintLayout spyParent = spy(mViewHolder.parentView);
-        doReturn(mViewHolder.plusButton).when(spyParent).findFocus();
-        mViewHolder = new FuseboxViewHolder(spyParent, mPopup);
         recreateMediator();
+
+        mViewHolder.plusButton.setVisibility(View.VISIBLE);
+        mViewHolder.plusButton.setFocusableInTouchMode(true);
+        assertTrue(mViewHolder.plusButton.requestFocus());
+        assertEquals(mViewHolder.plusButton, mViewHolder.parentView.findFocus());
 
         // Show popup first
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
@@ -990,7 +991,7 @@ public class FuseboxMediatorUnitTest {
         // Hide popup
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
-        verify(mKeyboardVisibilityDelegate).showKeyboard(any());
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mViewHolder.plusButton);
     }
 
     @Test
