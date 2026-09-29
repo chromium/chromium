@@ -7868,5 +7868,111 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
   FormSubmitted(response_data);
 }
 
+// Tests that the personalization survey is triggered when a credit card form is
+// submitted and the survey conditions are met.
+TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPersonalizationAndTrustCreditCardSurvey);
+
+  const FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .autocomplete_attribute = "cc-name"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"}}});
+
+  FormsSeen({form});
+  const FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(4));
+
+  const HatsSurveyStringData expected_field_filling_stats_data = {
+      {"All field types", "CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER"},
+      {"Total number of fields in form", "2"},
+      {"Number of correctly filled fields", "2"},
+      {"Number of fields that were submitted empty without filling", "0"},
+      {"Number of fields that were modified after filling", "0"},
+      {"Number of fields that were cleared after filling", "0"},
+      {"Number of fields that were manually filled without filling", "0"},
+      {"Filling products used", "CreditCard"},
+      {"AutofillAi entity record types used", ""},
+      {"AutofillAi entity types used", ""},
+      {"Time since last Autofill use", "0"}};
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kCreditCard), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kCreditCard,
+                                     Not(expected_field_filling_stats_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kCreditCard,
+                                     expected_field_filling_stats_data));
+
+  FormSubmitted(response_data);
+}
+
+// Tests that when both One-Time Password (OTP) and Address personalization
+// surveys are eligible, the OTP survey takes precedence and is triggered
+// instead of Address.
+TEST_F(BrowserAutofillManagerTest,
+       PersonalizationAndTrust_OtpPrecedenceOverAddresses) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillPersonalizationAndTrustAddressSurvey,
+       features::kAutofillPersonalizationAndTrustOneTimePasswordSurvey},
+      /*disabled_features=*/{});
+
+  FormData form = test::GetFormData(
+      {.fields = {{.role = ADDRESS_HOME_LINE1,
+                   .autocomplete_attribute = "address-line1"},
+                  {.role = ADDRESS_HOME_LINE2,
+                   .autocomplete_attribute = "address-line2"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
+                  {.role = ONE_TIME_CODE,
+                   .autocomplete_attribute = "one-time-code"}}});
+
+  FormsSeen({form});
+
+  // Fill address fields.
+  FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], kElvisProfileGuid);
+
+  // Fill the OTP field.
+  autofill_manager().FillOrPreviewField(
+      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+      form.global_id(), form.fields()[3].global_id(), u"123456",
+      FillingProduct::kOneTimePassword, ONE_TIME_CODE);
+  test_api(response_data).fields()[3].set_value(u"123456");
+
+  const HatsSurveyStringData expected_survey_data = {
+      {"All field types",
+       "EMAIL_ADDRESS, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, "
+       "ONE_TIME_CODE"},
+      {"Total number of fields in form", "4"},
+      {"Number of correctly filled fields", "4"},
+      {"Number of fields that were submitted empty without filling", "0"},
+      {"Number of fields that were modified after filling", "0"},
+      {"Number of fields that were cleared after filling", "0"},
+      {"Number of fields that were manually filled without filling", "0"},
+      {"Filling products used", "Address, OneTimePassword"},
+      {"AutofillAi entity record types used", ""},
+      {"AutofillAi entity types used", ""},
+      {"Time since last Autofill use", "0"}};
+
+  // OTP was used and should take precedence over Address.
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kOneTimePassword), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kOneTimePassword, Not(expected_survey_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(),
+              TriggerPersonalizationAndTrustSurveys(
+                  FillingProduct::kOneTimePassword, expected_survey_data));
+
+  FormSubmitted(response_data);
+}
+
 }  // namespace
 }  // namespace autofill

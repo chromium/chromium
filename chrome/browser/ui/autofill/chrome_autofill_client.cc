@@ -980,12 +980,14 @@ void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
       case FillingProduct::kAutofillAi:
         return kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled;
       case FillingProduct::kCreditCard:
-      case FillingProduct::kPassword:
+        return kHatsSurveyTriggerAutofillPersonalizationAndTrustCreditCardFilled;
       case FillingProduct::kOneTimePassword:
+        return kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled;
       case FillingProduct::kAtMemory:
       case FillingProduct::kNone:
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kPasskey:
+      case FillingProduct::kPassword:
       case FillingProduct::kDataList:
       case FillingProduct::kIban:
       case FillingProduct::kAutocomplete:

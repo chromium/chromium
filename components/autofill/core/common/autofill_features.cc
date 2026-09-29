@@ -936,6 +936,10 @@ BASE_FEATURE(kAutofillPersonalizationAndTrustAddressSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillPersonalizationAndTrustAutofillAiSurvey,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustCreditCardSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillPersonalizationAndTrustOneTimePasswordSurvey,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin
