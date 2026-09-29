@@ -1102,9 +1102,6 @@ UnitsVector CollectSumOrProductInOrder(const CSSMathExpressionOperation* root) {
 bool ArithmeticOperationIsAllowedToBeSimplified(
     const CSSMathExpressionOperation& operation) {
   DCHECK(operation.IsArithmeticOperation());
-  if (!RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
-    return true;
-  }
   return !operation.HasNestedIntermediateResult();
 }
 
@@ -1224,9 +1221,8 @@ CSSMathExpressionNode* MaybeDistributeArithmeticOperation(
   if (op != CSSMathOperator::kMultiply && op != CSSMathOperator::kDivide) {
     return nullptr;
   }
-  if (RuntimeEnabledFeatures::CSSTypedArithmeticEnabled() &&
-      (left_side->Category() == kCalcIntermediate ||
-       right_side->Category() == kCalcIntermediate)) {
+  if (left_side->Category() == kCalcIntermediate ||
+      right_side->Category() == kCalcIntermediate) {
     return nullptr;
   }
   // NOTE: we should not simplify num * (fn + fn), all the operands inside
@@ -1571,42 +1567,6 @@ static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
           kCalcPercentAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
           kCalcPercentAngle}}};
 
-static CalculationResultCategory DetermineCategory(
-    const CSSMathExpressionNode& left_side,
-    const CSSMathExpressionNode& right_side,
-    CSSMathOperator op) {
-  CalculationResultCategory left_category = left_side.Category();
-  CalculationResultCategory right_category = right_side.Category();
-
-  if (left_category == kCalcOther || right_category == kCalcOther) {
-    return kCalcOther;
-  }
-
-  if (left_side.IsCalcSize() || right_side.IsCalcSize()) {
-    return kCalcOther;
-  }
-
-  switch (op) {
-    case CSSMathOperator::kAdd:
-    case CSSMathOperator::kSubtract:
-      return kAddSubtractResult[left_category][right_category];
-    case CSSMathOperator::kMultiply:
-      if (left_category != kCalcNumber && right_category != kCalcNumber) {
-        return kCalcOther;
-      }
-      return left_category == kCalcNumber ? right_category : left_category;
-    case CSSMathOperator::kDivide:
-      if (right_category != kCalcNumber) {
-        return kCalcOther;
-      }
-      return left_category;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-}
-
 static CalculationResultCategory DetermineComparisonCategory(
     const CSSMathExpressionOperation::Operands& operands) {
   DCHECK(!operands.empty());
@@ -1846,15 +1806,11 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateArithmeticOperation(
   DCHECK_NE(left_side->Category(), kCalcOther);
   DCHECK_NE(right_side->Category(), kCalcOther);
 
-  CalculationResultCategory new_category =
-      DetermineCategory(*left_side, *right_side, op);
   CSSMathType type = DetermineType(*left_side, *right_side, op);
-  if (RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
-    if (!type.IsValid()) {
-      return nullptr;
-    }
-    new_category = type.Category();
+  if (!type.IsValid()) {
+    return nullptr;
   }
+  CalculationResultCategory new_category = type.Category();
   if (new_category == kCalcOther) {
     return nullptr;
   }
@@ -2336,9 +2292,6 @@ inline bool CanArithmeticOperationBeSimplified(
       left_side->Category() != kCalcNumber &&
       right_side->Category() != kCalcNumber) {
     return false;
-  }
-  if (!RuntimeEnabledFeatures::CSSTypedArithmeticEnabled()) {
-    return true;
   }
   // Don't simplify invert(1 / 1px) or intermedite result.
   return !(left_side->IsOperation() &&

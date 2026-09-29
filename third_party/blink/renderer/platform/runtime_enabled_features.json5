@@ -2192,10 +2192,6 @@
       status: "experimental",
     },
     {
-      name: "CSSTypedArithmetic",
-      status: "stable",
-    },
-    {
       // CSS URL request modifiers: cross-origin(), integrity(),
       // referrer-policy() inside url() functions.
       //
