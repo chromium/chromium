@@ -265,9 +265,8 @@ function createRoutes(): SettingsRoutes {
     r.LANGUAGES = r.ADVANCED.createSection(
         '/languages', 'languages',
         loadTimeData.getString('languagesPageTitle'));
-    r.SPELL_CHECK = r.LANGUAGES.createSection('/spellCheck', 'languages');
     // <if expr="not is_chromeos and not is_macosx">
-    r.EDIT_DICTIONARY = r.SPELL_CHECK.createChild('/editDictionary');
+    r.EDIT_DICTIONARY = r.LANGUAGES.createChild('/editDictionary');
     // </if>
   }
 
