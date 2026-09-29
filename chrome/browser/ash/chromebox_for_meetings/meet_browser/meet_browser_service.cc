@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/components/media_device_salt/media_device_salt_service_provider.h"
+#include "components/account_id/account_id.h"
 #include "components/media_device_salt/media_device_salt_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -136,9 +138,11 @@ void MeetBrowserService::TranslateVideoDeviceId(
 
   url::Origin security_origin = frame_host->GetLastCommittedOrigin();
 
-  if (media_device_salt::MediaDeviceSaltService* salt_service =
-          MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
-              browser_context)) {
+  const AccountId* account_id = AnnotatedAccountId::Get(browser_context);
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      account_id ? MediaDeviceSaltServiceProvider::Get().Find(*account_id)
+                 : nullptr;
+  if (salt_service) {
     salt_service->GetSalt(
         frame_host->GetStorageKey(),
         base::BindOnce(&TranslateDeviceId, hashed_device_id,

@@ -23,7 +23,9 @@ static_library("meet_browser") {
 
   deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/media/webrtc",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/media_device_salt:media_device_salt_service_provider",
+    "//components/account_id",
     "//components/media_device_salt",
     "//content/public/browser",
   ]
