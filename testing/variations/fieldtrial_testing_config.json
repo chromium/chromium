@@ -16933,6 +16933,23 @@
             ]
         }
     ],
+    "SharedMemorySystemProfileMinidump": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharedMemorySystemProfileMinidump"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharedStorageDeprecation": [
         {
             "platforms": [
