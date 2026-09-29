@@ -622,9 +622,13 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
     // allow the sandboxed frame to navigate the top-level captive portal
     // window, bypassing the sandbox restriction. In that case, fall back to
     // NEW_POPUP so that the sandbox restriction is respected while still
-    // allowing popups.
-    if (initiator_rfh && initiator_rfh->IsSandboxed(
-                             network::mojom::WebSandboxFlags::kTopNavigation)) {
+    // allowing popups. Also fall back to NEW_POPUP if the initiator frame was
+    // already destroyed (`!initiator_rfh`), since its sandbox flags can no
+    // longer be checked.
+    if (params->initiator_frame_token.has_value() &&
+        (!initiator_rfh ||
+         initiator_rfh->IsSandboxed(
+             network::mojom::WebSandboxFlags::kTopNavigation))) {
       params->disposition = WindowOpenDisposition::NEW_POPUP;
     } else {
       params->disposition = WindowOpenDisposition::CURRENT_TAB;

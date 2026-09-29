@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "content/public/test/browser_test.h"
@@ -220,6 +221,94 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
       web_contents_added_observer.GetWebContents();
   ASSERT_TRUE(new_contents);
 
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
+
+  content::WaitForLoadStop(new_contents);
+  EXPECT_EQ(new_contents->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("/target.html"));
+}
+
+// Regression test for b/563822975: if a sandboxed subframe (without
+// allow-top-navigation) triggers a popup that gets blocked by the popup
+// blocker, and the initiator subframe is destroyed before the user replays the
+// blocked popup, `NavigateImpl()` must fall back to `NEW_POPUP` rather than
+// rewriting the disposition to `CURRENT_TAB` and replacing the captive portal
+// sign-in window's top-level document.
+IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
+                       NavigateBlockedPopupFromDestroyedSandboxedSubframe) {
+  net::test_server::ControllableHttpResponse embedder_response(
+      embedded_test_server(), "/embedder.html");
+  net::test_server::ControllableHttpResponse iframe_response(
+      embedded_test_server(), "/iframe.html");
+  net::test_server::ControllableHttpResponse target_response(
+      embedded_test_server(), "/target.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* const portal_signin_window = NetworkPortalSigninWindow::Get();
+  const GURL start_url = embedded_test_server()->GetURL("/embedder.html");
+
+  portal_signin_window->Show(start_url);
+
+  embedder_response.WaitForRequest();
+  embedder_response.Send(
+      net::HTTP_OK, "text/html",
+      "<html><body>"
+      "<iframe id='iframe' sandbox='allow-scripts allow-popups' "
+      "src='/iframe.html'></iframe>"
+      "</body></html>");
+  embedder_response.Done();
+
+  iframe_response.WaitForRequest();
+  iframe_response.Send(
+      net::HTTP_OK, "text/html",
+      "<html><body>"
+      "<a id='link' href='/target.html' target='_blank'>Click me</a>"
+      "</body></html>");
+  iframe_response.Done();
+
+  content::WebContents* const web_contents =
+      portal_signin_window->GetWebContentsForTesting();
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
+
+  content::RenderFrameHost* const iframe_rfh =
+      content::ChildFrameAt(web_contents, 0);
+  ASSERT_TRUE(iframe_rfh);
+
+  auto* const popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(popup_blocker->GetBlockedPopupsCount(), 0u);
+
+  // Trigger an ungestured popup from the sandboxed iframe so it gets stored in
+  // the popup blocker with `iframe_rfh`'s frame token.
+  EXPECT_TRUE(content::ExecJs(iframe_rfh,
+                              "document.getElementById('link').click();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(popup_blocker->GetBlockedPopupsCount(), 1u);
+
+  // Destroy the initiator subframe before replaying the blocked popup.
+  content::RenderFrameDeletedObserver deleted_observer(iframe_rfh);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.getElementById('iframe').remove();"));
+  deleted_observer.WaitUntilDeleted();
+
+  // Replay the blocked popup as if the user clicked it in the location bar UI.
+  content::WebContentsAddedObserver web_contents_added_observer;
+  popup_blocker->ShowAllBlockedPopups();
+
+  target_response.WaitForRequest();
+  target_response.Send(net::HTTP_OK, "text/html",
+                       "<html><body>Target</body></html>");
+  target_response.Done();
+
+  content::WebContents* const new_contents =
+      web_contents_added_observer.GetWebContents();
+  ASSERT_TRUE(new_contents);
+  EXPECT_NE(new_contents, web_contents);
+
+  // The captive portal sign-in window must remain on `start_url`.
   EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
 
   content::WaitForLoadStop(new_contents);
