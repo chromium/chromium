@@ -64,6 +64,8 @@ class SpeechRecognitionRecognizerImplTest
         /*mask_offensive_words=*/true);
     auto soda_client = std::make_unique<NiceMock<::soda::MockSodaClient>>();
     soda_client_ = soda_client.get();
+    ON_CALL(*soda_client_, IsInitialized())
+        .WillByDefault(testing::Return(true));
     recognizer_->SetSodaClientForTesting(std::move(soda_client));
   }
 
@@ -441,6 +443,59 @@ TEST_F(SpeechRecognitionRecognizerImplTest, EmptyHypothesisDoesNotCrash) {
 
   EXPECT_EQ(0, recognition_event_count_);
   EXPECT_TRUE(last_received_result_.transcription.empty());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, DestroySodaWhenClientDisconnects) {
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  // Disconnecting the client remote should release the SODA instance and
+  // prevent subsequent ResetSoda() calls from re-initializing it.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*soda_client_, Destroy()).WillOnce([&]() { run_loop.Quit(); });
+  receiver_.reset();
+  run_loop.Run();
+
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  recognizer_->OnLanguagePackInstalled(config_paths());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest,
+       DoNotResetUninitializedSodaOnLanguagePackInstalled) {
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+  ON_CALL(*soda_client_, IsInitialized()).WillByDefault(testing::Return(false));
+
+  base::flat_map<std::string, base::FilePath> updated_paths;
+  updated_paths[kPrimaryLanguageName] = base::FilePath::FromASCII("/new/path");
+
+  // Updating language pack paths while SODA is uninitialized should not
+  // eagerly initialize SODA.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(0);
+  recognizer_->OnLanguagePackInstalled(updated_paths);
+
+  // When audio finally arrives, SODA should be initialized with the updated
+  // config paths.
+  EXPECT_CALL(*soda_client_, Reset(_, _, _)).Times(1);
+  SendAudio(recognizer_.get(), base::Seconds(1), base::Seconds(0));
+  EXPECT_EQ("/new/path", recognizer_->GetExtendedSodaConfigMsgForTesting()
+                             ->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, DestroySodaOnContinuousSilence) {
+  auto options = CreateOptions();
+  options->skip_continuously_empty_audio = true;
+  CreateRecognizer(std::move(options), kPrimaryLanguageName);
+
+  // Send silent audio within the 10-second threshold; SODA should not be
+  // destroyed yet.
+  EXPECT_CALL(*soda_client_, Destroy()).Times(0);
+  SendAudio(recognizer_.get(), base::Seconds(1), base::Seconds(0));
+
+  // Advance past the 10-second silence threshold and send another silent
+  // buffer; SODA should be destroyed and no audio forwarded to SODA.
+  task_environment_.FastForwardBy(base::Seconds(11));
+  EXPECT_CALL(*soda_client_, Destroy()).Times(1);
+  EXPECT_CALL(*soda_client_, AddAudio(_, _)).Times(0);
+  SendAudio(recognizer_.get(), base::Seconds(1), base::Seconds(11));
 }
 
 }  // namespace speech

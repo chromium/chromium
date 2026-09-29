@@ -223,7 +223,9 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
 void SpeechRecognitionRecognizerImpl::OnLanguagePackInstalled(
     base::flat_map<std::string, base::FilePath> config_paths) {
   config_paths_ = config_paths;
-  ResetSoda();
+  if (soda_client_ && soda_client_->IsInitialized()) {
+    ResetSoda();
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::Create(
@@ -314,6 +316,9 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
 void SpeechRecognitionRecognizerImpl::
     OnSpeechRecognitionRecognitionEventCallback(bool success) {
   is_client_requesting_speech_recognition_ = success;
+  if (!is_client_requesting_speech_recognition_ && soda_client_) {
+    soda_client_->Destroy();
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
@@ -389,6 +394,9 @@ void SpeechRecognitionRecognizerImpl::SetSodaClientForTesting(
 
 void SpeechRecognitionRecognizerImpl::OnClientHostDisconnected() {
   is_client_requesting_speech_recognition_ = false;
+  if (soda_client_) {
+    soda_client_->Destroy();
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
@@ -411,6 +419,9 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
       caption_bubble_visible_duration_ += duration;
     } else {
       caption_bubble_hidden_duration_ += duration;
+      if (soda_client_) {
+        soda_client_->Destroy();
+      }
       return;
     }
   }
@@ -455,7 +466,12 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
     // computations, once we're fairly sure the silence isn't meaningful.
     constexpr base::TimeDelta kSilenceThreshold = base::Seconds(10);
     if (now - last_non_empty_audio_time_ > kSilenceThreshold) {
-      // No nonzero data for several seconds. Don't send this buffer of zeroes.
+      // No nonzero data for several seconds. Don't send this buffer of zeroes,
+      // and release the SODA instance to free memory until non-empty audio
+      // resumes.
+      if (soda_client_) {
+        soda_client_->Destroy();
+      }
 
       // Forward `media_start_pts` since we can seek into the middle of long
       // stretches of silence.
@@ -498,6 +514,7 @@ void SpeechRecognitionRecognizerImpl::UpdateRecognitionContext(
   }
 
   auto serialized = context.SerializeAsString();
+
   RecognitionContext serialized_recognition_context;
   serialized_recognition_context.recognition_context = serialized.c_str();
   serialized_recognition_context.recognition_context_size = serialized.size();
@@ -585,7 +602,9 @@ void SpeechRecognitionRecognizerImpl::OnLanguageChanged(
 void SpeechRecognitionRecognizerImpl::OnMaskOffensiveWordsChanged(
     bool mask_offensive_words) {
   mask_offensive_words_ = mask_offensive_words;
-  ResetSoda();
+  if (soda_client_ && soda_client_->IsInitialized()) {
+    ResetSoda();
+  }
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
@@ -594,7 +613,9 @@ void SpeechRecognitionRecognizerImpl::ResetSodaWithNewLanguage(
   if (config_and_exists.second) {
     config_paths_[language_name] = config_and_exists.first;
     primary_language_name_ = language_name;
-    ResetSoda();
+    if (soda_client_ && soda_client_->IsInitialized()) {
+      ResetSoda();
+    }
   }
 }
 
@@ -618,6 +639,10 @@ void SpeechRecognitionRecognizerImpl::RecordDuration() {
 }
 
 void SpeechRecognitionRecognizerImpl::ResetSoda() {
+  if (!is_client_requesting_speech_recognition_) {
+    return;
+  }
+
   // Initialize the SODA instance.
   auto api_key = google_apis::GetSodaAPIKey();
 

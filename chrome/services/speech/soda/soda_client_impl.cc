@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "partition_alloc/memory_reclaimer.h"
 
 namespace soda {
 
@@ -71,13 +72,7 @@ SodaClientImpl::SodaClientImpl(base::FilePath library_path)
 
 NO_SANITIZE("cfi-icall")
 SodaClientImpl::~SodaClientImpl() {
-  if (load_soda_result_ != LoadSodaResultValue::kSuccess) {
-    return;
-  }
-
-  if (IsInitialized()) {
-    delete_soda_func_(soda_async_handle_);
-  }
+  Destroy();
 }
 
 NO_SANITIZE("cfi-icall")
@@ -87,6 +82,14 @@ void SodaClientImpl::AddAudio(const char* audio_buffer, int audio_buffer_size) {
   }
 
   add_audio_func_(soda_async_handle_, audio_buffer, audio_buffer_size);
+
+  // Regularly tell PartitionAlloc to return unused heap to the OS to reduce
+  // ongoing committed memory usage.
+  audio_bytes_since_reclaim_ += audio_buffer_size;
+  if (audio_bytes_since_reclaim_ >= kAudioBytesPerReclaim) {
+    audio_bytes_since_reclaim_ = 0;
+    ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
+  }
 }
 
 NO_SANITIZE("cfi-icall")
@@ -110,19 +113,32 @@ void SodaClientImpl::Reset(const SerializedSodaConfig config,
     return;
   }
 
-  if (IsInitialized()) {
-    delete_soda_func_(soda_async_handle_);
-  }
+  Destroy();
 
   soda_async_handle_ = create_soda_func_(config);
   if (!soda_async_handle_) {
-    is_initialized_ = false;
     return;
   }
   sample_rate_ = sample_rate;
   channel_count_ = channel_count;
   is_initialized_ = true;
   soda_start_func_(soda_async_handle_);
+}
+
+NO_SANITIZE("cfi-icall")
+void SodaClientImpl::Destroy() {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess) {
+    return;
+  }
+
+  if (IsInitialized()) {
+    delete_soda_func_(soda_async_handle_.ExtractAsDangling());
+    is_initialized_ = false;
+    sample_rate_ = 0;
+    channel_count_ = 0;
+    audio_bytes_since_reclaim_ = 0;
+    ::partition_alloc::MemoryReclaimer::Instance()->ReclaimAll();
+  }
 }
 
 NO_SANITIZE("cfi-icall")

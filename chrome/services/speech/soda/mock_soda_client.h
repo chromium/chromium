@@ -32,6 +32,7 @@ class MockSodaClient : public SodaClient {
                int sample_rate,
                int channel_count),
               (override));
+  MOCK_METHOD(void, Destroy, (), (override));
   MOCK_METHOD(void,
               UpdateRecognitionContext,
               (const RecognitionContext context),

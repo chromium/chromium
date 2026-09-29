@@ -30,6 +30,7 @@ class SodaClientImpl : public SodaClient {
   void Reset(const SerializedSodaConfig config,
              int sample_rate,
              int channel_count) override;
+  void Destroy() override;
   void UpdateRecognitionContext(const RecognitionContext context) override;
   bool IsInitialized() override;
   bool BinaryLoadedSuccessfully() override;
@@ -64,6 +65,10 @@ class SodaClientImpl : public SodaClient {
   bool is_initialized_ = false;
   int sample_rate_ = 0;
   int channel_count_ = 0;
+
+  // Tracking for regular calls to MemoryReclaimer::ReclaimAll().
+  int audio_bytes_since_reclaim_ = 0;
+  static constexpr int kAudioBytesPerReclaim = 2000000;  // E.g. ~10 seconds.
 };
 
 }  // namespace soda

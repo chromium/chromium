@@ -43,6 +43,9 @@ class SodaClient {
                      int sample_rate,
                      int channel_count) = 0;
 
+  // Destroys the SODA instance and releases its memory if initialized.
+  virtual void Destroy() = 0;
+
   // Updates the recognition context for the current SODA instance.
   virtual void UpdateRecognitionContext(const RecognitionContext context) = 0;
 
