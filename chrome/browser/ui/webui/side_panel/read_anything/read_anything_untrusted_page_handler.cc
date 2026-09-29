@@ -34,6 +34,7 @@
 #include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -77,6 +78,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -187,6 +189,13 @@ constexpr int PDF_LOAD_DELAY_MS = 1000;
 
 // Prefix definition for logging.
 constexpr char kReadAnythingPrefix[] = "Read Anything";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// chrome://whats-new renders its content in a single https://www.google.com
+// child frame (see the frame-src CSP in WhatsNewUI). Reading mode distills that
+// frame directly.
+constexpr char kWhatsNewEmbeddedContentOrigin[] = "https://www.google.com";
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -302,6 +311,33 @@ content::RenderFrameHost* FindPdfContentFrame(content::WebContents* contents) {
           : contents->GetPrimaryMainFrame();
   return embedder_host ? pdf_frame_util::FindPdfChildFrame(embedder_host)
                        : nullptr;
+}
+
+// Returns whether `rfh` is a subframe of the primary page that the primary main
+// frame can already script, i.e. it is same-origin with it. Opaque main frame
+// origins are excluded because opaque-origin frames cannot script each other.
+// file:// main frame origins are excluded because all file:// URLs share one
+// url::Origin even though Blink isolates local files from each other.
+bool IsSameOriginSubframe(content::RenderFrameHost* rfh,
+                          content::RenderFrameHost* main_frame) {
+  const url::Origin& main_origin = main_frame->GetLastCommittedOrigin();
+  return rfh->GetMainFrame() == main_frame && !main_origin.opaque() &&
+         main_origin.scheme() != url::kFileScheme &&
+         rfh->GetLastCommittedOrigin().IsSameOriginWith(main_origin);
+}
+
+// chrome://whats-new only exists on Windows, Mac and Linux.
+bool IsWhatsNewEmbeddedContentFrame(content::RenderFrameHost* rfh,
+                                    content::RenderFrameHost* main_frame) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return rfh->GetParent() == main_frame &&
+         main_frame->GetLastCommittedOrigin().IsSameOriginWith(
+             GURL(chrome::kChromeUIWhatsNewURL)) &&
+         rfh->GetLastCommittedOrigin().IsSameOriginWith(
+             GURL(kWhatsNewEmbeddedContentOrigin));
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -576,6 +612,12 @@ void ReadAnythingUntrustedPageHandler::WebContentsDestroyed() {
 
 void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
     const ui::AXUpdatesAndEvents& details) {
+  // Only forward accessibility data for frames that Reading Mode distills.
+  if (!IsObservingTree(details.ax_tree_id)) {
+    DVLOG(2) << "Dropping accessibility event for tree " << details.ax_tree_id;
+    return;
+  }
+  forwarded_tree_ids_.insert(details.ax_tree_id);
   page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
                                     details.events);
 }
@@ -585,7 +627,11 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
-  page_->OnAXTreeDestroyed(ax_tree_id);
+  // The registry reports removals for every tree in the browser; only tell the
+  // renderer about trees it was sent.
+  if (forwarded_tree_ids_.erase(ax_tree_id)) {
+    page_->OnAXTreeDestroyed(ax_tree_id);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -873,7 +919,10 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
   }
 
   if (!IsPdfContents(contents, !!pdf_observer_)) {
-    return rfh == contents->GetPrimaryMainFrame();
+    // `contents` is the main observed contents here.
+    content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+    return rfh == main_frame || IsSameOriginSubframe(rfh, main_frame) ||
+           IsWhatsNewEmbeddedContentFrame(rfh, main_frame);
   }
 
   content::RenderFrameHost* pdf_rfh =
@@ -1164,7 +1213,11 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-  CHECK(IsObservingTree(target_tree_id));
+  // The target frame may have been removed or navigated while the image was
+  // downloading.
+  if (!IsObservingTree(target_tree_id)) {
+    return;
+  }
   if (!ui::IsValidAXNodeIDFromRenderer(node_id)) {
     VLOG(1) << "Received image data download notification with invalid node_id "
             << node_id;
@@ -1589,7 +1642,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
   // `pdf_observer_` and integrate ReadAnythingWebContentsObserver with
   // ReadAnythingUntrustedPageHandler.
   content::WebContents* pdf_contents = nullptr;
-  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+  // Only adopt the PDF guest when the tab itself is a full-page PDF. An
+  // embedded PDF on an HTML page is not distilled as a PDF.
+  if (!chrome_pdf::features::IsOopifPdfEnabled() &&
+      IsFullPagePdf(main_contents)) {
     std::vector<content::WebContents*> inner_contents =
         main_contents ? main_contents->GetInnerWebContents()
                       : std::vector<content::WebContents*>();
@@ -1629,6 +1685,7 @@ void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
   if (pdf_rfh) {
     is_pdf_with_frame_ = true;
     VLOG(1) << "Sending pdf tree with id " << pdf_rfh->GetAXTreeID();
+    forwarded_tree_ids_.insert(pdf_rfh->GetAXTreeID());
     page_->OnActiveAXTreeIDChanged(
         pdf_rfh->GetAXTreeID(), pdf_rfh->GetPageUkmSourceId(), /*is_pdf=*/true);
   } else {
@@ -1724,6 +1781,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
   // for text selection.
+  forwarded_tree_ids_.insert(rfh->GetAXTreeID());
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
 
