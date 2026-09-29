@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, Basic) {
   size_t expected_number_items = 8;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_number_items += 1;
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   PinnedActionToolbarButtonMenuModel model(browser(), kActionRouteMedia);
   EXPECT_EQ(model.GetItemCount(), expected_number_items);
@@ -77,31 +77,53 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, Basic) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// "Report an issue" should be present for normal profiles as well as for
-// incognito.
+// "Report an issue" should be present when feedback is allowed (normal and
+// incognito profiles) and absent when feedback is disabled by policy.
 IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest,
                        EnableAndDisableReportIssue) {
-  PinnedActionToolbarButtonMenuModel model(browser(), kActionRouteMedia);
-  std::vector<actions::ActionId> model_actions;
-  for (size_t index = 0; index < model.GetItemCount(); index++) {
-    model_actions.push_back(model.GetActionIdAtForTesting(index));
+  {
+    PinnedActionToolbarButtonMenuModel model(browser(), kActionRouteMedia);
+    std::vector<actions::ActionId> model_actions;
+    for (size_t index = 0; index < model.GetItemCount(); index++) {
+      model_actions.push_back(model.GetActionIdAtForTesting(index));
+    }
+    EXPECT_TRUE(std::ranges::contains(
+        model_actions, kActionMediaToolbarContextReportCastIssue));
   }
-  EXPECT_TRUE(std::ranges::contains(model_actions,
-                                    kActionMediaToolbarContextReportCastIssue));
 
-  BrowserWindowInterface* incognito_browser =
-      CreateIncognitoBrowser(browser()->GetProfile());
+  {
+    BrowserWindowInterface* incognito_browser =
+        CreateIncognitoBrowser(browser()->GetProfile());
 
-  PinnedActionToolbarButtonMenuModel incognito_menu(incognito_browser,
-                                                    kActionRouteMedia);
-  std::vector<actions::ActionId> incognito_model_actions;
-  for (size_t index = 0; index < model.GetItemCount(); index++) {
-    incognito_model_actions.push_back(model.GetActionIdAtForTesting(index));
+    PinnedActionToolbarButtonMenuModel incognito_menu(incognito_browser,
+                                                      kActionRouteMedia);
+    std::vector<actions::ActionId> incognito_model_actions;
+    for (size_t index = 0; index < incognito_menu.GetItemCount(); index++) {
+      incognito_model_actions.push_back(
+          incognito_menu.GetActionIdAtForTesting(index));
+    }
+    EXPECT_TRUE(std::ranges::contains(
+        incognito_model_actions, kActionMediaToolbarContextReportCastIssue));
   }
-  EXPECT_TRUE(std::ranges::contains(incognito_model_actions,
-                                    kActionMediaToolbarContextReportCastIssue));
+
+  {
+    policy::PolicyMap policy_map;
+    policy_map.Set(policy::key::kUserFeedbackAllowed,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+    provider()->UpdateChromePolicy(policy_map);
+
+    PinnedActionToolbarButtonMenuModel disabled_model(browser(),
+                                                      kActionRouteMedia);
+    std::vector<actions::ActionId> disabled_actions;
+    for (size_t index = 0; index < disabled_model.GetItemCount(); index++) {
+      disabled_actions.push_back(disabled_model.GetActionIdAtForTesting(index));
+    }
+    EXPECT_FALSE(std::ranges::contains(
+        disabled_actions, kActionMediaToolbarContextReportCastIssue));
+  }
 }
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, ToggleMediaRemotingItem) {
   PinnedActionToolbarButtonMenuModel model(browser(), kActionRouteMedia);

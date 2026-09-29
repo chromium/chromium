@@ -31,6 +31,7 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:primitives",
+    "//chrome/browser/feedback",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_actions",

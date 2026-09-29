@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -90,18 +91,20 @@ void CastToolbarButtonUtil::AddCastChildActions(
               media_router::prefs::kMediaRouterMediaRemotingEnabled))
           .Build());
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  cast_action->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* browser, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                ShowSingletonTab(browser,
-                                 GURL(chrome::kChromeUICastFeedbackURL));
-              },
-              base::Unretained(bwi)))
-          .SetActionId(kActionMediaToolbarContextReportCastIssue)
-          .SetText(l10n_util::GetStringUTF16(
-              IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE))
-          .Build());
-#endif
+  if (chrome::CanShowFeedback(bwi->GetProfile())) {
+    cast_action->AddChild(
+        actions::ActionItem::Builder(
+            base::BindRepeating(
+                [](BrowserWindowInterface* browser, actions::ActionItem* item,
+                   actions::ActionInvocationContext context) {
+                  ShowSingletonTab(browser,
+                                   GURL(chrome::kChromeUICastFeedbackURL));
+                },
+                base::Unretained(bwi)))
+            .SetActionId(kActionMediaToolbarContextReportCastIssue)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE))
+            .Build());
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
