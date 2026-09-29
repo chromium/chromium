@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -27,7 +28,7 @@ constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 
 // Width ratio of the leading quick action button to the total width of the
 // quick actions row when there are three (3) buttons in the row.
-constexpr CGFloat kLeadingActionWidthFactor = 0.5;
+constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 
 // The horizontal inset margin for the button stack view in a regular x regular
 // size class.
@@ -40,6 +41,13 @@ CGFloat HorizontalInsetForQuickActions(
   if (!IsNewTabPageUICleanupEnabled()) {
     return 0.0;
   }
+
+  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+      arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
+    return 0.0;
+  }
+
   return IsRegularXRegularSizeClass(trait_environment)
              ? kHorizontalInsetRegularXRegular
              : 0.0;
@@ -56,6 +64,9 @@ CGFloat HorizontalInsetForQuickActions(
   UIButton* _aimImageGenerationButton;
   UIButton* _aimAttachImageButton;
   UIButton* _incognitoSearchButton;
+
+  // Constraint for the width of the AI Mode button in Split Toolbar mode.
+  NSLayoutConstraint* _aimButtonSplitToolbarWidthConstraint;
 
   // Constraints for the leading and trailing edges of the `_buttonStackView`.
   NSLayoutConstraint* _stackViewLeadingConstraint;
@@ -107,7 +118,8 @@ CGFloat HorizontalInsetForQuickActions(
 
 // Creates the subviews for the Quick Actions row.
 - (void)createSubviews {
-  switch (ntp_tiles::GetAimButtonRefactorArm()) {
+  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  switch (arm) {
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
     case AimButtonRefactorArm::kDisabled: {
       _buttonStackView = [self createButtonStackView];
@@ -133,11 +145,12 @@ CGFloat HorizontalInsetForQuickActions(
       [_buttonStackView addArrangedSubview:_aimButton];
       [_buttonStackView addArrangedSubview:_aimImageGenerationButton];
       [_buttonStackView addArrangedSubview:_incognitoSearchButton];
-      _buttonStackView.distribution = UIStackViewDistributionFill;
+
+      _aimButtonSplitToolbarWidthConstraint = [_aimButton.widthAnchor
+          constraintEqualToAnchor:_buttonStackView.widthAnchor
+                       multiplier:kLeadingActionWidthFactor];
       [NSLayoutConstraint activateConstraints:@[
-        [_aimButton.widthAnchor
-            constraintEqualToAnchor:_buttonStackView.widthAnchor
-                         multiplier:kLeadingActionWidthFactor],
+        _aimButtonSplitToolbarWidthConstraint,
         [_aimImageGenerationButton.widthAnchor
             constraintEqualToAnchor:_incognitoSearchButton.widthAnchor],
       ]];
@@ -155,11 +168,12 @@ CGFloat HorizontalInsetForQuickActions(
       [_buttonStackView addArrangedSubview:_aimButton];
       [_buttonStackView addArrangedSubview:_aimAttachImageButton];
       [_buttonStackView addArrangedSubview:_incognitoSearchButton];
-      _buttonStackView.distribution = UIStackViewDistributionFill;
+
+      _aimButtonSplitToolbarWidthConstraint = [_aimButton.widthAnchor
+          constraintEqualToAnchor:_buttonStackView.widthAnchor
+                       multiplier:kLeadingActionWidthFactor];
       [NSLayoutConstraint activateConstraints:@[
-        [_aimButton.widthAnchor
-            constraintEqualToAnchor:_buttonStackView.widthAnchor
-                         multiplier:kLeadingActionWidthFactor],
+        _aimButtonSplitToolbarWidthConstraint,
         [_aimAttachImageButton.widthAnchor
             constraintEqualToAnchor:_incognitoSearchButton.widthAnchor],
       ]];
@@ -212,11 +226,14 @@ CGFloat HorizontalInsetForQuickActions(
     _stackViewTrailingConstraint,
   ]];
 
-  if (IsNewTabPageUICleanupEnabled()) {
+  if (IsNewTabPageUICleanupEnabled() ||
+      arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
     [self registerForTraitChanges:@[
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ]
                        withAction:@selector(updateButtonStackConstraints)];
+    [self updateButtonStackConstraints];
   }
 }
 
@@ -233,13 +250,29 @@ CGFloat HorizontalInsetForQuickActions(
 // Updates the horizontal constraints for the button stack view based on the
 // layout environment.
 - (void)updateButtonStackConstraints {
-  CHECK(IsNewTabPageUICleanupEnabled());
-  if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
+  if (IsNewTabPageUICleanupEnabled()) {
+    if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
+      return;
+    }
+
+    CGFloat inset = HorizontalInsetForQuickActions(self);
+    _stackViewLeadingConstraint.constant = inset;
+    _stackViewTrailingConstraint.constant = -inset;
+  }
+
+  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
+  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
+      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
     return;
   }
-  CGFloat inset = HorizontalInsetForQuickActions(self);
-  _stackViewLeadingConstraint.constant = inset;
-  _stackViewTrailingConstraint.constant = -inset;
+
+  if (!IsSplitToolbarMode(self)) {
+    _aimButtonSplitToolbarWidthConstraint.active = NO;
+    _buttonStackView.distribution = UIStackViewDistributionFillEqually;
+    return;
+  }
+  _aimButtonSplitToolbarWidthConstraint.active = YES;
+  _buttonStackView.distribution = UIStackViewDistributionFill;
 }
 
 #pragma mark - Actions
