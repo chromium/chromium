@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_app_interface.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"

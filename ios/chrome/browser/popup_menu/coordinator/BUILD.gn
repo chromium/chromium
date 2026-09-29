@@ -46,7 +46,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/popup_menu/public:metrics_protocols",
     "//ios/chrome/browser/presenters/ui_bundled",
     "//ios/chrome/browser/promos_manager/model:factory",
-    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/segmentation_platform/model",

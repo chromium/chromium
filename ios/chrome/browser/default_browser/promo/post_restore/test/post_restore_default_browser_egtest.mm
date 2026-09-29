@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/time/time.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

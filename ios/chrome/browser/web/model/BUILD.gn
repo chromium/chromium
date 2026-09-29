@@ -324,7 +324,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/profile/model:keyed_service_factories",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/reader_mode/model",
-    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/safe_browsing/model/client_side_detection",

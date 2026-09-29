@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_request_inserter.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"

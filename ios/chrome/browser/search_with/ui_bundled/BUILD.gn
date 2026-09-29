@@ -60,7 +60,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/browser_content/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/public",
-    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/search_engines/model:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",

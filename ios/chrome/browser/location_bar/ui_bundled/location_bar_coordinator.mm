@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_chip_coordinator.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"

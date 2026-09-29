@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

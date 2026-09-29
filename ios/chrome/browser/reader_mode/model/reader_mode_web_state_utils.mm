@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/web/public/web_state.h"
 

@@ -99,7 +99,6 @@
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_tab_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_web_state_observer.h"

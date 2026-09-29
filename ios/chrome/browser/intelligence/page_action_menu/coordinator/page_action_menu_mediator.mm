@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"

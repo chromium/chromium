@@ -12,9 +12,6 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_feature.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
-#import "ios/chrome/browser/reader_mode/model/reader_mode_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -37,7 +34,6 @@ ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory()
                                     ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(SamplePanelModelFactory::GetInstance());
   DependsOn(PriceInsightsModelFactory::GetInstance());
-  DependsOn(ReaderModeModelFactory::GetInstance());
 }
 
 ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
@@ -60,13 +56,6 @@ ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
   if (price_insights_model_factory && IsPriceInsightsEnabled(profile)) {
     models.emplace(ContextualPanelItemType::PriceInsightsItem,
                    price_insights_model_factory);
-  }
-
-  auto* reader_mode_model_factory =
-      ReaderModeModelFactory::GetForProfile(profile);
-  if (reader_mode_model_factory && IsReaderModeOmniboxEntryPointEnabled()) {
-    models.emplace(ContextualPanelItemType::ReaderModeItem,
-                   reader_mode_model_factory);
   }
 
   return std::make_unique<ContextualPanelModelService>(models);

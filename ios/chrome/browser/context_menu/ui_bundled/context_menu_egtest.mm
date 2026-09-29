@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

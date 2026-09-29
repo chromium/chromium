@@ -149,7 +149,6 @@
 #import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_blur_overlay_coordinator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"

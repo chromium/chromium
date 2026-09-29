@@ -73,7 +73,6 @@
 #import "ios/chrome/browser/permissions/model/geolocation_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/permissions/model/media_api_usage_java_script_feature.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_java_script_feature.h"

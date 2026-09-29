@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_scroll_anchor_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"

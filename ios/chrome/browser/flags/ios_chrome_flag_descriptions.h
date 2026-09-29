@@ -1707,11 +1707,6 @@ inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerName[] =
 inline constexpr char kProactiveSuggestionsFrameworkPopupBlockerDescription[] =
     "Enables the popup blocker feature row in the Page Action Menu.";
 
-inline constexpr char kReaderModeOmniboxEntrypointInUSName[] =
-    "Reader Mode Omnibox Entrypoint In US";
-inline constexpr char kReaderModeOmniboxEntrypointInUSDescription[] =
-    "Enables the omnibox entrypoint for Reader Mode for users in the US.";
-
 inline constexpr char kReaderModeSupportNewFontsName[] =
     "Reader Mode support new fonts";
 inline constexpr char kReaderModeSupportNewFontsDescription[] =

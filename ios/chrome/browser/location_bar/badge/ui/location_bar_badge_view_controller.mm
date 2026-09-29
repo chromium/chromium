@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

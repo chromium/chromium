@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"

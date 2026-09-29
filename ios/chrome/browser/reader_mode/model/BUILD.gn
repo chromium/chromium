@@ -49,7 +49,6 @@ source_set("model") {
   ]
   deps = [
     ":constants",
-    ":features",
     ":reader_mode_js",
     ":reader_mode_scroll_anchor_js",
     "//base",
@@ -111,21 +110,6 @@ source_set("model") {
   public_deps = [ "//base" ]
 }
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [
-    ":constants",
-    "//base",
-    "//components/variations/service",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
-  ]
-}
-
 optimize_ts("reader_mode_scroll_anchor_js") {
   visibility = [ ":model" ]
   sources = [ "resources/reader_mode_scroll_anchor.ts" ]
@@ -163,7 +147,6 @@ source_set("test_support") {
   ]
   deps = [
     ":constants",
-    ":features",
     ":model",
     "//base",
     "//base/test:test_support",
@@ -212,7 +195,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":constants",
-    ":features",
     ":model",
     ":test_support",
     "//base",

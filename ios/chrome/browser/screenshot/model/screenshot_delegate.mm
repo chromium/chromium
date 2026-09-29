@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"

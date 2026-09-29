@@ -25,7 +25,6 @@ source_set("ui") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/reader_mode/model:constants",
-    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:options",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

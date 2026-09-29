@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_browser_agent.h"

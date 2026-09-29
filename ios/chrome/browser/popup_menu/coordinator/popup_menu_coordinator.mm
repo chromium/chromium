@@ -39,7 +39,6 @@
 #import "ios/chrome/browser/popup_menu/public/popup_menu_metrics_handler.h"
 #import "ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"

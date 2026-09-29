@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"

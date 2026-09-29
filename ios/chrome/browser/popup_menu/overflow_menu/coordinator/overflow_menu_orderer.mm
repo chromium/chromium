@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"

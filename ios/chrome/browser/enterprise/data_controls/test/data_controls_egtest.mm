@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/test/analysis_connectors_app_interface.h"
 #import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"

@@ -40,7 +40,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/browser_content/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/enterprise/connectors/analysis/test:eg_test_support+eg2",
     "//ios/chrome/browser/enterprise/data_controls/test:eg_test_support+eg2",
-    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/enterprise/analysis:features",

@@ -124,7 +124,6 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -1653,11 +1652,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"https-upgrades-ios", flag_descriptions::kHttpsUpgradesName,
      flag_descriptions::kHttpsUpgradesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsUpgrades)},
-    {"reader-mode-omnibox-entrypoint-in-us",
-     flag_descriptions::kReaderModeOmniboxEntrypointInUSName,
-     flag_descriptions::kReaderModeOmniboxEntrypointInUSDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableReaderModeOmniboxEntryPointInUS)},
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},

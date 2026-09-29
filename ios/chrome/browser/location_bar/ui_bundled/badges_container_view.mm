@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_content_size_delegate.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_placeholder_type.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"

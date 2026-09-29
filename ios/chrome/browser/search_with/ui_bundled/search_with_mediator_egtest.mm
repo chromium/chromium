@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/location_bar/badge/ui/location_bar_badge_constants.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_app_interface.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"

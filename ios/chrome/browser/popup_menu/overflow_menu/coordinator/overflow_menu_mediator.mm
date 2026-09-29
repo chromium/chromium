@@ -80,7 +80,6 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
-#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_utils.h"
