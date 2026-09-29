@@ -4,6 +4,14 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_coordinator.h"
 
+#import <set>
+#import <vector>
+
+#import "base/barrier_closure.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actuation_worklog_coordinator.h"
@@ -17,7 +25,12 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_view_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -53,6 +66,40 @@
 }
 
 - (void)start {
+  __weak __typeof(self) weakSelf = self;
+  [self dismissGeminiFromOtherWindowsWithCompletion:^{
+    [weakSelf startContainer];
+  }];
+}
+
+- (void)dismissWithCompletion:(void (^)(void))completion {
+  [_containerHandler dismissAssistantContainerAnimated:YES
+                                            completion:completion];
+}
+
+- (void)minimize {
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
+}
+
+- (void)stop {
+  if (IsGeminiActorEnabled()) {
+    [_containerHandler setAssistantContainerMinimizedDetentHeight:
+                           kAssistantContainerMinimizedDetentHeight];
+    [_actuationWorklogCoordinator stop];
+    _actuationWorklogCoordinator = nil;
+  }
+  [_mediator disconnect];
+  _mediator = nil;
+  _viewController = nil;
+  _containerHandler = nil;
+  _geminiZeroStateViewController = nil;
+}
+
+#pragma mark - Private
+
+// Starts and presents the Gemini container.
+- (void)startContainer {
   actor::ActorService* actorService = nullptr;
   if (IsGeminiActorEnabled()) {
     actorService =
@@ -113,32 +160,7 @@
   [_mediator connect];
 }
 
-- (void)dismissWithCompletion:(void (^)(void))completion {
-  [_containerHandler dismissAssistantContainerAnimated:YES
-                                            completion:completion];
-}
-
-- (void)minimize {
-  [_containerHandler
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
-}
-
-- (void)stop {
-  if (IsGeminiActorEnabled()) {
-    [_containerHandler setAssistantContainerMinimizedDetentHeight:
-                           kAssistantContainerMinimizedDetentHeight];
-    [_actuationWorklogCoordinator stop];
-    _actuationWorklogCoordinator = nil;
-  }
-  [_mediator disconnect];
-  _mediator = nil;
-  _viewController = nil;
-  _containerHandler = nil;
-  _geminiZeroStateViewController = nil;
-}
-
-#pragma mark - Private
-
+// Configures the command handlers on `_mediator` and its session handler.
 - (void)setSessionCommandHandlers {
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   _mediator.gatewayManager.sessionHandler.settingsHandler =
@@ -147,6 +169,49 @@
       HandlerForProtocol(dispatcher, GeminiCommands);
   _mediator.gatewayManager.sessionHandler.geminiHandler = geminiHandler;
   _mediator.geminiHandler = geminiHandler;
+}
+
+// Dismisses Gemini from all other windows and executes `completion`.
+- (void)dismissGeminiFromOtherWindowsWithCompletion:
+    (ProceduralBlock)completion {
+  // Collect all browsers (excluding the current one) for all profiles.
+  std::vector<base::WeakPtr<Browser>> otherBrowsers;
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
+    const std::set<Browser*>& browsers =
+        browserList->BrowsersOfType(BrowserList::BrowserType::kRegular);
+    for (Browser* browser : browsers) {
+      if (browser == self.browser) {
+        continue;
+      }
+      otherBrowsers.push_back(browser->AsWeakPtr());
+    }
+  }
+
+  if (otherBrowsers.empty()) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  // Gate the completion behind this barrier closure which executes it when all
+  // other browsers have dismissed their Gemini sessions.
+  base::RepeatingClosure barrier =
+      base::BarrierClosure(otherBrowsers.size(), base::BindOnce(completion));
+
+  // Dismiss Gemini in all the other browsers for all profiles.
+  for (base::WeakPtr<Browser> browser : otherBrowsers) {
+    if (!browser) {
+      barrier.Run();
+      continue;
+    }
+    id<GeminiCommands> geminiHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands);
+    [geminiHandler
+        dismissGeminiFlowWithCompletion:base::CallbackToBlock(barrier)];
+  }
 }
 
 @end

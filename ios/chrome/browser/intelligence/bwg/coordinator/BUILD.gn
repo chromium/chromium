@@ -123,6 +123,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "gemini_container_coordinator_unittest.mm",
     "gemini_container_mediator_unittest.mm",
     "gemini_container_ui_state_manager_unittest.mm",
     "gemini_entry_flow_coordinator_unittest.mm",
@@ -146,6 +147,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/intelligence/bwg/metrics",
