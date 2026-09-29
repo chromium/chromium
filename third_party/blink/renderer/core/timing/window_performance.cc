@@ -35,7 +35,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -213,6 +212,19 @@ AtomicString SameOriginAttribution(Frame* observer_frame,
   return SameOriginKeyword();
 }
 
+base::TimeDelta TotalNonOverlappingProcessingDuration(
+    base::span<const Member<PerformanceEventTiming>> range) {
+  base::TimeDelta processing_duration;
+  for (const auto& entry : range) {
+    const auto& reporting_info = *entry->GetEventTimingReportingInfo();
+    if (!reporting_info.is_processing_fully_nested_in_another_event) {
+      processing_duration += reporting_info.processing_end_time -
+                             reporting_info.processing_start_time;
+    }
+  }
+  return processing_duration;
+}
+
 bool ShouldLogEvent(const Event& event) {
   return event.type() == event_type_names::kPointerdown ||
          event.type() == event_type_names::kPointerup ||
@@ -240,31 +252,46 @@ void HandleInputDelay(LocalDOMWindow* window,
   }
 }
 
+}  // namespace
+
 constexpr size_t kDefaultVisibilityStateEntrySize = 50;
 
-constexpr std::string_view kHistogramPerAnimationFramePrefix =
-    "Blink.Responsiveness.PerAnimationFrame.";
-constexpr std::string_view kHistogramWithoutAnimationFramePrefix =
-    "Blink.Responsiveness.WithoutAnimationFrame.";
-constexpr std::string_view kHistogramInputDelay = "InputDelay";
-constexpr std::string_view kHistogramCreationToQueueTime =
-    "InputDelay.CreationToQueueTime";
-constexpr std::string_view kHistogramQueueToProcessingStartTime =
-    "InputDelay.QueueToProcessingStartTime";
-constexpr std::string_view kHistogramMainThreadWork = "MainThreadWork";
-constexpr std::string_view kHistogramEventProcessingDuration =
-    "MainThreadWork.EventProcessingDuration";
-constexpr std::string_view kHistogramUnaccountedDuration =
-    "MainThreadWork.UnaccountedDuration";
-constexpr std::string_view kHistogramRenderingDuration =
-    "MainThreadWork.RenderingDuration";
-constexpr std::string_view kHistogramPresentationDelay = "PresentationDelay";
-constexpr std::string_view kHistogramBothInteractionTypes = ".Both";
-constexpr std::string_view kHistogramKeyboardInteractionTypes = ".Keyboard";
-constexpr std::string_view kHistogramTapOrClickInteractionTypes = ".TapOrClick";
-constexpr std::string_view kHistogramAllInteractionTypes = ".All";
+const char kHistogramEventCreationTimeToProcessingStartPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToProcessingStart";
+const char kHistogramEventQueueTimeToProcessingStartPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToProcessingStart";
+const char kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationTimeToEventQueueTime";
 
-}  // namespace
+const char
+    kHistogramFirstProcessingStartToLastProcessingEndPerAnimationFrame[] =
+        "Blink.Responsiveness.PerAnimationFrame."
+        "FirstProcessingStartToLastProcessingEnd";
+const char kHistogramTotalUnaccountedEventProcessingTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame."
+    "TotalUnaccountedEventProcessingTime";
+
+const char kHistogramProcessingEndToRenderStartTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToRenderStartTime";
+const char kHistogramRenderStartTimeToCommitTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.RenderStartTimeToCommitTime";
+const char kHistogramCommitToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.CommitToPresentationTime";
+const char kHistogramProcessingEndToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.ProcessingEndToPresentationTime";
+
+const char kHistogramEventQueueTimeToCommitPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventQueueTimeToCommit";
+const char kHistogramEventCreationToPresentationTimePerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationToPresentationTime";
+const char kHistogramEventCreationToLastProcessingEndPerAnimationFrame[] =
+    "Blink.Responsiveness.PerAnimationFrame.EventCreationToLastProcessingEnd."
+    "NoFramePresented";
+
+const char kHistogramBothInteractionTypes[] = ".Both";
+const char kHistogramKeyboardInteractionTypes[] = ".Keyboard";
+const char kHistogramTapOrClickInteractionTypes[] = ".TapOrClick";
+const char kHistogramAllInteractionTypes[] = ".All";
 
 base::TimeTicks WindowPerformance::GetTimeOrigin(LocalDOMWindow* window) {
   DocumentLoader* loader = window->GetFrame()->Loader().GetDocumentLoader();
@@ -954,155 +981,15 @@ void WindowPerformance::FlushEventTimingsOnPageHidden() {
   ReportAllPendingEventTimingsOnPageHidden();
 }
 
-void ReportResponsivenessHistograms(std::string_view histogram_prefix,
-                                    std::string_view histogram_subpart,
-                                    std::string_view histogram_suffix,
-                                    base::TimeDelta sample) {
+void ReportPerAnimationFrameHistograms(std::string_view histogram_name,
+                                       std::string_view histogram_suffix,
+                                       base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(
-      base::StrCat({histogram_prefix, histogram_subpart, histogram_suffix}),
-      sample, base::Milliseconds(1), base::Seconds(60), 50);
+      base::StrCat({histogram_name, histogram_suffix}), sample,
+      base::Milliseconds(1), base::Seconds(60), 50);
   base::UmaHistogramCustomTimes(
-      base::StrCat(
-          {histogram_prefix, histogram_subpart, kHistogramAllInteractionTypes}),
-      sample, base::Milliseconds(1), base::Seconds(60), 50);
-}
-
-// Breakdown of an animation frame's interaction timing into 3 phases and their
-// non-overlapping subparts:
-//
-// +----------------------+----------------------------------+---------------+
-// |      InputDelay      |          MainThreadWork          | Presentation  |
-// | (Creation->ProcStart)|     (ProcStart->Commit/Paint)    |    Delay      |
-// +----------+-----------+-----------+-----------+----------+---------------+
-// | Creation | QueueTo   | Event     | Unaccoun- | Rendering|  (Commit/     |
-// | ToQueue  | Processing| Processing| ted       | Duration |   Paint ->    |
-// | Time     | StartTime | Duration  | Duration  |          |  Presentation)|
-// +----------+-----------+-----------+-----------+----------+---------------+
-void ReportAnimationFrameTimingHistograms(
-    base::span<const Member<PerformanceEventTiming>> frame_entries,
-    bool had_key_interaction,
-    bool had_click_tap_interaction) {
-  CHECK(!frame_entries.empty());
-
-  auto* first_event_reporting_info =
-      frame_entries.front()->GetEventTimingReportingInfo();
-  auto* last_event_reporting_info =
-      frame_entries.back()->GetEventTimingReportingInfo();
-  const base::TimeTicks first_event_creation_time =
-      first_event_reporting_info->creation_time;
-  const base::TimeTicks first_event_enqueued_to_main_thread_time =
-      first_event_reporting_info->enqueued_to_main_thread_time;
-  const base::TimeTicks first_event_processing_start_time =
-      first_event_reporting_info->processing_start_time;
-  const base::TimeTicks last_event_commit_finish_time =
-      last_event_reporting_info->commit_finish_time;
-  const base::TimeTicks last_event_presentation_time =
-      last_event_reporting_info->presentation_time;
-
-  // Find the last event (not fully nested in another event) processing end
-  // time.
-  base::TimeTicks last_event_processing_end_time;
-  for (const auto& entry : base::Reversed(frame_entries)) {
-    const auto& info = *entry->GetEventTimingReportingInfo();
-    if (!info.is_processing_fully_nested_in_another_event) {
-      last_event_processing_end_time = info.processing_end_time;
-      break;
-    }
-  }
-
-  bool has_frame_presentation = !last_event_presentation_time.is_null() &&
-                                !last_event_commit_finish_time.is_null();
-  const base::TimeTicks main_thread_end_time =
-      std::max({last_event_processing_end_time,
-                first_event_reporting_info->render_start_time,
-                last_event_commit_finish_time});
-
-  // render_start_time can be null on the first event when either:
-  // - We don't need next paint (!has_frame_presentation), in which case we
-  //   fallback to main_thread_end_time so rendering_duration is 0.
-  // - ALL events were inside rendering (and we missed render_start_time), in
-  //   which case we fallback to first_event_processing_start_time.
-  const base::TimeTicks render_start_time =
-      !first_event_reporting_info->render_start_time.is_null()
-          ? first_event_reporting_info->render_start_time
-          : (!has_frame_presentation ? main_thread_end_time
-                                     : first_event_processing_start_time);
-
-  // Phase 1: Input delay breakdown.
-  base::TimeDelta creation_to_queue =
-      first_event_enqueued_to_main_thread_time - first_event_creation_time;
-  base::TimeDelta queue_to_processing_start =
-      first_event_processing_start_time -
-      first_event_enqueued_to_main_thread_time;
-  base::TimeDelta input_delay = creation_to_queue + queue_to_processing_start;
-
-  // Phase 2: Main thread work breakdown.
-  base::TimeDelta event_processing_duration;
-  base::TimeDelta event_processing_inside_rendering;
-  for (const auto& entry : frame_entries) {
-    const auto& info = *entry->GetEventTimingReportingInfo();
-    if (info.is_processing_fully_nested_in_another_event) {
-      continue;
-    }
-    base::TimeDelta duration =
-        info.processing_end_time - info.processing_start_time;
-    event_processing_duration += duration;
-    if (info.processing_end_time > render_start_time) {
-      CHECK_GE(info.processing_start_time, render_start_time);
-      event_processing_inside_rendering += duration;
-    }
-  }
-
-  base::TimeDelta main_thread_work =
-      main_thread_end_time - first_event_processing_start_time;
-  base::TimeDelta rendering_duration =
-      (main_thread_end_time - render_start_time) -
-      event_processing_inside_rendering;
-  base::TimeDelta unaccounted_duration =
-      main_thread_work - event_processing_duration - rendering_duration;
-
-  std::string_view histogram_prefix =
-      has_frame_presentation ? kHistogramPerAnimationFramePrefix
-                             : kHistogramWithoutAnimationFramePrefix;
-
-  std::string_view histogram_suffix;
-  if (had_click_tap_interaction && had_key_interaction) {
-    histogram_suffix = kHistogramBothInteractionTypes;
-  } else if (had_key_interaction) {
-    histogram_suffix = kHistogramKeyboardInteractionTypes;
-  } else {
-    histogram_suffix = kHistogramTapOrClickInteractionTypes;
-  }
-
-  ReportResponsivenessHistograms(histogram_prefix, kHistogramInputDelay,
-                                 histogram_suffix, input_delay);
-  ReportResponsivenessHistograms(histogram_prefix,
-                                 kHistogramCreationToQueueTime,
-                                 histogram_suffix, creation_to_queue);
-  ReportResponsivenessHistograms(histogram_prefix,
-                                 kHistogramQueueToProcessingStartTime,
-                                 histogram_suffix, queue_to_processing_start);
-
-  ReportResponsivenessHistograms(histogram_prefix, kHistogramMainThreadWork,
-                                 histogram_suffix, main_thread_work);
-  ReportResponsivenessHistograms(histogram_prefix,
-                                 kHistogramEventProcessingDuration,
-                                 histogram_suffix, event_processing_duration);
-  ReportResponsivenessHistograms(histogram_prefix,
-                                 kHistogramUnaccountedDuration,
-                                 histogram_suffix, unaccounted_duration);
-
-  if (has_frame_presentation) {
-    // Phase 3: Presentation delay.
-    base::TimeDelta presentation_delay =
-        last_event_presentation_time - main_thread_end_time;
-    ReportResponsivenessHistograms(histogram_prefix,
-                                   kHistogramRenderingDuration,
-                                   histogram_suffix, rendering_duration);
-    ReportResponsivenessHistograms(histogram_prefix,
-                                   kHistogramPresentationDelay,
-                                   histogram_suffix, presentation_delay);
-  }
+      base::StrCat({histogram_name, kHistogramAllInteractionTypes}), sample,
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 // At visibility change, we report event timings of current pending events. The
@@ -1169,8 +1056,14 @@ void WindowPerformance::TryFlushEventTimingQueue() {
         frame_entries.back()->GetEventTimingReportingInfo();
     const auto& first_event_creation_time =
         first_event_reporting_info->creation_time;
+    const auto& first_event_enqueued_to_main_thread_time =
+        first_event_reporting_info->enqueued_to_main_thread_time;
     const auto& first_event_processing_start =
         first_event_reporting_info->processing_start_time;
+    const auto& last_event_processing_end_time =
+        last_event_reporting_info->processing_end_time;
+    const auto& last_event_render_start_time =
+        last_event_reporting_info->render_start_time;
     const auto& last_event_commit_finish_time =
         last_event_reporting_info->commit_finish_time;
     const auto& last_event_presentation_time =
@@ -1241,11 +1134,82 @@ void WindowPerformance::TryFlushEventTimingQueue() {
       }
     }
 
-    // Report INP breakdown metrics into UMA per animation frame (or without
-    // animation frame when no frame was presented).
+    // Report INP breakdown metrics into UMA per animation frame.
+    // Input delay breakdown.
     if (had_interaction_in_animation_frame) {
-      ReportAnimationFrameTimingHistograms(frame_entries, had_key_interaction,
-                                           had_click_tap_interaction);
+      std::string_view histogram_suffix;
+      if (had_click_tap_interaction && had_key_interaction) {
+        histogram_suffix = kHistogramBothInteractionTypes;
+      } else if (had_key_interaction) {
+        histogram_suffix = kHistogramKeyboardInteractionTypes;
+      } else {
+        histogram_suffix = kHistogramTapOrClickInteractionTypes;
+      }
+      ReportPerAnimationFrameHistograms(
+          kHistogramEventCreationTimeToProcessingStartPerAnimationFrame,
+          histogram_suffix,
+          first_event_processing_start - first_event_creation_time);
+      ReportPerAnimationFrameHistograms(
+          kHistogramEventCreationTimeToEventQueueTimePerAnimationFrame,
+          histogram_suffix,
+          first_event_enqueued_to_main_thread_time - first_event_creation_time);
+      ReportPerAnimationFrameHistograms(
+          kHistogramEventQueueTimeToProcessingStartPerAnimationFrame,
+          histogram_suffix,
+          first_event_processing_start -
+              first_event_enqueued_to_main_thread_time);
+
+      // Event Processing duration breakdown.
+      base::TimeDelta total_processing_duration =
+          last_event_processing_end_time - first_event_processing_start;
+      ReportPerAnimationFrameHistograms(
+          kHistogramFirstProcessingStartToLastProcessingEndPerAnimationFrame,
+          histogram_suffix, total_processing_duration);
+
+      base::TimeDelta total_accountable_processing_duration =
+          TotalNonOverlappingProcessingDuration(frame_entries);
+      base::TimeDelta total_unaccountable_processing_duration =
+          total_processing_duration - total_accountable_processing_duration;
+      ReportPerAnimationFrameHistograms(
+          kHistogramTotalUnaccountedEventProcessingTimePerAnimationFrame,
+          histogram_suffix, total_unaccountable_processing_duration);
+
+      // Presentation delay breakdown.
+      if (!last_event_presentation_time.is_null() &&
+          !last_event_commit_finish_time.is_null() &&
+          !last_event_render_start_time.is_null()) {
+        ReportPerAnimationFrameHistograms(
+            kHistogramProcessingEndToRenderStartTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_render_start_time - last_event_processing_end_time);
+        ReportPerAnimationFrameHistograms(
+            kHistogramRenderStartTimeToCommitTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_commit_finish_time - last_event_render_start_time);
+        ReportPerAnimationFrameHistograms(
+            kHistogramCommitToPresentationTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_presentation_time - last_event_commit_finish_time);
+        ReportPerAnimationFrameHistograms(
+            kHistogramProcessingEndToPresentationTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_presentation_time - last_event_processing_end_time);
+
+        // Overall durations
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventQueueTimeToCommitPerAnimationFrame, histogram_suffix,
+            last_event_commit_finish_time -
+                first_event_enqueued_to_main_thread_time);
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventCreationToPresentationTimePerAnimationFrame,
+            histogram_suffix,
+            last_event_presentation_time - first_event_creation_time);
+      } else {
+        ReportPerAnimationFrameHistograms(
+            kHistogramEventCreationToLastProcessingEndPerAnimationFrame,
+            histogram_suffix,
+            last_event_processing_end_time - first_event_creation_time);
+      }
     }
 
     // Remove reported EventData objects.
