@@ -1419,7 +1419,6 @@ TEST_F(OptimizationGuideStoreTest, FailedRemovedFetchedHintsByKey) {
 }
 
 TEST_F(OptimizationGuideStoreTest, ClearFetchedHints) {
-  base::HistogramTester histogram_tester;
   MetadataSchemaState schema_state = MetadataSchemaState::kValid;
   size_t initial_hint_count = 10;
   base::Time update_time = base::Time().Now();
@@ -1479,8 +1478,6 @@ TEST_F(OptimizationGuideStoreTest, ClearFetchedHints) {
 
   // Remove the fetched hints from the OptimizationGuideStore.
   ClearFetchedHintsFromDatabase();
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.ClearFetchedHints.StoreAvailable", true, 1);
 
   host = "domain1.org";
   // Component hint should still exist.

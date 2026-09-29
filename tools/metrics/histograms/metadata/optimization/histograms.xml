@@ -965,16 +965,6 @@ chromium-metrics-reviews@google.com.
   <token key="OptimizationType" variants="OptimizationType"/>
 </histogram>
 
-<histogram name="OptimizationGuide.ClearFetchedHints.StoreAvailable"
-    enum="BooleanAvailable" expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Records whether the optimization guide store was available when fetched
-    hints are cleared from the store after browser history is cleared.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.GeneralizedSafetyChecker.ExecutionTime"
     units="ms" expires_after="2027-09-26">
   <owner>zekunjiang@google.com</owner>

@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -540,8 +539,6 @@ void OptimizationGuideStore::ClearComponentVersion() {
 void OptimizationGuideStore::ClearFetchedHintsFromDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.ClearFetchedHints.StoreAvailable", IsAvailable());
   if (!IsAvailable()) {
     return;
   }
