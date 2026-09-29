@@ -39,9 +39,9 @@ class TabRestoreService;
 @interface RecentTabsMediator
     : NSObject <ClosedTabsObserving, TableViewFaviconDataSource>
 
-// The consumer for this object. Must be set after initialization, and is then
-// configured with the current data.
-@property(nonatomic, strong) id<RecentTabsConsumer> consumer;
+// The consumer for this object. This can change during the lifetime of this
+// object and may be nil.
+@property(nonatomic, weak) id<RecentTabsConsumer> consumer;
 
 - (instancetype)
     initWithSessionSyncService:

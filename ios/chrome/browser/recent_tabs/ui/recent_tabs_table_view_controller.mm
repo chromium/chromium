@@ -16,7 +16,6 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "components/prefs/pref_service.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/strings/grit/components_strings.h"
@@ -25,7 +24,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_signin_promo_item.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/model/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
@@ -33,16 +31,6 @@
 #import "ios/chrome/browser/recent_tabs/public/recent_tabs_constants.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_menu_provider.h"
 #import "ios/chrome/browser/recent_tabs/ui/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
@@ -135,13 +123,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, assign) sessions::TabRestoreService* tabRestoreService;
 // The sync state.
 @property(nonatomic, assign) SessionsSyncUserState sessionState;
-// The browser state used for many operations, derived from the one provided by
-// `self.browser`.
-@property(nonatomic, readonly) ProfileIOS* profile;
-// YES if this ViewController is being presented on incognito mode.
-@property(nonatomic, readonly, getter=isIncognito) BOOL incognito;
-// Convenience getter for `self.browser`'s WebStateList
-@property(nonatomic, readonly) WebStateList* webStateList;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
 @end
@@ -191,24 +172,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 #pragma mark - Setters & Getters
-
-- (void)setBrowser:(Browser*)browser {
-  _browser = browser;
-  if (browser) {
-    ProfileIOS* profile = browser->GetProfile();
-    // Some RecentTabs services depend on objects not present in the
-    // OffTheRecord profile, in order to prevent crashes set
-    // `_profile` to `profile->OriginalProfile`. While
-    // doing this check if incognito or not so that pages are loaded
-    // accordingly.
-    _profile = profile->GetOriginalProfile();
-    _incognito = profile->IsOffTheRecord();
-  }
-}
-
-- (WebStateList*)webStateList {
-  return self.browser->GetWebStateList();
-}
 
 - (void)setPreventUpdates:(BOOL)preventUpdates {
   if (_preventUpdates == preventUpdates) {

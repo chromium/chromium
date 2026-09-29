@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #include "ui/base/window_open_disposition.h"
 
-class Browser;
 enum class UrlLoadStrategy;
 
 namespace synced_sessions {
@@ -19,8 +18,6 @@ struct DistantSession;
 
 @protocol RecentTabsMenuProvider;
 @protocol RecentTabsPresentationDelegate;
-@protocol RecentTabsPromoDataProvider;
-@protocol SceneCommands;
 @protocol SigninPromoViewDelegate;
 @protocol TableViewFaviconDataSource;
 
@@ -28,13 +25,8 @@ struct DistantSession;
     : LegacyChromeTableViewController <RecentTabsConsumer,
                                        SigninPromoViewConsumer,
                                        UIAdaptivePresentationControllerDelegate>
-// The Browser for the tabs being restored. It's an error to pass a nullptr
-// Browser.
-@property(nonatomic, assign) Browser* browser;
 // Delegate for the signin-promo subview.
 @property(nonatomic, weak) id<SigninPromoViewDelegate> signinPromoViewDelegate;
-// The command handlers used by this ViewController.
-@property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;

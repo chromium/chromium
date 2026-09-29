@@ -122,12 +122,7 @@
   // Initialize and configure RecentTabsTableViewController.
   self.recentTabsTableViewController =
       [[RecentTabsTableViewController alloc] init];
-  self.recentTabsTableViewController.browser = self.browser;
   self.recentTabsTableViewController.loadStrategy = self.loadStrategy;
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  id<SceneCommands> sceneHandler =
-      HandlerForProtocol(dispatcher, SceneCommands);
-  self.recentTabsTableViewController.sceneHandler = sceneHandler;
   self.recentTabsTableViewController.presentationDelegate = self;
 
   self.recentTabsContextMenuHelper =
@@ -173,9 +168,6 @@
                                               restoreService:restoreService
                                                faviconLoader:faviconLoader
                                                  syncService:_syncService];
-
-  // Set the consumer first before calling [self.mediator initObservers] and
-  // then [self.mediator configureConsumer].
   self.mediator.consumer = self.recentTabsTableViewController;
   self.recentTabsTableViewController.imageDataSource = self.mediator;
 
@@ -222,7 +214,7 @@
   [self stopHistorySyncPopupCoordinator];
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
-  self.recentTabsTableViewController.browser = nil;
+  self.recentTabsTableViewController.signinPromoViewDelegate = nil;
   self.recentTabsTableViewController = nil;
   [self.recentTabsNavigationController.presentingViewController
       dismissViewControllerAnimated:YES
