@@ -4,6 +4,7 @@
 
 #include "base/i18n/icubridge/default_icu_locale.h"
 
+#include "base/check.h"
 #include "base/i18n/icu4c_tag_converter.h"  // nogncheck
 #include "base/i18n/language_tag.h"
 #include "base/i18n/locale_holder.h"
@@ -11,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/debug/crash_logging.h"
@@ -22,8 +24,14 @@ namespace base::i18n {
 namespace {
 
 ThreadSafeLocaleHolder& GetLocaleHolder() {
-  static base::NoDestructor<ThreadSafeLocaleHolder> holder(
-      GetKnownLanguageTag("en-US"));
+  static base::NoDestructor<ThreadSafeLocaleHolder> holder([]() {
+    // The "en-US" locale here is used as the initial default so this is never
+    // in a uninitialized state.
+    UErrorCode error_code = U_ZERO_ERROR;
+    icu::Locale::setDefault(icu::Locale::getUS(), error_code);
+    CHECK(U_SUCCESS(error_code));
+    return GetKnownLanguageTag("en-US");
+  }());
   return *holder;
 }
 

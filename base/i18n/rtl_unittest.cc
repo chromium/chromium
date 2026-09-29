@@ -547,23 +547,4 @@ TEST_F(RTLTest, SanitizeUserSuppliedString) {
   }
 }
 
-class SetICULocaleTest : public PlatformTest {};
-
-TEST_F(SetICULocaleTest, OverlongLocaleId) {
-  test::ScopedRestoreICUDefaultLocale restore_locale;
-  std::string id("fr-ca-x-foo");
-  std::string lid("fr_CA@x=foo");
-  while (id.length() < 152) {
-    id.append("-x-foo");
-    lid.append("-x-foo");
-  }
-  SetICUDefaultLocale(id);
-  EXPECT_STRNE("en_US", icu::Locale::getDefault().getName());
-  id.append("zzz");
-  lid.append("zzz");
-  SetICUDefaultLocale(id);
-  // ICU-21639 fix the long locale issue now.
-  EXPECT_STREQ(lid.c_str(), icu::Locale::getDefault().getName());
-}
-
 }  // namespace base::i18n

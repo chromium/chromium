@@ -5881,7 +5881,6 @@ TEST_F(RenderTextTest, SelectMultipleWords) {
 
 TEST_F(RenderTextTest, DisplayRectShowsCursorLTR) {
   ASSERT_FALSE(base::i18n::IsRTL());
-  ASSERT_FALSE(base::i18n::ICUIsRTL());
 
   RenderText* render_text = GetRenderText();
   render_text->SetText(u"abcdefghijklmnopqrstuvwxzyabcdefg");

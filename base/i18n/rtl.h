@@ -42,23 +42,8 @@ BASE_I18N_EXPORT std::string GetConfiguredLocale();
 // Canonicalize a string (eg. a POSIX locale string) to a Chrome locale name.
 BASE_I18N_EXPORT std::string GetCanonicalLocale(std::string_view locale);
 
-// Sets the default locale of ICU.
-// Once the application locale of Chrome in GetApplicationLocale is determined,
-// the default locale of ICU need to be changed to match the application locale
-// so that ICU functions work correctly in a locale-dependent manner.
-// This is handy in that we don't have to call GetApplicationLocale()
-// everytime we call locale-dependent ICU APIs as long as we make sure
-// that this is called before any locale-dependent API is called.
-BASE_I18N_EXPORT void SetICUDefaultLocale(std::string_view locale_string);
-
 // Returns true if the application text direction is right-to-left.
 BASE_I18N_EXPORT bool IsRTL();
-
-// Returns whether the text direction for the default ICU locale is RTL.  This
-// assumes that SetICUDefaultLocale has been called to set the default locale to
-// the UI locale of Chrome.
-// NOTE: Generally, you should call IsRTL() instead of this.
-BASE_I18N_EXPORT bool ICUIsRTL();
 
 // Gets the explicitly forced text direction for debugging. If no forcing is
 // applied, returns UNKNOWN_DIRECTION.

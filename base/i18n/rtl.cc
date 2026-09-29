@@ -15,10 +15,8 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/i18n/base_i18n_switches.h"
-#include "base/i18n/icu4c_tag_converter.h"
 #include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -31,7 +29,6 @@
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 #if BUILDFLAG(IS_IOS)
-#include "base/debug/crash_logging.h"
 #include "base/ios/ios_util.h"
 #endif
 
@@ -101,36 +98,6 @@ TextDirection GetCharacterDirection(UChar32 character) {
   return UNKNOWN_DIRECTION;
 }
 
-// Convert Chrome locale name to ICU locale name
-std::string ICULocaleName(std::string_view locale_string) {
-  // If not Spanish, just return it.
-  if (locale_string.substr(0, 2) != "es") {
-    return std::string(locale_string);
-  }
-  // Expand es to es-ES.
-  if (EqualsCaseInsensitiveASCII(locale_string, "es")) {
-    return "es-ES";
-  }
-  // Map es-419 (Latin American Spanish) to es-FOO depending on the system
-  // locale.  If it's es-RR other than es-ES, map to es-RR. Otherwise, map
-  // to es-MX (the most populous in Spanish-speaking Latin America).
-  if (EqualsCaseInsensitiveASCII(locale_string, "es-419")) {
-    const icu::Locale& locale = icu::Locale::getDefault();
-    std::string language = locale.getLanguage();
-    const char* country = locale.getCountry();
-    if (EqualsCaseInsensitiveASCII(language, "es") &&
-        !EqualsCaseInsensitiveASCII(country, "es")) {
-      language += '-';
-      language += country;
-      return language;
-    }
-    return "es-MX";
-  }
-  // Currently, Chrome has only "es" and "es-419", but later we may have
-  // more specific "es-RR".
-  return std::string(locale_string);
-}
-
 TextDirection GetTextDirectionInternal() {
   TextDirection forced_direction = GetForcedTextDirection();
   if (forced_direction != UNKNOWN_DIRECTION) {
@@ -159,35 +126,7 @@ std::string GetCanonicalLocale(std::string_view locale) {
       icu::Locale::createCanonical(std::string(locale).c_str()));
 }
 
-void SetICUDefaultLocale(std::string_view locale_string) {
-#if BUILDFLAG(IS_IOS)
-  static base::debug::CrashKeyString* crash_key_locale =
-      base::debug::AllocateCrashKeyString("icu_locale_input",
-                                          base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(crash_key_locale, locale_string);
-#endif
-  icu::Locale locale(ICULocaleName(locale_string).c_str());
-  UErrorCode error_code = U_ZERO_ERROR;
-  const char* lang = locale.getLanguage();
-  if (lang != nullptr && *lang != '\0') {
-    icu::Locale::setDefault(locale, error_code);
-    SetDefaultIcuLocale(
-        DefaultIcuLocaleSetterKey(),
-        IcuLocaleConverter::GetInstance().ToLanguageTag(locale));
-  } else {
-    LOG(ERROR) << "Failed to set the ICU default locale to " << locale_string
-               << ". Falling back to en-US.";
-    icu::Locale::setDefault(icu::Locale::getUS(), error_code);
-    SetDefaultIcuLocale(DefaultIcuLocaleSetterKey(),
-                        GetKnownLanguageTag("en-US"));
-  }
-}
-
 bool IsRTL() {
-  return ICUIsRTL();
-}
-
-bool ICUIsRTL() {
   return GetTextDirectionInternal() == RIGHT_TO_LEFT;
 }
 

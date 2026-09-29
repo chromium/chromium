@@ -1849,7 +1849,12 @@ _CONFIG = [
         'paths':
         ['third_party/blink/renderer/core/inspector/locale_controller.cc'],
         'allowed': [
-            'base::i18n::SetICUDefaultLocale',
+            'base::i18n::GetDefaultIcuLocale',
+            'base::i18n::LanguageTag',
+            'base::i18n::GetLanguageTagFromString',
+            'base::i18n::LanguageTag',
+            'base::i18n::SetDefaultIcuLocale',
+            'base::i18n::DefaultIcuLocaleSetterKey',
         ],
     },
     {

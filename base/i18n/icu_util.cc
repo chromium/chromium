@@ -4,6 +4,8 @@
 
 #include "base/i18n/icu_util.h"
 
+#include "base/i18n/icubridge/default_icu_locale.h"
+#include "base/i18n/language_tag.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -37,8 +39,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
-#include "base/android/jni_android.h"
-#include "base/i18n/android_locale.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -369,25 +369,15 @@ bool DoCommonInitialization() {
                << u_errorName(status);
   }
 
-  // TODO(jungshik): Some callers do not care about tz at all. If necessary,
-  // add a boolean argument to this function to init the default tz only
-  // when requested.
-  InitializeIcuTimeZone();
-
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, ICU's default locale ID comes from POSIX environment variables
-  // (LC_ALL, etc.), which are not set for Android apps, resulting in
-  // "en_US_POSIX". That is not a real locale and causes break iterators and
-  // other ICU operations to fail if called before SetICUDefaultLocale() is run
-  // in PostEarlyInitialization. Initialize the default ICU locale using the
-  // system default.
-  if (base::android::IsJavaAvailable()) {
-    SetICUDefaultLocale(base::i18n::GetAndroidDefaultLocale().tag_string());
-  } else {
-    SetICUDefaultLocale("en-US");
+  // This is supposed to be the first time `GetDefaultIcuLocale()` is called and
+  // therefore, its initial "en-US" locale should be returned here.
+  if (GetDefaultIcuLocale() != GetKnownLanguageTag("en-US")) {
+    LOG(FATAL) << "ICU has been initialized but the default locale is not "
+                  "en-US. The current default locale is: "
+               << GetDefaultIcuLocale();
   }
-#endif
 
+  InitializeIcuTimeZone();
   utrace_setLevel(UTRACE_VERBOSE);
   return true;
 }

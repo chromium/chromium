@@ -66,7 +66,6 @@ char kTSanDefaultSuppressions[] =
 
     // http://crbug.com/695929
     "race:base::i18n::IsRTL\n"
-    "race:base::i18n::SetICUDefaultLocale\n"
 
     // http://crbug.com/927330
     "race:net::(anonymous namespace)::g_network_change_notifier\n"
