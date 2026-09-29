@@ -1,58 +1,3 @@
-  <style include="cr-shared-style settings-shared autofill-shared
-      cr-spinner-style">
-    #addressList .start {
-      display: flex;
-      overflow: hidden;
-    }
-
-    #addressSummary {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-    }
-
-    #noEmailsLabel {
-      padding-inline-start: var(--cr-section-indent-padding);
-    }
-
-    .dropdown-item.external-link-style {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .dropdown-item.external-link-style cr-icon {
-      --cr-icon-color: var(--cr-secondary-text-color);
-    }
-
-    .vertical-list .start {
-      display: flex;
-      align-items: center;
-    }
-
-    site-favicon {
-      margin-inline-start: 20px;
-      margin-inline-end: 16px;
-    }
-
-    #otpFillingLoadingRow {
-      align-items: center;
-      display: flex;
-      min-height: var(--cr-section-two-line-min-height);
-      padding: 0 var(--cr-section-padding);
-    }
-
-    #otpFillingLoadingLabelWrapper {
-      flex: 1;
-      padding: var(--cr-section-vertical-padding) 0;
-      margin-inline-end: 20px;
-    }
-
-    #otpFillingLoadingSubLabel a {
-      color: var(--cr-link-color);
-    }
-  </style>
   <settings-subpage page-title="$i18n{contactInfoTitle}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
       class="multi-card">
@@ -60,99 +5,100 @@
       <settings-toggle-button id="autofillProfileToggle"
           no-extension-indicator label="$i18n{enableProfilesLabel}"
           sub-label="$i18n{enableProfilesSublabel}"
-          pref="[[profileEnabledSyntheticPref_]]"
-          on-settings-boolean-control-change="onAutofillProfileToggleChange_">
+          .pref="${this.profileEnabledSyntheticPref_}"
+          @settings-boolean-control-change="${
+              this.onAutofillProfileToggleSettingsBooleanControlChange_}">
       </settings-toggle-button>
       <div id="otpFillingLoadingRow" class="cr-row hr cr-padded-text"
           aria-live="polite" aria-busy="true"
-          hidden$="[[!shouldShowOtpFillingLoadingRow_(
-              showGmailOtpFillingToggle_, isOtpConsentLoading_)]]">
+          ?hidden="${!this.shouldShowOtpFillingLoadingRow_()}">
         <div class="flex" id="otpFillingLoadingLabelWrapper">
           <div class="label">$i18n{enableGmailOtpFillingTitle}</div>
           <div class="cr-secondary-text label"
               id="otpFillingLoadingSubLabel">
             <div id="otpFillingLoadingSubLabelWithLink"
-                inner-h-t-m-l="[[getGmailOtpFillingDescription_()]]"
-                on-click="onGmailOtpFillingLinkClick_">
+                .innerHTML="${this.getGmailOtpFillingDescription_()}"
+                @click="${this.onGmailOtpFillingLinkClick_}">
             </div>
           </div>
         </div>
         <div id="otpFillingLoadingSpinner" class="spinner"></div>
       </div>
       <settings-toggle-button id="autofillOtpFillingToggle" class="hr"
-          hidden$="[[!shouldShowOtpFillingToggle_(
-              showGmailOtpFillingToggle_, isOtpConsentLoading_)]]"
+          ?hidden="${!this.shouldShowOtpFillingToggle_()}"
           label="$i18n{enableGmailOtpFillingTitle}"
           sub-label-with-link="$i18n{enableGmailOtpFillingDescription}"
-          on-sub-label-link-clicked="onGmailOtpFillingLinkClick_"
-          on-settings-boolean-control-change=
-              "onAutofillOtpFillingToggleChanged_"
-          pref="{{otpFillingTogglePref_}}"
+          @sub-label-link-clicked="${
+              this.onGmailOtpFillingSubLabelLinkClicked_}"
+          @settings-boolean-control-change="${
+              this.onAutofillOtpFillingToggleSettingsBooleanControlChange_}"
+          .pref="${this.otpFillingTogglePref_}"
           no-set-pref>
       </settings-toggle-button>
-      <template is="dom-if"
-          if="[[profileEnabledSyntheticPref_.extensionId]]">
+      ${this.profileEnabledSyntheticPref_?.extensionId ? html`
         <div class="cr-row continuation">
           <extension-controlled-indicator class="flex"
               id="autofillExtensionIndicator"
-              extension-id="[[profileEnabledSyntheticPref_.extensionId]]"
-              extension-name=
-                  "[[profileEnabledSyntheticPref_.controlledByName]]"
-              extension-can-be-disabled="[[
-                  profileEnabledSyntheticPref_.extensionCanBeDisabled]]">
+              .extensionId="${this.profileEnabledSyntheticPref_.extensionId}"
+              .extensionName="${
+                  this.profileEnabledSyntheticPref_.controlledByName || ''}"
+              .extensionCanBeDisabled="${
+                  this.profileEnabledSyntheticPref_.extensionCanBeDisabled ||
+                  false}">
           </extension-controlled-indicator>
         </div>
-      </template>
+      ` : ''}
     </div>
     <div class="card">
       <div class="cr-row continuation">
         <h2 class="flex">$i18n{addresses}</h2>
         <cr-button id="addAddress" class="header-aligned-button"
-            on-click="onAddAddressClick_" aria-label="$i18n{addAddressTitle}"
-            disabled="[[!profileEnabledSyntheticPref_.value]]">
+            @click="${this.onAddAddressClick_}" aria-label="$i18n{addAddressTitle}"
+            ?disabled="${!this.profileEnabledSyntheticPref_?.value}">
           $i18n{add}
         </cr-button>
       </div>
       <div class="list-frame" aria-label="$i18n{addressesTableAriaLabel}"
           role="list">
         <div id="addressList" class="vertical-list" role="none">
-          <template is="dom-repeat" items="[[addresses]]">
+          ${this.addresses.map((item, index) => html`
             <div class="list-item" role="listitem">
               <div class="start">
                 <span id="addressSummary">
                   <span class="ellipses">
-                    [[item.metadata.summaryLabel]]
+                    ${item.metadata?.summaryLabel}
                   </span>
                   <span class="ellipses">
-                    [[item.metadata.summarySublabel]]
+                    ${item.metadata?.summarySublabel}
                   </span>
                 </span>
                 <cr-icon
                     id="address-row-icon"
-                    icon="[[getAddressIcon_(item, accountInfo_)]]"
-                    hidden$="[[!shouldShowAddressIcon_(item, accountInfo_)]]"
-                    aria-label="[[getA11yLabelForIcon_(item, accountInfo_)]]"
+                    icon="${this.getAddressIcon_(item)}"
+                    ?hidden="${!this.shouldShowAddressIcon_(item)}"
+                    aria-label="${this.getA11yLabelForIcon_(item)}"
                     role="img">
                 </cr-icon>
               </div>
               <cr-icon-button class="icon-more-vert address-menu"
-                  on-click="onAddressMenuClick_"
-                  title="[[moreActionsTitle_(item)]]">
+                  data-index="${index}"
+                  @click="${this.onAddressMenuClick_}"
+                  title="${this.moreActionsTitle_(item)}">
               </cr-icon-button>
             </div>
-          </template>
+          `)}
         </div>
         <div id="noAddressesLabel" class="list-item"
-            hidden$="[[hasSome_(addresses)]]">
+            ?hidden="${this.addresses.length > 0}">
           $i18n{noAddressesFound}
         </div>
       </div>
       <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
-        <template is="dom-if" if="[[isGoogleProfileAddress]]" restamp>
+        ${this.isGoogleProfileAddress_() ? html`
           <button
               id="menuEditAddress"
               class="dropdown-item external-link-style"
-              on-click="onMenuEditAddressClick_"
+              @click="${this.onMenuEditAddressClick_}"
               aria-label="$i18n{homeWorkAddressAccessiblityLabel}">
             <span class="label">$i18n{edit}</span>
             <cr-icon icon="cr:open-in-new" aria-hidden="true"></cr-icon>
@@ -160,79 +106,77 @@
 
           <button id="menuRemoveAddress"
               class="dropdown-item"
-              on-click="onMenuRemoveAddressClick_">
-            [[getMenuRemoveAddressLabel_(activeAddress)]]
+              @click="${this.onMenuRemoveAddressClick_}">
+            ${this.getMenuRemoveAddressLabel_()}
           </button>
-        </template>
-
-        <template is="dom-if" if="[[!isGoogleProfileAddress]]" restamp>
+        ` : html`
           <button id="menuEditAddress" class="dropdown-item"
-              on-click="onMenuEditAddressClick_">$i18n{edit}</button>
+              @click="${this.onMenuEditAddressClick_}">$i18n{edit}</button>
 
           <button id="menuRemoveAddress" class="dropdown-item"
-              on-click="onMenuRemoveAddressClick_">
-            [[getMenuRemoveAddressLabel_(activeAddress)]]
+              @click="${this.onMenuRemoveAddressClick_}">
+            ${this.getMenuRemoveAddressLabel_()}
           </button>
-        </template>
+        `}
       </cr-action-menu>
-      <template is="dom-if" if="[[showAddressDialog_]]" restamp>
-        <settings-address-edit-dialog address="[[activeAddress]]"
-            account-info="[[accountInfo_]]" on-close="onAddressDialogClose_">
+      ${this.showAddressDialog_ ? html`
+        <settings-address-edit-dialog .address="${this.activeAddress!}"
+            .accountInfo="${this.accountInfo_}"
+            @close="${this.onAddressDialogClose_}">
         </settings-address-edit-dialog>
-      </template>
-      <template is="dom-if" if="[[showAddressRemoveConfirmationDialog_]]"
-          restamp>
+      ` : ''}
+      ${this.showAddressRemoveConfirmationDialog_ ? html`
         <settings-address-remove-confirmation-dialog
-            address="[[activeAddress]]" account-info="[[accountInfo_]]"
-            on-close="onAddressRemoveConfirmationDialogClose_">
+            .address="${this.activeAddress!}"
+            .accountInfo="${this.accountInfo_}"
+            @close="${this.onAddressRemoveConfirmationDialogClose_}">
         </settings-address-remove-confirmation-dialog>
-      </template>
-      <template is="dom-if" if="[[showGmailOtpDisclaimerDialog_]]" restamp>
+      ` : ''}
+      ${this.showGmailOtpDisclaimerDialog_ ? html`
         <settings-gmail-otp-disclaimer-dialog
-            on-close="onGmailOtpDisclaimerDialogClose_">
+            @close="${this.onGmailOtpDisclaimerDialogClose_}">
         </settings-gmail-otp-disclaimer-dialog>
-      </template>
-      <template is="dom-if" if="[[showEmailRemoveConfirmationDialog_]]"
-          restamp>
+      ` : ''}
+      ${this.showEmailRemoveConfirmationDialog_ ? html`
         <settings-simple-confirmation-dialog id="emailRemoveConfirmationDialog"
             title-text="$i18n{removeVerifiedEmailPermissionTitle}"
-            body-text="[[getEmailRemoveConfirmationDescription_(
-                activeEmailIssuer_)]]"
+            body-text="${this.getEmailRemoveConfirmationDescription_()}"
             confirm-text="$i18n{remove}"
-            on-close="onEmailRemoveConfirmationDialogClose_">
+            @close="${this.onEmailRemoveConfirmationDialogClose_}">
         </settings-simple-confirmation-dialog>
-      </template>
+      ` : ''}
     </div>
     <div class="card">
       <div class="cr-row continuation">
         <h2 class="flex">$i18n{emailVerificationSectionTitle}</h2>
       </div>
-      <template is="dom-if" if="[[isEmailVerificationProtocolEnabled_]]">
+      ${this.isEmailVerificationProtocolEnabled_ ? html`
         <settings-toggle-button id="autofillEmailVerificationToggle"
             no-extension-indicator label="$i18n{emailVerificationLabel}"
             pref-key="autofill.email_verification_enabled">
         </settings-toggle-button>
         <div class="vertical-list">
-          <template is="dom-repeat" items="[[emailVerificationAddresses_]]">
+          ${this.emailVerificationAddresses_.map((item, index) => html`
             <div class="list-item">
               <site-favicon
-                  url="[[getIssuerSite_(item, emailVerificationStatePref_)]]">
+                  url="${this.getIssuerSite_(item)}">
               </site-favicon>
-              <div class="start">[[item]]</div>
+              <div class="start">${item}</div>
               <cr-icon-button class="icon-more-vert email-menu"
-                  on-click="onEmailMenuClick_">
+                  data-index="${index}"
+                  @click="${this.onEmailMenuClick_}">
               </cr-icon-button>
             </div>
-          </template>
+          `)}
         </div>
         <div id="noEmailsLabel" class="list-item"
-            hidden$="[[hasSome_(emailVerificationAddresses_)]]">
+            ?hidden="${this.emailVerificationAddresses_.length > 0}">
           $i18n{emailVerificationEmptyLabel}
         </div>
-      </template>
+      ` : ''}
       <cr-action-menu id="emailSharedMenu" role-description="$i18n{menu}">
         <button id="menuRemoveEmail" class="dropdown-item"
-            on-click="onMenuRemoveEmailClick_">
+            @click="${this.onMenuRemoveEmailClick_}">
           $i18n{removeVerifiedEmailPermission}
         </button>
       </cr-action-menu>

@@ -8,8 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import type {SettingsGmailOtpDisclaimerDialogElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('GmailOtpDisclaimerDialogTest', function() {
@@ -30,18 +29,18 @@ suite('GmailOtpDisclaimerDialogTest', function() {
 
     dialog = document.createElement('settings-gmail-otp-disclaimer-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
   });
 
   test('UI components rendered correctly', function() {
     assertTrue(dialog.$.dialog.open);
-    const title = dialog.shadowRoot!.querySelector('[slot=title]');
+    const title = dialog.shadowRoot.querySelector('[slot=title]');
     assertTrue(!!title);
     assertEquals(
         'To use this feature, first turn on smart features in Gmail',
         title.textContent?.trim());
 
-    const listItems = dialog.shadowRoot!.querySelectorAll('ol li');
+    const listItems = dialog.shadowRoot.querySelectorAll('ol li');
     assertEquals(2, listItems.length);
 
     const step1 = listItems[0];

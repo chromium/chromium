@@ -12,8 +12,6 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestAutofillManager} from './autofill_fake_data.js';
 import {createAddressEntry} from './autofill_fake_data.js';
 import {createContactInfoPage, deleteAddress} from './contact_info_page_test_utils.js';
-
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('ContactInfoPageFocusTest', function() {
@@ -27,9 +25,7 @@ suite('ContactInfoPageFocusTest', function() {
         {profile_enabled: {value: true}});
 
     // Ensure the subpage's back button is focused before continuing further.
-    await waitAfterNextRender(page);
-    const subpageElement =
-        page.shadowRoot!.querySelector('settings-subpage');
+    const subpageElement = page.shadowRoot.querySelector('settings-subpage');
     assertTrue(!!subpageElement);
     // Note: Using assertTrue instead of assertEquals on purpose, because Mocha
     // in case of failure tries to serialize the arguments, which in turn throws

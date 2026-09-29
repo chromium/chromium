@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {
   CrInputElement,
   CrTextareaElement,
@@ -31,7 +30,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {loadTimeData, OpenWindowProxyImpl, PrefService} from 'chrome://settings/settings.js';
-import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, whenAttributeIs, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -182,18 +181,16 @@ suite('ContactInfoPageUiTest', function() {
     document.body.appendChild(page);
     await flushTasks();
 
-    assertFalse(
-        !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+    assertFalse(!!page.shadowRoot.querySelector('#autofillExtensionIndicator'));
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {
         key: 'autofill.profile_enabled',
         extensionId: 'test-id',
       },
     ]);
-    flush();
+    await microtasksFinished();
 
-    assertTrue(
-        !!page.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+    assertTrue(!!page.shadowRoot.querySelector('#autofillExtensionIndicator'));
   });
 
   test('AutofillTypesBlockedPolicy', async function() {
@@ -206,7 +203,6 @@ suite('ContactInfoPageUiTest', function() {
         value: [{url_pattern: '*', blocked_types: ['contact_info']}],
       },
     });
-    flush();
 
     const toggle = page.$.autofillProfileToggle;
     assertTrue(toggle.controlDisabled());
@@ -217,7 +213,7 @@ suite('ContactInfoPageUiTest', function() {
     prefsBrowserProxy.fakeApi.sendPrefChanges([
       {key: 'autofill.types_blocked', value: []},
     ]);
-    flush();
+    await microtasksFinished();
     assertFalse(toggle.controlDisabled());
     assertTrue(toggle.checked);
     assertFalse(page.$.addAddress.disabled);
@@ -229,7 +225,7 @@ suite('ContactInfoPageUiTest', function() {
         value: [{url_pattern: '*', blocked_types: ['contact_info']}],
       },
     ]);
-    flush();
+    await microtasksFinished();
     assertTrue(toggle.controlDisabled());
     assertFalse(toggle.checked);
     assertTrue(page.$.addAddress.disabled);
@@ -245,7 +241,6 @@ suite('ContactInfoPageUiTest', function() {
         value: [{url_pattern: '*', blocked_types: ['all']}],
       },
     });
-    flush();
 
     const toggle = page.$.autofillProfileToggle;
     assertTrue(toggle.controlDisabled());
@@ -263,7 +258,6 @@ suite('ContactInfoPageUiTest', function() {
         value: [{url_pattern: '*', blocked_types: ['payments']}],
       },
     });
-    flush();
 
     const toggle = page.$.autofillProfileToggle;
     assertFalse(toggle.controlDisabled());
@@ -281,7 +275,6 @@ suite('ContactInfoPageUiTest', function() {
         value: [{url_pattern: '*', blocked_types: ['contact_info']}],
       },
     });
-    flush();
 
     const toggle = page.$.autofillProfileToggle;
     assertFalse(toggle.controlDisabled());
@@ -293,14 +286,13 @@ suite('ContactInfoPageUiTest', function() {
     const page = await createContactInfoPage([], {
       profile_enabled: {value: true},
     });
-    flush();
 
     const toggle = page.$.autofillProfileToggle;
     assertFalse(page.$.addAddress.disabled);
 
     // User toggles off addresses.
     toggle.click();
-    flush();
+    await microtasksFinished();
 
     assertFalse(toggle.checked);
     assertTrue(page.$.addAddress.disabled);
@@ -314,10 +306,10 @@ suite('ContactInfoPageUiTest', function() {
       email_verification_enabled: {value: true},
     });
     const toggle =
-        page.shadowRoot!.querySelector('#autofillEmailVerificationToggle');
+        page.shadowRoot.querySelector('#autofillEmailVerificationToggle');
     assertTrue(!!toggle);
 
-    const noEmailsLabel = page.shadowRoot!.querySelector('#noEmailsLabel');
+    const noEmailsLabel = page.shadowRoot.querySelector('#noEmailsLabel');
     assertTrue(!!noEmailsLabel);
     assertFalse((noEmailsLabel as HTMLElement).hidden);
   });
@@ -339,10 +331,8 @@ suite('ContactInfoPageUiTest', function() {
       },
     });
 
-    flush();
-
     const menuButtons =
-        page.shadowRoot!.querySelectorAll<HTMLElement>('.email-menu');
+        page.shadowRoot.querySelectorAll<HTMLElement>('.email-menu');
     assertEquals(2, menuButtons.length);
 
     const button0 = menuButtons[0]!;
@@ -377,9 +367,9 @@ suite('ContactInfoPageUiTest', function() {
     page.$.menuRemoveEmail.click();
     await flushTasks();
 
-    const dialog = page.shadowRoot!
-                       .querySelector<SettingsSimpleConfirmationDialogElement>(
-                           '#emailRemoveConfirmationDialog');
+    const dialog =
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
+            '#emailRemoveConfirmationDialog');
     assertTrue(!!dialog);
     dialog.$.confirm.click();
 
@@ -395,7 +385,7 @@ suite('ContactInfoPageUiTest', function() {
     assertTrue('test2@example.com' in updatedPrefs);
 
     // Verify UI updated.
-    const newMenuButtons = page.shadowRoot!.querySelectorAll('.email-menu');
+    const newMenuButtons = page.shadowRoot.querySelectorAll('.email-menu');
     assertEquals(1, newMenuButtons.length);
     const newButton0 = newMenuButtons[0]!;
     const newItem0 = newButton0.parentElement!;
@@ -927,7 +917,7 @@ suite('ContactInfoPageUiTest', function() {
 
         // The stale response must NOT re-enable the toggle.
         assertFalse(toggle.checked);
-        assertFalse(page.get('otpFillingTogglePref_.value'));
+        assertFalse(page.$.autofillOtpFillingToggle.pref!.value);
         assertFalse(
             isVisible(page.$.otpFillingLoadingRow),
             'loading row should not be shown after state reset');
@@ -969,7 +959,7 @@ suite('ContactInfoPageUiTest', function() {
 
         // The stale error must NOT re-enable the toggle.
         assertFalse(toggle.checked);
-        assertFalse(page.get('otpFillingTogglePref_.value'));
+        assertFalse(page.$.autofillOtpFillingToggle.pref!.value);
       });
 
   test('OtpFillingToggleDirectlyTurnedOff', async function() {
@@ -1035,8 +1025,7 @@ suite('ContactInfoPageUiTest', function() {
         metricsTracker.count(
             AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, false));
     assertFalse(
-        !!page.shadowRoot!.querySelector(
-            'settings-gmail-otp-disclaimer-dialog'),
+        !!page.shadowRoot.querySelector('settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should not be shown');
     assertEquals(
         1, autofillManager.getCallCount('fetchUserDataProcessingConsent'),
@@ -1318,7 +1307,7 @@ suite('ContactInfoPageUiTest', function() {
 
     assertTrue(toggle.checked);
     assertTrue(
-        page.shadowRoot!.activeElement === toggle,
+        page.shadowRoot.activeElement === toggle,
         'focus should be restored to toggle after consent is granted');
   });
 
@@ -1344,7 +1333,7 @@ suite('ContactInfoPageUiTest', function() {
 
     assertTrue(toggle.checked);
     assertTrue(
-        page.shadowRoot!.activeElement === toggle,
+        page.shadowRoot.activeElement === toggle,
         'focus should be restored to toggle after consent fetch fails');
   });
 
@@ -1479,8 +1468,7 @@ suite('ContactInfoPageUiTest', function() {
         metricsTracker.count(
             AUTOFILL_GMAIL_OTP_OPT_IN_SETTINGS_CHANGE_METRIC, true));
     assertFalse(
-        !!page.shadowRoot!.querySelector(
-            'settings-gmail-otp-disclaimer-dialog'),
+        !!page.shadowRoot.querySelector('settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should not be shown on error');
   });
 
@@ -1530,7 +1518,7 @@ suite('ContactInfoPageUiTest', function() {
 
           // Disclaimer dialog is shown.
           const dialog =
-              page.shadowRoot!
+              page.shadowRoot
                   .querySelector<SettingsGmailOtpDisclaimerDialogElement>(
                       'settings-gmail-otp-disclaimer-dialog');
           assertTrue(!!dialog, 'disclaimer dialog should be shown');
@@ -1541,7 +1529,7 @@ suite('ContactInfoPageUiTest', function() {
           await flushTasks();
 
           assertFalse(
-              !!page.shadowRoot!.querySelector(
+              !!page.shadowRoot.querySelector(
                   'settings-gmail-otp-disclaimer-dialog'),
               'disclaimer dialog should be closed');
           assertFalse(toggle.checked);
@@ -1576,7 +1564,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     const dialog =
-        page.shadowRoot!.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
+        page.shadowRoot.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
             'settings-gmail-otp-disclaimer-dialog');
     assertTrue(!!dialog);
 
@@ -1586,8 +1574,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     assertFalse(
-        !!page.shadowRoot!.querySelector(
-            'settings-gmail-otp-disclaimer-dialog'),
+        !!page.shadowRoot.querySelector('settings-gmail-otp-disclaimer-dialog'),
         'disclaimer dialog should be closed');
     assertFalse(toggle.checked);
     assertFalse(
@@ -1624,7 +1611,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     let dialog =
-        page.shadowRoot!.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
+        page.shadowRoot.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
             'settings-gmail-otp-disclaimer-dialog');
     assertTrue(!!dialog);
     dialog.$.dialog.cancel();
@@ -1649,7 +1636,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     dialog =
-        page.shadowRoot!.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
+        page.shadowRoot.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
             'settings-gmail-otp-disclaimer-dialog');
     assertTrue(!!dialog);
     dialog.$.confirmButton.click();
@@ -1676,7 +1663,7 @@ suite('ContactInfoPageUiTest', function() {
     await autofillManager.whenCalled('fetchUserDataProcessingConsent');
     await flushTasks();
 
-    assertFalse(!!page.shadowRoot!.querySelector(
+    assertFalse(!!page.shadowRoot.querySelector(
         'settings-gmail-otp-disclaimer-dialog'));
     assertTrue(toggle.checked);
     assertTrue(
@@ -1799,7 +1786,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     const dialog =
-        page.shadowRoot!.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
+        page.shadowRoot.querySelector<SettingsGmailOtpDisclaimerDialogElement>(
             'settings-gmail-otp-disclaimer-dialog');
     assertTrue(!!dialog);
 
@@ -1809,7 +1796,7 @@ suite('ContactInfoPageUiTest', function() {
     await flushTasks();
 
     assertEquals(
-        toggle, page.shadowRoot!.activeElement,
+        toggle, page.shadowRoot.activeElement,
         'focus should be restored to toggle after dialog close');
   });
 
@@ -1837,7 +1824,7 @@ suite('ContactInfoPageUiTest', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
     changeListener([], [], [], [], undefined);
-    flush();
+    await microtasksFinished();
     assertFalse(isVisible(toggle));
 
     // Update consent state on manager.
@@ -2061,7 +2048,7 @@ suite('ContactInfoPageUiTest', function() {
             isVisible(page.$.autofillOtpFillingToggle),
             'toggle should be hidden while Account B fetch is in flight');
         assertFalse(
-            page.get('otpFillingTogglePref_.value'),
+            page.$.autofillOtpFillingToggle.pref!.value,
             'backing pref should not be enabled by stale Account A response');
 
         // Account B resolves with DISABLED consent.
@@ -2137,7 +2124,7 @@ suite('ContactInfoPageUiTest', function() {
             isVisible(page.$.autofillOtpFillingToggle),
             'toggle should be hidden while Account B fetch is in flight');
         assertFalse(
-            page.get('otpFillingTogglePref_.value'),
+            page.$.autofillOtpFillingToggle.pref!.value,
             'backing pref should not be enabled by stale Account A error');
 
         // Account B resolves with DISABLED consent.
@@ -2208,8 +2195,7 @@ suite('ContactInfoPageAddressTests', function() {
 
     const addressList = page.$.addressList;
     assertTrue(!!addressList);
-    // 1 for the template element.
-    assertEquals(1, addressList.children.length);
+    assertEquals(0, addressList.children.length);
 
     assertFalse(page.$.noAddressesLabel.hidden);
     assertFalse(page.$.addAddress.disabled);
@@ -2294,6 +2280,7 @@ suite('ContactInfoPageAddressTests', function() {
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
     changeListener(autofillManager.data.addresses, [], [], [], undefined);
+    await microtasksFinished();
     const iconName2 = getIcon()!.getAttribute('icon');
     assertFalse(
         !!iconName2 && iconName2.includes('cloud-off'),
@@ -2301,6 +2288,7 @@ suite('ContactInfoPageAddressTests', function() {
 
     changeListener(
         autofillManager.data.addresses, [], [], [], STUB_USER_ACCOUNT_INFO);
+    await microtasksFinished();
     assertTrue(
         isVisible(getIcon()),
         'Sync is disabled but the feature is on, the icon should be visible.');
@@ -2344,9 +2332,9 @@ suite('ContactInfoPageAddressTests', function() {
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
-    assertTrue(!!page.shadowRoot!.querySelector('#menuEditAddress'));
+    assertTrue(!!page.shadowRoot.querySelector('#menuEditAddress'));
   });
 
   test(
@@ -2381,10 +2369,10 @@ suite('ContactInfoPageAddressTests', function() {
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     const editButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -2406,10 +2394,10 @@ suite('ContactInfoPageAddressTests', function() {
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     const editButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -2431,10 +2419,10 @@ suite('ContactInfoPageAddressTests', function() {
     const menuButton = row.querySelector<HTMLElement>('.address-menu');
     assertTrue(!!menuButton);
     menuButton.click();
-    flush();
+    await microtasksFinished();
 
     const editButton =
-        page.shadowRoot!.querySelector<HTMLElement>('#menuEditAddress');
+        page.shadowRoot.querySelector<HTMLElement>('#menuEditAddress');
     assertTrue(!!editButton);
     editButton.click();
 
@@ -2566,7 +2554,7 @@ suite('ContactInfoPageAddressTests', function() {
     assertEquals('US', countrySelect.value);
     countrySelect.value = 'GB';
     countrySelect.dispatchEvent(new CustomEvent('change'));
-    flush();
+    await microtasksFinished();
     assertEquals('GB', countrySelect.value);
   });
 
@@ -2584,7 +2572,6 @@ suite('ContactInfoPageAddressTests', function() {
     countrySelect.value = 'IL';
     countryDetailManager.setGetAddressFormatRepsonse(ADDRESS_COMPONENTS_IL);
     countrySelect.dispatchEvent(new CustomEvent('change'));
-    flush();
     await eventToPromise('on-update-address-wrapper', dialog);
     assertEquals('IL', countrySelect.value);
     assertEquals('iw', address.languageCode);

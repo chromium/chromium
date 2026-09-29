@@ -10,14 +10,13 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../../settings_shared.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './gmail_otp_disclaimer_dialog.html.js';
+import {getCss} from './gmail_otp_disclaimer_dialog.css.js';
+import {getHtml} from './gmail_otp_disclaimer_dialog.html.js';
 
 export interface SettingsGmailOtpDisclaimerDialogElement {
   $: {
@@ -26,19 +25,26 @@ export interface SettingsGmailOtpDisclaimerDialogElement {
   };
 }
 
-export class SettingsGmailOtpDisclaimerDialogElement extends PolymerElement {
+export class SettingsGmailOtpDisclaimerDialogElement extends CrLitElement {
   static get is() {
     return 'settings-gmail-otp-disclaimer-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private onConfirmButtonClick_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected onConfirmButtonClick_() {
     this.$.dialog.close();
   }
 }
+
+export type GmailOtpDisclaimerDialogElement =
+    SettingsGmailOtpDisclaimerDialogElement;
 
 declare global {
   interface HTMLElementTagNameMap {
