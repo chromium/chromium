@@ -164,4 +164,13 @@ TEST_F(SaveAddressProfileViewTest, CancelInvokesTheController) {
   view()->CancelDialog();
 }
 
+TEST_F(SaveAddressProfileViewTest, AcceptAfterHideDoesNotCrash) {
+  std::unique_ptr<MockSaveAddressBubbleController> controller =
+      CreateViewController();
+  EXPECT_CALL(*controller, OnUserDecision).Times(0);
+  CreateViewAndShow(std::move(controller));
+  view()->Hide();
+  view()->AcceptDialog();
+}
+
 }  // namespace autofill

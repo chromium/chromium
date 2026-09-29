@@ -40,7 +40,6 @@ class UpdateAddressProfileView : public AddressBubbleBaseView {
 
   // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
-  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
   void Show(DisplayReason reason);
@@ -50,10 +49,6 @@ class UpdateAddressProfileView : public AddressBubbleBaseView {
 
  private:
   std::unique_ptr<UpdateAddressBubbleController> controller_;
-
-  // Indicates whether the profile has empty original values meaning the prompt
-  // is shown to add info to the profile.
-  bool has_empty_original_values_ = false;
 };
 
 }  // namespace autofill

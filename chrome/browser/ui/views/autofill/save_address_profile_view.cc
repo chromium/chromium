@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -110,15 +111,13 @@ SaveAddressProfileView::SaveAddressProfileView(
       controller_(std::move(controller)) {
   // TODO(crbug.com/40164487): Accept action should consider the selected
   // nickname when saving the address.
-  SetAcceptCallback(
-      base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
-                     base::Unretained(controller_.get()),
-                     AutofillClient::AddressPromptUserDecision::kAccepted,
-                     controller_->GetAutofillProfile()));
-  SetCancelCallback(base::BindOnce(&SaveAddressBubbleController::OnUserDecision,
-                                   base::Unretained(controller_.get()),
-                                   controller_->GetCancelCallbackValue(),
-                                   std::nullopt));
+  SetAcceptCallback(base::BindOnce(
+      &SaveAddressBubbleController::OnUserDecision, controller_->GetWeakPtr(),
+      AutofillClient::AddressPromptUserDecision::kAccepted,
+      controller_->GetAutofillProfile()));
+  SetCancelCallback(base::BindOnce(
+      &SaveAddressBubbleController::OnUserDecision, controller_->GetWeakPtr(),
+      controller_->GetCancelCallbackValue(), std::nullopt));
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
@@ -177,7 +176,7 @@ SaveAddressProfileView::SaveAddressProfileView(
 
   edit_button_ = details_section->AddChildView(CreateEditButton(
       base::BindRepeating(&SaveAddressBubbleController::OnEditButtonClicked,
-                          base::Unretained(controller_.get()))));
+                          controller_->GetWeakPtr())));
   edit_button_->SetProperty(views::kElementIdentifierKey, kEditButtonViewId);
 
   std::u16string address = controller_->GetAddressSummary();

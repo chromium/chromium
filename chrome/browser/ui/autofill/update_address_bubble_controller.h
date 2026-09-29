@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -57,6 +58,10 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
   // itself is about to be deleted.
   virtual void OnBubbleClosed();
 
+  base::WeakPtr<UpdateAddressBubbleController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   base::WeakPtr<AddressBubbleControllerDelegate> delegate_;
 
@@ -67,6 +72,8 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
   // Contains the details of the address profile that will be updated if the
   // user accepts the prompt.
   const AutofillProfile original_profile_;
+
+  base::WeakPtrFactory<UpdateAddressBubbleController> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

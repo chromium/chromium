@@ -71,6 +71,10 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   // itself is about to be deleted.
   virtual void OnBubbleClosed();
 
+  base::WeakPtr<SaveAddressBubbleController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   bool IsMigrationToAccount() const;
 
@@ -84,6 +88,8 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
 
   // Whether the bubble prompts to save (migrate) the profile into account.
   const AutofillClient::SaveAddressBubbleType save_address_bubble_type_;
+
+  base::WeakPtrFactory<SaveAddressBubbleController> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
