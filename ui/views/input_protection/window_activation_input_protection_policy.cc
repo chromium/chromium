@@ -14,8 +14,14 @@ namespace views {
 WindowActivationInputProtectionPolicy::WindowActivationInputProtectionPolicy(
     Widget* widget) {
   CHECK(widget);
+  Widget* parent = widget->GetPrimaryWindowWidget();
+  if (!parent || parent == widget) {
+    return;
+  }
+
   widget_observation_.Observe(widget);
-  parent_was_visible_when_activation_changed_ = IsParentVisible(widget);
+  parent_observation_.Observe(parent);
+  needs_activation_protection_ = !parent->IsVisible();
 }
 
 WindowActivationInputProtectionPolicy::
@@ -42,22 +48,34 @@ void WindowActivationInputProtectionPolicy::OnProtectionReset() {
 void WindowActivationInputProtectionPolicy::OnWidgetActivationChanged(
     Widget* widget,
     bool active) {
-  if (active && !parent_was_visible_when_activation_changed_) {
-    widget_protected_time_stamp_ = base::TimeTicks::Now();
+  if (widget != widget_observation_.GetSource()) {
+    return;
   }
-  parent_was_visible_when_activation_changed_ = IsParentVisible(widget);
+  if (!active || !needs_activation_protection_) {
+    return;
+  }
+
+  widget_protected_time_stamp_ = base::TimeTicks::Now();
+  needs_activation_protection_ = false;
+}
+
+void WindowActivationInputProtectionPolicy::OnWidgetVisibilityChanged(
+    Widget* widget,
+    bool visible) {
+  if (widget != parent_observation_.GetSource() || visible) {
+    return;
+  }
+
+  needs_activation_protection_ = true;
 }
 
 void WindowActivationInputProtectionPolicy::OnWidgetDestroying(Widget* widget) {
-  widget_observation_.Reset();
-}
-
-bool WindowActivationInputProtectionPolicy::IsParentVisible(
-    Widget* widget) const {
-  if (Widget* parent = widget->GetPrimaryWindowWidget()) {
-    return parent->IsVisible();
+  if (widget_observation_.IsObservingSource(widget)) {
+    widget_observation_.Reset();
   }
-  return false;
+  if (parent_observation_.IsObservingSource(widget)) {
+    parent_observation_.Reset();
+  }
 }
 
 }  // namespace views

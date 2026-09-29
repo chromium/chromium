@@ -287,4 +287,57 @@ TEST_F(WindowActivationInputProtectionPolicyTest,
       mock_protector));
 }
 
+TEST_F(WindowActivationInputProtectionPolicyTest,
+       ParentHideWhileChildInactive_TriggersProtection) {
+  // Create parent widget.
+  auto parent_widget = CreateWidgetWithZOrder();
+  parent_widget->SetBounds(gfx::Rect(0, 0, 400, 400));
+  ShowAndActivateWidget(*parent_widget);
+
+  // Create child widget (bubble) anchored to parent.
+  auto bubble_delegate = std::make_unique<TestBubbleDialogDelegate>(
+      parent_widget->GetContentsView());
+  std::unique_ptr<Widget> child_widget =
+      BubbleDialogDelegate::CreateBubble(bubble_delegate.get());
+
+  auto policy = std::make_unique<WindowActivationInputProtectionPolicy>(
+      child_widget.get());
+  MockInputEventActivationProtector mock_protector;
+
+  ShowAndActivateWidget(*child_widget);
+
+  // Deactivate child first while parent remains visible.
+  auto focus_stealer = DeactivateWidget(child_widget.get());
+  EXPECT_TRUE(parent_widget->IsVisible());
+
+  // Now hide the parent while the child is already inactive.
+  parent_widget->Hide();
+  WidgetVisibleWaiter(parent_widget.get()).WaitUntilInvisible();
+
+  // Fast forward past cooldown.
+  FastForwardBy(mock_protector.cooldown_interval() + base::Milliseconds(1));
+
+  // Show parent and reactivate child.
+  ShowAndActivateWidget(*parent_widget);
+  ShowAndActivateWidget(*child_widget);
+
+  // Click immediately. It should be blocked because the parent was hidden while
+  // the child was inactive.
+  const gfx::Point child_center =
+      child_widget->GetNonDecoratedClientAreaBoundsInScreen().CenterPoint();
+  ui::MouseEvent click_blocked =
+      CreateMouseEvent(child_center, child_widget->GetRootView());
+  EXPECT_TRUE(policy->IsPossiblyUnintendedInteraction(
+      click_blocked, child_widget->GetRootView(), mock_protector));
+
+  // Fast forward past cooldown again.
+  FastForwardBy(mock_protector.cooldown_interval() + base::Milliseconds(1));
+
+  // Click should now be allowed.
+  ui::MouseEvent click_allowed =
+      CreateMouseEvent(child_center, child_widget->GetRootView());
+  EXPECT_FALSE(policy->IsPossiblyUnintendedInteraction(
+      click_allowed, child_widget->GetRootView(), mock_protector));
+}
+
 }  // namespace views::test

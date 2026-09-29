@@ -22,6 +22,7 @@
 #include "ui/views/input_protection/input_protection_interactive_test.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
+#include "ui/views/input_protection/window_activation_input_protection_policy.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
@@ -41,6 +42,8 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondaryButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryAotButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondaryAotButtonId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBubbleButtonId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAuxiliaryButtonId);
 
 constexpr gfx::Rect kInitialWidgetBounds(100, 100, 400, 400);
 constexpr gfx::Point kPrimaryButtonOrigin(20, 20);
@@ -112,6 +115,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
   void OnSecondaryButtonClicked() { secondary_click_count_++; }
   void OnPrimaryAotButtonClicked() { primary_aot_click_count_++; }
   void OnSecondaryAotButtonClicked() { secondary_aot_click_count_++; }
+  void OnBubbleButtonClicked() { bubble_click_count_++; }
 
   const int& primary_click_count() const { return primary_click_count_; }
   const int& secondary_click_count() const { return secondary_click_count_; }
@@ -121,6 +125,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
   const int& secondary_aot_click_count() const {
     return secondary_aot_click_count_;
   }
+  const int& bubble_click_count() const { return bubble_click_count_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -129,6 +134,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
   int secondary_click_count_ = 0;
   int primary_aot_click_count_ = 0;
   int secondary_aot_click_count_ = 0;
+  int bubble_click_count_ = 0;
 
 #if BUILDFLAG(IS_MAC)
   // Use synchronous activation to prevent native activation timeouts on macOS.
@@ -496,6 +502,45 @@ TEST_F(InputProtectionInteractiveUiTest,
       AdvancePastInputProtectionInterval(),
       // After cooldown expires, clicks to the underlying button succeed.
       ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
+}
+
+// Verifies that `WindowActivationInputProtectionPolicy` permits clicks
+// immediately if the parent window was already visible and active, but
+// enforces input protection if the child widget activates after the parent
+// was invisible.
+TEST_F(InputProtectionInteractiveUiTest,
+       HiddenParentReactivationEnforcesCooldown) {
+  RunTestSequence(
+      ShowAuxiliaryWindow(kAuxiliaryButtonId),
+      ShowBubbleDialog(
+          kPrimaryButtonId, kBubbleButtonId,
+          base::BindRepeating(
+              &InputProtectionInteractiveUiTest::OnBubbleButtonClicked,
+              base::Unretained(this)),
+          {MakePolicy<WindowActivationInputProtectionPolicy>()}),
+      // Activate the bubble surface while the parent window is visible.
+      InAnyContext(ActivateSurface(kBubbleButtonId)),
+      // While parent is visible, `WindowActivationInputProtectionPolicy` does
+      // not trigger cooldown; clicks are accepted immediately.
+      InAnyContext(
+          ClickExpectingAllowed(kBubbleButtonId, bubble_click_count())),
+      AdvancePastInputProtectionInterval(),
+      // Hide the parent window containing kPrimaryButtonId.
+      HideWindow(kPrimaryButtonId),
+      // Activate the auxiliary surface to simulate focus leaving the bubble
+      // while the parent is hidden.
+      InAnyContext(ActivateSurface(kAuxiliaryButtonId)),
+      // Restore the parent window.
+      ShowWindow(kPrimaryButtonId),
+      // Reactivate the bubble dialog.
+      InAnyContext(ActivateSurface(kBubbleButtonId)),
+      // Clicks are blocked during sudden activation cooldown.
+      InAnyContext(
+          ClickExpectingBlocked(kBubbleButtonId, bubble_click_count())),
+      AdvancePastInputProtectionInterval(),
+      // After cooldown expires, click is allowed.
+      InAnyContext(
+          ClickExpectingAllowed(kBubbleButtonId, bubble_click_count())));
 }
 
 }  // namespace views::test

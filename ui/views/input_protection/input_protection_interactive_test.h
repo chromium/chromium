@@ -6,12 +6,15 @@
 #define UI_VIEWS_INPUT_PROTECTION_INPUT_PROTECTION_INTERACTIVE_TEST_H_
 
 #include <concepts>
+#include <map>
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -20,11 +23,13 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views {
+class InputProtectionPolicy;
 class Widget;
 }
 
@@ -39,6 +44,27 @@ class InputProtectionTestApi
  public:
   InputProtectionTestApi();
   ~InputProtectionTestApi() override;
+
+  using PolicyFactory =
+      base::RepeatingCallback<std::unique_ptr<InputProtectionPolicy>(Widget*)>;
+
+  // Factory helper that creates a `PolicyFactory` for any
+  // `InputProtectionPolicy` type, forwarding any constructor arguments and
+  // passing the target `Widget*` if accepted by the constructor.
+  template <typename Policy, typename... Args>
+  static PolicyFactory MakePolicy(Args&&... args) {
+    return base::BindRepeating(
+        [](std::decay_t<Args>... bound_args,
+           Widget* widget) -> std::unique_ptr<InputProtectionPolicy> {
+          if constexpr (std::is_constructible_v<Policy, Widget*,
+                                                std::decay_t<Args>...>) {
+            return std::make_unique<Policy>(widget, bound_args...);
+          } else {
+            return std::make_unique<Policy>(bound_args...);
+          }
+        },
+        std::forward<Args>(args)...);
+  }
 
   // Enables input protection on the widget containing `element_id`. If
   // `element_id` is omitted, input protection is enabled on `context_widget()`.
@@ -164,6 +190,27 @@ class InputProtectionTestApi
   [[nodiscard]] MultiStep TriggerAotPopAwayAttack(
       ui::ElementIdentifier element_id);
 
+  // Anchors a bubble dialog containing a button tagged with `button_id` to
+  // `anchor_element_id` and shows it with input event activation protection
+  // enabled.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ShowBubbleDialog(
+      ui::ElementIdentifier anchor_element_id,
+      ui::ElementIdentifier button_id,
+      base::RepeatingClosure on_button_clicked,
+      std::vector<PolicyFactory> policy_factories = {});
+
+  // Hides the widget window containing `element_id` and waits for it to hide.
+  [[nodiscard]] MultiStep HideWindow(ui::ElementIdentifier element_id);
+
+  // Shows the widget window previously hidden by `HideWindow` and waits for
+  // it to show.
+  [[nodiscard]] MultiStep ShowWindow(ui::ElementIdentifier element_id);
+
+  // Shows an auxiliary window hosting a button tagged with `button_id`.
+  // Useful for transferring surface activation.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ShowAuxiliaryWindow(
+      ui::ElementIdentifier button_id);
+
   // Installs custom protected bounds on the view identified by `element_id`.
   [[nodiscard]] ui::InteractionSequence::StepBuilder
   InstallInputProtectionSpecification(
@@ -188,6 +235,10 @@ class InputProtectionTestApi
   virtual void FastForwardMockClock(base::TimeDelta delta);
 
   std::vector<std::unique_ptr<views::Widget>> aot_widgets_;
+  std::vector<std::unique_ptr<views::Widget>> auxiliary_widgets_;
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate_;
+  std::unique_ptr<views::Widget> bubble_widget_;
+  std::map<ui::ElementIdentifier, raw_ptr<views::Widget>> hidden_widgets_;
 };
 
 // Template for adding `InputProtectionTestApi` to any test fixture which is
@@ -213,9 +264,13 @@ class InputProtectionInteractiveTestMixin : public T,
   }
 
   void TearDown() override {
-    private_test_impl().DoTestTearDown();
+    hidden_widgets_.clear();
+    bubble_widget_.reset();
+    bubble_delegate_.reset();
     aot_widgets_.clear();
+    auxiliary_widgets_.clear();
     run_loop_timeout_.reset();
+    private_test_impl().DoTestTearDown();
     T::TearDown();
   }
 

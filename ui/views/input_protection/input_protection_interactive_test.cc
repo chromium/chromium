@@ -20,7 +20,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/input_event_activation_protector.h"
+#include "ui/views/input_protection/input_protection_policy.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/widget_test.h"
@@ -474,6 +477,98 @@ InputProtectionTestApi::TriggerAotPopAwayAttack(
     ui::ElementIdentifier element_id) {
   auto steps = Steps(OccludeElementWithAotWindow(element_id), HideAotWindows());
   AddDescriptionPrefix(steps, "TriggerAotPopAwayAttack()");
+  return steps;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::ShowBubbleDialog(
+    ui::ElementIdentifier anchor_element_id,
+    ui::ElementIdentifier button_id,
+    base::RepeatingClosure on_button_clicked,
+    std::vector<PolicyFactory> policy_factories) {
+  auto step = WithView(
+      anchor_element_id,
+      [this, button_id, on_button_clicked = std::move(on_button_clicked),
+       factories = std::move(policy_factories)](View* anchor_view) {
+        bubble_delegate_ = std::make_unique<BubbleDialogDelegate>(
+            anchor_view, BubbleBorder::TOP_LEFT);
+        bubble_delegate_->set_close_on_deactivate(false);
+        auto button =
+            std::make_unique<LabelButton>(on_button_clicked, u"Bubble Button");
+        button->SetProperty(kElementIdentifierKey, button_id);
+        bubble_delegate_->SetContentsView(std::move(button));
+        bubble_widget_ =
+            BubbleDialogDelegate::CreateBubble(bubble_delegate_.get());
+        std::unique_ptr<InputEventActivationProtector> protector;
+        if (!factories.empty()) {
+          protector = std::make_unique<InputEventActivationProtector>(
+              factories[0].Run(bubble_widget_.get()));
+          for (size_t i = 1; i < factories.size(); ++i) {
+            protector->AddPolicy(factories[i].Run(bubble_widget_.get()));
+          }
+          bubble_widget_->EnableInputEventActivationProtection(
+              std::move(protector));
+        } else {
+          bubble_widget_->EnableInputEventActivationProtection();
+        }
+        bubble_widget_->Show();
+        WidgetVisibleWaiter(bubble_widget_.get()).Wait();
+      });
+  step.SetDescription("ShowBubbleDialog()");
+  return step;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::HideWindow(
+    ui::ElementIdentifier element_id) {
+  auto steps = InAnyContext(WithView(element_id,
+                                     [this, element_id](View* view) {
+                                       if (auto* widget = view->GetWidget()) {
+                                         hidden_widgets_[element_id] = widget;
+                                         widget->Hide();
+                                       }
+                                     }),
+                            WaitForHide(element_id));
+  AddDescriptionPrefix(steps, "HideWindow()");
+  return steps;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::ShowAuxiliaryWindow(ui::ElementIdentifier button_id) {
+  auto step = Do([this, button_id]() {
+    Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    if (context_widget()) {
+      params.context = context_widget()->GetNativeWindow();
+    }
+    params.bounds = gfx::Rect(500, 100, 200, 100);
+    auto widget = std::make_unique<Widget>();
+    widget->Init(std::move(params));
+    auto contents = std::make_unique<View>();
+    auto button =
+        std::make_unique<LabelButton>(Button::PressedCallback(), u"Aux Button");
+    button->SetProperty(kElementIdentifierKey, button_id);
+    button->SetBoundsRect(gfx::Rect(10, 10, 80, 30));
+    contents->AddChildView(std::move(button));
+    widget->SetContentsView(std::move(contents));
+    widget->Show();
+    WidgetVisibleWaiter(widget.get()).Wait();
+    auxiliary_widgets_.push_back(std::move(widget));
+  });
+  step.SetDescription("ShowAuxiliaryWindow()");
+  return step;
+}
+
+InputProtectionTestApi::MultiStep InputProtectionTestApi::ShowWindow(
+    ui::ElementIdentifier element_id) {
+  auto steps = InAnyContext(Do([this, element_id]() {
+                              auto it = hidden_widgets_.find(element_id);
+                              CHECK(it != hidden_widgets_.end());
+                              if (it->second) {
+                                it->second->Show();
+                              }
+                              hidden_widgets_.erase(it);
+                            }),
+                            WaitForShow(element_id));
+  AddDescriptionPrefix(steps, "ShowWindow()");
   return steps;
 }
 

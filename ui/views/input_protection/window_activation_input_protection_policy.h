@@ -46,21 +46,21 @@ class VIEWS_EXPORT WindowActivationInputProtectionPolicy final
 
   // WidgetObserver:
   void OnWidgetActivationChanged(Widget* widget, bool active) override;
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
   void OnWidgetDestroying(Widget* widget) override;
 
  private:
-  // Returns true if the parent widget is currently visible.
-  bool IsParentVisible(Widget* widget) const;
-
-  // Tracks if the parent of the widget was visible when activation last
-  // changed.
-  bool parent_was_visible_when_activation_changed_ = true;
+  // True if the widget requires input protection when it next becomes active.
+  bool needs_activation_protection_ = false;
 
   // The timestamp when the widget was last protected.
   base::TimeTicks widget_protected_time_stamp_;
 
   // Observation of the target widget.
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
+
+  // Observation of the parent widget.
+  base::ScopedObservation<Widget, WidgetObserver> parent_observation_{this};
 };
 
 }  // namespace views
