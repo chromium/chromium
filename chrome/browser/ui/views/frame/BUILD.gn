@@ -365,14 +365,8 @@ if (is_chromeos) {
       "//ui/aura",
       "//ui/gfx/geometry",
     ]
-  }
 
-  source_set("immersive_mode_controller_chromeos_impl") {
     sources = [ "immersive_mode_controller_chromeos.cc" ]
-    public_deps = [
-      ":immersive_mode_controller_chromeos",
-      "//chrome/browser:browser_public_dependencies",
-    ]
     deps = [
       ":top_container_view",
       "//ash",
