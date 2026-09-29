@@ -3175,7 +3175,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Probe timeout"/>
   <int value="2" label="No unused Connection ID"/>
   <int value="3" label="Stateless reset received"/>
-  <int value="4" label="Probe failed"/>
+  <int value="4" label="Unknown probe failure"/>
+  <int value="5" label="Probing socket write error"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/quic/quic_migration_attempt_context.h:QuicMigrationAttemptFailureReason) -->

@@ -3568,6 +3568,145 @@ void QuicSessionPoolTest::TestMigrationOnNetworkMadeDefault(IoMode write_mode) {
   quic_data2.ExpectAllWriteDataConsumed();
 }
 
+// TODO(crbug.com/539527142): Under the default active_connection_id_limit of 2,
+// the in-flight probe consumes the only spare connection ID. While
+// FinishStartProbing() successfully cancels the in-flight probe as
+// superseded, the second probe fails path validation due to
+// QuicMigrationAttemptFailureReason::kNoUnusedConnectionId.
+// Once Chromium supports negotiating an active_connection_id_limit > 2 to
+// retain spare connection IDs in reserve, update this test to verify that the
+// second probe completes path validation and migrates the session.
+TEST_P(QuicSessionPoolTest,
+       ProbingFailsWithNoUnusedConnectionIdWhenProbingInFlight) {
+  const handles::NetworkHandle kNewNetworkForTests2 = 3;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests, kNewNetworkForTests2});
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), task_runner.get());
+
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+
+  MockQuicData quic_data1(version_);
+  quic_data1.AddReadPauseForever();
+  int packet_num = 1;
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_num++));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for first probe on kNewNetworkForTests.
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  MockQuicData quic_data2(version_);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
+  quic_data2.AddReadPause();
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for second probe on kNewNetworkForTests2.
+  MockQuicData quic_data3(version_);
+  quic_data3.AddReadPauseForever();
+  quic_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL(kDefaultUrl);
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  // Path degrading starts probing on kNewNetworkForTests.
+  session->connection()->OnPathDegradingDetected();
+  // OnPathDegradingDetected() asynchronously connects and configures the socket
+  // and posts a task to run FinishStartProbing(). FinishStartProbing() calls
+  // ValidatePath(), which writes the PATH_CHALLENGE packet on quic_data2 and
+  // starts socket reading. RunUntilPaused() runs until the socket reader hits
+  // quic_data2's AddReadPause(), ensuring that path validation is in flight.
+  quic_data2.GetSequencedSocketData()->RunUntilPaused();
+  EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+
+  base::HistogramTester histogram_tester;
+
+  // Signal that kNewNetworkForTests2 is connected and made default.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->SetConnectedNetworksList(
+          {kDefaultNetworkForTests, kNewNetworkForTests, kNewNetworkForTests2});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkConnected(kNewNetworkForTests2);
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests2);
+
+  // Run task runner so StartProbing and FinishStartProbing run for
+  // kNewNetworkForTests2. Unlike base::RunLoop().RunUntilIdle(), using
+  // RunUntilIdle() on `task_runner` is deterministic and safe from flakiness
+  // because `task_runner` is an isolated TestMockTimeTaskRunner containing only
+  // tasks explicitly scheduled by this test.
+  task_runner->RunUntilIdle();
+
+  // Probe 1 is cancelled as superseded by kOnNetworkMadeDefault.
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Superseded",
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.ConnectionMigration",
+      MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
+
+  // Probe 2 fails because active_connection_id_limit is 2 and Probe 1 consumed
+  // the only spare CID.
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+  histogram_tester.ExpectBucketCount("Net.QuicSession.ConnectionMigration",
+                                     MIGRATION_STATUS_INTERNAL_ERROR, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+
+  session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  stream.reset();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
+}
+
 // Regression test for http://859674.
 // This test veries that a writer will not attempt to write packets until being
 // unblocked on both socket level and network level. In this test, a probing

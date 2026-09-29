@@ -52,8 +52,14 @@ enum class QuicMigrationAttemptFailureReason {
   kProbeTimeout = 1,
   kNoUnusedConnectionId = 2,
   kStatelessReset = 3,
-  kProbeFailed = 4,
-  kMaxValue = kProbeFailed,
+  // Catch-all for a probe that failed without QUICHE, or Chromium, giving a
+  // usable reason. Every known cause now has its own value, so this should
+  // never be recorded.
+  kProbeUnknownFailure = 4,
+  // A write error on the probing socket caused Chromium to cancel the
+  // validation.
+  kProbeWriteError = 5,
+  kMaxValue = kProbeWriteError,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:QuicMigrationAttemptFailureReason)
 

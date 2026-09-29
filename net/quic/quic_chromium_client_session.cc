@@ -2758,7 +2758,7 @@ void QuicChromiumClientSession::MaybeCancelProbing(
       // No need to set the migration attempt context outcome here. This will be
       // done within LogPathValidationFailure.
       CHECK(!superseded_cause.has_value());
-      failure_reason = quic::PathValidationFailure::Reason::kUnknown;
+      failure_reason = quic::PathValidationFailure::Reason::kWriterError;
       break;
     case ProbingCancellationReason::kNetworkDisconnected:
       // No need to set the migration attempt context outcome here. This will be
@@ -3937,15 +3937,32 @@ void QuicChromiumClientSession::LogPathValidationFailure(
   QuicMigrationAttemptContext* migration_context = context->migration_context();
 
   switch (context->failure_reason().value_or(kUnknown)) {
-    // TODO(crbug.com/557126867): Correctly report kNoAvailableConnectionId and
-    // kWriterError separately.
-    case kNoAvailableConnectionId:
-    case kWriterError:
     case kUnknown:
+      // This should never happen. We should CHECK-fail, but we're not 100%
+      // certain yet that it won't happen in production. Consider CHECK-failing
+      // once confirmed via metrics.
       status = MIGRATION_STATUS_INTERNAL_ERROR;
       reason = "Unknown";
       migration_context->SetFailure(
-          QuicMigrationAttemptFailureReason::kProbeFailed);
+          QuicMigrationAttemptFailureReason::kProbeUnknownFailure);
+      break;
+    case kNoAvailableConnectionId:
+      // `status` is only used by the old migration UMAs, which will soon be
+      // removed. Keep reporting `MIGRATION_STATUS_INTERNAL_ERROR` as was done
+      // previously.
+      status = MIGRATION_STATUS_INTERNAL_ERROR;
+      reason = "No unused server connection ID";
+      migration_context->SetFailure(
+          QuicMigrationAttemptFailureReason::kNoUnusedConnectionId);
+      break;
+    case kWriterError:
+      // `status` is only used by the old migration UMAs, which will soon be
+      // removed. Keep reporting `MIGRATION_STATUS_INTERNAL_ERROR` as was done
+      // previously.
+      status = MIGRATION_STATUS_INTERNAL_ERROR;
+      reason = "Probing socket write error";
+      migration_context->SetFailure(
+          QuicMigrationAttemptFailureReason::kProbeWriteError);
       break;
     case kStatelessReset:
       status = MIGRATION_STATUS_STATELESS_RESET;

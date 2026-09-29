@@ -249,7 +249,7 @@ TEST_F(QuicMigrationAttemptContextTest, SpuriousOutcome) {
 
   // Calling Set* when an outcome has already been set records into
   // Net.Quic.Migration.Attempt.SpuriousOutcome.
-  context->SetFailure(QuicMigrationAttemptFailureReason::kProbeFailed);
+  context->SetFailure(QuicMigrationAttemptFailureReason::kProbeUnknownFailure);
   context->SetIneligible(QuicMigrationAttemptIneligibleReason::kIdleSession);
   context->SetSuperseded(QuicMigrationAttemptCause::kOnNetworkDisconnected);
   context->SetSuccess();
@@ -297,7 +297,10 @@ TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
        "ChangeNetworkOnPathDegrading",
        QuicMigrationAttemptFailureReason::kStatelessReset},
       {QuicMigrationAttemptCause::kOnNetworkMadeDefault, "OnNetworkMadeDefault",
-       QuicMigrationAttemptFailureReason::kProbeFailed},
+       QuicMigrationAttemptFailureReason::kProbeUnknownFailure},
+      {QuicMigrationAttemptCause::kChangePortOnPathDegrading,
+       "ChangePortOnPathDegrading",
+       QuicMigrationAttemptFailureReason::kProbeWriteError},
   };
 
   base::HistogramTester histogram_tester;
@@ -319,6 +322,10 @@ TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
   histogram_tester.ExpectBucketCount(
       "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
       "ChangeNetworkOnPathDegrading",
+      false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.Eligible.ByTrigger."
+      "ChangePortOnPathDegrading",
       false, 1);
 
   for (const auto& test_case : test_cases) {
