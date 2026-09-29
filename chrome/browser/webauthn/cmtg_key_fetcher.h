@@ -29,8 +29,10 @@ class TickClock;
 class CmtgKeyFetcher {
  public:
   using Callback = base::OnceClosure;
+  using Operation = webauthn::CmtgDeviceKeyProvider::Operation;
 
   CmtgKeyFetcher(webauthn::CmtgDeviceKeyProvider* provider,
+                 Operation operation,
                  const base::TickClock* tick_clock);
   ~CmtgKeyFetcher();
 
@@ -59,6 +61,7 @@ class CmtgKeyFetcher {
   void RecordMetricsAndMaybeRunCallback();
 
   const raw_ptr<webauthn::CmtgDeviceKeyProvider> provider_;
+  const Operation operation_;
   Callback callback_;
   std::unique_ptr<webauthn::CmtgDeviceKeyProvider::Request> fetch_request_;
   base::OneShotTimer timeout_;

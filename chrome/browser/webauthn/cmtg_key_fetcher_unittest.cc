@@ -29,9 +29,10 @@ class CmtgKeyFetcherTest : public ::testing::Test {
   void SetUp() override {
     fake_cmtg_device_key_provider_ =
         std::make_unique<webauthn::FakeCmtgDeviceKeyProvider>();
-    fetcher_ =
-        std::make_unique<CmtgKeyFetcher>(fake_cmtg_device_key_provider_.get(),
-                                         task_environment_.GetMockTickClock());
+    fetcher_ = std::make_unique<CmtgKeyFetcher>(
+        fake_cmtg_device_key_provider_.get(),
+        webauthn::CmtgDeviceKeyProvider::Operation::kGetAssertion,
+        task_environment_.GetMockTickClock());
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

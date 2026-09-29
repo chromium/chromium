@@ -451,8 +451,12 @@ GPMEnclaveController::GPMEnclaveController(
   SetActive(EnclaveEnabledStatus::kEnabled);
 
   if (cmtg_key_requested) {
+    const auto operation =
+        request_type_ == device::FidoRequestType::kMakeCredential
+            ? webauthn::CmtgDeviceKeyProvider::Operation::kMakeCredential
+            : webauthn::CmtgDeviceKeyProvider::Operation::kGetAssertion;
     cmtg_key_fetcher_ = std::make_unique<CmtgKeyFetcher>(
-        CmtgDeviceKeyProviderFactory::GetForProfile(profile),
+        CmtgDeviceKeyProviderFactory::GetForProfile(profile), operation,
         GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host));
     cmtg_key_fetcher_->Start();
   }

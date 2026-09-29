@@ -29,7 +29,8 @@ class CryptauthCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {
   CryptauthCmtgDeviceKeyProvider();
   ~CryptauthCmtgDeviceKeyProvider() override;
 
-  std::unique_ptr<Request> GetDeviceKeys(Callback callback) override;
+  std::unique_ptr<Request> GetDeviceKeys(Operation operation,
+                                         Callback callback) override;
 };
 
 }  // namespace webauthn

@@ -72,7 +72,8 @@ CryptauthCmtgDeviceKeyProvider::CryptauthCmtgDeviceKeyProvider() = default;
 CryptauthCmtgDeviceKeyProvider::~CryptauthCmtgDeviceKeyProvider() = default;
 
 std::unique_ptr<CmtgDeviceKeyProvider::Request>
-CryptauthCmtgDeviceKeyProvider::GetDeviceKeys(Callback callback) {
+CryptauthCmtgDeviceKeyProvider::GetDeviceKeys(Operation operation,
+                                              Callback callback) {
   auto request = std::make_unique<RequestImpl>(std::move(callback));
   request->Start();
   return request;

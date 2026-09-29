@@ -30,7 +30,8 @@ class FakeCmtgDeviceKeyProvider : public CmtgDeviceKeyProvider {
   ~FakeCmtgDeviceKeyProvider() override;
 
   // CmtgDeviceKeyProvider:
-  std::unique_ptr<Request> GetDeviceKeys(Callback callback) override;
+  std::unique_ptr<Request> GetDeviceKeys(Operation operation,
+                                         Callback callback) override;
 
   // Sets the keys that will be returned on the next call to GetDeviceKeys.
   void SetNextKeys(std::vector<std::vector<uint8_t>> keys);

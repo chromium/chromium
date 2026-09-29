@@ -9,8 +9,9 @@
 #include "components/device_event_log/device_event_log.h"
 
 CmtgKeyFetcher::CmtgKeyFetcher(webauthn::CmtgDeviceKeyProvider* provider,
+                               Operation operation,
                                const base::TickClock* tick_clock)
-    : provider_(provider), timeout_(tick_clock) {}
+    : provider_(provider), operation_(operation), timeout_(tick_clock) {}
 
 CmtgKeyFetcher::~CmtgKeyFetcher() = default;
 
@@ -24,8 +25,9 @@ void CmtgKeyFetcher::Start() {
   timeout_.Start(FROM_HERE, GPMEnclaveController::kFetchDeviceKeysTimeout,
                  base::BindOnce(&CmtgKeyFetcher::OnTimeout,
                                 weak_ptr_factory_.GetWeakPtr()));
-  fetch_request_ = provider_->GetDeviceKeys(base::BindOnce(
-      &CmtgKeyFetcher::OnKeysFetched, weak_ptr_factory_.GetWeakPtr()));
+  fetch_request_ = provider_->GetDeviceKeys(
+      operation_, base::BindOnce(&CmtgKeyFetcher::OnKeysFetched,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CmtgKeyFetcher::WaitForKeys(Callback callback) {

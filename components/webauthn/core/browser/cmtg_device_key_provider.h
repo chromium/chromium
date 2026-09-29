@@ -7,9 +7,10 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -21,6 +22,15 @@ class CmtgDeviceKeyProvider : public KeyedService {
  public:
   enum class Error {
     kNetworkError,
+  };
+
+  enum class Operation {
+    // Calls GetCmtgWrapperKeys to fetch wrapper keys for all devices in the
+    // trust group.
+    kGetAssertion,
+    // Calls GetOrCreateCmtgWrapperKey to fetch or create the calling device's
+    // own wrapper key.
+    kMakeCredential,
   };
 
   using Callback = base::OnceCallback<void(
@@ -38,8 +48,9 @@ class CmtgDeviceKeyProvider : public KeyedService {
 
   ~CmtgDeviceKeyProvider() override = default;
 
-  // Fetches the device keys.
+  // Fetches the device keys for the given `operation`.
   [[nodiscard]] virtual std::unique_ptr<Request> GetDeviceKeys(
+      Operation operation,
       Callback callback) = 0;
 };
 

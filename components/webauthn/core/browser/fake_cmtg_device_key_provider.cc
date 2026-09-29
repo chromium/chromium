@@ -17,7 +17,8 @@ FakeCmtgDeviceKeyProvider::FakeCmtgDeviceKeyProvider() = default;
 FakeCmtgDeviceKeyProvider::~FakeCmtgDeviceKeyProvider() = default;
 
 std::unique_ptr<CmtgDeviceKeyProvider::Request>
-FakeCmtgDeviceKeyProvider::GetDeviceKeys(Callback callback) {
+FakeCmtgDeviceKeyProvider::GetDeviceKeys(Operation operation,
+                                         Callback callback) {
   if (hold_callback_) {
     pending_callback_ = std::move(callback);
   } else {

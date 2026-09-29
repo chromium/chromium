@@ -32,7 +32,8 @@ TEST_F(CryptauthCmtgDeviceKeyProviderTest, GetDeviceKeysSuccess) {
 
   // TODO(crbug.com/485888879): Update tests to verify real network responses
   // when Cryptauth network service is implemented.
-  auto request = provider.GetDeviceKeys(future.GetCallback());
+  auto request = provider.GetDeviceKeys(
+      CmtgDeviceKeyProvider::Operation::kGetAssertion, future.GetCallback());
   ASSERT_TRUE(future.Get().has_value());
   EXPECT_EQ(future.Get()->size(), 1u);
   EXPECT_EQ(future.Get()->front().size(), 32u);
@@ -48,6 +49,7 @@ TEST_F(CryptauthCmtgDeviceKeyProviderTest, CancelsWhenRequestDestroyed) {
   CryptauthCmtgDeviceKeyProvider provider;
   {
     auto request = provider.GetDeviceKeys(
+        CmtgDeviceKeyProvider::Operation::kGetAssertion,
         base::BindOnce([](base::expected<std::vector<std::vector<uint8_t>>,
                                          CmtgDeviceKeyProvider::Error> res) {
           FAIL() << "Callback should have been cancelled.";
