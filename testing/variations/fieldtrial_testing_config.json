@@ -16135,10 +16135,21 @@
             ],
             "experiments": [
                 {
-                    "name": "DirectNavigationInRealboxOmnibox_20260923",
+                    "name": "DirectNavigationInRealbox_20260928",
                     "enable_features": [
-                        "ComposeboxRichImageSuggestionsOmnibox",
                         "ComposeboxRichImageSuggestionsRealbox"
+                    ],
+                    "disable_features": [
+                        "ComposeboxRichImageSuggestionsOmnibox"
+                    ]
+                },
+                {
+                    "name": "AddPromptInRealbox_20260928",
+                    "enable_features": [
+                        "ComposeboxRichImageSuggestionsRealbox"
+                    ],
+                    "disable_features": [
+                        "ComposeboxRichImageSuggestionsOmnibox"
                     ]
                 }
             ]
