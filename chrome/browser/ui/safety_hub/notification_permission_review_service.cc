@@ -271,6 +271,5 @@ bool NotificationPermissionsReviewService::
 bool NotificationPermissionsReviewService::
     IsDisruptiveNotificationRevocationEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kSafetyHubDisruptiveNotificationRevocation) &&
-         !features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get();
+      features::kSafetyHubDisruptiveNotificationRevocation);
 }

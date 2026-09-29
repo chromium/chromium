@@ -4005,14 +4005,12 @@ const FeatureEntry::FeatureVariation kDiskCacheBackendExperimentVariations[] = {
 
 const FeatureEntry::FeatureParam
     kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll[] = {
-        {"shadow_run", "false"},
         {"max_engagement_score", "100.0"},
         {"min_notification_count", "0"},
         {"waiting_time_as_proposed", "0d"},
         {"waiting_for_metrics_days", "0"}};
 const FeatureEntry::FeatureParam
     kSafetyHubDisruptiveNotificationRevocationVariations_Moderate[] = {
-        {"shadow_run", "false"},
         {"max_engagement_score", "0.0"},
         {"min_notification_count", "4"},
         {"waiting_time_as_proposed", "4d"},

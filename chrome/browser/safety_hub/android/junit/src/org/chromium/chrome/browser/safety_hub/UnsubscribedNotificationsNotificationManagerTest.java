@@ -29,7 +29,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
     NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED,
-    ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION + ":shadow_run/false"
+    ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION
 })
 public class UnsubscribedNotificationsNotificationManagerTest {
     private MockNotificationManagerProxy mMockNotificationManager;

@@ -182,11 +182,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     private static boolean shouldShowNotificationModule() {
         return !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
-                || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION,
-                        "shadow_run",
-                        true);
+                ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION);
     }
 
     private static boolean shouldShowUnifiedPasswords() {

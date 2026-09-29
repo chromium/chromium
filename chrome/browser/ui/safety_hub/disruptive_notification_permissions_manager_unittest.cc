@@ -402,9 +402,7 @@ class DisruptiveNotificationPermissionsManagerRevocationTest
   DisruptiveNotificationPermissionsManagerRevocationTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kSafetyHubDisruptiveNotificationRevocation,
-        {{features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-          "false"},
-         {features::
+        {{features::
               kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown
                   .name,
           "3"},
@@ -1282,62 +1280,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "OutsideSafetyHub.PreviousNotificationCount",
       kHighNotificationCount, 1);
-}
-
-class DisruptiveNotificationPermissionsManagerShadowRunTest
-    : public DisruptiveNotificationPermissionsManagerTest {
- public:
-  DisruptiveNotificationPermissionsManagerShadowRunTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSafetyHubDisruptiveNotificationRevocation,
-        {
-            {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-             "true"},
-        });
-  }
-};
-
-TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
-       ProposeRevokeDisruptivePermission) {
-  base::HistogramTester t;
-  GURL url("https://www.example.com");
-  SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, kHighNotificationCount);
-  site_engagement_service()->ResetBaseScoreForURL(url, 0);
-
-  // The shadow run should never display notifications.
-  EXPECT_CALL(*mock_notification_manager(), DisplayNotification).Times(0);
-  manager()->RevokeDisruptiveNotifications();
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
-  std::optional<RevocationEntry> revocation_entry =
-      ContentSettingHelper(*hcsm()).GetRevocationEntry(url);
-
-  EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::has_reported_proposal, false)));
-  EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::site_engagement, 0)));
-  EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::daily_notification_count,
-                             kHighNotificationCount)));
-
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kProposedRevoke, 1);
-  t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
-
-  // Repeated runs during the shadow run don't revoke the notification but
-  // report that the site is already in proposed revocation list instead.
-  manager()->RevokeDisruptiveNotifications();
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      hcsm()->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
-  EXPECT_EQ(GetRevokedPermissionsCount(), 1);
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kProposedRevoke, 1);
-  t.ExpectBucketCount(kRevocationResultHistogram,
-                      RevocationResult::kAlreadyInProposedRevokeList, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,

@@ -1547,11 +1547,6 @@ BASE_FEATURE(kSafetyHubThreeDotDetails, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool>
-    kSafetyHubDisruptiveNotificationRevocationShadowRun{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"shadow_run", /*default_value=*/false};
-
 #if BUILDFLAG(IS_ANDROID)
 constexpr base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationExperimentVersion{

@@ -405,34 +405,10 @@ using NotificationPermissionReviewServiceTestWithAutorevocationEnabled =
     NotificationPermissionReviewServiceTestBase;
 
 TEST_F(NotificationPermissionReviewServiceTestWithAutorevocationEnabled,
-       DisruptiveNotificationRevocationShadowRun) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSafetyHubDisruptiveNotificationRevocation,
-      {
-          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-           "true"},
-      });
-
-  CreateMockNotificationPermissionsForReview();
-
-  auto* service =
-      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
-  const auto& notification_permissions =
-      service->PopulateNotificationPermissionReviewData();
-  // Check if the results are returned.
-  EXPECT_EQ(2UL, notification_permissions.size());
-}
-
-TEST_F(NotificationPermissionReviewServiceTestWithAutorevocationEnabled,
        DisruptiveNotificationRevocation) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kSafetyHubDisruptiveNotificationRevocation,
-      {
-          {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-           "false"},
-      });
+  feature_list.InitAndEnableFeature(
+      features::kSafetyHubDisruptiveNotificationRevocation);
 
   CreateMockNotificationPermissionsForReview();
   auto* service =

@@ -40,13 +40,10 @@ class DisruptiveNotificationPermissionsManager {
   // kNotSiteScopedContentSetting, kManagedContentSetting, kNoRevokeDefaultBlock
   // are returned for sites where the permission cannot be revoked.
   //
-  // Shadow run: the site is proposed for revocation (kProposedRevoke) and
-  // returns kAlreadyInProposedRevokeList for all the next runs.
-  //
-  // Actual revocation: the site first is marked for revocation (returns
-  // kProposedRevoke) and then the permission is actually revoked (return
-  // kRevoke). After the permission is revoked, the content setting is removed
-  // so the site won't be reported anymore.
+  // The site first is marked for revocation (returns kProposedRevoke) and
+  // returns kAlreadyInProposedRevokeList until ready, and then the permission
+  // is actually revoked (returns kRevoke). After the permission is revoked,
+  // the content setting is removed so the site won't be reported anymore.
   //
   // Undo: If the user has undone the revocation, the site is marked as "ignore"
   // so it won't be revoked on the next runs.

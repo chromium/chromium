@@ -51,11 +51,7 @@ public class UnsubscribedNotificationsNotificationManager {
 
     private static boolean isDisruptiveNotificationRevocationEnabled() {
         return ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
-                && !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION,
-                        "shadow_run",
-                        false);
+                ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION);
     }
 
     private static boolean isAutoRevokeSuspiciousNotificationEnabled() {

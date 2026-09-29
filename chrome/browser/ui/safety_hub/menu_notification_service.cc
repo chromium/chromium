@@ -89,8 +89,7 @@ SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
                           base::Unretained(revoked_permissions_service)),
       stored_notifications);
   if (!base::FeatureList::IsEnabled(
-          features::kSafetyHubDisruptiveNotificationRevocation) ||
-      features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get()) {
+          features::kSafetyHubDisruptiveNotificationRevocation)) {
     pref_dict_key_map_
         [safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS] =
             "notification-permissions";

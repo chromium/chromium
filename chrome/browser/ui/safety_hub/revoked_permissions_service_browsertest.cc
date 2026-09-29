@@ -540,65 +540,6 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-class DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest
-    : public RevokedPermissionsServiceBrowserTest {
- public:
-  DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSafetyHubDisruptiveNotificationRevocation,
-        {
-            {features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-             "true"},
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    DisruptiveNotificationPermissionsRevocationShadowRunBrowserTest,
-    TestProposeRevokeDisruptiveNotificationPermissions) {
-  auto* hcsm =
-      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
-  auto* service =
-      RevokedPermissionsServiceFactory::GetForProfile(browser()->GetProfile());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
-
-  // Set up a disruptive notification permission.
-  hcsm->SetContentSettingDefaultScope(
-      url, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
-  auto* notifications_engagement_service =
-      NotificationsEngagementServiceFactory::GetForProfile(
-          browser()->GetProfile());
-  notifications_engagement_service->RecordNotificationDisplayed(url, 50);
-
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-
-  // The url was stored in the disruptive notification content setting.
-  EXPECT_THAT(
-      DisruptiveNotificationContentSettingHelper(*hcsm).GetRevocationEntry(url),
-      Not(Eq(std::nullopt)));
-
-  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
-  std::optional<DisruptiveNotificationRevocationEntry> revocation_entry =
-      DisruptiveNotificationContentSettingHelper(*hcsm).GetRevocationEntry(url);
-  EXPECT_THAT(
-      revocation_entry,
-      Optional(Field(&DisruptiveNotificationRevocationEntry::revocation_state,
-                     DisruptiveNotificationRevocationState::kProposed)));
-  ASSERT_EQ(GetRevokedUnusedPermissions(hcsm).size(), 0u);
-  std::optional<std::unique_ptr<SafetyHubResult>> opt_result =
-      service->GetCachedResult();
-  ASSERT_TRUE(opt_result.has_value());
-  auto* result =
-      static_cast<RevokedPermissionsResult*>(opt_result.value().get());
-  EXPECT_EQ(result->GetRevokedPermissions().size(), 0u);
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      hcsm->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
-}
-
 class DisruptiveNotificationPermissionsRevocationBrowserTest
     : public RevokedPermissionsServiceBrowserTest {
  public:
@@ -606,9 +547,7 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
 #if BUILDFLAG(IS_ANDROID)
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kSafetyHubDisruptiveNotificationRevocation,
-        {{features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-          "false"},
-         {features::
+        {{features::
               kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                   .name,
           "7"}});
@@ -616,9 +555,7 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kSafetyHubDisruptiveNotificationRevocation,
-          {{features::kSafetyHubDisruptiveNotificationRevocationShadowRun.name,
-            "false"},
-           {features::
+          {{features::
                 kSafetyHubDisruptiveNotificationRevocationWaitingForMetricsDays
                     .name,
             "7"}}}},

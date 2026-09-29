@@ -3169,8 +3169,7 @@ void AddSafetyHubStrings(content::WebUIDataSource* html_source) {
 
   const bool is_disruptive_notification_revocation_enabled =
       base::FeatureList::IsEnabled(
-          features::kSafetyHubDisruptiveNotificationRevocation) &&
-      !features::kSafetyHubDisruptiveNotificationRevocationShadowRun.Get();
+          features::kSafetyHubDisruptiveNotificationRevocation);
   html_source->AddString(
       "safetyHubUnusedSitePermissionsSettingSublabel",
       l10n_util::GetStringUTF16(

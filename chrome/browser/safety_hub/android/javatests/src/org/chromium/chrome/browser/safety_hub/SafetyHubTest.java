@@ -321,24 +321,12 @@ public final class SafetyHubTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(
-            ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION + ":shadow_run/false")
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION)
     public void testFragmentAppearanceDisruptiveRevocation() throws IOException {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubExpandablePreference preference =
                 mSafetyHubFragmentTestRule.getFragment().findPreference(PREF_NOTIFICATIONS_REVIEW);
         Assert.assertFalse(preference.isVisible());
-    }
-
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(
-            ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION + ":shadow_run/true")
-    public void testFragmentAppearanceShadowRun() throws IOException {
-        mSafetyHubFragmentTestRule.startSettingsActivity();
-        SafetyHubExpandablePreference preference =
-                mSafetyHubFragmentTestRule.getFragment().findPreference(PREF_NOTIFICATIONS_REVIEW);
-        Assert.assertTrue(preference.isVisible());
     }
 
     @Test

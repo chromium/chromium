@@ -1088,13 +1088,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationExperimentVersion;
 
-// Whether the disruptive notification revocation will be performed as a shadow
-// run (without actually revoking permissions). Used to collect metrics and
-// evaluate the conditions for autorevocation.
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool>
-    kSafetyHubDisruptiveNotificationRevocationShadowRun;
-
 // The minimum number of average daily notifications over last 7 days for a
 // website to classify for disruptive notification revocation. Used in a
 // combination with

@@ -435,9 +435,7 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
             ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
           } else {
-            if (!features::kSafetyHubDisruptiveNotificationRevocationShadowRun
-                     .Get() &&
-                CanRevokeNotifications(url, *revocation_entry)) {
+            if (CanRevokeNotifications(url, *revocation_entry)) {
               RevokeNotifications(url, *revocation_entry);
               revoked_anything = true;
             } else {
