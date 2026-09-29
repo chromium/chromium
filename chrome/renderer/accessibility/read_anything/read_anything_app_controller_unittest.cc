@@ -3711,6 +3711,57 @@ TEST_F(ReadAnythingAppControllerTest,
 }
 
 TEST_F(ReadAnythingAppControllerTest,
+       OnPdfDebounceFinished_DistillationRunning_DefersToOnAXTreeDistilled) {
+  // Set up a PDF and start the debouncer. This also starts a distillation,
+  // which the mock distiller doesn't complete.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  page_handler_.FlushForTesting();
+  ASSERT_TRUE(model().screen2x_distiller_running());
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // The debouncer finishing mid-distillation doesn't draw the stale model.
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+
+  // The result is drawn once distillation completes.
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       AccessibilityEventReceived_PdfDistillationRunning_ResetsDebouncer) {
+  // Set up a PDF and start the debouncer. This also starts a distillation,
+  // which the mock distiller doesn't complete.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  ASSERT_TRUE(model().screen2x_distiller_running());
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  ASSERT_FALSE(IsPdfDrawDebouncerRunning());
+
+  // An update queued behind the running distillation restarts the debouncer.
+  ui::AXNodeData node;
+  node.id = 2;
+  SendUpdateWithNodes({std::move(node)});
+  EXPECT_FALSE(model().pending_updates_for_testing().empty());
+  EXPECT_TRUE(IsPdfDrawDebouncerRunning());
+
+  // An empty result isn't drawn before the queued update is processed.
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
+  EXPECT_CALL(page_handler_, OnDistillationStateChanged(testing::_)).Times(0);
+  OnAXTreeDistilled(tree_id_, {});
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_StartsDebouncerIfHidden) {
   // Start in inactive state (hidden).
   controller().OnGetPresentationState(
@@ -5895,6 +5946,28 @@ TEST_F(ReadAnythingAppControllerTest, ProcessModelUpdates_ResetsPdfDebouncer) {
   // Now it should be done
   controller().Draw(/* recompute_display_nodes= */ true);
   EXPECT_TRUE(model().display_node_ids().contains(kId));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       ProcessModelUpdates_ResetsPdfDebouncerBeforeDistilling) {
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  OnAXTreeDistilled(tree_id_, {});
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  ASSERT_FALSE(IsPdfDrawDebouncerRunning());
+
+  // Distillation can complete synchronously, so the debouncer must already be
+  // running when it starts.
+  bool debouncer_running_on_distill = false;
+  EXPECT_CALL(*distiller_, Distill).WillOnce(testing::InvokeWithoutArgs([&] {
+    debouncer_running_on_distill = IsPdfDrawDebouncerRunning();
+  }));
+  model().set_requires_distillation(true);
+  model().set_reset_distillation_delay_timer(true);
+  ProcessModelUpdates();
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  EXPECT_TRUE(debouncer_running_on_distill);
 }
 
 TEST_F(ReadAnythingAppControllerTest,

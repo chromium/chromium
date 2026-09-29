@@ -381,6 +381,15 @@ void ReadAnythingAppController::AccessibilityEventReceived(
           << "In AccessibilityEventReceived. Calling QueueAccessibilityUpdates "
              "because distiller should not run yet.";
 
+      // PDF content can arrive while an earlier distillation is running.
+      // Extend the debounce so that distillation's result isn't drawn before
+      // these updates are processed. Scroll updates may also reset the timer
+      // while distillation is in-flight, but won't re-trigger distillation once
+      // it finishes.
+      if (IsPdf() && model_.screen2x_distiller_running()) {
+        pdf_draw_debouncer_->Reset();
+      }
+
       model_.QueueAccessibilityUpdates(
           tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
           const_cast<std::vector<ui::AXEvent>&>(events));
@@ -429,6 +438,14 @@ void ReadAnythingAppController::ProcessModelUpdates() {
         << "Readability should not reset the distillation delay timer.";
   }
 
+  // If a subtree was created in a PDF, this value will be true and it will
+  // reset the timer to distill. Reset before Distill(), which may call
+  // OnAXTreeDistilled() synchronously.
+  if (model_.reset_distillation_delay_timer()) {
+    pdf_draw_debouncer_->Reset();
+    model_.set_reset_distillation_delay_timer(false);
+  }
+
   if (model_.requires_distillation()) {
     Distill();
   }
@@ -474,13 +491,6 @@ void ReadAnythingAppController::ProcessModelUpdates() {
   if (model_.reset_draw_timer()) {
     post_user_entry_draw_timer_->Reset();
     model_.set_reset_draw_timer(false);
-  }
-
-  // If a subtree was created in a PDF, this value will be true and it will
-  // reset the timer to distill.
-  if (model_.reset_distillation_delay_timer()) {
-    pdf_draw_debouncer_->Reset();
-    model_.set_reset_distillation_delay_timer(false);
   }
 }
 
@@ -1005,6 +1015,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
 void ReadAnythingAppController::OnPdfDebounceFinished() {
   if (IsHidden()) {
+    return;
+  }
+
+  // Let OnAXTreeDistilled() draw the in-flight distillation's result rather
+  // than drawing the stale, possibly empty, model.
+  if (model_.screen2x_distiller_running()) {
     return;
   }
 
