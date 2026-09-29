@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -393,7 +392,7 @@ bool ReadAnythingAppModel::IsNodeLikelyKeyPoints(ui::AXNode* node) const {
     std::u16string node_text16 = a11y::GetTextContent(node, is_pdf_, IsDocs());
     std::string node_text = base::ToLowerASCII(base::UTF16ToUTF8(node_text16));
 
-    static const base::NoDestructor<re2::RE2> key_points_re(kKeyPointsRegex);
+    static constexpr re2::LazyRE2 key_points_re = {kKeyPointsRegex};
     if (re2::RE2::PartialMatch(node_text, *key_points_re)) {
       return true;
     }
