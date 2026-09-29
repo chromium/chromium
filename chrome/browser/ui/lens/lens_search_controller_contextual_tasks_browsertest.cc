@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
@@ -47,6 +48,7 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -1066,4 +1068,84 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksRoutingIneligibleTest,
       lens::LensOverlayInvocationSource::kContextualTasksComposebox);
 
   EXPECT_FALSE(controller->should_route_to_contextual_tasks());
+}
+
+class OmniboxContextualSuggestionPrivacyNoticeBypassBrowserTest
+    : public ContextualTasksLensInteractionBrowserTestBase {
+ public:
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
+                              {contextual_tasks::kContextualTasksContext, {}},
+                              {contextual_tasks::
+                                   kContextualTasksForceEntryPointEligibility,
+                               {}},
+                              {lens::features::kLensOverlay, {}},
+                              {lens::features::kLensOverlayContextualSearchbox,
+                               {}},
+                              {omnibox::kWebUIOmniboxAskGAboutThisPage,
+                               {{"Omnibox_AskGBypassPrivacyNotice", "true"}}}},
+        /*disabled_features=*/{lens::features::kLensSidePanelUnification});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextualSuggestionPrivacyNoticeBypassBrowserTest,
+    IssueContextualSearchRequest_GrantsSessionPermission) {
+  // Ensure user has not permanently granted Lens permissions in prefs.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageContentEnabled, false);
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(controller->IsOff());
+
+  // Issue a contextual search request via ChromeAutocompleteProviderClient.
+  ChromeAutocompleteProviderClient client(
+      browser()->GetProfile(),
+      base::BindRepeating(&TabStripModel::GetActiveWebContents,
+                          base::Unretained(browser()->tab_strip_model())));
+  client.IssueContextualSearchRequest(
+      GURL("https://www.google.com/search?q=Help+me+with+this+page"),
+      omnibox::AutocompleteMatchType::kSearchSuggest,
+      /*is_zero_prefix_suggestion=*/true);
+
+  EXPECT_FALSE(controller->IsOff());
+  ASSERT_TRUE(controller->lens_overlay_query_controller());
+  EXPECT_TRUE(
+      controller->lens_overlay_query_controller()->HasPermissionForSession());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextualSuggestionPrivacyNoticeBypassBrowserTest,
+    IssueContextualSearchRequest_WithoutBypass_DoesNotGrantSessionPermission) {
+  // Ensure user has not permanently granted Lens permissions in prefs.
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      lens::prefs::kLensSharingPageContentEnabled, false);
+
+  auto* controller = GetLensSearchController();
+  ASSERT_TRUE(controller);
+  ASSERT_TRUE(controller->IsOff());
+
+  // Issue a contextual search request without session permissions.
+  controller->IssueContextualSearchRequest(
+      lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion,
+      GURL("https://www.google.com/search?q=Help+me+with+this+page"),
+      omnibox::AutocompleteMatchType::kSearchSuggest,
+      /*is_zero_prefix_suggestion=*/true,
+      /*grant_session_permission=*/false);
+
+  EXPECT_FALSE(controller->IsOff());
+  ASSERT_TRUE(controller->lens_overlay_query_controller());
+  EXPECT_FALSE(
+      controller->lens_overlay_query_controller()->HasPermissionForSession());
 }

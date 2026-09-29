@@ -341,7 +341,8 @@ void LensSearchController::IssueContextualSearchRequest(
     lens::LensOverlayInvocationSource invocation_source,
     const GURL& destination_url,
     omnibox::AutocompleteMatchType match_type,
-    bool is_zero_prefix_suggestion) {
+    bool is_zero_prefix_suggestion,
+    bool grant_session_permission) {
   // This method should only be used by the omnibox flows.
   // There is no dependency on the omnibox, so this check is solely to ensure a
   // new flow is not accidentally added.
@@ -357,7 +358,8 @@ void LensSearchController::IssueContextualSearchRequest(
 
   IssueTextSearchRequest(
       invocation_source, query_text, additional_query_parameters, match_type,
-      is_zero_prefix_suggestion, /*suppress_contextualization=*/false);
+      is_zero_prefix_suggestion, /*suppress_contextualization=*/false,
+      grant_session_permission);
 }
 
 void LensSearchController::IssueTextSearchRequest(
@@ -366,7 +368,8 @@ void LensSearchController::IssueTextSearchRequest(
     std::map<std::string, std::string> additional_query_parameters,
     omnibox::AutocompleteMatchType match_type,
     bool is_zero_prefix_suggestion,
-    bool suppress_contextualization) {
+    bool suppress_contextualization,
+    bool grant_session_permission) {
   // If the eligibility checks fail, do not procced with opening any UI.
   if (!RunLensEligibilityChecks(
           invocation_source,
@@ -374,13 +377,15 @@ void LensSearchController::IssueTextSearchRequest(
               &LensSearchController::IssueTextSearchRequest,
               weak_ptr_factory_.GetWeakPtr(), invocation_source, query_text,
               additional_query_parameters, match_type,
-              is_zero_prefix_suggestion, suppress_contextualization))) {
+              is_zero_prefix_suggestion, suppress_contextualization,
+              grant_session_permission))) {
     return;
   }
 
   if (IsOff()) {
     // If the state is off, the Lens sessions needs to be initialized.
-    StartLensSession(invocation_source, suppress_contextualization);
+    StartLensSession(invocation_source, suppress_contextualization,
+                     grant_session_permission);
   }
 
   // If routing to contextual tasks, ignore fetching context via the Lens
@@ -807,7 +812,8 @@ bool LensSearchController::ShouldEnableContextualTasksRouting(
 
 void LensSearchController::StartLensSession(
     lens::LensOverlayInvocationSource invocation_source,
-    bool suppress_contextualization) {
+    bool suppress_contextualization,
+    bool grant_session_permission) {
   state_ = State::kInitializing;
   invocation_source_ = invocation_source;
 
@@ -823,6 +829,10 @@ void LensSearchController::StartLensSession(
   // Create the query controller to be used for the current invocation.
   CHECK(!lens_overlay_query_controller_);
   lens_overlay_query_controller_ = CreateLensQueryController(invocation_source);
+  if (grant_session_permission) {
+    lens_overlay_query_controller_->GrantPermissionForSession();
+  }
+
   query_router_ = CreateLensQueryFlowRouter();
   query_router_->SetSuggestInputsReadyCallback(
       base::BindRepeating(&LensSearchController::OnSuggestInputsReady,

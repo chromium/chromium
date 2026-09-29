@@ -10,6 +10,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -44,6 +45,9 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_metrics.h"
+#include "components/lens/lens_overlay_permission_utils.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -709,5 +713,76 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(AimEligibilityTestState::kEligible,
                     AimEligibilityTestState::kAimIneligible,
                     AimEligibilityTestState::kCobrowseIneligible));
+
+class OmniboxContextualSuggestionInteractiveUiTest
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{contextual_tasks::kContextualTasks, {}},
+                              {contextual_tasks::kContextualTasksContext, {}},
+                              {contextual_tasks::
+                                   kContextualTasksForceEntryPointEligibility,
+                               {}},
+                              {lens::features::kLensOverlay, {}},
+                              {lens::features::kLensOverlayContextualSearchbox,
+                               {}},
+                              {omnibox::kWebUIOmniboxAskGAboutThisPage,
+                               {{"Omnibox_AskGBypassPrivacyNotice", "true"}}}},
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads,
+                               lens::features::kLensSidePanelUnification});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OmniboxContextualSuggestionInteractiveUiTest,
+    IssueContextualSearchRequestBypassesPrivacyNoticeAndGrantsPermission) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+      Do([this]() {
+        // Ensure user has not granted Lens permissions in prefs.
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            lens::prefs::kLensSharingPageScreenshotEnabled, false);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            lens::prefs::kLensSharingPageContentEnabled, false);
+
+        auto* controller = LensSearchController::FromTabWebContents(
+            browser()->GetTabStripModel()->GetActiveWebContents());
+        ASSERT_TRUE(controller);
+        ASSERT_TRUE(controller->IsOff());
+
+        // Issue a contextual search request via
+        // ChromeAutocompleteProviderClient.
+        ChromeAutocompleteProviderClient client(
+            browser()->GetProfile(),
+            base::BindRepeating(
+                &TabStripModel::GetActiveWebContents,
+                base::Unretained(browser()->tab_strip_model())));
+        client.IssueContextualSearchRequest(
+            GURL("https://www.google.com/search?q=Help+me+with+this+page"),
+            omnibox::AutocompleteMatchType::kSearchSuggest,
+            /*is_zero_prefix_suggestion=*/true);
+      }),
+      // Verify the Contextual Tasks side panel web view shows.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      CheckResult(
+          [this]() {
+            auto* controller = LensSearchController::FromTabWebContents(
+                browser()->GetTabStripModel()->GetActiveWebContents());
+            return controller && controller->lens_overlay_query_controller() &&
+                   controller->lens_overlay_query_controller()
+                       ->HasPermissionForSession();
+          },
+          true));
+}
 
 }  // namespace
