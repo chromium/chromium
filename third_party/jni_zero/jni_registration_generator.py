@@ -21,11 +21,10 @@ from codegen import header_common
 from codegen import natives_header
 from codegen import register_natives
 import common
+import java_parse
 import java_types
 import jni_generator
-import parse
 import proxy
-
 
 _THIS_DIR = os.path.dirname(__file__)
 
@@ -35,11 +34,12 @@ def _ParseHelper(package_prefix, package_prefix_filter, enable_safe_pointers,
   try:
     # The link step emits only JNI boundary types, so safe pointer inner types
     # are never resolved to C++ types here.
-    return parse.parse_java_file(path,
-                                 package_prefix=package_prefix,
-                                 package_prefix_filter=package_prefix_filter,
-                                 allow_private_called_by_natives=True,
-                                 enable_safe_pointers=enable_safe_pointers)
+    return java_parse.parse_java_file(
+        path,
+        package_prefix=package_prefix,
+        package_prefix_filter=package_prefix_filter,
+        allow_private_called_by_natives=True,
+        enable_safe_pointers=enable_safe_pointers)
   except Exception as e:
     return e
 

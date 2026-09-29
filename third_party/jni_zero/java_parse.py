@@ -650,7 +650,6 @@ def _parse_called_by_natives_or_javap(contents,
       return_type = java_types.VOID
       name = '<init>'
 
-
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)
     if natives_only:

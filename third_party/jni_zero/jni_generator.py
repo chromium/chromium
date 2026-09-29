@@ -22,8 +22,8 @@ from codegen import placeholder_gen_jni_java
 from codegen import placeholder_java_type
 from codegen import proxy_impl_java
 import common
+import java_parse
 import java_types
-import parse
 import proxy
 
 
@@ -174,6 +174,7 @@ class NativeMethod:
 
 class CalledByNative:
   """Describes a Java method that is called from C++"""
+
   def __init__(self,
                class_type_resolver,
                parsed_called_by_native,
@@ -637,7 +638,7 @@ def _ParseClassFiles(jar_file, class_files, args):
   for class_file in class_files:
     path_arg = f'jar:file://{jar_file}!/{class_file}'
     contents = _RunJavap(args.javap, path_arg)
-    parsed_file = parse.parse_javap_data(class_file, contents)
+    parsed_file = java_parse.parse_javap_data(class_file, contents)
     ret.append(
         JniObject(parsed_file,
                   from_javap=True,
@@ -784,7 +785,7 @@ def GenerateFromSource(parser, args, jni_mode):
     for f in args.input_files:
       try:
         parsed_files.append(
-            parse.parse_java_file(
+            java_parse.parse_java_file(
                 f,
                 package_prefix=args.package_prefix,
                 package_prefix_filter=args.package_prefix_filter,
@@ -792,7 +793,7 @@ def GenerateFromSource(parser, args, jni_mode):
                 allow_private_called_by_natives,
                 type_catalog=type_catalog,
                 enable_safe_pointers=args.enable_safe_pointers))
-      except parse.ParseError as e:
+      except java_parse.ParseError as e:
         errors.append(e)
 
     if errors:
@@ -806,7 +807,7 @@ def GenerateFromSource(parser, args, jni_mode):
       common.merge_type_catalogs(type_catalog, pf.type_tokens, pf.filename)
 
     if args.enable_safe_pointers:
-      parse.resolve_safe_pointers(parsed_files, type_catalog)
+      java_parse.resolve_safe_pointers(parsed_files, type_catalog)
 
     if args.output_type_catalog:
       local_type_catalog = {}
@@ -829,7 +830,7 @@ def GenerateFromSource(parser, args, jni_mode):
       common.write_depfile(args.depfile, first_out, loaded_type_catalogs)
     if args.resolved_types_path:
       _WriteResolvedTypes(args.resolved_types_path, jni_objs)
-  except parse.ParseError as e:
+  except java_parse.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
@@ -895,7 +896,7 @@ def GenerateFromJar(parser, args, jni_mode):
 
   try:
     jni_objs = _ParseClassFiles(args.jar_file, args.input_files, args)
-  except parse.ParseError as e:
+  except java_parse.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
