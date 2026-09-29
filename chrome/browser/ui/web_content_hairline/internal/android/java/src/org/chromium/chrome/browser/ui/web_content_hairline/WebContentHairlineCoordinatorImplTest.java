@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.side_ui;
+package org.chromium.chrome.browser.ui.web_content_hairline;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewStub;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,15 +38,17 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.UiUpdateRequest;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.Collections;
 import java.util.Map;
 
-/** Unit tests for {@link SideUiWebContentHairlineManager}. */
+/** Unit tests for {@link WebContentHairlineCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
-public class SideUiWebContentHairlineManagerTest {
+public class WebContentHairlineCoordinatorImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,10 +56,11 @@ public class SideUiWebContentHairlineManagerTest {
     @Mock private SideUiStateProvider mSideUiStateProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private TopControlsStacker mTopControlsStacker;
+    @Mock private ViewStub mHairlineContainerStub;
 
     private static final int HAIRLINE_HEIGHT = 1;
 
-    private SideUiWebContentHairlineManager mManager;
+    private WebContentHairlineCoordinatorImpl mCoordinator;
 
     private View mTopHairline;
     private View mLeftHairline;
@@ -72,13 +77,12 @@ public class SideUiWebContentHairlineManagerTest {
 
         mLayoutParams = new MarginLayoutParams(0, 0);
 
-        SideUiWebContentHairlineContainer hairlineContainer =
-                (SideUiWebContentHairlineContainer)
+        WebContentHairlineContainer hairlineContainer =
+                (WebContentHairlineContainer)
                         LayoutInflater.from(activity)
-                                .inflate(
-                                        R.layout.side_ui_web_content_hairline_container,
-                                        /* root= */ null);
+                                .inflate(R.layout.web_content_hairline_container, /* root= */ null);
         hairlineContainer.setLayoutParams(mLayoutParams);
+        doReturn(hairlineContainer).when(mHairlineContainerStub).inflate();
 
         mTopHairline = hairlineContainer.getTopHairline();
         mLeftHairline = hairlineContainer.getLeftHairline();
@@ -87,13 +91,13 @@ public class SideUiWebContentHairlineManagerTest {
         mTopRightRoundedCorner = hairlineContainer.getTopRightRoundedCorner();
         mBottomLeftRoundedCorner = hairlineContainer.getBottomLeftRoundedCorner();
 
-        mManager =
-                new SideUiWebContentHairlineManager(
+        mCoordinator =
+                new WebContentHairlineCoordinatorImpl(
                         mBrowserControlsStateProvider,
                         mSideUiStateProvider,
-                        hairlineContainer,
                         mIncognitoStateProvider,
-                        mTopControlsStacker);
+                        mTopControlsStacker,
+                        mHairlineContainerStub);
     }
 
     @Test
@@ -111,7 +115,7 @@ public class SideUiWebContentHairlineManagerTest {
         verify(mIncognitoStateProvider)
                 .addIncognitoStateObserverAndTrigger(incognitoObserverCaptor.capture());
 
-        mManager.destroy();
+        mCoordinator.destroy();
         verify(mBrowserControlsStateProvider).removeObserver(controlsObserverCaptor.getValue());
         verify(mSideUiStateProvider).removeObserver(sideUiObserverCaptor.getValue());
         verify(mIncognitoStateProvider).removeObserver(incognitoObserverCaptor.getValue());
@@ -164,16 +168,27 @@ public class SideUiWebContentHairlineManagerTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void testSideUiSpecsChangedUpdatesTopHairline() {
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        SideUiObserver observer = observerCaptor.getValue();
+
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
-        mManager.update();
+        observer.onSideUiSpecsChanged(
+                new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR))),
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
 
         assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
         assertEquals(View.VISIBLE, mTopHairline.getVisibility());
 
+        // Once no side UI is showing, the top hairline should be hidden.
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(false);
-        mManager.update();
+        observer.onSideUiSpecsChanged(
+                new SideUiSpecs(Collections.emptyMap()),
+                UiUpdateRequest.getRequestForTesting(/* suppressAnimations= */ true));
+
         assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
     }
 

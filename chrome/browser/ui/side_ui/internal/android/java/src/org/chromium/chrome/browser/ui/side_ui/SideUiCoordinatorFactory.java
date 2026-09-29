@@ -42,8 +42,6 @@ public final class SideUiCoordinatorFactory {
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
-     * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
-     *     container.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      * @param tabModelSelector The {@link TabModelSelector} to query tabs.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
@@ -59,7 +57,6 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
-            @Nullable ViewStub webContentHairlineContainerStub,
             IncognitoStateProvider incognitoStateProvider,
             TabModelSelector tabModelSelector) {
         if (!AndroidSidePanelEnabledFn.isEnabled()
@@ -70,7 +67,6 @@ public final class SideUiCoordinatorFactory {
         assert anchorContainerParent != null;
         assert leftAnchorContainerStub != null;
         assert rightAnchorContainerStub != null;
-        assert webContentHairlineContainerStub != null;
 
         return new SideUiCoordinatorImpl(
                 parentActivity,
@@ -82,7 +78,6 @@ public final class SideUiCoordinatorFactory {
                 anchorContainerParent,
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
-                webContentHairlineContainerStub,
                 incognitoStateProvider,
                 tabModelSelector);
     }

@@ -5,18 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
-  sources = [
-    "android/java/res/drawable/rounded_corner_bottom_left.xml",
-    "android/java/res/drawable/rounded_corner_bottom_left_incognito.xml",
-    "android/java/res/drawable/rounded_corner_left.xml",
-    "android/java/res/drawable/rounded_corner_left_incognito.xml",
-    "android/java/res/drawable/rounded_corner_right.xml",
-    "android/java/res/drawable/rounded_corner_right_incognito.xml",
-    "android/java/res/drawable/vertical_hairline.xml",
-    "android/java/res/layout/side_ui_web_content_hairline_container.xml",
-    "android/java/res/values/colors.xml",
-    "android/java/res/values/dimens.xml",
-  ]
+  sources = [ "android/java/res/values/dimens.xml" ]
 }
 
 android_library("java") {
@@ -34,8 +23,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiResizeHandler.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiTransitionListener.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiUpdateSpecs.java",
-    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineContainer.java",
-    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineManager.java",
   ]
 
   deps = [
@@ -43,7 +30,6 @@ android_library("java") {
     "//base:base_java",
     "//base:callback_java",
     "//base:supplier_java",
-    "//base:tasks_java",
     "//build/android:build_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
@@ -73,8 +59,6 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorImplTest.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiResizeHandlerTest.java",
-    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineContainerTest.java",
-    "android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiWebContentHairlineManagerTest.java",
   ]
   deps = [
     ":java",

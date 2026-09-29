@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.side_ui;
+package org.chromium.chrome.browser.ui.web_content_hairline;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -17,10 +17,10 @@ import com.google.errorprone.annotations.DoNotMock;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-/** Custom view for the web content hairline container in Side UI. */
+/** Custom view for the WebContents hairline container. */
 @NullMarked
 @DoNotMock
-/* package */ final class SideUiWebContentHairlineContainer extends FrameLayout {
+/* package */ final class WebContentHairlineContainer extends FrameLayout {
 
     private ImageView mTopHairline;
     private ImageView mLeftHairline;
@@ -31,7 +31,7 @@ import org.chromium.build.annotations.Nullable;
     private ImageView mTopRightRoundedCorner;
 
     /** Constructor for inflating from XML. */
-    public SideUiWebContentHairlineContainer(Context context, @Nullable AttributeSet attrs) {
+    public WebContentHairlineContainer(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

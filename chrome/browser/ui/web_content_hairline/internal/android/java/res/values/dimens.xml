@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <dimen name="vertical_hairline_width">1dp</dimen>
+    <dimen name="rounded_corner_radius">8dp</dimen>
+    <!-- Should be consistent with toolbar_corner_radius (16dp). -->
+    <dimen name="bottom_left_rounded_corner_radius">16dp</dimen>
+</resources>

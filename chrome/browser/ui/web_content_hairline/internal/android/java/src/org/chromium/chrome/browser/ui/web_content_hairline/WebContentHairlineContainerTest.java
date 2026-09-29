@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.ui.side_ui;
+package org.chromium.chrome.browser.ui.web_content_hairline;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -20,12 +20,12 @@ import org.robolectric.Shadows;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.TestActivity;
 
-/** Unit tests for {@link SideUiWebContentHairlineContainer}. */
+/** Unit tests for {@link WebContentHairlineContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class SideUiWebContentHairlineContainerTest {
+public class WebContentHairlineContainerTest {
 
     private TestActivity mTestActivity;
-    private SideUiWebContentHairlineContainer mContainer;
+    private WebContentHairlineContainer mContainer;
 
     private ImageView mTopHairline;
     private ImageView mLeftHairline;
@@ -39,11 +39,9 @@ public class SideUiWebContentHairlineContainerTest {
     public void setUp() {
         mTestActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mContainer =
-                (SideUiWebContentHairlineContainer)
+                (WebContentHairlineContainer)
                         LayoutInflater.from(mTestActivity)
-                                .inflate(
-                                        R.layout.side_ui_web_content_hairline_container,
-                                        /* root= */ null);
+                                .inflate(R.layout.web_content_hairline_container, /* root= */ null);
 
         mTopHairline = mContainer.getTopHairline();
         mLeftHairline = mContainer.getLeftHairline();

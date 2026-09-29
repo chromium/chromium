@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_resources("java_resources") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "android/java/res/drawable/rounded_corner_bottom_left.xml",
+    "android/java/res/drawable/rounded_corner_bottom_left_incognito.xml",
+    "android/java/res/drawable/rounded_corner_left.xml",
+    "android/java/res/drawable/rounded_corner_left_incognito.xml",
+    "android/java/res/drawable/rounded_corner_right.xml",
+    "android/java/res/drawable/rounded_corner_right_incognito.xml",
+    "android/java/res/drawable/vertical_hairline.xml",
+    "android/java/res/layout/web_content_hairline_container.xml",
+    "android/java/res/values/colors.xml",
+    "android/java/res/values/dimens.xml",
+  ]
+}
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "//chrome/android:chrome_all_java",
+  ]
+
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/web_content_hairline/WebContentHairlineContainer.java",
+    "android/java/src/org/chromium/chrome/browser/ui/web_content_hairline/WebContentHairlineCoordinatorFactory.java",
+    "android/java/src/org/chromium/chrome/browser/ui/web_content_hairline/WebContentHairlineCoordinatorImpl.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:features_java",
+    "//build/android:build_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/side_ui/public:java",
+    "//chrome/browser/ui/web_content_hairline/public:java",
+    "//components/cached_flags:java",
+    "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.ui.web_content_hairline"
+}
+
+robolectric_library("junit") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.web_content_hairline"
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/ui/web_content_hairline/WebContentHairlineContainerTest.java",
+    "android/java/src/org/chromium/chrome/browser/ui/web_content_hairline/WebContentHairlineCoordinatorImplTest.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/side_ui/public:java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}

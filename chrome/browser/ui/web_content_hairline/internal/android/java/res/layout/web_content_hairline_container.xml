@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.ui.side_ui.SideUiWebContentHairlineContainer
+<org.chromium.chrome.browser.ui.web_content_hairline.WebContentHairlineContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/web_content_hairline_container"
@@ -73,4 +73,4 @@ found in the LICENSE file.
         android:importantForAccessibility="no"
         tools:ignore="RtlHardcoded" />
 
-</org.chromium.chrome.browser.ui.side_ui.SideUiWebContentHairlineContainer>
+</org.chromium.chrome.browser.ui.web_content_hairline.WebContentHairlineContainer>

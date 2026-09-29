@@ -122,7 +122,6 @@ final class SideUiCoordinatorImpl
     private final SideUiTransitionListener mSideUiTransitionListener =
             new SideUiTransitionListener();
 
-    private final SideUiWebContentHairlineManager mWebContentsHairlineManager;
     private final TabModelSelector mTabModelSelector;
 
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
@@ -150,8 +149,6 @@ final class SideUiCoordinatorImpl
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
-     * @param webContentHairlineContainerStub The {@link ViewStub} for the web content hairline
-     *     container.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} to observe incognito state.
      * @param tabModelSelector The {@link TabModelSelector} to query tabs.
      */
@@ -165,7 +162,6 @@ final class SideUiCoordinatorImpl
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
-            ViewStub webContentHairlineContainerStub,
             IncognitoStateProvider incognitoStateProvider,
             TabModelSelector tabModelSelector) {
         mParentActivity = parentActivity;
@@ -193,18 +189,6 @@ final class SideUiCoordinatorImpl
                                 new SideUiSize(/* reservedWidth= */ 0, HeightType.NOT_APPLICABLE),
                                 AnchorSide.RIGHT,
                                 new SideUiSize(/* reservedWidth= */ 0, HeightType.NOT_APPLICABLE)));
-
-        webContentHairlineContainerStub.setLayoutResource(
-                R.layout.side_ui_web_content_hairline_container);
-        SideUiWebContentHairlineContainer webContentHairlineContainer =
-                (SideUiWebContentHairlineContainer) webContentHairlineContainerStub.inflate();
-        mWebContentsHairlineManager =
-                new SideUiWebContentHairlineManager(
-                        browserControlVisibilityManager,
-                        /* sideUiStateProvider= */ this,
-                        webContentHairlineContainer,
-                        incognitoStateProvider,
-                        topControlsStacker);
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
@@ -299,7 +283,6 @@ final class SideUiCoordinatorImpl
         mBrowserControlsVisibilityManager.removeObserver(this);
         mFullscreenManager.removeObserver(this);
         mIncognitoStateProvider.removeObserver(this);
-        mWebContentsHairlineManager.destroy();
         mActivityLifecycleDispatcher.unregister(this);
     }
 
@@ -590,7 +573,6 @@ final class SideUiCoordinatorImpl
             @Nullable TransitionSet transitionSet =
                     suppressAnimations ? null : collectTransitions(uiUpdateSpecs);
             commitNewSideUiSpecs(uiUpdateSpecs, transitionSet);
-            mWebContentsHairlineManager.update();
         }
 
         // 9. Sync the resize handles. This is also done when specs change, but a container can

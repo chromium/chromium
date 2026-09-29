@@ -13,7 +13,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -54,7 +53,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -101,9 +99,8 @@ public class SideUiCoordinatorImplTest {
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private ViewStub mLeftAnchorContainerStub;
     @Mock private ViewStub mRightAnchorContainerStub;
-    @Mock private ViewStub mWebContentHairlineContainerStub;
-    @Mock private SideUiObserver mSideUiObserver;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private SideUiObserver mSideUiObserver;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
 
@@ -148,15 +145,6 @@ public class SideUiCoordinatorImplTest {
         doReturn(mLeftAnchorContainer).when(mLeftAnchorContainerStub).inflate();
         doReturn(mRightAnchorContainer).when(mRightAnchorContainerStub).inflate();
 
-        // Set up hairline container.
-        SideUiWebContentHairlineContainer webContentHairlineContainer =
-                (SideUiWebContentHairlineContainer)
-                        mTestActivity
-                                .getLayoutInflater()
-                                .inflate(R.layout.side_ui_web_content_hairline_container, null);
-        webContentHairlineContainer.setLayoutParams(new MarginLayoutParams(0, 0));
-        doReturn(webContentHairlineContainer).when(mWebContentHairlineContainerStub).inflate();
-
         // Set up browser controls classes.
         doReturn(mBrowserControlsVisibilityDelegate)
                 .when(mBrowserControlsVisibilityManager)
@@ -177,7 +165,6 @@ public class SideUiCoordinatorImplTest {
                         anchorContainerParent,
                         mLeftAnchorContainerStub,
                         mRightAnchorContainerStub,
-                        mWebContentHairlineContainerStub,
                         mIncognitoStateProvider,
                         mTabModelSelector);
 
@@ -1240,25 +1227,6 @@ public class SideUiCoordinatorImplTest {
         @Px int expectedWidth = ViewUtils.dpToPx(mTestActivity, sideUiContainer.mMaxWidthDp);
         verify(mSideUiObserver)
                 .onSideUiSpecsChanged(eq(new SideUiSpecs(0, expectedWidth)), eq(committedRequest));
-    }
-
-    @Test
-    @DisabledTest(message = "crbug.com/538387539")
-    public void testUpdateUi_UpdatesWebContentHairline() {
-        doReturn(50f).when(mBrowserControlsVisibilityManager).getTopVisibleContentOffset();
-
-        var sideUiContainer =
-                new TestSideUiContainer(
-                        mCoordinator, mSideUiContainerView, SideUiId.SIDE_PANEL, AnchorSide.RIGHT);
-        mCoordinator.registerSideUiContainer(sideUiContainer);
-
-        mCoordinator.updateUi(
-                new UiUpdateRequest(
-                        sideUiContainer.getSideUiId(),
-                        /* suppressAnimations= */ true,
-                        UpdateReason.SIDE_UI_REQUEST));
-
-        verify(mBrowserControlsVisibilityManager, atLeastOnce()).getTopVisibleContentOffset();
     }
 
     @Test

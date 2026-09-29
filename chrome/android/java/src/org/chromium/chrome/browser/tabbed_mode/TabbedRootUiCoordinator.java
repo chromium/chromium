@@ -272,6 +272,8 @@ import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.web_content_hairline.WebContentHairlineCoordinator;
+import org.chromium.chrome.browser.ui.web_content_hairline.WebContentHairlineCoordinatorFactory;
 import org.chromium.chrome.browser.user_education.UserEducationUtils;
 import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPromoType;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
@@ -408,6 +410,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable NtpSyncedThemeManager mNtpSyncedThemeManager;
     private final @Nullable CrossDeviceSettingImporter mCrossDeviceSettingImporter;
     private @Nullable SideUiCoordinator mSideUiCoordinator;
+    private @Nullable WebContentHairlineCoordinator mWebContentHairlineCoordinator;
     private @Nullable SidePanelContainerCoordinator mSidePanelContainerCoordinator;
     private @Nullable SidePanelDevFeature mSidePanelDevFeature;
     private final OneshotSupplierImpl<Boolean> mTrackerInitializedOneshotSupplier =
@@ -1087,6 +1090,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mControlContainer = null;
         }
 
+        // The hairline observes SideUiCoordinator, so it must be destroyed first.
+        destroyWebContentHairline();
         destroySideUi();
 
         super.onDestroy();
@@ -1593,6 +1598,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // Must precede initializeSideUi(), which passes this controller to vertical tabs.
         initUndoGroupSnackbarController();
         initializeSideUi(currentlySelectedProfile);
+        initializeWebContentHairline();
 
         // ContextualTasksBridge depends on the side panel framework set up by initializeSideUi().
         if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
@@ -2334,14 +2340,27 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    private void initializeWebContentHairline() {
+        // The hairline observes SideUiCoordinator, so it can only be created if side UI exists.
+        if (mSideUiCoordinator == null) return;
+
+        ViewStub webContentHairlineContainerStub =
+                mActivity.findViewById(R.id.web_content_hairline_container_stub);
+        mWebContentHairlineCoordinator =
+                WebContentHairlineCoordinatorFactory.create(
+                        mBrowserControlsManager,
+                        mSideUiCoordinator,
+                        mIncognitoStateProvider,
+                        mTopControlsStacker,
+                        assumeNonNull(webContentHairlineContainerStub));
+    }
+
     private void initializeSideUi(Profile currentlySelectedProfile) {
         ViewGroup anchorContainerParent = mActivity.findViewById(R.id.constrained_views_container);
         ViewStub sideUiStartAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_left_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_right_anchor_container_stub);
-        ViewStub webContentHairlineContainerStub =
-                mActivity.findViewById(R.id.side_ui_web_content_hairline_container_stub);
 
         if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
             mTabSearchOverlayCoordinator =
@@ -2373,7 +2392,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
-                        webContentHairlineContainerStub,
                         mIncognitoStateProvider,
                         mTabModelSelectorSupplier.asNonNull().get());
 
@@ -2687,6 +2705,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
             UmaSessionStats.registerSyntheticFieldTrial(
                     "VerticalTabsAndroid", shouldShowVerticalTabs ? "Enabled" : "Disabled");
+        }
+    }
+
+    private void destroyWebContentHairline() {
+        if (mWebContentHairlineCoordinator != null) {
+            mWebContentHairlineCoordinator.destroy();
+            mWebContentHairlineCoordinator = null;
         }
     }
 
