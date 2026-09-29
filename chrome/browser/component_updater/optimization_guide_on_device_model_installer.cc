@@ -16,6 +16,7 @@
 
 #include "base/byte_size.h"
 #include "base/callback_list.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -41,7 +42,6 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -155,8 +155,8 @@ void GetComponentFreeDiskSpace(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(),
-       optimization_guide::switches::
-               ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask()
+       base::CommandLine::ForCurrentProcess()->HasSwitch(
+           optimization_guide::kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch)
            ? base::TaskPriority::USER_VISIBLE
            : base::TaskPriority::BEST_EFFORT},
       base::BindOnce(

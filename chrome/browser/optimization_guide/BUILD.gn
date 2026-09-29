@@ -167,6 +167,7 @@ if (!is_android) {
 
     deps = [
       ":optimization_guide",
+      ":optimization_guide_on_device_model_installer",
       ":test_support",
       "//base/test:test_proto",
       "//base/test:test_support",

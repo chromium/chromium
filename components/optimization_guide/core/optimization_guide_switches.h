@@ -21,13 +21,6 @@ extern const char kOnDeviceModelExecutionOverride[];
 // Returns the path to the on-device base model provided on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<base::FilePath> GetOnDeviceModelExecutionOverride();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[];
-// Returns whether to get free disk space with base::TaskPriority::USER_VISIBLE
-// task. This is about the freediskspace check in the context of the on-device
-// model eligibility check.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
 
 }  // namespace switches
 }  // namespace optimization_guide

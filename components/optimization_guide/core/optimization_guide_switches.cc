@@ -15,20 +15,12 @@ namespace switches {
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";
 
-const char kGetFreeDiskSpaceWithUserVisiblePriorityTask[] =
-    "optimization-guide-get-free-disk-space-with-user-visible-priority-task";
-
 std::optional<base::FilePath> GetOnDeviceModelExecutionOverride() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kOnDeviceModelExecutionOverride)) {
     return std::nullopt;
   }
   return command_line->GetSwitchValuePath(kOnDeviceModelExecutionOverride);
-}
-
-bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kGetFreeDiskSpaceWithUserVisiblePriorityTask);
 }
 
 }  // namespace switches
