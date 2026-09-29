@@ -427,23 +427,34 @@ def sort_versions(versions: List[str]) -> List[str]:
     return sorted(versions, key=cmp_to_key(compare_versions))
 
 
+def _fetch_url(url: str) -> bytes:
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(url, timeout=15) as response:
+                return response.read()
+        except OSError as e:
+            print(f'Failed to fetch {url}: {e}. Retrying...')
+            time.sleep(2**attempt)
+    raise RuntimeError(f'Failed to fetch {url}')
+
+
 @cache
 def _get_latest_stable_version_string():
     """Fetches the latest stable version string from chromiumdash by doing an
     HTTP request."""
     print('Fetching latest stable version from chromiumdash...')
-    with urllib.request.urlopen(
-            # Chromiumdash lists releases by date. Because of LTS backports, an older
-            # milestone is often released more recently than the newest major version.
-            # We fetch a large batch (e.g., 50) and select the highest branch number
-            # to ensure we identify the actual latest stable branch.
+    # Chromiumdash lists releases by date. Because of LTS backports, an older
+    # milestone is often released more recently than the newest major version.
+    # We fetch a large batch (e.g., 50) and select the highest branch number
+    # to ensure we identify the actual latest stable branch.
+    data = json.loads(
+        _fetch_url(
             'https://chromiumdash.appspot.com/fetch_releases?num=50&platform=Android&channel=Stable'
-    ) as url:
-        data = json.loads(url.read().decode())
-        latest_stable = sort_versions(
-            [release_json['version'] for release_json in data])[-1]
-        print(f'Latest stable version is {latest_stable}')
-        return latest_stable
+        ))
+    latest_stable = sort_versions(
+        [release_json['version'] for release_json in data])[-1]
+    print(f'Latest stable version is {latest_stable}')
+    return latest_stable
 
 
 def _get_build_number_from_version_string(version: str) -> int:
@@ -495,9 +506,8 @@ def _get_chromium_last_change() -> str:
 
 def _fetch_breakages() -> list[dict[str, str]]:
     print(f"Fetching breakages.json from {_BREAKAGES_FILE_URL}")
-    with urllib.request.urlopen(_BREAKAGES_FILE_URL) as url:
-        return json.loads(base64.b64decode(url.read().decode()))["breakages"]
-    raise ValueError("Failed to fetch breakages")
+    return json.loads(base64.b64decode(
+        _fetch_url(_BREAKAGES_FILE_URL)))["breakages"]
 
 
 def _get_change_ids_from_head(months: int) -> dict[str, int]:
