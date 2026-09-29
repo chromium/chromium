@@ -99,6 +99,16 @@ class TestLoader(testloader.TestLoader):
                 # tests, but add to `disabled_tests` anyway just in case.
                 test = self.get_test(manifest, item, inherit_metadata,
                                      test_metadata)
+                if not self._port.get_option('no_expectations'):
+                    test_name = self._blink_test_name(item.id,
+                                                      subsuite.run_info)
+                    if self._expectations.get_expectations(
+                            test_name).is_slow_test:
+                        # Blink SlowTests do not affect wptrunner's watchdog.
+                        # Keep Chromium-specific slow WPT tests from
+                        # requiring an upstream, cross-browser timeout marker.
+                        test_cls = wpttest.manifest_test_cls[item.item_type]
+                        test.timeout = max(test.timeout, test_cls.long_timeout)
                 tests = self.disabled_tests if test.disabled() else self.tests
                 tests[subsuite_name][item.item_type].append(test)
 
@@ -110,6 +120,14 @@ class TestLoader(testloader.TestLoader):
                 for test in tests:
                     items_by_url[test.id] = test
         return items_by_url
+
+    @staticmethod
+    def _blink_test_name(url: str, run_info: RunInfo) -> str:
+        test_name = wpt_url_to_blink_test(url)
+        virtual_suite = run_info.get('virtual_suite')
+        if virtual_suite:
+            test_name = f'virtual/{virtual_suite}/{test_name}'
+        return test_name
 
     def load_dir_metadata(
         self,
@@ -132,10 +150,7 @@ class TestLoader(testloader.TestLoader):
         test_type: Optional[TestType] = None
 
         for item in test_manifest.iterpath(test_path):
-            test_name = wpt_url_to_blink_test(item.id)
-            virtual_suite = run_info.get('virtual_suite')
-            if virtual_suite:
-                test_name = f'virtual/{virtual_suite}/{test_name}'
+            test_name = self._blink_test_name(item.id, run_info)
             assert not test_type or test_type == item.item_type, item
             test_type = item.item_type
             expected_text = self._port.expected_text(test_name)

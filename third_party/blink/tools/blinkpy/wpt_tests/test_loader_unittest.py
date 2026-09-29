@@ -38,6 +38,9 @@ class TestLoaderTestCase(unittest.TestCase):
                             ['variant.html?foo=bar/abc', {}],
                             ['variant.html?foo=baz', {}],
                         ],
+                        'long.html': ['abcdef', [None, {
+                            'timeout': 'long'
+                        }]],
                         'dir': {
                             'multiglob.https.any.js': [
                                 '123456',
@@ -52,14 +55,23 @@ class TestLoaderTestCase(unittest.TestCase):
                             [None, [['reftest-ref.html', '==']], {}],
                         ],
                     },
+                    'wdspec': {
+                        'test.py': ['abcdef', [None, {}]],
+                        'long.py': ['abcdef', [None, {
+                            'timeout': 'long'
+                        }]],
+                    },
+                    'crashtest': {
+                        'crash.html': ['abcdef', [None, {}]],
+                    },
                 },
             }))
         wptlogging.setup({}, {})
 
     @contextlib.contextmanager
-    def _make_loader(self, **kwargs):
+    def _make_loader(self, no_expectations=False, **kwargs):
         port = self.host.port_factory.get('test-linux-trusty')
-        port.set_option_default('no_expectations', False)
+        port.set_option_default('no_expectations', no_expectations)
         with self.fs.patch_builtins():
             manifest = load_and_update(
                 self.finder.path_from_wpt_tests(),
@@ -73,7 +85,7 @@ class TestLoaderTestCase(unittest.TestCase):
                 'metadata_path': manifest.tests_root,
             }
             yield TestLoader(port, {manifest: test_root},
-                             ['testharness', 'reftest'],
+                             ['testharness', 'reftest', 'wdspec', 'crashtest'],
                              base_run_info={},
                              **kwargs)
 
@@ -397,3 +409,111 @@ class TestLoaderTestCase(unittest.TestCase):
         with self._make_loader(subsuites=subsuites, include=[]) as loader:
             self.assertEqual(set(loader.tests), {''})
             self.assertEqual(loader.tests[''], {})
+
+    def test_slow_timeout_for_multiple_test_types(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('SlowTests'),
+            '# results: [ Slow ]\n'
+            'external/wpt/test.py [ Slow ]\n'
+            'external/wpt/variant.html?foo=baz [ Slow ]\n'
+            'external/wpt/reftest.html [ Slow ]\n'
+            'external/wpt/crash.html [ Slow ]\n')
+        subsuites = {'': Subsuite('', config={})}
+        with self._make_loader(subsuites=subsuites,
+                               include=[
+                                   '/test.py', '/long.py', '/long.html',
+                                   '/variant.html?foo=bar/abc',
+                                   '/variant.html?foo=baz', '/reftest.html',
+                                   '/crash.html'
+                               ]) as loader:
+            tests = {
+                test.id: test
+                for test_type in loader.tests[''].values()
+                for test in test_type
+            }
+            self.assertEqual(tests['/test.py'].timeout,
+                             wpttest.WdspecTest.long_timeout)
+            self.assertEqual(tests['/long.py'].timeout,
+                             wpttest.WdspecTest.long_timeout)
+            self.assertEqual(tests['/variant.html?foo=baz'].timeout,
+                             wpttest.TestharnessTest.long_timeout)
+            self.assertEqual(tests['/variant.html?foo=bar/abc'].timeout,
+                             wpttest.TestharnessTest.default_timeout)
+            self.assertEqual(tests['/long.html'].timeout,
+                             wpttest.TestharnessTest.long_timeout)
+            self.assertEqual(tests['/reftest.html'].timeout,
+                             wpttest.ReftestTest.long_timeout)
+            self.assertEqual(tests['/crash.html'].timeout,
+                             wpttest.CrashTest.long_timeout)
+
+        # WPT-only reporting must retain the upstream manifest timeout.
+        with self._make_loader(subsuites=subsuites,
+                               no_expectations=True,
+                               include=[
+                                   '/test.py', '/variant.html?foo=baz',
+                                   '/reftest.html', '/crash.html', '/long.html'
+                               ]) as loader:
+            tests = {
+                test.id: test
+                for test_type in loader.tests[''].values()
+                for test in test_type
+            }
+            self.assertEqual(tests['/test.py'].timeout,
+                             wpttest.WdspecTest.default_timeout)
+            self.assertEqual(tests['/variant.html?foo=baz'].timeout,
+                             wpttest.TestharnessTest.default_timeout)
+            self.assertEqual(tests['/reftest.html'].timeout,
+                             wpttest.ReftestTest.default_timeout)
+            self.assertEqual(tests['/crash.html'].timeout,
+                             wpttest.CrashTest.default_timeout)
+            self.assertEqual(tests['/long.html'].timeout,
+                             wpttest.TestharnessTest.long_timeout)
+
+    def test_slow_timeout_is_scoped_to_virtual_suite(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('SlowTests'),
+            '# results: [ Slow ]\n'
+            'virtual/fake-vts/external/wpt/test.py [ Slow ]\n'
+            'virtual/fake-vts/external/wpt/variant.html?foo=baz [ Slow ]\n')
+        subsuites = {
+            '':
+            Subsuite('', config={}),
+            'fake-vts':
+            Subsuite('fake-vts',
+                     config={},
+                     run_info_extras={'virtual_suite': 'fake-vts'},
+                     include=['/test.py', '/variant.html?foo=baz']),
+        }
+        with self._make_loader(subsuites=subsuites,
+                               include=['/test.py',
+                                        '/variant.html?foo=baz']) as loader:
+            (base_test, ) = loader.tests['']['wdspec']
+            (virtual_test, ) = loader.tests['fake-vts']['wdspec']
+            self.assertEqual(base_test.timeout,
+                             wpttest.WdspecTest.default_timeout)
+            self.assertEqual(virtual_test.timeout,
+                             wpttest.WdspecTest.long_timeout)
+            (base_test, ) = loader.tests['']['testharness']
+            (virtual_test, ) = loader.tests['fake-vts']['testharness']
+            self.assertEqual(base_test.timeout,
+                             wpttest.TestharnessTest.default_timeout)
+            self.assertEqual(virtual_test.timeout,
+                             wpttest.TestharnessTest.long_timeout)
+
+    def test_slow_timeout_respects_platform_tags(self):
+        self.fs.write_text_file(
+            self.finder.path_from_web_tests('SlowTests'),
+            '# tags: [ Linux Mac ]\n'
+            '# results: [ Slow ]\n'
+            '[ Mac ] external/wpt/test.py [ Slow ]\n'
+            'external/wpt/variant.html?foo=baz [ Slow ]\n')
+        subsuites = {'': Subsuite('', config={})}
+        with self._make_loader(subsuites=subsuites,
+                               include=['/test.py',
+                                        '/variant.html?foo=baz']) as loader:
+            (wdspec_test, ) = loader.tests['']['wdspec']
+            (testharness_test, ) = loader.tests['']['testharness']
+            self.assertEqual(wdspec_test.timeout,
+                             wpttest.WdspecTest.default_timeout)
+            self.assertEqual(testharness_test.timeout,
+                             wpttest.TestharnessTest.long_timeout)
