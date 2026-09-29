@@ -38,12 +38,24 @@ UnderlyingSourceBase*
 FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
     ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-  scoped_refptr<base::SingleThreadTaskRunner> current_runner =
-      context->GetTaskRunner(TaskType::kInternalMediaRealTime);
-
   auto host = host_.Lock();
   if (!host)
     return nullptr;
+
+  // A source created on a destroyed context would never get
+  // `ContextDestroyed()`, so the host would keep forwarding frames to a dead
+  // heap. Treat this like a transferred source whose context was destroyed.
+  if (!context || context->IsContextDestroyed()) {
+    if (transferred_source_destroyed_callback_) {
+      std::move(transferred_source_destroyed_callback_).Run();
+    }
+    PostCrossThreadTask(
+        *host_runner_, FROM_HERE,
+        CrossThreadBindOnce(&FrameQueueHost::Close, std::move(host)));
+    return nullptr;
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> current_runner =
+      context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
   base::TimeTicks time_origin;
   bool is_cross_origin_isolated = false;
