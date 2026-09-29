@@ -106,6 +106,30 @@ class ContextMenuChipController implements View.OnClickListener {
         }
     }
 
+    private ChipView buildChipView(ChipRenderParams chipRenderParams) {
+        ChipView chipView =
+                (ChipView) LayoutInflater.from(mContext).inflate(R.layout.context_menu_chip, null);
+
+        chipView.getPrimaryTextView().setText(mContext.getString(chipRenderParams.titleResourceId));
+        // TODO(benwgold): Consult with Chrome UX owners to see if Chip UI hierarchy should be
+        // refactored.
+        chipView.getPrimaryTextView()
+                .setMaxWidth(getChipTextMaxWidthPx(chipRenderParams.isRemoveIconHidden));
+
+        if (chipRenderParams.iconResourceId != 0) {
+            chipView.setIconWithTint(
+                    chipRenderParams.iconResourceId, /* tintWithTextColor= */ false);
+        }
+
+        if (!chipRenderParams.isRemoveIconHidden) {
+            chipView.addRemoveIcon();
+            chipView.setRemoveIconClickListener(v -> dismissChipIfShowing());
+        }
+
+        chipView.setOnClickListener(this);
+        return chipView;
+    }
+
     /**
      * Inflate an anchored chip view, set it up, and show it to the user.
      *
@@ -119,50 +143,33 @@ class ContextMenuChipController implements View.OnClickListener {
 
         mChipRenderParams = chipRenderParams;
 
-        mChipView =
-                (ChipView) LayoutInflater.from(mContext).inflate(R.layout.context_menu_chip, null);
+        ChipView chipView = buildChipView(chipRenderParams);
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         // Draw a clear background to avoid blocking context menu items.
         mPopupWindow =
-                new AnchoredPopupWindow(
-                        mContext,
-                        mAnchorView,
-                        new ColorDrawable(Color.TRANSPARENT),
-                        mChipView,
-                        rectProvider);
-        mPopupWindow.setAnimationStyle(R.style.ChipAnimation);
-        mPopupWindow.setPreferredHorizontalOrientation(
-                AnchoredPopupWindow.HorizontalOrientation.CENTER);
-        // The bottom margin will determine the vertical placement of the chip, so
-        // ensure that this distance is computed from the anchor.
-        mPopupWindow.setPreferredVerticalOrientation(AnchoredPopupWindow.VerticalOrientation.ABOVE);
-        mPopupWindow.setFocusable(false);
-        // Don't dismiss as a result of touches outside of the chip popup.
-        mPopupWindow.setOutsideTouchable(false);
-        mPopupWindow.setMaxWidth(
-                mContext.getResources().getDimensionPixelSize(R.dimen.context_menu_chip_max_width));
+                new AnchoredPopupWindow.Builder(
+                                mContext,
+                                mAnchorView,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> chipView,
+                                rectProvider)
+                        .setAnimationStyle(R.style.ChipAnimation)
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.CENTER)
+                        // The bottom margin will determine the vertical placement of the chip, so
+                        // ensure that this distance is computed from the anchor.
+                        .setPreferredVerticalOrientation(
+                                AnchoredPopupWindow.VerticalOrientation.ABOVE)
+                        .setFocusable(false)
+                        // Don't dismiss as a result of touches outside of the chip popup.
+                        .setOutsideTouchable(false)
+                        .setMaxWidth(
+                                mContext.getResources()
+                                        .getDimensionPixelSize(R.dimen.context_menu_chip_max_width))
+                        .build();
 
-        mChipView
-                .getPrimaryTextView()
-                .setText(mContext.getString(chipRenderParams.titleResourceId));
-        // TODO(benwgold): Consult with Chrome UX owners to see if Chip UI hierarchy should be
-        // refactored.
-        mChipView
-                .getPrimaryTextView()
-                .setMaxWidth(getChipTextMaxWidthPx(chipRenderParams.isRemoveIconHidden));
-
-        if (chipRenderParams.iconResourceId != 0) {
-            mChipView.setIconWithTint(
-                    chipRenderParams.iconResourceId, /* tintWithTextColor= */ false);
-        }
-
-        if (!chipRenderParams.isRemoveIconHidden) {
-            mChipView.addRemoveIcon();
-            mChipView.setRemoveIconClickListener(v -> dismissChipIfShowing());
-        }
-
-        mChipView.setOnClickListener(this);
+        mChipView = chipView;
 
         mPopupWindow.show();
         if (mChipRenderParams.onShowCallback != null) {

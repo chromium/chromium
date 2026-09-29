@@ -440,16 +440,17 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         : R.drawable.menu_bg_tinted;
 
         mColorIconPopupWindow =
-                new AnchoredPopupWindow(
-                        mActivity,
-                        decorView,
-                        AppCompatResources.getDrawable(mActivity, bgDrawableId),
-                        root,
-                        new ViewRectProvider(anchorView));
-        mColorIconPopupWindow.addOnDismissListener(onDismissListener);
-        mColorIconPopupWindow.setFocusable(true);
-        mColorIconPopupWindow.setHorizontalOverlapAnchor(true);
-        mColorIconPopupWindow.setVerticalOverlapAnchor(true);
+                new AnchoredPopupWindow.Builder(
+                                mActivity,
+                                decorView,
+                                AppCompatResources.getDrawable(mActivity, bgDrawableId),
+                                () -> root,
+                                new ViewRectProvider(anchorView))
+                        .addOnDismissListener(onDismissListener)
+                        .setFocusable(true)
+                        .setHorizontalOverlapAnchor(true)
+                        .setVerticalOverlapAnchor(true)
+                        .build();
         mColorIconPopupWindow.show();
     }
 

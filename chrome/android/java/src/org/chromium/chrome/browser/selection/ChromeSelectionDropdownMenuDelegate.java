@@ -76,12 +76,19 @@ public class ChromeSelectionDropdownMenuDelegate
         int desiredContentWidth = calculateDesiredContentWidth(contentView, menu, maxWidthPx);
 
         AnchoredPopupWindow popupWindow =
-                new AnchoredPopupWindow(
-                        context,
-                        rootView,
-                        new ColorDrawable(Color.TRANSPARENT),
-                        menu.getContentView(),
-                        new RectProvider(dropdownRect));
+                new AnchoredPopupWindow.Builder(
+                                context,
+                                rootView,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                menu::getContentView,
+                                new RectProvider(dropdownRect))
+                        .setVerticalOverlapAnchor(true)
+                        .setHorizontalOverlapAnchor(true)
+                        .setMaxWidth(maxWidthPx)
+                        .setDesiredContentWidth(desiredContentWidth)
+                        .setFocusable(true)
+                        .setOutsideTouchable(true)
+                        .build();
         AnchoredPopupWindow.LayoutObserver layoutObserver =
                 (positionBelow, x2, y2, width, height, anchorRect) ->
                         popupWindow.setAnimationStyle(
@@ -89,12 +96,6 @@ public class ChromeSelectionDropdownMenuDelegate
                                         ? R.style.StartIconMenuAnim
                                         : R.style.StartIconMenuAnimBottom);
         popupWindow.setLayoutObserver(layoutObserver);
-        popupWindow.setVerticalOverlapAnchor(true);
-        popupWindow.setHorizontalOverlapAnchor(true);
-        popupWindow.setMaxWidth(maxWidthPx);
-        popupWindow.setDesiredContentWidth(desiredContentWidth);
-        popupWindow.setFocusable(true);
-        popupWindow.setOutsideTouchable(true);
         popupWindow.addOnDismissListener(
                 () -> {
                     dismiss();
