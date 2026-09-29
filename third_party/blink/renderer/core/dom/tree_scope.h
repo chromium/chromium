@@ -92,8 +92,6 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   TreeScope* ParentTreeScope() const { return parent_tree_scope_.Get(); }
 
-  bool IsInclusiveAncestorTreeScopeOf(const TreeScope&) const;
-
   // is_pseudo_allowed:
   // - if true, PseudoElement can be returned
   // - if false, PseudoElement will be retargeted to some Element according to

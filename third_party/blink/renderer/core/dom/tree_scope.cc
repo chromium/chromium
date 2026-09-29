@@ -89,15 +89,6 @@ TreeScope::TreeScope(Document& document)
 
 TreeScope::~TreeScope() = default;
 
-bool TreeScope::IsInclusiveAncestorTreeScopeOf(const TreeScope& scope) const {
-  for (const TreeScope* current = &scope; current;
-       current = current->ParentTreeScope()) {
-    if (current == this)
-      return true;
-  }
-  return false;
-}
-
 void TreeScope::SetParentTreeScope(TreeScope& new_parent_scope) {
   // A document node cannot be re-parented.
   DCHECK(!RootNode().IsDocumentNode());
@@ -797,7 +788,7 @@ Focusable* TreeScope::activeFocusable() const {
   // the outer document, in an unrelated shadow tree, or on a slotted light-DOM
   // element).
   if (!focused_element ||
-      !IsInclusiveAncestorTreeScopeOf(focused_element->GetTreeScope())) {
+      !IsInclusiveAncestorOf(focused_element->GetTreeScope())) {
     return nullptr;
   }
   return Focusable::CreateFromElement(*focused_element, *this);

@@ -467,7 +467,7 @@ void EventPath::CheckReachability(TreeScope& tree_scope,
                ->target()
                ->ToNode()
                ->GetTreeScope()
-               .IsInclusiveAncestorTreeScopeOf(tree_scope));
+               .IsInclusiveAncestorOf(tree_scope));
   }
 }
 #endif

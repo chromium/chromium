@@ -5526,7 +5526,7 @@ double CSSMathExpressionSiblingFunction::ComputeDouble(
   length_resolver.ReferenceSibling();
   const Element* element = length_resolver.GetElement();
   if (const TreeScope* value_scope = function_->GetTreeScope()) {
-    if (!element->GetTreeScope().IsInclusiveAncestorTreeScopeOf(*value_scope)) {
+    if (!element->GetTreeScope().IsInclusiveAncestorOf(*value_scope)) {
       return 1;
     }
   }

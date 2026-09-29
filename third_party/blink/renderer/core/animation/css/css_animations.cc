@@ -1392,7 +1392,7 @@ bool TimelineMatchesScope(const ScrollTimeline& timeline,
   const TreeScope* ref_scope = target_name.GetTreeScope();
   CHECK(ref_scope);
 
-  if (!def_scope->IsInclusiveAncestorTreeScopeOf(*ref_scope)) {
+  if (!def_scope->IsInclusiveAncestorOf(*ref_scope)) {
     UseCounter::Count(document, WebFeature::kCSSTimelineTreeScopeMismatch);
     if (RuntimeEnabledFeatures::CSSTreeScopedScrollTimelineEnabled()) {
       return false;
