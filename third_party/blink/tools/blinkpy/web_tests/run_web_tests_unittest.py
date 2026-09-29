@@ -1125,6 +1125,20 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             sorted(tests_run),
             ['passes/error.html', 'passes/image.html', 'passes/text.html'])
 
+    def test_gtest_filter_disables_default_smoke(self):
+        # Tests named via --gtest_filter must not be combined with the smoke
+        # tests on a port that runs only smoke tests by default.
+        host = MockHost()
+        host.filesystem.write_text_file(
+            test.MOCK_WEB_TESTS + 'TestLists/Default.txt',
+            'passes/text.html\n')
+        with mock.patch.object(test.TestPort,
+                               'default_smoke_test_only',
+                               return_value=True):
+            tests_run = get_tests_run(['--gtest_filter=passes/image.html'],
+                                      host=host)
+        self.assertEqual(['passes/image.html'], tests_run)
+
     def test_sharding_even(self):
         # Test that we actually select the right part
         tests_to_run = [

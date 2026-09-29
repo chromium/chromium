@@ -183,6 +183,11 @@ def _set_up_derived_options(port, options, args):
                 port.host.filesystem.abspath(path))
         options.additional_platform_directory = additional_platform_directories
 
+    # Tests named via --gtest_filter are explicitly specified tests, so they
+    # must be added before deciding whether to default to smoke tests.
+    if options.gtest_filter:
+        args.extend(options.gtest_filter.split(':'))
+
     if not args and not options.test_list and options.smoke is None:
         options.smoke = port.default_smoke_test_only()
     if options.smoke:
@@ -200,9 +205,6 @@ def _set_up_derived_options(port, options, args):
 
     if not options.skipped:
         options.skipped = 'default'
-
-    if options.gtest_filter:
-        args.extend(options.gtest_filter.split(':'))
 
     if not options.total_shards and 'GTEST_TOTAL_SHARDS' in port.host.environ:
         options.total_shards = int(port.host.environ['GTEST_TOTAL_SHARDS'])
