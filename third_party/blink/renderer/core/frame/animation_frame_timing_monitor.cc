@@ -66,7 +66,7 @@ constexpr base::TimeDelta kCongestionIdleGap = base::Milliseconds(5);
 
 AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
                                                          CoreProbeSink* sink)
-    : client_(client) {
+    : client_(&client) {
   Thread::Current()->AddTaskTimeObserver(this);
   if (!IsMainThread()) {
     CHECK(RuntimeEnabledFeatures::LongAnimationFrameWorkerEnabled());
@@ -763,6 +763,7 @@ void AnimationFrameTimingMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_handling_input_);
   visitor->Trace(task_attributed_window_);
   visitor->Trace(congestion_scripts_);
+  visitor->Trace(client_);
 }
 
 BASE_FEATURE(kAlwaysLogLOAFURL, base::FEATURE_DISABLED_BY_DEFAULT);

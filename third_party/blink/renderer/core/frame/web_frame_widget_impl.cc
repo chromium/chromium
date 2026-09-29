@@ -1694,6 +1694,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(device_emulator_);
   visitor->Trace(animation_frame_timing_monitor_);
   visitor->Trace(unbounded_surface_state_);
+  AnimationFrameTimingMonitor::Client::Trace(visitor);
 }
 
 void WebFrameWidgetImpl::SetNeedsRecalculateRasterScales() {

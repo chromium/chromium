@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -46,7 +47,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
     : public GarbageCollected<AnimationFrameTimingMonitor>,
       public base::sequence_manager::TaskTimeObserver {
  public:
-  class Client {
+  class Client : public GarbageCollectedMixin {
    public:
     virtual void ReportLongTaskTiming(base::TimeTicks start,
                                       base::TimeTicks end,
@@ -194,7 +195,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   std::optional<PendingScriptInfo> pending_script_info_;
   HashMap<size_t, PendingScriptInfo> user_entry_points_;
-  const raw_ref<Client, UnprotectedInRelease | DanglingUntriaged> client_;
+  const Member<Client> client_;
 
   enum class State {
     // No task running, no pending frames.

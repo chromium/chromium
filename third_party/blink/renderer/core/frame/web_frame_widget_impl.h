@@ -173,7 +173,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool is_for_scalable_page);
   ~WebFrameWidgetImpl() override;
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   // Shutdown the widget.
   void Close(DetachReason detach_reason);
