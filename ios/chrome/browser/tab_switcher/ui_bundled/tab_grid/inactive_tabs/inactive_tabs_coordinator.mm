@@ -137,7 +137,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
     NSLayoutConstraint* baseViewSnapshotHorizontalPosition;
 
 // Whether settings are currently presented.
-@property(nonatomic, getter=isPresetingSettings) BOOL presentingSettings;
+@property(nonatomic, getter=isPresentingSettings) BOOL presentingSettings;
 
 // The optional user education coordinator shown the first time Inactive Tabs
 // are displayed.
@@ -420,9 +420,11 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 - (void)inactiveTabsUserEducationCoordinatorDidTapSettingsButton:
     (InactiveTabsUserEducationCoordinator*)
         inactiveTabsUserEducationCoordinator {
-  [self.userEducationCoordinator stop];
+  __weak __typeof(self) weakSelf = self;
+  [self.userEducationCoordinator stopWithCompletion:^{
+    [weakSelf presentSettings];
+  }];
   self.userEducationCoordinator = nil;
-  [self presentSettings];
 }
 
 - (void)inactiveTabsUserEducationCoordinatorDidFinish:
@@ -691,6 +693,12 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 // Presents the Inactive Tabs settings modally in their own navigation
 // controller.
 - (void)presentSettings {
+  if (self.presentingSettings || _settingsController ||
+      self.viewController.presentedViewController ||
+      self.baseViewController.presentedViewController) {
+    return;
+  }
+
   _settingsController = [SettingsNavigationController
       inactiveTabsControllerForBrowser:self.browser->GetActiveBrowser()
                               delegate:self];

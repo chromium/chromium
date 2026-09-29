@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_INACTIVE_TABS_INACTIVE_TABS_USER_EDUCATION_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_INACTIVE_TABS_INACTIVE_TABS_USER_EDUCATION_COORDINATOR_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class InactiveTabsUserEducationCoordinator;
@@ -29,6 +30,10 @@
 // Delegate for dismissing the coordinator.
 @property(nonatomic, weak) id<InactiveTabsUserEducationCoordinatorDelegate>
     delegate;
+
+// Stops the coordinator and dismisses its view controller, calling `completion`
+// when dismissal completes.
+- (void)stopWithCompletion:(ProceduralBlock)completion;
 
 @end
 

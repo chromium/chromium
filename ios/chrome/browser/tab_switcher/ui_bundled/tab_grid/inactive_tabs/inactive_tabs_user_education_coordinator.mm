@@ -145,8 +145,17 @@ UIImage* ConfirmationAlertImage() {
 }
 
 - (void)stop {
+  [self stopWithCompletion:nil];
+}
+
+- (void)stopWithCompletion:(ProceduralBlock)completion {
   [super stop];
-  [_confirmationAlert dismissViewControllerAnimated:YES completion:nil];
+  if (_confirmationAlert) {
+    [_confirmationAlert dismissViewControllerAnimated:YES
+                                           completion:completion];
+  } else if (completion) {
+    completion();
+  }
 }
 
 #pragma mark - ConfirmationAlertActionHandler
