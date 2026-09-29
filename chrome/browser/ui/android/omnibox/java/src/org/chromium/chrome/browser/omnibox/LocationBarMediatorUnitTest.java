@@ -239,18 +239,13 @@ public class LocationBarMediatorUnitTest {
     @Mock private ComposeboxQueryControllerBridge mComposeboxBridge;
     @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
-    @Mock private OmniboxSuggestionsDropdown mDropdown;
     @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
     @Mock private View mUrlBar;
     @Mock private View mDeleteButton;
     @Mock private ChipView mActivationChip;
-    @Mock private View mMicButton;
-    @Mock private View mNavigateButton;
-    @Mock private View mPlusButton;
     @Mock private View mFocusThief;
     @Mock private Activity mActivity;
     @Mock private Window mWindow;
-    @Mock private View mPlaceholder;
     @Mock private AutocompleteMatch mAutocompleteMatch;
     @Mock private Tracker mTracker;
     @Mock private LocationBarNavigator mNavigator;
@@ -265,6 +260,11 @@ public class LocationBarMediatorUnitTest {
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
     @Captor private ArgumentCaptor<View.OnLayoutChangeListener> mOnLayoutChangeListenerCaptor;
 
+    private OmniboxSuggestionsDropdown mDropdown;
+    private View mMicButton;
+    private View mNavigateButton;
+    private View mPlusButton;
+    private View mPlaceholder;
     private Callback<Boolean> mOnInteractionCompletedCallback;
     private Context mContext;
     private OmniboxResourceProvider mOmniboxResourceProvider;
@@ -342,6 +342,11 @@ public class LocationBarMediatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, null);
+        mMicButton = new View(mContext);
+        mNavigateButton = new View(mContext);
+        mPlusButton = new View(mContext);
+        mPlaceholder = new View(mContext);
         mOmniboxResourceProvider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
 
@@ -1618,9 +1623,9 @@ public class LocationBarMediatorUnitTest {
 
         // Make only UrlBar and Delete button visible to simplify selection.
         doReturn(View.GONE).when(mActivationChip).getVisibility();
-        doReturn(View.GONE).when(mPlusButton).getVisibility();
-        doReturn(View.GONE).when(mMicButton).getVisibility();
-        doReturn(View.GONE).when(mNavigateButton).getVisibility();
+        mPlusButton.setVisibility(View.GONE);
+        mMicButton.setVisibility(View.GONE);
+        mNavigateButton.setVisibility(View.GONE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
 
         // 1. Send TAB to move selection from UrlBar (index 0) to Delete button (index 1 in visible
@@ -4236,7 +4241,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         doReturn(View.GONE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
@@ -4300,7 +4305,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         doReturn(View.GONE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
@@ -4418,7 +4423,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         doReturn(View.GONE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
@@ -4466,7 +4471,7 @@ public class LocationBarMediatorUnitTest {
         doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
         doReturn(true).when(mKeyEvent).hasNoModifiers();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.GONE).when(mDeleteButton).getVisibility();
         doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
@@ -4502,7 +4507,7 @@ public class LocationBarMediatorUnitTest {
     public void testHandleKeyNavigationEvent_downKeySelectsAutocomplete() {
         doReturn(KeyEvent.KEYCODE_DPAD_DOWN).when(mKeyEvent).getKeyCode();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
@@ -4524,7 +4529,7 @@ public class LocationBarMediatorUnitTest {
     public void testHandleKeyNavigationEvent_upKeySelectsAutocomplete() {
         doReturn(KeyEvent.KEYCODE_DPAD_UP).when(mKeyEvent).getKeyCode();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(View.VISIBLE).when(mPlusButton).getVisibility();
+        mPlusButton.setVisibility(View.VISIBLE);
         doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
         doReturn(View.VISIBLE).when(mActivationChip).getVisibility();
         doReturn(true).when(mAutocompleteCoordinator).isServingSuggestions();
