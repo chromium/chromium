@@ -23,6 +23,12 @@ namespace errors = manifest_errors;
 
 class InputComponentsManifestTest : public ManifestTest {
  protected:
+  std::u16string GetInvalidIdError(int component_index) {
+    return ErrorUtils::FormatErrorMessageUTF16(
+        errors::kInvalidInputComponentId,
+        base::NumberToString(component_index));
+  }
+
   std::u16string GetInvalidLayoutError(int component_index, int layout_index) {
     return ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidInputComponentLayoutName,
@@ -58,7 +64,30 @@ TEST_F(InputComponentsManifestTest, ValidLayouts) {
       InputComponents::GetInputComponents(extension.get());
   ASSERT_TRUE(components);
   ASSERT_EQ(1u, components->size());
+  EXPECT_EQ("test_id", (*components)[0].id);
   EXPECT_EQ(3u, (*components)[0].layouts.size());
+}
+
+TEST_F(InputComponentsManifestTest, InvalidId) {
+  base::DictValue manifest;
+  manifest.Set("name", "test");
+  manifest.Set("version", "1");
+  manifest.Set("manifest_version", 3);
+
+  base::DictValue component;
+  component.Set("name", "test component");
+  component.Set("id", "test_id,another_id");
+
+  base::ListValue input_components;
+  input_components.Append(std::move(component));
+  manifest.Set("input_components", std::move(input_components));
+
+  std::u16string error;
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        manifest, Extension::NO_FLAGS, &error);
+  EXPECT_FALSE(extension.get());
+  EXPECT_EQ(GetInvalidIdError(0), error);
 }
 
 TEST_F(InputComponentsManifestTest, InvalidLayouts) {

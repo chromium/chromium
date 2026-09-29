@@ -76,6 +76,12 @@ bool InputComponentsHandler::Parse(Extension* extension,
     std::string id_str;
     const std::string* maybe_id_str = module_value->FindString(keys::kId);
     if (maybe_id_str) {
+      // Prevent delimiter injection in prefs (comma is used as a delimiter).
+      if (maybe_id_str->contains(',')) {
+        *error = ErrorUtils::FormatErrorMessageUTF16(
+            errors::kInvalidInputComponentId, base::NumberToString(i));
+        return false;
+      }
       id_str = *maybe_id_str;
     }
 
