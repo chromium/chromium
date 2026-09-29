@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
@@ -3203,11 +3204,38 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 
   // Click the media button in the overflow menu and wait for the
   // overflow menu to close.
-  //
-  // TODO(crbug.com/491791965): Also verify that the media dialog is
-  // shown once clicking the overflow menu item is wired up to open the dialog.
   ASSERT_TRUE(ClickOverflowMenuItem(
       *overflow_menu, IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS));
+
+  // The button is hidden when the overflow menu item is clicked, so the browser
+  // has to ask the WebUI to display it before the dialog can be anchored to it.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarMediaButtonElementId));
+
+  // The dialog should be shown once the button becomes visible.
+  ASSERT_TRUE(base::test::RunUntil(
+      []() -> bool { return MediaDialogView::IsShowing(); }));
+
+  // The dialog must be anchored to the button itself, rather than falling back
+  // to the toolbar as a whole. The element is looked up again here rather than
+  // reusing the one above, since showing the dialog may have destroyed and
+  // recreated it.
+  ui::TrackedElement* media_element =
+      WaitForTrackedElementVisible(kToolbarMediaButtonElementId);
+  ASSERT_TRUE(media_element);
+  EXPECT_EQ(MediaDialogView::GetDialogViewForTesting()->GetAnchorRect(),
+            media_element->GetScreenBounds());
+
+  // The button must stay visible for as long as the dialog is anchored to it,
+  // even though it would otherwise overflow at this window size.
+  EXPECT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId, kToolbarMediaButtonElementId},
+      {kToolbarForwardButtonElementId}));
+
+  // Closing the dialog should allow the button to overflow again.
+  MediaDialogView::HideDialog();
+  EXPECT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarMediaButtonElementId}));
 }
 
 // Test that when the media button is shown but disabled (greyed out), it

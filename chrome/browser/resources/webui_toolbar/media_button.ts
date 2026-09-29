@@ -45,6 +45,7 @@ export class MediaButtonElement extends MediaButtonElementBase {
     enabled: true,
     shouldBeShown: false,
     isContextMenuVisible: false,
+    preventOverflow: false,
   };
 
   protected pressHandler_: PressHandler = new PressHandler(

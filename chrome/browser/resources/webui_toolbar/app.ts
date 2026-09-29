@@ -515,6 +515,7 @@ export class ToolbarAppElement extends AppElementBase {
       enabled: true,
       shouldBeShown: false,
       isContextMenuVisible: false,
+      preventOverflow: false,
     },
     glicButtonState: {
       open: false,
