@@ -25,6 +25,7 @@
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
 #include "net/base/network_change_notifier.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -106,7 +107,7 @@ std::string ConfiguratorImpl::GetOSLongName() const {
 
 std::string ConfiguratorImpl::GetDeviceFormFactor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::string();
+  return std::string(ui::DeviceFormFactorToString(ui::GetDeviceFormFactor()));
 }
 
 base::flat_map<std::string, std::string> ConfiguratorImpl::ExtraRequestParams()

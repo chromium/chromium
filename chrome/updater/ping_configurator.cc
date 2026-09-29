@@ -153,7 +153,7 @@ std::string PingConfigurator::GetOSLongName() const {
 
 std::string PingConfigurator::GetDeviceFormFactor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {};
+  return "desktop";
 }
 
 base::flat_map<std::string, std::string> PingConfigurator::ExtraRequestParams()

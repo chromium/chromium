@@ -177,7 +177,7 @@ std::string Configurator::GetOSLongName() const {
 
 std::string Configurator::GetDeviceFormFactor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {};
+  return "desktop";
 }
 
 base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()
