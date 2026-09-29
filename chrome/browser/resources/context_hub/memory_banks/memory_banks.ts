@@ -28,7 +28,7 @@ import type {SearchSuggestion} from './memory_banks_search.js';
 
 function downloadFile(
     filename: string, content: string,
-    mimeType: string = 'text/plain;charset=utf-8') {
+    mimeType: string = 'text/markdown;charset=utf-8') {
   if (!content) {
     return;
   }
@@ -504,7 +504,7 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected async onCopyClick_() {
-    const textToCopy = this.getSelectedEntriesAsText_();
+    const textToCopy = this.getSelectedEntriesAsMarkdown_();
     try {
       await navigator.clipboard.writeText(textToCopy);
     } catch (err) {
@@ -513,13 +513,12 @@ export class MemoryBanksElement extends CrLitElement {
   }
 
   protected onDownloadSelectedEntriesClick_() {
-    downloadFile('memory_banks_entries.txt', this.getSelectedEntriesAsText_());
+    downloadFile(
+        'memory_banks_entries.md', this.getSelectedEntriesAsMarkdown_());
   }
 
   protected onDownloadGeminiResponseClick_() {
-    downloadFile(
-        'gemini_response.md', this.geminiResponse_,
-        'text/markdown;charset=utf-8');
+    downloadFile('gemini_response.md', this.geminiResponse_);
   }
 
   protected async onDeleteClick_() {
@@ -572,32 +571,35 @@ export class MemoryBanksElement extends CrLitElement {
     }
   }
 
-  private getSelectedEntriesAsText_(): string {
+  private getSelectedEntriesAsMarkdown_(): string {
     return this.entries.filter(entry => this.selectedIds.has(entry.id))
         .map(entry => {
           const dateStr =
               this.convertMojoTimeToDate(entry.timestamp).toLocaleString();
           const typeStr = entry.type === EntryType.kTextSelection ?
-              'Saved Text' :
+              'Saved Text Selection' :
               'Saved Tab';
           const lines = [
-            `[${typeStr}]`,
-            `Title: ${entry.tabTitle}`,
-            `URL: ${entry.url}`,
+            `## [${typeStr}]`,
+            `- **Title:** ${entry.tabTitle}`,
+            `- **URL:** ${entry.url}`,
           ];
           if (entry.collection) {
-            lines.push(`Collection: ${entry.collection}`);
+            lines.push(`- **Collection:** ${entry.collection}`);
           }
           if (entry.tags && entry.tags.length > 0) {
-            lines.push(`Tags: ${entry.tags.join(', ')}`);
+            lines.push(`- **Tags:** ${entry.tags.join(', ')}`);
           }
+          lines.push(`- **Saved Date:** ${dateStr}`);
           if (entry.note) {
-            lines.push(`Note: "${entry.note}"`);
+            const formattedNote = entry.note.replace(/\r?\n/g, '\n  > ');
+            lines.push(`- **Note:**\n  > ${formattedNote}`);
           }
           if (entry.selectedText) {
-            lines.push(`Content: "${entry.selectedText}"`);
+            const formattedContent =
+                entry.selectedText.replace(/\r?\n/g, '\n  > ');
+            lines.push(`- **Content:**\n  > ${formattedContent}`);
           }
-          lines.push(`Saved Date: ${dateStr}`);
           return lines.join('\n');
         })
         .join('\n\n---\n\n');
