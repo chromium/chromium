@@ -496,7 +496,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
-    units="notifications" expires_after="2026-10-04">
+    units="notifications" expires_after="2027-09-28">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -510,7 +510,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationReachedCap"
-    enum="Boolean" expires_after="2026-06-08">
+    enum="Boolean" expires_after="2027-09-28">
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -518,6 +518,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     by default) has reached the cap limit for specified management type.
     Recorded when we are trying to show any price drop notifications.
     Implemented for Android.
+
+    Warning: this histogram was expired from 2026-06-08 to 2026-09-28; data may
+    be missing.
   </summary>
   <token key="ManagementType" variants="ManagementTypes"/>
 </histogram>
