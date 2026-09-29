@@ -28,10 +28,13 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -130,6 +133,10 @@ class ToastControllerInteractiveTest
  public:
   void SetUpOnMainThread() override {
     SplitViewInteractiveTestMixin::SetUpOnMainThread();
+    if (features::IsWebUILocationBarEnabled()) {
+      WaitForInitialWebUIToolbar(browser());
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
+    }
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -255,6 +262,9 @@ class ToastControllerInteractiveTest
     BrowserView::GetBrowserViewForBrowser(browser())
         ->GetFocusManager()
         ->ClearFocus();
+    if (features::IsWebUILocationBarEnabled()) {
+      ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, false);
+    }
   }
 
  private:

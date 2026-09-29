@@ -253,7 +253,11 @@ void ToastController::OnOmniboxPopupVisibilityChanged(bool popup_is_open) {
 void ToastController::UpdateToastWidgetVisibility(bool show_toast_widget) {
   if (toast_widget_) {
     if (show_toast_widget) {
-      toast_widget_->ShowInactive();
+      // Avoid calling ShowInactive() if the toast is already visible, as doing
+      // so could deactivate an already-active toast widget.
+      if (!toast_widget_->IsVisible()) {
+        toast_widget_->ShowInactive();
+      }
     } else {
       toast_widget_->Hide();
     }
