@@ -608,7 +608,6 @@ if (!is_android) {
           "notification_interactive_uitest_support.cc",
           "notification_interactive_uitest_support.h",
         ]
-        deps += [ "//chrome/browser/ui:browser_tabstrip" ]
       }
 
       if (is_win) {

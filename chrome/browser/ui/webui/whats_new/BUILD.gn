@@ -84,7 +84,6 @@ source_set("impl") {
     deps += [
       "//chrome/browser:global_features",
       "//chrome/browser/resources/whats_new:resources",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_strip",

@@ -90,39 +90,6 @@ source_set("browser_live_tab_context") {
 }
 
 if (!is_android) {
-  source_set("browser_tabstrip") {
-    public = [ "browser_tabstrip.h" ]
-    public_deps = [
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/navigator",
-      "//components/tab_groups",
-      "//content/public/browser",
-      "//ui/base",
-    ]
-  }
-
-  source_set("browser_tabstrip_impl") {
-    sources = [ "browser_tabstrip.cc" ]
-    deps = [
-      ":browser_tabstrip",
-      ":ui_features",
-      "//base",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/navigator",
-      "//chrome/browser/ui/tabs:tab_enums",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/web_applications",
-      "//chrome/browser/ui/window_feature_controller",
-      "//chrome/common",
-      "//chrome/common:constants",
-      "//components/tab_groups",
-      "//content/public/browser",
-      "//content/public/common",
-      "//ui/base",
-      "//url",
-    ]
-  }
-
   source_set("chrome_web_modal_dialog_manager_delegate") {
     public = [ "chrome_web_modal_dialog_manager_delegate.h" ]
     sources = [ "chrome_web_modal_dialog_manager_delegate.cc" ]
@@ -436,7 +403,6 @@ if (!is_android) {
       "//chrome/browser:browser_public_dependencies",
     ]
     deps = [
-      ":browser_tabstrip",
       "//base",
       "//chrome/browser/content_settings:content_settings_util",
       "//chrome/browser/ui:chrome_pages",
@@ -628,7 +594,6 @@ if (!is_android) {
       ":browser_commands",
       ":browser_live_tab_context",
       ":browser_manager_service",
-      ":browser_tabstrip",
       ":browser_window_header",
       ":chrome_pages",
       "//base",
@@ -843,7 +808,6 @@ if (!is_android) {
       ":browser_command_controller",
       ":browser_init_state",
       ":browser_live_tab_context",
-      ":browser_tabstrip",
       ":browser_window_header",
       ":browser_window_state",
       ":intent_picker_tab_helper",
@@ -2256,7 +2220,8 @@ static_library("ui") {
       ":browser_tab_restorer",
 
       # browser_tab_strip_model_delegate.cc includes browser_commands.h,
-      # browser_window.h, and unload_controller.h which cannot be split out yet.
+      # browser_tabstrip.h, browser_window.h, and unload_controller.h which
+      # cannot be split out yet.
       ":browser_tab_strip_model_delegate_impl",
 
       # chrome_pages.cc includes browser_window.h which cannot be split out yet.
@@ -2335,6 +2300,8 @@ static_library("ui") {
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
       "browser.h",
+      "browser_tabstrip.cc",
+      "browser_tabstrip.h",
     ]
 
     if (enable_dice_support) {
@@ -2362,8 +2329,6 @@ static_library("ui") {
       ":browser_header",
       ":browser_manager_service",
       ":browser_select_file_dialog_controller",
-      ":browser_tabstrip",
-      ":browser_tabstrip_impl",
       ":browser_window_header",
       ":browser_window_state",
       ":collected_cookies_infobar_delegate",
@@ -2717,12 +2682,12 @@ static_library("ui") {
       # browser_commands.h from //chrome/browser/ui:ui.
       ":browser_command_controller_impl",
 
-      # browser_commands.cc includes browser_window.h from
-      # //chrome/browser/ui:ui.
+      # browser_commands.cc includes browser_window.h and browser_tabstrip.h
+      # from //chrome/browser/ui:ui.
       ":browser_commands_impl",
 
-      # unload_controller.cc includes browser_window.h and browser_commands.h
-      # from //chrome/browser/ui:ui.
+      # unload_controller.cc includes browser_tabstrip.h, browser_window.h,
+      # and browser_commands.h from //chrome/browser/ui:ui.
       ":unload_controller_impl",
 
       # TODO(crbug.com/382237520): Remove this once NTP code is modularized.
@@ -2782,7 +2747,8 @@ static_library("ui") {
       # TODO(crbug.com/438226511): Remove this circular dependency when the
       # following headers get componentized:
       # - c/b/ui/browser.h, browser_window.h, browser_window_state.h,
-      #   browser_commands.h, intent_picker_tab_helper.h.
+      #   browser_commands.h,
+      #   browser_tabstrip.h, intent_picker_tab_helper.h.
       "//chrome/browser/ui/web_applications:impl",
 
       # TODO(crbug.com/438226511): Remove this circular dependency when
@@ -4937,7 +4903,6 @@ if (!is_android) {
       ":browser_init_state",
       ":browser_live_tab_context",
       ":browser_tab_menu_model_delegate",
-      ":browser_tabstrip",
       ":browser_window_header",
       ":tab_helpers",
       ":ui_features",
@@ -5119,7 +5084,6 @@ if (!is_android) {
       ":browser_instant_controller",
       ":browser_manager_service",
       ":browser_tabrestore",
-      ":browser_tabstrip",
       ":browser_ui_prefs",
       ":browser_window_header",
       ":confirm_bubble",
@@ -5449,7 +5413,6 @@ if (!is_android && !is_chromeos_device) {
 
     deps = [
       ":browser_commands",
-      ":browser_tabstrip",
       ":browser_window_header",
       ":chrome_pages",
       ":test_support",

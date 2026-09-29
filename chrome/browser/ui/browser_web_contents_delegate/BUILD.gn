@@ -28,7 +28,6 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:tab_dialogs",
       "//chrome/browser/ui:tab_modal_confirm_dialog",

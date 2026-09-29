@@ -159,7 +159,6 @@ if (!is_android && enterprise_cloud_content_analysis) {
       # Inherits -Wno-sign-compare via fuzztest_public_config. See
       # crbug.com/527094632.
       "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_tabstrip",
       "//third_party/fuzztest",
     ]
   }

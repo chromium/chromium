@@ -92,7 +92,6 @@ source_set("browser_tests") {
 
   deps = [
     ":tab_contents",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

@@ -117,10 +117,7 @@ if (!is_android) {
         "platform_auth_policy_observer_browsertest.cc",
         "platform_auth_provider_manager_browsertest.cc",
       ]
-      deps += [
-        ":test_utils",
-        "//chrome/browser/ui:browser_tabstrip",
-      ]
+      deps += [ ":test_utils" ]
     }
 
     if (is_mac) {

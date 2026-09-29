@@ -115,7 +115,6 @@ if (!is_android) {
         "//chrome/browser/search_engines",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_commands",
-        "//chrome/browser/ui:browser_tabstrip",
         "//chrome/browser/ui/browser_window",
         "//chrome/browser/ui/signin",
         "//chrome/browser/web_applications",
