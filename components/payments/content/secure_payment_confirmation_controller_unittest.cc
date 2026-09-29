@@ -102,7 +102,7 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnConfirm) {
   WaitForEvents();
 
   histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
+      "PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome",
       SecurePaymentRequestOutcome::kAccept,
       /*expected_bucket_count=*/1);
 }
@@ -118,9 +118,10 @@ TEST_F(SecurePaymentConfirmationControllerTest,
   controller()->OnConfirm();
   WaitForEvents();
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kAccept,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kAccept,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnAnotherWay) {
@@ -132,7 +133,7 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnAnotherWay) {
   WaitForEvents();
 
   histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
+      "PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome",
       SecurePaymentRequestOutcome::kAnotherWay,
       /*expected_bucket_count=*/1);
 }
@@ -146,7 +147,7 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnCancel) {
   WaitForEvents();
 
   histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
+      "PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome",
       SecurePaymentRequestOutcome::kCancel,
       /*expected_bucket_count=*/1);
 }
@@ -162,9 +163,10 @@ TEST_F(SecurePaymentConfirmationControllerTest,
   controller()->OnCancel();
   WaitForEvents();
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kCancel,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kCancel,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnOptOut) {
@@ -176,7 +178,7 @@ TEST_F(SecurePaymentConfirmationControllerTest, Metrics_OnOptOut) {
   WaitForEvents();
 
   histogram_tester.ExpectUniqueSample(
-      "SecurePaymentRequest.Transaction.Outcome",
+      "PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome",
       SecurePaymentRequestOutcome::kOptOut,
       /*expected_bucket_count=*/1);
 }
@@ -192,9 +194,10 @@ TEST_F(SecurePaymentConfirmationControllerTest,
   controller()->OnOptOut();
   WaitForEvents();
 
-  histogram_tester.ExpectUniqueSample("SecurePaymentRequest.Fallback.Outcome",
-                                      SecurePaymentRequestOutcome::kOptOut,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome",
+      SecurePaymentRequestOutcome::kOptOut,
+      /*expected_bucket_count=*/1);
 }
 
 

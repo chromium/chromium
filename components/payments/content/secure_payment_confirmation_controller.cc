@@ -29,10 +29,10 @@
 namespace {
 
 constexpr char kTransactionOutcomeHistogramName[] =
-    "SecurePaymentRequest.Transaction.Outcome";
+    "PaymentRequest.SecurePaymentConfirmation.Transaction.Outcome";
 
 constexpr char kFallbackOutcomeHistogramName[] =
-    "SecurePaymentRequest.Fallback.Outcome";
+    "PaymentRequest.SecurePaymentConfirmation.Fallback.Outcome";
 
 }  // namespace
 
