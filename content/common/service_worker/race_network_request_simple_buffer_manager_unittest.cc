@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -406,6 +407,39 @@ TEST_F(RaceNetworkRequestSimpleBufferManagerTest, DisconnectBeforeClone) {
                                            &received_data));
     EXPECT_EQ(data, received_data);
   }
+}
+
+TEST_F(RaceNetworkRequestSimpleBufferManagerTest,
+       DestroyManagerInCloneCompleteCallbackOnWriteError) {
+  mojo::ScopedDataPipeProducerHandle source_producer;
+  mojo::ScopedDataPipeConsumerHandle source_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, source_producer, source_consumer));
+  auto manager = std::make_unique<RaceNetworkRequestSimpleBufferManager>(
+      std::move(source_consumer));
+
+  const std::string data = "test data";
+  size_t actual_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            source_producer->WriteData(base::as_byte_span(data),
+                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                       actual_written_bytes));
+
+  base::RunLoop run_loop;
+  mojo::ScopedDataPipeProducerHandle destination_producer;
+  mojo::ScopedDataPipeConsumerHandle destination_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, destination_producer,
+                                                 destination_consumer));
+
+  manager->Clone(std::move(destination_producer),
+                 base::BindLambdaForTesting([&]() {
+                   manager.reset();
+                   run_loop.Quit();
+                 }));
+  destination_consumer.reset();
+
+  run_loop.Run();
+  EXPECT_FALSE(manager);
 }
 }  // namespace
 }  // namespace content
