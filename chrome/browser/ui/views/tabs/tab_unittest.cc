@@ -998,6 +998,7 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
 TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
   controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
   controller_->AddTab(1, TabActive::kActive);
+  views::test::RunScheduledLayout(tab_strip_);
   Tab* media_tab = tab_strip_->tab_at(0);
 
   // Pinned inactive tab only has an icon.
@@ -1040,6 +1041,7 @@ TEST_F(TabContentsTest, MinHoldDurationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   controller_->AddTab(0, TabActive::kActive);
+  views::test::RunScheduledLayout(tab_strip_);
   Tab* media_tab = tab_strip_->tab_at(0);
 
   EXPECT_FALSE(showing_alert_indicator(media_tab));
@@ -1071,6 +1073,7 @@ TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   controller_->AddTab(0, TabActive::kActive);
+  views::test::RunScheduledLayout(tab_strip_);
   Tab* media_tab = tab_strip_->tab_at(0);
 
   EXPECT_FALSE(showing_alert_indicator(media_tab));

@@ -154,6 +154,17 @@ std::vector<Tab*> TabContainerImpl::AddTabs(
     for (auto& param : tabs_params) {
       StartInsertTabAnimation(param.model_index);
     }
+  } else if (GetWidget() && !GetWidget()->IsVisible() && !IsAnimating()) {
+    // Nothing can be seen until the widget is shown, and Layout() then does
+    // what CompleteAnimationAndLayout() would do now (ideal bounds, snap, slot
+    // visibility), so a single layout at that point gives the same result.
+    // Laying out the whole strip for every tab added to a hidden widget is
+    // quadratic in the number of tabs, which matters when a large session is
+    // restored into a window that is not shown yet. An animation that is
+    // still running (the widget was hidden while tabs were moving) is
+    // completed right away as before, so the strip never waits in a
+    // half-animated state.
+    InvalidateLayout();
   } else {
     CompleteAnimationAndLayout();
   }

@@ -246,6 +246,10 @@ class TabContainerTest : public ChromeViewsTestBase {
                                                    tab_slot_controller_.get()),
                              model_index, pinned);
     Tab* tab = tab_container_->AddTabs(std::move(tabs_params))[0];
+    // The test widget is never shown, so AddTabs() only invalidated the
+    // layout. Tests inspect tab bounds right after adding a tab, so lay out
+    // now, as showing the widget would.
+    tab_container_->CompleteAnimationAndLayout();
 
     tab_strip_controller_->AddTab(model_index, active, pinned);
 

@@ -396,6 +396,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   controller_->AddTab(1, TabActive::kActive);
   controller_->AddTab(2, TabActive::kInactive);
   ASSERT_EQ(3, tab_strip_->GetTabCount());
+  CompleteAnimationAndLayout();
 
   Tab* tab0 = tab_strip_->tab_at(0);
   ASSERT_FALSE(tab0->IsActive());
@@ -414,6 +415,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   // big enough to accommodate 3 icons, so it should not show its
   // tab close button.
   controller_->AddTab(3, TabActive::kInactive);
+  CompleteAnimationAndLayout();
   Tab* tab3 = tab_strip_->tab_at(3);
   EXPECT_FALSE(tab3->showing_close_button_);
 
@@ -429,6 +431,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   // An active tab added to the tabstrip should show its tab close
   // button.
   controller_->AddTab(4, TabActive::kActive);
+  CompleteAnimationAndLayout();
   Tab* tab4 = tab_strip_->tab_at(4);
   ASSERT_TRUE(tab4->IsActive());
   EXPECT_TRUE(tab4->showing_close_button_);
@@ -441,6 +444,7 @@ TEST_P(TabStripTest, TabCloseButtonVisibility) {
   // tab close button hidden and the newly-active tab should show
   // its tab close button.
   tab_strip_->SelectTab(tab2, dummy_event_);
+  CompleteAnimationAndLayout();
   ASSERT_FALSE(tab4->IsActive());
   ASSERT_TRUE(tab2->IsActive());
   EXPECT_FALSE(tab0->showing_close_button_);
