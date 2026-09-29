@@ -31,6 +31,7 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/test/test_clipboard_request_handler_ios.h"
 #import "ios/chrome/browser/enterprise/common/test/mock_reporting_event_router.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client.h"
@@ -1494,6 +1495,9 @@ TEST_F(DataControlsTabHelperTest,
   base::test::TestFuture<bool> consecutive_paste;
   tab_helper()->ShouldAllowPaste(consecutive_paste.GetCallback());
   EXPECT_FALSE(consecutive_paste.Get());
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredConsecutivePasteBlockedHistogram, true,
+      1);
 
   // Simulate user bypass.
   std::move(handler->_callback).Run(true);
@@ -1899,6 +1903,10 @@ TEST_F(DataControlsTabHelperTest,
   // became stale.
   EXPECT_FALSE(future.Get());
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kPasteboardChanged, 1);
+
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }
 
@@ -2172,6 +2180,10 @@ TEST_F(DataControlsTabHelperTest,
   EXPECT_FALSE(future.Get());
   EXPECT_EQ(queue->size(), 0UL);
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kInvalidTabState, 1);
+
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }
 
@@ -2263,6 +2275,10 @@ TEST_F(DataControlsTabHelperTest,
   // ongoing paste.
   EXPECT_FALSE(future.Get());
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kSpinningOverlayInterrupted, 1);
+
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }
 
@@ -2310,6 +2326,10 @@ TEST_F(DataControlsTabHelperTest,
   EXPECT_FALSE(future.Get());
   EXPECT_EQ(queue->size(), 0UL);
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kInvalidTabState, 1);
+
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }
 
@@ -2356,6 +2376,10 @@ TEST_F(DataControlsTabHelperTest,
   // The paste should be blocked because the paste event became stale.
   EXPECT_FALSE(future.Get());
   EXPECT_EQ(queue->size(), 0UL);
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kPasteboardChanged, 1);
 
   enterprise_connectors::ClipboardRequestHandler::ResetFactoryForTesting();
 }

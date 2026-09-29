@@ -49,8 +49,6 @@ extern const char kIOSPasteProtectionScanTriggeredWarningBypassedHistogram[];
 
 extern const char kIOSPasteProtectionScanTriggeredScanTimeHistogram[];
 
-// TODO(crbug.com/539938728): Add the rest of the invalid paste metrics in tab
-// helper after spinning overlay is merged.
 extern const char kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram[];
 
 extern const char

@@ -19,6 +19,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/ios_cloud_binary_upload_service_factory.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/paste_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/pasteboard_content_handler_ios.h"
 #import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
@@ -140,6 +141,8 @@ void DataControlsTabHelper::ShouldAllowPaste(
   // is not completed and user is trying to paste again. Block the current and
   // following paste event directly until the previous scan is done.
   if (pasteboard_content_handler_) {
+    base::UmaHistogramBoolean(
+        kIOSPasteProtectionScanTriggeredConsecutivePasteBlockedHistogram, true);
     std::move(callback).Run(false);
     return;
   }
@@ -752,8 +755,12 @@ void DataControlsTabHelper::ShowPasteSpinner(const GURL& destination_url) {
 void DataControlsTabHelper::DismissPasteSpinnerIfPresented() {
   paste_spinner_timer_.Stop();
   if (web_state_ && paste_event_state_ == PasteEventState::kDisplayingSpinner) {
-    // Although we already have the scan result, we are waiting for the logic to
-    // go through the result and make the decision (allow, warn, block).
+    // This can either come from `PasteIfAllowedByContentAnalysis` because of
+    // scan finished or `InvalidateCurrentPaste` because of user actions.
+    // Setting the `paste_event_state_` back to `kWaitingScanDecision` as an
+    // intermediate state so that paste can go through if it is valid. Or it
+    // will be set to `kPasteEventStale` by `InvalidateCurrentPaste` and blocked
+    // by subsequent call to `PasteIfAllowedByContentAnalysis`.
     paste_event_state_ = PasteEventState::kWaitingScanDecision;
     OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
         web_state_, OverlayModality::kWebContentArea);
@@ -769,6 +776,10 @@ void DataControlsTabHelper::OnPasteSpinnerDismissed(
     return;
   }
 
+  base::UmaHistogramEnumeration(
+      kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+      EnterprisePasteProtectionInvalidatedType::kSpinningOverlayInterrupted);
+
   // Invalidate the current paste if the spinner is being interrupted by other
   // overlays.
   InvalidateCurrentPaste();
@@ -780,6 +791,11 @@ void DataControlsTabHelper::WasHidden(web::WebState* web_state) {
   // before the paste is finished. In this case, we should invalidate the paste
   // event based and not let the paste go through.
   InvalidateCurrentPaste();
+  if (paste_event_state_ == PasteEventState::kPasteEventStale) {
+    base::UmaHistogramEnumeration(
+        kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+        EnterprisePasteProtectionInvalidatedType::kInvalidTabState);
+  }
 }
 
 void DataControlsTabHelper::DidStartNavigation(
@@ -789,6 +805,11 @@ void DataControlsTabHelper::DidStartNavigation(
   // pastebin/textarea should be gone and we should invalidate the paste event
   // and not let the paste go through.
   InvalidateCurrentPaste();
+  if (paste_event_state_ == PasteEventState::kPasteEventStale) {
+    base::UmaHistogramEnumeration(
+        kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+        EnterprisePasteProtectionInvalidatedType::kNavigatedAway);
+  }
 }
 
 void DataControlsTabHelper::InvalidateCurrentPaste() {
@@ -827,6 +848,11 @@ void DataControlsTabHelper::OnPasteboardContentChanged() {
   // The pasteboard content is changed, we should invalidate the current paste
   // event and block it.
   InvalidateCurrentPaste();
+  if (paste_event_state_ == PasteEventState::kPasteEventStale) {
+    base::UmaHistogramEnumeration(
+        kIOSPasteProtectionScanTriggeredPasteInvalidatedHistogram,
+        EnterprisePasteProtectionInvalidatedType::kPasteboardChanged);
+  }
 }
 
 }  // namespace data_controls
