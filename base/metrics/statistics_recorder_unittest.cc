@@ -228,9 +228,9 @@ TEST_P(StatisticsRecorderTest, RegisterHistogram) {
 
 TEST_P(StatisticsRecorderTest, FindHistogram) {
   HistogramBase* histogram1 = Histogram::FactoryGet(
-      "TestHistogram1", 1, 1000, 10, HistogramBase::kNoFlags);
+      "TestHistogram1", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
   HistogramBase* histogram2 = Histogram::FactoryGet(
-      "TestHistogram2", 1, 1000, 10, HistogramBase::kNoFlags);
+      "TestHistogram2", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
 
   EXPECT_EQ(histogram1, StatisticsRecorder::FindHistogram("TestHistogram1"));
   EXPECT_EQ(histogram2, StatisticsRecorder::FindHistogram("TestHistogram2"));
@@ -263,9 +263,9 @@ TEST_P(StatisticsRecorderTest, FindHistogram) {
 
 TEST_P(StatisticsRecorderTest, FindHistogramWithHash) {
   HistogramBase* histogram1 = Histogram::FactoryGet(
-      "TestHistogram1", 1, 1000, 10, HistogramBase::kNoFlags);
+      "TestHistogram1", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
   HistogramBase* histogram2 = Histogram::FactoryGet(
-      "TestHistogram2", 1, 1000, 10, HistogramBase::kNoFlags);
+      "TestHistogram2", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
 
   auto hash_h1 = HashMetricName("TestHistogram1");
   auto hash_h2 = HashMetricName("TestHistogram2");
@@ -480,8 +480,10 @@ TEST_P(StatisticsRecorderTest, ToJSONOmitBuckets) {
 }
 
 TEST_P(StatisticsRecorderTest, IterationTest) {
-  Histogram::FactoryGet("IterationTest1", 1, 64, 16, HistogramBase::kNoFlags);
-  Histogram::FactoryGet("IterationTest2", 1, 64, 16, HistogramBase::kNoFlags);
+  Histogram::FactoryGet("IterationTest1", 1, 64, 16,
+                        HistogramBase::kUmaTargetedHistogramFlag);
+  Histogram::FactoryGet("IterationTest2", 1, 64, 16,
+                        HistogramBase::kUmaTargetedHistogramFlag);
 
   auto histograms = StatisticsRecorder::GetHistograms();
   EXPECT_THAT(histograms, SizeIs(2));
@@ -934,7 +936,8 @@ TEST_P(StatisticsRecorderTest, ImportHistogramsTest) {
 
   // Create a histogram inside a new allocator for testing.
   GlobalHistogramAllocator::CreateWithLocalMemory(kAllocatorMemorySize, 0, "");
-  HistogramBase* histogram = LinearHistogram::FactoryGet("Foo", 1, 10, 11, 0);
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      "Foo", 1, 10, 11, HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(3);
 
   // Undo back to the starting point.

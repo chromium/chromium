@@ -79,15 +79,16 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
 
   // Try basic construction
   HistogramBase* histogram = Histogram::FactoryGet(
-      "TestHistogram", 1, 1000, 10, HistogramBase::kIsPersistent);
+      "TestHistogram", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
   EXPECT_TRUE(histogram);
   histogram->CheckName("TestHistogram");
   PersistentMemoryAllocator::MemoryInfo meminfo1;
   allocator_->GetMemoryInfo(&meminfo1);
   EXPECT_GT(meminfo0.free, meminfo1.free);
 
-  HistogramBase* linear_histogram = LinearHistogram::FactoryGet(
-      "TestLinearHistogram", 1, 1000, 10, HistogramBase::kIsPersistent);
+  HistogramBase* linear_histogram =
+      LinearHistogram::FactoryGet("TestLinearHistogram", 1, 1000, 10,
+                                  HistogramBase::kUmaTargetedHistogramFlag);
   EXPECT_TRUE(linear_histogram);
   linear_histogram->CheckName("TestLinearHistogram");
   PersistentMemoryAllocator::MemoryInfo meminfo2;
@@ -95,7 +96,7 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
   EXPECT_GT(meminfo1.free, meminfo2.free);
 
   HistogramBase* boolean_histogram = BooleanHistogram::FactoryGet(
-      "TestBooleanHistogram", HistogramBase::kIsPersistent);
+      "TestBooleanHistogram", HistogramBase::kUmaTargetedHistogramFlag);
   EXPECT_TRUE(boolean_histogram);
   boolean_histogram->CheckName("TestBooleanHistogram");
   PersistentMemoryAllocator::MemoryInfo meminfo3;
@@ -105,8 +106,9 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
   std::vector<int> custom_ranges;
   custom_ranges.push_back(1);
   custom_ranges.push_back(5);
-  HistogramBase* custom_histogram = CustomHistogram::FactoryGet(
-      "TestCustomHistogram", custom_ranges, HistogramBase::kIsPersistent);
+  HistogramBase* custom_histogram =
+      CustomHistogram::FactoryGet("TestCustomHistogram", custom_ranges,
+                                  HistogramBase::kUmaTargetedHistogramFlag);
   EXPECT_TRUE(custom_histogram);
   custom_histogram->CheckName("TestCustomHistogram");
   PersistentMemoryAllocator::MemoryInfo meminfo4;
@@ -147,6 +149,44 @@ TEST_F(PersistentHistogramAllocatorTest, CreateAndIterate) {
 
   recovered = histogram_iter.GetNext();
   EXPECT_FALSE(recovered);
+}
+
+TEST_F(PersistentHistogramAllocatorTest, LocalHistogramsAreNotPersistent) {
+  PersistentMemoryAllocator::MemoryInfo meminfo0;
+  allocator_->GetMemoryInfo(&meminfo0);
+
+  HistogramBase* histogram = Histogram::FactoryGet("LocalHistogram", 1, 1000,
+                                                   10, HistogramBase::kNoFlags);
+  ASSERT_TRUE(histogram);
+  EXPECT_FALSE(histogram->HasFlags(HistogramBase::kIsPersistent));
+
+  HistogramBase* linear_histogram = LinearHistogram::FactoryGet(
+      "LocalLinearHistogram", 1, 1000, 10, HistogramBase::kNoFlags);
+  ASSERT_TRUE(linear_histogram);
+  EXPECT_FALSE(linear_histogram->HasFlags(HistogramBase::kIsPersistent));
+
+  HistogramBase* boolean_histogram = BooleanHistogram::FactoryGet(
+      "LocalBooleanHistogram", HistogramBase::kNoFlags);
+  ASSERT_TRUE(boolean_histogram);
+  EXPECT_FALSE(boolean_histogram->HasFlags(HistogramBase::kIsPersistent));
+
+  HistogramBase* custom_histogram = CustomHistogram::FactoryGet(
+      "LocalCustomHistogram", {1, 5}, HistogramBase::kNoFlags);
+  ASSERT_TRUE(custom_histogram);
+  EXPECT_FALSE(custom_histogram->HasFlags(HistogramBase::kIsPersistent));
+
+  HistogramBase* sparse_histogram = SparseHistogram::FactoryGet(
+      "LocalSparseHistogram", HistogramBase::kNoFlags);
+  ASSERT_TRUE(sparse_histogram);
+  EXPECT_FALSE(sparse_histogram->HasFlags(HistogramBase::kIsPersistent));
+
+  PersistentMemoryAllocator::MemoryInfo meminfo1;
+  allocator_->GetMemoryInfo(&meminfo1);
+  EXPECT_EQ(meminfo0.free, meminfo1.free);
+
+  PersistentHistogramAllocator::Iterator histogram_iter(
+      GlobalHistogramAllocator::Get());
+  EXPECT_FALSE(histogram_iter.GetNext());
 }
 
 // Tests that persistent histograms can be recovered from a file mapped strictly
@@ -346,8 +386,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   PersistentSampleVector::ResetMountExistingCountsStorageResultForTesting();
 
   // Create a linear histogram for merge testing.
-  HistogramBase* histogram1 =
-      LinearHistogram::FactoryGet(LinearHistogramName, 1, 10, 10, 0);
+  HistogramBase* histogram1 = LinearHistogram::FactoryGet(
+      LinearHistogramName, 1, 10, 10, HistogramBase::kUmaTargetedHistogramFlag);
   ASSERT_TRUE(histogram1);
   EXPECT_EQ(1U, StatisticsRecorder::GetHistogramCount());
   histogram1->Add(3);
@@ -357,8 +397,8 @@ TEST_F(PersistentHistogramAllocatorTest, StatisticsRecorderMerge) {
   histogram1->Add(6);
 
   // Create a sparse histogram for merge testing.
-  HistogramBase* histogram2 =
-      SparseHistogram::FactoryGet(SparseHistogramName, 0);
+  HistogramBase* histogram2 = SparseHistogram::FactoryGet(
+      SparseHistogramName, HistogramBase::kUmaTargetedHistogramFlag);
   ASSERT_TRUE(histogram2);
   EXPECT_EQ(2U, StatisticsRecorder::GetHistogramCount());
   histogram2->Add(3);
@@ -523,23 +563,27 @@ TEST_F(PersistentHistogramAllocatorTest,
 
   // Create a bunch of histograms, and call SnapshotDelta() on all of them so
   // that their next SnapshotDelta() calls return an empty HistogramSamples.
-  LinearHistogram::FactoryGet("SRTLinearHistogram1", 1, 10, 10, 0);
+  LinearHistogram::FactoryGet("SRTLinearHistogram1", 1, 10, 10,
+                              HistogramBase::kUmaTargetedHistogramFlag);
   HistogramBase* histogram2 =
-      LinearHistogram::FactoryGet("SRTLinearHistogram2", 1, 10, 10, 0);
+      LinearHistogram::FactoryGet("SRTLinearHistogram2", 1, 10, 10,
+                                  HistogramBase::kUmaTargetedHistogramFlag);
   histogram2->Add(3);
   histogram2->SnapshotDelta();
   HistogramBase* histogram3 =
-      LinearHistogram::FactoryGet("SRTLinearHistogram3", 1, 10, 10, 0);
+      LinearHistogram::FactoryGet("SRTLinearHistogram3", 1, 10, 10,
+                                  HistogramBase::kUmaTargetedHistogramFlag);
   histogram3->Add(1);
   histogram3->Add(10);
   histogram3->SnapshotDelta();
-  SparseHistogram::FactoryGet("SRTSparseHistogram1", 0);
-  HistogramBase* sparse_histogram2 =
-      SparseHistogram::FactoryGet("SRTSparseHistogram2", 0);
+  SparseHistogram::FactoryGet("SRTSparseHistogram1",
+                              HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* sparse_histogram2 = SparseHistogram::FactoryGet(
+      "SRTSparseHistogram2", HistogramBase::kUmaTargetedHistogramFlag);
   sparse_histogram2->Add(3);
   sparse_histogram2->SnapshotDelta();
-  HistogramBase* sparse_histogram3 =
-      SparseHistogram::FactoryGet("SRTSparseHistogram3", 0);
+  HistogramBase* sparse_histogram3 = SparseHistogram::FactoryGet(
+      "SRTSparseHistogram3", HistogramBase::kUmaTargetedHistogramFlag);
   sparse_histogram3->Add(1);
   sparse_histogram3->Add(10);
   sparse_histogram3->SnapshotDelta();
@@ -631,7 +675,8 @@ TEST_F(PersistentHistogramAllocatorTest, MultipleSameSparseHistograms) {
       StatisticsRecorder::CreateTemporaryForTesting();
 
   // Create a sparse histogram.
-  HistogramBase* sparse = SparseHistogram::FactoryGet(kSparseHistogramName, 0);
+  HistogramBase* sparse = SparseHistogram::FactoryGet(
+      kSparseHistogramName, HistogramBase::kUmaTargetedHistogramFlag);
 
   // Get the sparse histogram that was created above. We should have two
   // distinct objects, but both representing and pointing to the same data.
@@ -699,7 +744,7 @@ TEST_F(PersistentHistogramAllocatorTest, CustomRangesManager) {
   // Create a linear histogram and verify it is registered with the local SR.
   HistogramBase* histogram = LinearHistogram::FactoryGet(
       LinearHistogramName, /*minimum=*/1, /*maximum=*/10, /*bucket_count=*/10,
-      /*flags=*/0);
+      /*flags=*/HistogramBase::kUmaTargetedHistogramFlag);
   ASSERT_TRUE(histogram);
   EXPECT_EQ(1U, StatisticsRecorder::GetHistogramCount());
   histogram->Add(1);
@@ -750,10 +795,10 @@ TEST_F(PersistentHistogramAllocatorTest, RangesDeDuplication) {
   const int kRangesRefIndex = 5;
 
   // Create two histograms with the same ranges.
-  HistogramBase* histogram1 =
-      Histogram::FactoryGet("TestHistogram1", 1, 1000, 10, 0);
-  HistogramBase* histogram2 =
-      Histogram::FactoryGet("TestHistogram2", 1, 1000, 10, 0);
+  HistogramBase* histogram1 = Histogram::FactoryGet(
+      "TestHistogram1", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram2 = Histogram::FactoryGet(
+      "TestHistogram2", 1, 1000, 10, HistogramBase::kUmaTargetedHistogramFlag);
   const uint32_t ranges_ref = static_cast<Histogram*>(histogram1)
                                   ->bucket_ranges()
                                   ->persistent_reference();

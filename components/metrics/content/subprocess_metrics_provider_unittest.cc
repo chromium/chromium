@@ -186,9 +186,12 @@ class SubprocessMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
-  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
-  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
-  base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10, 0);
+  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(
       "_foobar", base::HistogramBase::kUmaTargetedHistogramFlag);
   foo->Add(42);
@@ -256,9 +259,12 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetrics) {
 }
 
 TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
-  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
-  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
-  base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10, 0);
+  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* baz = base::Histogram::FactoryGet("_baz", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(
       "_foobar", base::HistogramBase::kUmaTargetedHistogramFlag);
   foo->Add(42);
@@ -334,8 +340,10 @@ TEST_F(SubprocessMetricsProviderTest, SnapshotMetricsAsync) {
 // Verifies that it is fine to deregister an allocator even if background tasks
 // that access it are still pending/running.
 TEST_F(SubprocessMetricsProviderTest, AllocatorRefCounted) {
-  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10, 0);
-  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10, 0);
+  base::HistogramBase* foo = base::Histogram::FactoryGet("_foo", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  base::HistogramBase* bar = base::Histogram::FactoryGet("_bar", 1, 100, 10,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
   base::HistogramBase* baz = base::SparseHistogram::FactoryGet(
       "_baz", base::HistogramBase::kUmaTargetedHistogramFlag);
   base::HistogramBase* foobar = base::SparseHistogram::FactoryGet(

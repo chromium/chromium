@@ -43,7 +43,9 @@ HistogramBase* SparseHistogram::FactoryGet(std::string_view name,
     PersistentMemoryAllocator::Reference histogram_ref = 0;
     std::unique_ptr<HistogramBase> tentative_histogram;
     PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
-    if (allocator) {
+    const bool should_persist =
+        (flags & HistogramBase::kPersistentHistogramFlagsMask) != 0;
+    if (allocator && should_persist) {
       tentative_histogram = allocator->AllocateHistogram(
           SPARSE_HISTOGRAM, name, name_hash, /*minimum=*/0, /*maximum=*/0,
           /*bucket_ranges=*/nullptr, flags, &histogram_ref);

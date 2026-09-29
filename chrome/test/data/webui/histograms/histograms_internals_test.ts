@@ -60,11 +60,11 @@ suite('HistogramsInternals', () => {
     // We can assume these two histograms appear next to each other since
     // the histograms are sorted by name.
     const expectedContent =
-        '- Histogram: HTMLOut recorded 5 samples, mean = 4.0 (flags = 0x40) [#]\n\n' +
+        '- Histogram: HTMLOut recorded 5 samples, mean = 4.0 [#]\n\n' +
         '0  ... \n' +
         '4  -----O                                                                    (5 = 100.0%) {0.0%}\n' +
         '7  ... \n\n\n' +
-        '- Histogram: HTMLOut1 recorded 6 samples, mean = 13.3 (flags = 0x40) [#]\n\n' +
+        '- Histogram: HTMLOut1 recorded 6 samples, mean = 13.3 [#]\n\n' +
         '0   O                                                                         (0 = 0.0%)\n' +
         '1   --O                                                                       (2 = 33.3%) {0.0%}\n' +
         '11  ----O                                                                     (4 = 66.7%) {33.3%}\n' +

@@ -120,15 +120,26 @@ class BASE_EXPORT HistogramBase {
     kCallbackExists = 0x20,
 
     // Indicates that the histogram is held in "persistent" memory and may
-    // be accessible between processes. This is only possible if such a
-    // memory segment has been created/attached, used to create a Persistent-
-    // MemoryAllocator, and that loaded into the Histogram module before this
-    // histogram is created.
+    // be accessible between processes. This flag is set internally by the
+    // allocator upon creation, rather than being passed as an input flag when
+    // defining or creating a histogram.
     kIsPersistent = 0x40,
 
     // Indicates that the histogram should be collected by PUMA, and its type is
     // PUMA for Regional Capabilities.
     kPumaRcTargetedHistogramFlag = 0x80,
+
+    // Mask of flags indicating that the histogram should be persisted in PMA
+    // files. Currently, only UMA-targeted histograms (including stability
+    // histograms, which include `kUmaTargetedHistogramFlag`) are persisted.
+    // Unlike `kIsPersistent` (which is a state flag set internally on histograms
+    // already allocated in persistent memory), this mask is checked against the
+    // histogram's creation flags (e.g. `kUmaTargetedHistogramFlag`) to determine
+    // whether to allocate the histogram in the GlobalHistogramAllocator.
+    // Note: This constant should only be used for testing whether a histogram
+    // should be persisted, and must not be passed as a flag when creating a
+    // histogram.
+    kPersistentHistogramFlagsMask = kUmaTargetedHistogramFlag,
 
     // A combination of all flags used in tests.
     kAllFlags = kUmaTargetedHistogramFlag | kUmaStabilityHistogramFlag |

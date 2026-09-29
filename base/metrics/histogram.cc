@@ -229,7 +229,9 @@ HistogramBase* Histogram::Factory::Build() {
     PersistentHistogramAllocator::Reference histogram_ref = 0;
     std::unique_ptr<HistogramBase> tentative_histogram;
     PersistentHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
-    if (allocator) {
+    const bool should_persist =
+        (flags_ & HistogramBase::kPersistentHistogramFlagsMask) != 0;
+    if (allocator && should_persist) {
       tentative_histogram = allocator->AllocateHistogram(
           histogram_type_, name_, name_hash_, minimum_, maximum_,
           registered_ranges, flags_, &histogram_ref);

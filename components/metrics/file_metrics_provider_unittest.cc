@@ -527,22 +527,26 @@ TEST_P(FileMetricsProviderTest, AccessDirectory) {
                          allocator, base_time);
   // Histogram names must be 2 characters (see
   // DeltaRecordingHistogramSnapshotManager).
-  histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h1", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
                          allocator, base_time + base::Minutes(1));
 
-  histogram = base::Histogram::FactoryGet("h2", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h2", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(2);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("c2.pma"),
                          allocator, base_time + base::Minutes(2));
 
-  histogram = base::Histogram::FactoryGet("h3", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h3", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(3);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("b3.pma"),
                          allocator, base_time + base::Minutes(3));
 
-  histogram = base::Histogram::FactoryGet("h4", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h4", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(3);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("d4.pma"),
                          allocator, base_time + base::Minutes(4));
@@ -673,12 +677,14 @@ TEST_P(FileMetricsProviderTest, AccessTimeLimitedDirectory) {
   // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
-  histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h1", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
                          allocator, base::Time::Now() - base::Hours(1));
 
-  histogram = base::Histogram::FactoryGet("h2", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h2", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(2);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("b2.pma"),
                          allocator, base::Time::Now());
@@ -721,12 +727,14 @@ TEST_P(FileMetricsProviderTest, AccessCountLimitedDirectory) {
   // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
-  histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h1", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
                          allocator, base::Time::Now() - base::Hours(1));
 
-  histogram = base::Histogram::FactoryGet("h2", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h2", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(2);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("b2.pma"),
                          allocator, base::Time::Now());
@@ -775,12 +783,14 @@ TEST_P(FileMetricsProviderTest, AccessSizeLimitedDirectory) {
   // (see DeltaRecordingHistogramSnapshotManager).
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
-  histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h1", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
                          allocator, base::Time::Now() - base::Hours(1));
 
-  histogram = base::Histogram::FactoryGet("h2", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h2", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(2);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("b2.pma"),
                          allocator, base::Time::Now());
@@ -828,22 +838,26 @@ TEST_P(FileMetricsProviderTest, AccessFilteredDirectory) {
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   // Histogram names must be 2 characters (see
   // DeltaRecordingHistogramSnapshotManager).
-  histogram = base::Histogram::FactoryGet("h1", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h1", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(1);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("a1.pma"),
                          allocator, base_time + base::Minutes(1));
 
-  histogram = base::Histogram::FactoryGet("h2", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h2", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(2);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("c2.pma"),
                          allocator, base_time + base::Minutes(2));
 
-  histogram = base::Histogram::FactoryGet("h3", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h3", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(3);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("b3.pma"),
                          allocator, base_time + base::Minutes(3));
 
-  histogram = base::Histogram::FactoryGet("h4", 1, 100, 10, 0);
+  histogram = base::Histogram::FactoryGet(
+      "h4", 1, 100, 10, base::HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(3);
   WriteMetricsFileAtTime(metrics_files.GetPath().AppendASCII("d4.pma"),
                          allocator, base_time + base::Minutes(4));

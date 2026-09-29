@@ -331,8 +331,8 @@ TEST_P(SparseHistogramTest, DuplicationSafety) {
   size_t histogram_count = StatisticsRecorder::GetHistogramCount();
 
   // Create a histogram that we will later duplicate.
-  HistogramBase* original =
-      SparseHistogram::FactoryGet(histogram_name, HistogramBase::kNoFlags);
+  HistogramBase* original = SparseHistogram::FactoryGet(
+      histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
   ++histogram_count;
   DCHECK_EQ(histogram_count, StatisticsRecorder::GetHistogramCount());
   original->Add(1);
@@ -346,7 +346,8 @@ TEST_P(SparseHistogramTest, DuplicationSafety) {
     GlobalHistogramAllocator::Get()->ClearLastCreatedReferenceForTesting();
     // Creating a different histogram will first do an Import to ensure it
     // hasn't been created elsewhere, triggering the duplication and release.
-    SparseHistogram::FactoryGet("something.new", HistogramBase::kNoFlags);
+    SparseHistogram::FactoryGet("something.new",
+                                HistogramBase::kUmaTargetedHistogramFlag);
     ++histogram_count;
   } else {
     // To allocate from the heap, just call the (private) constructor directly.
@@ -358,8 +359,8 @@ TEST_P(SparseHistogramTest, DuplicationSafety) {
   DCHECK_EQ(histogram_count, StatisticsRecorder::GetHistogramCount());
 
   // Re-creating the histogram via FactoryGet() will return the same one.
-  HistogramBase* duplicate =
-      SparseHistogram::FactoryGet(histogram_name, HistogramBase::kNoFlags);
+  HistogramBase* duplicate = SparseHistogram::FactoryGet(
+      histogram_name, HistogramBase::kUmaTargetedHistogramFlag);
   DCHECK_EQ(original, duplicate);
   DCHECK_EQ(histogram_count, StatisticsRecorder::GetHistogramCount());
   duplicate->Add(2);
