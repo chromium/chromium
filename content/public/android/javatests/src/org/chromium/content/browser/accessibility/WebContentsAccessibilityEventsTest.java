@@ -242,19 +242,13 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_addChild() {
-        performTest(
-                "add-child.html",
-                "add-child-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("add-child.html", "add-child-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_addChildOfBody() {
-        performTest(
-                "add-child-of-body.html",
-                "add-child-of-body-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("add-child-of-body.html", "add-child-of-body-expected-android.txt");
     }
 
     @Test
@@ -286,17 +280,13 @@ public class WebContentsAccessibilityEventsTest {
     public void test_addHiddenAttributeSubtree() {
         performTest(
                 "add-hidden-attribute-subtree.html",
-                "add-hidden-attribute-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "add-hidden-attribute-subtree-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_addSubtree() {
-        performTest(
-                "add-subtree.html",
-                "add-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("add-subtree.html", "add-subtree-expected-android.txt");
     }
 
     @Test
@@ -304,8 +294,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_anonymousBlockChildrenChanged() {
         performTest(
                 "anonymous-block-children-changed.html",
-                "anonymous-block-children-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "anonymous-block-children-changed-expected-android.txt");
     }
 
     @Test
@@ -626,8 +615,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_ariaSelectedChangedNewSubtree() {
         performTest(
                 "aria-selected-changed-new-subtree.html",
-                "aria-selected-changed-new-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "aria-selected-changed-new-subtree-expected-android.txt");
     }
 
     @Test
@@ -791,10 +779,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_buttonRemoveChildren() {
-        performTest(
-                "button-remove-children.html",
-                "button-remove-children-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("button-remove-children.html", "button-remove-children-expected-android.txt");
     }
 
     @Test
@@ -914,10 +899,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_deleteSubtree() {
-        performTest(
-                "delete-subtree.html",
-                "delete-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("delete-subtree.html", "delete-subtree-expected-android.txt");
     }
 
     @Test
@@ -1377,10 +1359,7 @@ public class WebContentsAccessibilityEventsTest {
     @Test
     @SmallTest
     public void test_removeChild() {
-        performTest(
-                "remove-child.html",
-                "remove-child-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("remove-child.html", "remove-child-expected-android.txt");
     }
 
     @Test
@@ -1397,17 +1376,13 @@ public class WebContentsAccessibilityEventsTest {
     public void test_removeHiddenAttributeSubtree() {
         performTest(
                 "remove-hidden-attribute-subtree.html",
-                "remove-hidden-attribute-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "remove-hidden-attribute-subtree-expected-android.txt");
     }
 
     @Test
     @SmallTest
     public void test_removeSubtree() {
-        performTest(
-                "remove-subtree.html",
-                "remove-subtree-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+        performTest("remove-subtree.html", "remove-subtree-expected-android.txt");
     }
 
     @Test
@@ -1415,8 +1390,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_reparentElementWithActiveDescendant() {
         performTest(
                 "reparent-element-with-active-descendant.html",
-                "reparent-element-with-active-descendant-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "reparent-element-with-active-descendant-expected-android.txt");
     }
 
     @Test
@@ -1471,8 +1445,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_subtreeReparentedIgnoredChanged() {
         performTest(
                 "subtree-reparented-ignored-changed.html",
-                "subtree-reparented-ignored-changed-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "subtree-reparented-ignored-changed-expected-android.txt");
     }
 
     @Test
@@ -1480,8 +1453,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_subtreeReparentedViaAppendChild() {
         performTest(
                 "subtree-reparented-via-append-child.html",
-                "subtree-reparented-via-append-child-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "subtree-reparented-via-append-child-expected-android.txt");
     }
 
     @Test
@@ -1489,8 +1461,7 @@ public class WebContentsAccessibilityEventsTest {
     public void test_subtreeReparentedViaAriaOwns() {
         performTest(
                 "subtree-reparented-via-aria-owns.html",
-                "subtree-reparented-via-aria-owns-expected-android.txt",
-                /* shouldFilterTrivialEvents= */ false);
+                "subtree-reparented-via-aria-owns-expected-android.txt");
     }
 
     @Test
