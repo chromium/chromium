@@ -93,7 +93,8 @@ void VoicePlateController::MoveToWindow(BrowserWindowInterface* browser) {
   // on Linux, so we recreate the View on each window move.
   voice_plate_ = std::make_unique<dictation::DictationBubbleUi>(
       anchor_view, close_callback_,
-      /*toggle_active_stream_callback=*/base::DoNothing());
+      /*toggle_active_stream_callback=*/base::DoNothing(),
+      /*show_reviewing_page_status=*/false);
   voice_plate_->SetState(initial_state);
   voice_plate_->Show();
 }

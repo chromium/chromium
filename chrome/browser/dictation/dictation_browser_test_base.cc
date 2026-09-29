@@ -50,6 +50,14 @@ void DictationBrowserTestBase::SetUpOnMainThread() {
   ASSERT_TRUE(embedded_test_server()->Start());
   profile()->GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
+  // Suppress the "Reviewing page" status that is otherwise shown at the start
+  // of a session. While visible, it hides the bubble's toggle button and
+  // compacts the waveform until a timer expires, which would make tests that
+  // interact with the bubble timing-dependent. Tests covering this status
+  // re-enable it explicitly.
+  if (auto* service = DictationKeyedService::Get(profile())) {
+    service->SetReviewingPageStatusEnabledForTesting(false);
+  }
   LoadTestExtensionInManualMode(profile());
 }
 

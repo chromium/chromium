@@ -21,16 +21,15 @@ namespace dictation {
 namespace {
 
 // Sizing and layout.
-constexpr int kFullSizeViewWidth = 63;
-constexpr size_t kFullSizeBarCount = 9;
+constexpr int kFullSizeHorizontalPadding = 13;
 
 constexpr int kNonFullSizeViewWidth = 20;
 constexpr int kNonFullSizeViewHeight = 20;
 constexpr size_t kNonFullSizeBarCount = 3;
 
-constexpr float kFullSizeBarSpacing = 6.0f;
-constexpr float kNonFullSizeBarSpacing = 5.0f;
-constexpr float kBarWidth = 2.0f;
+constexpr int kFullSizeBarSpacing = 6;
+constexpr int kNonFullSizeBarSpacing = 5;
+constexpr int kBarWidth = 2;
 constexpr float kBarCornerRadius = 0.5f;
 
 // Height limits.
@@ -92,13 +91,23 @@ float CalculateBarHeight(float min_bar_height,
 
 WaveformView::WaveformView(bool full_size) : full_size_(full_size) {
   const size_t bar_count =
-      full_size_ ? kFullSizeBarCount : kNonFullSizeBarCount;
+      full_size_ ? kDefaultFullSizeBarCount : kNonFullSizeBarCount;
   bars_.resize(bar_count);
   audio_history_.resize(GetCenterBarIndex() + 1, 0.0f);
   animation_ = std::make_unique<gfx::InfiniteAnimation>(this);
 }
 
 WaveformView::~WaveformView() = default;
+
+void WaveformView::SetBarCount(size_t bar_count) {
+  if (bars_.size() == bar_count) {
+    return;
+  }
+  bars_.resize(bar_count);
+  audio_history_.assign(GetCenterBarIndex() + 1, 0.0f);
+  InvalidateLayout();
+  SchedulePaint();
+}
 
 size_t WaveformView::GetCenterBarIndex() const {
   return bars_.size() / 2;
@@ -177,7 +186,9 @@ gfx::Size WaveformView::CalculatePreferredSize(
     return gfx::Size(0, 0);
   }
   const auto* const layout_provider = ChromeLayoutProvider::Get();
-  const int width = full_size_ ? kFullSizeViewWidth : kNonFullSizeViewWidth;
+  const int width = full_size_ ? (bars_.size() - 1) * kFullSizeBarSpacing +
+                                     kBarWidth + kFullSizeHorizontalPadding
+                               : kNonFullSizeViewWidth;
   const int height = full_size_ ? layout_provider->GetDistanceMetric(
                                       DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT)
                                 : kNonFullSizeViewHeight;

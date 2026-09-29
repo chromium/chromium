@@ -60,7 +60,7 @@ ToastId GetToastId(StreamErrorReason reason) {
 
 }  // namespace
 
-void SessionUiImpl::CreateBubbleUi() {
+void SessionUiImpl::CreateBubbleUi(bool show_reviewing_page_status) {
   BrowserWindowInterface* window = tab_->GetBrowserWindowInterface();
   if (!window) {
     return;
@@ -80,7 +80,8 @@ void SessionUiImpl::CreateBubbleUi() {
       base::BindRepeating(&SessionUiImpl::OnDictationBubbleCloseClicked,
                           base::Unretained(this)),
       base::BindRepeating(&SessionUiImpl::OnToggleActiveStreamClicked,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      show_reviewing_page_status);
   bubble_ui_->SetState(ToUiState(controller_->GetState()));
 
   // TODO(b/510778034): Determine what we need to make this accessibility
@@ -101,9 +102,10 @@ void SessionUiImpl::CreateBubbleUi() {
 }
 
 SessionUiImpl::SessionUiImpl(tabs::TabInterface& tab,
-                             SessionUiDelegate& delegate)
+                             SessionUiDelegate& delegate,
+                             bool show_reviewing_page_status)
     : tab_(tab), controller_(delegate) {
-  CreateBubbleUi();
+  CreateBubbleUi(show_reviewing_page_status);
 
   session_state_changed_subscription_ =
       delegate.AddSessionStateChangedCallback(base::BindRepeating(
@@ -227,7 +229,7 @@ void SessionUiImpl::OnTabWillDetach(tabs::TabInterface* tab,
 
 void SessionUiImpl::OnTabInserted(tabs::TabInterface* tab) {
   // Recreate the UI elements for the ongoing session in the new window.
-  CreateBubbleUi();
+  CreateBubbleUi(/*show_reviewing_page_status=*/false);
 }
 
 void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {

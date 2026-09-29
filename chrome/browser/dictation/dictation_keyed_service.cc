@@ -182,8 +182,8 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
   // We must have a tab since this is called synchronously from session
   // creation.
   CHECK(tab);
-
-  return std::make_unique<SessionUiImpl>(*tab, controller);
+  return std::make_unique<SessionUiImpl>(*tab, controller,
+                                         ConsumeShowReviewingPageStatus());
 }
 
 bool DictationKeyedService::ConsumeShowReviewingPageStatus() const {

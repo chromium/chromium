@@ -26,15 +26,18 @@ namespace dictation {
 // TODO(b/555790343): Make the toggle button optional.
 class DictationBubbleUi : public views::BubbleDialogDelegate {
  public:
-  explicit DictationBubbleUi(
-      views::View* anchor_view,
-      base::RepeatingClosure close_callback,
-      base::RepeatingClosure toggle_active_stream_callback);
+  // If `show_reviewing_page_status` is true, the bubble initially shows a
+  // transient "Reviewing page" status in place of the toggle button.
+  DictationBubbleUi(views::View* anchor_view,
+                    base::RepeatingClosure close_callback,
+                    base::RepeatingClosure toggle_active_stream_callback,
+                    bool show_reviewing_page_status);
   ~DictationBubbleUi() override;
 
   void Show();
   void SetState(UiState state);
   void UpdateAudioLevel(float audio_level);
+  void SetReviewingPageStatusDurationForTesting(base::TimeDelta duration);
 
   // views::BubbleDialogDelegate:
   gfx::Rect GetBubbleBounds() override;
@@ -47,6 +50,9 @@ class DictationBubbleUi : public views::BubbleDialogDelegate {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleButtonElementIdForTesting);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWaveformElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSeparatorElementIdForTesting);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kReviewingPageStatusLabelElementIdForTesting);
 
  private:
   std::unique_ptr<views::Widget> widget_;

@@ -19634,6 +19634,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DICTATION_ACCNAME_OVERLAY_WAVEFORM_BUTTON" desc="The accessible name for the waveform button on the dictation overlay UI that stops dictating text." translateable="false">
         Stop microphone
       </message>
+      <message name="IDS_DICTATION_REVIEWING_PAGE" desc="Status label shown in the dictation bubble UI while page context is being reviewed." translateable="false">
+        Reviewing page
+      </message>
     </if>
 
     <if expr="is_android">

@@ -6,10 +6,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/dictation/reviewing_page_status_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +30,8 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/view.h"
@@ -44,6 +49,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
                                       kToggleButtonElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
                                       kWaveformElementIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DictationBubbleUi,
+                                      kSeparatorElementIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    DictationBubbleUi,
+    kReviewingPageStatusLabelElementIdForTesting);
 
 namespace {
 
@@ -53,21 +63,36 @@ class DictationToastView : public views::View {
  public:
   explicit DictationToastView(
       base::RepeatingClosure close_callback,
-      base::RepeatingClosure toggle_active_stream_callback);
+      base::RepeatingClosure toggle_active_stream_callback,
+      base::RepeatingClosure on_layout_changed_callback);
   ~DictationToastView() override;
 
   void Init();
+  void ShowReviewingPageStatus();
   void UpdateForState(UiState state);
   void UpdateAudioLevel(float audio_level);
+  void SetReviewingPageStatusDurationForTesting(base::TimeDelta duration);
 
   views::MdTextButton* toggle_button() { return toggle_button_; }
+  views::ImageButton* close_button() { return close_button_; }
+
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
  private:
+  void OnReviewingPageStatusVisibilityChanged(bool visible);
+  bool IsReviewingPageStatusVisible() const;
+
   base::RepeatingClosure close_callback_;
   base::RepeatingClosure toggle_active_stream_callback_;
+  base::RepeatingClosure on_layout_changed_callback_;
+
   raw_ptr<views::ImageView> mic_view_ = nullptr;
   raw_ptr<WaveformView> waveform_view_ = nullptr;
+  raw_ptr<ReviewingPageStatusView> status_view_ = nullptr;
   raw_ptr<views::MdTextButton> toggle_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 };
 
 }  // namespace
@@ -76,11 +101,14 @@ class DictationToastView : public views::View {
 
 DictationToastView::DictationToastView(
     base::RepeatingClosure close_callback,
-    base::RepeatingClosure toggle_active_stream_callback)
+    base::RepeatingClosure toggle_active_stream_callback,
+    base::RepeatingClosure on_layout_changed_callback)
     : close_callback_(std::move(close_callback)),
-      toggle_active_stream_callback_(std::move(toggle_active_stream_callback)) {
+      toggle_active_stream_callback_(std::move(toggle_active_stream_callback)),
+      on_layout_changed_callback_(std::move(on_layout_changed_callback)) {
   SetProperty(views::kElementIdentifierKey,
               DictationBubbleUi::kViewElementIdForTesting);
+  SetNotifyEnterExitOnChild(true);
 }
 
 DictationToastView::~DictationToastView() = default;
@@ -109,21 +137,28 @@ void DictationToastView::Init() {
       mic_icon_source, ui::kColorSysOnSurface,
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE)));
 
+  const int child_spacing =
+      lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING);
+  const gfx::Insets child_margins = gfx::Insets::TLBR(0, child_spacing, 0, 0);
+
   WaveformView* waveform_view =
       AddChildView(std::make_unique<WaveformView>(/*full_size=*/true));
   waveform_view_ = waveform_view;
   waveform_view->SetProperty(views::kElementIdentifierKey,
                              DictationBubbleUi::kWaveformElementIdForTesting);
-  waveform_view->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(
-          0, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING),
-          0, 0));
+  waveform_view->SetProperty(views::kMarginsKey, child_margins);
   waveform_view->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+
+  status_view_ = AddChildView(
+      std::make_unique<ReviewingPageStatusView>(base::BindRepeating(
+          &DictationToastView::OnReviewingPageStatusVisibilityChanged,
+          base::Unretained(this))));
+  status_view_->Init();
+  status_view_->SetProperty(views::kMarginsKey, child_margins);
 
   views::MdTextButton* toggle_button =
       AddChildView(std::make_unique<views::MdTextButton>(
@@ -159,13 +194,10 @@ void DictationToastView::Init() {
   views::InstallCircleHighlightPathGenerator(close_button);
   close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
-  close_button->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(
-          0, lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING),
-          0, 0));
+  close_button->SetProperty(views::kMarginsKey, child_margins);
   close_button->SetProperty(views::kElementIdentifierKey,
                             DictationBubbleUi::kCloseButtonElementIdForTesting);
+  close_button_ = close_button;
 }
 
 void DictationToastView::UpdateForState(UiState state) {
@@ -203,6 +235,49 @@ void DictationToastView::UpdateAudioLevel(float audio_level) {
   }
 }
 
+void DictationToastView::ShowReviewingPageStatus() {
+  if (status_view_) {
+    status_view_->Show();
+  }
+}
+
+void DictationToastView::SetReviewingPageStatusDurationForTesting(
+    base::TimeDelta duration) {
+  if (status_view_) {
+    status_view_->SetDurationForTesting(duration);  // IN-TEST
+  }
+}
+
+void DictationToastView::OnMouseEntered(const ui::MouseEvent& event) {
+  if (status_view_) {
+    status_view_->UpdateTimer();
+  }
+}
+
+void DictationToastView::OnMouseExited(const ui::MouseEvent& event) {
+  if (status_view_) {
+    status_view_->UpdateTimer();
+  }
+}
+
+void DictationToastView::OnReviewingPageStatusVisibilityChanged(bool visible) {
+  if (waveform_view_) {
+    waveform_view_->SetBarCount(visible
+                                    ? WaveformView::kCompactFullSizeBarCount
+                                    : WaveformView::kDefaultFullSizeBarCount);
+  }
+  if (toggle_button_) {
+    toggle_button_->SetVisible(!visible);
+  }
+  if (on_layout_changed_callback_) {
+    on_layout_changed_callback_.Run();
+  }
+}
+
+bool DictationToastView::IsReviewingPageStatusVisible() const {
+  return status_view_ && status_view_->GetVisible();
+}
+
 BEGIN_METADATA(DictationToastView)
 END_METADATA
 
@@ -211,7 +286,8 @@ END_METADATA
 DictationBubbleUi::DictationBubbleUi(
     views::View* anchor_view,
     base::RepeatingClosure close_callback,
-    base::RepeatingClosure toggle_active_stream_callback)
+    base::RepeatingClosure toggle_active_stream_callback,
+    bool show_reviewing_page_status)
     : BubbleDialogDelegate(anchor_view, views::BubbleBorder::NONE) {
   SetBackgroundColor(ui::kColorBubbleBackground);
   SetShowCloseButton(false);
@@ -220,7 +296,9 @@ DictationBubbleUi::DictationBubbleUi(
       DISTANCE_TOAST_BUBBLE_HEIGHT));
   set_close_on_deactivate(false);
   SetContentsView(std::make_unique<DictationToastView>(
-      std::move(close_callback), std::move(toggle_active_stream_callback)));
+      std::move(close_callback), std::move(toggle_active_stream_callback),
+      base::BindRepeating(&DictationBubbleUi::SizeToContents,
+                          base::Unretained(this))));
 
   // TODO(crbug.com/509983464): Update this to call an undeprecated factory
   // function when this bug is fixed.
@@ -229,6 +307,11 @@ DictationBubbleUi::DictationBubbleUi(
           this, views::Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   GetBubbleFrameView()->bubble_border()->set_draw_border_stroke(false);
+
+  if (show_reviewing_page_status) {
+    views::AsViewClass<DictationToastView>(GetContentsView())
+        ->ShowReviewingPageStatus();
+  }
 }
 
 DictationBubbleUi::~DictationBubbleUi() = default;
@@ -236,6 +319,17 @@ DictationBubbleUi::~DictationBubbleUi() = default;
 void DictationBubbleUi::Show() {
   CHECK(widget_);
   widget_->ShowInactive();
+  // While the reviewing page status is shown, `GetInitiallyFocusedView()`
+  // returns the close button, which `ShowInactive()` stores as the view to
+  // focus on activation. Clear it so that the widget becoming active without
+  // explicit keyboard navigation doesn't focus the close button, which would
+  // pause the reviewing page status timer.
+  views::View* toggle_button =
+      views::AsViewClass<DictationToastView>(GetContentsView())
+          ->toggle_button();
+  if (!toggle_button->GetVisible()) {
+    widget_->GetFocusManager()->SetStoredFocusView(nullptr);
+  }
 }
 
 void DictationBubbleUi::SetState(UiState state) {
@@ -256,6 +350,14 @@ void DictationBubbleUi::UpdateAudioLevel(float audio_level) {
   if (GetContentsView()) {
     views::AsViewClass<DictationToastView>(GetContentsView())
         ->UpdateAudioLevel(audio_level);
+  }
+}
+
+void DictationBubbleUi::SetReviewingPageStatusDurationForTesting(
+    base::TimeDelta duration) {
+  if (GetContentsView()) {
+    views::AsViewClass<DictationToastView>(GetContentsView())
+        ->SetReviewingPageStatusDurationForTesting(duration);  // IN-TEST
   }
 }
 
@@ -292,7 +394,17 @@ void DictationBubbleUi::Init() {
 
 views::View* DictationBubbleUi::GetInitiallyFocusedView() {
   auto* toast_view = views::AsViewClass<DictationToastView>(GetContentsView());
-  return toast_view ? toast_view->toggle_button() : nullptr;
+  if (!toast_view) {
+    return nullptr;
+  }
+  // The toggle button is hidden while the reviewing page status is shown. Fall
+  // back to the close button so that keyboard users can still move focus into
+  // the bubble (e.g. via pane cycling), since a hidden view can't take focus.
+  views::View* toggle_button = toast_view->toggle_button();
+  if (toggle_button && toggle_button->GetVisible()) {
+    return toggle_button;
+  }
+  return toast_view->close_button();
 }
 
 gfx::Rect DictationBubbleUi::GetBubbleBounds() {

@@ -29,12 +29,18 @@ class WaveformView : public views::View, public gfx::AnimationDelegate {
   METADATA_HEADER(WaveformView, views::View)
 
  public:
+  static constexpr size_t kDefaultFullSizeBarCount = 9;
+  static constexpr size_t kCompactFullSizeBarCount = 5;
+
   explicit WaveformView(bool full_size);
   WaveformView(const WaveformView&) = delete;
   WaveformView& operator=(const WaveformView&) = delete;
   ~WaveformView() override;
 
   bool full_size() const { return full_size_; }
+
+  void SetBarCount(size_t bar_count);
+  size_t bar_count() const { return bars_.size(); }
 
   // Set the current dictation state to control the animation behavior.
   void SetState(UiState state);

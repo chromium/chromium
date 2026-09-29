@@ -239,4 +239,92 @@ IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
   // clang-format on
 }
 
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
+                       ReviewingPageStatusShownOnFirstSessionStart) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  const GURL other_url =
+      embedded_test_server()->GetURL("/textinput/simple_textinput.html");
+
+  dictation_service().SetReviewingPageStatusEnabledForTesting(true);
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    // First session shows "Reviewing page" and hides "Done".
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    WaitForShow(
+        DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
+    WaitForShow(DictationBubbleUi::kSeparatorElementIdForTesting),
+    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+
+    // End first session.
+    Do([this] { dictation_service().EndSession(); }),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Second session on the same document within the cooldown period shows
+    // "Done" immediately and does NOT show "Reviewing page". Check "Done"
+    // without waiting so this can't pass by the status timing out.
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    EnsurePresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    EnsureNotPresent(
+        DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
+    EnsureNotPresent(DictationBubbleUi::kSeparatorElementIdForTesting),
+
+    // End second session.
+    Do([this] { dictation_service().EndSession(); }),
+    WaitForHide(DictationBubbleUi::kViewElementIdForTesting),
+
+    // Third session on a different document shows "Reviewing page" again.
+    NavigateWebContents(kWebContentsElementId, other_url),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    EnsurePresent(
+        DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
+    EnsurePresent(DictationBubbleUi::kSeparatorElementIdForTesting),
+    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting)
+  );
+  // clang-format on
+}
+
+// While the reviewing page status is shown the toggle button is hidden. The
+// bubble must still be reachable by keyboard (b/559265158), with focus going to
+// the close button instead.
+IN_PROC_BROWSER_TEST_F(DictationSessionUiImplInteractiveUiTest,
+                       FocusUiByCyclingPaneFocusWhileReviewingPageStatusShown) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url =
+      embedded_test_server()->GetURL("/textinput/simple_textarea.html");
+  dictation_service().SetReviewingPageStatusEnabledForTesting(true);
+
+  ui::Accelerator next_pane;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_FOCUS_NEXT_PANE, &next_pane));
+  views::Widget* bubble_widget = nullptr;
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    ObserveState(views::test::kCurrentWidgetFocus),
+    StartSessionWithTarget(kWebContentsElementId, "#text_id"),
+    WaitForShow(DictationBubbleUi::kViewElementIdForTesting),
+    WaitForShow(
+        DictationBubbleUi::kReviewingPageStatusLabelElementIdForTesting),
+    WithView(
+        DictationBubbleUi::kViewElementIdForTesting,
+        [&](views::View* view) { bubble_widget = view->GetWidget(); }),
+    SendAccelerator(kBrowserViewElementId, next_pane),
+    WaitForState(views::test::kCurrentWidgetFocus, std::ref(bubble_widget)),
+    EnsureNotPresent(DictationBubbleUi::kToggleButtonElementIdForTesting),
+    CheckViewProperty(DictationBubbleUi::kCloseButtonElementIdForTesting,
+                      &views::View::HasFocus, true)
+  );
+  // clang-format on
+}
+
 }  // namespace dictation
