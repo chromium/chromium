@@ -13,6 +13,7 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -32,6 +33,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_host_manifest.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_logging.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
@@ -54,6 +56,46 @@ void TerminateNativeProcess(base::Process native_process) {
 #else
   base::EnsureProcessTerminated(std::move(native_process));
 #endif
+}
+
+// Renders `command_line` for logging with the --reconnect-command argument's
+// value elided, since its base64 payload carries the user data and profile
+// directories. The value needs no CommandLineToArgvW-style quoting (it's
+// pure base64), so it appears in GetCommandLineString()'s output unchanged
+// and can be located there as plain text.
+base::CommandLine::StringType RedactedCommandLineForLogging(
+    const base::CommandLine& command_line) {
+  constexpr base::CommandLine::StringViewType kReconnectCommandSwitch =
+      FILE_PATH_LITERAL("--reconnect-command=");
+  base::CommandLine::StringType result = command_line.GetCommandLineString();
+
+  // Find the switch by its own argv entry rather than searching `result`
+  // for the switch text. A plain find() can also match text that only
+  // looks like the switch because it sits inside another argument's value.
+  // The native messaging host's own program path is the argument that
+  // matters here. GetCommandLineString() does not quote it on POSIX, so an
+  // embedded space in the path reads as an argument boundary too, and the
+  // path can contain arbitrary text. Matching a whole argv entry, not just
+  // its prefix, means a false match would also have to reproduce the
+  // base64 payload, which this code derives from data the caller never
+  // controls.
+  for (const base::CommandLine::StringType& arg : command_line.argv()) {
+    if (!arg.starts_with(kReconnectCommandSwitch)) {
+      continue;
+    }
+    size_t token_pos = result.find(arg);
+    if (token_pos == base::CommandLine::StringType::npos) {
+      // `arg` came from argv(), so GetCommandLineString() should always
+      // contain it. If a platform ever quotes it, drop the whole line rather
+      // than return one still carrying the payload.
+      return FILE_PATH_LITERAL("<command line unavailable>");
+    }
+    size_t value_pos = token_pos + kReconnectCommandSwitch.size();
+    result.replace(value_pos, arg.size() - kReconnectCommandSwitch.size(),
+                   FILE_PATH_LITERAL("<omitted>"));
+    break;
+  }
+  return result;
 }
 
 }  // namespace
@@ -145,24 +187,27 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
       FindManifest(native_host_name, allow_user_level_hosts, error_message);
 
   if (manifest_path.empty()) {
-    LOG(WARNING) << "Can't find manifest for native messaging host "
-                 << native_host_name;
+    NM_LOG(WARNING) << "Can't find manifest for native messaging host "
+                    << native_host_name;
     return BackgroundLaunchResult(NativeProcessLauncher::RESULT_NOT_FOUND);
   }
+
+  VLOG(1) << "Found manifest for native messaging host " << native_host_name
+          << " at " << manifest_path.AsUTF8Unsafe();
 
   std::unique_ptr<NativeMessagingHostManifest> manifest =
       NativeMessagingHostManifest::Load(manifest_path, &error_message);
 
   if (!manifest) {
-    LOG(WARNING) << "Failed to load manifest for native messaging host "
-                 << native_host_name << ": " << error_message;
+    NM_LOG(WARNING) << "Failed to load manifest for native messaging host "
+                    << native_host_name << ": " << error_message;
     return BackgroundLaunchResult(NativeProcessLauncher::RESULT_NOT_FOUND);
   }
 
   if (manifest->name() != native_host_name) {
-    LOG(WARNING) << "Failed to load manifest for native messaging host "
-                 << native_host_name
-                 << ": Invalid name specified in the manifest.";
+    NM_LOG(WARNING) << "Failed to load manifest for native messaging host "
+                    << native_host_name
+                    << ": Invalid name specified in the manifest.";
     return BackgroundLaunchResult(NativeProcessLauncher::RESULT_NOT_FOUND);
   }
 
@@ -183,8 +228,8 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
 #if BUILDFLAG(IS_WIN)
     host_path = manifest_path.DirName().Append(host_path);
 #else   // BUILDFLAG(IS_WIN)
-    LOG(WARNING) << "Native messaging host path must be absolute for "
-                 << native_host_name;
+    NM_LOG(WARNING) << "Native messaging host path must be absolute for "
+                    << native_host_name;
     return BackgroundLaunchResult(NativeProcessLauncher::RESULT_NOT_FOUND);
 #endif  // BUILDFLAG(IS_WIN)
   }
@@ -192,7 +237,7 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
   // In case when the manifest file is there, but the host binary doesn't exist
   // report the NOT_FOUND error.
   if (!base::PathExists(host_path)) {
-    LOG(WARNING)
+    NM_LOG(WARNING)
         << "Found manifest, but not the binary for native messaging host "
         << native_host_name << ". Host path specified in the manifest: "
         << host_path.AsUTF8Unsafe();
@@ -259,6 +304,9 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
     command_line.AppendArg(base::StrCat(
         {"--", switches::kNativeMessagingConnectId, "=", connect_id}));
   }
+
+  VLOG(1) << "Launching native messaging host with command line: "
+          << RedactedCommandLineForLogging(command_line);
 
   if (auto state = LaunchNativeProcess(
           command_line, native_hosts_executables_launch_directly)) {

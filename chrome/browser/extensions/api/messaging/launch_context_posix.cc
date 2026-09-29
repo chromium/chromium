@@ -16,6 +16,7 @@
 #include "base/process/launch.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_logging.h"
 #include "chrome/common/chrome_paths.h"
 #include "net/base/file_stream.h"
 
@@ -64,7 +65,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
 
   int read_pipe_fds[2] = {};
   if (HANDLE_EINTR(pipe(read_pipe_fds)) != 0) {
-    LOG(ERROR) << "Bad read pipe";
+    NM_LOG(ERROR) << "Bad read pipe";
     return std::nullopt;
   }
   base::ScopedFD read_pipe_read_fd(read_pipe_fds[0]);
@@ -74,7 +75,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
 
   int write_pipe_fds[2] = {};
   if (HANDLE_EINTR(pipe(write_pipe_fds)) != 0) {
-    LOG(ERROR) << "Bad write pipe";
+    NM_LOG(ERROR) << "Bad write pipe";
     return std::nullopt;
   }
   base::ScopedFD write_pipe_read_fd(write_pipe_fds[0]);
@@ -97,9 +98,10 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
 
   base::Process local_process = base::LaunchProcess(command_line, options);
   if (!local_process.IsValid()) {
-    LOG(ERROR) << "Error launching process";
+    NM_LOG(ERROR) << "Error launching process";
     return std::nullopt;
   }
+  VLOG(1) << "Launched native messaging host. PID: " << local_process.Pid();
 
   // We will not be reading from the write pipe, nor writing from the read pipe.
   write_pipe_read_fd.reset();

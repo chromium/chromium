@@ -22,6 +22,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -31,13 +32,16 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_logging.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "chrome/browser/profiles/profile.h"
@@ -546,6 +550,203 @@ TEST_F(NativeMessagingTest, LogMessageSize) {
   histogram_tester.ExpectUniqueSample(
       "Extensions.NativeMessaging.MessageSize.NativeApp", strlen(kTestMessage),
       1);
+}
+
+// Tests that launch_context.cc's real NM_LOG(WARNING) call for a missing
+// manifest -- the same failure DisallowUserLevel above exercises -- still
+// emits when the global minimum log level is raised to LOGGING_FATAL (what
+// --log-level=3 does), as long as --vmodule enables verbosity for this
+// directory. It also checks that the same directory pattern reaches a
+// second real call site in a different file on the same failure path: the
+// plain VLOG(1) close trace in NativeMessageProcessHost::Close, which has
+// no LOG_IS_ON fallback of its own and so depends on vmodule alone. This
+// proves the WARNING path at one call site plus one VLOG(1) call site at
+// another. It says nothing about the ERROR call sites in launch_context.cc,
+// launch_context_win.cc, or launch_context_posix.cc, or about any of the
+// directory's other log lines.
+TEST_F(NativeMessagingTest, MissingManifestWarningSurvivesVmodule) {
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(true));
+
+  // Restores the process-global min log level when it goes out of scope.
+  // Declared before |scoped_vmodule_switches| so it is destroyed after it:
+  // its destructor re-runs InitLogging(), which touches the same vlog state
+  // ScopedVmoduleSwitches owns, so the vmodule switch has to be torn down
+  // first.
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
+
+  // Precondition: LOG_IS_ON is not file-dependent, so this holds for
+  // launch_context.cc's own check too. Without the vmodule switch below,
+  // the warning this test looks for could not emit.
+  EXPECT_FALSE(LOG_IS_ON(WARNING));
+
+  logging::ScopedVmoduleSwitches scoped_vmodule_switches;
+  scoped_vmodule_switches.InitWithSwitches("*/extensions/api/messaging/*=1");
+
+  base::test::MockLog log;
+  // Tolerate every other log line this failure path emits. gMock tries
+  // expectations in reverse declaration order (third_party/googletest/src/
+  // docs/gmock_for_dummies.md, "Using Multiple Expectations"), so this
+  // catch-all has to come first to end up tried last, after the specific
+  // expectations below.
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      log,
+      Log(logging::LOGGING_WARNING, testing::_, testing::_, testing::_,
+          testing::HasSubstr("Can't find manifest for native messaging host")))
+      .WillOnce(testing::Return(true));
+  // VLOG(1)'s severity is -1 (VERBOSE1). See base/logging.h.
+  EXPECT_CALL(log, Log(-1, testing::_, testing::_, testing::_,
+                       testing::HasSubstr("Closing native messaging channel")))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
+
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::kHostName, false, &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+
+  // The host should fail to start, same as DisallowUserLevel above.
+  EXPECT_TRUE(channel_closed_);
+}
+
+// Tests that a real, successful native messaging launch reaches both of
+// launch_context.cc's new VLOG(1) traces under the directory vmodule
+// pattern, and that the second one redacts the --reconnect-command
+// argument. UserLevel above drives the same successful launch, but takes
+// neither of the two conditions launch_context.cc's reconnect-command
+// branch needs: a host manifest with supports_native_initiated_connections,
+// and a non-empty profile directory for the extension. This test is
+// ReconnectArgs above plus the logging scopers. It enables
+// features::kOnConnectNative because NativeMessagingHostManifest::Load()
+// ignores the manifest's own supports_native_initiated_connections value
+// while that feature is off (see the manifest unit test named for exactly
+// this, in native_messaging_host_manifest_unittest.cc), switches to
+// kSupportsNativeInitiatedConnectionsHostName, and forces
+// ScopedAllowNativeAppConnectionForTest(true) so the profile directory is
+// not empty either.
+TEST_F(NativeMessagingTest, SuccessfulLaunchLogsRedactedCommandLine) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnConnectNative);
+
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(true));
+
+  // Forces GetProfilePathIfEnabled() (native_message_process_host.cc) to
+  // treat `profile_` as capable of a native-initiated reconnection, so
+  // LaunchContext::LaunchInBackground takes the --reconnect-command branch
+  // instead of leaving profile_directory empty.
+  ScopedAllowNativeAppConnectionForTest allow_native_app_connection(true);
+
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
+
+  logging::ScopedVmoduleSwitches scoped_vmodule_switches;
+  scoped_vmodule_switches.InitWithSwitches("*/extensions/api/messaging/*=1");
+
+  const base::FilePath expected_manifest_path =
+      test_host.temp_dir().AppendASCII(
+          std::string(ScopedTestNativeMessagingHost::
+                          kSupportsNativeInitiatedConnectionsHostName) +
+          ".json");
+
+  base::test::MockLog log;
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(
+      log,
+      Log(-1, testing::_, testing::_, testing::_,
+          testing::AllOf(
+              testing::HasSubstr("Found manifest for native messaging host"),
+              testing::HasSubstr(expected_manifest_path.AsUTF8Unsafe()))))
+      .WillOnce(testing::Return(true));
+  // The reconnect blob encodes profile_.GetPath() as two separate
+  // switches in LaunchContext::LaunchInBackground: --profile-directory=
+  // gets the base name, --user-data-dir= gets the parent directory. The
+  // parent directory is the value worth checking for. It is the whole
+  // local filesystem path, while the base name alone ("Default" in most
+  // profiles) does not by itself say much.
+  EXPECT_CALL(log,
+              Log(-1, testing::_, testing::_, testing::_,
+                  testing::AllOf(
+                      testing::HasSubstr(
+                          "Launching native messaging host with command line:"),
+                      testing::HasSubstr("--reconnect-command=<omitted>"),
+                      testing::Not(testing::HasSubstr(
+                          profile_.GetPath().DirName().AsUTF8Unsafe())))))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
+
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::
+          kSupportsNativeInitiatedConnectionsHostName,
+      /*allow_user_level=*/true, &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+
+  native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  ASSERT_FALSE(last_message_.empty());
+  ASSERT_TRUE(last_message_parsed_);
+}
+
+// Tests that a launch with no --reconnect-command argument logs the command
+// line unmodified. kHostName's manifest sets
+// supports_native_initiated_connections to false (see
+// WriteTestNativeHostManifest in native_messaging_test_util.cc), so
+// LaunchInBackground never builds a reconnect argument for this host, the
+// same as UserLevel above. This exercises the early-return path of
+// RedactedCommandLineForLogging (launch_context.cc): the loop over
+// command_line.argv() finds no entry starting with
+// "--reconnect-command=", so the function falls out of the loop and
+// returns command_line.GetCommandLineString() untouched.
+TEST_F(NativeMessagingTest, LogUnmodifiedCommandLineWithoutReconnectSwitch) {
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(true));
+
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
+
+  logging::ScopedVmoduleSwitches scoped_vmodule_switches;
+  scoped_vmodule_switches.InitWithSwitches("*/extensions/api/messaging/*=1");
+
+  base::test::MockLog log;
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(log,
+              Log(-1, testing::_, testing::_, testing::_,
+                  testing::AllOf(
+                      testing::HasSubstr(
+                          "Launching native messaging host with command line:"),
+                      testing::Not(testing::HasSubstr("<omitted>")))))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
+
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, gfx::NativeView(), ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::kHostName, /*allow_user_level=*/true,
+      &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+
+  native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  ASSERT_FALSE(last_message_.empty());
+  ASSERT_TRUE(last_message_parsed_);
 }
 
 }  // namespace extensions

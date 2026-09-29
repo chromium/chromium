@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_host_manifest.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_logging.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
@@ -321,8 +322,8 @@ void NativeMessageProcessHost::ProcessIncomingData(
         *UNSAFE_TODO(reinterpret_cast<const uint32_t*>(incoming_data_.data()));
 
     if (message_size > kMaximumNativeMessageSize) {
-      LOG(ERROR) << "Native Messaging host tried sending a message that is "
-                 << message_size << " bytes long.";
+      NM_LOG(ERROR) << "Native Messaging host tried sending a message that is "
+                    << message_size << " bytes long.";
       Close(kHostInputOutputError);
       return;
     }
@@ -374,16 +375,16 @@ void NativeMessageProcessHost::HandleWriteResult(
     if (result.error() == net::ERR_IO_PENDING) {
       write_pending_ = true;
     } else {
-      LOG(ERROR) << "Error when writing to Native Messaging host: "
-                 << result.error();
+      NM_LOG(ERROR) << "Error when writing to Native Messaging host: "
+                    << result.error();
       Close(kHostInputOutputError);
     }
     return;
   }
 
   if (result->is_zero()) {
-    LOG(ERROR) << "Error when writing to Native Messaging host: unexpected "
-                  "zero-length write";
+    NM_LOG(ERROR) << "Error when writing to Native Messaging host: unexpected "
+                     "zero-length write";
     Close(kHostInputOutputError);
     return;
   }
@@ -407,6 +408,7 @@ void NativeMessageProcessHost::Close(const std::string& error_message) {
 
   if (!closed_) {
     closed_ = true;
+    VLOG(1) << "Closing native messaging channel: " << error_message;
 #if BUILDFLAG(IS_POSIX)
     read_controller_.reset();
 #endif

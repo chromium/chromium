@@ -31,6 +31,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_logging.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #include "crypto/random.h"
 #include "net/base/file_stream.h"
@@ -110,7 +111,7 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
       ::CreateFileW(out_pipe_name.c_str(), FILE_WRITE_DATA | SYNCHRONIZE, 0,
                     &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
   if (!stdout_file.is_valid()) {
-    LOG(ERROR) << "Failed to open write handle for stdout.";
+    NM_LOG(ERROR) << "Failed to open write handle for stdout.";
     return base::Process();
   }
 
@@ -118,7 +119,7 @@ base::Process LaunchNativeExeDirectly(const std::wstring& command,
       ::CreateFileW(in_pipe_name.c_str(), FILE_READ_DATA | SYNCHRONIZE, 0,
                     &sa_attr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0));
   if (!stdin_file.is_valid()) {
-    LOG(ERROR) << "Failed to open read handle for stdin.";
+    NM_LOG(ERROR) << "Failed to open read handle for stdin.";
     return base::Process();
   }
 
@@ -154,7 +155,7 @@ base::Process LaunchNativeHostViaCmd(const std::wstring& command,
                                      const std::wstring& out_pipe_name) {
   DWORD comspec_length = ::GetEnvironmentVariable(L"COMSPEC", NULL, 0);
   if (comspec_length == 0) {
-    LOG(ERROR) << "COMSPEC is not set";
+    NM_LOG(ERROR) << "COMSPEC is not set";
     return base::Process();
   }
   std::wstring comspec;
@@ -222,7 +223,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
   const DWORD kBufferSize = 0;
 
   if (!command_line.GetProgram().IsAbsolute()) {
-    LOG(ERROR) << "Native Messaging host path must be absolute.";
+    NM_LOG(ERROR) << "Native Messaging host path must be absolute.";
     return std::nullopt;
   }
 
@@ -242,7 +243,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
           FILE_FLAG_FIRST_PIPE_INSTANCE,
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdout_pipe.is_valid()) {
-    LOG(ERROR) << "Failed to create pipe " << out_pipe_name;
+    NM_LOG(ERROR) << "Failed to create pipe " << out_pipe_name;
     return std::nullopt;
   }
 
@@ -252,7 +253,7 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
           FILE_FLAG_FIRST_PIPE_INSTANCE,
       PIPE_TYPE_BYTE, 1, kBufferSize, kBufferSize, kTimeoutMs, NULL));
   if (!stdin_pipe.is_valid()) {
-    LOG(ERROR) << "Failed to create pipe " << in_pipe_name;
+    NM_LOG(ERROR) << "Failed to create pipe " << in_pipe_name;
     return std::nullopt;
   }
 
@@ -285,10 +286,11 @@ std::optional<LaunchContext::ProcessState> LaunchContext::LaunchNativeProcess(
   }
 
   if (!launched_process.IsValid()) {
-    LOG(ERROR) << "Error launching process "
-               << command_line.GetProgram().MaybeAsASCII();
+    NM_LOG(ERROR) << "Error launching process "
+                  << command_line.GetProgram().MaybeAsASCII();
     return std::nullopt;
   }
+  VLOG(1) << "Launched native messaging host. PID: " << launched_process.Pid();
 
   return ProcessState(std::move(launched_process), std::move(stdout_pipe),
                       std::move(stdin_pipe));
@@ -374,10 +376,10 @@ void LaunchContext::OnObjectSignaled(HANDLE object) {
   CHECK_EQ(object, native_process_.Handle());
   int exit_code = 0;  // EXIT_SUCCESS
   if (native_process_.WaitForExitWithTimeout({}, &exit_code)) {
-    LOG(ERROR) << "Native Messaging host process exited with code "
-               << exit_code;
+    NM_LOG(ERROR) << "Native Messaging host process exited with code "
+                  << exit_code;
   } else {
-    LOG(ERROR) << "Native Messaging host process exited unexpectedly";
+    NM_LOG(ERROR) << "Native Messaging host process exited unexpectedly";
   }
   OnFailure(NativeProcessLauncher::RESULT_FAILED_TO_START);
 }

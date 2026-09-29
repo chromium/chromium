@@ -42,6 +42,7 @@ source_set("messaging") {
         "native_message_process_host.h",
         "native_messaging_launch_from_native.cc",
         "native_messaging_launch_from_native.h",
+        "native_messaging_logging.h",
         "native_process_launcher.cc",
         "native_process_launcher.h",
       ]
