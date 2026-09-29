@@ -14,10 +14,6 @@
 // static
 safe_browsing::ClientSideDetectionService*
 ClientSideDetectionServiceFactory::GetForProfile(ProfileIOS* profile) {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionEnabledIos)) {
-    return nullptr;
-  }
   return GetInstance()
       ->GetServiceForProfileAs<safe_browsing::ClientSideDetectionService>(
           profile, true);
