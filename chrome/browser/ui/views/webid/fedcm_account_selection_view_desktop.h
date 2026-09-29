@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -398,11 +399,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // the background, becomes foregrounded.
   void BackgroundTaskTabForegrounded(tabs::TabInterface* tab);
 
+  // Calls a delegate method while guarding against `this` being deleted.
   // Returns false if `this` got deleted. In that case, the caller must early
   // return.
-  bool NotifyDelegateOfAccountSelection(
-      const Account& account,
-      const content::IdentityProviderData& idp_data);
+  [[nodiscard]] bool NotifyDelegate(base::FunctionRef<void()> notify_callback);
 
   // Shows the verifying sheet.
   void ShowVerifyingSheet(const IdentityRequestAccountPtr& account);
