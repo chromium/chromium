@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
@@ -5312,6 +5313,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEntrypointsBrowserTest,
       .WillByDefault(testing::Return(false));
 
   WaitForPaint();
+  WaitForInitialWebUIToolbar(browser());
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -8890,6 +8892,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
                        PreselectionToastOmniboxFocusState) {
   WaitForPaint();
+  WaitForInitialWebUIToolbar(browser());
 
   // State should start in off.
   auto* controller = GetLensOverlayController();
@@ -8907,6 +8910,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_TRUE(fake_controller);
   fake_controller->FlushForTesting();
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  WaitForOverlayScreenshotRendered();
 
   // Preselection toast should be visible when the overlay is showing and is in
   // the kOverlay state.
