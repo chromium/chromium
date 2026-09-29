@@ -38,7 +38,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/proto/device_classifier_util.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
-#include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
 #include "chromeos/ash/services/device_sync/synced_bluetooth_address_tracker_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

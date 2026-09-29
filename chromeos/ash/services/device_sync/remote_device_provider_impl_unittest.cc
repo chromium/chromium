@@ -21,7 +21,6 @@
 #include "chromeos/ash/services/device_sync/fake_remote_device_v2_loader.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
-#include "chromeos/ash/services/device_sync/remote_device_loader.h"
 #include "chromeos/ash/services/device_sync/remote_device_v2_loader_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -63,27 +62,6 @@ multidevice::RemoteDevice CreateRemoteDeviceForTest(const std::string& suffix,
           beacon_seed_data, base::Time::FromMillisecondsSinceUnixEpoch(200L),
           base::Time::FromMillisecondsSinceUnixEpoch(300L))},
       kTestRemoteDeviceBluetoothPublicAddressPrefix + suffix);
-}
-
-// Provide four fake RemoteDevices associated with a v1 DeviceSync. These
-// devices have the IDs:
-//   0. "" /* instance_id */ , "publicKey-0"
-//   1. "" /* instance_id */ , "publicKey-1"
-//   2. "" /* instance_id */ , "publicKey-2"
-//   3. "" /* instance_id */ , "publicKey-v1-only"
-const multidevice::RemoteDeviceList& GetV1RemoteDevices() {
-  static const base::NoDestructor<multidevice::RemoteDeviceList> devices(
-      multidevice::RemoteDeviceList{
-          CreateRemoteDeviceForTest("0", false /* has_instance_id */,
-                                    true /* has_public_key */),
-          CreateRemoteDeviceForTest("1", false /* has_instance_id */,
-                                    true /* has_public_key */),
-          CreateRemoteDeviceForTest("2", false /* has_instance_id */,
-                                    true /* has_public_key */),
-          CreateRemoteDeviceForTest("v1-only", false /* has_instance_id */,
-                                    true /* has_public_key */),
-      });
-  return *devices;
 }
 
 // Provide five fake RemoteDevices associated with a v2 DeviceSync. These
@@ -145,70 +123,6 @@ class TestObserver : public RemoteDeviceProvider::Observer {
 
 }  // namespace
 
-class FakeDeviceLoader final : public RemoteDeviceLoader {
- public:
-  class TestRemoteDeviceLoaderFactory final
-      : public RemoteDeviceLoader::Factory {
-   public:
-    TestRemoteDeviceLoaderFactory() = default;
-    ~TestRemoteDeviceLoaderFactory() = default;
-
-    std::unique_ptr<RemoteDeviceLoader> CreateInstance(
-        const std::vector<cryptauth::ExternalDeviceInfo>& device_info_list,
-        const std::string& user_email,
-        const std::string& user_private_key,
-        std::unique_ptr<multidevice::SecureMessageDelegate>
-            secure_message_delegate) override {
-      EXPECT_EQ(std::string(kTestUserEmail), user_email);
-      EXPECT_EQ(std::string(kTestUserPrivateKey), user_private_key);
-      std::unique_ptr<FakeDeviceLoader> device_loader =
-          std::make_unique<FakeDeviceLoader>();
-      device_loader->remote_device_loader_factory_ = this;
-      return device_loader;
-    }
-
-    void InvokeLastCallback(
-        const std::vector<cryptauth::ExternalDeviceInfo>& device_info_list) {
-      ASSERT_TRUE(!callback_.is_null());
-      // Fetch only the devices inserted by tests, since GetV1RemoteDevices()
-      // contains all available devices.
-      multidevice::RemoteDeviceList devices;
-      for (const auto& remote_device : GetV1RemoteDevices()) {
-        for (const auto& external_device_info : device_info_list) {
-          if (remote_device.public_key == external_device_info.public_key())
-            devices.push_back(remote_device);
-        }
-      }
-      std::move(callback_).Run(devices);
-    }
-
-    // Fetch is only started if the change result passed to OnSyncFinished() is
-    // CHANGED and sync is SUCCESS.
-    bool HasQueuedCallback() { return !callback_.is_null(); }
-
-    void QueueCallback(RemoteDeviceCallback callback) {
-      callback_ = std::move(callback);
-    }
-
-   private:
-    RemoteDeviceLoader::RemoteDeviceCallback callback_;
-  };
-
-  FakeDeviceLoader()
-      : RemoteDeviceLoader(std::vector<cryptauth::ExternalDeviceInfo>(),
-                           "",
-                           "",
-                           nullptr) {}
-
-  ~FakeDeviceLoader() override {}
-
-  raw_ptr<TestRemoteDeviceLoaderFactory> remote_device_loader_factory_;
-
-  void Load(RemoteDeviceCallback callback) override {
-    remote_device_loader_factory_->QueueCallback(std::move(callback));
-  }
-};
-
 class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
  public:
   DeviceSyncRemoteDeviceProviderImplTest() = default;
@@ -226,10 +140,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
     multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         fake_secure_message_delegate_factory_.get());
 
-    test_device_loader_factory_ =
-        std::make_unique<FakeDeviceLoader::TestRemoteDeviceLoaderFactory>();
-    RemoteDeviceLoader::Factory::SetFactoryForTesting(
-        test_device_loader_factory_.get());
     fake_remote_device_v2_loader_factory_ =
         std::make_unique<FakeRemoteDeviceV2LoaderFactory>();
     RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(
@@ -241,7 +151,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   void TearDown() override {
     multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         nullptr);
-    RemoteDeviceLoader::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
@@ -337,14 +246,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   }
 
   // Verifies that the output of the RemoteDeviceProvider corresponds to the
-  // first |expected_num_devices| of GetV1RemoteDevices().
-  void VerifyV1SyncedDevices(size_t expected_num_devices) {
-    VerifySyncedDevices(multidevice::RemoteDeviceList(
-        GetV1RemoteDevices().cbegin(),
-        GetV1RemoteDevices().cbegin() + expected_num_devices));
-  }
-
-  // Verifies that the output of the RemoteDeviceProvider corresponds to the
   // first |expected_num_devices| of GetV2RemoteDevices().
   void VerifyV2SyncedDevices(size_t expected_num_devices) {
     VerifySyncedDevices(multidevice::RemoteDeviceList(
@@ -352,8 +253,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
         GetV2RemoteDevices().cbegin() + expected_num_devices));
   }
 
-  std::unique_ptr<FakeDeviceLoader::TestRemoteDeviceLoaderFactory>
-      test_device_loader_factory_;
   std::unique_ptr<TestObserver> test_observer_;
 
  private:

@@ -43,7 +43,6 @@
 #include "chromeos/ash/services/device_sync/fake_cryptauth_v2_device_manager.h"
 #include "chromeos/ash/services/device_sync/fake_device_sync_observer.h"
 #include "chromeos/ash/services/device_sync/fake_remote_device_provider.h"
-#include "chromeos/ash/services/device_sync/fake_software_feature_manager.h"
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_client_app_metadata.pb.h"
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
@@ -52,7 +51,6 @@
 #include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "chromeos/ash/services/device_sync/remote_device_provider_impl.h"
-#include "chromeos/ash/services/device_sync/software_feature_manager_impl.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
@@ -115,30 +113,6 @@ std::vector<cryptauth::IneligibleDevice> GenerateTestIneligibleDevices(
 
   return ineligible_devices;
 }
-
-// Delegate which invokes the Closure provided to its constructor when a
-// delegate function is invoked.
-class FakeSoftwareFeatureManagerDelegate
-    : public FakeSoftwareFeatureManager::Delegate {
- public:
-  explicit FakeSoftwareFeatureManagerDelegate(
-      base::RepeatingClosure on_delegate_call_closure)
-      : on_delegate_call_closure_(on_delegate_call_closure) {}
-
-  ~FakeSoftwareFeatureManagerDelegate() override = default;
-
-  // FakeSoftwareFeatureManager::Delegate:
-  void OnSetSoftwareFeatureStateCalled() override {
-    on_delegate_call_closure_.Run();
-  }
-  void OnSetFeatureStatusCalled() override { on_delegate_call_closure_.Run(); }
-  void OnFindEligibleDevicesCalled() override {
-    on_delegate_call_closure_.Run();
-  }
-
- private:
-  base::RepeatingClosure on_delegate_call_closure_;
-};
 
 // Delegate which invokes the Closure provided to its constructor when a
 // delegate function is invoked.
@@ -681,7 +655,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
     CryptAuthKeyRegistryImpl::Factory::SetFactoryForTesting(nullptr);
     CryptAuthV2EnrollmentManagerImpl::Factory::SetFactoryForTesting(nullptr);
     RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(nullptr);
-    SoftwareFeatureManagerImpl::Factory::SetFactoryForTesting(nullptr);
     DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
 
     network_handler_test_helper_.reset();
