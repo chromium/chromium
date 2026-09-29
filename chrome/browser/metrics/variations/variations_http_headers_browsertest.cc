@@ -362,7 +362,12 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
 class VariationsHttpHeadersBrowserTest : public PlatformBrowserTest {
  public:
   VariationsHttpHeadersBrowserTest()
-      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {
+#if BUILDFLAG(IS_ANDROID)
+    // SetUpOnMainThread() uses NetworkConnectionChangeSimulator.
+    set_use_test_network_connection_tracker(false);
+#endif
+  }
 
   VariationsHttpHeadersBrowserTest(const VariationsHttpHeadersBrowserTest&) =
       delete;

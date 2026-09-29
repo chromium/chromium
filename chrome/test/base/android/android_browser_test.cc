@@ -17,8 +17,10 @@
 #include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/network/test/test_network_connection_tracker.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_management.h"
@@ -67,6 +69,14 @@ void AndroidBrowserTest::SetUp() {
   embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
 
   ASSERT_TRUE(SetUpUserDataDirectory());
+
+  if (use_test_network_connection_tracker_ &&
+      !network::TestNetworkConnectionTracker::HasInstance()) {
+    // Report an online network, since emulators often don't. Leaked on purpose:
+    // Android never tears down the browser, so its observers are never removed.
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::CreateInstance().release());
+  }
 
   BrowserTestBase::SetUp();
 }

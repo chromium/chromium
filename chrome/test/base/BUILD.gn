@@ -1309,6 +1309,7 @@ if (is_android) {
       "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//content/test:test_support",
+      "//services/network:test_support",
     ]
     deps = [
       ":chrome_test_path_utils",

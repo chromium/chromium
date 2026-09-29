@@ -224,6 +224,11 @@ SyncTest::SyncTest(TestType test_type)
   sync_run_loop_timeout_.SetAddGTestFailureOnTimeout();
 
   sync_datatype_helper::AssociateWithTest(this);
+
+#if BUILDFLAG(IS_ANDROID)
+  // DisableNetwork()/EnableNetwork() use NetworkConnectionChangeSimulator.
+  set_use_test_network_connection_tracker(false);
+#endif
 }
 
 SyncTest::~SyncTest() = default;

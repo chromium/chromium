@@ -93,6 +93,14 @@ class AndroidBrowserTest : public content::BrowserTestBase {
   // TabModel associated with GetProfile().
   TabListInterface* GetTabListInterface() const;
 
+  // By default, Android browser tests use a TestNetworkConnectionTracker that
+  // reports an online network. Tests that simulate network changes (e.g. with
+  // content::NetworkConnectionChangeSimulator) need the real tracker. Must be
+  // called from the constructor.
+  void set_use_test_network_connection_tracker(bool use) {
+    use_test_network_connection_tracker_ = use;
+  }
+
  private:
   // Temporary user data directory. Used only when a user data directory is not
   // specified in the command line.
@@ -100,6 +108,8 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   // Used to set up test factories for each browser context.
   base::CallbackListSubscription create_services_subscription_;
+
+  bool use_test_network_connection_tracker_ = true;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::optional<base::AutoReset<bool>> allow_unpacked_without_developer_mode_;
