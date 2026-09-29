@@ -1943,6 +1943,35 @@ TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Error) {
   service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
                                  future.GetCallback());
   EXPECT_FALSE(future.Get().has_value());
+  EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
+
+  EXPECT_CALL(
+      mock_remote_model_executor_,
+      ExecuteModel(optimization_guide::ModelBasedCapabilityKey::kContextHub, _,
+                   _, _))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            auto throttled_error = optimization_guide::
+                OptimizationGuideModelExecutionError::FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kRequestThrottled);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::unexpected(throttled_error), nullptr),
+                nullptr);
+          });
+
+  base::test::TestFuture<std::optional<std::string>> throttled_future;
+  service_.ExecuteMemoryBankChat(ids, "hello", /*save_to_history=*/true,
+                                 throttled_future.GetCallback());
+  EXPECT_EQ(throttled_future.Get(),
+            "Unable to generate response due to high server load. Please try "
+            "again later.");
+  EXPECT_TRUE(service_.GetMemoryBankChatHistory().empty());
 }
 
 TEST_F(ContextHubServiceTest, AddAndGetMemoryBankChatHistory) {

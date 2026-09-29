@@ -1259,20 +1259,18 @@ void ContextHubService::OnMemoryBankEntriesFetched(
   }
 
   request.set_user_command(user_command);
-  if (save_to_history) {
-    AddMemoryBankChatHistoryTurn(
-        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
-  }
 
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContextHub, request,
       optimization_guide::ModelExecutionOptions(),
       base::BindOnce(
           &ContextHubService::HandleMemoryBankChatModelExecutionResult,
-          weak_factory_.GetWeakPtr(), save_to_history, std::move(callback)));
+          weak_factory_.GetWeakPtr(), user_command, save_to_history,
+          std::move(callback)));
 }
 
 void ContextHubService::HandleMemoryBankChatModelExecutionResult(
+    const std::string& user_command,
     bool save_to_history,
     MemoryBankChatCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult result,
@@ -1283,6 +1281,15 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
         optimization_guide::proto::ContextHubResponse>(*result.response);
   }
   if (!response || !response->has_memory_bank_chat_response()) {
+    if (!result.response.has_value() &&
+        result.response.error().error() ==
+            optimization_guide::OptimizationGuideModelExecutionError::
+                ModelExecutionError::kRequestThrottled) {
+      std::move(callback).Run(
+          "Unable to generate response due to high server load. Please try "
+          "again later.");
+      return;
+    }
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -1290,6 +1297,8 @@ void ContextHubService::HandleMemoryBankChatModelExecutionResult(
   std::string text_response =
       response->memory_bank_chat_response().text_response();
   if (save_to_history && !text_response.empty()) {
+    AddMemoryBankChatHistoryTurn(
+        optimization_guide::proto::ChatHistoryTurn::ROLE_USER, user_command);
     AddMemoryBankChatHistoryTurn(
         optimization_guide::proto::ChatHistoryTurn::ROLE_ASSISTANT,
         text_response);

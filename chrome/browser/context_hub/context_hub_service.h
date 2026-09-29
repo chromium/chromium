@@ -426,6 +426,7 @@ class ContextHubService : public KeyedService,
 
   // Handles the result of the model execution from `ExecuteMemoryBankChat`.
   void HandleMemoryBankChatModelExecutionResult(
+      const std::string& user_command,
       bool save_to_history,
       MemoryBankChatCallback callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
