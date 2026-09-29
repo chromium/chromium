@@ -35,6 +35,8 @@ bool ShouldStartDistillabilityService() {
 BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSyncReaderForAccessibility, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
 BASE_FEATURE(kReaderModeBlurTransitionAnimation,

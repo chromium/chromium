@@ -33,6 +33,7 @@ static_library("sync_preferences") {
   deps = [
     ":features",
     "//base",
+    "//components/dom_distiller/core:prefs",
     "//components/metrics/demographics",
     "//components/policy/core/browser",
     "//components/pref_registry",
@@ -61,7 +62,7 @@ source_set("common_syncable_prefs_database") {
     "//components/content_settings/core/common",
     "//components/contextual_search:prefs",
     "//components/desktop_to_mobile_promos",
-    "//components/dom_distiller/core",
+    "//components/dom_distiller/core:prefs",
     "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics/demographics",

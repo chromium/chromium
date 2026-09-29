@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
+#include "components/dom_distiller/core/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -178,6 +179,7 @@ enum {
   kCustomLinksInitializedMobile = 127,
   kCustomLinksListMobile = 128,
   kSiteTokenProviderPref = 129,
+  kReaderForAccessibility = 130,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -590,6 +592,10 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
+        {dom_distiller::prefs::kReaderForAccessibility,
+         {syncable_prefs_ids::kReaderForAccessibility, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone,
+          WriteBehavior::kWriteToBoth}},
     });
 
 }  // namespace

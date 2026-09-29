@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -54,7 +55,11 @@ void DistilledPagePrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kFont, static_cast<int32_t>(mojom::FontFamily::kSansSerif));
   registry->RegisterDoublePref(prefs::kFontScale, kDefaultFontScale);
   registry->RegisterBooleanPref(prefs::kLinksEnabled, true);
-  registry->RegisterBooleanPref(prefs::kReaderForAccessibility, false);
+  registry->RegisterBooleanPref(
+      prefs::kReaderForAccessibility, false,
+      base::FeatureList::IsEnabled(kSyncReaderForAccessibility)
+          ? user_prefs::PrefRegistrySyncable::SYNCABLE_PREF
+          : PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
 void DistilledPagePrefs::SetFontFamily(mojom::FontFamily new_font_family) {

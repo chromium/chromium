@@ -401,6 +401,7 @@ chromium-metrics-reviews@google.com.
   <int value="127" label="CustomLinksInitializedMobile"/>
   <int value="128" label="CustomLinksListMobile"/>
   <int value="129" label="SiteTokenProviderPref"/>
+  <int value="130" label="ReaderForAccessibility"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

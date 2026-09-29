@@ -98,6 +98,7 @@ static_library("core") {
     "//build:blink_buildflags",
     "//components/dom_distiller/core/mojom",
     "//components/leveldb_proto",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/resources",
     "//components/strings",
