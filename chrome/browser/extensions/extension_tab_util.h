@@ -194,7 +194,7 @@ class ExtensionTabUtil {
 
   // Returns true if the `browser` supports tab groups in its tab strip. For
   // example, tab groups are not supported by many app types (PWAs, WebApks,
-  // Chrome Apps, etc.).
+  // Chrome Apps, etc.). Returns false if `browser` is null.
   static bool SupportsTabGroups(BrowserWindowInterface* browser);
 
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not

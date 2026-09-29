@@ -743,7 +743,9 @@ int ExtensionTabUtil::GetSplitId(const split_tabs::SplitTabId& id) {
 
 // static
 bool ExtensionTabUtil::SupportsTabGroups(BrowserWindowInterface* browser) {
-  CHECK(browser);
+  if (!browser) {
+    return false;
+  }
 #if BUILDFLAG(IS_ANDROID)
   // Android only supports tab groups for normal browser windows.
   return browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;

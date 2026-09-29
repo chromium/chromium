@@ -169,6 +169,12 @@ TEST(ExtensionTabUtilTest, ResolvePossiblyRelativeURL) {
             GURL("path"));
 }
 
+// Verifies that ExtensionTabUtil::SupportsTabGroups returns false gracefully
+// when passed a null BrowserWindowInterface.
+TEST(ExtensionTabUtilTest, SupportsTabGroups_NullBrowser) {
+  EXPECT_FALSE(ExtensionTabUtil::SupportsTabGroups(nullptr));
+}
+
 class ChromeExtensionNavigationTest : public ExtensionServiceTestBase {
  public:
   ChromeExtensionNavigationTest() = default;
