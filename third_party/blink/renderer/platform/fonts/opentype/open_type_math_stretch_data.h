@@ -32,8 +32,8 @@ class PLATFORM_EXPORT OpenTypeMathStretchData {
   // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   struct AssemblyParameters {
     float connector_overlap{0};
-    unsigned repetition_count{0};
-    unsigned glyph_count{0};
+    wtf_size_t repetition_count{0};
+    wtf_size_t glyph_count{0};
     float stretch_size{0};
     Vector<GlyphPartRecord> parts;
   };

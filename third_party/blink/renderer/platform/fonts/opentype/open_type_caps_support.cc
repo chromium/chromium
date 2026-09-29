@@ -19,8 +19,8 @@ bool activationSelectorPresent(
     const hb_aat_layout_feature_type_t feature_type,
     const hb_aat_layout_feature_selector_t enabled_selector_expectation) {
   Vector<hb_aat_layout_feature_selector_info_t> feature_selectors;
-  unsigned num_feature_selectors = 0;
-  unsigned default_index = 0;
+  wtf_size_t num_feature_selectors = 0;
+  wtf_size_t default_index = 0;
   num_feature_selectors = hb_aat_layout_feature_type_get_selector_infos(
       hb_face, feature_type, 0, nullptr, nullptr, nullptr);
   feature_selectors.resize(num_feature_selectors);
@@ -171,7 +171,7 @@ bool OpenTypeCapsSupport::SupportsAatFeature(uint32_t tag) const {
   hb_face_t* const hb_face = hb_font_get_face(harfbuzz_face_->GetScaledFont());
 
   Vector<hb_aat_layout_feature_type_t> aat_features;
-  unsigned feature_count =
+  wtf_size_t feature_count =
       hb_aat_layout_get_feature_types(hb_face, 0, nullptr, nullptr);
   aat_features.resize(feature_count);
   if (!hb_aat_layout_get_feature_types(hb_face, 0, &feature_count,

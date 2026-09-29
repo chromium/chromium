@@ -34,7 +34,7 @@ class PLATFORM_EXPORT OpenTypeCpalLookup {
    * The position in the returned vector matches the palette index in the font.
    */
   static Vector<Color> RetrieveColorRecords(sk_sp<SkTypeface> typeface,
-                                            unsigned int palette_index);
+                                            wtf_size_t palette_index);
 };
 
 }  // namespace blink

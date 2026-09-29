@@ -30,13 +30,13 @@ bool OpenTypeCapsSupport::SupportsOpenTypeFeature(hb_script_t script,
   // Get the OpenType tag(s) that match this script code
   DCHECK_EQ(HB_TAG_NONE, 0u);
   hb_tag_t script_tags[2] = {};
-  unsigned num_returned_script_tags = std::size(script_tags);
+  wtf_size_t num_returned_script_tags = std::size(script_tags);
   hb_ot_tags_from_script_and_language(
       static_cast<hb_script_t>(script), HB_LANGUAGE_INVALID,
       &num_returned_script_tags, script_tags, nullptr, nullptr);
 
   const hb_tag_t kGSUB = HB_TAG('G', 'S', 'U', 'B');
-  unsigned script_index = 0;
+  wtf_size_t script_index = 0;
   // Identify for which script a GSUB table is available.
   hb_ot_layout_table_select_script(face, kGSUB, num_returned_script_tags,
                                    script_tags, &script_index, nullptr);

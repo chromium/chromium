@@ -49,14 +49,14 @@ std::optional<uint16_t> OpenTypeCpalLookup::FirstThemedPalette(
 
 Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(
     sk_sp<SkTypeface> typeface,
-    unsigned palette_index) {
+    wtf_size_t palette_index) {
   hb::unique_ptr<hb_face_t> face(HbFaceFromSkTypeface(typeface));
 
   if (!face) {
     return Vector<Color>();
   }
 
-  unsigned num_colors = hb_ot_color_palette_get_colors(
+  wtf_size_t num_colors = hb_ot_color_palette_get_colors(
       face.get(), palette_index, 0, nullptr, nullptr);
   if (!num_colors) {
     return Vector<Color>();
@@ -68,7 +68,7 @@ Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(
     return Vector<Color>();
   }
   Vector<Color> color_records(num_colors);
-  for (unsigned i = 0; i < num_colors; i++) {
+  for (wtf_size_t i = 0; i < num_colors; ++i) {
     color_records[i] = Color::FromRGBA(
         hb_color_get_red(colors[i]), hb_color_get_green(colors[i]),
         hb_color_get_blue(colors[i]), hb_color_get_alpha(colors[i]));

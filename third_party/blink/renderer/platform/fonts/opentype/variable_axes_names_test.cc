@@ -19,7 +19,7 @@ TEST(VariableAxesNamesTest, TestVariableAxes) {
   sk_sp<SkFontMgr> mgr = skia::DefaultFontMgr();
   sk_sp<SkTypeface> typeface = mgr->makeFromFile(file_path.Utf8().c_str(), 0);
   Vector<VariationAxis> axes = VariableAxesNames::GetVariationAxes(typeface);
-  EXPECT_EQ(axes.size(), (unsigned)2);
+  EXPECT_EQ(axes.size(), 2u);
   VariationAxis axis1 = axes.at(0);
   EXPECT_EQ(axis1.name, "Weight");
   EXPECT_EQ(axis1.tag, "wght");

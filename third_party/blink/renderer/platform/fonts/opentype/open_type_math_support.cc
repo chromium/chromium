@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
+namespace blink {
+
 namespace {
 // HarfBuzz' hb_position_t is a 16.16 fixed-point value.
 float HarfBuzzUnitsToFloat(hb_position_t value) {
@@ -27,18 +29,16 @@ float HarfBuzzUnitsToFloat(hb_position_t value) {
 // Latin Modern, STIX Two, XITS, Asana, Deja Vu, Libertinus and TeX Gyre fonts
 // provide at most 13 size variant and 5 assembly parts.
 // See https://chromium-review.googlesource.com/c/chromium/src/+/2074678
-constexpr unsigned kMaxHarfBuzzRecords = 20;
+constexpr wtf_size_t kMaxHarfBuzzRecords = 20;
 
 hb_direction_t HarfBuzzDirection(
-    blink::OpenTypeMathStretchData::StretchAxis stretch_axis) {
-  return stretch_axis == blink::OpenTypeMathStretchData::StretchAxis::Horizontal
+    OpenTypeMathStretchData::StretchAxis stretch_axis) {
+  return stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal
              ? HB_DIRECTION_LTR
              : HB_DIRECTION_BTT;
 }
 
 }  // namespace
-
-namespace blink {
 
 bool OpenTypeMathSupport::HasMathData(const HarfBuzzFace* harfbuzz_face) {
   if (!harfbuzz_face)
@@ -143,12 +143,12 @@ std::optional<float> OpenTypeMathSupport::MathItalicCorrection(
 
 template <typename HarfBuzzRecordType>
 using GetHarfBuzzMathRecordGetter =
-    base::OnceCallback<unsigned int(hb_font_t* font,
-                                    hb_codepoint_t glyph,
-                                    hb_direction_t direction,
-                                    unsigned int start_offset,
-                                    unsigned int* record_count,
-                                    HarfBuzzRecordType* record_array)>;
+    base::OnceCallback<wtf_size_t(hb_font_t* font,
+                                  hb_codepoint_t glyph,
+                                  hb_direction_t direction,
+                                  wtf_size_t start_offset,
+                                  wtf_size_t* record_count,
+                                  HarfBuzzRecordType* record_array)>;
 
 template <typename HarfBuzzRecordType, typename RecordType>
 using HarfBuzzMathRecordConverter =
@@ -172,7 +172,7 @@ Vector<RecordType> GetHarfBuzzMathRecord(
   // GlyphPartRecords (parts of a glyph assembly) so it is safe to truncate
   // the result vector to a small size.
   std::array<HarfBuzzRecordType, kMaxHarfBuzzRecords> chunk;
-  unsigned int count = kMaxHarfBuzzRecords;
+  wtf_size_t count = kMaxHarfBuzzRecords;
   std::move(getter).Run(hb_font, base_glyph, hb_stretch_axis,
                         0 /* start_offset */, &count, chunk.data());
 
@@ -182,7 +182,7 @@ Vector<RecordType> GetHarfBuzzMathRecord(
   result.ReserveInitialCapacity(prepended_record ? count + 1 : count);
   if (prepended_record)
     result.push_back(*prepended_record);
-  for (unsigned i = 0; i < count; i++) {
+  for (wtf_size_t i = 0; i < count; ++i) {
     result.push_back(converter.Run(chunk[i]));
   }
   return result;
@@ -219,8 +219,8 @@ OpenTypeMathSupport::GetGlyphPartRecords(
 
   auto getter =
       BindOnce([](hb_font_t* font, hb_codepoint_t glyph,
-                  hb_direction_t direction, unsigned int start_offset,
-                  unsigned int* parts_count, hb_ot_math_glyph_part_t* parts) {
+                  hb_direction_t direction, wtf_size_t start_offset,
+                  wtf_size_t* parts_count, hb_ot_math_glyph_part_t* parts) {
         hb_position_t italic_correction;
         return hb_ot_math_get_glyph_assembly(font, glyph, direction,
                                              start_offset, parts_count, parts,

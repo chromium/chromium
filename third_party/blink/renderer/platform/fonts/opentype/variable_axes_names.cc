@@ -26,10 +26,10 @@ Vector<VariationAxis> VariableAxesNames::GetVariationAxes(
       SkData::MakeFromStream(stream.get(), stream->getLength());
   hb::unique_ptr<hb_blob_t> blob(
       hb_blob_create(reinterpret_cast<const char*>(sk_data->bytes()),
-                     base::checked_cast<unsigned>(sk_data->size()),
+                     base::checked_cast<wtf_size_t>(sk_data->size()),
                      HB_MEMORY_MODE_READONLY, nullptr, nullptr));
   hb::unique_ptr<hb_face_t> face(hb_face_create(blob.get(), 0));
-  unsigned axes_count = hb_ot_var_get_axis_count(face.get());
+  wtf_size_t axes_count = hb_ot_var_get_axis_count(face.get());
   auto axes = base::HeapArray<hb_ot_var_axis_info_t>::WithSize(axes_count);
   hb_ot_var_get_axis_infos(face.get(), 0, &axes_count, axes.data());
 
@@ -39,12 +39,12 @@ Vector<VariationAxis> VariableAxesNames::GetVariationAxes(
     // HB_LANGUAGE_INVALID fetches the default English string according
     // to HarfBuzz documentation. If the buffer is nullptr, it returns
     // the length of the name without writing to the buffer.
-    unsigned name_length = hb_ot_name_get_utf16(
+    wtf_size_t name_length = hb_ot_name_get_utf16(
         face.get(), hb_axis.name_id, HB_LANGUAGE_INVALID, nullptr, nullptr);
 
     axis.name = g_empty_string;
     if (name_length) {
-      unsigned buffer_length = name_length + 1;
+      wtf_size_t buffer_length = name_length + 1;
       auto name_buffer = base::HeapArray<char16_t>::WithSize(buffer_length);
       hb_ot_name_get_utf16(face.get(), hb_axis.name_id, HB_LANGUAGE_INVALID,
                            &buffer_length,

@@ -21,8 +21,8 @@ OpenTypeFeatures::OpenTypeFeatures(const SimpleFontData& font)
   hb_face_t* const hb_face = hb_font_get_face(hb_font);
   DCHECK(hb_face);
 
-  unsigned get_size = kInitialSize;
-  unsigned size = hb_ot_layout_table_get_feature_tags(
+  wtf_size_t get_size = kInitialSize;
+  wtf_size_t size = hb_ot_layout_table_get_feature_tags(
       hb_face, HB_OT_TAG_GPOS, 0, &get_size, features_.data());
   features_.resize(size);
   if (size > get_size) {

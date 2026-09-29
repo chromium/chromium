@@ -16,7 +16,7 @@ void retrieveGlyphForStretchyOperators(const blink::Font* operatorsWoff,
   DCHECK(horizontalGlyphs.empty());
   // For details, see createSizeVariants() and createStretchy() from
   // third_party/blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py
-  for (unsigned i = 0; i < 4; i++) {
+  for (wtf_size_t i = 0; i < 4; ++i) {
     verticalGlyphs.push_back(operatorsWoff->PrimaryFont()->GlyphForCharacter(
         uchar::kPrivateUseFirst + 2 * i));
     horizontalGlyphs.push_back(operatorsWoff->PrimaryFont()->GlyphForCharacter(
