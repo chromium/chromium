@@ -944,14 +944,9 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .class_like_name = class_like_name,
       .property_like_name = property_like_name,
       .source_location = {.url = location->Url(script_state->GetIsolate()),
-                          .char_position = location->CharPosition()}};
-
-  if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
-    pending_script_info_->source_location.line_number =
-        location->LineNumber() + 1;
-    pending_script_info_->source_location.column_number =
-        location->ColumnNumber() + 1;
-  }
+                          .char_position = location->CharPosition(),
+                          .line_number = location->LineNumber(),
+                          .column_number = location->ColumnNumber()}};
 }
 
 void AnimationFrameTimingMonitor::Will(

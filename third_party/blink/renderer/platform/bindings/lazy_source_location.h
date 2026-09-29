@@ -41,16 +41,18 @@ class PLATFORM_EXPORT LazySourceLocation final
   static LazySourceLocation* FromCurrentStack(v8::Isolate* isolate);
   const String& Url(v8::Isolate* isolate);
   int CharPosition() const { return char_position_; }
-  int LineNumber() const { return line_number_; }
-  int ColumnNumber() const { return column_number_; }
+  int LineNumber() const { return line_number_ < 0 ? -1 : line_number_ + 1; }
+  int ColumnNumber() const {
+    return column_number_ < 0 ? -1 : column_number_ + 1;
+  }
   void Trace(Visitor* visitor) const;
 
  private:
   TraceWrapperV8Reference<v8::String> v8_url_;
   String url_;
   int char_position_ = -1;
-  int line_number_ = 0;
-  int column_number_ = 0;
+  int line_number_ = -1;
+  int column_number_ = -1;
 };
 
 }  // namespace blink

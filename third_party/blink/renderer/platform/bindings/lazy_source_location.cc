@@ -26,9 +26,15 @@ LazySourceLocation* LazySourceLocation::FromCurrentStack(v8::Isolate* isolate) {
   }
 
   v8::Local<v8::StackFrame> stack_frame = stack_trace->GetFrame(isolate, 0);
-  int script_position = stack_frame->GetSourcePosition();
   v8::Local<v8::String> script_name_v8 =
       stack_frame->GetScriptNameOrSourceURL();
+
+  if (stack_frame->IsScriptOpaque()) {
+    return MakeGarbageCollected<LazySourceLocation>(isolate, script_name_v8,
+                                                    /*char_position=*/-1);
+  }
+
+  int script_position = stack_frame->GetSourcePosition();
 
   if (RuntimeEnabledFeatures::LongAnimationFrameSourceLineColumnEnabled()) {
     v8::Location location = stack_frame->GetLocation();
