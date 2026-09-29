@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -1289,14 +1290,12 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     return popup_view->presenter()->get_widget_for_testing();
   }
 
-  void SetBrowserBounds(views::Widget* popup_widget, const gfx::Rect& bounds) {
+  void SetBrowserBounds(const gfx::Rect& bounds) {
     views::Widget* browser_widget = views::Widget::GetWidgetForNativeWindow(
         browser()->GetWindow()->GetNativeWindow());
     WidgetBoundsWaiter browser_waiter(browser_widget);
-    WidgetBoundsWaiter popup_waiter(popup_widget);
     browser()->GetWindow()->SetBounds(bounds);
     browser_waiter.Wait();
-    popup_waiter.Wait();
   }
 
   void SimulateFrontendMojoMessage(bool is_showing,
@@ -1306,17 +1305,8 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
         location_bar->GetOmniboxPopupView());
     if (popup_view && popup_view->presenter()) {
-      views::Widget* popup_widget =
-          popup_view->presenter()->get_widget_for_testing();
-      std::optional<WidgetBoundsWaiter> waiter;
-      if (popup_widget) {
-        waiter.emplace(popup_widget);
-      }
       popup_view->presenter()->OnEmbeddedPermissionDialogChanged(is_showing,
                                                                  prompt_size);
-      if (waiter) {
-        waiter->Wait();
-      }
     }
   }
 
@@ -1335,27 +1325,33 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupPermissionBrowserTest,
   ASSERT_TRUE(popup_widget);
 
   // Force browser window to be small.
-  SetBrowserBounds(popup_widget, gfx::Rect(0, 0, 400, 600));
+  SetBrowserBounds(gfx::Rect(0, 0, 400, 600));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return popup_widget->GetRestoredBounds().width() < 500; }));
 
   // Open PEPC prompt requesting 500px.
   SimulateFrontendMojoMessage(true, gfx::Size(500, 400));
 
   // PEPC prompt forced omnibox popup to grow to 500px.
-  EXPECT_GE(popup_widget->GetRestoredBounds().width(), 500);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return popup_widget->GetRestoredBounds().width() >= 500; }));
 
   // User manually drags browser window to be big.
-  SetBrowserBounds(popup_widget, gfx::Rect(0, 0, 1000, 600));
+  SetBrowserBounds(gfx::Rect(0, 0, 1000, 600));
 
   // Popup should adjust to the window size.
-  EXPECT_GE(popup_widget->GetRestoredBounds().width(), 800);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return popup_widget->GetRestoredBounds().width() >= 800; }));
 
   // User manually drags browser window back to small.
-  SetBrowserBounds(popup_widget, gfx::Rect(0, 0, 300, 600));
+  SetBrowserBounds(gfx::Rect(0, 0, 300, 600));
 
   // Width of popup should adjust.
   const int expected_width =
       500 + RoundedOmniboxResultsFrame::GetShadowInsets().width();
-  EXPECT_EQ(popup_widget->GetRestoredBounds().width(), expected_width);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return popup_widget->GetRestoredBounds().width() == expected_width;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupPermissionBrowserTest,
@@ -1365,15 +1361,20 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupPermissionBrowserTest,
       ->GetOmniboxView()
       ->SetUserText(u"test");
   views::Widget* popup_widget = GetPopupWidget();
+  ASSERT_TRUE(popup_widget);
 
   // Small browser width.
-  SetBrowserBounds(popup_widget, gfx::Rect(0, 0, 400, 600));
+  SetBrowserBounds(gfx::Rect(0, 0, 400, 600));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return popup_widget->GetRestoredBounds().width() < 500; }));
 
   auto test_frontend_closure = [&](const std::string& action_name) {
     // Open the PEPC prompt.
     SimulateFrontendMojoMessage(true, gfx::Size(500, 400));
-    EXPECT_GE(popup_widget->GetRestoredBounds().width(), 500)
-        << "Failed to expand for " << action_name;
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return popup_widget->GetRestoredBounds().width() >= 500;
+    })) << "Failed to expand for "
+        << action_name;
 
     // Simulate the user triggering the specific UI action that closes the
     // prompt. In the frontend, clicking 'Allow', 'Deny', 'Allow Always', or
@@ -1381,10 +1382,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupPermissionBrowserTest,
     // backend.
     SimulateFrontendMojoMessage(false, gfx::Size());
 
-    // Assert the physical OS window actually shrunk back down to standard
-    // size.
-    EXPECT_LT(popup_widget->GetRestoredBounds().width(), 500)
-        << "Physical window failed to shrink after action: " << action_name;
+    // Assert the physical OS window actually shrunk back down to standard size.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return popup_widget->GetRestoredBounds().width() < 500;
+    })) << "Physical window failed to shrink after action: "
+        << action_name;
   };
 
   test_frontend_closure("Allow");
