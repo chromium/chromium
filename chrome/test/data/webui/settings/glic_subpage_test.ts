@@ -1341,11 +1341,11 @@ suite('GlicSubpage', function() {
       const scopeToggle = $<SettingsToggleButtonElement>('scopeToggle')!;
 
       prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, true);
-      await microtasksFinished();
+      await page.updateComplete;
       assertTrue(scopeToggle.checked);
 
       prefService.setPrefValue(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, false);
-      await microtasksFinished();
+      await page.updateComplete;
       assertFalse(scopeToggle.checked);
     });
 
@@ -1374,7 +1374,7 @@ suite('GlicSubpage', function() {
       // Disable launcher, both shortcuts should still be visible because local
       // scope is enabled.
       prefService.setPrefValue(PrefName.LAUNCHER_ENABLED, false);
-      await microtasksFinished();
+      await page.updateComplete;
       assertTrue(isVisible($(mainShortcutSettingId)));
       assertTrue(isVisible($(selectionShortcutSettingId)));
     });
