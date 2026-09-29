@@ -235,33 +235,28 @@ class ContentAnalysisDialogBehaviorBrowserTest
   base::TimeDelta response_delay() const { return std::get<2>(GetParam()); }
 
   void SetUpOnMainThread() override {
-    ui::test::TestWebDialogDelegate* delegate =
-        new ui::test::TestWebDialogDelegate(GURL(url::kAboutBlankURL));
-    delegate->SetDeleteOnClosedAndObserve(&web_dialog_delegate_destroyed_);
-
     auto view = std::make_unique<views::WebDialogView>(
-        browser()->GetProfile(), delegate,
+        browser()->GetProfile(), &delegate_,
         std::make_unique<ChromeWebContentsHandler>());
     gfx::NativeView parent_view =
         browser()->GetTabStripModel()->GetActiveWebContents()->GetNativeView();
-    view_ = view.get();
-    view_tracker_.SetView(view_);
+    view_tracker_.SetView(view.get());
 
     auto* widget =
         views::Widget::CreateWindowWithParent(std::move(view), parent_view);
     widget->Show();
 
-    EXPECT_TRUE(content::WaitForLoadStop(view_->web_contents()));
+    EXPECT_TRUE(content::WaitForLoadStop(GetWebViewDialogContents()));
   }
 
   content::WebContents* GetWebViewDialogContents() {
-    return view_->web_contents();
+    return static_cast<views::WebDialogView*>(view_tracker_.view())
+        ->web_contents();
   }
 
  private:
+  ui::test::TestWebDialogDelegate delegate_{GURL(url::kAboutBlankURL)};
   views::ViewTracker view_tracker_;
-  raw_ptr<views::WebDialogView, DisableDanglingPtrDetection> view_ = nullptr;
-  bool web_dialog_delegate_destroyed_ = false;
 
   raw_ptr<ContentAnalysisDialogDelegate, DanglingUntriaged> dialog_;
 
