@@ -186,6 +186,7 @@ public class DisplayAndroidManager {
             sIsDisplayTopologyAvailable =
                     UiAndroidFeatureList.sAndroidUseDisplayTopology.isEnabled()
                             && isDisplayTopologyAvailable(getDisplayManager());
+            ResettersForTesting.register(() -> sIsDisplayTopologyAvailable = null);
         }
         return sIsDisplayTopologyAvailable;
     }
