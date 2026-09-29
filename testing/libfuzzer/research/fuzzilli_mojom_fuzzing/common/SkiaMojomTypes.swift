@@ -49,9 +49,9 @@ extension ILType {
         ofName: CommonMojoStrings.skiaMojomAlphaType, withValues: Array(0...4)
     )
     public static let jsSkiaMojomColorTransferFunctionArray: ILType = .createJsArrayType(
-        ofElementType: .jsFloatElement)
+        ofElementType: .float)
     public static let jsSkiaMojomColorToXyzMatrixArray: ILType = .createJsArrayType(
-        ofElementType: .jsFloatElement)
+        ofElementType: .float)
 }
 
 extension ObjectGroup {
@@ -78,7 +78,7 @@ public let MojoSkiaMojomColorTransferFunctionArrayGenerator = CodeGenerator(
     for _ in 1...7 {
         floats.append(b.loadFloat(b.randomFloat()))
     }
-    b.createArray(with: floats, elementGroupName: CommonMojoStrings.floatElement)
+    b.createArray(with: floats)
 }
 
 public let MojoSkiaMojomColorToXyzMatrixArrayGenerator = CodeGenerator(
@@ -90,5 +90,5 @@ public let MojoSkiaMojomColorToXyzMatrixArrayGenerator = CodeGenerator(
     for _ in 1...9 {
         floats.append(b.loadFloat(b.randomFloat()))
     }
-    b.createArray(with: floats, elementGroupName: CommonMojoStrings.floatElement)
+    b.createArray(with: floats)
 }

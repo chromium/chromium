@@ -64,7 +64,7 @@ extension ILType {
     public static let jsMojoBaseMojomString16: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomString16, withProperties: ["data"])
     public static let jsMojoBaseMojomString16Constructor: ILType = .constructor(
-        [.plain(.createJsArrayType(ofElementType: .jsInt16Element))] => .jsMojoBaseMojomString16
+        [.plain(.createJsArrayType(ofElementType: .jsUint16))] => .jsMojoBaseMojomString16
     )
     public static let jsMojoBaseMojomUint128: ILType = .object(
         ofGroup: CommonMojoStrings.mojoBaseMojomUint128, withProperties: ["high", "low"])
@@ -100,7 +100,7 @@ extension ObjectGroup {
         name: CommonMojoStrings.mojoBaseMojomString16,
         instanceType: .jsMojoBaseMojomString16,
         properties: [
-            "data": .createJsArrayType(ofElementType: .jsInt16Element)
+            "data": .createJsArrayType(ofElementType: .jsUint16)
         ],
         methods: [:]
     )
@@ -119,7 +119,7 @@ extension OptionsBag {
     public static let mojoBaseMojomBigBuffer = OptionsBag(
         name: CommonMojoStrings.mojoBaseMojomBigBuffer,
         properties: [
-            "bytes": .createJsArrayType(ofElementType: .jsUint8Element),
+            "bytes": .createJsArrayType(ofElementType: .jsUint8),
             "sharedMemory": ILType.jsMojoBaseMojomBigBufferSharedMemoryRegion,
             "invalidBuffer": .boolean,
         ],
@@ -130,10 +130,10 @@ extension OptionsBag {
 public let MojoMojoBaseMojomBigBufferBytesGenerator = CodeGenerator(
     "MojoMojoBaseMojomBigBufferBytesGenerator",
     inputs: .one,
-    produces: [.createJsArrayType(ofElementType: .jsUint8Element)]
+    produces: [.createJsArrayType(ofElementType: .jsUint8)]
 ) { b, _ in
-    var elements: [Variable] = [b.loadInt(Int64.random(in: 0...255))]
-    b.createArray(with: elements, elementGroupName: CommonMojoStrings.uint8Element)
+    var elements: [Variable] = [b.findOrGenerateType(.jsUint8)]
+    b.createArray(with: elements)
 }
 
 public let MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator = CodeGenerator(
@@ -160,19 +160,18 @@ public let MojoMojoBaseMojomBigBufferSharedMemoryRegionGenerator = CodeGenerator
 
 public let MojoMojoBaseMojomString16Generator = CodeGenerator(
     "MojoMojoBaseMojomString16Generator",
+    inputs: .one,
     produces: [.jsMojoBaseMojomString16]
-) { b in
+) { b, _ in
     // Ideally the CodeGenerator would use a string from the JavaScript
     // program. Such a string would be represented by a `Variable` object, and
     // there is no clean way to grab the underlying string value from a
-    // `Variable` object. So, instead, generate a random Swift string.
-    let randomStr = b.randomString()
+    // `Variable` object. So, instead, generate a random uint16 values.
     var elements: [Variable] = []
-    // Convert the string into a jsArray of integer variables
-    for charCode in randomStr.utf16 {
-        elements.append(b.loadInt(Int64(charCode)))
+    for _ in (0..<Int64.random(in: 1...30)) {
+       elements.append(b.findOrGenerateType(.jsUint16))
     }
-    let array = b.createArray(with: elements, elementGroupName: CommonMojoStrings.int16Element)
+    let array = b.createArray(with: elements)
     let constructor = b.createNamedVariable(forBuiltin: CommonMojoStrings.mojoBaseMojomString16)
     b.construct(constructor, withArgs: [array])
 }
