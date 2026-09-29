@@ -501,7 +501,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kIconSize);
     case Suggestion::Icon::kGmail:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      return ImageModelFromVectorIcon(vector_icons::kGoogleGmailLogoIcon,
+      return ImageModelFromVectorIcon(vector_icons::kGoogleGmailIcon,
                                       kIconSize);
 #else
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
