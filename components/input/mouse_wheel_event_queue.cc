@@ -5,7 +5,6 @@
 #include "components/input/mouse_wheel_event_queue.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -89,7 +88,6 @@ void MouseWheelEventQueue::QueueEvent(
   wheel_queue_.push_back(std::make_unique<QueuedWebMouseWheelEvent>(
       event_with_action, std::move(dispatch_callback)));
   TryForwardNextEventToRenderer();
-  LOCAL_HISTOGRAM_COUNTS_100("Renderer.WheelQueueSize", wheel_queue_.size());
 }
 
 bool MouseWheelEventQueue::CanGenerateGestureScroll(
