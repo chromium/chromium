@@ -572,7 +572,11 @@ base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK(result_size == 0 || result_buffer != nullptr)
       << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
-  return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(result_buffer),
+  // TODO(crbug.com/566667042): `base::unchecked` is needed for now to
+  // unblock tighter bounds checking for Checked Span, but it's
+  // symptomatic of a bigger problem in SQLite3 that ought to be fixed.
+  return UNSAFE_TODO(base::span(base::unchecked,
+                                static_cast<const uint8_t*>(result_buffer),
                                 base::checked_cast<size_t>(result_size)));
 }
 
