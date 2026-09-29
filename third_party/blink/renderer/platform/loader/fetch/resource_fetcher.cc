@@ -2007,6 +2007,9 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
     case Resource::MatchStatus::kSkipServiceWorkerDoesNotMatch:
       builder.Append("because the Service Worker skip policy does not match.");
       break;
+    case Resource::MatchStatus::kPreventAllCrossWorldForCspReuse:
+      builder.Append("because it is a cross-world-for-csp resource mismatch.");
+      break;
   }
   console_logger_->AddConsoleMessage(mojom::ConsoleMessageSource::kOther,
                                      mojom::ConsoleMessageLevel::kWarning,

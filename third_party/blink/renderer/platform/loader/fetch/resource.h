@@ -180,6 +180,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
     // Match fails due to different ServiceWorker policies (SkipServiceWorker).
     kSkipServiceWorkerDoesNotMatch,
+
+    // Match fails because cross-`WorldForCsp()` reuse is prevented.
+    kPreventAllCrossWorldForCspReuse,
   };
 
   Resource(const Resource&) = delete;

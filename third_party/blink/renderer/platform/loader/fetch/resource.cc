@@ -73,8 +73,8 @@
 
 namespace blink {
 
-// TODO(crbug.com/507483993): Enable these behaviors by default and remove the
-// feature flags after monitoring for regressions.
+// TODO(crbug.com/563000235, crbug.com/507483993): Enable these behaviors by
+// default and remove the feature flags after monitoring for regressions.
 
 // Feature that prevents an extension resource (chrome-extension://...) from
 // being fetched across isolated worlds.
@@ -84,6 +84,10 @@ BASE_FEATURE(kPreventExtensionResourceFetchAcrossIsolatedWorlds,
 // Feature that prevents resources fetched via a Service Worker from being
 // reused across different script worlds.
 BASE_FEATURE(kPreventCrossWorldServiceWorkerResourceReuse,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature that prevents all other remaining `WorldForCsp()` mismatch cases.
+BASE_FEATURE(kPreventAllCrossWorldForCspReuse,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature that prevents resources from being reused if the Service Worker skip
@@ -879,37 +883,43 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   // Use GetResourceRequest to get the const resource_request_.
   const ResourceRequestHead& current_request = GetResourceRequest();
 
-  // We need two distinct checks here to prevent unexpected cross-world
-  // resource reuse.
-  //
-  // 1. The extension-specific check prevents sharing of extension
-  //    resources (chrome-extension://...) across different script worlds,
-  //    even for standard network loads.
-  //    For example, if a main world page preloads a web-accessible extension
-  //    resource, reusing that cached resource in the extension's isolated
-  //    world could bypass world-specific loader checks.
-  //    This behavior is tested in
-  //    `ResourceFetcherTest.CrossWorldExtensionResourceMismatch`.
-  if (base::FeatureList::IsEnabled(
-          kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
-      CommonSchemeRegistry::IsExtensionScheme(
-          current_request.Url().Protocol().Ascii()) &&
-      options_.WorldForCsp() != new_options.WorldForCsp()) {
-    return MatchStatus::kCrossWorldExtensionResourceMismatch;
-  }
+  // MemoryCache/preloads isolation by `WorldForCsp()`.
+  if (options_.WorldForCsp() != new_options.WorldForCsp()) {
+    // We first check some subset of mismatch cases, governed by individual kill
+    // switches.
 
-  // 2. The Service Worker check prevents sharing of any resource that was
-  //    fetched via a Service Worker across different script worlds. This is
-  //    necessary because a Service Worker in one world (e.g., the main world)
-  //    could modify the response of a resource that is later loaded by an
-  //    isolated world (e.g., an extension, DevTools, or a userscript), leading
-  //    to unexpected code execution in that world.
-  //    This behavior is tested in `ResourceTest.CanReuseServiceWorkerResource`.
-  if (base::FeatureList::IsEnabled(
-          kPreventCrossWorldServiceWorkerResourceReuse) &&
-      GetResponse().WasFetchedViaServiceWorker() &&
-      options_.WorldForCsp() != new_options.WorldForCsp()) {
-    return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
+    // 1. The extension-specific check prevents sharing of extension
+    //    resources (chrome-extension://...) across different script worlds,
+    //    even for standard network loads.
+    //    For example, if a main world page preloads a web-accessible extension
+    //    resource, reusing that cached resource in the extension's isolated
+    //    world could bypass world-specific loader checks.
+    //    This behavior is tested in
+    //    `ResourceFetcherTest.CrossWorldExtensionResourceMismatch`.
+    if (base::FeatureList::IsEnabled(
+            kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
+        CommonSchemeRegistry::IsExtensionScheme(
+            current_request.Url().Protocol().Ascii())) {
+      return MatchStatus::kCrossWorldExtensionResourceMismatch;
+    }
+
+    // 2. The Service Worker check prevents sharing of any resource that was
+    //    fetched via a Service Worker across different script worlds. This is
+    //    necessary because a Service Worker in one world (e.g., the main world)
+    //    could modify the response of a resource that is later loaded by an
+    //    isolated world (e.g., an extension, DevTools, or a userscript),
+    //    leading to unexpected code execution in that world. This behavior is
+    //    tested in `ResourceTest.CanReuseServiceWorkerResource`.
+    if (base::FeatureList::IsEnabled(
+            kPreventCrossWorldServiceWorkerResourceReuse) &&
+        GetResponse().WasFetchedViaServiceWorker()) {
+      return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
+    }
+
+    // Catch-all rejection of cross-`WorldForCsp()` reuse for comprehensive fix.
+    if (base::FeatureList::IsEnabled(kPreventAllCrossWorldForCspReuse)) {
+      return MatchStatus::kPreventAllCrossWorldForCspReuse;
+    }
   }
 
   if (base::FeatureList::IsEnabled(
