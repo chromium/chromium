@@ -31,6 +31,7 @@
 #include "extensions/browser/api/printer_provider/printer_provider_print_job.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/api/printer_provider/usb_printer_manifest_data.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
@@ -71,13 +72,16 @@ void UpdateJobFileInfo(std::unique_ptr<extensions::PrinterProviderPrintJob> job,
   std::move(callback).Run(std::move(job));
 }
 
-bool HasUsbPrinterProviderPermissions(const Extension* extension) {
+bool HasUsbPrinterProviderPermissions(const Extension* extension,
+                                      Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   return extension->permissions_data() &&
          extension->permissions_data()->HasAPIPermission(
              extensions::mojom::APIPermissionID::kPrinterProvider) &&
          extension->permissions_data()->HasAPIPermission(
-             extensions::mojom::APIPermissionID::kUsb);
+             extensions::mojom::APIPermissionID::kUsb) &&
+         (!profile->IsOffTheRecord() ||
+          extensions::util::IsIncognitoEnabled(extension, profile));
 #else
   return false;
 #endif
@@ -170,7 +174,7 @@ void ExtensionPrinterHandler::StartGetPrinters(
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
   for (const auto& extension : registry->enabled_extensions()) {
     if (UsbPrinterManifestData::Get(extension.get()) &&
-        HasUsbPrinterProviderPermissions(extension.get())) {
+        HasUsbPrinterProviderPermissions(extension.get(), profile_)) {
       extension_supports_usb_printers = true;
       break;
     }
@@ -380,7 +384,8 @@ void ExtensionPrinterHandler::OnUsbDevicesEnumerated(
   for (const auto& extension : registry->enabled_extensions()) {
     const UsbPrinterManifestData* manifest_data =
         UsbPrinterManifestData::Get(extension.get());
-    if (!manifest_data || !HasUsbPrinterProviderPermissions(extension.get())) {
+    if (!manifest_data ||
+        !HasUsbPrinterProviderPermissions(extension.get(), profile_)) {
       continue;
     }
 
