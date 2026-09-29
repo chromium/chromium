@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -267,6 +268,41 @@ TEST_F(ServiceWorkerSyntheticResponseDataPipeConnectorTest,
 
   EXPECT_EQ(kData1 + kData2 + kData3, ReadDataPipe(std::move(dest_consumer)));
   run_loop.Run();
+}
+
+TEST_F(ServiceWorkerSyntheticResponseDataPipeConnectorTest,
+       DestroyConnectorInOnFinishedOnWriteError) {
+  mojo::ScopedDataPipeConsumerHandle source_consumer;
+  mojo::ScopedDataPipeProducerHandle source_producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, source_producer, source_consumer));
+
+  auto connector =
+      std::make_unique<ServiceWorkerSyntheticResponseDataPipeConnector>(
+          std::move(source_consumer));
+
+  const std::string kData = "data";
+  size_t actual_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            source_producer->WriteData(base::as_byte_span(kData),
+                                       MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                       actual_written_bytes));
+
+  mojo::ScopedDataPipeConsumerHandle dest_consumer;
+  mojo::ScopedDataPipeProducerHandle dest_producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, dest_producer, dest_consumer));
+
+  base::RunLoop run_loop;
+  connector->Transfer(std::move(dest_producer),
+                      base::BindLambdaForTesting([&]() {
+                        connector.reset();
+                        run_loop.Quit();
+                      }));
+  dest_consumer.reset();
+
+  run_loop.Run();
+  EXPECT_FALSE(connector);
 }
 
 }  // namespace content

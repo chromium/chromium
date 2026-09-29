@@ -5,6 +5,7 @@
 #include "content/browser/service_worker/service_worker_synthetic_response_data_pipe_connector.h"
 
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 
 namespace content {
@@ -137,7 +138,10 @@ void ServiceWorkerSyntheticResponseDataPipeConnector::Finish() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   producer_handle_.reset();
   producer_handle_watcher_.reset();
-  std::move(on_complete_).Run();
+  if (on_complete_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_complete_));
+  }
 }
 
 }  // namespace content
