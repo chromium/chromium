@@ -38,6 +38,7 @@
 namespace blink {
 
 Canvas2DBitmapProvider::Canvas2DBitmapProvider(
+    sk_sp<SkSurface> surface,
     gfx::Size size,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
@@ -50,8 +51,9 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
-      surface_(CreateSkSurface()),
+      surface_(std::move(surface)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+  CHECK(surface_);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -64,10 +66,6 @@ Canvas2DBitmapProvider::~Canvas2DBitmapProvider() {
 
 void Canvas2DBitmapProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (!surface_) {
-    return;
-  }
-
   std::string dump_name =
       base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(surface_.get()));
@@ -87,9 +85,6 @@ void Canvas2DBitmapProvider::OnMemoryDump(
 }
 
 size_t Canvas2DBitmapProvider::GetSize() const {
-  if (!surface_) {
-    return 0;
-  }
   SkImageInfo info = surface_->imageInfo();
   return info.computeByteSize(info.minRowBytes());
 }
@@ -169,21 +164,6 @@ void Canvas2DBitmapProvider::ReleaseImageProviderImages() {
   }
 }
 
-sk_sp<SkSurface> Canvas2DBitmapProvider::CreateSkSurface() const {
-  TRACE_EVENT0("blink", "Canvas2DBitmapProvider::CreateSkSurface");
-
-  const auto info = SkImageInfo::Make(
-      size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-      kPremul_SkAlphaType, color_space_.ToSkColorSpace());
-  const auto props = GetSkSurfaceProps();
-  return SkSurfaces::Raster(info, &props);
-}
-
-SkSurfaceProps Canvas2DBitmapProvider::GetSkSurfaceProps() const {
-  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
-  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
-}
-
 void Canvas2DBitmapProvider::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
@@ -255,16 +235,22 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProviderDelegate* delegate) {
+  const auto info = SkImageInfo::Make(
+      size.width(), size.height(), viz::ToClosestSkColorType(format),
+      kPremul_SkAlphaType, color_space.ToSkColorSpace());
+  const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
+  const auto props =
+      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &props);
+  if (!surface) {
+    return nullptr;
+  }
   auto provider =
       base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-          size, format, alpha_type, color_space, hdr_metadata, delegate));
-  if (provider->IsValid()) {
-    provider->ClearAtCreation();
-    // The ClearAtCreation() call cannot turn a Canvas2DBitmapProvider invalid.
-    CHECK(provider->IsValid());
-    return provider;
-  }
-  return nullptr;
+          std::move(surface), size, format, alpha_type, color_space,
+          hdr_metadata, delegate));
+  provider->ClearAtCreation();
+  return provider;
 }
 
 std::unique_ptr<Canvas2DBitmapProvider>

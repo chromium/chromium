@@ -68,7 +68,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   ~Canvas2DBitmapProvider() override;
 
-  bool IsValid() const { return surface_ != nullptr; }
+  bool IsValid() const { return true; }
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }
@@ -95,7 +95,8 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void RestoreBackBuffer(const cc::PaintImage&);
 
  private:
-  Canvas2DBitmapProvider(gfx::Size size,
+  Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
+                         gfx::Size size,
                          viz::SharedImageFormat format,
                          SkAlphaType alpha_type,
                          const gfx::ColorSpace& color_space,
@@ -115,9 +116,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void OnContextDestroyed() override;
 
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
-
-  SkSurfaceProps GetSkSurfaceProps() const;
-  sk_sp<SkSurface> CreateSkSurface() const;
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
