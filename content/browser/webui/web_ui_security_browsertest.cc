@@ -12,6 +12,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
@@ -39,6 +41,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/url_util.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 
@@ -343,6 +346,61 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUICrossSiteSubframe) {
     EXPECT_EQ(BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}),
               child->current_frame_host()->GetEnabledBindings());
   }
+}
+
+// Verify that when a trusted WebUI frame navigates another frame via a
+// remote frame proxy, the navigation is upgraded to browser-initiated and the
+// referrer is stripped.
+IN_PROC_BROWSER_TEST_F(
+    WebUISecurityTest,
+    RemoteFrameNavigationFromWebUIUpgradesToBrowserInitiated) {
+  EXPECT_TRUE(embedded_test_server()->Start());
+
+  GURL main_frame_url(
+      GetWebUIURL("web-ui/page_with_blank_iframe.html?childsrc=child-src *;"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  EXPECT_EQ(1U, root->child_count());
+
+  FrameTreeNode* child = root->child_at(0);
+  GURL child_frame_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+  NavigateFrameToURL(child, child_frame_url);
+
+  SiteInstanceImpl* root_instance =
+      root->current_frame_host()->GetSiteInstance();
+  RenderFrameProxyHost* child_proxy =
+      child->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(root_instance->group());
+  ASSERT_TRUE(child_proxy);
+
+  GURL dest_url = embedded_test_server()->GetURL("b.com", "/title2.html");
+  TestNavigationManager nav_manager(shell()->web_contents(), dest_url);
+
+  auto params = blink::mojom::OpenURLParams::New();
+  params->url = dest_url;
+  params->disposition = WindowOpenDisposition::CURRENT_TAB;
+  params->initiator_state_token =
+      root->current_frame_host()->current_initiator_state_token();
+  params->initiator_document_token =
+      root->current_frame_host()->GetDocumentToken();
+  params->initiator_frame_token = root->current_frame_host()->GetFrameToken();
+  params->referrer = blink::mojom::Referrer::New(
+      main_frame_url, network::mojom::ReferrerPolicy::kDefault);
+
+  static_cast<blink::mojom::RemoteFrameHost*>(child_proxy)
+      ->OpenURL(std::move(params));
+
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  NavigationHandle* handle = nav_manager.GetNavigationHandle();
+  ASSERT_TRUE(handle);
+  EXPECT_FALSE(handle->IsRendererInitiated());
+  EXPECT_TRUE(handle->GetReferrer().url.is_empty());
 }
 
 // Verify that SiteInstance and WebUI reuse happens in subframes as well.

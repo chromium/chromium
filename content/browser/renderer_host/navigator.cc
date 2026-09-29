@@ -1214,22 +1214,26 @@ void Navigator::NavigateFromFrameProxy(
     return;
   }
 
-  // TODO(creis): Determine if this transfer started as a browser-initiated
-  // navigation.  See https://crbug.com/495161.
+  RenderFrameHostImpl* initiator_rfh =
+      initiator_frame_token ? RenderFrameHostImpl::FromFrameToken(
+                                  initiator_process_id, *initiator_frame_token)
+                            : nullptr;
   bool is_renderer_initiated = true;
   Referrer referrer_to_use(referrer);
-  if (WebUI* web_ui = render_frame_host->web_ui()) {
-    // Note that we hide the referrer for Web UI pages. We don't really want
-    // web sites to see a referrer of "chrome://blah" (and some chrome: URLs
-    // might have search terms or other stuff we don't want to send to the
-    // site), so we send no referrer.
-    referrer_to_use = Referrer();
+  if (initiator_rfh) {
+    if (WebUI* web_ui = initiator_rfh->web_ui()) {
+      // Note that we hide the referrer for Web UI pages. We don't really want
+      // web sites to see a referrer of "chrome://blah" (and some chrome: URLs
+      // might have search terms or other stuff we don't want to send to the
+      // site), so we send no referrer.
+      referrer_to_use = Referrer();
 
-    // Navigations in trusted Web UI pages count as browser-initiated
-    // navigations.
-    if (web_ui->GetController()->GetTrustPolicy() ==
-        WebUIController::TrustPolicy::kTrusted) {
-      is_renderer_initiated = false;
+      // Navigations in trusted Web UI pages count as browser-initiated
+      // navigations.
+      if (web_ui->GetController()->GetTrustPolicy() ==
+          WebUIController::TrustPolicy::kTrusted) {
+        is_renderer_initiated = false;
+      }
     }
   }
 
