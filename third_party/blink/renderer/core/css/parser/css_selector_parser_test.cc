@@ -198,7 +198,10 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
                               "::-webkit-scrollbar:not(:horizontal)",
                               "::slotted(span)::before",
                               "::slotted(div)::after",
-                              "::slotted(div)::view-transition"};
+                              "::slotted(div)::view-transition",
+                              "::slotted(div)::scroll-marker-group",
+                              "::slotted(div)::scroll-marker",
+                              "::slotted(div)::scroll-button(up)"};
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {

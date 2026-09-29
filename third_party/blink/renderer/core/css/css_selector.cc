@@ -1876,6 +1876,9 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoViewTransitionNew ||
           GetPseudoType() == kPseudoOverscrollAreaParent ||
           GetPseudoType() == kPseudoSkeleton ||
+          GetPseudoType() == kPseudoScrollMarkerGroup ||
+          GetPseudoType() == kPseudoScrollMarker ||
+          GetPseudoType() == kPseudoScrollButton ||
           IsElementBackedPseudoElement(GetPseudoType()));
 }
 
