@@ -356,6 +356,17 @@ class IndigoBrowserTest : public InteractiveBrowserTest {
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
+  auto NavigateAndClickAnchoredMessage(const GURL& url) {
+    return Steps(
+        InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+        WaitForWebContentsReady(kWebContentsId, url),
+        WaitForShow(kIndigoPageActionIconElementId),
+        WaitForShow(
+            page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+        PressButton(
+            page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeApi fake_api_;
@@ -372,12 +383,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
   gfx::Rect image_bounds{50, 50, 200, 200};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -413,12 +419,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
   base::test::TestFuture<void> disconnect_future;
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
       WaitForShow(IndigoToolbar::kToolbarElementId),
 
       WithElement(
@@ -454,12 +455,7 @@ IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   gfx::Rect image_bounds{50, 50, 200, 200};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -499,14 +495,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
       embedded_test_server()->GetURL("/empty.html"), "toyut", "chrome-mi");
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId),
-      NavigateWebContents(kWebContentsId, main_tab_url),
-      WaitForWebContentsReady(kWebContentsId, main_tab_url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(main_tab_url),
       WaitForShow(IndigoOnboardingDialog::kWebViewId),
       InstrumentNonTabWebView(kDialogWebContentsId,
                               IndigoOnboardingDialog::kWebViewId),
@@ -532,14 +521,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
       embedded_test_server()->GetURL("/empty.html"), "toyut", "chrome-mi");
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId),
-      NavigateWebContents(kWebContentsId, main_tab_url),
-      WaitForWebContentsReady(kWebContentsId, main_tab_url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(main_tab_url),
       WaitForShow(IndigoOnboardingDialog::kWebViewId),
       InstrumentNonTabWebView(kDialogWebContentsId,
                               IndigoOnboardingDialog::kWebViewId),
@@ -559,29 +541,24 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/empty.html");
 
-  RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
+  RunTestSequence(NavigateAndClickAnchoredMessage(url),
+                  WaitForShow(IndigoToolbar::kToolbarElementId),
 
-      // Expand the toolbar
-      PressButton(IndigoToolbar::kExpandButtonElementId),
-      WaitForShow(IndigoToolbar::kExpandedContainerElementId),
+                  // Expand the toolbar
+                  PressButton(IndigoToolbar::kExpandButtonElementId),
+                  WaitForShow(IndigoToolbar::kExpandedContainerElementId),
 
-      // Open a new tab and switch to it
-      AddInstrumentedTab(kSecondTabId, url2),
-      WaitForHide(IndigoToolbar::kToolbarElementId),
+                  // Open a new tab and switch to it
+                  AddInstrumentedTab(kSecondTabId, url2),
+                  WaitForWebContentsReady(kSecondTabId, url2),
+                  WaitForHide(IndigoToolbar::kToolbarElementId),
 
-      // Switch back to the first tab
-      SelectTab(kTabStripElementId, 0),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
+                  // Switch back to the first tab
+                  SelectTab(kTabStripElementId, 0),
+                  WaitForShow(IndigoToolbar::kToolbarElementId),
 
-      // Verify it is still expanded
-      WaitForShow(IndigoToolbar::kExpandedContainerElementId));
+                  // Verify it is still expanded
+                  WaitForShow(IndigoToolbar::kExpandedContainerElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
@@ -590,9 +567,11 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
 
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForWebContentsReady(kWebContentsId, url),
 
       // Open a new tab (Tab 2 is active, Tab 1 is in background)
       AddInstrumentedTab(kSecondTabId, url2),
+      WaitForWebContentsReady(kSecondTabId, url2),
 
       // Trigger toolbar showing on the background tab (Tab 1)
       Do(base::BindLambdaForTesting([&]() {
@@ -622,12 +601,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningScroll) {
   gfx::Rect image_bounds{50, 500, 512, 512};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -676,12 +650,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningFixedOcclusion) {
   gfx::Rect image_bounds{50, 150, 200, 200};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -736,12 +705,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningOOPIFOcclusion) {
   gfx::Rect image_bounds{50, 150, 200, 200};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -790,12 +754,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
   gfx::Rect image_bounds{9, 59, 283, 283};
 
   RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -818,21 +777,16 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
-  RunTestSequence(
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-      WaitForShow(IndigoToolbar::kToolbarElementId),
-      // Reload the current tab. Using chrome::Reload avoids race conditions
-      // with ReloadButton's internal mode-switch timer.
-      Do(base::BindLambdaForTesting([&]() {
-        chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-      })),
-      // Verify the toolbar is hidden.
-      WaitForHide(IndigoToolbar::kToolbarElementId));
+  RunTestSequence(NavigateAndClickAnchoredMessage(url),
+                  WaitForShow(IndigoToolbar::kToolbarElementId),
+                  // Reload the current tab. Using chrome::Reload avoids race
+                  // conditions with ReloadButton's internal mode-switch timer.
+                  Do(base::BindLambdaForTesting([&]() {
+                    chrome::Reload(browser(),
+                                   WindowOpenDisposition::CURRENT_TAB);
+                  })),
+                  // Verify the toolbar is hidden.
+                  WaitForHide(IndigoToolbar::kToolbarElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
@@ -842,13 +796,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
 
   RunTestSequence(
       // Navigation to first page displays Anchored Message
-      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
-      WaitForShow(kIndigoPageActionIconElementId),
-      WaitForShow(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
-
-      PressButton(
-          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      NavigateAndClickAnchoredMessage(url),
       WaitForShow(IndigoToolbar::kToolbarElementId),
 
       Check([&]() {
@@ -867,6 +815,7 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
       // duration has not expired, this tab will display a suggestion chip
       // instead.
       AddInstrumentedTab(kSecondTabId, url2),
+      WaitForWebContentsReady(kSecondTabId, url2),
       WaitForShow(kIndigoPageActionIconElementId), Check([&]() {
         return user_action_tester.GetActionCount(
                    "Indigo.PageAction.AnchoredMessage.Proactive.Show") == 1;
@@ -904,7 +853,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
   ASSERT_TRUE(toast_controller);
 
   RunTestSequence(InstrumentTab(kWebContentsId),
-                  NavigateWebContents(kWebContentsId, url), Do([&]() {
+                  NavigateWebContents(kWebContentsId, url),
+                  WaitForWebContentsReady(kWebContentsId, url), Do([&]() {
                     toast_controller->MaybeShowToast(
                         ToastParams(ToastId::kIndigoInvokeError));
                   }),
