@@ -8,7 +8,6 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import difflib
-import os
 import sys
 
 # pyright: reportMissingImports=false
@@ -18,15 +17,23 @@ def RuntimeEnabledFeatures(input_api, filename):
     # We need to wait until we have an input_api object and use this
     # roundabout construct to import json5 because this file is
     # eval-ed and thus doesn't have __file__.
+    json5_path = input_api.os_path.normpath(
+        input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..',
+                               '..', 'pyjson5', 'src'))
+    path_added = False
     try:
-        json5_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                            '..', '..', '..', 'pyjson5', 'src')
-        sys.path.append(json5_path)
+        if json5_path not in sys.path:
+            sys.path.insert(0, json5_path)
+            path_added = True
+        # pylint: disable=import-outside-toplevel
         import json5
-        return json5.load(open(filename, encoding='utf-8'))['data']
+        # pylint: enable=import-outside-toplevel
+        with open(filename, encoding='utf-8') as f:
+            return json5.load(f)['data']
     finally:
         # Restore sys.path to what it was before.
-        sys.path.remove(json5_path)
+        if path_added and json5_path in sys.path:
+            sys.path.remove(json5_path)
 
 
 def _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
@@ -52,24 +59,32 @@ def _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
     ]
 
 
+def _IsFileAffected(file_name, input_api):
+    """Returns True if the specified file was modified in this change."""
+    target_path = input_api.os_path.normpath(
+        input_api.os_path.join(input_api.PresubmitLocalPath(), file_name))
+    return any(
+        input_api.os_path.normpath(f.AbsoluteLocalPath()) == target_path
+        for f in input_api.AffectedFiles(include_deletes=False))
+
+
 def _CheckRuntimeEnabledFile(file_name, input_api, output_api):
-    """Checks common to both upload and commit."""
-    # Read json5 using the JSON5 parser.
-    features_filename = os.path.join(input_api.PresubmitLocalPath(), file_name)
+    """Checks that features in file_name are sorted alphabetically."""
+    if not _IsFileAffected(file_name, input_api):
+        return []
+
+    features_filename = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                               file_name)
     try:
         features = RuntimeEnabledFeatures(input_api, features_filename)
-    except:
+        return _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
+                                                  output_api)
+    except Exception as e:
         return [
             output_api.PresubmitError(
-                'Failed to parse {} for checks'.format(features_filename))
+                f'Failed to parse or validate {features_filename} for checks: '
+                f'{e}')
         ]
-
-    results = []
-    results.extend(
-        _CheckRuntimeEnabledFeaturesSorted(features, features_filename,
-                                           output_api))
-
-    return results
 
 
 def _CommonChecks(input_api, output_api):
