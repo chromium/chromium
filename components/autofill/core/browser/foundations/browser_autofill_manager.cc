@@ -1196,8 +1196,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
                                    driver().GetPageUkmSourceId());
     }
     if (autofill_metrics::FormEventLoggerBase* logger =
-            GetEventFormLogger(*autofill_field);
-        logger && ShouldBeParsed(*form_structure, /*log_manager=*/nullptr)) {
+            GetEventFormLogger(*autofill_field)) {
       if (logger == &metrics_->credit_card_form_event_logger) {
         metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
             metrics_->signin_state_for_metrics);

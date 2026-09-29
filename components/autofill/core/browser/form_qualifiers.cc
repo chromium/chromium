@@ -247,10 +247,6 @@ bool ShouldBeParsed(const FormData& form, LogManager* log_manager) {
   return internal::ShouldBeParsed(form, {}, log_manager);
 }
 
-bool ShouldBeParsed(const FormStructure& form, LogManager* log_manager) {
-  return internal::ShouldBeParsed(form, {}, log_manager);
-}
-
 bool ShouldRunHeuristics(const FormData& form, bool ignore_small_forms) {
   return internal::ShouldRunHeuristics(form, ignore_small_forms);
 }

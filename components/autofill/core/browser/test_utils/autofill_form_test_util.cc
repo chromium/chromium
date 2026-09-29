@@ -574,7 +574,7 @@ void FormStructureTest::CheckFormStructureTestData(
       EXPECT_TRUE(IsAutofillable(*form_structure));
     }
     if (test_case.form_flags.should_be_parsed) {
-      EXPECT_TRUE(ShouldBeParsed(*form_structure, /*log_manager=*/nullptr));
+      EXPECT_TRUE(ShouldBeParsed(form, /*log_manager=*/nullptr));
     }
     if (test_case.form_flags.should_be_queried) {
       EXPECT_TRUE(ShouldBeQueried(*form_structure));

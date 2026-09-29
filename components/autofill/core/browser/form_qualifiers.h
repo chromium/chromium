@@ -30,8 +30,6 @@ class LogManager;
 // Returns true if this form matches the structural requirements for Autofill.
 [[nodiscard]] bool ShouldBeParsed(const FormData& form,
                                   LogManager* log_manager);
-[[nodiscard]] bool ShouldBeParsed(const FormStructure& form,
-                                  LogManager* log_manager);
 
 // Returns true if heuristic autofill type detection should be attempted for
 // this form.
