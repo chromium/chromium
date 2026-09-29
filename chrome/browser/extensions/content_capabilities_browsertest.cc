@@ -247,13 +247,11 @@ IN_PROC_BROWSER_TEST_F(ContentCapabilitiesTest, ClipboardWrite) {
   EXPECT_TRUE(
       CanWriteClipboardInAboutBlankFrame(extension.get(),
                                           GetTestURLFor("foo.example.com")));
-  // EvalJs supplies a user gesture, so the focused top-level document can
-  // write despite not having the clipboardWrite capability.
+  // TODO(dcheng): This should be false, but we cannot currently execute testing
+  // script without a user gesture.
   EXPECT_TRUE(
       CanWriteClipboard(extension.get(), GetTestURLFor("bar.example.com")));
-  // The about:blank child is not focused, so transient user activation alone
-  // does not allow it to write without the clipboardWrite capability.
-  EXPECT_FALSE(CanWriteClipboardInAboutBlankFrame(
+  EXPECT_TRUE(CanWriteClipboardInAboutBlankFrame(
       extension.get(), GetTestURLFor("bar.example.com")));
 
   EXPECT_FALSE(

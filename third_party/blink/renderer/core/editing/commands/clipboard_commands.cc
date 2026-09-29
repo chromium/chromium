@@ -162,12 +162,8 @@ bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
   if (source == EditorCommandSource::kMenuOrKeyBinding)
     return true;
   Settings* const settings = frame.GetSettings();
-  if (settings && settings->GetJavaScriptCanAccessClipboard()) {
-    return true;
-  }
-  if (LocalFrame::HasTransientUserActivation(&frame) &&
-      ((settings && settings->GetClipboardFocusExempt()) ||
-       frame.GetDocument()->hasFocus())) {
+  if ((settings && settings->GetJavaScriptCanAccessClipboard()) ||
+      LocalFrame::HasTransientUserActivation(&frame)) {
     return true;
   }
   return frame.GetContentSettingsClient() &&
