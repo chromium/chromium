@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
+#import "ios/web/web_state/ui/crw_permission_request.h"
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
@@ -29,10 +29,10 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
 
 }  // namespace
 
-@implementation CRWMediaCapturePermissionRequest {
+@implementation CRWPermissionRequest {
   // Task runner the decision handler should run on.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
-  // Handler of user's media capture decision.
+  // Handler of user's permission decision.
   void (^_decisionHandler)(WKPermissionDecision);
   // Track whether the decision handler has been called.
   BOOL _decisionHandlerInvoked;
@@ -107,7 +107,7 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
       });
 }
 
-// Handle user response to media capture request.
+// Handle user response to permission request.
 - (void)handleDecision:(WKPermissionDecision)decision {
   if (_decisionHandlerInvoked) {
     return;

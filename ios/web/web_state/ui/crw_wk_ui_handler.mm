@@ -16,7 +16,7 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/util/wk_security_origin_util.h"
-#import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
+#import "ios/web/web_state/ui/crw_permission_request.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -56,7 +56,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
 }  // namespace
 
-@interface CRWWKUIHandler () <CRWMediaCapturePermissionPresenter> {
+@interface CRWWKUIHandler () <CRWPermissionPresenter> {
   // Check that public API is called from the correct sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
 }
@@ -122,10 +122,9 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                                (void (^)(WKPermissionDecision decision))
                                    decisionHandler {
   RecordHistogramForPermissionRequestForWKMediaCaptureType(type);
-  CRWMediaCapturePermissionRequest* request =
-      [[CRWMediaCapturePermissionRequest alloc]
-          initWithDecisionHandler:decisionHandler
-                     onTaskRunner:self.mainTaskRunner];
+  CRWPermissionRequest* request = [[CRWPermissionRequest alloc]
+      initWithDecisionHandler:decisionHandler
+                 onTaskRunner:self.mainTaskRunner];
   request.presenter = self;
   GURL securityOrigin = web::GURLOriginWithWKSecurityOrigin(origin);
   if (web::GetWebClient()->EnableFullscreenAPI()) {
@@ -323,7 +322,7 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                                     base::BindOnce(completionHandler));
 }
 
-#pragma mark - CRWMediaCapturePermissionPresenter
+#pragma mark - CRWPermissionPresenter
 
 - (web::WebStateImpl*)presentingWebState {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);

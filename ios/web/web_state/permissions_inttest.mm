@@ -15,7 +15,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/test/web_test_with_web_controller.h"
-#import "ios/web/web_state/ui/crw_media_capture_permission_request.h"
+#import "ios/web/web_state/ui/crw_permission_request.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -486,15 +486,12 @@ TEST_F(PermissionsInttest, TestsThatClosingTabBeforeDecisionDeniesPermission) {
   {
     // Fake a media capture permission request. Use an inner scope to allow
     // the request to be destroyed, simulating the closing of a tab.
-    CRWMediaCapturePermissionRequest* request =
-        [[CRWMediaCapturePermissionRequest alloc]
-            initWithDecisionHandler:^(
-                WKPermissionDecision wk_permission_decision) {
-              decision = static_cast<NSInteger>(wk_permission_decision);
-            }
-                       onTaskRunner:base::SequencedTaskRunner::
-                                        GetCurrentDefault()];
-    request.presenter = (id<CRWMediaCapturePermissionPresenter>)ui_delegate;
+    CRWPermissionRequest* request = [[CRWPermissionRequest alloc]
+        initWithDecisionHandler:^(WKPermissionDecision wk_permission_decision) {
+          decision = static_cast<NSInteger>(wk_permission_decision);
+        }
+                   onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
+    request.presenter = (id<CRWPermissionPresenter>)ui_delegate;
     [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
                                        origin:GURL(kSecureUrl)];
   }
@@ -559,13 +556,12 @@ TEST_F(PermissionsInttest, TestPermissionDeniedForNonSecureOrigin) {
   id<WKUIDelegate> ui_delegate = web_view.UIDelegate;
 
   // Fake a media capture permission request.
-  CRWMediaCapturePermissionRequest* request = [[CRWMediaCapturePermissionRequest
-      alloc]
+  CRWPermissionRequest* request = [[CRWPermissionRequest alloc]
       initWithDecisionHandler:^(WKPermissionDecision wk_permission_decision) {
         decision = static_cast<NSInteger>(wk_permission_decision);
       }
                  onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
-  request.presenter = (id<CRWMediaCapturePermissionPresenter>)ui_delegate;
+  request.presenter = (id<CRWPermissionPresenter>)ui_delegate;
   [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
                                      origin:GURL(kInsecureUrl)];
 

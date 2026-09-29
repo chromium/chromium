@@ -67,8 +67,8 @@ source_set("ui") {
 
   sources = [
     "crw_content_view.h",
-    "crw_media_capture_permission_request.h",
-    "crw_media_capture_permission_request.mm",
+    "crw_permission_request.h",
+    "crw_permission_request.mm",
     "crw_touch_tracking_recognizer.mm",
     "crw_viewport_insets_animator.h",
     "crw_viewport_insets_animator.mm",
