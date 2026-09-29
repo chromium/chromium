@@ -187,8 +187,9 @@ def _IterChangedStatements(input_api, affected_file):
       stmt_line = line_num
     stmt_parts.append(code)
     joined = ' '.join(stmt_parts)
-    if ';' in code or (joined.count('(') > 0 and
-                       joined.count('(') == joined.count(')')):
+    if (';' in code or
+        (joined.count('(') == 0 and code.endswith(',')) or
+        (joined.count('(') > 0 and joined.count('(') == joined.count(')'))):
       yield stmt_line, joined
       stmt_line = None
       stmt_parts = []
@@ -350,7 +351,7 @@ def _CheckNewFlagsHaveMetrics(input_api, output_api):
           r'\b(?:DEFINE_VARIATION_PARAM|VARIATION_ENTRY)\s*\(\s*(k\w+)'
       ),
       FEATURE_LIST_CC_PATH: input_api.re.compile(
-          r'&\s*(k\w+)'
+          r'^\s*&\s*\b(k\w+)'
       ),
   }
 

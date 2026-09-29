@@ -628,5 +628,19 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     errors = [r for r in results if r.type == 'Error']
     self.assertEqual(0, len(errors))
 
+  def testNewFlagsHaveMetrics_IgnoresNonFeatureListAddressOf(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_list.cc',
+            [],
+            [(10, '  const auto* ptr = &kSomeOtherVariable;'),
+             (11, '  SomeHelper(&kAnotherVariable);')],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
+
 if __name__ == '__main__':
   unittest.main()
