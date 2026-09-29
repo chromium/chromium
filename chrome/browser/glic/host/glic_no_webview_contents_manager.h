@@ -60,6 +60,18 @@ class Host;
 class GlicNoWebviewContentsManager : public GlicWebContentsManager,
                                      public GlicWebClientManager::Delegate {
  public:
+  enum class GuestState {
+    // Navigation in progress or waiting for Glic web client to connect.
+    kLoading,
+    // Glic web client script has initialized/connected and is ready to display
+    // (covers WebClientState::kResponsive and kUnresponsive).
+    kReady,
+    // Guest is displaying a web login or proxy authentication page.
+    kLogin,
+    // Guest is displaying an in-page error page (e.g. /sorry/ or CAPTCHA).
+    kGuestError,
+  };
+
   // Manages the lifetime, WebUI page handler bindings, and observer events
   // for the loading/error overlay WebContents (chrome://glic/overlay).
   class OverlayContentsManager : public content::WebContentsObserver,
@@ -67,7 +79,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
    public:
     OverlayContentsManager(Profile* profile,
                            GlicNoWebviewContentsManager* owner,
-                           ObservableValueView<bool>& guest_ready);
+                           ObservableValueView<GuestState>& guest_state);
     ~OverlayContentsManager() override;
 
     content::WebContents* EnsureWebContents();
@@ -85,14 +97,15 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
     // Determines what the overlay state should be based on explicit inputs:
     // - `error_type`: If an error is active, the overlay shows that error
-    // panel.
-    // - `is_guest_ready`: If no error is active and the guest is ready, no
-    //   overlay state is needed (returns nullptr).
+    //   panel.
+    // - `guest_state`: If `GuestState::kLoading`, a loading skeleton is shown;
+    //   otherwise (kReady, kLogin, kGuestError), the guest WebContents is
+    //   presented directly and no overlay is needed (returns nullptr).
     // - `panel_state_kind`: Detached panels show a floating loading skeleton;
     //   otherwise, a side-panel loading skeleton is shown.
     static mojom::OverlayStatePtr DetermineOverlayState(
         std::optional<mojom::ErrorPanelType> error_type,
-        bool is_guest_ready,
+        GuestState guest_state,
         std::optional<mojom::PanelStateKind> panel_state_kind);
 
     // Evaluates current inputs to determine the desired overlay state.
@@ -127,8 +140,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     raw_ptr<GlicNoWebviewContentsManager> owner_;
     std::unique_ptr<content::WebContents> web_contents_;
     std::optional<mojom::ErrorPanelType> error_type_;
-    const raw_ref<ObservableValueView<bool>> guest_ready_;
-    base::CallbackListSubscription guest_ready_subscription_;
+    const raw_ref<ObservableValueView<GuestState>> guest_state_;
+    base::CallbackListSubscription guest_state_subscription_;
     base::CallbackListSubscription panel_state_subscription_;
     raw_ptr<ObservableValueView<mojom::PanelState>> panel_state_ = nullptr;
     gfx::Size cached_size_;
@@ -199,7 +212,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
     return overlay_manager_.error_type();
   }
 
-  ObservableValueView<bool>& guest_ready() { return guest_ready_; }
+  ObservableValueView<GuestState>& guest_state() { return guest_state_; }
 
   // Returns the Mojo page handler for the overlay UI, used for testing.
   mojom::GlicOverlayPageHandler* GetOverlayPageHandlerForTesting() const;
@@ -283,6 +296,10 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Applies the cached viewport size from the overlay/host to the guest view.
   void ApplySizeToGuest();
 
+  // Displays the guest WebContents directly for guest pages that bypass the
+  // web client bootstrap (e.g. login or guest error pages).
+  void ShowGuestDirectly(GuestState state);
+
   // Transitions the manager to `next_state`, coordinating overlay allocation,
   // destruction, and active WebContents change notifications.
   void TransitionTo(DisplayState next_state);
@@ -306,9 +323,8 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   raw_ptr<GlicEnabling> enabling_ = nullptr;
   raw_ptr<Host> host_ = nullptr;
 
-  // True if the guest WebContents is the currently active view presented by
-  // `active_web_contents()`.
-  ObservableValue<bool> guest_ready_{false};
+  // Lifecycle state of the guest WebContents.
+  ObservableValue<GuestState> guest_state_{GuestState::kLoading};
 
   GlicWebClientManager web_client_manager_;
   OverlayContentsManager overlay_manager_;
@@ -320,9 +336,6 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   // True if Glic is currently visible to the user.
   bool is_visible_ = false;
-
-  // True if the guest navigated to an error page (e.g. /sorry/).
-  bool is_guest_error_ = false;
 
   // Actuation tracking state.
   bool is_actuating_ = false;

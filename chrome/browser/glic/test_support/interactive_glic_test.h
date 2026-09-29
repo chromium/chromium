@@ -916,7 +916,9 @@ class InteractiveGlicTestMixin : public T {
           if (features::IsGlicNoWebviewEnabled()) {
             auto* manager = static_cast<GlicNoWebviewContentsManager*>(
                 instance->host().contents_manager());
-            if (!manager || !manager->guest_ready().get()) {
+            if (!manager ||
+                manager->guest_state().get() !=
+                    GlicNoWebviewContentsManager::GuestState::kReady) {
               return "Glic guest not ready";
             }
           }

@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -26,6 +27,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -88,6 +91,15 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicNoWebview},
         /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().SetCertHostnames(
+        {"login.corp.google.com", "127.0.0.1"});
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "chrome/test/data");
+    GlicBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("login.corp.google.com", "127.0.0.1");
   }
 
  protected:
@@ -240,8 +252,79 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
   EXPECT_EQ(manager.active_web_contents(), manager.guest_contents());
+  EXPECT_EQ(manager.guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kGuestError);
+  EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
   // Should reload on next show to recover from error state.
   EXPECT_TRUE(manager.ShouldReloadOnShow());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       GuestLoginShowsGuestAndRecoversOnRegularNavigation) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  PreventDeletionOnClose(instance);
+
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kReady);
+
+  // Navigating the guest to a web login or proxy interstitial page swaps to
+  // the guest WebContents in kLogin state instead of latching
+  // ErrorPanelType::kSignIn.
+  const GURL login_url = embedded_https_test_server().GetURL(
+      "login.corp.google.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(manager->guest_contents(), login_url));
+
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLogin);
+  EXPECT_FALSE(manager->loading_timer_for_testing().IsRunning());
+  // Switching tabs/windows during login should not destroy the login session.
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
+
+  // Completing login in the guest navigates back to the regular Glic client
+  // page and reconnects the web client.
+  ASSERT_TRUE(content::NavigateToURL(manager->guest_contents(),
+                                     ::glic::GetGuestURL(GetProfile())));
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kReady);
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
+
+  // Invalidate account credentials to transition GlicEnabling to
+  // ProfileReadyState::kSignInRequired. A non-transient profile sign-in
+  // requirement takes precedence over background guest navigations.
+  InvalidateAccount(GetProfile());
+  ASSERT_EQ(manager->error_type(), mojom::ErrorPanelType::kSignIn);
+
+  ASSERT_TRUE(content::NavigateToURL(manager->guest_contents(), login_url));
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kSignIn);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
+
+  // Re-authenticating clears the profile sign-in requirement, which reloads
+  // the guest to fetch the authenticated client page.
+  ReauthAccount(GetProfile());
+  ASSERT_OK(WaitForGlicClient(instance));
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kReady);
+  EXPECT_FALSE(manager->ShouldReloadOnShow());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
@@ -450,30 +533,37 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                        DetermineOverlayStateInputs) {
   using OverlayContentsManager =
       GlicNoWebviewContentsManager::OverlayContentsManager;
+  using GuestState = GlicNoWebviewContentsManager::GuestState;
   // Input 1: Active error state takes precedence over loading/guest readiness.
   auto error_state = OverlayContentsManager::DetermineOverlayState(
-      mojom::ErrorPanelType::kSignIn, /*is_guest_ready=*/false,
+      mojom::ErrorPanelType::kSignIn, GuestState::kLoading,
       mojom::PanelStateKind::kDetached);
   ASSERT_TRUE(error_state && error_state->is_error());
   EXPECT_EQ(error_state->get_error(), mojom::ErrorPanelType::kSignIn);
 
   // Error also takes precedence even if guest is ready.
   auto error_ready_state = OverlayContentsManager::DetermineOverlayState(
-      mojom::ErrorPanelType::kDisabledByAdmin, /*is_guest_ready=*/true,
+      mojom::ErrorPanelType::kDisabledByAdmin, GuestState::kReady,
       mojom::PanelStateKind::kAttached);
   ASSERT_TRUE(error_ready_state && error_ready_state->is_error());
   EXPECT_EQ(error_ready_state->get_error(),
             mojom::ErrorPanelType::kDisabledByAdmin);
 
-  // Input 2: Guest readiness. When guest is ready and no error, returns null.
-  auto ready_state = OverlayContentsManager::DetermineOverlayState(
-      /*error_type=*/std::nullopt, /*is_guest_ready=*/true,
-      mojom::PanelStateKind::kAttached);
-  EXPECT_FALSE(ready_state);
+  // Input 2: Guest presentation. When guest is ready, login, or guest error,
+  // returns null (no overlay needed).
+  EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
+      /*error_type=*/std::nullopt, GuestState::kReady,
+      mojom::PanelStateKind::kAttached));
+  EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
+      /*error_type=*/std::nullopt, GuestState::kLogin,
+      mojom::PanelStateKind::kAttached));
+  EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
+      /*error_type=*/std::nullopt, GuestState::kGuestError,
+      mojom::PanelStateKind::kAttached));
 
   // Input 3: Panel state. When loading and detached, returns kFloating style.
   auto floating_state = OverlayContentsManager::DetermineOverlayState(
-      /*error_type=*/std::nullopt, /*is_guest_ready=*/false,
+      /*error_type=*/std::nullopt, GuestState::kLoading,
       mojom::PanelStateKind::kDetached);
   ASSERT_TRUE(floating_state && floating_state->is_loading());
   EXPECT_EQ(floating_state->get_loading(), mojom::LoadingStyle::kFloating);
@@ -481,13 +571,13 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // When loading and attached to side panel or unattached, returns kSidePanel
   // style.
   auto attached_state = OverlayContentsManager::DetermineOverlayState(
-      /*error_type=*/std::nullopt, /*is_guest_ready=*/false,
+      /*error_type=*/std::nullopt, GuestState::kLoading,
       mojom::PanelStateKind::kAttached);
   ASSERT_TRUE(attached_state && attached_state->is_loading());
   EXPECT_EQ(attached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 
   auto unattached_state = OverlayContentsManager::DetermineOverlayState(
-      /*error_type=*/std::nullopt, /*is_guest_ready=*/false,
+      /*error_type=*/std::nullopt, GuestState::kLoading,
       /*panel_state_kind=*/std::nullopt);
   ASSERT_TRUE(unattached_state && unattached_state->is_loading());
   EXPECT_EQ(unattached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
@@ -550,7 +640,8 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // the container swaps to the guest.
   manager.OnWebClientStateChanged(mojom::WebClientState::kResponsive);
   EXPECT_EQ(manager.error_type(), std::nullopt);
-  EXPECT_TRUE(manager.guest_ready().get());
+  EXPECT_EQ(manager.guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kReady);
   EXPECT_EQ(manager.state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
   EXPECT_EQ(manager.active_web_contents(), manager.guest_contents());
