@@ -21,6 +21,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -172,23 +173,30 @@ class BackdropFetcher {
   OnFetchComplete callback_;
 };
 
-BackdropCollectionInfoFetcher::BackdropCollectionInfoFetcher() {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-}
+BackdropCollectionInfoFetcher::BackdropCollectionInfoFetcher() = default;
 
 BackdropCollectionInfoFetcher::~BackdropCollectionInfoFetcher() = default;
 
-void BackdropCollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
+BackdropCollectionInfoFetcherImpl::BackdropCollectionInfoFetcherImpl(
+    base::PassKey<WallpaperFetcherDelegateImpl>) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+}
+
+BackdropCollectionInfoFetcherImpl::~BackdropCollectionInfoFetcherImpl() =
+    default;
+
+void BackdropCollectionInfoFetcherImpl::Start(
+    OnCollectionsInfoFetched callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   ash::GetCustomizationId(
       base::BindOnce(&GetFilterFromCustomizationId)
           .Then(base::BindOnce(
-              &BackdropCollectionInfoFetcher::OnGetCustomizationIdFilter,
+              &BackdropCollectionInfoFetcherImpl::OnGetCustomizationIdFilter,
               weak_ptr_factory_.GetWeakPtr())));
 }
 
-void BackdropCollectionInfoFetcher::OnGetCustomizationIdFilter(
+void BackdropCollectionInfoFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
 
@@ -235,11 +243,11 @@ void BackdropCollectionInfoFetcher::OnGetCustomizationIdFilter(
   backdrop_fetcher_->Start(
       GURL(MaybeConvertToTestUrl(kBackdropCollectionsUrl)), serialized_proto,
       traffic_annotation,
-      base::BindOnce(&BackdropCollectionInfoFetcher::OnResponseFetched,
+      base::BindOnce(&BackdropCollectionInfoFetcherImpl::OnResponseFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BackdropCollectionInfoFetcher::OnResponseFetched(
+void BackdropCollectionInfoFetcherImpl::OnResponseFetched(
     const std::string& response) {
   std::vector<backdrop::Collection> collections;
   backdrop::GetCollectionsResponse collections_response;
@@ -257,25 +265,30 @@ void BackdropCollectionInfoFetcher::OnResponseFetched(
   std::move(callback_).Run(success, collections);
 }
 
-BackdropImageInfoFetcher::BackdropImageInfoFetcher(
+BackdropImageInfoFetcher::BackdropImageInfoFetcher() = default;
+
+BackdropImageInfoFetcher::~BackdropImageInfoFetcher() = default;
+
+BackdropImageInfoFetcherImpl::BackdropImageInfoFetcherImpl(
+    base::PassKey<WallpaperFetcherDelegateImpl>,
     const std::string& collection_id)
     : collection_id_(collection_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
-BackdropImageInfoFetcher::~BackdropImageInfoFetcher() = default;
+BackdropImageInfoFetcherImpl::~BackdropImageInfoFetcherImpl() = default;
 
-void BackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
+void BackdropImageInfoFetcherImpl::Start(OnImagesInfoFetched callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
   ash::GetCustomizationId(
       base::BindOnce(&GetFilterFromCustomizationId)
           .Then(base::BindOnce(
-              &BackdropImageInfoFetcher::OnGetCustomizationIdFilter,
+              &BackdropImageInfoFetcherImpl::OnGetCustomizationIdFilter,
               weak_ptr_factory_.GetWeakPtr())));
 }
 
-void BackdropImageInfoFetcher::OnGetCustomizationIdFilter(
+void BackdropImageInfoFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
 
@@ -324,11 +337,12 @@ void BackdropImageInfoFetcher::OnGetCustomizationIdFilter(
   backdrop_fetcher_->Start(
       GURL(MaybeConvertToTestUrl(kBackdropImagesUrl)), serialized_proto,
       traffic_annotation,
-      base::BindOnce(&BackdropImageInfoFetcher::OnResponseFetched,
+      base::BindOnce(&BackdropImageInfoFetcherImpl::OnResponseFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BackdropImageInfoFetcher::OnResponseFetched(const std::string& response) {
+void BackdropImageInfoFetcherImpl::OnResponseFetched(
+    const std::string& response) {
   std::vector<backdrop::Image> images;
   backdrop::GetImagesInCollectionResponse images_response;
   bool success = false;
@@ -345,27 +359,34 @@ void BackdropImageInfoFetcher::OnResponseFetched(const std::string& response) {
   std::move(callback_).Run(success, collection_id_, images);
 }
 
-BackdropSurpriseMeImageFetcher::BackdropSurpriseMeImageFetcher(
+BackdropSurpriseMeImageFetcher::BackdropSurpriseMeImageFetcher() = default;
+
+BackdropSurpriseMeImageFetcher::~BackdropSurpriseMeImageFetcher() = default;
+
+BackdropSurpriseMeImageFetcherImpl::BackdropSurpriseMeImageFetcherImpl(
+    base::PassKey<WallpaperFetcherDelegateImpl>,
     const std::string& collection_id,
     const std::string& resume_token)
     : collection_id_(collection_id), resume_token_(resume_token) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
 }
 
-BackdropSurpriseMeImageFetcher::~BackdropSurpriseMeImageFetcher() = default;
+BackdropSurpriseMeImageFetcherImpl::~BackdropSurpriseMeImageFetcherImpl() =
+    default;
 
-void BackdropSurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
+void BackdropSurpriseMeImageFetcherImpl::Start(
+    OnSurpriseMeImageFetched callback) {
   CHECK(callback_.is_null(), base::NotFatalUntil::M160);
   callback_ = std::move(callback);
 
   ash::GetCustomizationId(
       base::BindOnce(&GetFilterFromCustomizationId)
           .Then(base::BindOnce(
-              &BackdropSurpriseMeImageFetcher::OnGetCustomizationIdFilter,
+              &BackdropSurpriseMeImageFetcherImpl::OnGetCustomizationIdFilter,
               weak_ptr_factory_.GetWeakPtr())));
 }
 
-void BackdropSurpriseMeImageFetcher::OnGetCustomizationIdFilter(
+void BackdropSurpriseMeImageFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
   backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
 
@@ -420,11 +441,11 @@ void BackdropSurpriseMeImageFetcher::OnGetCustomizationIdFilter(
   backdrop_fetcher_->Start(
       GURL(MaybeConvertToTestUrl(kBackdropSurpriseMeImageUrl)),
       serialized_proto, traffic_annotation,
-      base::BindOnce(&BackdropSurpriseMeImageFetcher::OnResponseFetched,
+      base::BindOnce(&BackdropSurpriseMeImageFetcherImpl::OnResponseFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BackdropSurpriseMeImageFetcher::OnResponseFetched(
+void BackdropSurpriseMeImageFetcherImpl::OnResponseFetched(
     const std::string& response) {
   backdrop::GetImageFromCollectionResponse surprise_me_image_response;
   if (response.empty() ||

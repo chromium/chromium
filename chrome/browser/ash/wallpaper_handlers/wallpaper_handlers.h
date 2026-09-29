@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
 
 namespace backdrop {
@@ -36,17 +37,30 @@ class BackdropCollectionInfoFetcher {
   virtual ~BackdropCollectionInfoFetcher();
 
   // Starts the fetcher.
-  virtual void Start(OnCollectionsInfoFetched callback);
+  virtual void Start(OnCollectionsInfoFetched callback) = 0;
 
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
   BackdropCollectionInfoFetcher();
+};
+
+class BackdropCollectionInfoFetcherImpl : public BackdropCollectionInfoFetcher {
+ public:
+  explicit BackdropCollectionInfoFetcherImpl(
+      base::PassKey<WallpaperFetcherDelegateImpl>);
+
+  BackdropCollectionInfoFetcherImpl(const BackdropCollectionInfoFetcherImpl&) =
+      delete;
+  BackdropCollectionInfoFetcherImpl& operator=(
+      const BackdropCollectionInfoFetcherImpl&) = delete;
+
+  ~BackdropCollectionInfoFetcherImpl() override;
+
+  // BackdropCollectionInfoFetcher:
+  void Start(OnCollectionsInfoFetched callback) override;
 
  private:
-  // Allow delegate to view the constructor.
-  friend class WallpaperFetcherDelegateImpl;
-
   // Called when the customization_id has been read from StatisticsProvider.
   void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
 
@@ -60,7 +74,8 @@ class BackdropCollectionInfoFetcher {
   // collections info.
   OnCollectionsInfoFetched callback_;
 
-  base::WeakPtrFactory<BackdropCollectionInfoFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BackdropCollectionInfoFetcherImpl> weak_ptr_factory_{
+      this};
 };
 
 // Downloads the wallpaper images info from the Backdrop service.
@@ -77,17 +92,29 @@ class BackdropImageInfoFetcher {
   virtual ~BackdropImageInfoFetcher();
 
   // Starts the fetcher.
-  virtual void Start(OnImagesInfoFetched callback);
+  virtual void Start(OnImagesInfoFetched callback) = 0;
 
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  explicit BackdropImageInfoFetcher(const std::string& collection_id);
+  BackdropImageInfoFetcher();
+};
+
+class BackdropImageInfoFetcherImpl : public BackdropImageInfoFetcher {
+ public:
+  BackdropImageInfoFetcherImpl(base::PassKey<WallpaperFetcherDelegateImpl>,
+                               const std::string& collection_id);
+
+  BackdropImageInfoFetcherImpl(const BackdropImageInfoFetcherImpl&) = delete;
+  BackdropImageInfoFetcherImpl& operator=(const BackdropImageInfoFetcherImpl&) =
+      delete;
+
+  ~BackdropImageInfoFetcherImpl() override;
+
+  // BackdropImageInfoFetcher:
+  void Start(OnImagesInfoFetched callback) override;
 
  private:
-  // Allow delegate to view the constructor.
-  friend class WallpaperFetcherDelegateImpl;
-
   // Called when the customization_id has been read from StatisticsProvider.
   void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
 
@@ -104,7 +131,7 @@ class BackdropImageInfoFetcher {
   // info.
   OnImagesInfoFetched callback_;
 
-  base::WeakPtrFactory<BackdropImageInfoFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BackdropImageInfoFetcherImpl> weak_ptr_factory_{this};
 };
 
 // Downloads the surprise me image info from the Backdrop service.
@@ -123,17 +150,33 @@ class BackdropSurpriseMeImageFetcher {
   virtual ~BackdropSurpriseMeImageFetcher();
 
   // Starts the fetcher.
-  virtual void Start(OnSurpriseMeImageFetched callback);
+  virtual void Start(OnSurpriseMeImageFetched callback) = 0;
 
  protected:
   // Protected constructor forces creation via `WallpaperFetcherDelegate` to
   // allow mocking in test code.
-  BackdropSurpriseMeImageFetcher(const std::string& collection_id,
-                                 const std::string& resume_token);
+  BackdropSurpriseMeImageFetcher();
+};
+
+class BackdropSurpriseMeImageFetcherImpl
+    : public BackdropSurpriseMeImageFetcher {
+ public:
+  BackdropSurpriseMeImageFetcherImpl(
+      base::PassKey<WallpaperFetcherDelegateImpl>,
+      const std::string& collection_id,
+      const std::string& resume_token);
+
+  BackdropSurpriseMeImageFetcherImpl(
+      const BackdropSurpriseMeImageFetcherImpl&) = delete;
+  BackdropSurpriseMeImageFetcherImpl& operator=(
+      const BackdropSurpriseMeImageFetcherImpl&) = delete;
+
+  ~BackdropSurpriseMeImageFetcherImpl() override;
+
+  // BackdropSurpriseMeImageFetcher:
+  void Start(OnSurpriseMeImageFetched callback) override;
 
  private:
-  // Allow delegate to view the constructor.
-  friend class WallpaperFetcherDelegateImpl;
 
   // Called when the customization_id has been read from StatisticsProvider.
   void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
@@ -157,7 +200,8 @@ class BackdropSurpriseMeImageFetcher {
   // me image info.
   OnSurpriseMeImageFetched callback_;
 
-  base::WeakPtrFactory<BackdropSurpriseMeImageFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<BackdropSurpriseMeImageFetcherImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace wallpaper_handlers

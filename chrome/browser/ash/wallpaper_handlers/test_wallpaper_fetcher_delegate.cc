@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/wallpaper_handlers/fake_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
-#include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,22 +23,19 @@ TestWallpaperFetcherDelegate::~TestWallpaperFetcherDelegate() = default;
 
 std::unique_ptr<BackdropCollectionInfoFetcher>
 TestWallpaperFetcherDelegate::CreateBackdropCollectionInfoFetcher() const {
-  return std::make_unique<
-      testing::NiceMock<MockBackdropCollectionInfoFetcher>>();
+  return std::make_unique<FakeBackdropCollectionInfoFetcher>();
 }
 
 std::unique_ptr<BackdropImageInfoFetcher>
 TestWallpaperFetcherDelegate::CreateBackdropImageInfoFetcher(
     const std::string& collection_id) const {
-  return std::make_unique<testing::NiceMock<MockBackdropImageInfoFetcher>>(
-      collection_id);
+  return std::make_unique<FakeBackdropImageInfoFetcher>(collection_id);
 }
 
 std::unique_ptr<BackdropSurpriseMeImageFetcher>
 TestWallpaperFetcherDelegate::CreateBackdropSurpriseMeImageFetcher(
     const std::string& collection_id) const {
-  return std::make_unique<
-      testing::NiceMock<MockBackdropSurpriseMeImageFetcher>>(collection_id);
+  return std::make_unique<FakeBackdropSurpriseMeImageFetcher>(collection_id);
 }
 
 std::unique_ptr<GooglePhotosAlbumsFetcher>

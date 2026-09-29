@@ -42,12 +42,12 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_wallpaper_handlers.cc",
+    "fake_wallpaper_handlers.h",
     "mock_google_photos_wallpaper_handlers.cc",
     "mock_google_photos_wallpaper_handlers.h",
     "mock_sea_pen_fetcher.cc",
     "mock_sea_pen_fetcher.h",
-    "mock_wallpaper_handlers.cc",
-    "mock_wallpaper_handlers.h",
     "test_wallpaper_fetcher_delegate.cc",
     "test_wallpaper_fetcher_delegate.h",
   ]

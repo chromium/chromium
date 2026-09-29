@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/types/pass_key.h"
 #include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
@@ -32,23 +33,23 @@ WallpaperFetcherDelegateImpl::~WallpaperFetcherDelegateImpl() = default;
 
 std::unique_ptr<BackdropCollectionInfoFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropCollectionInfoFetcher() const {
-  // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new BackdropCollectionInfoFetcher());
+  return std::make_unique<BackdropCollectionInfoFetcherImpl>(
+      base::PassKey<WallpaperFetcherDelegateImpl>());
 }
 
 std::unique_ptr<BackdropImageInfoFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropImageInfoFetcher(
     const std::string& collection_id) const {
-  // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(new BackdropImageInfoFetcher(collection_id));
+  return std::make_unique<BackdropImageInfoFetcherImpl>(
+      base::PassKey<WallpaperFetcherDelegateImpl>(), collection_id);
 }
 
 std::unique_ptr<BackdropSurpriseMeImageFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropSurpriseMeImageFetcher(
     const std::string& collection_id) const {
-  // Use `WrapUnique` to access the protected constructor.
-  return absl::WrapUnique(
-      new BackdropSurpriseMeImageFetcher(collection_id, /*resume_token=*/""));
+  return std::make_unique<BackdropSurpriseMeImageFetcherImpl>(
+      base::PassKey<WallpaperFetcherDelegateImpl>(), collection_id,
+      /*resume_token=*/"");
 }
 
 std::unique_ptr<GooglePhotosAlbumsFetcher>

@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
+#include "chrome/browser/ash/wallpaper_handlers/fake_wallpaper_handlers.h"
 
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -14,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
-#include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
 
@@ -86,7 +86,7 @@ backdrop::Image GenerateFakeBackdropImage(const std::string& collection_id,
   }
   if (collection_id ==
       ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId) {
-    image.set_unit_id(MockBackdropImageInfoFetcher::kTimeOfDayUnitId);
+    image.set_unit_id(FakeBackdropImageInfoFetcher::kTimeOfDayUnitId);
   } else {
     image.set_unit_id(asset_id);
   }
@@ -132,109 +132,105 @@ std::vector<backdrop::Image> GenerateDarkLightBackdropImagePair(
 }
 }  // namespace
 
-MockBackdropCollectionInfoFetcher::MockBackdropCollectionInfoFetcher() {
-  ON_CALL(*this, Start).WillByDefault([](OnCollectionsInfoFetched callback) {
-    std::vector<backdrop::Collection> collections;
-    {
-      if (ash::features::IsTimeOfDayWallpaperEnabled()) {
-        // Generate a fake time of day collection.
-        backdrop::Collection time_of_day_collection;
-        time_of_day_collection.set_collection_id(
-            ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
-        time_of_day_collection.set_collection_name("Dawn to dark");
-        time_of_day_collection.set_description_content(
-            "Dawn to dark collection description");
-        backdrop::Image* image = time_of_day_collection.add_preview();
-        // Needs a data url so that it loads.
-        image->set_image_url(kDataUrlPrefix);
-        collections.push_back(std::move(time_of_day_collection));
-      }
-    }
-    {
-      // Generate a dark light collection.
-      backdrop::Collection dark_light_collection;
-      dark_light_collection.set_collection_id(kDarklightCollectionId);
-      dark_light_collection.set_collection_name("Dark Light collection");
-      dark_light_collection.set_description_content(
-          "Dark Light collection description");
-      backdrop::Image* image = dark_light_collection.add_preview();
+FakeBackdropCollectionInfoFetcher::FakeBackdropCollectionInfoFetcher() =
+    default;
+
+FakeBackdropCollectionInfoFetcher::~FakeBackdropCollectionInfoFetcher() =
+    default;
+
+void FakeBackdropCollectionInfoFetcher::Start(
+    OnCollectionsInfoFetched callback) {
+  std::vector<backdrop::Collection> collections;
+  {
+    if (ash::features::IsTimeOfDayWallpaperEnabled()) {
+      // Generate a fake time of day collection.
+      backdrop::Collection time_of_day_collection;
+      time_of_day_collection.set_collection_id(
+          ash::wallpaper_constants::kTimeOfDayWallpaperCollectionId);
+      time_of_day_collection.set_collection_name("Dawn to dark");
+      time_of_day_collection.set_description_content(
+          "Dawn to dark collection description");
+      backdrop::Image* image = time_of_day_collection.add_preview();
       // Needs a data url so that it loads.
       image->set_image_url(kDataUrlPrefix);
-      collections.push_back(std::move(dark_light_collection));
+      collections.push_back(std::move(time_of_day_collection));
     }
-    for (auto i = 0; i < 3; i++) {
-      collections.push_back(GenerateFakeBackdropCollection(i));
+  }
+  {
+    // Generate a dark light collection.
+    backdrop::Collection dark_light_collection;
+    dark_light_collection.set_collection_id(kDarklightCollectionId);
+    dark_light_collection.set_collection_name("Dark Light collection");
+    dark_light_collection.set_description_content(
+        "Dark Light collection description");
+    backdrop::Image* image = dark_light_collection.add_preview();
+    // Needs a data url so that it loads.
+    image->set_image_url(kDataUrlPrefix);
+    collections.push_back(std::move(dark_light_collection));
+  }
+  for (auto i = 0; i < 3; i++) {
+    collections.push_back(GenerateFakeBackdropCollection(i));
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                std::move(collections)));
+}
+
+FakeBackdropImageInfoFetcher::FakeBackdropImageInfoFetcher(
+    const std::string& collection_id)
+    : collection_id_(collection_id) {}
+
+FakeBackdropImageInfoFetcher::~FakeBackdropImageInfoFetcher() = default;
+
+void FakeBackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
+  std::vector<backdrop::Image> images;
+  const auto starting_asset_id = GetStartingAssetId(collection_id_);
+  if (collection_id_ == kDarklightCollectionId) {
+    for (auto asset_id = starting_asset_id;
+         asset_id < starting_asset_id + kMaxImageNum * 2; asset_id += 2) {
+      std::vector<backdrop::Image> pairs =
+          GenerateDarkLightBackdropImagePair(collection_id_, asset_id);
+      images.push_back(pairs[0]);
+      images.push_back(pairs[1]);
     }
+  } else {
+    for (auto asset_id = starting_asset_id;
+         asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
+      images.push_back(GenerateFakeBackdropImage(collection_id_, asset_id));
+    }
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                collection_id_, std::move(images)));
+}
+
+FakeBackdropSurpriseMeImageFetcher::FakeBackdropSurpriseMeImageFetcher(
+    const std::string& collection_id)
+    : collection_id_(collection_id) {}
+
+FakeBackdropSurpriseMeImageFetcher::~FakeBackdropSurpriseMeImageFetcher() =
+    default;
+
+void FakeBackdropSurpriseMeImageFetcher::Start(
+    OnSurpriseMeImageFetched callback) {
+  const auto starting_asset_id = GetStartingAssetId(collection_id_);
+  if (collection_id_ == kDarklightCollectionId) {
+    id_incrementer_ = (id_incrementer_ + 2) % (2 * kMaxImageNum);
+    const auto asset_id = starting_asset_id + id_incrementer_;
+    std::vector<backdrop::Image> pairs =
+        GenerateDarkLightBackdropImagePair(collection_id_, asset_id);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
+                                  pairs[0], /*new_resume_token=*/""));
+  } else {
+    id_incrementer_ = (id_incrementer_ + 1) % kMaxImageNum;
+    const auto asset_id = starting_asset_id + id_incrementer_;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), /*success=*/true, collections));
-  });
+        base::BindOnce(std::move(callback), /*success=*/true,
+                       GenerateFakeBackdropImage(collection_id_, asset_id),
+                       /*new_resume_token=*/""));
+  }
 }
-
-MockBackdropCollectionInfoFetcher::~MockBackdropCollectionInfoFetcher() =
-    default;
-
-MockBackdropImageInfoFetcher::MockBackdropImageInfoFetcher(
-    const std::string& collection_id)
-    : BackdropImageInfoFetcher(collection_id), collection_id_(collection_id) {
-  ON_CALL(*this, Start)
-      .WillByDefault([&collection_id =
-                          collection_id_](OnImagesInfoFetched callback) {
-        std::vector<backdrop::Image> images;
-        const auto starting_asset_id = GetStartingAssetId(collection_id);
-        if (collection_id == kDarklightCollectionId) {
-          for (auto asset_id = starting_asset_id;
-               asset_id < starting_asset_id + kMaxImageNum * 2; asset_id += 2) {
-            std::vector<backdrop::Image> pairs =
-                GenerateDarkLightBackdropImagePair(collection_id, asset_id);
-            images.push_back(pairs[0]);
-            images.push_back(pairs[1]);
-          }
-        } else {
-          for (auto asset_id = starting_asset_id;
-               asset_id < starting_asset_id + kMaxImageNum; asset_id++) {
-            images.push_back(
-                GenerateFakeBackdropImage(collection_id, asset_id));
-          }
-        }
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
-                                      collection_id, images));
-      });
-}
-
-MockBackdropImageInfoFetcher::~MockBackdropImageInfoFetcher() = default;
-
-MockBackdropSurpriseMeImageFetcher::MockBackdropSurpriseMeImageFetcher(
-    const std::string& collection_id)
-    : BackdropSurpriseMeImageFetcher(collection_id, /*resume_token=*/""),
-      collection_id_(collection_id) {
-  ON_CALL(*this, Start)
-      .WillByDefault([&collection_id = collection_id_,
-                      &id_incrementer =
-                          id_incrementer_](OnSurpriseMeImageFetched callback) {
-        const auto starting_asset_id = GetStartingAssetId(collection_id);
-        if (collection_id == kDarklightCollectionId) {
-          id_incrementer = (id_incrementer + 2) % (2 * kMaxImageNum);
-          const auto asset_id = starting_asset_id + id_incrementer;
-          std::vector<backdrop::Image> pairs =
-              GenerateDarkLightBackdropImagePair(collection_id, asset_id);
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), /*success=*/true,
-                                        pairs[0], /*new_resume_token=*/""));
-        } else {
-          id_incrementer = (id_incrementer + 1) % kMaxImageNum;
-          const auto asset_id = starting_asset_id + id_incrementer;
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE,
-              base::BindOnce(std::move(callback), /*success=*/true,
-                             GenerateFakeBackdropImage(collection_id, asset_id),
-                             /*new_resume_token=*/""));
-        }
-      });
-}
-
-MockBackdropSurpriseMeImageFetcher::~MockBackdropSurpriseMeImageFetcher() =
-    default;
 
 }  // namespace wallpaper_handlers
