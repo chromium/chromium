@@ -27,27 +27,33 @@ namespace actor {
 namespace {
 
 // Evaluates the destination against the Actor Safety List component data.
-origin_gating::Decision EvaluateSafetyListPredicate(
+void EvaluateSafetyListPredicate(
     origin_gating::GatingDecisionContext* context,
-    const origin_gating::GateableEvent& event) {
+    const origin_gating::GateableEvent& event,
+    base::OnceCallback<void(origin_gating::Decision)> callback) {
   actor::SafetyListManager* safety_list_manager =
       actor::SafetyListManager::GetInstance();
   if (!safety_list_manager) {
-    return origin_gating::Decision::kNoDecision;
+    std::move(callback).Run(origin_gating::Decision::kNoDecision);
+    return;
   }
 
   const GURL& destination = event.destination();
   const GURL& effective_source = event.source() && !event.source()->is_empty()
                                      ? *event.source()
                                      : destination;
-  switch (safety_list_manager->Find(effective_source, destination)) {
-    case actor::SafetyListManager::Decision::kAllow:
-      return origin_gating::Decision::kAllowed;
-    case actor::SafetyListManager::Decision::kBlock:
-      return origin_gating::Decision::kBlocked;
-    case actor::SafetyListManager::Decision::kNone:
-      return origin_gating::Decision::kNoDecision;
-  }
+  safety_list_manager->Find(
+      effective_source, destination,
+      base::BindOnce([](actor::SafetyListManager::Decision decision) {
+        switch (decision) {
+          case actor::SafetyListManager::Decision::kAllow:
+            return origin_gating::Decision::kAllowed;
+          case actor::SafetyListManager::Decision::kBlock:
+            return origin_gating::Decision::kBlocked;
+          case actor::SafetyListManager::Decision::kNone:
+            return origin_gating::Decision::kNoDecision;
+        }
+      }).Then(std::move(callback)));
 }
 
 // Returns the string representation of the ActorEngine::State.

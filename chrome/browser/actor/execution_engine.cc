@@ -98,6 +98,7 @@
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/event_dispatcher.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -336,22 +337,26 @@ std::optional<std::string> ExtractMimeType(
 
 CustomPredicate CreateSafetyListPredicate() {
   return CustomPredicate(
-      base::BindRepeating([](origin_gating::GatingDecisionContext*,
-                             const GateableEvent& event) {
-        const GURL& destination_url = event.destination();
-        const GURL& effective_source =
-            event.source() && !event.source()->is_empty() ? *event.source()
-                                                          : destination_url;
-        switch (SafetyListManager::GetInstance()->Find(effective_source,
-                                                       destination_url)) {
-          case SafetyListManager::Decision::kNone:
-            return origin_gating::Decision::kNoDecision;
-          case SafetyListManager::Decision::kAllow:
-            return origin_gating::Decision::kAllowed;
-          case SafetyListManager::Decision::kBlock:
-            return origin_gating::Decision::kBlocked;
-        }
-      }),
+      base::BindRepeating(
+          [](origin_gating::GatingDecisionContext*, const GateableEvent& event,
+             base::OnceCallback<void(origin_gating::Decision)> callback) {
+            const GURL& destination_url = event.destination();
+            const GURL& effective_source =
+                event.source() && !event.source()->is_empty() ? *event.source()
+                                                              : destination_url;
+            SafetyListManager::GetInstance()->Find(
+                effective_source, destination_url,
+                base::BindOnce([](SafetyListManager::Decision decision) {
+                  switch (decision) {
+                    case SafetyListManager::Decision::kNone:
+                      return origin_gating::Decision::kNoDecision;
+                    case SafetyListManager::Decision::kAllow:
+                      return origin_gating::Decision::kAllowed;
+                    case SafetyListManager::Decision::kBlock:
+                      return origin_gating::Decision::kBlocked;
+                  }
+                }).Then(std::move(callback)));
+          }),
       ActorCustomPredicate::kSafetyList);
 }
 

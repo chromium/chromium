@@ -7,12 +7,14 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <string>
 
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/timer/timer.h"
 #include "components/actor/core/actor_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,6 +44,16 @@ class SafetyListManagerTest : public ::testing::TestWithParam<bool> {
  protected:
   SafetyListManager& manager() { return *manager_; }
 
+  Decision Find(const GURL& source, const GURL& destination) {
+    base::test::TestFuture<Decision> future;
+    manager().Find(source, destination, future.GetCallback());
+    return future.Get();
+  }
+
+  void SetSafetyLists(std::string json) {
+    SetSafetyListsForTesting(&manager(), std::move(json));
+  }
+
   bool enforce_component_updater_blocklist() { return GetParam(); }
 
   Decision ExpectedBlocklistDecision() {
@@ -59,12 +71,373 @@ class SafetyListManagerTest : public ::testing::TestWithParam<bool> {
 };
 
 TEST_P(SafetyListManagerTest, DefaultInstance) {
-  EXPECT_EQ(manager().Find(GURL("https://anything.com"),
-                           GURL("https://www.googleplex.com")),
+  EXPECT_EQ(
+      Find(GURL("https://anything.com"), GURL("https://www.googleplex.com")),
+      Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://anything.com"), GURL("https://corp.google.com")),
             Decision::kNone);
-  EXPECT_EQ(manager().Find(GURL("https://anything.com"),
-                           GURL("https://corp.google.com")),
+}
+
+TEST_P(SafetyListManagerTest, ParseSafetyLists_LazyUntilFirstFind) {
+  base::HistogramTester histogram_tester;
+  bool producer_called = false;
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        producer_called = true;
+        return R"json({
+          "navigation_allowed": [{ "from": "a.com", "to": "b.com" }],
+          "navigation_blocked": []
+        })json";
+      }));
+
+  // Setting the callback should not invoke the producer or parse the safety
+  // lists before `Find()` is called.
+  EXPECT_FALSE(producer_called);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationAllowed", 0);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationBlocked", 0);
+
+  // The first call to `Find()` triggers the producer and parses the JSON.
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+  EXPECT_TRUE(producer_called);
+  histogram_tester.ExpectUniqueSample(
+      "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Actor.SafetyListParseResult.NavigationBlocked", ParseResult::kSuccess,
+      1);
+
+  // Subsequent `Find()` calls reuse the parsed settings without re-parsing.
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationAllowed", 1);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationBlocked", 1);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_MultipleUpdatesBeforeFindOnlyUsesLatest) {
+  base::HistogramTester histogram_tester;
+  bool first_producer_called = false;
+  bool second_producer_called = false;
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        first_producer_called = true;
+        return R"json({
+          "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+        })json";
+      }));
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        second_producer_called = true;
+        return R"json({
+          "navigation_allowed": [{ "from": "c.com", "to": "d.com" }]
+        })json";
+      }));
+
+  EXPECT_FALSE(first_producer_called);
+  EXPECT_FALSE(second_producer_called);
+
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
             Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://c.com"), GURL("https://d.com")),
+            Decision::kAllow);
+  EXPECT_FALSE(first_producer_called);
+  EXPECT_TRUE(second_producer_called);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationAllowed", 1);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_ConcurrentFindsShareSingleParse) {
+  base::HistogramTester histogram_tester;
+  int producer_call_count = 0;
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        ++producer_call_count;
+        return R"json({
+          "navigation_allowed": [{ "from": "a.com", "to": "b.com" }],
+          "navigation_blocked": [{ "from": "c.com", "to": "d.com" }]
+        })json";
+      }));
+
+  base::test::TestFuture<Decision> future1;
+  base::test::TestFuture<Decision> future2;
+  base::test::TestFuture<Decision> future3;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+  manager().Find(GURL("https://c.com"), GURL("https://d.com"),
+                 future2.GetCallback());
+  manager().Find(GURL("https://e.com"), GURL("https://f.com"),
+                 future3.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kAllow);
+  EXPECT_EQ(future2.Get(), ExpectedBlocklistDecision());
+  EXPECT_EQ(future3.Get(), Decision::kNone);
+  EXPECT_EQ(producer_call_count, 1);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationAllowed", 1);
+}
+
+TEST_P(SafetyListManagerTest, ParseSafetyLists_NulloptProducer) {
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+
+  base::HistogramTester histogram_tester;
+  manager().SetLoadSafetyListsClosure(base::BindOnce(
+      []() -> std::optional<std::string> { return std::nullopt; }));
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationAllowed", 0);
+  histogram_tester.ExpectTotalCount(
+      "Actor.SafetyListParseResult.NavigationBlocked", 0);
+}
+
+TEST_P(SafetyListManagerTest, FindBeforeSetLoadSafetyListsClosure) {
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+
+  // Setting a failing closure (nullopt) after an initial Find.
+  manager().SetLoadSafetyListsClosure(base::BindOnce(
+      []() -> std::optional<std::string> { return std::nullopt; }));
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+
+  // Setting a failing closure (invalid JSON) after a failed Find.
+  SetSafetyLists("not valid json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+
+  // Setting a succeeding closure after failed Finds.
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_MultipleUpdatesBeforeFind_FailureThenSuccess) {
+  bool first_producer_called = false;
+  bool second_producer_called = false;
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        first_producer_called = true;
+        return std::nullopt;
+      }));
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        second_producer_called = true;
+        return R"json({
+          "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+        })json";
+      }));
+
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+  EXPECT_FALSE(first_producer_called);
+  EXPECT_TRUE(second_producer_called);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_MultipleUpdatesBeforeFind_SuccessThenFailure) {
+  bool first_producer_called = false;
+  bool second_producer_called = false;
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        first_producer_called = true;
+        return R"json({
+          "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+        })json";
+      }));
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        second_producer_called = true;
+        return "invalid json";
+      }));
+
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_FALSE(first_producer_called);
+  EXPECT_TRUE(second_producer_called);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_SequentialFailureAndSuccessTransitions) {
+  int nullopt_producer_calls = 0;
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        ++nullopt_producer_calls;
+        return std::nullopt;
+      }));
+
+  // First Find runs the failing closure; subsequent Find returns kNone
+  // immediately without re-invoking the closure.
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_EQ(nullopt_producer_calls, 1);
+
+  // Transition from failed state to Parsed state.
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kAllow);
+
+  // Transition from Parsed state to failed state via invalid JSON.
+  SetSafetyLists("not valid json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+
+  // Transition back to Parsed state with a new list.
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "c.com", "to": "d.com" }]
+  })json");
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://c.com"), GURL("https://d.com")),
+            Decision::kAllow);
+}
+
+TEST_P(SafetyListManagerTest,
+       ParseSafetyLists_ConcurrentFindsOnFailureResolveToNone) {
+  int producer_call_count = 0;
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        ++producer_call_count;
+        return "invalid json";
+      }));
+
+  base::test::TestFuture<Decision> future1;
+  base::test::TestFuture<Decision> future2;
+  base::test::TestFuture<Decision> future3;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+  manager().Find(GURL("https://c.com"), GURL("https://d.com"),
+                 future2.GetCallback());
+  manager().Find(GURL("https://e.com"), GURL("https://f.com"),
+                 future3.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kNone);
+  EXPECT_EQ(future2.Get(), Decision::kNone);
+  EXPECT_EQ(future3.Get(), Decision::kNone);
+  EXPECT_EQ(producer_call_count, 1);
+}
+
+TEST_P(SafetyListManagerTest,
+       InFlightParseReplacedByNewClosure_FailureThenSuccess) {
+  manager().SetLoadSafetyListsClosure(base::BindOnce(
+      []() -> std::optional<std::string> { return std::nullopt; }));
+
+  base::test::TestFuture<Decision> future1;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+
+  // While the first (failing) parse is in flight, provide a valid list.
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+
+  base::test::TestFuture<Decision> future2;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future2.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kAllow);
+  EXPECT_EQ(future2.Get(), Decision::kAllow);
+}
+
+TEST_P(SafetyListManagerTest,
+       InFlightParseReplacedByNewClosure_SuccessThenFailure) {
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+
+  base::test::TestFuture<Decision> future1;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+
+  // While the first (succeeding) parse is in flight, replace with a failing
+  // closure.
+  manager().SetLoadSafetyListsClosure(base::BindOnce(
+      []() -> std::optional<std::string> { return std::nullopt; }));
+
+  base::test::TestFuture<Decision> future2;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future2.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kNone);
+  EXPECT_EQ(future2.Get(), Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+}
+
+TEST_P(SafetyListManagerTest,
+       InFlightParseReplacedByNewClosure_SuccessThenSuccess) {
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
+  })json");
+
+  base::test::TestFuture<Decision> future1;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+
+  // While the first parse is in flight, replace with a newer valid list.
+  SetSafetyLists(R"json({
+    "navigation_allowed": [{ "from": "c.com", "to": "d.com" }]
+  })json");
+
+  base::test::TestFuture<Decision> future2;
+  manager().Find(GURL("https://c.com"), GURL("https://d.com"),
+                 future2.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kNone);
+  EXPECT_EQ(future2.Get(), Decision::kAllow);
+  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
+            Decision::kNone);
+  EXPECT_EQ(Find(GURL("https://c.com"), GURL("https://d.com")),
+            Decision::kAllow);
+}
+
+TEST_P(SafetyListManagerTest,
+       InFlightParseReplacedByNewClosure_FailureThenFailure) {
+  bool second_called = false;
+  manager().SetLoadSafetyListsClosure(base::BindOnce(
+      []() -> std::optional<std::string> { return std::nullopt; }));
+
+  base::test::TestFuture<Decision> future1;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future1.GetCallback());
+
+  manager().SetLoadSafetyListsClosure(
+      base::BindLambdaForTesting([&]() -> std::optional<std::string> {
+        second_called = true;
+        return "invalid json";
+      }));
+
+  base::test::TestFuture<Decision> future2;
+  manager().Find(GURL("https://a.com"), GURL("https://b.com"),
+                 future2.GetCallback());
+
+  EXPECT_EQ(future1.Get(), Decision::kNone);
+  EXPECT_EQ(future2.Get(), Decision::kNone);
+  EXPECT_TRUE(second_called);
 }
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
@@ -304,9 +677,9 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
     base::HistogramTester histogram_tester;
-    base::test::TestFuture<void> future;
-    manager().ParseSafetyLists(test_case.json, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
+    SetSafetyLists(test_case.json);
+    // Trigger lazy parsing via `Find`.
+    Find(GURL("https://example.com"), GURL("https://example.org"));
 
     histogram_tester.ExpectUniqueSample(
         "Actor.SafetyListParseResult.NavigationAllowed",
@@ -319,8 +692,7 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<void> future;
-  manager().ParseSafetyLists(R"json(
+  SetSafetyLists(R"json(
     {
       "navigation_allowed": [
         { "from": "[*.]google.com", "to": "youtube.com" },
@@ -332,23 +704,19 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
         { "from": "blocked.com", "to": "not-allowed.com"}
       ]
     }
-  )json",
-                             future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
-                           GURL("https://youtube.com")),
+  )json");
+  EXPECT_EQ(Find(GURL("https://www.google.com"), GURL("https://youtube.com")),
             Decision::kAllow);
-  EXPECT_EQ(manager().Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
+  EXPECT_EQ(Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
             Decision::kAllow);
-  EXPECT_EQ(manager().Find(GURL("https://a.com:8080"), GURL("http://b.com")),
+  EXPECT_EQ(Find(GURL("https://a.com:8080"), GURL("http://b.com")),
             Decision::kNone);
-  EXPECT_EQ(manager().Find(GURL("https://a.com:8080"), GURL("https://b.com")),
+  EXPECT_EQ(Find(GURL("https://a.com:8080"), GURL("https://b.com")),
             Decision::kAllow);
-  EXPECT_EQ(manager().Find(GURL("http://127.0.0.1"), GURL("http://localhost")),
+  EXPECT_EQ(Find(GURL("http://127.0.0.1"), GURL("http://localhost")),
             Decision::kAllow);
 
-  EXPECT_EQ(manager().Find(GURL("https://blocked.com"),
-                           GURL("https://not-allowed.com")),
+  EXPECT_EQ(Find(GURL("https://blocked.com"), GURL("https://not-allowed.com")),
             ExpectedBlocklistDecision());
   histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
@@ -360,43 +728,34 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
 
 TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<void> future1;
-  manager().ParseSafetyLists(R"json(
+  SetSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]google.com", "to": "youtube.com" },
         { "from": "foo.com", "to": "[*.]bar.com" }
       ]
     }
-  )json",
-                             future1.GetCallback());
-  ASSERT_TRUE(future1.Wait());
-  EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
-                           GURL("https://youtube.com")),
+  )json");
+  EXPECT_EQ(Find(GURL("https://www.google.com"), GURL("https://youtube.com")),
             ExpectedBlocklistDecision());
-  EXPECT_EQ(manager().Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
+  EXPECT_EQ(Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
             ExpectedBlocklistDecision());
 
-  base::test::TestFuture<void> future2;
-  manager().ParseSafetyLists(R"json(
+  SetSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]yahoo.com", "to": "vimeo.com" },
         { "from": "bar.com", "to": "[*.]foo.com" }
       ]
     }
-  )json",
-                             future2.GetCallback());
-  ASSERT_TRUE(future2.Wait());
-  EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
-                           GURL("https://youtube.com")),
+  )json");
+  EXPECT_EQ(Find(GURL("https://www.google.com"), GURL("https://youtube.com")),
             Decision::kNone);
-  EXPECT_EQ(manager().Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
+  EXPECT_EQ(Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
             Decision::kNone);
-  EXPECT_EQ(
-      manager().Find(GURL("https://www.yahoo.com"), GURL("https://vimeo.com")),
-      ExpectedBlocklistDecision());
-  EXPECT_EQ(manager().Find(GURL("http://bar.com"), GURL("https://sub.foo.com")),
+  EXPECT_EQ(Find(GURL("https://www.yahoo.com"), GURL("https://vimeo.com")),
+            ExpectedBlocklistDecision());
+  EXPECT_EQ(Find(GURL("http://bar.com"), GURL("https://sub.foo.com")),
             ExpectedBlocklistDecision());
   histogram_tester.ExpectBucketCount(
       "Actor.SafetyListParseResult.NavigationAllowed", ParseResult::kSuccess,
@@ -408,17 +767,15 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
   base::HistogramTester histogram_tester;
-  base::test::TestFuture<void> future;
-  manager().ParseSafetyLists(R"json(
+  SetSafetyLists(R"json(
     {
       "navigation_allowed": [],
       "navigation_blocked": [
         { "from": "a.*.com", "to": "b.com" }
       ]
     }
-  )json",
-                             future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  )json");
+  Find(GURL("https://a.com"), GURL("https://b.com"));
   histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationBlocked",
       ParseResult::kInvalidFromUrlPattern, 1);
@@ -636,10 +993,8 @@ TEST_P(SafetyListManagerTest, Find) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    base::test::TestFuture<void> future;
-    manager().ParseSafetyLists(test_case.json, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(manager().Find(GURL(test_case.from_url), GURL(test_case.to_url)),
+    SetSafetyLists(test_case.json);
+    EXPECT_EQ(Find(GURL(test_case.from_url), GURL(test_case.to_url)),
               test_case.expected);
   }
 }
@@ -700,10 +1055,8 @@ TEST_P(SafetyListManagerTest, Find_SameOrigin) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    base::test::TestFuture<void> future;
-    manager().ParseSafetyLists(test_case.json, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(manager().Find(url, url), test_case.expected);
+    SetSafetyLists(test_case.json);
+    EXPECT_EQ(Find(url, url), test_case.expected);
   }
 }
 

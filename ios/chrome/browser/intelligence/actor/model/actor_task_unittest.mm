@@ -1475,8 +1475,8 @@ TEST_F(ActorTaskTest,
       {"from": "https://malicious.com", "to": "https://malicious.com"}
     ]
   })json";
-  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
-                                    mock_rules_json);
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
 
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task",
@@ -1503,8 +1503,8 @@ TEST_F(ActorTaskTest,
 
   EXPECT_TRUE(decision_future.Get().ShouldCancelNavigation());
 
-  actor::ParseSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
-                                    "{}");
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  "{}");
 }
 
 // Test that interrupting an acting task for user confirmation transitions

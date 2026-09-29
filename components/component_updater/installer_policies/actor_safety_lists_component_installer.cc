@@ -16,14 +16,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/path_service.h"
-#include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "components/actor/core/safety_list_manager.h"
-#include "components/component_updater/component_updater_paths.h"
 
 namespace {
 
@@ -42,7 +38,7 @@ const char kActorSafetyListsManifestName[] = "Actor Safety Lists";
 constexpr base::FilePath::CharType kRelInstallDir[] =
     FILE_PATH_LITERAL("ActorSafetyLists");
 
-// Runs on a thread pool.
+// Runs on a thread pool when the component data is first needed.
 std::optional<std::string> ReadComponentFromDisk(
     const base::FilePath& file_path) {
   VLOG(1) << "Reading Actor Safety Lists data from file: " << file_path.value();
@@ -100,11 +96,8 @@ void ActorSafetyListsComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Actor Safety Lists ready, version " << version.GetString()
           << " in " << install_dir.value();
 
-  // Given `BEST_EFFORT` since we don't need to be USER_BLOCKING.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReadComponentFromDisk, GetInstalledPath(install_dir)),
-      base::BindOnce(on_component_ready_cb_));
+  on_component_ready_cb_.Run(
+      base::BindOnce(&ReadComponentFromDisk, GetInstalledPath(install_dir)));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -141,17 +134,12 @@ void RegisterActorSafetyListsComponent(
   VLOG(1) << "Registering Actor Safety Lists Component.";
   auto policy = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<ActorSafetyListsComponentInstallerPolicy>(
-          base::BindRepeating([](std::optional<std::string> raw_metadata) {
-            if (raw_metadata.has_value()) {
-              // The safety lists are used by the actor component which will
-              // not need them until long after startup completes. So we are
-              // fine passing NullCallback and having
-              // SafetyListManager::Find return kNone in the time before the
-              // list is parsed.
-              actor::SafetyListManager::GetInstance()->ParseSafetyLists(
-                  std::move(raw_metadata).value(), base::NullCallback());
-            }
-          })));
+          base::BindRepeating(
+              [](ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback
+                     read_component_cb) {
+                actor::SafetyListManager::GetInstance()
+                    ->SetLoadSafetyListsClosure(std::move(read_component_cb));
+              })));
   policy->Register(cus, std::move(callback));
 }
 

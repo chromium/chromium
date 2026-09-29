@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL second_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_allowed": [
         { "from": "*", "to": "[*.]example.com" },
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
      {
        "navigation_allowed": [
          { "from": "[*.]example.com", "to": "[*.]example.com" }
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
      {
        "navigation_blocked": [
          { "from": "[*.]example.com", "to": "[*.]example.com" }
@@ -1383,7 +1383,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/empty.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]example.com" }
@@ -1420,7 +1420,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_allowed": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
@@ -1454,7 +1454,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
@@ -1496,7 +1496,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL allowed_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_allowed": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
@@ -1537,7 +1537,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationBlockedByStaticList_CrossOriginIframe) {
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "blocked.example.com" }
@@ -1626,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]example.com" }
@@ -1660,7 +1660,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL sandboxed_url = embedded_https_test_server().GetURL(
       "foo.com", "/actor/sandbox_main_frame_csp.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
@@ -1698,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL start_url = embedded_https_test_server().GetURL(
       "bad.example.com", "/actor/link.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
      {
        "navigation_blocked": [
          { "from": "*", "to": "[*.]bad.example.com" }
@@ -1726,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL allowed_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
      {
        "navigation_blocked": [
          { "from": "*", "to": "[*.]bad.example.com" }
@@ -1846,7 +1846,7 @@ IN_PROC_BROWSER_TEST_F(
                     url::EncodeUriComponent(destination_url.spec())}));
 
   // Block the destination URL in SafetyListManager.
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "bar.com" }
@@ -1888,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
 
   // Block the page URL in SafetyListManager.
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "example.com" }
@@ -2432,7 +2432,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]foo.com" }
@@ -2458,7 +2458,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
-  ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+  SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]foo.com" }
@@ -2674,7 +2674,7 @@ class OutOfTurnNavigationTestBase
  public:
   void SetUpOnMainThread() override {
     ExecutionEngineOriginGatingBrowserTestBase::SetUpOnMainThread();
-    ParseSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+    SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
       {
         "navigation_blocked": [
           { "from": "*", "to": "bar.com" }

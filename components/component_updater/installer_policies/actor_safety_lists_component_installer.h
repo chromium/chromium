@@ -22,8 +22,10 @@ class ComponentUpdateService;
 class ActorSafetyListsComponentInstallerPolicy
     : public ComponentInstallerPolicy {
  public:
+  using ReadComponentCallback =
+      base::OnceCallback<std::optional<std::string>()>;
   using OnActorSafetyListsComponentReadyCallback =
-      base::RepeatingCallback<void(std::optional<std::string>)>;
+      base::RepeatingCallback<void(ReadComponentCallback)>;
 
   explicit ActorSafetyListsComponentInstallerPolicy(
       OnActorSafetyListsComponentReadyCallback on_component_ready_cb);

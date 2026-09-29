@@ -61,7 +61,9 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
 
 TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
        ComponentReady_NonexistentFile) {
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<
+      ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback>
+      future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 
@@ -69,7 +71,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
                                   base::FilePath(FILE_PATH_LITERAL("invalid")),
                                   base::DictValue());
 
-  EXPECT_EQ(future.Take(), std::nullopt);
+  EXPECT_EQ(future.Take().Run(), std::nullopt);
 }
 
 TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentReady_ValidFile) {
@@ -79,7 +81,9 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentReady_ValidFile) {
           component_install_dir_.GetPath()),
       expectation));
 
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<
+      ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback>
+      future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 
@@ -87,7 +91,33 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentReady_ValidFile) {
                                   component_install_dir_.GetPath(),
                                   base::DictValue());
 
-  EXPECT_EQ(future.Take(), expectation);
+  EXPECT_EQ(future.Take().Run(), expectation);
+}
+
+TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
+       ComponentReady_ReadsFileLazily) {
+  base::test::TestFuture<
+      ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback>
+      future;
+  ActorSafetyListsComponentInstallerPolicy policy(
+      future.GetRepeatingCallback());
+
+  // Trigger ComponentReady before the file exists on disk. If ComponentReady
+  // read the file eagerly, it would observe a missing file.
+  policy.ComponentReadyForTesting(base::Version("0.0.1"),
+                                  component_install_dir_.GetPath(),
+                                  base::DictValue());
+
+  ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback read_cb =
+      future.Take();
+
+  const std::string expectation = "lazy json";
+  ASSERT_TRUE(base::WriteFile(
+      ActorSafetyListsComponentInstallerPolicy::GetInstalledPathForTesting(
+          component_install_dir_.GetPath()),
+      expectation));
+
+  EXPECT_EQ(std::move(read_cb).Run(), expectation);
 }
 
 TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
@@ -102,14 +132,16 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
           dir_v1.GetPath()),
       expectation_v1));
 
-  base::test::TestFuture<std::optional<std::string>> future;
+  base::test::TestFuture<
+      ActorSafetyListsComponentInstallerPolicy::ReadComponentCallback>
+      future;
   ActorSafetyListsComponentInstallerPolicy policy(
       future.GetRepeatingCallback());
 
   policy.ComponentReadyForTesting(base::Version("0.0.1"), dir_v1.GetPath(),
                                   base::DictValue());
 
-  EXPECT_EQ(future.Take(), expectation_v1);
+  EXPECT_EQ(future.Take().Run(), expectation_v1);
 
   // Install newer component, which should be read by the policy.
   base::ScopedTempDir dir_v2;
@@ -125,7 +157,7 @@ TEST_F(ActorSafetyListsComponentInstallerPolicyTest,
   policy.ComponentReadyForTesting(base::Version("0.0.2"), dir_v2.GetPath(),
                                   base::DictValue());
 
-  EXPECT_EQ(future.Take(), expectation_v2);
+  EXPECT_EQ(future.Take().Run(), expectation_v2);
 }
 
 TEST_F(ActorSafetyListsComponentInstallerPolicyTest, ComponentRegistered) {
