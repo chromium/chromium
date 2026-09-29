@@ -222,16 +222,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="LoadMetadataFailed"/>
-  <int value="2" label="SchemaMetadataMissing"/>
-  <int value="3" label="SchemaMetadataWrongVersion"/>
-  <int value="4" label="ComponentMetadataMissing"/>
-  <int value="5" label="FetchedMetadataMissing"/>
-  <int value="6" label="ComponentAndFetchedMetadataMissing"/>
-</enum>
-
 <enum name="OptimizationGuideHintCacheLevelDBStoreStatus">
   <int value="0" label="Unitialized"/>
   <int value="1" label="Initializing"/>

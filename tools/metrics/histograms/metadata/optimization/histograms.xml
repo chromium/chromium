@@ -975,17 +975,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult"
-    enum="OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult"
-    expires_after="M145">
-  <owner>rajendrant@chromium.org</owner>
-  <owner>catliu@chromium.org</owner>
-  <summary>
-    Records the result of loading the metadata while initializing the
-    HintCacheLevelDBStore.
-  </summary>
-</histogram>
-
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
     enum="OptimizationGuideHintCacheLevelDBStoreStatus"
     expires_after="2027-04-14">

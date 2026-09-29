@@ -338,9 +338,6 @@ TEST_F(OptimizationGuideStoreTest, NoInitialization) {
   SeedInitialData(MetadataSchemaState::kMissing);
   CreateDatabase();
 
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", 0);
-
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
@@ -364,9 +361,6 @@ TEST_F(OptimizationGuideStoreTest,
   // In the case where initialization fails, the store should be fully purged.
   EXPECT_EQ(GetDBStoreEntryCount(), static_cast<size_t>(0));
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", 0);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -394,10 +388,6 @@ TEST_F(OptimizationGuideStoreTest,
   // In the case where initialization fails, the store should be fully purged.
   EXPECT_EQ(GetDBStoreEntryCount(), static_cast<size_t>(0));
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      1 /* kLoadMetadataFailed */, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -430,10 +420,6 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      2 /* kSchemaMetadataMissing */, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -456,9 +442,6 @@ TEST_F(OptimizationGuideStoreTest,
   // In the case where initialization fails, the store should be fully purged.
   EXPECT_EQ(GetDBStoreEntryCount(), static_cast<size_t>(0));
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", 0);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -486,10 +469,6 @@ TEST_F(OptimizationGuideStoreTest,
   // In the case where initialization fails, the store should be fully purged.
   EXPECT_EQ(GetDBStoreEntryCount(), static_cast<size_t>(0));
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      1 /* kLoadMetadataFailed */, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -521,10 +500,6 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      3 /* kSchemaMetadataWrongVersion */, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -554,10 +529,6 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      0 /* kSuccess */, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -582,10 +553,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithoutSchemaEntry) {
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      2 /* kSchemaMetadataMissing */, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -614,10 +581,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithInvalidSchemaEntry) {
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      3 /* kSchemaMetadataWrongVersion */, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -642,16 +605,6 @@ TEST_F(OptimizationGuideStoreTest, InitializeSucceededWithValidSchemaEntry) {
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      4 /* kComponentMetadataMissing*/, 0);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      5 /* kFetchedMetadataMissing*/, 0);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      6 /* kComponentAndFetchedMetadataMissing*/, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -680,10 +633,6 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(GetStoreEntryKeyCount(), static_cast<size_t>(0));
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      3 /* kSchemaMetadataWrongVersion */, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
@@ -744,10 +693,6 @@ TEST_F(OptimizationGuideStoreTest,
   ExpectComponentHintsPresent(kDefaultComponentVersion, component_hint_count);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      0 /* kSuccess */, 1);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -779,16 +724,6 @@ TEST_F(OptimizationGuideStoreTest,
   ExpectComponentHintsPresent(kDefaultComponentVersion, component_hint_count);
 
   histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      4 /* kComponentMetadataMissing*/, 0);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      5 /* kFetchedMetadataMissing*/, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      6 /* kComponentAndFetchedMetadataMissing*/, 0);
-
-  histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,
       1);
   histogram_tester.ExpectBucketCount(
@@ -817,10 +752,6 @@ TEST_F(OptimizationGuideStoreTest,
   EXPECT_EQ(GetStoreEntryKeyCount(), component_hint_count);
 
   EXPECT_TRUE(IsMetadataSchemaEntryKeyPresent());
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult",
-      4 /* kComponentMetadataMissing*/, 1);
 
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintCacheLevelDBStore.Status", 0 /* kUninitialized */,

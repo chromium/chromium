@@ -50,42 +50,6 @@ constexpr size_t kDatabaseWriteBufferSizeBytes = 128 * 1024;
 //    "[StoreEntryType::kComponentHint]_[component_version]_[host]"
 constexpr char kKeySectionDelimiter = '_';
 
-// Enumerates the possible outcomes of loading metadata. Used in UMA histograms,
-// so the order of enumerators should not be changed.
-//
-// Keep in sync with OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult
-// in tools/metrics/histograms/enums.xml.
-enum class OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult {
-  kSuccess = 0,
-  kLoadMetadataFailed = 1,
-  kSchemaMetadataMissing = 2,
-  kSchemaMetadataWrongVersion = 3,
-  kComponentMetadataMissing = 4,
-  kFetchedMetadataMissing = 5,
-  kComponentAndFetchedMetadataMissing = 6,
-  kMaxValue = kComponentAndFetchedMetadataMissing,
-};
-
-// Util class for recording the result of loading the metadata. The result is
-// recorded when it goes out of scope and its destructor is called.
-class ScopedLoadMetadataResultRecorder {
- public:
-  ScopedLoadMetadataResultRecorder() = default;
-  ~ScopedLoadMetadataResultRecorder() {
-    UMA_HISTOGRAM_ENUMERATION(
-        "OptimizationGuide.HintCacheLevelDBStore.LoadMetadataResult", result_);
-  }
-
-  void set_result(
-      OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult result) {
-    result_ = result;
-  }
-
- private:
-  OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult result_ =
-      OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::kSuccess;
-};
-
 void RecordStatusChange(OptimizationGuideStore::Status status) {
   UMA_HISTOGRAM_ENUMERATION("OptimizationGuide.HintCacheLevelDBStore.Status",
                             status);
@@ -636,15 +600,7 @@ void OptimizationGuideStore::OnLoadMetadata(
     std::unique_ptr<EntryMap> metadata_entries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create a scoped load metadata result recorder. It records the result when
-  // its destructor is called.
-  ScopedLoadMetadataResultRecorder result_recorder;
-
   if (!success || !metadata_entries) {
-    result_recorder.set_result(
-        OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-            kLoadMetadataFailed);
-
     UpdateStatus(Status::kFailed);
     std::move(callback).Run();
     return;
@@ -657,33 +613,17 @@ void OptimizationGuideStore::OnLoadMetadata(
   if (schema_entry == metadata_entries->end() ||
       !schema_entry->second.has_version() ||
       schema_entry->second.version() != kStoreSchemaVersion) {
-    if (schema_entry == metadata_entries->end()) {
-      result_recorder.set_result(
-          OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-              kSchemaMetadataMissing);
-    } else {
-      result_recorder.set_result(
-          OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-              kSchemaMetadataWrongVersion);
-    }
-
     PurgeDatabase(std::move(callback));
     return;
   }
 
   // If the component metadata entry exists, then use it to set the component
   // version.
-  bool component_metadata_missing = false;
   auto component_entry =
       metadata_entries->find(GetMetadataTypeEntryKey(MetadataType::kComponent));
   if (component_entry != metadata_entries->end()) {
     DCHECK(component_entry->second.has_version());
     SetComponentVersion(base::Version(component_entry->second.version()));
-  } else {
-    result_recorder.set_result(
-        OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-            kComponentMetadataMissing);
-    component_metadata_missing = true;
   }
 
   auto fetched_entry =
@@ -693,15 +633,6 @@ void OptimizationGuideStore::OnLoadMetadata(
     fetched_update_time_ = base::Time::FromDeltaSinceWindowsEpoch(
         base::Seconds(fetched_entry->second.update_time_secs()));
   } else {
-    if (component_metadata_missing) {
-      result_recorder.set_result(
-          OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-              kComponentAndFetchedMetadataMissing);
-    } else {
-      result_recorder.set_result(
-          OptimizationGuideHintCacheLevelDBStoreLoadMetadataResult::
-              kFetchedMetadataMissing);
-    }
     fetched_update_time_ = base::Time();
   }
 
