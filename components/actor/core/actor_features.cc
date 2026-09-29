@@ -156,6 +156,8 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicActorLoadAndExtractContentTool, "timeout",
         kGlicActorLoadAndExtractContentToolTimeoutDefault};
 
+BASE_FEATURE(kGlicActorFileUploadTool, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicActorTransientTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicActorTransientTasksForceTransient{
     &kGlicActorTransientTasks, "force_transient", false};

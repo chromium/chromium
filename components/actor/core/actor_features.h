@@ -118,6 +118,11 @@ BASE_DECLARE_FEATURE(kGlicActorLoadAndExtractContentTool);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicActorLoadAndExtractContentToolTimeout;
 
+// Enables the file upload tool, which lets the actor fulfill a page's file
+// chooser request with files downloaded from model-provided URLs instead of
+// showing the native file picker.
+BASE_DECLARE_FEATURE(kGlicActorFileUploadTool);
+
 BASE_DECLARE_FEATURE(kGlicActorTransientTasks);
 extern const base::FeatureParam<bool> kGlicActorTransientTasksForceTransient;
 extern const base::FeatureParam<base::TimeDelta> kGlicActorTransientTasksDelay;
