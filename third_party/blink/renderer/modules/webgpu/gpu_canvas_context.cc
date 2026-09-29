@@ -890,6 +890,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     CanvasNon2DResourceProvider* resource_provider) const {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(resource_provider);
+  CHECK(!resource_provider->IsSoftware());
 
   gfx::Size size(texture.GetWidth(), texture.GetHeight());
   DCHECK_EQ(resource_provider->Size(), size);
