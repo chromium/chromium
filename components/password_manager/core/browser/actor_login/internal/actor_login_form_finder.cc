@@ -92,7 +92,8 @@ using ParsedFormDetails =
 FormFinderResult::FormFinderResult() = default;
 
 FormFinderResult::FormFinderResult(
-    std::vector<password_manager::PasswordFormManager*> eligible_managers,
+    std::vector<raw_ptr<password_manager::PasswordFormManager>>
+        eligible_managers,
     std::vector<ParsedFormDetails> parsed_forms_details)
     : eligible_managers(std::move(eligible_managers)),
       parsed_forms_details(std::move(parsed_forms_details)) {}
@@ -134,10 +135,10 @@ std::u16string ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(
 // static
 password_manager::PasswordFormManager*
 ActorLoginFormFinder::GetSigninFormManager(
-    const std::vector<password_manager::PasswordFormManager*>&
+    const std::vector<raw_ptr<password_manager::PasswordFormManager>>&
         eligible_managers) {
   password_manager::PasswordFormManager* signin_form_manager = nullptr;
-  for (auto* manager : eligible_managers) {
+  for (password_manager::PasswordFormManager* manager : eligible_managers) {
     // Prefer filling the primary main frame form if one exists, but
     // also prefer more recently-parsed forms.
     if (manager->GetDriver()->IsInPrimaryMainFrame()) {
@@ -307,7 +308,7 @@ void ActorLoginFormFinder::OnVisibilityChecksComplete(
 void ActorLoginFormFinder::OnAllEligibleChecksCompleted(
     EligibleManagersCallback callback,
     std::vector<std::pair<DriverFormKey, bool>> results) {
-  std::vector<password_manager::PasswordFormManager*> eligible_managers;
+  std::vector<raw_ptr<password_manager::PasswordFormManager>> eligible_managers;
   password_manager::PasswordFormCache* form_cache =
       client_->GetPasswordManager()->GetPasswordFormCache();
   CHECK(form_cache);
