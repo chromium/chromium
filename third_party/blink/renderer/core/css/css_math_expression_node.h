@@ -69,8 +69,8 @@ class WritingDirectionMode;
 class CSSMathExpressionNode;
 class CSSParserLocalContext;
 
-// The order of this enum should not change since its elements are used as
-// indices in the addSubtractResult matrix.
+// kCalcOther must remain the last element, since it's used as the upper bound
+// of CalculationResultCategorySet.
 enum CalculationResultCategory {
   kCalcNumber,
   kCalcLength,

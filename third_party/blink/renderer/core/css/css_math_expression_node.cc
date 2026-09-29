@@ -1519,77 +1519,42 @@ void CSSMathExpressionNumericLiteral::Trace(Visitor* visitor) const {
 
 // ------ End of CSSMathExpressionNumericLiteral member functions
 
-static constexpr std::array<std::array<CalculationResultCategory, kCalcOther>,
-                            kCalcOther>
-    kAddSubtractResult = {
-        /* CalcNumber */
-        {{kCalcNumber, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
-         /* CalcLength */
-         {kCalcOther, kCalcLength, kCalcLengthFunction, kCalcLengthFunction,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther},
-         /* CalcPercent */
-         {kCalcOther, kCalcLengthFunction, kCalcPercent, kCalcLengthFunction,
-          kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcPercentAngle},
-         /* CalcLengthFunction */
-         {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
-          kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther},
-         /* CalcIntermediate */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
-         /* CalcAngle */
-         {kCalcOther, kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther,
-          kCalcAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcPercentAngle},
-         /* CalcTime */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcTime, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
-         /* CalcFrequency */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcFrequency, kCalcOther, kCalcOther,
-          kCalcOther},
-         /* CalcResolution */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcResolution, kCalcOther,
-          kCalcOther},
-         /* CalcIdent */
-         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcOther},
-         /* CalcPercentAngle */
-         {kCalcOther, kCalcOther, kCalcPercentAngle, kCalcOther, kCalcOther,
-          kCalcPercentAngle, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-          kCalcPercentAngle}}};
-
+// Determines the category of a math function whose arguments must have a
+// consistent type (e.g. min(), max(), clamp(), hypot(), round(), random()),
+// by adding up the types of all of its arguments, see:
+// https://drafts.csswg.org/css-values-4/#determine-the-type-of-a-calculation
 static CalculationResultCategory DetermineComparisonCategory(
     const CSSMathExpressionOperation::Operands& operands) {
   DCHECK(!operands.empty());
 
-  bool is_first = true;
-  CalculationResultCategory category = kCalcOther;
   for (const CSSMathExpressionNode* operand : operands) {
     if (operand->IsCalcSize()) {
       return kCalcOther;
     }
-    if (is_first) {
-      category = operand->Category();
-    } else {
-      category = kAddSubtractResult[category][operand->Category()];
-    }
+  }
 
-    is_first = false;
-    if (category == kCalcOther) {
-      break;
+  if (operands.size() == 1) {
+    return operands.front()->Category();
+  }
+
+  for (const CSSMathExpressionNode* operand : operands) {
+    // Identifiers can't be added to anything, and intermediate results
+    // (e.g. 1px * 1px) are not supported as arguments to these functions.
+    CalculationResultCategory category = operand->Category();
+    if (category == kCalcOther || category == kCalcIdent ||
+        category == kCalcIntermediate) {
+      return kCalcOther;
     }
   }
 
-  return category;
+  CSSMathType type(*operands.front());
+  for (wtf_size_t i = 1; i < operands.size(); ++i) {
+    type = type + CSSMathType(*operands[i]);
+    if (!type.IsValid()) {
+      return kCalcOther;
+    }
+  }
+  return type.Category();
 }
 
 static CalculationResultCategory DetermineCalcSizeCategory(
@@ -2044,15 +2009,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSteppedValueFunction(
     Operands&& operands,
     CSSMathOperator op) {
   DCHECK_EQ(operands.size(), 2u);
-  if (operands[0]->Category() == kCalcOther ||
-      operands[1]->Category() == kCalcOther) {
-    return nullptr;
-  }
-  if (operands.front()->IsCalcSize() || operands.back()->IsCalcSize()) {
-    return nullptr;
-  }
-  CalculationResultCategory category =
-      kAddSubtractResult[operands[0]->Category()][operands[1]->Category()];
+  CalculationResultCategory category = DetermineComparisonCategory(operands);
   if (category == kCalcOther) {
     return nullptr;
   }
