@@ -101,8 +101,8 @@
 }
 
 :host([dark-mode]) .top-toolbar-logo-button.clickable {
-  background: var(--toolbar-background-color, #292a2d);
-  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.6);
+  background: var(--toolbar-background-color, #22242a);
+  box-shadow: 0 0 6px 0 rgba(255, 255, 255, 0.25);
 }
 
 .top-toolbar-logo-button.clickable:focus-visible {
