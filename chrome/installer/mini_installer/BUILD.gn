@@ -232,7 +232,10 @@ action("mini_installer_archive") {
   }
 
   if (v8_use_external_startup_data) {
-    deps += [ "//v8" ]
+    deps += [
+      "//v8",
+      "//v8:run_mksnapshot_default",
+    ]
     if (use_v8_context_snapshot) {
       inputs += [ "$root_out_dir/$v8_context_snapshot_filename" ]
       deps += [ "//tools/v8_context_snapshot" ]
