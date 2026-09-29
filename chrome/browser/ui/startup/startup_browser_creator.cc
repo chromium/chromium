@@ -1298,7 +1298,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     // Use incognito profile since this is a credential provider logon.
     Profile* incognito_profile =
         privacy_safe_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-    DCHECK(incognito_profile->IsIncognitoProfile());
+    DCHECK(incognito_profile->IsPrimaryOTRProfileWithRegularParent());
     // NOTE: All launch urls are ignored when running with --gcpw-signin since
     // this mode only loads Google's sign in page.
 

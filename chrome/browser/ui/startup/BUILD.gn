@@ -559,6 +559,7 @@ if (!is_android) {
         "//chrome/browser/ui:chrome_pages",
         "//chrome/credential_provider/common:common_constants",
         "//chrome/test/base:testing_browser_process",
+        "//components/enterprise/isolated_mode",
       ]
     }
     if (enable_dice_support) {

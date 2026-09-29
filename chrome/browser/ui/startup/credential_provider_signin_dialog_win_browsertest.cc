@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(
     CredentialProviderSigninDialogWinIntegrationDialogDisplayTest,
     ShowDialogOnlyTest) {
   WaitForDialogToLoad();
-  EXPECT_TRUE(reinterpret_cast<Profile*>(web_contents_->GetBrowserContext())
+  EXPECT_TRUE(Profile::FromBrowserContext(web_contents_->GetBrowserContext())
                   ->IsIncognitoProfile());
   views::Widget::Widgets all_widgets = views::test::WidgetTest::GetAllWidgets();
   (*all_widgets.begin())->Close();
@@ -601,6 +602,32 @@ IN_PROC_BROWSER_TEST_F(
                                 ui::KeyboardCode::VKEY_ESCAPE,
                                 ui::DomCode::ESCAPE, 0);
   (*all_widgets.begin())->OnKeyEvent(&escape_key_event);
+  RunUntilBrowserProcessQuits();
+}
+
+class CredentialProviderSigninDialogWinIsolatedModeTest
+    : public CredentialProviderSigninDialogWinIntegrationDialogDisplayTest {
+ public:
+  CredentialProviderSigninDialogWinIsolatedModeTest() = default;
+  ~CredentialProviderSigninDialogWinIsolatedModeTest() override = default;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::
+        SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        enterprise_isolated_mode::switches::
+            kForceEnterpriseIsolatedModeReplacesIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinIsolatedModeTest,
+                       LoadsWithEnterpriseIsolatedModeFlag) {
+  WaitForDialogToLoad();
+  EXPECT_TRUE(Profile::FromBrowserContext(web_contents_->GetBrowserContext())
+                  ->IsEnterpriseIsolatedModeProfile());
+  views::Widget::Widgets all_widgets = views::test::WidgetTest::GetAllWidgets();
+  (*all_widgets.begin())->Close();
   RunUntilBrowserProcessQuits();
 }
 
