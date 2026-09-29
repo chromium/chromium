@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -113,13 +114,9 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {};
 
 class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBrowserTest {
  public:
-  PrintPreviewDialogControllerBrowserTest() {
-    // TODO(crbug.com/467180032): Remove once
-    // `kPdfAccessibilityHeuristicEnhancements` is enabled by default and
-    // `PrintPreviewPdfAccessibility` is updated.
-    feature_list_.InitAndDisableFeature(
-        features::kPdfAccessibilityHeuristicEnhancements);
-  }
+  PrintPreviewDialogControllerBrowserTest()
+      : PrintPreviewDialogControllerBrowserTest(
+            /*enable_pdf_heuristic_enhancements=*/false) {}
   ~PrintPreviewDialogControllerBrowserTest() override = default;
 
   WebContents* initiator() { return initiator_; }
@@ -219,6 +216,15 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
   }
 
  protected:
+  // TODO(crbug.com/467180032): Remove once
+  // `kPdfAccessibilityHeuristicEnhancements` is enabled by default.
+  explicit PrintPreviewDialogControllerBrowserTest(
+      bool enable_pdf_heuristic_enhancements) {
+    feature_list_.InitWithFeatureState(
+        features::kPdfAccessibilityHeuristicEnhancements,
+        enable_pdf_heuristic_enhancements);
+  }
+
   BrowserWindowInterface* CreateBrowser(std::unique_ptr<BrowserWindow> window) {
     BrowserWindowCreateParams params(browser()->GetProfile(),
                                      /*from_user_gesture=*/true);
@@ -237,6 +243,25 @@ class PrintPreviewDialogControllerBrowserTest : public printing::PrintPreviewBro
         break;
       }
     }
+  }
+
+  void RunPrintPreviewPdfAccessibilityTest(
+      std::string_view expected_node_name) {
+    SetUpPrintingScenario();
+
+    content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+    // Put a DIV after the text we're going to search for. The last node in the
+    // tree will not have a newline appended, but all the others will. Avoid
+    // making assumptions about whether it's the last node or not. There may be
+    // nodes for headers and footers following the document contents.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,HelloWorld<div>next</div>")));
+    PrintPreview();
+    WebContents* preview_dialog = GetPrintPreviewDialog();
+    WaitForAccessibilityTreeToContainNodeWithName(preview_dialog,
+                                                  expected_node_name);
+
+    PrintPreviewDone();
   }
 
  private:
@@ -458,21 +483,23 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        PrintPreviewPdfAccessibility) {
-  SetUpPrintingScenario();
+  RunPrintPreviewPdfAccessibilityTest("HelloWorld\r\n");
+}
 
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  // Put a DIV after the text we're going to search for. The last node in the
-  // tree will not have a newline appended, but all the others will. Avoid
-  // making assumptions about whether it's the last node or not. There may be
-  // nodes for headers and footers following the document contents.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html,HelloWorld<div>next</div>")));
-  PrintPreview();
-  WebContents* preview_dialog = GetPrintPreviewDialog();
-  WaitForAccessibilityTreeToContainNodeWithName(preview_dialog,
-                                                "HelloWorld\r\n");
+class PrintPreviewDialogControllerHeuristicEnhancementsBrowserTest
+    : public PrintPreviewDialogControllerBrowserTest {
+ public:
+  PrintPreviewDialogControllerHeuristicEnhancementsBrowserTest()
+      : PrintPreviewDialogControllerBrowserTest(
+            /*enable_pdf_heuristic_enhancements=*/true) {}
+};
 
-  PrintPreviewDone();
+IN_PROC_BROWSER_TEST_F(
+    PrintPreviewDialogControllerHeuristicEnhancementsBrowserTest,
+    PrintPreviewPdfAccessibility) {
+  // The heuristics put both lines in one static text node and replace trailing
+  // line breaks with spaces.
+  RunPrintPreviewPdfAccessibilityTest("HelloWorld next ");
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest, IsPrintPreviewURL) {
