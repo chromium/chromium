@@ -3263,10 +3263,6 @@ static_library("ui") {
       # following header gets modularized:
       # - c/b/ui/browser_tabstrip.h
       "//chrome/browser/ui/webui/app_home:impl",
-
-      # TODO(crbug.com/364667551): browser_switch_ui.cc includes browser.h from
-      # //chrome/browser/ui:ui.
-      "//chrome/browser/ui/webui/browser_switch",
     ]
 
     if (enable_dice_support) {
