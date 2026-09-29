@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,6 +152,44 @@ TEST_F(GetBufferSubDataTest, TransformFeedback) {
 
   glGetBufferSubDataCHROMIUM(GL_TRANSFORM_FEEDBACK_BUFFER, 0, 6, buffer_data);
   GLTestHelper::CheckGLError("no errors", __LINE__);
+}
+
+// Tests end-to-end that GetBufferSubData delivers exact buffer contents
+// with the workaround forced on, on both decoders (crbug.com/558109451).
+TEST_F(GetBufferSubDataTest, GetBufferSubDataHealthyWithResetCheckWorkaround) {
+  GLManager::Options options;
+  options.size = gfx::Size(kCanvasSize, kCanvasSize);
+  options.context_type = CONTEXT_TYPE_OPENGLES3;
+  GpuDriverBugWorkarounds workarounds;
+  workarounds.check_graphics_reset_status_after_readback = true;
+  gl_.Destroy();
+  gl_.InitializeWithWorkarounds(options, workarounds);
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  constexpr GLsizeiptr kSize = 64;
+  std::array<uint8_t, kSize> data;
+  for (GLsizeiptr i = 0; i < kSize; ++i) {
+    data[i] = static_cast<uint8_t>(i * 3 + 1);
+  }
+
+  GLuint buffer = 0;
+  glGenBuffers(1, &buffer);
+  EXPECT_LT(0u, buffer);
+  glBindBuffer(GL_PIXEL_PACK_BUFFER, buffer);
+  glBufferData(GL_PIXEL_PACK_BUFFER, kSize, data.data(), GL_STATIC_DRAW);
+  GLTestHelper::CheckGLError("no errors", __LINE__);
+
+  std::array<uint8_t, kSize> out = {};
+  glGetBufferSubDataCHROMIUM(GL_PIXEL_PACK_BUFFER, 0, kSize, out.data());
+  GLTestHelper::CheckGLError("no errors", __LINE__);
+
+  for (GLsizeiptr i = 0; i < kSize; ++i) {
+    EXPECT_EQ(data[i], out[i]) << "byte " << i;
+  }
+  ASSERT_TRUE(gl_.decoder());
+  EXPECT_FALSE(gl_.decoder()->WasContextLost());
 }
 
 }  // namespace gpu

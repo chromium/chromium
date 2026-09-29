@@ -15953,6 +15953,13 @@ void GLES2DecoderImpl::ReadBackBuffersIntoShadowCopies(
       group_->LoseContexts(error::kUnknown);
       return;
     }
+    if (workarounds().check_graphics_reset_status_after_readback &&
+        CheckResetStatus()) {
+      // Refuse shadow-copy delivery across a device reset; the mapped bytes
+      // may not have been produced.
+      group_->LoseContexts(error::kUnknown);
+      return;
+    }
     UNSAFE_TODO(memcpy(shadow, mapped, buffer->size()));
     bool unmap_ok = api()->glUnmapBufferFn(GL_ARRAY_BUFFER);
     if (unmap_ok == GL_FALSE) {
@@ -17420,6 +17427,17 @@ error::Error GLES2DecoderImpl::HandleGetBufferSubDataCHROMIUM(
     // This should mean GL_OUT_OF_MEMORY (or context loss).
     LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
     return error::kNoError;
+  }
+
+  if (workarounds().check_graphics_reset_status_after_readback &&
+      CheckResetStatus()) {
+    // The driver reset underneath the blocking map: the mapped bytes may
+    // never have been written by the readback that was supposed to produce
+    // them (ES 3.2 section 2.3.2: a reset can occur at any point and is
+    // observable via GetGraphicsResetStatus before other commands report
+    // CONTEXT_LOST). Do not deliver them. crbug.com/558109451
+    group_->LoseContexts(error::kUnknown);
+    return error::kLostContext;
   }
 
   UNSAFE_TODO(memcpy(mem, ptr, size));

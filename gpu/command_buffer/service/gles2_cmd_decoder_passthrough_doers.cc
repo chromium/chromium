@@ -1523,6 +1523,14 @@ error::Error GLES2DecoderPassthroughImpl::DoGetBufferSubDataCHROMIUM(
     return error::kNoError;
   }
 
+  if (feature_info_->workarounds().check_graphics_reset_status_after_readback &&
+      CheckResetStatus()) {
+    // The driver reset underneath the blocking map; do not deliver bytes the
+    // discarded readback may never have written.
+    group_->LoseContexts(error::kUnknown);
+    return error::kLostContext;
+  }
+
   UNSAFE_TODO(memcpy(data, map_ptr, static_cast<size_t>(size)));
 
   api()->glUnmapBufferFn(target);

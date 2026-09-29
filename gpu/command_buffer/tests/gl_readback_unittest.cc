@@ -529,7 +529,6 @@ TEST_P(GLReadbackResetCheckES3Test, GenerateMipmapLevelReadbackUnaffected) {
   glTexStorage2DEXT(GL_TEXTURE_2D, /*levels=*/2, GL_RGBA8, kSize, kSize);
   glTexSubImage2D(GL_TEXTURE_2D, /*level=*/0, /*xoffset=*/0, /*yoffset=*/0,
                   kSize, kSize, GL_RGBA, GL_UNSIGNED_BYTE, blue.data());
-
   glGenerateMipmap(GL_TEXTURE_2D);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 
