@@ -424,6 +424,11 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetTitle(*text_override);
   }
 
+  if (std::u16string* secondary_text =
+          child_base->GetProperty(AppMenuActionItem::kSecondaryTextKey)) {
+    menu_item->SetSecondaryTitle(*secondary_text);
+  }
+
   const ui::ElementIdentifier element_id =
       child_base->GetProperty(views::kElementIdentifierKey);
   if (element_id) {

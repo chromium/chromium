@@ -2232,6 +2232,40 @@ TEST_F(ActionAppMenuTest, MenuItemIsAlertedProperty) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, MenuItemSecondaryTextProperty) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot, browser_actions_->root_action_item());
+  ASSERT_NE(app_menu_root, nullptr);
+  app_menu_root->ResetActionList();
+
+  std::unique_ptr<actions::IndirectActionItem> print_indirect =
+      AppMenuActionItem::CreateIndirect(
+          kActionPrint, browser_actions_->root_action_item(),
+          {.secondary_text = u"Print secondary text"});
+  ASSERT_NE(print_indirect, nullptr);
+  const std::u16string* secondary_text =
+      print_indirect->GetProperty(AppMenuActionItem::kSecondaryTextKey);
+  ASSERT_NE(secondary_text, nullptr);
+  EXPECT_EQ(*secondary_text, u"Print secondary text");
+  app_menu_root->AddChild(std::move(print_indirect));
+
+  menu.RunMenu(button_->button_controller());
+  EXPECT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* print_item = root->GetMenuItemByID(kActionPrint);
+  ASSERT_TRUE(print_item);
+  EXPECT_EQ(print_item->secondary_title(), u"Print secondary text");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
   actions::ActionItem* global_error_action =
       actions::ActionManager::Get().FindAction(
