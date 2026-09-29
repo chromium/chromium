@@ -357,6 +357,11 @@ void CustomTabBarView::OnTabStripModelChanged(
 }
 
 bool CustomTabBarView::HasSecurityStateChanged() const {
+  web_app::AppBrowserController* const app_controller =
+      web_app::AppBrowserController::From(browser_);
+  if (app_controller && !app_controller->ShouldShowCustomTabBar()) {
+    return false;
+  }
   return GetVisible() && location_icon_view_ &&
          location_icon_view_->HasSecurityStateChanged();
 }

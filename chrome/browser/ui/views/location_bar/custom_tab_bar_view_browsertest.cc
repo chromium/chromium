@@ -10,12 +10,15 @@
 #include "build/build_config.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -34,6 +37,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -812,7 +816,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
 }
 
 // Check that the CustomTabBarView security chip updates when the visible
-// security state changes while the bar is already visible.
+// security state changes while the bar is already visible, without breaking
+// page action updates in the web app frame toolbar (b/517407917, b/565727775).
 IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
                        SecurityChipUpdatesOnVisibleSecurityStateChange) {
   const GURL app_url =
@@ -867,4 +872,17 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_FALSE(icon->HasSecurityStateChanged());
   EXPECT_EQ(icon->GetShowText(), icon->ShouldShowLabel());
   EXPECT_FALSE(app_view->UpdateToolbarSecurityState());
+
+  // Verify that the web app frame toolbar's page action icons (such as Zoom)
+  // remain connected to the active tab's PageActionController (b/565727775).
+  page_actions::PageActionViewInterface* zoom_action =
+      app_view->toolbar_button_provider()->GetPageActionViewInterface(
+          kActionShowZoomBubble);
+  ASSERT_TRUE(zoom_action);
+  views::View* zoom_view = zoom_action->GetBubbleAnchor().GetIfView();
+  ASSERT_TRUE(zoom_view);
+  EXPECT_FALSE(zoom_view->GetVisible());
+
+  chrome::Zoom(app_browser_, content::PAGE_ZOOM_IN);
+  EXPECT_TRUE(zoom_view->GetVisible());
 }
