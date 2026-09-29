@@ -250,8 +250,13 @@
     return nil;
   }
 
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED, tabsDecluttered);
+  NSString* title;
+  if (tabsDecluttered <= 15) {
+    title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED, tabsDecluttered);
+  } else {
+    title = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_TABS_DECLUTTERED_MAX);
+  }
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_TABS_DECLUTTERED);
   return
@@ -267,8 +272,15 @@
   if (passwordsAutofilled <= 0) {
     return nil;
   }
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_LEVEL_UP_STAT_PASSWORDS_AUTOFILLED, passwordsAutofilled);
+
+  NSString* title;
+  if (passwordsAutofilled <= 40) {
+    title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_LEVEL_UP_STAT_PASSWORDS_AUTOFILLED, passwordsAutofilled);
+  } else {
+    title =
+        l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_PASSWORDS_AUTOFILLED_MAX);
+  }
   NSString* subtitle = l10n_util::GetNSString(
       IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_AUTOFILLED);
   return [[LevelUpStat alloc]
@@ -284,8 +296,16 @@
   if (passwordsVerified <= 0) {
     return nil;
   }
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED, passwordsVerified);
+
+  NSString* title;
+  if (passwordsVerified <= 25) {
+    title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED, passwordsVerified);
+  } else {
+    title =
+        l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_PASSWORDS_VERIFIED_MAX);
+  }
+
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PASSWORDS_VERIFIED);
   return [[LevelUpStat alloc]
@@ -301,8 +321,14 @@
   if (photoSearchesPerformed <= 0) {
     return nil;
   }
-  NSString* title = l10n_util::GetPluralNSStringF(
-      IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED, photoSearchesPerformed);
+  NSString* title;
+  if (photoSearchesPerformed <= 20) {
+    title = l10n_util::GetPluralNSStringF(
+        IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED, photoSearchesPerformed);
+  } else {
+    title = l10n_util::GetNSString(
+        IDS_IOS_LEVEL_UP_STAT_PHOTO_SEARCHES_PERFORMED_MAX);
+  }
   NSString* subtitle = l10n_util::GetNSString(
       IDS_IOS_LEVEL_UP_STAT_SUBTITLE_PHOTO_SEARCHES_PERFORMED);
   return [[LevelUpStat alloc]
