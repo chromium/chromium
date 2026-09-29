@@ -34,15 +34,6 @@ found in the LICENSE file.
         app:tickVisible="false"
         android:contentDescription="@string/page_zoom_label" />
 
-    <!-- TODO(crbug.com/439911511): Legacy seekbar. -->
-    <SeekBar
-        android:id="@+id/text_size_contrast_slider_legacy"
-      android:layout_weight="1"
-      android:layout_width="0dp"
-      android:layout_height="@dimen/min_touch_target_size"
-      android:visibility="gone"
-      android:contentDescription="@string/page_zoom_label" />
-
   <org.chromium.ui.widget.ChromeImageButton
       android:id="@+id/text_size_contrast_increase_zoom_button"
       android:layout_width="@dimen/min_touch_target_size"

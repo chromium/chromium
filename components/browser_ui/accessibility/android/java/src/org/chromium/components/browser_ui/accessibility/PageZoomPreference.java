@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -18,32 +19,38 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import com.google.android.material.slider.Slider;
+
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.IntegerPreferenceDelegate;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.widget.ChromeImageButton;
 
-/** Abstract base class for the page zoom section of Accessibility Settings. */
+/** Custom preference for the page zoom section of Accessibility Settings. */
 @NullMarked
-public abstract class PageZoomPreference extends Preference {
-    protected int mInitialValue;
-    protected ChromeImageButton mDecreaseButton;
-    protected ChromeImageButton mIncreaseButton;
-    protected TextView mCurrentValueText;
-
-    protected @Nullable ChromeImageButton mTextSizeContrastDecreaseButton;
-    protected @Nullable ChromeImageButton mTextSizeContrastIncreaseButton;
-    protected @Nullable TextView mTextSizeContrastCurrentLevelText;
-    protected @Nullable IntegerPreferenceDelegate mTextSizeContrastDelegate;
-    protected static final int TEXT_SIZE_CONTRAST_BUTTON_INCREMENT = 10;
+public class PageZoomPreference extends Preference implements ContainmentItem {
+    private static final int TEXT_SIZE_CONTRAST_BUTTON_INCREMENT = 10;
 
     // Values taken from dimens of text_size_* in //ui/android/java/res/values/dimens.xml
     private static final float DEFAULT_LARGE_TEXT_SIZE_SP = 16.0f;
     private static final float DEFAULT_MEDIUM_TEXT_SIZE_SP = 14.0f;
     private static final float DEFAULT_SMALL_TEXT_SIZE_SP = 12.0f;
+
+    private int mInitialValue;
+    private ChromeImageButton mDecreaseButton;
+    private ChromeImageButton mIncreaseButton;
+    private TextView mCurrentValueText;
+
+    private @Nullable ChromeImageButton mTextSizeContrastDecreaseButton;
+    private @Nullable ChromeImageButton mTextSizeContrastIncreaseButton;
+    private @Nullable TextView mTextSizeContrastCurrentLevelText;
+    private @Nullable IntegerPreferenceDelegate mTextSizeContrastDelegate;
+    private @Nullable Slider mSlider;
+    private @Nullable Slider mTextSizeContrastSlider;
 
     private float mDefaultPreviewImageSize;
     private ImageView mPreviewImage;
@@ -58,6 +65,7 @@ public abstract class PageZoomPreference extends Preference {
 
     public PageZoomPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setLayoutResource(R.layout.page_zoom_preference);
     }
 
     @Initializer
@@ -95,11 +103,10 @@ public abstract class PageZoomPreference extends Preference {
                 (ChromeImageButton) holder.findViewById(R.id.page_zoom_increase_zoom_button);
         mIncreaseButton.setOnClickListener(v -> onHandleIncreaseClicked());
 
-        // Subclasses must initialize their specific Slider/seekbar.
         initializeControls(holder);
 
         mCurrentMultiplier = mInitialValue;
-        updateViews(getCurrentZoomValue(), true);
+        updateViews(getCurrentZoomValue(), /* isZoom= */ true);
 
         // Set up text size contrast slider.
         if (shouldShowTextSizeContrastSetting()) {
@@ -131,8 +138,73 @@ public abstract class PageZoomPreference extends Preference {
             assumeNonNull(mTextSizeContrastDelegate);
             mTextSizeContrastFactor = mTextSizeContrastDelegate.getValue();
             setCurrentContrastValue(mTextSizeContrastFactor);
-            updateViews(mTextSizeContrastFactor, false);
+            updateViews(mTextSizeContrastFactor, /* isZoom= */ false);
         }
+    }
+
+    private void initializeControls(PreferenceViewHolder holder) {
+        mDecreaseButton.setBackgroundColor(Color.TRANSPARENT);
+        mIncreaseButton.setBackgroundColor(Color.TRANSPARENT);
+
+        mSlider = (Slider) holder.findViewById(R.id.page_zoom_slider);
+        assumeNonNull(mSlider);
+        mSlider.setVisibility(View.VISIBLE);
+        mSlider.setValueFrom(0);
+        mSlider.setValueTo(PageZoomUtils.PAGE_ZOOM_MAXIMUM_BAR_VALUE);
+        mSlider.setValue(mInitialValue);
+        mSlider.setLabelFormatter(
+                value -> {
+                    long zoomLevel =
+                            Math.round(100 * PageZoomUtils.convertBarValueToZoomLevel((int) value));
+                    return getContext().getString(R.string.page_zoom_level, zoomLevel);
+                });
+        mSlider.addOnChangeListener(
+                (slider, value, fromUser) -> {
+                    if (fromUser) {
+                        updateViews((int) value, /* isZoom= */ true);
+                    }
+                });
+        mSlider.addOnSliderTouchListener(
+                new Slider.OnSliderTouchListener() {
+                    @Override
+                    public void onStartTrackingTouch(Slider slider) {}
+
+                    @Override
+                    public void onStopTrackingTouch(Slider slider) {
+                        callChangeListener((int) slider.getValue());
+                    }
+                });
+    }
+
+    private void initializeContrastControl(PreferenceViewHolder holder) {
+        assumeNonNull(mTextSizeContrastDecreaseButton);
+        mTextSizeContrastDecreaseButton.setBackgroundColor(Color.TRANSPARENT);
+        assumeNonNull(mTextSizeContrastIncreaseButton);
+        mTextSizeContrastIncreaseButton.setBackgroundColor(Color.TRANSPARENT);
+
+        mTextSizeContrastSlider = (Slider) holder.findViewById(R.id.text_size_contrast_slider);
+        assumeNonNull(mTextSizeContrastSlider);
+        mTextSizeContrastSlider.setVisibility(View.VISIBLE);
+        mTextSizeContrastSlider.setValueFrom(0);
+        mTextSizeContrastSlider.setValueTo(PageZoomUtils.TEXT_SIZE_CONTRAST_MAX_LEVEL);
+        mTextSizeContrastSlider.setLabelFormatter(
+                value -> getContext().getString(R.string.text_size_contrast_level, (int) value));
+        mTextSizeContrastSlider.addOnChangeListener(
+                (slider, value, fromUser) -> {
+                    if (fromUser) {
+                        updateViews((int) value, /* isZoom= */ false);
+                    }
+                });
+        mTextSizeContrastSlider.addOnSliderTouchListener(
+                new Slider.OnSliderTouchListener() {
+                    @Override
+                    public void onStartTrackingTouch(Slider slider) {}
+
+                    @Override
+                    public void onStopTrackingTouch(Slider slider) {
+                        saveTextSizeContrastValueToPreferences();
+                    }
+                });
     }
 
     static boolean shouldShowTextSizeContrastSetting() {
@@ -157,7 +229,7 @@ public abstract class PageZoomPreference extends Preference {
         mTextSizeContrastDelegate = delegate;
     }
 
-    protected void updateViews(int progress, boolean isZoom) {
+    private void updateViews(int progress, boolean isZoom) {
         updateZoomPercentageText(progress, isZoom);
         updatePreviewWidget(progress, isZoom);
         updateButtonStates(progress, isZoom);
@@ -225,12 +297,12 @@ public abstract class PageZoomPreference extends Preference {
     private void onHandleDecreaseClicked() {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
         double currentZoomFactor = PageZoomUtils.convertBarValueToZoomFactor(getCurrentZoomValue());
-        int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
+        int index = PageZoomUtils.getNextIndex(/* decrease= */ true, currentZoomFactor);
 
         if (index >= 0) {
             int barValue = PageZoomUtils.convertZoomFactorToBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             setCurrentZoomValue(barValue);
-            updateViews(barValue, true);
+            updateViews(barValue, /* isZoom= */ true);
             mCurrentValueText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
             callChangeListener(barValue);
         }
@@ -239,12 +311,12 @@ public abstract class PageZoomPreference extends Preference {
     private void onHandleIncreaseClicked() {
         // When increasing zoom, "snap" to the smallest preset value that is more than the current.
         double currentZoomFactor = PageZoomUtils.convertBarValueToZoomFactor(getCurrentZoomValue());
-        int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
+        int index = PageZoomUtils.getNextIndex(/* decrease= */ false, currentZoomFactor);
 
         if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
             int barValue = PageZoomUtils.convertZoomFactorToBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             setCurrentZoomValue(barValue);
-            updateViews(barValue, true);
+            updateViews(barValue, /* isZoom= */ true);
             mCurrentValueText.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
             callChangeListener(barValue);
         }
@@ -254,7 +326,7 @@ public abstract class PageZoomPreference extends Preference {
         // Decrease the contrast slider by defined increment.
         int newValue = getCurrentContrastValue() - TEXT_SIZE_CONTRAST_BUTTON_INCREMENT;
         setCurrentContrastValue(newValue);
-        updateViews(newValue, false);
+        updateViews(newValue, /* isZoom= */ false);
         saveTextSizeContrastValueToPreferences();
     }
 
@@ -262,29 +334,49 @@ public abstract class PageZoomPreference extends Preference {
         // Increase the contrast slider by defined increment.
         int newValue = getCurrentContrastValue() + TEXT_SIZE_CONTRAST_BUTTON_INCREMENT;
         setCurrentContrastValue(newValue);
-        updateViews(newValue, false);
+        updateViews(newValue, /* isZoom= */ false);
         saveTextSizeContrastValueToPreferences();
     }
 
-    protected void saveTextSizeContrastValueToPreferences() {
+    private void saveTextSizeContrastValueToPreferences() {
         assumeNonNull(mTextSizeContrastDelegate);
         mTextSizeContrastDelegate.setValue(getCurrentContrastValue());
     }
 
-    // Abstract methods for subclasses to implement.
-    protected abstract void initializeControls(PreferenceViewHolder holder);
+    int getCurrentZoomValue() {
+        if (mSlider == null) return 0;
+        return (int) mSlider.getValue();
+    }
 
-    protected abstract void initializeContrastControl(PreferenceViewHolder holder);
+    void setCurrentZoomValue(int value) {
+        if (mSlider == null) return;
+        mSlider.setValue(value);
+    }
 
-    protected abstract int getCurrentZoomValue();
+    int getCurrentContrastValue() {
+        if (mTextSizeContrastSlider == null) return 0;
+        return (int) mTextSizeContrastSlider.getValue();
+    }
 
-    protected abstract void setCurrentZoomValue(int value);
+    void setCurrentContrastValue(int value) {
+        if (mTextSizeContrastSlider == null) return;
+        mTextSizeContrastSlider.setValue(value);
+    }
 
-    protected abstract int getCurrentContrastValue();
+    void setZoomValueForTesting(int value) {
+        setCurrentZoomValue(value);
+        updateViews(value, /* isZoom= */ true);
+    }
 
-    protected abstract void setCurrentContrastValue(int value);
+    void setTextContrastValueForTesting(int contrast) {
+        setCurrentContrastValue(contrast);
+        updateViews(contrast, /* isZoom= */ false);
+    }
 
-    protected abstract void setZoomValueForTesting(int value);
-
-    protected abstract void setTextContrastValueForTesting(int contrast);
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        // This ensures the Preference itself doesn't have a background,
+        // allowing the sub-sections to have their own custom background styles.
+        return BackgroundStyle.NONE;
+    }
 }

@@ -74,10 +74,7 @@ public class PageZoomBarCoordinatorUnitTest {
 
         mCoordinator =
                 new PageZoomBarCoordinator(
-                        mDelegateMock,
-                        mPageZoomManagerMock,
-                        /* useSlider= */ true,
-                        mBottomSheetControllerSupplier);
+                        mDelegateMock, mPageZoomManagerMock, mBottomSheetControllerSupplier);
 
         // Initialize the supplier
         mBottomSheetControllerSupplier.set(mBottomSheetControllerMock);
@@ -135,7 +132,7 @@ public class PageZoomBarCoordinatorUnitTest {
                 ObservableSuppliers.createMonotonic();
 
         PageZoomBarCoordinator coordinator =
-                new PageZoomBarCoordinator(mDelegateMock, mPageZoomManagerMock, true, supplier);
+                new PageZoomBarCoordinator(mDelegateMock, mPageZoomManagerMock, supplier);
 
         // Trigger supplier initialization
         supplier.set(mockController);

@@ -117,17 +117,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         mPageTitle.set(getString(R.string.prefs_accessibility));
 
         assertNonNull(mDelegate);
-        // TODO(crbug.com/439911511): Add PageZoomPreference directly to the xml file instead.
-        // Create the page zoom preference.
-        if (mDelegate.shouldUseSlider()) {
-            mPageZoomDefaultZoomPref = new PageZoomSliderPreference(getContext(), null);
-        } else {
-            mPageZoomDefaultZoomPref = new PageZoomSeekbarPreference(getContext(), null);
-        }
-        mPageZoomDefaultZoomPref.setKey(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
-        mPageZoomDefaultZoomPref.setOrder(-1);
-        getPreferenceScreen().addPreference(mPageZoomDefaultZoomPref);
-
+        mPageZoomDefaultZoomPref = findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         mPageZoomAlwaysShowPref = findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
         mPageZoomIncludeOSAdjustment = findPreference(PREF_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT);
 
@@ -433,7 +423,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         String id = PreferenceParser.createUniqueId(parentFragment, key);
         Context context = ContextUtils.getApplicationContext();
         String title = context.getString(titleId);
-        indexData.addEntry(
+        indexData.updateEntry(
                 id,
                 new SettingsIndexData.Entry.Builder(id, key, title, parentFragment)
                         .setSummary(context.getString(summaryId))

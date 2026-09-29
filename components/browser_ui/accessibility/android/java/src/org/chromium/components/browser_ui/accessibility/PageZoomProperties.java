@@ -40,7 +40,6 @@ public class PageZoomProperties {
             new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey MAXIMUM_BAR_VALUE = new WritableIntPropertyKey();
     static final WritableIntPropertyKey CURRENT_BAR_VALUE = new WritableIntPropertyKey();
-    static final ReadableBooleanPropertyKey USE_SLIDER = new ReadableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
         DECREASE_ZOOM_CALLBACK,
@@ -52,7 +51,6 @@ public class PageZoomProperties {
         INCREASE_ZOOM_ENABLED,
         MAXIMUM_BAR_VALUE,
         CURRENT_BAR_VALUE,
-        USE_SLIDER,
         DEFAULT_ZOOM_FACTOR,
         ZOOM_PERCENT_TEXT,
         IMMERIVE_MODE_ENABLED,

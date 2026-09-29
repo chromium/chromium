@@ -94,13 +94,6 @@ public interface AccessibilitySettingsDelegate {
     DistilledPagePrefs getDistilledPagePrefs();
 
     /**
-     * Returns whether the material slider should be used for the page zoom preference.
-     *
-     * @return True if the slider should be used, false otherwise.
-     */
-    boolean shouldUseSlider();
-
-    /**
      * Returns whether caret browsing is enabled.
      *
      * @return boolean - Whether caret browsing is enabled.

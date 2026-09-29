@@ -139,16 +139,6 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     }
 
     /**
-     * Returns whether the material slider should be used for the page zoom preference.
-     *
-     * @return True if the slider should be used, false otherwise.
-     */
-    @Override
-    public boolean shouldUseSlider() {
-        return true;
-    }
-
-    /**
      * Checks if the caret browsing feature is currently enabled for the associated profile.
      *
      * @return True if caret browsing is enabled, false otherwise.

@@ -56,8 +56,6 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSeekbarPreference.java",
-    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomSliderPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/ZoomEventsObserver.java",
   ]
 
@@ -119,7 +117,6 @@ android_resources("java_resources") {
     "java/res/drawable/page_zoom_background.xml",
     "java/res/drawable/page_zoom_ripple.xml",
     "java/res/layout/page_zoom_indicator_view.xml",
-    "java/res/layout/page_zoom_legacy_preference.xml",
     "java/res/layout/page_zoom_preference.xml",
     "java/res/layout/page_zoom_slider.xml",
     "java/res/layout/page_zoom_view.xml",

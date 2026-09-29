@@ -16,7 +16,6 @@ import static org.mockito.Mockito.when;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
-import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.SmallTest;
 
@@ -34,10 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
@@ -50,33 +46,15 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.widget.ChromeImageButton;
 
-import java.util.Arrays;
-import java.util.List;
-
-/** Tests for the Accessibility Settings menu's Seekbar. */
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
+/** Tests for the Accessibility Settings menu's Page Zoom preference. */
+@RunWith(BaseJUnit4ClassRunner.class)
 @Features.DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
     ContentFeatureList.SMART_ZOOM,
     DomDistillerFeatures.READER_MODE_TOGGLE_LINKS,
 })
 public class AccessibilitySettingsPageZoomTest {
-    @ParameterAnnotations.ClassParameter
-    private static final List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(false).name("useSlider_false"),
-                    new ParameterSet().value(true).name("useSlider_true"));
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    private final boolean mUseSlider;
-    private AccessibilitySettings mAccessibilitySettings;
-    private PageZoomPreference mPageZoomPref;
-
-    public AccessibilitySettingsPageZoomTest(boolean useSlider) {
-        mUseSlider = useSlider;
-    }
 
     @Rule
     public BlankUiTestActivitySettingsTestRule mSettingsActivityTestRule =
@@ -91,6 +69,9 @@ public class AccessibilitySettingsPageZoomTest {
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
 
+    private AccessibilitySettings mAccessibilitySettings;
+    private PageZoomPreference mPageZoomPref;
+
     @Before
     public void setUp() {
         HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapBridgeMock);
@@ -103,7 +84,6 @@ public class AccessibilitySettingsPageZoomTest {
         when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
         when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
         when(mDelegate.getSiteSettingsNavigation(any())).thenReturn(mSettingsNavigationMock);
-        when(mDelegate.shouldUseSlider()).thenReturn(mUseSlider);
 
         // Enable screen reader to display all settings options.
         ThreadUtils.runOnUiThreadBlocking(
@@ -178,8 +158,7 @@ public class AccessibilitySettingsPageZoomTest {
     public void testPageZoomPreference_zoomSliderUpdatesValue() {
         getPageZoomPref();
         int startingVal = mPageZoomPref.getCurrentZoomValue();
-        onSliderView(R.id.page_zoom_slider, R.id.page_zoom_slider_legacy)
-                .perform(ViewActions.swipeRight());
+        onView(withId(R.id.page_zoom_slider)).perform(ViewActions.swipeRight());
         Assert.assertNotEquals(startingVal, mPageZoomPref.getCurrentZoomValue());
     }
 
@@ -258,8 +237,7 @@ public class AccessibilitySettingsPageZoomTest {
     public void testPageZoomPreference_smartZoom_zoomSliderUpdatesValue() {
         getPageZoomPref();
         int startingVal = mPageZoomPref.getCurrentContrastValue();
-        onSliderView(R.id.text_size_contrast_slider, R.id.text_size_contrast_slider_legacy)
-                .perform(ViewActions.swipeRight());
+        onView(withId(R.id.text_size_contrast_slider)).perform(ViewActions.swipeRight());
         Assert.assertNotEquals(startingVal, mPageZoomPref.getCurrentContrastValue());
     }
 
@@ -284,9 +262,5 @@ public class AccessibilitySettingsPageZoomTest {
                         AccessibilitySettings.PREF_PAGE_ZOOM_DEFAULT_ZOOM);
         Assert.assertNotNull(mPageZoomPref);
         Assert.assertTrue("Page Zoom pref should be visible.", mPageZoomPref.isVisible());
-    }
-
-    private ViewInteraction onSliderView(int sliderId, int legacySliderId) {
-        return onView(withId(mUseSlider ? sliderId : legacySliderId));
     }
 }
