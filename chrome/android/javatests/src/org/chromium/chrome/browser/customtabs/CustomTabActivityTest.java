@@ -3012,9 +3012,14 @@ public class CustomTabActivityTest {
     @MediumTest
     public void omniboxInCct_testInteractiveOmniboxOnEligibleCcts() throws Exception {
         // Permit Omnibox for any upcoming intent(s).
-        var connection = Mockito.spy(CustomTabsConnection.getInstance());
-        doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());
-        CustomTabsConnection.setInstanceForTesting(connection);
+        CustomTabsConnection.setInstanceForTesting(
+                new CustomTabsConnection() {
+                    @Override
+                    public boolean shouldEnableOmniboxForIntent(
+                            BrowserServicesIntentDataProvider intentData) {
+                        return true;
+                    }
+                });
 
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
@@ -3050,10 +3055,13 @@ public class CustomTabActivityTest {
                 PageInfoController.getLastPageInfoController());
         // For a non-interactive omnibox, clicking the title bar should show Page Info instead of
         // activating the omnibox.
-        ThreadUtils.runOnUiThreadBlocking(() -> titleBar.performClick());
-        assertNotNull(
-                "Page info should have been shown.",
-                PageInfoController.getLastPageInfoController());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    titleBar.performClick();
+                    PageInfoController controller = PageInfoController.getLastPageInfoController();
+                    assertNotNull("Page info should have been shown.", controller);
+                    controller.dismiss();
+                });
     }
 
     @Test
