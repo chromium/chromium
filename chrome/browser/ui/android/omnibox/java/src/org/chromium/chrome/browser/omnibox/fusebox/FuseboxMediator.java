@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.SetActiveModel
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.AnchoringMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.BackgroundStyle;
 import org.chromium.chrome.browser.omnibox.fusebox.PopupButtonData.PopupButtonType;
+import org.chromium.chrome.browser.omnibox.fusebox.consent.DriveConsentDialog;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
@@ -66,6 +67,7 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.contextual_search.DisclaimerStatus;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AimModelsProtoIntDef.ModelMode;
@@ -145,6 +147,7 @@ import java.util.function.Supplier;
     private boolean mPopupItemSelected;
     private @Nullable Runnable mOnFirstPickerInteractionCanceledCallback;
     private boolean mNeedUnfocusOnCancel;
+    private @Nullable DriveConsentDialog mDriveConsentDialog;
 
     private final ListObserver<Void> mListObserver =
             new ListObserver<>() {
@@ -371,6 +374,7 @@ import java.util.function.Supplier;
         setAutocompleteInput(null);
         mProfile = null;
         mMetrics = null;
+        destroyDriveConsentDialog();
         updateFuseboxState();
     }
 
@@ -1127,7 +1131,60 @@ import java.util.function.Supplier;
         mPopupItemSelected = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.DRIVE_FILES);
-        launchDrivePicker(mProfile);
+
+        Profile requestProfile = mProfile;
+        DriveDisclaimerBridge.checkConsentStatus(
+                requestProfile, status -> onDriveConsentStatus(requestProfile, status));
+    }
+
+    private void onDriveConsentStatus(Profile requestProfile, @DisclaimerStatus int status) {
+        if (!isInInputSession()
+                || mProfile != requestProfile
+                || mInput.getDisplayState() == DisplayState.DRAFTING_NO_FOCUS) {
+            return;
+        }
+
+        switch (status) {
+            case DisclaimerStatus.ACCEPTED -> launchDrivePicker(mProfile);
+            case DisclaimerStatus.NOT_ACCEPTED -> showDriveConsentDialog(mProfile);
+            case DisclaimerStatus.RESTRICTED -> handlePickerCanceled();
+        }
+    }
+
+    private void showDriveConsentDialog(Profile requestProfile) {
+        destroyDriveConsentDialog();
+        mDriveConsentDialog =
+                DriveConsentDialog.show(
+                        mWindowAndroid,
+                        requestProfile,
+                        granted -> onDriveConsentResult(requestProfile, granted));
+    }
+
+    private void onDriveConsentResult(Profile requestProfile, boolean granted) {
+        mDriveConsentDialog = null;
+        if (!isInInputSession() || mProfile != requestProfile) return;
+
+        if (granted) {
+            launchDrivePicker(requestProfile);
+        } else {
+            handlePickerCanceled();
+        }
+    }
+
+    /**
+     * Dismisses and destroys any active Drive consent dialog.
+     *
+     * <p>This is invoked during {@link #endInput()} (and defensively before showing a new dialog in
+     * {@link #showDriveConsentDialog(Profile)}). It is only destroyed when the Omnibox session
+     * fully terminates because the dialog is an app-level modal overlaying the window; transient
+     * focus or display state changes (such as defocusing the URL bar) must not interrupt the user's
+     * in-progress consent flow. Destroying it on session end ensures the dialog cannot linger on
+     * screen over a concluded session.
+     */
+    private void destroyDriveConsentDialog() {
+        if (mDriveConsentDialog == null) return;
+        mDriveConsentDialog.destroy();
+        mDriveConsentDialog = null;
     }
 
     private void launchDrivePicker(Profile profile) {
@@ -1296,11 +1353,10 @@ import java.util.function.Supplier;
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_IMAGE_VALUE);
         boolean filesEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_LENS_FILE_VALUE);
-        // Drive button only visible if the flag is enabled, it is in allowedInputTypes, and
-        // the Drive picker is available on device.
+        // Drive button is visible if native allows it (server config, feature flag, and identity
+        // are checked in InputStateModel) and the Drive picker is available on device.
         boolean driveVisible =
-                OmniboxFeatures.sComposeboxDriveContextMenuOption.isEnabled()
-                        && inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE)
+                inputState.allowedInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE)
                         && DriveFilePickerClient.getInstance().isAvailable(mContext, mProfile);
         boolean driveEnabled =
                 !inputState.disabledInputTypes.contains(InputType.INPUT_TYPE_DRIVE_VALUE);

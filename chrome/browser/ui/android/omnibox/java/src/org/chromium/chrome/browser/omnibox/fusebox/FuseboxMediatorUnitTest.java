@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -62,6 +63,7 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -102,6 +104,7 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.contextual_search.DisclaimerStatus;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.feature_engagement.Tracker;
@@ -284,6 +287,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tab mTab;
     @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
     @Mock private DriveFilePickerClient mDriveFilePickerClient;
+    @Mock private DriveDisclaimerBridge.Natives mDriveDisclaimerBridgeNatives;
     @Mock private TabLoadingService mTabLoadingService;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
@@ -386,6 +390,7 @@ public class FuseboxMediatorUnitTest {
                 .doReturn(Promise.fulfilled(null))
                 .when(mDriveFilePickerClient)
                 .launchPicker(any(), any(), any());
+        DriveDisclaimerBridgeJni.setInstanceForTesting(mDriveDisclaimerBridgeNatives);
 
         mInputStateSupplier.set(DEFAULT_INPUT_STATE);
 
@@ -580,6 +585,17 @@ public class FuseboxMediatorUnitTest {
         when(data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS))
                 .thenReturn(new ArrayList<>(tabIds));
         return data;
+    }
+
+    private void setDriveConsentStatus(@DisclaimerStatus int status) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> callback = invocation.getArgument(1);
+                            callback.onResult(status);
+                            return null;
+                        })
+                .when(mDriveDisclaimerBridgeNatives)
+                .checkConsentStatus(any(), any());
     }
 
     @Test
@@ -1421,6 +1437,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onDrivePickerClicked_pickerSuccess_attachesDriveFile() {
+        setDriveConsentStatus(DisclaimerStatus.ACCEPTED);
         DriveAttachmentMetadata metadata =
                 new DriveAttachmentMetadata(
                         "drive_id",
@@ -1444,6 +1461,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onDrivePickerClicked_pickerCanceled_handlesPickerCanceled() {
+        setDriveConsentStatus(DisclaimerStatus.ACCEPTED);
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
 
@@ -1453,6 +1471,24 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
         assertEquals(0, mAttachments.size());
         verify(mOnFirstPickerInteractionCanceledCallback).run();
+    }
+
+    @Test
+    public void onDrivePickerClicked_consentRestricted_cancelsWithoutPicker() {
+        setDriveConsentStatus(DisclaimerStatus.RESTRICTED);
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any());
+    }
+
+    @Test
+    public void onDrivePickerClicked_consentNotAccepted_cancelsWithoutPicker() {
+        setDriveConsentStatus(DisclaimerStatus.NOT_ACCEPTED);
+
+        mModel.get(FuseboxProperties.POPUP_ATTACH_DRIVE_CLICKED).run();
+
+        verify(mDriveFilePickerClient, never()).launchPicker(any(), any(), any());
     }
 
     @Test
@@ -2061,8 +2097,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_updatesDriveButton() {
-        FeatureOverrides.overrideFlag(
-                OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, true);
         setInputState(
                 createDefaultInputStateBuilder()
                         .withAllowedInputTypes(InputType.INPUT_TYPE_DRIVE_VALUE)
@@ -2078,8 +2112,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onInputStateChange_driveNotAvailable_hidesDriveButton() {
-        FeatureOverrides.overrideFlag(
-                OmniboxFeatureList.COMPOSEBOX_DRIVE_CONTEXT_MENU_OPTION, true);
         doReturn(false).when(mDriveFilePickerClient).isAvailable(any(), any());
         setInputState(
                 createDefaultInputStateBuilder()

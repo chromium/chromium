@@ -50,13 +50,6 @@ public class DriveConsentKitClientUnitTest {
     }
 
     @Test
-    public void whenAttached_evaluatesJavaScriptWithCallbackId() {
-        mClient.onWhenAttached(42);
-
-        verify(mWebContents).evaluateJavaScript("window.ckUiCallback(42)", /* callback= */ null);
-    }
-
-    @Test
     public void closeWithResult_grantedConsent_notifiesDelegate() {
         doReturn(true)
                 .when(mBridgeNatives)

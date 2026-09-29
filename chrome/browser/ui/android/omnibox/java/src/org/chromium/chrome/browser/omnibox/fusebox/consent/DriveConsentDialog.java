@@ -51,6 +51,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.LoadingView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -92,7 +93,8 @@ public class DriveConsentDialog
     @CheckResult
     public static @Nullable DriveConsentDialog show(
             WindowAndroid windowAndroid, Profile profile, Callback<Boolean> onConsentComplete) {
-        Activity activity = windowAndroid.getActivity().get();
+        WeakReference<Activity> activityRef = windowAndroid.getActivity();
+        Activity activity = activityRef == null ? null : activityRef.get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         IntentRequestTracker tracker = windowAndroid.getIntentRequestTracker();
         if (activity == null
@@ -134,18 +136,11 @@ public class DriveConsentDialog
                         || consentUrl.startsWith(CONSENT_ORIGIN + "?")
                 : "Consent URL origin diverged from the JS bridge allowlist: " + consentUrl;
 
-        // Create WebContents, set up the client, and inject the JS bridge.
+        // Create WebContents and attach Android view delegates.
         WebContents webContents =
                 WebContentsFactory.createWebContents(
                         profile, /* initiallyHidden= */ false, /* initializeRenderer= */ false);
         mWebContents = webContents;
-        DriveConsentKitClient client = new DriveConsentKitClient(webContents, profile, this);
-        mClient = client;
-        if (!injectBridge(webContents, client)) {
-            return false;
-        }
-
-        // Attach Android view delegates.
         ContentView contentView = ContentView.createContentView(mActivity, webContents);
         webContents.setDelegates(
                 VersionInfo.getProductVersion(),
@@ -153,6 +148,14 @@ public class DriveConsentDialog
                 contentView,
                 windowAndroid,
                 WebContents.createDefaultInternalsHolder());
+
+        // Set up the client and inject the JS bridge. JavascriptInjector requires the WebContents
+        // to be initialized by setDelegates() first.
+        DriveConsentKitClient client = new DriveConsentKitClient(webContents, profile, this);
+        mClient = client;
+        if (!injectBridge(webContents, client)) {
+            return false;
+        }
 
         // Create ThinWebView and configure the ConsentKit user agent.
         IntentRequestTracker tracker = assumeNonNull(windowAndroid.getIntentRequestTracker());
