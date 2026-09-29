@@ -189,6 +189,10 @@ void ContextualCueingTabHelper::SetLocationBarBadgeCommandsHandler(
   location_bar_badge_handler_ = handler;
 }
 
+void ContextualCueingTabHelper::SetGeminiHandler(id<GeminiCommands> handler) {
+  gemini_handler_ = handler;
+}
+
 NSString* ContextualCueingTabHelper::GetContextualCuePrompt() const {
   if (!cue_.has_value()) {
     return nil;
@@ -201,7 +205,9 @@ bool ContextualCueingTabHelper::ShowContextualCueInfobar(
   if (!web_state_) {
     return false;
   }
-  return ContextualCueInfobarDelegate::Create(web_state_, gemini_handler);
+  id<GeminiCommands> handler =
+      gemini_handler ? gemini_handler : gemini_handler_;
+  return ContextualCueInfobarDelegate::Create(web_state_, handler);
 }
 
 bool ContextualCueingTabHelper::ShowContextualCueChip(
@@ -242,6 +248,25 @@ bool ContextualCueingTabHelper::ShowContextualCueChip(
   [handler updateBadgeConfig:config];
   RecordCueShown();
   return true;
+}
+
+bool ContextualCueingTabHelper::PresentContextualCue() {
+  if (!cue_.has_value() || !cue_ui_type_.has_value() || has_presented_cue_) {
+    return false;
+  }
+  bool presented = false;
+  switch (*cue_ui_type_) {
+    case ContextualCueUiType::kMessage:
+      presented = ShowContextualCueInfobar();
+      break;
+    case ContextualCueUiType::kOmniboxChip:
+      presented = ShowContextualCueChip();
+      break;
+  }
+  if (presented) {
+    has_presented_cue_ = true;
+  }
+  return presented;
 }
 
 #pragma mark - web::WebStateObserver
@@ -297,6 +322,10 @@ void ContextualCueingTabHelper::PageLoaded(
 
 void ContextualCueingTabHelper::WasShown(web::WebState* web_state) {
   if (!IsGeminiSuggestionsSettingEnabled()) {
+    return;
+  }
+  if (cue_.has_value() && !has_presented_cue_) {
+    PresentContextualCue();
     return;
   }
   if (!categories_.has_value() && web_state_ && web_state_->IsVisible() &&
@@ -556,6 +585,8 @@ void ContextualCueingTabHelper::InitiateModelExecutionRequest(
   request.mutable_active_tab_page_context()->set_url(expected_url.spec());
   request.mutable_active_tab_page_context()->set_title(
       base::UTF16ToUTF8(web_state_->GetTitle()));
+  request.add_supported_surfaces(
+      optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME);
 
   if (delegate_) {
     base::flat_set<GURL> seen_urls;
@@ -647,6 +678,7 @@ void ContextualCueingTabHelper::OnModelExecutionResponseReceived(
 void ContextualCueingTabHelper::NotifyContextualCueReceived(
     std::optional<optimization_guide::proto::ContextualCue> cue) {
   cue_ = std::move(cue);
+  has_presented_cue_ = false;
   if (cue_.has_value()) {
     ContextualCueingCapTrackerService* cap_service = GetCapTrackerService();
     if (cap_service && active_category_type_.has_value()) {
@@ -661,10 +693,15 @@ void ContextualCueingTabHelper::NotifyContextualCueReceived(
   for (Observer& observer : observers_) {
     observer.OnContextualCueReceived(this, cue_);
   }
+  if (cue_.has_value() && web_state_ && web_state_->IsVisible()) {
+    PresentContextualCue();
+  }
 }
 
 void ContextualCueingTabHelper::InvalidateCue() {
   active_category_type_.reset();
+  has_presented_cue_ = false;
+  DismissFeatureEngagementPromo();
   if (!cue_.has_value()) {
     return;
   }

@@ -125,6 +125,9 @@ class ContextualCueingTabHelper
   // Sets the location bar badge commands handler.
   void SetLocationBarBadgeCommandsHandler(id<LocationBarBadgeCommands> handler);
 
+  // Sets the Gemini commands handler.
+  void SetGeminiHandler(id<GeminiCommands> handler);
+
   // Returns the prepopulated prompt for the active contextual cue, or nil if
   // no cue or prompt is available.
   NSString* GetContextualCuePrompt() const;
@@ -211,6 +214,10 @@ class ContextualCueingTabHelper
   void NotifyContextualCueReceived(
       std::optional<optimization_guide::proto::ContextualCue> cue);
 
+  // Automatically presents the current contextual cue on the appropriate UI
+  // surface (infobar or omnibox chip). Returns true if presentation succeeded.
+  bool PresentContextualCue();
+
   // Clears `cue_` and notifies observers that the cue is no longer valid. No-op
   // if there is no cue.
   void InvalidateCue();
@@ -265,6 +272,8 @@ class ContextualCueingTabHelper
   std::optional<optimization_guide::proto::ContextualCue> cue_;
   // The UI surface (`kMessage` or `kOmniboxChip`) selected for `cue_`.
   std::optional<ContextualCueUiType> cue_ui_type_;
+  // Whether `cue_` has already been presented on a UI surface.
+  bool has_presented_cue_ = false;
   bool is_model_execution_in_flight_ = false;
 
   std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry_;
@@ -276,6 +285,8 @@ class ContextualCueingTabHelper
 
   // Handler for dispatching location bar badge commands.
   id<LocationBarBadgeCommands> location_bar_badge_handler_ = nil;
+  // Handler for dispatching Gemini commands.
+  id<GeminiCommands> gemini_handler_ = nil;
 
   base::WeakPtrFactory<ContextualCueingTabHelper> weak_ptr_factory_{this};
 };
