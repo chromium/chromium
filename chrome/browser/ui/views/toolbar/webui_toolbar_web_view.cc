@@ -119,6 +119,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_util_mac.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace {
 
 using Code = mojo_base::mojom::Code;
@@ -154,11 +158,15 @@ WebUIToolbarUI* GetWebUIToolbarUIFromWebContents(
   return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
 }
 
+#if BUILDFLAG(IS_MAC)
+
 //  The approach used by RoundedOmniboxResultsFrame on Mac to forward mouse
 //  events received by the popup to the underlying windows ultimately ends up
 //  with the event received at Views level at NativeViewHost, which doesn't know
 //  what to do with them. This is set up as a fallback handler to receive these,
-//  and forward them on further till the WebView.
+//  and forward them on further till the WebView. It also reconstructs
+//  double- (and triple-) clicks, since they might get broken by the coordinate
+//  change of the popup showing.
 class WebUIToolbarEventForwarder : public ui::EventHandler {
  public:
   WebUIToolbarEventForwarder(WebUIToolbarControlDelegate& control_delegate,
@@ -176,11 +184,60 @@ class WebUIToolbarEventForwarder : public ui::EventHandler {
       // handling and it doesn't seem like we actually do anything with them.
       return;
     }
+    std::optional<int> adjusted_click_count;
+
+    // We only adjust mouse press events since blink generally doesn't pay
+    // attention to click counts on releases (copying them from press);
+    // except in some scenarios involving pointer lock --- see
+    // `blink::MouseEventManager::SetClickCount`.
     if (event->type() == ui::EventType::kMousePressed) {
+      // Convert us to screen coordinates so that we can figure out if we're
+      // continuing a click sequence started without a popup open;
+      // normal double-click detection would fail due to coordinate space
+      // change. (This actually keeps going afterwards, too).
+      std::unique_ptr<ui::MouseEvent> adjusted_event;
+      ui::MouseEvent* base_for_repeated = nullptr;
+      if (monitor_ && event->target()) {
+        auto location = event->target()->GetScreenLocation(*event);
+        adjusted_event = WebUIToolbarPressMonitor::CloneMouseEvent(event);
+        adjusted_event->set_location(location);
+
+        ui::MouseEvent* last_adjusted = OverallLastAdjusted(*event);
+        if (last_adjusted &&
+            last_adjusted->time_stamp() != adjusted_event->time_stamp() &&
+            ui::MouseEvent::IsRepeatedClickEvent(*last_adjusted,
+                                                 *adjusted_event)) {
+          base_for_repeated = last_adjusted;
+        }
+      }
+
+      if (base_for_repeated) {
+        adjusted_click_count =
+            std::min(3, base_for_repeated->GetClickCount() + 1);
+        // Make sure to store the new count with the saved adjusted event;
+        // it matters if we're going to produce a triple-click.
+        adjusted_event->SetClickCount(*adjusted_click_count);
+        monitor_->ClearLastAdjusted();
+      }
+      last_adjusted_event_ = std::move(adjusted_event);
+
+      // Make sure that focus gets grabbed; our strange arrangement can
+      // prevent the normal ways of this happening.
       web_view_->RequestFocus();
     }
-    target->ForwardMouseEvent(ui::MakeWebMouseEvent(*event));
+    blink::WebMouseEvent blink_event = ui::MakeWebMouseEvent(*event);
+    if (adjusted_click_count) {
+      blink_event.click_count = *adjusted_click_count;
+    }
+    target->ForwardMouseEvent(std::move(blink_event));
   }
+
+  void AddedToWidget() {
+    monitor_ = std::make_unique<WebUIToolbarPressMonitor>(
+        control_delegate_->GetBrowser(), *web_view_);
+  }
+
+  void RemovedFromWidget() { monitor_.reset(); }
 
   bool HaveOpenOmniboxPopup() {
     auto* bwi = control_delegate_->GetBrowser();
@@ -196,10 +253,31 @@ class WebUIToolbarEventForwarder : public ui::EventHandler {
     return location_bar->GetOmniboxController()->IsPopupOpen();
   }
 
+  ui::MouseEvent* OverallLastAdjusted(const ui::MouseEvent& to_disregard) {
+    auto* ours = last_adjusted_event_.get();
+    auto* monitors = monitor_->LastAdjustedDisregarding(to_disregard);
+    if (!ours) {
+      return monitors;
+    }
+    if (!monitors) {
+      return ours;
+    }
+
+    // In case of a tie, prefers our, since that's the copy that has the
+    // count increased (for triple-click case).
+    return ours->time_stamp() >= monitors->time_stamp() ? ours : monitors;
+  }
+
  private:
   const raw_ref<WebUIToolbarControlDelegate> control_delegate_;
   const raw_ref<views::WebView> web_view_;
+  std::unique_ptr<WebUIToolbarPressMonitor> monitor_;
+
+  // Last mouse press we got, with location adjusted to screen coordinates.
+  std::unique_ptr<ui::MouseEvent> last_adjusted_event_;
 };
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -323,6 +401,18 @@ class WebUIToolbarInternalWebView : public views::WebView {
     views::WebView::OnBlur();
     webui_toolbar_web_view_->OnBlur();
   }
+
+#if BUILDFLAG(IS_MAC)
+  void AddedToWidget() override {
+    views::WebView::AddedToWidget();
+    forwarder_->AddedToWidget();
+  }
+
+  void RemovedFromWidget() override {
+    views::WebView::RemovedFromWidget();
+    forwarder_->RemovedFromWidget();
+  }
+#endif
 
   std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
     std::optional<GURL> url;

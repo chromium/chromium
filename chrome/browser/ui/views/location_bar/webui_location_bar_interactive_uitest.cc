@@ -60,6 +60,8 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/range/range.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 #include "ui/views/mouse_constants.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
@@ -1912,6 +1914,67 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, DoubleClick2) {
       SynthesizeDoubleClickInToolbarWebUI(),
       WaitTillOmniboxViewText("https://local.test"),
       WaitTillOmniboxViewSelection("test", gfx::Range(14, 18)));
+}
+
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MacDoubleClick MacDoubleClick
+#else
+#define MAYBE_MacDoubleClick DISABLED_MacDoubleClick
+#endif
+
+// Test to make sure we can turn a second-click of a two-click sequence where
+// the second click is to the popup into a double-click. This is run only on
+// Mac since that's where the code it covers is, and sending two separate clicks
+// is flakey on slow bots like ASAN ones, which tend to be non-Mac. The test
+// does work on at least Linux as well, though.
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       MAYBE_MacDoubleClick) {
+#if BUILDFLAG(IS_MAC)
+  // Mac likes to make selections non-directional by default, and this test
+  // has it setting one rather than our code.
+  const bool expect_no_dir = true;
+#else
+  const bool expect_no_dir = false;
+#endif
+  PORT_UNFINISHED(Mode::kFull, "Not yet ported");
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      HandleAutofocus(), WaitTillOmniboxViewText("about:blank"),
+      WaitTillOmniboxViewSelection("about:blank", gfx::Range(11, 0)),
+      FocusTab(), NavigateWebContents(kTabId, GURL("https://local.test")),
+      // Navigation will deactivate any full popup
+      WaitTillOmniboxViewText("local.test", View::kStatic),
+      WaitTillOmniboxViewSelection("", gfx::Range(10), View::kStatic),
+      InAnyContext(MoveMouseTo(kOmniboxElementId)), InSameContext(ClickMouse()),
+      WaitForPopupShow(),
+      // Make sure the second click goes to the right popup frame.
+      Do([&]() {
+        auto frames = views::ElementTrackerViews::GetInstance()
+                          ->GetAllMatchingViewsInAnyContext(
+                              OmniboxPopupPresenterBase::kRoundedResultsFrame);
+        views::View* popup_frame = nullptr;
+        for (views::View* candidate : frames) {
+          if (candidate->GetBoundsInScreen().height() > 100) {
+            popup_frame = candidate;
+          }
+        }
+        ASSERT_TRUE(popup_frame);
+        auto click_gesture =
+            views::test::InteractionTestUtilMouse::Click(ui_controls::LEFT);
+        gfx::NativeWindow native_window =
+            popup_frame->GetWidget()->GetNativeWindow();
+        ASSERT_TRUE(mouse_util().PerformGestures(
+            views::test::InteractionTestUtilMouse::GestureParams(native_window),
+            click_gesture));
+      }),
+      // The URL is unelided, and "test" is selected (since the mouse
+      // is in the middle of the element and the URL is short, it's the last
+      // word that gets selected).
+      WaitTillOmniboxViewText("https://local.test"),
+      WaitTillOmniboxViewSelection("test", gfx::Range(14, 18), View::kEditable,
+                                   expect_no_dir));
 }
 
 // The context menu tests don't appear to work on Mac.
