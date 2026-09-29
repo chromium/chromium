@@ -212,9 +212,6 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
     return true;
   }
   if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return false;
-    }
     return true;
   }
 
@@ -574,10 +571,7 @@ bool OffscreenCanvasRenderingContext2D::IsResourceProviderValid() const {
   if (shared_image_provider_) {
     return shared_image_provider_->IsValid();
   }
-  if (bitmap_provider_) {
-    return bitmap_provider_->IsValid();
-  }
-  return false;
+  return bitmap_provider_ != nullptr;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()

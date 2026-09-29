@@ -43,8 +43,8 @@ TEST_F(Canvas2DBitmapProviderTest, Create) {
                                    /*has_alpha=*/true);
   auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
 
+  ASSERT_TRUE(provider);
   EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider && provider->IsValid());
   EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
 }
 
@@ -57,7 +57,7 @@ TEST_F(Canvas2DBitmapProviderTest, HdrMetadata) {
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
   auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
-  EXPECT_TRUE(provider && provider->IsValid());
+  ASSERT_TRUE(provider);
   scoped_refptr<StaticBitmapImage> snapshot = provider->Snapshot();
   EXPECT_TRUE(snapshot);
   EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);

@@ -68,7 +68,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   ~Canvas2DBitmapProvider() override;
 
-  bool IsValid() const { return true; }
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }

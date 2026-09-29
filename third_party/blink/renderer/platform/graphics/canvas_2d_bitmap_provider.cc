@@ -125,9 +125,6 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
 scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::Snapshot");
-  if (!IsValid()) {
-    return nullptr;
-  }
 
   cc::PaintImage paint_image;
 
@@ -185,7 +182,6 @@ void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
 }
 
 void Canvas2DBitmapProvider::ClearAtCreation() {
-  DCHECK(IsValid());
   MemoryManagedPaintRecorder recorder(Size(), nullptr);
   if (GetAlphaType() == kOpaque_SkAlphaType) {
     recorder.getRecordingCanvas().clear(SkColors::kBlack);
@@ -218,7 +214,6 @@ bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
                                          int x,
                                          int y) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::WritePixels");
-  DCHECK(IsValid());
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(

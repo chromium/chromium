@@ -1221,10 +1221,7 @@ bool CanvasRenderingContext2D::IsResourceProviderValid() const {
   if (shared_image_provider_) {
     return shared_image_provider_->IsValid();
   }
-  if (bitmap_provider_) {
-    return bitmap_provider_->IsValid();
-  }
-  return false;
+  return bitmap_provider_ != nullptr;
 }
 
 Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
@@ -1266,9 +1263,6 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
     return true;
   }
   if (bitmap_provider_) {
-    if (!bitmap_provider_->IsValid()) {
-      return false;
-    }
     return true;
   }
 
