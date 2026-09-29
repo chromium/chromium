@@ -10,10 +10,13 @@
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/task_environment.h"
+#import "base/values.h"
 #import "components/device_signals/core/browser/mock_signals_aggregator.h"
 #import "components/enterprise/device_trust/core/device_trust_service.h"
+#import "components/enterprise/device_trust/prefs.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/policy/core/common/management/management_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
@@ -39,26 +42,22 @@ class DeviceTrustServiceFactoryIOSTest : public PlatformTest {
         DeviceTrustServiceFactoryIOS::GetInstance(),
         DeviceTrustServiceFactoryIOS::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-
-    management_service_ =
-        policy::BrowserManagementServiceFactory::GetForProfile(profile_.get());
-    ASSERT_TRUE(management_service_);
-    management_service_->SetManagementAuthoritiesForTesting(
-        policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
   }
 
   void SetManagementAuthority(policy::EnterpriseManagementAuthority authority) {
-    management_service_->SetManagementAuthoritiesForTesting(authority);
+    policy::BrowserManagementService* management_service =
+        policy::BrowserManagementServiceFactory::GetForProfile(profile_.get());
+    ASSERT_TRUE(management_service);
+    management_service->SetManagementAuthoritiesForTesting(authority);
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<policy::BrowserManagementService> management_service_ = nullptr;
 };
 
-// Verifies that the factory creates a service for a managed regular profile
-// even when the connector is not enabled by policy.
-TEST_F(DeviceTrustServiceFactoryIOSTest, CreateService) {
+// Verifies that an unmanaged regular profile gets a service that is disabled.
+TEST_F(DeviceTrustServiceFactoryIOSTest, CreateDisabledServiceForUnmanaged) {
+  SetManagementAuthority(policy::EnterpriseManagementAuthority::NONE);
   enterprise_connectors::DeviceTrustService* service =
       DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
@@ -70,66 +69,54 @@ TEST_F(DeviceTrustServiceFactoryIOSTest, ReturnSameInstance) {
   enterprise_connectors::DeviceTrustService* first_service =
       DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get());
   ASSERT_TRUE(first_service);
-
-  enterprise_connectors::DeviceTrustService* second_service =
-      DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get());
-  EXPECT_EQ(first_service, second_service);
+  EXPECT_EQ(first_service,
+            DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get()));
 }
 
-// Verifies that unmanaged profiles do not instantiate a service.
-TEST_F(DeviceTrustServiceFactoryIOSTest, UnmanagedProfileReturnsNull) {
-  TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(IOSSignalsAggregatorFactory::GetInstance(),
-                            base::BindOnce(&BuildMockSignalsAggregator));
-  builder.AddTestingFactory(DeviceTrustServiceFactoryIOS::GetInstance(),
-                            DeviceTrustServiceFactoryIOS::GetDefaultFactory());
-  std::unique_ptr<TestProfileIOS> unmanaged_profile =
-      std::move(builder).Build();
+// Verifies that the service does not change when the management authority
+// changes (e.g. after enrollment).
+TEST_F(DeviceTrustServiceFactoryIOSTest,
+       ReturnSameInstanceWhenManagementChanges) {
+  SetManagementAuthority(policy::EnterpriseManagementAuthority::NONE);
+  enterprise_connectors::DeviceTrustService* service =
+      DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get());
+  ASSERT_TRUE(service);
+  SetManagementAuthority(policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+  EXPECT_EQ(service,
+            DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get()));
+  SetManagementAuthority(policy::EnterpriseManagementAuthority::NONE);
+  EXPECT_EQ(service,
+            DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get()));
+}
 
-  policy::BrowserManagementService* management_service =
-      policy::BrowserManagementServiceFactory::GetForProfile(
-          unmanaged_profile.get());
-  ASSERT_TRUE(management_service);
-  management_service->SetManagementAuthoritiesForTesting(
-      policy::EnterpriseManagementAuthority::NONE);
-
-  EXPECT_FALSE(
-      DeviceTrustServiceFactoryIOS::GetForProfile(unmanaged_profile.get()));
+// Verifies that setting the allowlist policy enables the existing service.
+TEST_F(DeviceTrustServiceFactoryIOSTest, EnableServiceWithManagedAllowlist) {
+  enterprise_connectors::DeviceTrustService* service =
+      DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get());
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->IsEnabled());
+  profile_->GetTestingPrefService()->SetManagedPref(
+      enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
+      base::ListValue().Append("https://example.com"));
+  EXPECT_TRUE(service->IsEnabled());
+  EXPECT_EQ(service,
+            DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get()));
 }
 
 // Verifies that off-the-record profiles do not receive a service instance.
 TEST_F(DeviceTrustServiceFactoryIOSTest, OffTheRecordReturnsNull) {
   ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile);
-
-  policy::BrowserManagementService* management_service =
-      policy::BrowserManagementServiceFactory::GetForProfile(otr_profile);
-  ASSERT_TRUE(management_service);
-  management_service->SetManagementAuthoritiesForTesting(
-      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-
-  enterprise_connectors::DeviceTrustService* service =
-      DeviceTrustServiceFactoryIOS::GetForProfile(otr_profile);
-  EXPECT_FALSE(service);
+  EXPECT_FALSE(DeviceTrustServiceFactoryIOS::GetForProfile(otr_profile));
 }
 
 // Verifies that testing profiles do not instantiate a service by default
-// (even when managed) unless explicitly configured via `AddTestingFactory`.
+// unless explicitly configured via `AddTestingFactory`.
 TEST_F(DeviceTrustServiceFactoryIOSTest, TestingProfileReturnsNullByDefault) {
-  TestProfileIOS::Builder builder;
   std::unique_ptr<TestProfileIOS> unconfigured_profile =
-      std::move(builder).Build();
-
-  policy::BrowserManagementService* management_service =
-      policy::BrowserManagementServiceFactory::GetForProfile(
-          unconfigured_profile.get());
-  ASSERT_TRUE(management_service);
-
-  management_service->SetManagementAuthoritiesForTesting(
-      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
-  enterprise_connectors::DeviceTrustService* service =
-      DeviceTrustServiceFactoryIOS::GetForProfile(unconfigured_profile.get());
-  EXPECT_FALSE(service);
+      TestProfileIOS::Builder().Build();
+  EXPECT_FALSE(
+      DeviceTrustServiceFactoryIOS::GetForProfile(unconfigured_profile.get()));
 }
 
 }  // namespace

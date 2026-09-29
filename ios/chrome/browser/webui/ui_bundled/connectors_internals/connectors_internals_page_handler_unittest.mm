@@ -24,10 +24,13 @@
 #import "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #import "components/enterprise/device_trust/core/device_trust_service.h"
 #import "components/enterprise/device_trust/core/signals/signals_service.h"
+#import "components/policy/core/common/management/management_service.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_connector_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
@@ -108,6 +111,30 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
   }
 
  protected:
+  void SetManagementAuthority(ProfileIOS* profile,
+                              policy::EnterpriseManagementAuthority authority) {
+    policy::BrowserManagementService* management_service =
+        policy::BrowserManagementServiceFactory::GetForProfile(profile);
+    ASSERT_TRUE(management_service);
+    management_service->SetManagementAuthoritiesForTesting(authority);
+  }
+
+  std::unique_ptr<TestProfileIOS> BuildProfileWithFakeDeviceTrustService() {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        DeviceTrustServiceFactoryIOS::GetInstance(),
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              base::DictValue signals;
+              signals.Set("test_signal_key", "test_signal_value");
+              return std::make_unique<FakeDeviceTrustService>(
+                  /*is_enabled=*/true, std::move(signals),
+                  DeviceTrustConnectorServiceFactoryIOS::GetForProfile(
+                      profile));
+            }));
+    return std::move(builder).Build();
+  }
+
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -269,25 +296,55 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   EXPECT_TRUE(state->policy_enabled_levels.empty());
 }
 
-// Tests that GetDeviceTrustState returns unsupported state when the
-// DeviceTrustService is null for the profile.
+// Tests that GetDeviceTrustState returns unsupported state for a managed
+// profile without a DeviceTrustService (no testing factory, so the factory
+// returns null because of `kNoServiceForTests`).
 TEST_F(ConnectorsInternalsPageHandlerTest,
        GetDeviceTrustState_FeatureEnabled_NoDeviceTrustService) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
-
+  SetManagementAuthority(profile_.get(),
+                         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+  ASSERT_FALSE(DeviceTrustServiceFactoryIOS::GetForProfile(profile_.get()));
   base::test::TestFuture<connectors_internals::mojom::DeviceTrustStatePtr>
       future;
   page_handler_->GetDeviceTrustState(future.GetCallback());
   auto state = future.Take();
-
   ASSERT_TRUE(state);
   EXPECT_FALSE(state->is_enabled);
   ASSERT_TRUE(state->key_info);
   EXPECT_EQ(
       state->key_info->is_key_manager_initialized,
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED);
+}
+
+// Tests that GetDeviceTrustState returns unsupported state for an unmanaged
+// profile, even though a DeviceTrustService exists for it.
+TEST_F(ConnectorsInternalsPageHandlerTest,
+       GetDeviceTrustState_FeatureEnabled_UnmanagedProfile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
+  std::unique_ptr<TestProfileIOS> test_profile =
+      BuildProfileWithFakeDeviceTrustService();
+  SetManagementAuthority(test_profile.get(),
+                         policy::EnterpriseManagementAuthority::NONE);
+  ASSERT_TRUE(DeviceTrustServiceFactoryIOS::GetForProfile(test_profile.get()));
+  mojo::Remote<connectors_internals::mojom::PageHandler> test_page_handler;
+  ConnectorsInternalsPageHandler test_handler(
+      test_page_handler.BindNewPipeAndPassReceiver(), test_profile.get());
+  base::test::TestFuture<connectors_internals::mojom::DeviceTrustStatePtr>
+      future;
+  test_page_handler->GetDeviceTrustState(future.GetCallback());
+  auto state = future.Take();
+  ASSERT_TRUE(state);
+  EXPECT_FALSE(state->is_enabled);
+  ASSERT_TRUE(state->key_info);
+  EXPECT_EQ(
+      state->key_info->is_key_manager_initialized,
+      connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED);
+  EXPECT_TRUE(state->signals_json.empty());
 }
 
 // Tests that GetDeviceTrustState returns device trust details and formatted
@@ -298,17 +355,10 @@ TEST_F(ConnectorsInternalsPageHandlerTest,
   scoped_feature_list.InitAndEnableFeature(
       enterprise_connectors::features::kEnableIOSDeviceTrustConnector);
 
-  TestProfileIOS::Builder builder;
-  builder.AddTestingFactory(
-      DeviceTrustServiceFactoryIOS::GetInstance(),
-      base::BindOnce([](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-        base::DictValue signals;
-        signals.Set("test_signal_key", "test_signal_value");
-        return std::make_unique<FakeDeviceTrustService>(
-            /*is_enabled=*/true, std::move(signals),
-            DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile));
-      }));
-  std::unique_ptr<TestProfileIOS> test_profile = std::move(builder).Build();
+  std::unique_ptr<TestProfileIOS> test_profile =
+      BuildProfileWithFakeDeviceTrustService();
+  SetManagementAuthority(test_profile.get(),
+                         policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 
   mojo::Remote<connectors_internals::mojom::PageHandler> test_page_handler;
   ConnectorsInternalsPageHandler test_handler(

@@ -28,19 +28,11 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_key_manager_ios.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
-#import "ios/chrome/browser/policy/model/browser_management_service.h"
-#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
-
-bool IsProfileManaged(ProfileIOS* profile) {
-  policy::BrowserManagementService* management_service =
-      policy::BrowserManagementServiceFactory::GetForProfile(profile);
-  return management_service && management_service->IsManaged();
-}
 
 DeviceTrustKeyManagerIOS* GetDeviceTrustKeyManager() {
   static base::NoDestructor<DeviceTrustKeyManagerIOS> key_manager;
@@ -74,10 +66,6 @@ policy::CloudPolicyStore* GetUserCloudPolicyStore(ProfileIOS* profile) {
 }
 
 std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
-  if (!IsProfileManaged(profile)) {
-    return nullptr;
-  }
-
   enterprise_connectors::DeviceTrustConnectorService* connector_service =
       DeviceTrustConnectorServiceFactoryIOS::GetForProfile(profile);
 
@@ -87,6 +75,8 @@ std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
   enterprise::ProfileIdService* profile_id_service =
       enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile);
 
+  // Only conditions that are fixed for the profile's lifetime may return
+  // nullptr here, because the keyed service framework caches a nullptr result.
   if (!connector_service || !signals_aggregator || !profile_id_service) {
     return nullptr;
   }
@@ -147,7 +137,6 @@ DeviceTrustServiceFactoryIOS::DeviceTrustServiceFactoryIOS()
                                     ProfileSelection::kNoInstanceInIncognito,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(DeviceTrustConnectorServiceFactoryIOS::GetInstance());
-  DependsOn(policy::BrowserManagementServiceFactory::GetInstance());
   DependsOn(IOSSignalsAggregatorFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }

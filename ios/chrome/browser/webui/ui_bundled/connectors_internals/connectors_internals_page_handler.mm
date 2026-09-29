@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_connector_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
+#import "ios/chrome/browser/policy/model/browser_management_service.h"
+#import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
@@ -48,6 +50,17 @@ void ConnectorsInternalsPageHandler::GetDeviceTrustState(
 
   if (!base::FeatureList::IsEnabled(
           enterprise_connectors::features::kEnableIOSDeviceTrustConnector)) {
+    std::move(callback).Run(
+        enterprise_connectors::utils::CreateUnsupportedDeviceTrustState());
+    return;
+  }
+
+  // Device trust diagnostics are only shown for managed profiles. Check
+  // management rather than `IsEnabled()` so that managed profiles without an
+  // allowlist policy still see the signals.
+  policy::BrowserManagementService* management_service =
+      policy::BrowserManagementServiceFactory::GetForProfile(profile_);
+  if (!management_service || !management_service->IsManaged()) {
     std::move(callback).Run(
         enterprise_connectors::utils::CreateUnsupportedDeviceTrustState());
     return;

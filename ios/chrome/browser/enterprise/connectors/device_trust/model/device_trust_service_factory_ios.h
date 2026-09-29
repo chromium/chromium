@@ -19,6 +19,10 @@ class DeviceTrustService;
 // Factory for creating `DeviceTrustService` instances on iOS.
 class DeviceTrustServiceFactoryIOS : public ProfileKeyedServiceFactoryIOS {
  public:
+  // Returns the DeviceTrustService for `profile`. Non-null for regular
+  // profiles; null for off-the-record profiles and in tests without a testing
+  // factory. A non-null result does not mean Device Trust is enabled: callers
+  // starting a Device Trust flow must check IsEnabled().
   static enterprise_connectors::DeviceTrustService* GetForProfile(
       ProfileIOS* profile);
   static DeviceTrustServiceFactoryIOS* GetInstance();
