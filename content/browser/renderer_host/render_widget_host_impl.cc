@@ -531,6 +531,8 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
   if (!destroyed_) {
     Destroy(false);
   }
+
+  DetachDelegate();
 }
 
 // static
@@ -2652,6 +2654,7 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   // destroyed) and detached first.
   if (delegate_) {
     delegate_->RenderWidgetDeleted(this);
+    DetachDelegate();
   }
 
   if (also_delete) {
@@ -2786,11 +2789,13 @@ void RenderWidgetHostImpl::SetPopupBounds(const gfx::Rect& bounds,
 
 input::RenderWidgetHostInputEventRouter*
 RenderWidgetHostImpl::GetInputEventRouter() {
-  return delegate()->GetInputEventRouter();
+  return delegate() ? delegate()->GetInputEventRouter() : nullptr;
 }
 
 input::RenderWidgetHostViewInput* RenderWidgetHostImpl::GetPointerLockView() {
-  return delegate()->GetPointerLockWidget()->GetView();
+  RenderWidgetHostImpl* widget =
+      delegate() ? delegate()->GetPointerLockWidget() : nullptr;
+  return widget ? widget->GetView() : nullptr;
 }
 
 void RenderWidgetHostImpl::ForwardDelegatedInkPoint(
