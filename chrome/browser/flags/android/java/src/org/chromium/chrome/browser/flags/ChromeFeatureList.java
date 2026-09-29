@@ -301,6 +301,7 @@ public abstract class ChromeFeatureList {
             "AndroidSaveCardNonBlockingDialog";
     public static final String ANDROID_SETTINGS_URL = "AndroidSettingsUrl";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
+    public static final String ANDROID_SET_GOOGLE_ACCOUNT_IN_HELP = "AndroidSetGoogleAccountInHelp";
     public static final String ANDROID_STARTUP_IMPROVEMENTS = "AndroidStartupImprovements";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX =

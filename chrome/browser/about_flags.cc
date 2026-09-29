@@ -7942,6 +7942,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-p-link-in-help", flag_descriptions::kUsePLinkInHelpName,
      flag_descriptions::kUsePLinkInHelpDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUsePLinkInHelp)},
+
+    {"android-set-google-account-in-help",
+     flag_descriptions::kAndroidSetGoogleAccountInHelpName,
+     flag_descriptions::kAndroidSetGoogleAccountInHelpDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSetGoogleAccountInHelp)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"gemini-antiscam-protections-metrics-only",

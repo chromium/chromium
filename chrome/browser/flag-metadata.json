@@ -494,6 +494,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "android-set-google-account-in-help",
+    "owners": ["spdonghao@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-settings-url",
     "owners": [ "jinsukkim@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 152
