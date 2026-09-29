@@ -860,6 +860,12 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE static bool FreeProlog(void* object,
                                           const PartitionRoot* root);
 
+  // Returns true if PartitionAllocHook overrides the memory deallocation.
+  template <FreeFlags flags>
+  PA_ALWAYS_INLINE static bool FreeObserverAndFilterFreeOverrideHook(
+      void* object,
+      const PartitionRoot* root);
+
   // Returns whether a |bucket| from |this| root is direct-mapped. This function
   // does not touch |bucket|, contrary to  PartitionBucket::is_direct_mapped().
   //
@@ -885,6 +891,25 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE AllocInternalResult AllocInternal(size_t requested_size,
                                                      size_t alignment,
                                                      const char* type_name);
+  // Returns true if allocation override hooks is enabled and the hook overrides
+  // the memory allocation. In the case, the allocated memory is returned via
+  // `out`. Otherwise, returns false.
+  template <AllocFlags flags>
+  PA_ALWAYS_INLINE bool FilterAllocationOverrideHook(size_t requested_size,
+                                                     size_t alignment,
+                                                     const char* type_name,
+                                                     AllocInternalResult* out);
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // Returns true if memory tools overrides the memory allocation. Otherwise,
+  // returns false. In the case, the allocated memory is returned via
+  // `out`. Otherwise, returns false.
+  template <AllocFlags flags>
+  PA_ALWAYS_INLINE bool FilterAllocationMemoryToolOverride(
+      size_t requested_size,
+      size_t alignment,
+      const char* type_name,
+      AllocInternalResult* out);
+#endif  //  PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
   // Same as |AllocInternal()|, but don't handle allocation hooks.
   template <AllocFlags flags = AllocFlags::kNone>

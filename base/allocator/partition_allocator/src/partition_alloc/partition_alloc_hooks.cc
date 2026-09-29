@@ -21,7 +21,7 @@ internal::Lock& GetHooksLock() {
 
 }  // namespace
 
-std::atomic<bool> PartitionAllocHooks::hooks_enabled_(false);
+std::atomic<bool> PartitionAllocHooks::realloc_observer_hook_enabled_(false);
 std::atomic<PartitionAllocHooks::AllocationObserverHook*>
     PartitionAllocHooks::allocation_observer_hook_(nullptr);
 std::atomic<PartitionAllocHooks::FreeObserverHook*>
@@ -48,7 +48,8 @@ void PartitionAllocHooks::SetObserverHooks(AllocationObserverHook* alloc_hook,
   allocation_observer_hook_ = alloc_hook;
   free_observer_hook_ = free_hook;
 
-  hooks_enabled_ = allocation_observer_hook_ || allocation_override_hook_;
+  realloc_observer_hook_enabled_ =
+      allocation_observer_hook_ && free_observer_hook_;
 }
 
 void PartitionAllocHooks::SetOverrideHooks(AllocationOverrideHook* alloc_hook,
@@ -63,8 +64,6 @@ void PartitionAllocHooks::SetOverrideHooks(AllocationOverrideHook* alloc_hook,
   allocation_override_hook_ = alloc_hook;
   free_override_hook_ = free_hook;
   realloc_override_hook_ = realloc_hook;
-
-  hooks_enabled_ = allocation_observer_hook_ || allocation_override_hook_;
 }
 
 void PartitionAllocHooks::AllocationObserverHookIfEnabled(
@@ -79,9 +78,10 @@ bool PartitionAllocHooks::AllocationOverrideHookIfEnabled(
     AllocFlags flags,
     size_t size,
     const char* type_name,
-    std::optional<size_t> alignment) {
+    std::optional<size_t> alignment,
+    bool use_brp) {
   if (auto* hook = allocation_override_hook_.load(std::memory_order_relaxed)) {
-    return hook(out, flags, size, type_name, alignment);
+    return hook(out, flags, size, type_name, alignment, use_brp);
   }
   return false;
 }
@@ -93,9 +93,10 @@ void PartitionAllocHooks::FreeObserverHookIfEnabled(
   }
 }
 
-bool PartitionAllocHooks::FreeOverrideHookIfEnabled(void* address) {
+bool PartitionAllocHooks::FreeOverrideHookIfEnabled(void* address,
+                                                    FreeFlags flags) {
   if (auto* hook = free_override_hook_.load(std::memory_order_relaxed)) {
-    return hook(address);
+    return hook(address, flags);
   }
   return false;
 }

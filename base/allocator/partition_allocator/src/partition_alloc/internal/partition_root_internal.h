@@ -473,11 +473,38 @@ FreeNotificationData PartitionRoot::CreateFreeNotificationData(
 
 // static
 template <FreeFlags flags>
+PA_ALWAYS_INLINE bool PartitionRoot::FreeObserverAndFilterFreeOverrideHook(
+    void* object,
+    const PartitionRoot* root) {
+  if constexpr (ContainsFlags(flags, FreeFlags::kNoHooks)) {
+    return false;
+  }
+  if (PartitionAllocHooks::IsFreeObserverHookEnabled()) [[unlikely]] {
+    // A valid |root| might not be available if this function is called from
+    // |FreeInUnknownRoot| and not deducible if object originates from
+    // an override hook.
+    // TODO(crbug.com/40152647): See if we can make the root available more
+    // reliably or even make this function non-static.
+    auto notification_data = root ? root->CreateFreeNotificationData(object)
+                                  : CreateDefaultFreeNotificationData(object);
+    PartitionAllocHooks::FreeObserverHookIfEnabled(notification_data);
+  }
+  if (!PartitionAllocHooks::IsFreeOverrideHookEnabled()) [[likely]] {
+    return false;
+  }
+  return PartitionAllocHooks::FreeOverrideHookIfEnabled(object, flags);
+}
+
+// static
+template <FreeFlags flags>
 PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
                                                 const PartitionRoot* root) {
   static_assert(AreValidFlags(flags));
 #if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if constexpr (!ContainsFlags(flags, FreeFlags::kNoMemoryToolOverride)) {
+    if (FreeObserverAndFilterFreeOverrideHook<flags>(object, root)) {
+      return true;
+    }
 #if PA_BUILDFLAG(PA_COMPILER_MSVC)
     if (ContainsFlags(flags, FreeFlags::kAlignedFreeForMemoryTool)) {
       _aligned_free(object);
@@ -499,25 +526,7 @@ PA_ALWAYS_INLINE bool PartitionRoot::FreeProlog(void* object,
     return true;
   }
 
-  if constexpr (ContainsFlags(flags, FreeFlags::kNoHooks)) {
-    return false;
-  }
-
-  if (PartitionAllocHooks::AreHooksEnabled()) {
-    // A valid |root| might not be available if this function is called from
-    // |FreeInUnknownRoot| and not deducible if object originates from
-    // an override hook.
-    // TODO(crbug.com/40152647): See if we can make the root available more
-    // reliably or even make this function non-static.
-    auto notification_data = root ? root->CreateFreeNotificationData(object)
-                                  : CreateDefaultFreeNotificationData(object);
-    PartitionAllocHooks::FreeObserverHookIfEnabled(notification_data);
-    if (PartitionAllocHooks::FreeOverrideHookIfEnabled(object)) {
-      return true;
-    }
-  }
-
-  return false;
+  return FreeObserverAndFilterFreeOverrideHook<flags>(object, root);
 }
 
 // static
@@ -1304,103 +1313,158 @@ PartitionRoot::SizeToBucketSizeDetails(
 }
 
 template <AllocFlags flags>
+PA_ALWAYS_INLINE bool PartitionRoot::FilterAllocationOverrideHook(
+    size_t requested_size,
+    size_t alignment,
+    const char* type_name,
+    AllocInternalResult* out) {
+  if constexpr (ContainsFlags(flags, AllocFlags::kNoHooks) ||
+                ContainsFlags(flags, AllocFlags::kNoOverrideHooks)) {
+    return false;
+  }
+  if (!PartitionAllocHooks::IsAllocationOverrideHookEnabled()) [[likely]] {
+    return false;
+  }
+  PA_DCHECK(initialized_);
+  void* object = nullptr;
+
+  auto additional_flags = AllocFlags::kNone;
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+  if (IsMemoryTaggingEnabled()) {
+    additional_flags |= AllocFlags::kMemoryShouldBeTaggedForMte;
+  }
+#endif
+  // The override hooks will return false if it can't handle the request,
+  // i.e. due to unsupported flags. In this case, we forward the allocation
+  // request to the default mechanisms.
+  // TODO(crbug.com/40152647): See if we can make the forwarding more
+  // verbose to ensure that this situation doesn't go unnoticed.
+  std::optional<size_t> override_alignment = std::nullopt;
+  if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
+    override_alignment = alignment;
+  }
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  bool use_brp = brp_enabled();
+#else
+  constexpr bool use_brp = false;
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (!PartitionAllocHooks::AllocationOverrideHookIfEnabled(
+          &object, flags | additional_flags, requested_size, type_name,
+          override_alignment, use_brp)) {
+    return false;
+  }
+  PartitionAllocHooks::AllocationObserverHookIfEnabled(
+      CreateAllocationNotificationData(object, requested_size, type_name));
+  *out = {object, std::nullopt};
+  return true;
+}
+
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+template <AllocFlags flags>
+PA_ALWAYS_INLINE bool PartitionRoot::FilterAllocationMemoryToolOverride(
+    size_t requested_size,
+    size_t alignment,
+    const char* type_name,
+    AllocInternalResult* out) {
+  if constexpr (ContainsFlags(flags, AllocFlags::kNoMemoryToolOverride)) {
+    return false;
+  }
+
+  if (!AllocWithMemoryToolProlog<flags>(requested_size)) {
+    // Early return if AllocWithMemoryToolProlog returns false
+    *out = {nullptr, std::nullopt};
+    return true;
+  }
+
+  // If AllocationOverrideHooks is enabled, invoke the hook.
+  if (FilterAllocationOverrideHook<flags>(requested_size, alignment, type_name,
+                                          out)) {
+    return true;
+  }
+
+  void* result = nullptr;
+  // Taken from base::AlignedAlloc implementation.
+  if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
+    size_t slot_span_alignment =
+        std::max(alignment, internal::PartitionPageSize());
+
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
+    result = _aligned_malloc(requested_size, slot_span_alignment);
+#elif PA_BUILDFLAG(IS_ANDROID)
+    // Android technically supports posix_memalign(), but does not expose it
+    // in the current version of the library headers used by Chromium.
+    // Luckily, memalign() on Android returns pointers which can safely be
+    // used with free(), so we can use it instead.  Issue filed to document
+    // this: http://code.google.com/p/android/issues/detail?id=35391
+    result = memalign(slot_span_alignment, requested_size);
+#else
+    int ret = posix_memalign(&result, slot_span_alignment, requested_size);
+    if (ret != 0) {
+      result = nullptr;
+    }
+#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
+    // Aligned alloc functions don't have the `calloc` behavior of zeroing
+    // the allocated memory, so we need to do it manually.
+    if constexpr (ContainsFlags(flags, AllocFlags::kZeroFill)) {
+      if (result) {
+        // SAFETY: `result` is non-null and `requested_size` is the size of
+        // the allocation, so this is a valid range to zero out.
+        PA_UNSAFE_BUFFERS(memset(result, 0, requested_size));
+      }
+    }
+  } else {
+    constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
+    result = zero_fill ? calloc(1, requested_size) : malloc(requested_size);
+  }
+  if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
+    PA_CHECK(result);
+  }
+
+  if constexpr (!ContainsFlags(flags, AllocFlags::kNoHooks)) {
+    if (PartitionAllocHooks::IsAllocationObserverHookEnabled()) [[unlikely]] {
+      PartitionAllocHooks::AllocationObserverHookIfEnabled(
+          CreateAllocationNotificationData(result, requested_size, type_name));
+    }
+  }
+  *out = {result, std::nullopt};
+  return true;
+}
+#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
+template <AllocFlags flags>
 PA_ALWAYS_INLINE PartitionRoot::AllocInternalResult
 PartitionRoot::AllocInternal(size_t requested_size,
                              size_t alignment,
                              const char* type_name) {
   static_assert(AreValidFlags(flags));
+  static_assert(!ContainsFlags(
+      flags, AllocFlags::kMemoryShouldBeTaggedForMte));  // Internal only.
+
+  AllocInternalResult alloc_internal_result;
+#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  if (FilterAllocationMemoryToolOverride<flags>(
+          requested_size, alignment, type_name, &alloc_internal_result)) {
+    return alloc_internal_result;
+  }
+#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
+  if (FilterAllocationOverrideHook<flags>(requested_size, alignment, type_name,
+                                          &alloc_internal_result)) {
+    return alloc_internal_result;
+  }
+
   size_t slot_span_alignment = alignment;
   if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
     slot_span_alignment = std::max(alignment, internal::PartitionPageSize());
   }
   PA_DCHECK((slot_span_alignment >= internal::PartitionPageSize()) &&
             std::has_single_bit(slot_span_alignment));
-  static_assert(!ContainsFlags(
-      flags, AllocFlags::kMemoryShouldBeTaggedForMte));  // Internal only.
 
-#if PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  if constexpr (!ContainsFlags(flags, AllocFlags::kNoMemoryToolOverride)) {
-    if (!AllocWithMemoryToolProlog<flags>(requested_size)) {
-      // Early return if AllocWithMemoryToolProlog returns false
-      return {nullptr, std::nullopt};
-    }
-    void* result = nullptr;
-    // Taken from base::AlignedAlloc implementation.
-    if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
-#if PA_BUILDFLAG(PA_COMPILER_MSVC)
-      result = _aligned_malloc(requested_size, slot_span_alignment);
-#elif PA_BUILDFLAG(IS_ANDROID)
-      // Android technically supports posix_memalign(), but does not expose it
-      // in the current version of the library headers used by Chromium.
-      // Luckily, memalign() on Android returns pointers which can safely be
-      // used with free(), so we can use it instead.  Issue filed to document
-      // this: http://code.google.com/p/android/issues/detail?id=35391
-      result = memalign(slot_span_alignment, requested_size);
-#else
-      int ret = posix_memalign(&result, slot_span_alignment, requested_size);
-      if (ret != 0) {
-        result = nullptr;
-      }
-#endif  // PA_BUILDFLAG(PA_COMPILER_MSVC)
-      // Aligned alloc functions don't have the `calloc` behavior of zeroing
-      // the allocated memory, so we need to do it manually.
-      if constexpr (ContainsFlags(flags, AllocFlags::kZeroFill)) {
-        if (result) {
-          // SAFETY: `result` is non-null and `requested_size` is the size of
-          // the allocation, so this is a valid range to zero out.
-          PA_UNSAFE_BUFFERS(memset(result, 0, requested_size));
-        }
-      }
-    } else {
-      constexpr bool zero_fill = ContainsFlags(flags, AllocFlags::kZeroFill);
-      result = zero_fill ? calloc(1, requested_size) : malloc(requested_size);
-    }
-    if constexpr (!ContainsFlags(flags, AllocFlags::kReturnNull)) {
-      PA_CHECK(result);
-    }
-    return {result, std::nullopt};
-  }
-#endif  // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
-
-  constexpr bool no_hooks = ContainsFlags(flags, AllocFlags::kNoHooks);
-  bool hooks_enabled;
-
-  if constexpr (!no_hooks) {
-    PA_DCHECK(initialized_);
-    void* object = nullptr;
-    hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
-    if (hooks_enabled) {
-      auto additional_flags = AllocFlags::kNone;
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-      if (IsMemoryTaggingEnabled()) {
-        additional_flags |= AllocFlags::kMemoryShouldBeTaggedForMte;
-      }
-#endif
-      // The override hooks will return false if it can't handle the request,
-      // i.e. due to unsupported flags. In this case, we forward the allocation
-      // request to the default mechanisms.
-      // TODO(crbug.com/40152647): See if we can make the forwarding more
-      // verbose to ensure that this situation doesn't go unnoticed.
-      std::optional<size_t> override_alignment = std::nullopt;
-      if constexpr (ContainsFlags(flags, AllocFlags::kAlignedAlloc)) {
-        override_alignment = alignment;
-      }
-      if (PartitionAllocHooks::AllocationOverrideHookIfEnabled(
-              &object, flags | additional_flags, requested_size, type_name,
-              override_alignment)) {
-        PartitionAllocHooks::AllocationObserverHookIfEnabled(
-            CreateAllocationNotificationData(object, requested_size,
-                                             type_name));
-        return {object, std::nullopt};
-      }
-    }
-  }
-
-  AllocInternalResult alloc_internal_result =
+  alloc_internal_result =
       AllocInternalNoHooks<flags>(requested_size, slot_span_alignment);
 
-  if constexpr (!no_hooks) {
-    if (hooks_enabled) [[unlikely]] {
+  if constexpr (!ContainsFlags(flags, AllocFlags::kNoHooks)) {
+    if (PartitionAllocHooks::IsAllocationObserverHookEnabled()) [[unlikely]] {
       PartitionAllocHooks::AllocationObserverHookIfEnabled(
           CreateAllocationNotificationData(alloc_internal_result.object,
                                            requested_size, type_name));
@@ -1786,10 +1850,10 @@ void* PartitionRoot::ReallocInline(void* ptr,
   }
 
   constexpr bool no_hooks = ContainsFlags(alloc_flags, AllocFlags::kNoHooks);
-  const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
   size_t old_usable_size = 0;
-  if (!no_hooks && hooks_enabled) [[unlikely]] {
+  if (!no_hooks && PartitionAllocHooks::IsReallocOverrideHookEnabled())
+      [[unlikely]] {
     overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
         &old_usable_size, ptr);
   }
@@ -1815,7 +1879,8 @@ void* PartitionRoot::ReallocInline(void* ptr,
       }
     }
     if (success) {
-      if (!no_hooks && hooks_enabled) [[unlikely]] {
+      if (!no_hooks && PartitionAllocHooks::IsReallocObserverHookEnabled())
+          [[unlikely]] {
         PartitionAllocHooks::ReallocObserverHookIfEnabled(
             CreateFreeNotificationData(ptr),
             CreateAllocationNotificationData(ptr, new_size, type_name));

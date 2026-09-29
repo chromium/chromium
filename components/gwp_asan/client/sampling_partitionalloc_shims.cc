@@ -32,7 +32,8 @@ bool AllocationHook(void** out,
                     partition_alloc::AllocFlags flags,
                     size_t size,
                     const char* type_name,
-                    std::optional<size_t> alignment) {
+                    std::optional<size_t> alignment,
+                    [[maybe_unused]] bool use_brp) {
   if (sampling_state.Sample(size)) [[unlikely]] {
     // Ignore allocation requests with unknown flags.
     // TODO(crbug.com/40277643): Add support for memory tagging in GWP-Asan.
@@ -53,7 +54,8 @@ bool AllocationHook(void** out,
   return false;
 }
 
-bool FreeHook(void* address) {
+bool FreeHook(void* address,
+              [[maybe_unused]] partition_alloc::FreeFlags flags) {
   if (gpa->PointerIsMine(address)) [[unlikely]] {
     gpa->Deallocate(address);
     return true;

@@ -4725,14 +4725,14 @@ TEST_P(PartitionAllocTest, OverrideHooks) {
 
   PartitionAllocHooks::SetOverrideHooks(
       [](void** out, AllocFlags flags, size_t size, const char* type_name,
-         std::optional<size_t> alignment) -> bool {
+         std::optional<size_t> alignment, bool use_brp) -> bool {
         if (size == kOverriddenSize && type_name == kOverriddenType) {
           *out = overridden_allocation;
           return true;
         }
         return false;
       },
-      [](void* address) -> bool {
+      [](void* address, FreeFlags flags) -> bool {
         if (address == overridden_allocation) {
           free_called = true;
           return true;
