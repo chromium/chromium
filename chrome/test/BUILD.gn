@@ -4890,7 +4890,6 @@ test("unit_tests") {
     "//chrome/browser/enterprise/connectors:unit_tests",
     "//chrome/browser/enterprise/connectors/analysis:unit_tests",
     "//chrome/browser/enterprise/connectors/device_trust:unit_tests",
-    "//chrome/browser/enterprise/connectors/device_trust/attestation/browser:unit_tests",
     "//chrome/browser/enterprise/connectors/device_trust/signals:unit_tests",
     "//chrome/browser/enterprise/core:unit_tests",
     "//chrome/browser/enterprise/data_protection:unit_tests",
