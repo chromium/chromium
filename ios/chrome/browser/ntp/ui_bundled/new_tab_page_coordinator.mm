@@ -2365,7 +2365,9 @@
 }
 
 - (void)showHomeBackgroundCustomizationPromoWithUIHandler:
-    (id<PromosManagerUIHandler>)uiHandler {
+            (id<PromosManagerUIHandler>)uiHandler
+                                shouldAlertFETOfDismissal:
+                                    (BOOL)shouldAlertFETOfDismissal {
   // The promo includes an in-product help bubble for the menu button itself.
   if (self.browser) {
     [HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands)
@@ -2374,9 +2376,10 @@
   }
 
   if (_customizationCoordinator) {
-    // Make sure to alert the coordinator that user education is active, so it
+    // Make sure to alert the coordinator if user education is active, so it
     // can alert the Feature Engagement Tracker on dismissal.
-    _customizationCoordinator.openedForUserEducation = YES;
+    _customizationCoordinator.openedForUserEducation =
+        shouldAlertFETOfDismissal;
     _customizationCoordinator.promosManagerUIHandler = uiHandler;
     return;
   }
@@ -2388,9 +2391,9 @@
                                HomeCustomizationEntrypoint::kPromo];
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
-  // Make sure to alert the coordinator that user education is active, so it can
+  // Make sure to alert the coordinator if user education is active, so it can
   // alert the Feature Engagement Tracker on dismissal.
-  _customizationCoordinator.openedForUserEducation = YES;
+  _customizationCoordinator.openedForUserEducation = shouldAlertFETOfDismissal;
   _customizationCoordinator.promosManagerUIHandler = uiHandler;
 }
 

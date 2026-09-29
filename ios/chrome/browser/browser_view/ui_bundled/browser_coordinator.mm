@@ -2936,7 +2936,9 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 }
 
 - (void)showHomeBackgroundCustomizationPromoWithUIHandler:
-    (id<PromosManagerUIHandler>)promosUIHandler {
+            (id<PromosManagerUIHandler>)promosUIHandler
+                                shouldAlertFETOfDismissal:
+                                    (BOOL)shouldAlertFETOfDismissal {
   // The promos manager tries to check if the current page is an NTP before
   // showing the promo, but asynchronous navigation can cause that to be
   // incorrect.
@@ -2945,7 +2947,9 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     return;
   }
   [_NTPCoordinator
-      showHomeBackgroundCustomizationPromoWithUIHandler:promosUIHandler];
+      showHomeBackgroundCustomizationPromoWithUIHandler:promosUIHandler
+                              shouldAlertFETOfDismissal:
+                                  shouldAlertFETOfDismissal];
 }
 
 #pragma mark - WebNavigationNTPDelegate
