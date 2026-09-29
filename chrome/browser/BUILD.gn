@@ -278,9 +278,13 @@ source_set("browser_process_platform_part") {
 source_set("chained_back_navigation_tracker") {
   public = [ "chained_back_navigation_tracker.h" ]
   sources = [ "chained_back_navigation_tracker.cc" ]
-  deps = [
+  public_deps = [
     "//base",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
+  deps = [
+    "//components/tabs:public",
     "//third_party/blink/public/common:headers",
     "//ui/base",
   ]

@@ -7,20 +7,28 @@
 
 #include "base/gtest_prod_util.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 // This class tracks chained back navigations (consecutive back navigations with
 // a short interval between them) by observing navigation events from
 // WebContents and providing functions to record back button clicks.
-class ChainedBackNavigationTracker
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<ChainedBackNavigationTracker> {
+class ChainedBackNavigationTracker : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(ChainedBackNavigationTracker);
+
+  ChainedBackNavigationTracker(tabs::TabInterface& tab,
+                               content::WebContents* contents);
   ~ChainedBackNavigationTracker() override;
 
   ChainedBackNavigationTracker(const ChainedBackNavigationTracker&) = delete;
   ChainedBackNavigationTracker& operator=(const ChainedBackNavigationTracker&) =
       delete;
+
+  static ChainedBackNavigationTracker* From(tabs::TabInterface* tab);
 
   // content::WebContentsObserver
   void DidStartNavigation(content::NavigationHandle* navigation) override;
@@ -49,8 +57,6 @@ class ChainedBackNavigationTracker
   static const uint32_t kMinimumChainedBackNavigationLength = 3u;
 
  private:
-  friend class content::WebContentsUserData<ChainedBackNavigationTracker>;
-
   FRIEND_TEST_ALL_PREFIXES(
       ChainedBackNavigationTrackerTest,
       ChainedBackNavigationStatus_ResetCountIfNonBackForwardNavigationHappens);
@@ -59,8 +65,6 @@ class ChainedBackNavigationTracker
   FRIEND_TEST_ALL_PREFIXES(
       ChainedBackNavigationTrackerBrowserTest,
       RendererInitiatedBackNavigationIsNotCountedAsChained);
-
-  explicit ChainedBackNavigationTracker(content::WebContents* contents);
 
   // Helper functions that modify the `last_back_navigation_time_` and
   // `chained_back_navigation_count_`.
@@ -80,7 +84,8 @@ class ChainedBackNavigationTracker
   base::TimeTicks last_back_navigation_time_;
   base::TimeTicks last_back_button_click_time_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<ChainedBackNavigationTracker>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_CHAINED_BACK_NAVIGATION_TRACKER_H_

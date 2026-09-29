@@ -118,6 +118,7 @@ class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
 class AboutThisSiteTabHelper;
+class ChainedBackNavigationTracker;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
 class FromGWSNavigationAndKeepAliveRequestObserver;
@@ -265,6 +266,8 @@ class TabFeatures {
       web_contents_top_sites_observer_;
   std::unique_ptr<client_hints::ClientHintsWebContentsObserver>
       client_hints_web_contents_observer_;
+  std::unique_ptr<ChainedBackNavigationTracker>
+      chained_back_navigation_tracker_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

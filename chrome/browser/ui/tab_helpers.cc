@@ -19,7 +19,6 @@
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
-#include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -302,7 +301,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
-  ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
   // Password manager and password reuse detection rely on ChromeAutofillClient
   // initialized by browser autofill, which is gated by enable_browser_autofill.

@@ -52,6 +52,7 @@ class ExternalProtocolObserver;
 class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
 class FontPrewarmerTabHelper;
+class ChainedBackNavigationTracker;
 class FramebustBlockTabHelper;
 
 class FormInteractionTabHelper;
@@ -921,6 +922,9 @@ class TabFeatures {
 
   std::unique_ptr<client_hints::ClientHintsWebContentsObserver>
       client_hints_web_contents_observer_;
+
+  std::unique_ptr<ChainedBackNavigationTracker>
+      chained_back_navigation_tracker_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

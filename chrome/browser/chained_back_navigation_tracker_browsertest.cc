@@ -50,9 +50,8 @@ IN_PROC_BROWSER_TEST_F(ChainedBackNavigationTrackerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a1));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_a2));
 
-  ChainedBackNavigationTracker::CreateForWebContents(web_contents());
   ChainedBackNavigationTracker* tracker =
-      ChainedBackNavigationTracker::FromWebContents(web_contents());
+      ChainedBackNavigationTracker::From(browser()->GetActiveTabInterface());
   ASSERT_TRUE(tracker);
 
   // The main frame back navigation should increment the count by 1.
@@ -96,9 +95,8 @@ IN_PROC_BROWSER_TEST_F(ChainedBackNavigationTrackerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_c));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_d));
 
-  ChainedBackNavigationTracker::CreateForWebContents(web_contents());
   ChainedBackNavigationTracker* tracker =
-      ChainedBackNavigationTracker::FromWebContents(web_contents());
+      ChainedBackNavigationTracker::From(browser()->GetActiveTabInterface());
   ASSERT_TRUE(tracker);
 
   // No back navigation is performed yet, the chain length should not be

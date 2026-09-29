@@ -98,6 +98,7 @@ source_set("tabs_impl") {
     ":oom_intervention",
     ":policy_auditor_bridge",
     ":tabs_public",
+    "//chrome/browser:chained_back_navigation_tracker",
     "//chrome/browser/actor",
     "//chrome/browser/actor/android",
     "//chrome/browser/complex_tasks",

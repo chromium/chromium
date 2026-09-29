@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
@@ -958,6 +959,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   client_hints_web_contents_observer_ =
       std::make_unique<client_hints::ClientHintsWebContentsObserver>(
           tab.GetContents());
+
+  chained_back_navigation_tracker_ =
+      GetUserDataFactory().CreateInstance<ChainedBackNavigationTracker>(
+          tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1315,6 +1320,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   client_hints_web_contents_observer_ =
       std::make_unique<client_hints::ClientHintsWebContentsObserver>(
           new_contents);
+
+  chained_back_navigation_tracker_.reset();
+  chained_back_navigation_tracker_ =
+      GetUserDataFactory().CreateInstance<ChainedBackNavigationTracker>(
+          *tab, *tab, new_contents);
 }
 
 customize_chrome::SidePanelController*

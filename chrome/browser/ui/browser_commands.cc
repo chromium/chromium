@@ -1057,7 +1057,8 @@ void MaybeShowFeatureBackNavigationMenuPromo(BrowserWindowInterface* browser,
 
   bool should_show_feature_promo;
   const ChainedBackNavigationTracker* tracker =
-      ChainedBackNavigationTracker::FromWebContents(web_contents);
+      ChainedBackNavigationTracker::From(
+          tabs::TabInterface::GetFromContents(web_contents));
   CHECK(tracker);
   switch (static_cast<BackNavigationMenuIPHTrigger>(
       base::GetFieldTrialParamByFeatureAsInt(

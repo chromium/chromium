@@ -3,17 +3,28 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chained_back_navigation_tracker.h"
+
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
+DEFINE_USER_DATA(ChainedBackNavigationTracker);
+
 ChainedBackNavigationTracker::ChainedBackNavigationTracker(
+    tabs::TabInterface& tab,
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
-      content::WebContentsUserData<ChainedBackNavigationTracker>(*contents) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 ChainedBackNavigationTracker::~ChainedBackNavigationTracker() = default;
+
+// static
+ChainedBackNavigationTracker* ChainedBackNavigationTracker::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void ChainedBackNavigationTracker::DidStartNavigation(
     content::NavigationHandle* navigation) {
@@ -73,5 +84,3 @@ bool ChainedBackNavigationTracker::
          chained_back_button_click_count_ >=
              kMinimumChainedBackNavigationLength;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ChainedBackNavigationTracker);
