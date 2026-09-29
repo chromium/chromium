@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -56,7 +56,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
@@ -101,13 +100,7 @@ class FindInPageControllerTest : public InProcessBrowserTest {
   FindInPageControllerTest() = default;
  protected:
   void SetUpOnMainThread() override {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    views::test::WaitForAnimatingLayoutManager(
-        static_cast<PinnedToolbarActionsContainer*>(
-            BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar_button_provider()
-                ->GetPinnedToolbarActions()));
+    PinnedActionTestAccessor::WaitForAnimation(browser());
   }
 
   bool GetFindBarWindowInfoForBrowser(BrowserWindowInterface* browser,

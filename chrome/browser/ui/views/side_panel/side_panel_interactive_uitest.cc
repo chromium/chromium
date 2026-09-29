@@ -37,8 +37,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_resize_area.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -299,11 +299,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
         PinnedToolbarActionsModel::Get(browser()->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     actions_model->UpdatePinnedState(kActionTabSearch, false);
-    auto* const layout_manager = views::test::GetAnimatingLayoutManager(
-        GetPinnedToolbarActionsContainer());
-    if (layout_manager && layout_manager->is_animating()) {
-      views::test::WaitForAnimatingLayoutManager(layout_manager);
-    }
+    PinnedActionTestAccessor::WaitForAnimation(browser());
   }
 
   auto OpenBookmarksSidePanel() {
@@ -321,12 +317,8 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   auto CheckActionPinnedToToolbar(const actions::ActionId& id,
                                   bool should_pin) {
     return CheckResult(
-        [&]() {
-          PinnedToolbarActionsContainer* const
-              pinned_toolbar_actions_container =
-                  GetPinnedToolbarActionsContainer();
-          return pinned_toolbar_actions_container->GetPinnedButtonFor(id) !=
-                 nullptr;
+        [this, id]() {
+          return PinnedActionTestAccessor(browser(), id).IsPinned();
         },
         should_pin);
   }
@@ -335,15 +327,6 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
     return CheckViewProperty(kSidePanelPinButtonElementId,
                              &views::ToggleImageButton::GetToggled,
                              should_toggle);
-  }
-
-  PinnedToolbarActionsContainer* GetPinnedToolbarActionsContainer() {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    return static_cast<PinnedToolbarActionsContainer*>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPinnedToolbarActions());
   }
 
   auto OpenReadingModeSidePanel() {
@@ -384,17 +367,12 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
         WaitForShow(kSidePanelElementId));
   }
 
-  auto CheckPinnedToolbarActionsContainerChildInkDropState(int child_index,
-                                                           bool is_active) {
-    return Steps(CheckResult(([this, child_index]() {
-                               return views::InkDrop::Get(
-                                          GetPinnedToolbarActionsContainer()
-                                              ->children()[child_index])
-                                          ->GetInkDrop()
-                                          ->GetTargetInkDropState() ==
-                                      views::InkDropState::ACTIVATED;
-                             }),
-                             is_active));
+  auto CheckActionHighlighted(const actions::ActionId& id, bool is_active) {
+    return Steps(CheckResult(
+        [this, id]() {
+          return PinnedActionTestAccessor(browser(), id).IsHighlighted();
+        },
+        is_active));
   }
 
   auto ShowSidePanelForKey(SidePanelEntryKey key) {
@@ -489,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Pin the bookmarks side panel
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, true),
-      WaitForShow(kPinnedToolbarActionsContainerDividerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(WaitForShow(kPinnedToolbarActionsContainerDividerElementId))),
       CheckPinButtonToggleState(true),
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId),
@@ -500,7 +479,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       // Unpin the bookmarks side panel
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, false),
-      WaitForHide(kPinnedToolbarActionsContainerDividerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(WaitForHide(kPinnedToolbarActionsContainerDividerElementId))),
       CheckPinButtonToggleState(false));
 }
 
@@ -581,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(
       // Verify side panel is closed.
       EnsureNotPresent(kSidePanelElementId),
       // Verify the bookmarks pinned toolbar button is not highlighted.
-      CheckPinnedToolbarActionsContainerChildInkDropState(0, false),
+      CheckActionHighlighted(kActionSidePanelShowBookmarks, false),
       // Open the bookmarks side panel.
       OpenBookmarksSidePanel(),
       // Verify bookmarks is pinned to the toolbar.
@@ -589,22 +569,24 @@ IN_PROC_BROWSER_TEST_F(
         return actions_model->Contains(kActionSidePanelShowBookmarks);
       })),
       WaitForShow(kPinnedToolbarActionShowSidePanelBookmarksElementId),
-      CheckView(
-          kPinnedToolbarActionsContainerElementId,
-          [](views::View* view) { return view->children().size() == 2u; }),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(CheckView(kPinnedToolbarActionsContainerElementId,
+                        [](views::View* view) {
+                          return view->children().size() == 2u;
+                        }),
+              CheckViewProperty(kPinnedToolbarActionsContainerDividerElementId,
+                                &views::View::GetVisible, true))),
       // Verify the bookmarks pinned toolbar button is highlighted.
-      CheckPinnedToolbarActionsContainerChildInkDropState(0, true),
-      CheckViewProperty(kPinnedToolbarActionsContainerDividerElementId,
-                        &views::View::GetVisible, true),
+      CheckActionHighlighted(kActionSidePanelShowBookmarks, true),
       // Close the side panel.
       PressButton(kSidePanelCloseButtonElementId),
       WaitForHide(kSidePanelElementId),
       // Verify the bookmarks pinned toolbar button is not highlighted.
-      CheckPinnedToolbarActionsContainerChildInkDropState(0, false),
+      CheckActionHighlighted(kActionSidePanelShowBookmarks, false),
       // Open non-bookmarks side panel.
       OpenReadingModeSidePanel(),
       // Verify the bookmarks pinned toolbar button is not highlighted.
-      CheckPinnedToolbarActionsContainerChildInkDropState(0, false));
+      CheckActionHighlighted(kActionSidePanelShowBookmarks, false));
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
@@ -615,12 +597,14 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       EnsureNotPresent(kPinnedToolbarActionShowSidePanelBookmarksElementId),
       // Open bookmarks sidepanel
       OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId),
-      WaitForShow(kPinnedToolbarActionsContainerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(WaitForShow(kPinnedToolbarActionsContainerElementId))),
       // Pin the button
       CheckPinButtonToggleState(false),
       PressButton(kSidePanelPinButtonElementId),
       CheckActionPinnedToToolbar(kActionSidePanelShowBookmarks, true),
-      EnsurePresent(kPinnedToolbarActionsContainerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(EnsurePresent(kPinnedToolbarActionsContainerElementId))),
       WaitForShow(kPinnedToolbarActionShowSidePanelBookmarksElementId),
       // Toggle side panel
       PressButton(kPinnedToolbarActionShowSidePanelBookmarksElementId),
@@ -686,25 +670,23 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        ToolbarButtonDisappearsOnEntryDeregister) {
-  constexpr char kBookmarksButton[] = "bookmarks_button";
   RunTestSequence(
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
       EnsureNotPresent(kPinnedToolbarActionShowSidePanelBookmarksElementId),
       // Open bookmarks sidepanel
       OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId),
-      WaitForShow(kPinnedToolbarActionsContainerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(WaitForShow(kPinnedToolbarActionsContainerElementId))),
       WaitForShow(kPinnedToolbarActionShowSidePanelBookmarksElementId),
-      NameChildViewByType<PinnedActionToolbarButton>(
-          kPinnedToolbarActionsContainerElementId, kBookmarksButton),
-      WaitForShow(kBookmarksButton),
       // Deregister the entry and verify the side panel and ephemeral toolbar
       // button are hidden.
       Do([this]() {
         SidePanelRegistry::From(browser())->Deregister(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
       }),
-      WaitForHide(kSidePanelElementId), WaitForHide(kBookmarksButton));
+      WaitForHide(kSidePanelElementId),
+      WaitForHide(kPinnedToolbarActionShowSidePanelBookmarksElementId));
 }
 
 // Regression test for crbug.com/452911460 where the side panel header close
@@ -721,7 +703,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest, CloseSidePanel) {
       EnsureNotPresent(kPinnedToolbarActionShowSidePanelBookmarksElementId),
       // Open bookmarks sidepanel
       OpenBookmarksSidePanel(), WaitForShow(kSidePanelElementId),
-      WaitForShow(kPinnedToolbarActionsContainerElementId),
+      If([&]() { return !features::IsWebUIPinnedToolbarActionsEnabled(); },
+         Then(WaitForShow(kPinnedToolbarActionsContainerElementId))),
       WaitForShow(kPinnedToolbarActionShowSidePanelBookmarksElementId),
       WaitForPromo(feature_engagement::kIPHSidePanelGenericPinnableFeature),
       PressButton(kSidePanelCloseButtonElementId),
@@ -932,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
       // Verify it is pinned and highlighted immediately.
       CheckActionPinnedToToolbar(kActionSidePanelShowReadingList, true),
-      CheckPinnedToolbarActionsContainerChildInkDropState(0, true),
+      CheckActionHighlighted(kActionSidePanelShowReadingList, true),
 
       // Unpin reading list action while open.
       Do(([&]() {

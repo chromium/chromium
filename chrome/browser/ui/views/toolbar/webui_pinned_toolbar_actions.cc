@@ -132,7 +132,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
 
   for (actions::ActionId id : model_->PinnedActionIds()) {
     add_state(id,
-              /*highlighted=*/std::ranges::contains(popped_out_actions_, id));
+              /*highlighted=*/std::ranges::contains(active_actions_, id));
   }
 
   if (!states.empty()) {
@@ -143,7 +143,7 @@ void WebUIPinnedToolbarActions::OnActionsChanged() {
     states.push_back(std::move(state));
   }
 
-  for (actions::ActionId id : popped_out_actions_) {
+  for (actions::ActionId id : active_actions_) {
     add_state(id, /*highlighted=*/true);
   }
 
@@ -189,15 +189,15 @@ void WebUIPinnedToolbarActions::UpdateActionState(actions::ActionId id,
 void WebUIPinnedToolbarActions::ShowActionEphemerallyInToolbar(
     actions::ActionId id,
     bool show) {
-  auto it = std::ranges::find(popped_out_actions_, id);
+  auto it = std::ranges::find(active_actions_, id);
   if (show) {
-    if (it == popped_out_actions_.end()) {
-      popped_out_actions_.push_back(id);
+    if (it == active_actions_.end()) {
+      active_actions_.push_back(id);
       OnActionsChanged();
     }
   } else {
-    if (it != popped_out_actions_.end()) {
-      popped_out_actions_.erase(it);
+    if (it != active_actions_.end()) {
+      active_actions_.erase(it);
       OnActionsChanged();
     }
   }
@@ -208,12 +208,19 @@ bool WebUIPinnedToolbarActions::IsActionPinned(actions::ActionId id) {
 }
 
 bool WebUIPinnedToolbarActions::IsActionPoppedOut(actions::ActionId id) {
-  return std::ranges::contains(popped_out_actions_, id) && !IsActionPinned(id);
+  // An action is popped out if it is active but not pinned to the toolbar.
+  return std::ranges::contains(active_actions_, id) && !IsActionPinned(id);
 }
 
 bool WebUIPinnedToolbarActions::IsActionPinnedOrPoppedOut(
     actions::ActionId id) {
   return IsActionPinned(id) || IsActionPoppedOut(id);
+}
+
+bool WebUIPinnedToolbarActions::IsActionHighlighted(actions::ActionId id) {
+  // An action is highlighted whenever it is active (whether pinned or popped
+  // out).
+  return std::ranges::contains(active_actions_, id);
 }
 
 void WebUIPinnedToolbarActions::PostOrQueueActionAfterAnimation(

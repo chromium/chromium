@@ -38,8 +38,9 @@ class PinnedActionToolbarButton : public ToolbarButton {
 
   void AddHighlight();
   void ResetHighlight();
+  bool IsHighlighted() const;
   void SetPinned(bool pinned);
-  bool IsActive();
+  bool IsActive() const;
   base::AutoReset<bool> SetNeedsDelayedDestruction(
       bool needs_delayed_destruction);
   void SetIconVisibility(bool is_visible);

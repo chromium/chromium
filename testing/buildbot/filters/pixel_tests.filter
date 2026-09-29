@@ -29,6 +29,7 @@ BrowserViewTabbedLayoutImplUiTest.*
 BubbleFrameViewBrowserTest.*
 BubbleSignInPromoInteractiveUITest.*
 CaptionBubbleBrowserTest.*
+CastBrowserControllerTest.*
 ChromeLabs*UiTest.*
 ChromeSignoutConfirmationPromptPixelTest.*
 ChromeSignoutConfirmationPromptWithExtensionsPixelTest.*

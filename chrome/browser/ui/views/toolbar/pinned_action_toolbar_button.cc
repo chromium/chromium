@@ -134,7 +134,7 @@ PinnedActionToolbarButton::~PinnedActionToolbarButton() {
   action_count_changed_subscription_ = {};
 }
 
-bool PinnedActionToolbarButton::IsActive() {
+bool PinnedActionToolbarButton::IsActive() const {
   return anchor_higlight_.has_value();
 }
 
@@ -157,6 +157,10 @@ void PinnedActionToolbarButton::AddHighlight() {
 void PinnedActionToolbarButton::ResetHighlight() {
   anchor_higlight_.reset();
   GetViewAccessibility().SetCheckedState(ax::mojom::CheckedState::kFalse);
+}
+
+bool PinnedActionToolbarButton::IsHighlighted() const {
+  return IsActive();
 }
 
 void PinnedActionToolbarButton::SetPinned(bool pinned) {

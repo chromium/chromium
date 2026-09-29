@@ -46,6 +46,7 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   bool IsActionPinned(actions::ActionId id) override;
   bool IsActionPoppedOut(actions::ActionId id) override;
   bool IsActionPinnedOrPoppedOut(actions::ActionId id) override;
+  bool IsActionHighlighted(actions::ActionId id) override;
   void PostOrQueueActionAfterAnimation(base::OnceClosure action) override;
   ToolbarButton* GetDownloadButton() override;
   views::BubbleAnchor GetBubbleAnchor(actions::ActionId action_id) override;
@@ -101,8 +102,9 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>
       model_observation_{this};
-  // List of ephemeral popped out actions.
-  std::vector<actions::ActionId> popped_out_actions_;
+  // List of active (highlighted) actions. If unpinned, these actions also
+  // display ephemerally in the toolbar as popped out buttons.
+  std::vector<actions::ActionId> active_actions_;
   // Allow this class to observe actions for currently displaying buttons.
   std::vector<base::CallbackListSubscription> action_subscriptions_;
   std::unique_ptr<PinnedActionToolbarButtonMenuModel> menu_model_;

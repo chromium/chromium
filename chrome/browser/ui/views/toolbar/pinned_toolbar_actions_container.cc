@@ -695,6 +695,11 @@ bool PinnedToolbarActionsContainer::IsActionPinnedOrPoppedOut(
   return IsActionPinned(id) || IsActionPoppedOut(id);
 }
 
+bool PinnedToolbarActionsContainer::IsActionHighlighted(actions::ActionId id) {
+  auto* button = GetButtonFor(id);
+  return button && button->IsActive();
+}
+
 void PinnedToolbarActionsContainer::ReorderViews() {
   size_t index = 0;
   // Pinned buttons appear first. Use the model's ordering of pinned ActionIds

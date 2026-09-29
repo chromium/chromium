@@ -13,14 +13,13 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/views/layout/animating_layout_manager_test_util.h"
 
 using media_router::MediaRoute;
 using testing::NiceMock;
@@ -53,16 +52,8 @@ class CastToolbarButtonControllerBrowserTest : public InProcessBrowserTest {
   }
 
   bool IsIconShown() const {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    auto* container = BrowserView::GetBrowserViewForBrowser(browser())
-                          ->toolbar_button_provider()
-                          ->GetPinnedToolbarActions();
-    views::test::WaitForAnimatingLayoutManager(
-        static_cast<PinnedToolbarActionsContainer*>(container));
-    auto* cast_button =
-        container->GetBubbleAnchor(kActionRouteMedia).GetIfView();
-    return cast_button && cast_button->GetVisible();
+    PinnedActionTestAccessor::WaitForAnimation(browser());
+    return PinnedActionTestAccessor(browser(), kActionRouteMedia).GetVisible();
   }
 
   void UpdateRoutesAndExpectIconShown(

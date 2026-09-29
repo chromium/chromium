@@ -395,6 +395,8 @@ if (!is_android) {
     sources = [
       "mock_webui_toolbar_control_delegate.cc",
       "mock_webui_toolbar_control_delegate.h",
+      "pinned_action_test_accessor.cc",
+      "pinned_action_test_accessor.h",
       "test_support/app_menu_test_accessor.cc",
       "test_support/app_menu_test_accessor.h",
       "webui_test_utils.cc",
@@ -416,7 +418,9 @@ if (!is_android) {
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/actions",
       "//ui/views",
+      "//ui/views:test_support",
       "//ui/views/interaction:test_support",
     ]
   }

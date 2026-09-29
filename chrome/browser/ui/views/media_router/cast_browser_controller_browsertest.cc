@@ -4,31 +4,30 @@
 
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 
+#include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/browser/mirroring_media_controller_host_impl.h"
+#include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/paint_vector_icon.h"
 
 using testing::_;
 
@@ -50,84 +49,85 @@ MediaRoute CreateNonLocalDisplayRoute() {
 
 }  // namespace
 
-class CastBrowserControllerTest : public InProcessBrowserTest {
+class CastBrowserControllerTest : public UiBrowserTest {
  public:
   CastBrowserControllerTest() = default;
 
-  void SetUp() override {
-    InProcessBrowserTest::SetUp();
-  }
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override {}
+  bool VerifyUi() override { return true; }
+  void WaitForUserDismissal() override {}
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    UiBrowserTest::SetUpOnMainThread();
 
     PinnedToolbarActionsModel::Get(browser()->GetProfile())
         ->UpdatePinnedState(kActionRouteMedia, true);
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    button_ = static_cast<PinnedToolbarActionsContainer*>(
-                  BrowserView::GetBrowserViewForBrowser(browser())
-                      ->toolbar_button_provider()
-                      ->GetPinnedToolbarActions())
-                  ->GetButtonFor(kActionRouteMedia);
     controller_ = CastBrowserController::From(browser());
     media_router_ =
         MediaRouterFactory::GetApiForBrowserContext(browser()->GetProfile());
 
-    const ui::ColorProvider* color_provider = button_->GetColorProvider();
-    const int icon_size =
-        GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize);
-    idle_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kCastIcon
-            : vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
-        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
-    warning_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kCastWarningIcon
-            : vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
-        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
-    active_chrome_refresh_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kCastConnectedIcon
-            : vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
-        icon_size, color_provider->GetColor(kColorMediaRouterIconActive)));
-    paused_icon_ = gfx::Image(gfx::CreateVectorIcon(
-        features::IsRoundedIconsEnabled()
-            ? vector_icons::kCastPauseIcon
-            : vector_icons::kMediaRouterPausedOldIcon,
-        icon_size, color_provider->GetColor(kColorToolbarButtonIcon)));
   }
 
   void TearDownOnMainThread() override {
     controller_ = nullptr;
-    button_ = nullptr;
     media_router_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
+    UiBrowserTest::TearDownOnMainThread();
   }
 
   bool IsWarningIcon() {
-    return gfx::test::AreImagesEqual(warning_chrome_refresh_icon_, GetIcon());
+    const auto* icon =
+        features::IsRoundedIconsEnabled()
+            ? &vector_icons::kCastWarningIcon
+            : &vector_icons::kMediaRouterWarningChromeRefreshOldIcon;
+    return GetVectorIcon() == icon;
   }
 
   bool IsIdleIcon() {
-    return gfx::test::AreImagesEqual(idle_chrome_refresh_icon_, GetIcon());
+    const auto* icon =
+        features::IsRoundedIconsEnabled()
+            ? &vector_icons::kCastIcon
+            : &vector_icons::kMediaRouterIdleChromeRefreshOldIcon;
+    return GetVectorIcon() == icon;
+  }
+
+  bool IsPausedIcon() {
+    const auto* icon = features::IsRoundedIconsEnabled()
+                           ? &vector_icons::kCastPauseIcon
+                           : &vector_icons::kMediaRouterPausedOldIcon;
+    return GetVectorIcon() == icon;
+  }
+
+  bool VerifyCastButtonScreenshot(const std::string& screenshot_name) {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            ::switches::kVerifyPixels)) {
+      return true;
+    }
+
+    PinnedActionTestAccessor accessor(browser(), kActionRouteMedia);
+    ui::TrackedElement* element = nullptr;
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      element = accessor.GetElement();
+      return element != nullptr;
+    }));
+    if (!element) {
+      return false;
+    }
+    return VerifyPixelUi(element, "CastBrowserControllerTest",
+                         screenshot_name) != ui::test::ActionResult::kFailed;
   }
 
  protected:
-  gfx::Image GetIcon() {
-    return gfx::Image(button_->GetImage(views::Button::STATE_NORMAL));
+  const gfx::VectorIcon* GetVectorIcon() {
+    auto model =
+        PinnedActionTestAccessor(browser(), kActionRouteMedia).GetImageModel();
+    return model.IsVectorIcon() ? model.GetVectorIcon().vector_icon() : nullptr;
   }
 
   std::unique_ptr<MirroringMediaControllerHostImpl> mirroring_controller_host_;
 
   raw_ptr<CastBrowserController> controller_ = nullptr;
-  raw_ptr<PinnedActionToolbarButton> button_ = nullptr;
   raw_ptr<MediaRouter> media_router_ = nullptr;
-  gfx::Image idle_chrome_refresh_icon_;
-  gfx::Image warning_chrome_refresh_icon_;
-  gfx::Image active_chrome_refresh_icon_;
-  gfx::Image paused_icon_;
 
   const std::vector<MediaRoute> local_display_route_list_ = {
       CreateLocalDisplayRoute()};
@@ -138,6 +138,7 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, UpdateIssues) {
   controller_->UpdateIcon();
   EXPECT_TRUE(IsIdleIcon());
+  EXPECT_TRUE(VerifyCastButtonScreenshot("UpdateIssues_InitialIdle"));
 
   controller_->OnIssue(Issue::CreateIssueWithIssueInfo(IssueInfo(
       "title notification", IssueInfo::Severity::NOTIFICATION, "sinkId1")));
@@ -146,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, UpdateIssues) {
   controller_->OnIssue(Issue::CreateIssueWithIssueInfo(
       IssueInfo("title warning", IssueInfo::Severity::WARNING, "sinkId1")));
   EXPECT_TRUE(IsWarningIcon());
+  EXPECT_TRUE(VerifyCastButtonScreenshot("UpdateIssues_Warning"));
 
   controller_->OnIssue(Issue::CreatePermissionRejectedIssue());
   EXPECT_TRUE(IsWarningIcon());
@@ -177,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, PausedIcon) {
       ->OnMediaStatusUpdated(std::move(status));
 
   controller_->OnRoutesUpdated(local_display_route_list_);
-  EXPECT_TRUE(gfx::test::AreImagesEqual(paused_icon_, GetIcon()));
+  EXPECT_TRUE(IsPausedIcon());
+  EXPECT_TRUE(VerifyCastButtonScreenshot("PausedIcon"));
 }
 
 }  // namespace media_router

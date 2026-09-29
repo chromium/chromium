@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -523,12 +524,6 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   const GURL app_url("https://test.org");
   helper()->InstallAndLaunchWebApp(browser(), app_url);
 
-  EXPECT_EQ(BrowserWindow::FromBrowser(helper()->app_browser())
-                ->GetPinnedToolbarActions(),
-            nullptr);
-
-  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-      << "Test needs modification to support WebUIPinnedToolbarActions";
   int button_count = 0;
   for (views::View* child :
        static_cast<PinnedToolbarActionsContainer*>(
@@ -2198,13 +2193,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       chrome_test_utils::GetTestUrl(
           base::FilePath().AppendASCII("downloads"),
           base::FilePath().AppendASCII("a_zip_file.zip")));
-  CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-      << "Test needs modification to support WebUIPinnedToolbarActions";
-  views::test::WaitForAnimatingLayoutManager(
-      static_cast<PinnedToolbarActionsContainer*>(
-          BrowserView::GetBrowserViewForBrowser(helper()->app_browser())
-              ->toolbar_button_provider()
-              ->GetPinnedToolbarActions()));
+  PinnedActionTestAccessor::WaitForAnimation(helper()->app_browser());
 
   // The download button is visible in the app browser.
   EXPECT_TRUE(toolbar_button_container->GetDownloadButton()->GetVisible());

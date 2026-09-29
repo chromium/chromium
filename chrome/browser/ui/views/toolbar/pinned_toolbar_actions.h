@@ -47,6 +47,7 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
   virtual bool IsActionPinned(actions::ActionId id) = 0;
   virtual bool IsActionPoppedOut(actions::ActionId id) = 0;
   virtual bool IsActionPinnedOrPoppedOut(actions::ActionId id) = 0;
+  virtual bool IsActionHighlighted(actions::ActionId id) = 0;
 
   // Queues an action to take place after the current animation completes.
   virtual void PostOrQueueActionAfterAnimation(base::OnceClosure action) = 0;

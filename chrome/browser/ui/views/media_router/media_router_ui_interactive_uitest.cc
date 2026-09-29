@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_coordinator.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -32,7 +32,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
-#include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -53,52 +52,36 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
     // interactive_ui_tests are not run on android, so
     // MediaRouterDialogControllerViews is the only implementation of
     // MediaRouterDialogController.
-    return static_cast<MediaRouterDialogControllerViews*>(GetDialogController())
-        ->GetCastDialogCoordinatorForTesting()
+    auto* controller =
+        static_cast<MediaRouterDialogControllerViews*>(GetDialogController());
+    if (auto* widget = controller->GetCastDialogCoordinatorForTesting()
+                           .GetCastDialogWidget()) {
+      return widget;
+    }
+    base::RunLoop run_loop;
+    controller->SetDialogCreationCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    return controller->GetCastDialogCoordinatorForTesting()
         .GetCastDialogWidget();
   }
 
-  ui::SimpleMenuModel* GetIconContextMenu() {
-    return static_cast<ui::SimpleMenuModel*>(GetCastIcon()->menu_model());
-  }
-
   void WaitForAnimations() {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    views::test::WaitForAnimatingLayoutManager(
-        static_cast<PinnedToolbarActionsContainer*>(
-            BrowserView::GetBrowserViewForBrowser(browser())
-                ->toolbar_button_provider()
-                ->GetPinnedToolbarActions()));
+    PinnedActionTestAccessor::WaitForAnimation(browser());
   }
 
   void PressToolbarIcon() {
     WaitForAnimations();
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetCastIcon(), ui::test::InteractionTestUtil::InputType::kMouse);
+    PinnedActionTestAccessor(browser(), kActionRouteMedia).Click();
   }
 
   bool ToolbarIconExists() {
     base::RunLoop().RunUntilIdle();
-    ToolbarButton* cast_icon = GetCastIcon();
-    return cast_icon && cast_icon->GetVisible();
+    return PinnedActionTestAccessor(browser(), kActionRouteMedia).GetVisible();
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
     CastToolbarButtonController::SetAlwaysShowActionPref(
         browser()->GetProfile(), always_show);
-  }
-
- private:
-  ToolbarButton* GetCastIcon() {
-    CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
-        << "Test needs modification to support WebUIPinnedToolbarActions";
-    return views::AsViewClass<ToolbarButton>(
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPinnedToolbarActions()
-            ->GetBubbleAnchor(kActionRouteMedia)
-            .GetIfView());
   }
 };
 
