@@ -728,6 +728,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
                            CompactRejectsOversizedInputBeforeReading);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactReaderMatchesGlyphAtForSubRange);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactReadersDoNotMaterialize);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            RangeSurvivesRepresentationChanges);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
@@ -762,16 +763,36 @@ struct PLATFORM_EXPORT ShapeResultRun final
 
 static_assert(std::is_trivially_destructible_v<ShapeResultRun>);
 
+inline HarfBuzzRunGlyphData GlyphDataRange::GlyphAtForTest(
+    unsigned index) const {
+  CHECK_LT(index, size_);
+  return run_->glyph_data_.GlyphAt(index_ + index);
+}
+
+inline void GlyphDataRange::Reader::Init(const ShapeResultRun& run,
+                                         unsigned index,
+                                         unsigned size) {
+  const ShapeResultRun::GlyphDataCollection& glyph_data = run.glyph_data_;
+  if (glyph_data.IsCompact()) [[unlikely]] {
+    compact_glyphs_ = glyph_data.CompactGlyphs(index, size);
+    compact_advance_ = glyph_data.CompactAdvance();
+    compact_index_offset_ = index;
+    return;
+  }
+  glyphs_ =
+      base::span<const HarfBuzzRunGlyphData>(glyph_data.NonCompactGlyphs())
+          .subspan(index, size);
+}
+
 inline GlyphDataRange::Reader::Reader(const GlyphDataRange& range) {
   if (range.run_) {
-    glyphs_ = base::span<const HarfBuzzRunGlyphData>(
-                  range.run_->glyph_data_.NonCompactGlyphs())
-                  .subspan(range.index_, range.size_);
+    Init(*range.run_, range.index_, range.size_);
   }
 }
 
-inline GlyphDataRange::Reader::Reader(const ShapeResultRun& run)
-    : glyphs_(run.glyph_data_.NonCompactGlyphs()) {}
+inline GlyphDataRange::Reader::Reader(const ShapeResultRun& run) {
+  Init(run, 0, run.glyph_data_.size());
+}
 
 }  // namespace blink
 

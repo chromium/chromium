@@ -407,7 +407,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
   const SimpleFontData* font_data = run->font_data_.Get();
   const wtf_size_t character_index_offset_for_glyph_data =
       CharacterIndexOffsetForGlyphData(part);
-  for (const auto& glyph_data : part.CreateReader()) {
+  for (const auto glyph_data : part.CreateReader()) {
     wtf_size_t character_index =
         glyph_data.character_index + character_index_offset_for_glyph_data;
     glyph_callback(context, character_index, glyph_data.glyph, *glyph_offsets,
@@ -452,7 +452,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
       CharacterIndexOffsetForGlyphData(part);
   const GlyphDataRange::Reader reader = part.CreateReader();
   if (run->IsLtr()) {  // Left-to-right
-    for (const auto& glyph_data : reader) {
+    for (const auto glyph_data : reader) {
       wtf_size_t character_index =
           glyph_data.character_index + character_index_offset_for_glyph_data;
       if (character_index >= to)
@@ -467,7 +467,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
     }
 
   } else {  // Right-to-left
-    for (const auto& glyph_data : reader) {
+    for (const auto glyph_data : reader) {
       wtf_size_t character_index =
           glyph_data.character_index + character_index_offset_for_glyph_data;
       if (character_index < from)

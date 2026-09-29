@@ -792,7 +792,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   auto glyph_offsets = run.glyph_data_.GetOffsets<kHasNonZeroGlyphOffsets>();
   auto total_advance = InlineLayoutUnit::FromFloatRound(initial_advance);
   bool is_horizontal = run.IsHorizontal();
-  for (const auto& glyph_data : GlyphDataRange::Reader(run)) {
+  for (const auto glyph_data : GlyphDataRange::Reader(run)) {
     glyph_callback(context, run.start_index_ + glyph_data.character_index,
                    glyph_data.glyph, *glyph_offsets, total_advance,
                    is_horizontal, run.canvas_rotation_, run.font_data_.Get());
@@ -834,7 +834,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   const GlyphDataRange::Reader reader(run);
 
   if (run.IsLtr()) {  // Left-to-right
-    for (const auto& glyph_data : reader) {
+    for (const auto glyph_data : reader) {
       const wtf_size_t character_index = run_start + glyph_data.character_index;
       if (character_index >= to)
         break;
@@ -847,7 +847,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
       ++glyph_offsets;
     }
   } else {  // Right-to-left
-    for (const auto& glyph_data : reader) {
+    for (const auto glyph_data : reader) {
       const wtf_size_t character_index = run_start + glyph_data.character_index;
       if (character_index < from)
         break;
@@ -976,7 +976,7 @@ GlyphData ShapeResult::EmphasisMarkGlyphData(
     if (run->glyph_data_.IsEmpty()) {
       continue;
     }
-    return GlyphData(run->glyph_data_[0].glyph,
+    return GlyphData(run->glyph_data_.GlyphAt(0).glyph,
                      run->font_data_->EmphasisMarkFontData(font_description),
                      run->CanvasRotation());
   }
@@ -2106,7 +2106,7 @@ void ShapeResult::ToString(StringBuilder* output) const {
     for (wtf_size_t glyph_index = 0; glyph_index < run.glyph_data_.size();
          ++glyph_index) {
       output->AppendNumber(glyph_index);
-      const auto& glyph_data = run.glyph_data_[glyph_index];
+      const auto& glyph_data = run.glyph_data_.GlyphAt(glyph_index);
       output->Append(":{char=");
       output->AppendNumber(glyph_data.character_index);
       output->Append(", glyph=");

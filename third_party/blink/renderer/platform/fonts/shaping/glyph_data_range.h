@@ -59,14 +59,11 @@ class PLATFORM_EXPORT GlyphDataRange {
       using iterator_concept = std::bidirectional_iterator_tag;
       using value_type = HarfBuzzRunGlyphData;
       using difference_type = std::ptrdiff_t;
-      using pointer = const HarfBuzzRunGlyphData*;
-      using reference = const HarfBuzzRunGlyphData&;
+      using reference = HarfBuzzRunGlyphData;
 
       Iterator() = default;
 
-      const HarfBuzzRunGlyphData& operator*() const {
-        return (*reader_)[index_];
-      }
+      HarfBuzzRunGlyphData operator*() const { return (*reader_)[index_]; }
       Iterator& operator++() {
         ++index_;
         return *this;
@@ -103,14 +100,31 @@ class PLATFORM_EXPORT GlyphDataRange {
     Iterator begin() const { return Iterator(this, 0); }
     Iterator end() const { return Iterator(this, size()); }
 
-    unsigned size() const { return static_cast<unsigned>(glyphs_.size()); }
-    const HarfBuzzRunGlyphData& operator[](unsigned index) const {
+    unsigned size() const {
+      return static_cast<unsigned>(
+          compact_glyphs_.empty() ? glyphs_.size() : compact_glyphs_.size());
+    }
+
+    HarfBuzzRunGlyphData operator[](unsigned index) const {
+      if (!compact_glyphs_.empty()) [[unlikely]] {
+        const base::span<const uint16_t> compact_glyphs = compact_glyphs_;
+        return HarfBuzzRunGlyphData(compact_glyphs[index],
+                                    compact_index_offset_ + index,
+                                    SafeToBreak::kSafe, compact_advance_);
+      }
       return glyphs_[index];
     }
 
    private:
+    void Init(const ShapeResultRun& run, unsigned index, unsigned size);
+
     base::span<const HarfBuzzRunGlyphData> glyphs_;
+    base::span<const uint16_t> compact_glyphs_;
+    TextRunLayoutUnit compact_advance_;
+    unsigned compact_index_offset_ = 0;
   };
+
+  HarfBuzzRunGlyphData GlyphAtForTest(unsigned index) const;
 
  private:
   GlyphDataRange(const ShapeResultRun* run, wtf_size_t index, wtf_size_t size)

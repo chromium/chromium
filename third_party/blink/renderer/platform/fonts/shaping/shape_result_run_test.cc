@@ -204,6 +204,37 @@ TEST_F(ShapeResultRunTest, CompactEqualityDoesNotMaterialize) {
 }
 #endif  // DCHECK_IS_ON()
 
+TEST_F(ShapeResultRunTest, CompactReadersDoNotMaterialize) {
+  ShapeResultRun* full = CreateConstantAdvanceRun(8, 8);
+  ShapeResultRun* compact = CreateCompactRun(8, 8);
+  ASSERT_FALSE(full->glyph_data_.IsCompact());
+  ASSERT_TRUE(compact->glyph_data_.IsCompact());
+
+  const GlyphDataRange::Reader full_reader(*full);
+  const GlyphDataRange range(*compact);
+  const GlyphDataRange::Reader readers[] = {GlyphDataRange::Reader(*compact),
+                                            GlyphDataRange::Reader(range)};
+  ASSERT_EQ(8u, full_reader.size());
+  for (const auto& reader : readers) {
+    ASSERT_EQ(full_reader.size(), reader.size());
+    unsigned i = 0;
+    for (const auto glyph : reader) {
+      ASSERT_LT(i, full_reader.size());
+      EXPECT_EQ(full_reader[i], reader[i]);
+      EXPECT_EQ(full_reader[i], glyph);
+      ++i;
+    }
+    EXPECT_EQ(full_reader.size(), i);
+
+    auto it = reader.end();
+    for (unsigned j = reader.size(); j > 0; --j) {
+      EXPECT_EQ(full_reader[j - 1], *--it);
+    }
+    EXPECT_EQ(reader.begin(), it);
+    EXPECT_TRUE(compact->glyph_data_.IsCompact());
+  }
+}
+
 TEST_F(ShapeResultRunTest, CompactRejectsOversizedInputBeforeReading) {
   ShapeResultRun* run = CreateTestShapeResultRun(0, 0);
   bool read_glyph = false;

@@ -44,12 +44,12 @@ bool ShapeResultTestInfo::RunInfoForTesting(wtf_size_t run_index,
 
 uint16_t ShapeResultTestInfo::GlyphForTesting(wtf_size_t run_index,
                                               wtf_size_t glyph_index) const {
-  return runs_[run_index]->glyph_data_[glyph_index].glyph;
+  return runs_[run_index]->glyph_data_.GlyphAt(glyph_index).glyph;
 }
 
 float ShapeResultTestInfo::AdvanceForTesting(wtf_size_t run_index,
                                              wtf_size_t glyph_index) const {
-  return runs_[run_index]->glyph_data_[glyph_index].advance;
+  return runs_[run_index]->glyph_data_.GlyphAt(glyph_index).advance;
 }
 
 SimpleFontData* ShapeResultTestInfo::FontDataForTesting(
