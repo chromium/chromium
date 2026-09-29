@@ -48,12 +48,50 @@ dictionary CaptureFilter {
   sequence<DOMString> origins;
 };
 
+// A peer connection's chrome://webrtc-internals record as it stood when the
+// connection was added.
+dictionary PeerConnectionRecord {
+  // ID of the renderer process that created the connection.
+  required long rid;
+  // ID of the connection, unique within its renderer.
+  required long lid;
+  // OS process ID of that renderer.
+  required long pid;
+  required DOMString rtcConfiguration;
+  required DOMString url;
+  required boolean isOpen;
+  required boolean connected;
+  required double timestamp;
+};
+
 callback OnCaptureStoppedListener = undefined ();
 
 interface OnCaptureStoppedEvent : ExtensionEvent {
   static undefined addListener(OnCaptureStoppedListener listener);
   static undefined removeListener(OnCaptureStoppedListener listener);
   static boolean hasListener(OnCaptureStoppedListener listener);
+};
+
+// |id|: Identifies the peer connection for the rest of this session, and is
+// the ID $(ref:onPeerConnectionRemoved) reports when it goes away.
+// |data|: The connection's chrome://webrtc-internals record as it stood when
+// it was added.
+callback OnPeerConnectionAddedListener =
+    undefined (DOMString id, PeerConnectionRecord data);
+
+interface OnPeerConnectionAddedEvent : ExtensionEvent {
+  static undefined addListener(OnPeerConnectionAddedListener listener);
+  static undefined removeListener(OnPeerConnectionAddedListener listener);
+  static boolean hasListener(OnPeerConnectionAddedListener listener);
+};
+
+// |id|: The ID $(ref:onPeerConnectionAdded) reported for this connection.
+callback OnPeerConnectionRemovedListener = undefined (DOMString id);
+
+interface OnPeerConnectionRemovedEvent : ExtensionEvent {
+  static undefined addListener(OnPeerConnectionRemovedListener listener);
+  static undefined removeListener(OnPeerConnectionRemovedListener listener);
+  static boolean hasListener(OnPeerConnectionRemovedListener listener);
 };
 
 // Programmatic access to WebRTC diagnostic information equivalent to
@@ -91,6 +129,16 @@ interface Webrtc {
   // Fired when this extension's active capture session in this profile
   // stops.
   static attribute OnCaptureStoppedEvent onCaptureStopped;
+
+  // Fired when a peer connection whose origin matches this session's filter
+  // is added in this profile. Carries the peer connection's ID and its
+  // chrome://webrtc-internals record.
+  static attribute OnPeerConnectionAddedEvent onPeerConnectionAdded;
+
+  // Fired when a peer connection is removed. Can fire for a connection this
+  // session never saw $(ref:onPeerConnectionAdded) for, if the connection
+  // already existed when the session started.
+  static attribute OnPeerConnectionRemovedEvent onPeerConnectionRemoved;
 };
 
 partial interface Enterprise {

@@ -106,6 +106,22 @@ bool EntryMatchesFilter(const base::DictValue& entry,
   return MatchesFilter(origins, url::Origin::Create(GURL(*origin_str)));
 }
 
+// The ids of every entry in `clients` whose registered filter matches
+// `origin`. Mirrors EntryMatchesFilter's handling of a missing origin: an
+// empty filter matches regardless, and a non-empty filter never matches when
+// there is no origin to compare.
+std::vector<std::string> MatchedClientIds(
+    const std::map<std::string, std::vector<url::Origin>, std::less<>>& clients,
+    const std::optional<url::Origin>& origin) {
+  std::vector<std::string> matched;
+  for (const auto& [client_id, filter] : clients) {
+    if (filter.empty() || (origin && MatchesFilter(filter, *origin))) {
+      matched.push_back(client_id);
+    }
+  }
+  return matched;
+}
+
 // Returns `entry` with its getUserMedia keys under the names the snapshot
 // uses. WebRTCInternals spells them in snake_case because
 // chrome://webrtc-internals reads those events as they are, so the rename
@@ -727,8 +743,10 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
       RebuildMetadataFor(state, dict);
       UpdateStatsTimer();
 
+      const std::vector<std::string> matched_client_ids =
+          MatchedClientIds(state->clients_, state->pc_metadata_.at(id).origin);
       for (auto& observer : state->observers_) {
-        observer.OnPeerConnectionAdded(id, *event_data);
+        observer.OnPeerConnectionAdded(id, *event_data, matched_client_ids);
       }
     } else {
       DLOG(WARNING) << "add-peer-connection missing rid or lid";
@@ -739,8 +757,13 @@ void WebRtcDiagnosticsImpl::OnUpdate(const std::string& event_name,
     if (rid && lid) {
       const std::string id = MakePeerConnectionId(*rid, *lid);
 
+      auto metadata_it = state->pc_metadata_.find(id);
+      const std::vector<std::string> matched_client_ids = MatchedClientIds(
+          state->clients_, metadata_it != state->pc_metadata_.end()
+                               ? metadata_it->second.origin
+                               : std::nullopt);
       for (auto& observer : state->observers_) {
-        observer.OnPeerConnectionRemoved(id);
+        observer.OnPeerConnectionRemoved(id, matched_client_ids);
       }
 
       // Drop the closed connection's data as well as its metadata. Retaining

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_WEBRTC_ENTERPRISE_WEBRTC_API_OBSERVER_H_
 
 #include <string>
-#include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -22,6 +22,10 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+namespace api::enterprise_webrtc {
+struct PeerConnectionRecord;
+}  // namespace api::enterprise_webrtc
 
 class EnterpriseWebrtcApiObserver
     : public BrowserContextKeyedAPI,
@@ -41,11 +45,27 @@ class EnterpriseWebrtcApiObserver
                            UnloadedExtensionReason reason) override;
 
   // content::WebRtcDiagnostics::Observer implementation.
-  void OnCaptureStopped(std::string_view stopped_client_id) override;
+  void OnPeerConnectionAdded(
+      const std::string& id,
+      const base::Value& data,
+      const std::vector<std::string>& matched_client_ids) override;
+  void OnPeerConnectionRemoved(
+      const std::string& id,
+      const std::vector<std::string>& matched_client_ids) override;
+  void OnCaptureStopped(const std::string& stopped_client_id) override;
 
   static EnterpriseWebrtcApiObserver* Get(content::BrowserContext* context);
 
  private:
+  // Dispatches onPeerConnectionAdded to `extension_id`.
+  void DispatchPeerConnectionAdded(
+      const std::string& id,
+      const api::enterprise_webrtc::PeerConnectionRecord& data,
+      const std::string& extension_id);
+  // Dispatches onPeerConnectionRemoved to `extension_id`.
+  void DispatchPeerConnectionRemoved(const std::string& id,
+                                     const std::string& extension_id);
+  // Dispatches onCaptureStopped to `extension_id`.
   void DispatchCaptureStopped(const std::string& extension_id);
 
   // BrowserContextKeyedAPI implementation.

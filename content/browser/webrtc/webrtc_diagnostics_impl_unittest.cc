@@ -37,20 +37,32 @@ class MockWebRtcDiagnosticsObserver : public WebRtcDiagnostics::Observer {
   const std::vector<std::string>& stopped_clients() const {
     return stopped_clients_;
   }
-
-  void OnPeerConnectionAdded(std::string_view id,
-                             const base::Value& data) override {
-    added_ids_.emplace_back(id);
+  const std::vector<std::string>& last_added_matched_clients() const {
+    return last_added_matched_clients_;
   }
-  void OnPeerConnectionRemoved(std::string_view id) override {
+  const std::vector<std::string>& last_removed_matched_clients() const {
+    return last_removed_matched_clients_;
+  }
+
+  void OnPeerConnectionAdded(
+      const std::string& id,
+      const base::Value& data,
+      const std::vector<std::string>& matched_client_ids) override {
+    added_ids_.emplace_back(id);
+    last_added_matched_clients_ = matched_client_ids;
+  }
+  void OnPeerConnectionRemoved(
+      const std::string& id,
+      const std::vector<std::string>& matched_client_ids) override {
     removed_ids_.emplace_back(id);
+    last_removed_matched_clients_ = matched_client_ids;
   }
   void OnSnapshotTruncated(int dropped_log,
                            int dropped_stats,
                            int dropped_media) override {
     truncated_count_++;
   }
-  void OnCaptureStopped(std::string_view stopped_client_id) override {
+  void OnCaptureStopped(const std::string& stopped_client_id) override {
     stopped_clients_.emplace_back(stopped_client_id);
   }
 
@@ -59,6 +71,8 @@ class MockWebRtcDiagnosticsObserver : public WebRtcDiagnostics::Observer {
   std::vector<std::string> added_ids_;
   std::vector<std::string> removed_ids_;
   std::vector<std::string> stopped_clients_;
+  std::vector<std::string> last_added_matched_clients_;
+  std::vector<std::string> last_removed_matched_clients_;
 };
 
 class WebRtcDiagnosticsImplTest : public testing::Test {
@@ -283,6 +297,104 @@ TEST_F(WebRtcDiagnosticsImplTest, RemovePeerConnectionDropsItsData) {
   seen = snapshot.FindDict("peerConnections");
   ASSERT_TRUE(seen);
   EXPECT_TRUE(seen->empty());
+}
+
+// remove-peer-connection for an id that never went through add-peer-connection
+// has no metadata to look up, so MatchedClientIds is called with a nullopt
+// origin. A client with an empty filter matches regardless, so it gets
+// Removed for an id it was never told about via Added.
+TEST_F(WebRtcDiagnosticsImplTest,
+       RemovePeerConnectionWithNoMetadataMatchesEmptyFilterClients) {
+  TestBrowserContext context;
+  MockRenderProcessHost rph(&context);
+  const int rid = rph.GetDeprecatedID();
+  MockWebRtcDiagnosticsObserver observer;
+
+  ASSERT_EQ(diagnostics()->StartCaptureForClient(&context, kClientA, {}),
+            WebRtcDiagnostics::StartCaptureResult::kSuccess);
+  diagnostics()->AddObserver(&context, &observer);
+
+  base::DictValue removal;
+  removal.Set("rid", rid);
+  removal.Set("lid", 99);
+  base::Value removed(std::move(removal));
+  diagnostics()->OnUpdate("remove-peer-connection", &removed);
+
+  EXPECT_EQ(observer.removed_ids().size(), 1u);
+  EXPECT_TRUE(observer.added_ids().empty());
+  ASSERT_EQ(observer.last_removed_matched_clients().size(), 1u);
+  EXPECT_EQ(observer.last_removed_matched_clients()[0], kClientA);
+
+  diagnostics()->RemoveObserver(&context, &observer);
+}
+
+// Same nullopt-origin path, but the client has a non-empty filter this time.
+// With no origin to compare against, MatchesFilter never matches, so the
+// matched-clients list this event carries is empty. (The observer itself
+// still fires either way: filtering matched_client_ids down to the
+// extensions that should hear about it is the caller's job, not
+// WebRtcDiagnostics'.)
+TEST_F(WebRtcDiagnosticsImplTest,
+       RemovePeerConnectionWithNoMetadataSkipsFilteredClients) {
+  TestBrowserContext context;
+  MockRenderProcessHost rph(&context);
+  const int rid = rph.GetDeprecatedID();
+  MockWebRtcDiagnosticsObserver observer;
+
+  ASSERT_EQ(diagnostics()->StartCaptureForClient(
+                &context, kClientA,
+                {url::Origin::Create(GURL("https://example.com"))}),
+            WebRtcDiagnostics::StartCaptureResult::kSuccess);
+  diagnostics()->AddObserver(&context, &observer);
+
+  base::DictValue removal;
+  removal.Set("rid", rid);
+  removal.Set("lid", 99);
+  base::Value removed(std::move(removal));
+  diagnostics()->OnUpdate("remove-peer-connection", &removed);
+
+  EXPECT_EQ(observer.removed_ids().size(), 1u);
+  EXPECT_TRUE(observer.last_removed_matched_clients().empty());
+
+  diagnostics()->RemoveObserver(&context, &observer);
+}
+
+// The IDL documents this case directly: a session can start mid-call, and
+// update-all-peer-connections replays whatever WebRTCInternals already knows
+// about. That replay populates pc_metadata_ with a real origin, not nullopt,
+// but never calls OnPeerConnectionAdded. A client whose filter matches that
+// origin still gets Removed later for a connection it was never told about.
+TEST_F(WebRtcDiagnosticsImplTest,
+       RemovePeerConnectionFromReplayedMetadataMatchesFilteredClients) {
+  TestBrowserContext context;
+  MockRenderProcessHost rph(&context);
+  const int rid = rph.GetDeprecatedID();
+  MockWebRtcDiagnosticsObserver observer;
+
+  ASSERT_EQ(diagnostics()->StartCaptureForClient(
+                &context, kClientA,
+                {url::Origin::Create(GURL("https://example.com"))}),
+            WebRtcDiagnostics::StartCaptureResult::kSuccess);
+  diagnostics()->AddObserver(&context, &observer);
+
+  base::ListValue pcs;
+  pcs.Append(PeerConnectionEntry(rid, 99, "https://example.com/call"));
+  base::Value replay(std::move(pcs));
+  diagnostics()->OnUpdate("update-all-peer-connections", &replay);
+
+  EXPECT_TRUE(observer.added_ids().empty());
+
+  base::DictValue removal;
+  removal.Set("rid", rid);
+  removal.Set("lid", 99);
+  base::Value removed(std::move(removal));
+  diagnostics()->OnUpdate("remove-peer-connection", &removed);
+
+  EXPECT_EQ(observer.removed_ids().size(), 1u);
+  ASSERT_EQ(observer.last_removed_matched_clients().size(), 1u);
+  EXPECT_EQ(observer.last_removed_matched_clients()[0], kClientA);
+
+  diagnostics()->RemoveObserver(&context, &observer);
 }
 
 // Replaying the same getUserMedia entry must not duplicate it, otherwise a
@@ -555,6 +667,48 @@ TEST_F(WebRtcDiagnosticsImplTest, PeerConnectionEventsAreScopedToProfile) {
 
   diagnostics()->RemoveObserver(&context_a, &observer_a);
   diagnostics()->RemoveObserver(&context_b, &observer_b);
+}
+
+// The matched-clients list is computed here, against each client's own
+// filter, rather than left for the observer to re-derive.
+TEST_F(WebRtcDiagnosticsImplTest, MatchedClientIdsReflectEachClientsFilter) {
+  TestBrowserContext context;
+  MockRenderProcessHost rph(&context);
+  const int rid = rph.GetDeprecatedID();
+  MockWebRtcDiagnosticsObserver observer;
+  diagnostics()->AddObserver(&context, &observer);
+
+  ASSERT_EQ(
+      diagnostics()->StartCaptureForClient(
+          &context, kClientA, {url::Origin::Create(GURL("https://a.example"))}),
+      WebRtcDiagnostics::StartCaptureResult::kSuccess);
+  ASSERT_EQ(diagnostics()->StartCaptureForClient(&context, kClientB, {}),
+            WebRtcDiagnostics::StartCaptureResult::kSuccess);
+
+  base::Value matches_both =
+      PeerConnectionEntry(rid, 1, "https://a.example/call");
+  diagnostics()->OnUpdate("add-peer-connection", &matches_both);
+  // kClientB is unfiltered and matches everything; kClientA's filter matches
+  // this origin too.
+  EXPECT_EQ(observer.last_added_matched_clients(),
+            (std::vector<std::string>{kClientA, kClientB}));
+
+  base::Value matches_b_only =
+      PeerConnectionEntry(rid, 2, "https://other.example/call");
+  diagnostics()->OnUpdate("add-peer-connection", &matches_b_only);
+  // kClientA's filter excludes this origin.
+  EXPECT_EQ(observer.last_added_matched_clients(),
+            (std::vector<std::string>{kClientB}));
+
+  base::DictValue removal;
+  removal.Set("rid", rid);
+  removal.Set("lid", 2);
+  base::Value removed(std::move(removal));
+  diagnostics()->OnUpdate("remove-peer-connection", &removed);
+  EXPECT_EQ(observer.last_removed_matched_clients(),
+            (std::vector<std::string>{kClientB}));
+
+  diagnostics()->RemoveObserver(&context, &observer);
 }
 
 TEST_F(WebRtcDiagnosticsImplTest, GetCapturingClientsIsPerProfile) {

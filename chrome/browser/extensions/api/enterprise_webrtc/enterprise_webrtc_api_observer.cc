@@ -5,9 +5,12 @@
 #include "chrome/browser/extensions/api/enterprise_webrtc/enterprise_webrtc_api_observer.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
+#include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/values.h"
 #include "chrome/common/extensions/api/enterprise_webrtc.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webrtc_diagnostics.h"
@@ -66,9 +69,67 @@ void EnterpriseWebrtcApiObserver::OnExtensionUnloaded(
       browser_context_, extension->id());
 }
 
+void EnterpriseWebrtcApiObserver::OnPeerConnectionAdded(
+    const std::string& id,
+    const base::Value& data,
+    const std::vector<std::string>& matched_client_ids) {
+  if (matched_client_ids.empty()) {
+    return;
+  }
+
+  std::optional<api::enterprise_webrtc::PeerConnectionRecord> record =
+      api::enterprise_webrtc::PeerConnectionRecord::FromValue(data);
+  if (!record) {
+    // add-peer-connection's record no longer matches PeerConnectionRecord's
+    // declared shape. A page cannot cause this; it means WebRTCInternals and
+    // the webidl have drifted apart, so drop the event instead of forwarding
+    // a record extensions were not told to expect.
+    DLOG(ERROR) << "add-peer-connection data does not match "
+                   "PeerConnectionRecord";
+    return;
+  }
+
+  for (const std::string& extension_id : matched_client_ids) {
+    DispatchPeerConnectionAdded(id, *record, extension_id);
+  }
+}
+
+void EnterpriseWebrtcApiObserver::DispatchPeerConnectionAdded(
+    const std::string& id,
+    const api::enterprise_webrtc::PeerConnectionRecord& data,
+    const std::string& extension_id) {
+  auto event = std::make_unique<Event>(
+      events::ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_ADDED,
+      api::enterprise_webrtc::OnPeerConnectionAdded::kEventName,
+      api::enterprise_webrtc::OnPeerConnectionAdded::Create(id, data),
+      browser_context_);
+  EventRouter::Get(browser_context_)
+      ->DispatchEventToExtension(extension_id, std::move(event));
+}
+
+void EnterpriseWebrtcApiObserver::OnPeerConnectionRemoved(
+    const std::string& id,
+    const std::vector<std::string>& matched_client_ids) {
+  for (const std::string& extension_id : matched_client_ids) {
+    DispatchPeerConnectionRemoved(id, extension_id);
+  }
+}
+
+void EnterpriseWebrtcApiObserver::DispatchPeerConnectionRemoved(
+    const std::string& id,
+    const std::string& extension_id) {
+  auto event = std::make_unique<Event>(
+      events::ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_REMOVED,
+      api::enterprise_webrtc::OnPeerConnectionRemoved::kEventName,
+      api::enterprise_webrtc::OnPeerConnectionRemoved::Create(id),
+      browser_context_);
+  EventRouter::Get(browser_context_)
+      ->DispatchEventToExtension(extension_id, std::move(event));
+}
+
 void EnterpriseWebrtcApiObserver::OnCaptureStopped(
-    std::string_view stopped_client_id) {
-  DispatchCaptureStopped(std::string(stopped_client_id));
+    const std::string& stopped_client_id) {
+  DispatchCaptureStopped(stopped_client_id);
 }
 
 void EnterpriseWebrtcApiObserver::DispatchCaptureStopped(

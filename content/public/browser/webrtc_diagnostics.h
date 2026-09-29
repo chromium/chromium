@@ -64,15 +64,26 @@ class CONTENT_EXPORT WebRtcDiagnostics {
   // registered against one context and only ever receives events belonging to
   // that context, so implementations do not need to re-check the profile.
   // Callbacks are invoked on the UI thread.
+  //
+  // OnPeerConnectionAdded runs after the connection's metadata is recorded;
+  // OnPeerConnectionRemoved runs before it is erased. Get*ForPeerConnection is
+  // therefore valid from inside either callback.
   class CONTENT_EXPORT Observer : public base::CheckedObserver {
    public:
-    virtual void OnPeerConnectionAdded(std::string_view pc_id,
-                                       const base::Value& data) {}
-    virtual void OnPeerConnectionRemoved(std::string_view pc_id) {}
+    // `matched_client_ids` lists the clients whose registered origin filter
+    // matches this connection, so an observer serving several clients does
+    // not have to re-derive the match itself.
+    virtual void OnPeerConnectionAdded(
+        const std::string& pc_id,
+        const base::Value& data,
+        const std::vector<std::string>& matched_client_ids) {}
+    virtual void OnPeerConnectionRemoved(
+        const std::string& pc_id,
+        const std::vector<std::string>& matched_client_ids) {}
     virtual void OnSnapshotTruncated(int dropped_log,
                                      int dropped_stats,
                                      int dropped_media) {}
-    virtual void OnCaptureStopped(std::string_view stopped_client_id) {}
+    virtual void OnCaptureStopped(const std::string& stopped_client_id) {}
   };
 
   static WebRtcDiagnostics* GetInstance();
