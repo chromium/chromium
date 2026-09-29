@@ -4,8 +4,10 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -400,9 +402,11 @@ void TabsEventRouter::DispatchEvent(
   event_router->BroadcastEvent(std::move(event));
 }
 
-void TabsEventRouter::UpdateTabIndices(TabListInterface& tab_list) {
-  std::vector<tabs::TabInterface*> tabs = tab_list.GetAllTabs();
-  for (size_t i = 0; i < tabs.size(); ++i) {
+void TabsEventRouter::UpdateTabIndices(TabListInterface& tab_list,
+                                       int first_index) {
+  const std::vector<tabs::TabInterface*> tabs = tab_list.GetAllTabs();
+  for (size_t i = static_cast<size_t>(std::max(first_index, 0));
+       i < tabs.size(); ++i) {
     content::WebContents* web_contents = tabs[i]->GetContents();
     CHECK(web_contents);
     TabEntry* tab_entry = GetTabEntry(*web_contents);
@@ -412,7 +416,7 @@ void TabsEventRouter::UpdateTabIndices(TabListInterface& tab_list) {
       // added to the set of tracked tabs.
       continue;
     }
-    tab_entry->set_last_known_index(i);
+    tab_entry->set_last_known_index(static_cast<int>(i));
   }
 }
 
@@ -422,9 +426,9 @@ void TabsEventRouter::OnTabAdded(TabListInterface& tab_list,
   content::WebContents* contents = tab->GetContents();
   CHECK(contents);
 
-  // Adding a new tab can affect the indices of all existing tabs in the tab
-  // list. Update them.
-  UpdateTabIndices(tab_list);
+  // Adding a tab shifts the tabs after it by one; the tabs before it keep
+  // their indices.
+  UpdateTabIndices(tab_list, index + 1);
 
   // Check if we've ever seen this tab.
   TabEntry* tab_entry = GetTabEntry(*contents);
@@ -512,9 +516,12 @@ void TabsEventRouter::OnTabRemoved(TabListInterface& tab_list,
   content::WebContents* web_contents = tab->GetContents();
   CHECK(web_contents);
 
-  // Removing a tab can affect the indices of all existing tabs in the tab
-  // list. Update them.
-  UpdateTabIndices(tab_list);
+  // Removing a tab shifts the tabs after it down by one; the tabs before it
+  // keep their indices. The removed tab is already gone from `tab_list`, so
+  // its last known index is where the shifted tabs start.
+  const TabEntry* removed_entry = GetTabEntry(*web_contents);
+  UpdateTabIndices(tab_list,
+                   removed_entry ? removed_entry->last_known_index() : 0);
 
   if (TabRemoveReasonUtils::WillDeleteTab(removed_reason)) {
     DispatchTabRemovedEvent(*web_contents, tab_list.IsClosingAllTabs());
@@ -538,9 +545,9 @@ void TabsEventRouter::OnTabMoved(TabListInterface& tab_list,
   content::WebContents* web_contents = tab->GetContents();
   CHECK(web_contents);
 
-  // Moving tab can affect the indices of all existing tabs in the tab list
-  // (not just the one being moved). Update them.
-  UpdateTabIndices(tab_list);
+  // Moving a tab shifts every tab between its old and new positions; the
+  // tabs before both keep their indices.
+  UpdateTabIndices(tab_list, std::min(from_index, to_index));
 
   base::ListValue args;
   args.Append(ExtensionTabUtil::GetTabId(web_contents));

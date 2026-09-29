@@ -195,9 +195,11 @@ class TabsEventRouter : public favicon::FaviconDriverObserver,
                      base::ListValue args,
                      EventRouter::UserGestureState user_gesture);
 
-  // Updates the last known indices recorded in `tab_entries_` for the tabs in
-  // `tab_list`.
-  void UpdateTabIndices(TabListInterface& tab_list);
+  // Refreshes the last known index of the tabs in `tab_list` at `first_index`
+  // and after it. `first_index` is a performance optimization: an insertion,
+  // removal or move only changes the indices of the tabs from that position
+  // on, so the tabs before it are skipped. Pass 0 to refresh every tab.
+  void UpdateTabIndices(TabListInterface& tab_list, int first_index);
 
   // TabListInterfaceObserver:
   void OnTabAdded(TabListInterface& tab_list,
