@@ -15,7 +15,7 @@
 
 namespace {
 
-constexpr char16_t kDeviceIdentifier[] = u"test-device";
+const std::u16string kDeviceIdentifier = u"test-device";
 
 }  // namespace
 
