@@ -36,6 +36,10 @@ class MockWalletPassAccessManager : public WalletPassAccessManager {
               PreloadDetailsForUpsertPass,
               (EntityType entity_type),
               (override));
+  MOCK_METHOD(std::optional<GetDetailsForUpsertPassResponse>,
+              ExtractPreloadedDetailsForUpsertPass,
+              (EntityType entity_type),
+              (override));
   MOCK_METHOD(void,
               GetDetailsForUpsertPass,
               (EntityType entity_type,

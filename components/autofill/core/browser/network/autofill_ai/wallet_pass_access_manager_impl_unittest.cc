@@ -45,6 +45,7 @@ using ::base::test::RunOnceCallbackRepeatedly;
 using ::base::test::ValueIs;
 using ::testing::_;
 using ::testing::Field;
+using ::testing::Optional;
 using ::testing::Truly;
 using GetUnmaskedPassCallback =
     ::wallet::WalletHttpClient::GetUnmaskedPassCallback;
@@ -479,7 +480,7 @@ TEST_P(WalletPassAccessManagerImplTest, SaveWalletEntityInstance) {
               UpsertPrivatePass(Truly([](const PrivatePass& pass) {
                                   return !pass.has_pass_id();
                                 }),
-                                testing::Optional(session_id), _))
+                                Optional(session_id), _))
       .WillOnce(RunOnceCallback<2>(std::move(masked_pass)));
   base::test::TestFuture<std::optional<EntityInstance>> save_result;
   access_manager().SaveWalletEntityInstance(unmasked_entity, session_id,
@@ -755,15 +756,15 @@ TEST_P(WalletPassAccessManagerImplTest,
       EntityType(EntityTypeName::kVehicle));
 }
 
-// Tests that reading a preloaded response consumes and erases it from the
-// cache, so that a subsequent read initiates a new network request for a fresh
-// single-use token.
+// Tests that reading a preloaded response consumes it and refills the cache,
+// so that a subsequent read is served a fresh single-use token from the cache.
 TEST_P(WalletPassAccessManagerImplTest,
        GetDetailsForUpsertPass_ConsumesCachedResponseOnRead) {
+  // 1 preload plus 1 refill after each of the 2 cache hits.
   EXPECT_CALL(mock_http_client(),
               GetDetailsForUpsertPass(
                   wallet::WalletHttpClient::PassType::kVehicleRegistration, _))
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(
           RunOnceCallbackRepeatedly<1>(CreateTestPassUpsertDetails()));
 
@@ -771,7 +772,8 @@ TEST_P(WalletPassAccessManagerImplTest,
   access_manager().PreloadDetailsForUpsertPass(
       EntityType(EntityTypeName::kVehicle));
 
-  // 1st read consumes the cached response without an additional network call.
+  // 1st read consumes the cached response and refills the cache (triggers 2nd
+  // network call).
   base::test::TestFuture<
       base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
                      WalletRequestError>>
@@ -780,8 +782,8 @@ TEST_P(WalletPassAccessManagerImplTest,
                                            future1.GetCallback());
   EXPECT_THAT(future1.Get(), ValueIs(CreateExpectedUpsertPassResponse()));
 
-  // 2nd read triggers 2nd network call because the cached response was
-  // consumed on the 1st read.
+  // 2nd read consumes the refilled response and refills again (triggers 3rd
+  // network call).
   base::test::TestFuture<
       base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
                      WalletRequestError>>
@@ -798,13 +800,15 @@ TEST_P(WalletPassAccessManagerImplTest,
        GetDetailsForUpsertPass_RunsConcurrentlyWithInFlightPreload) {
   wallet::WalletHttpClient::GetDetailsForUpsertPassCallback preload_cb;
   wallet::WalletHttpClient::GetDetailsForUpsertPassCallback direct_cb;
+  wallet::WalletHttpClient::GetDetailsForUpsertPassCallback refill_cb;
 
   EXPECT_CALL(mock_http_client(),
               GetDetailsForUpsertPass(
                   wallet::WalletHttpClient::PassType::kVehicleRegistration, _))
-      .Times(2)
+      .Times(3)
       .WillOnce(MoveArg<1>(&preload_cb))
-      .WillOnce(MoveArg<1>(&direct_cb));
+      .WillOnce(MoveArg<1>(&direct_cb))
+      .WillOnce(MoveArg<1>(&refill_cb));
 
   // Start background preload.
   access_manager().PreloadDetailsForUpsertPass(
@@ -836,7 +840,7 @@ TEST_P(WalletPassAccessManagerImplTest,
   preload_details.context_token = "preload_token";
   std::move(preload_cb).Run(std::move(preload_details));
 
-  // Subsequent read hits the cache populated by the preload.
+  // Subsequent read hits the cache populated by the preload and refills it.
   base::test::TestFuture<
       base::expected<WalletPassAccessManager::GetDetailsForUpsertPassResponse,
                      WalletRequestError>>
@@ -847,6 +851,72 @@ TEST_P(WalletPassAccessManagerImplTest,
               ValueIs(Field(&WalletPassAccessManager::
                                 GetDetailsForUpsertPassResponse::context_token,
                             "preload_token")));
+  EXPECT_FALSE(refill_cb.is_null());
+}
+
+// Tests that `ExtractPreloadedDetailsForUpsertPass` returns `std::nullopt`
+// without issuing a network request when nothing was preloaded.
+TEST_P(WalletPassAccessManagerImplTest,
+       ExtractPreloadedDetailsForUpsertPass_NothingPreloaded_ReturnsNullopt) {
+  EXPECT_CALL(mock_http_client(), GetDetailsForUpsertPass).Times(0);
+
+  EXPECT_EQ(access_manager().ExtractPreloadedDetailsForUpsertPass(
+                EntityType(EntityTypeName::kVehicle)),
+            std::nullopt);
+}
+
+// Tests that `ExtractPreloadedDetailsForUpsertPass` synchronously returns a
+// completed preload, consumes it, and starts a refill. While the refill is in
+// flight, a second read returns `std::nullopt`.
+TEST_P(WalletPassAccessManagerImplTest,
+       ExtractPreloadedDetailsForUpsertPass_ConsumesCachedResponseAndRefills) {
+  wallet::WalletHttpClient::GetDetailsForUpsertPassCallback refill_callback;
+  EXPECT_CALL(mock_http_client(),
+              GetDetailsForUpsertPass(
+                  wallet::WalletHttpClient::PassType::kVehicleRegistration, _))
+      .WillOnce(RunOnceCallback<1>(CreateTestPassUpsertDetails()))
+      .WillOnce(MoveArg<1>(&refill_callback));
+
+  access_manager().PreloadDetailsForUpsertPass(
+      EntityType(EntityTypeName::kVehicle));
+
+  EXPECT_THAT(access_manager().ExtractPreloadedDetailsForUpsertPass(
+                  EntityType(EntityTypeName::kVehicle)),
+              Optional(CreateExpectedUpsertPassResponse()));
+  EXPECT_FALSE(refill_callback.is_null());
+  EXPECT_EQ(access_manager().ExtractPreloadedDetailsForUpsertPass(
+                EntityType(EntityTypeName::kVehicle)),
+            std::nullopt);
+}
+
+// Tests that `ExtractPreloadedDetailsForUpsertPass` returns `std::nullopt`
+// without a refill while a preload is in flight, and returns the response once
+// the preload completes.
+TEST_P(WalletPassAccessManagerImplTest,
+       ExtractPreloadedDetailsForUpsertPass_PreloadInFlight_ReturnsNullopt) {
+  wallet::WalletHttpClient::GetDetailsForUpsertPassCallback http_callback;
+  wallet::WalletHttpClient::GetDetailsForUpsertPassCallback refill_callback;
+  EXPECT_CALL(mock_http_client(),
+              GetDetailsForUpsertPass(
+                  wallet::WalletHttpClient::PassType::kVehicleRegistration, _))
+      .WillOnce(MoveArg<1>(&http_callback))
+      .WillOnce(MoveArg<1>(&refill_callback));
+
+  access_manager().PreloadDetailsForUpsertPass(
+      EntityType(EntityTypeName::kVehicle));
+  ASSERT_FALSE(http_callback.is_null());
+
+  EXPECT_EQ(access_manager().ExtractPreloadedDetailsForUpsertPass(
+                EntityType(EntityTypeName::kVehicle)),
+            std::nullopt);
+  EXPECT_TRUE(refill_callback.is_null());
+
+  std::move(http_callback).Run(CreateTestPassUpsertDetails());
+
+  EXPECT_THAT(access_manager().ExtractPreloadedDetailsForUpsertPass(
+                  EntityType(EntityTypeName::kVehicle)),
+              Optional(CreateExpectedUpsertPassResponse()));
+  EXPECT_FALSE(refill_callback.is_null());
 }
 
 #if GTEST_HAS_DEATH_TEST

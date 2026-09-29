@@ -84,13 +84,27 @@ class WalletPassAccessManager : public KeyedService {
   // already in flight or cached, this is a no-op.
   virtual void PreloadDetailsForUpsertPass(EntityType entity_type) = 0;
 
+  // Synchronously returns the details cached by a previous
+  // `PreloadDetailsForUpsertPass` call for `entity_type`, or `std::nullopt` if
+  // nothing is cached, e.g. because the preload is still in flight or failed.
+  // The returned value never depends on a network request, so it suits UI
+  // entry points that must not wait on the Wallet backend.
+  //
+  // Side effects on a cache hit:
+  // - The entry is removed from the cache, since the context token is
+  //   single-use.
+  // - A new `PreloadDetailsForUpsertPass` is started to refill the cache, so
+  //   a later flow also finds cached details.
+  virtual std::optional<GetDetailsForUpsertPassResponse>
+  ExtractPreloadedDetailsForUpsertPass(EntityType entity_type) = 0;
+
   // Issues a `GetDetailsForUpsertPass` request to the Wallet backend to fetch
   // legal disclosure messages and a context token for audit logging prior to
   // upserting a public non-readonly pass of type `entity_type`.
   //
   // If cached details are available from a previous
-  // `PreloadDetailsForUpsertPass` call, the cached entry is consumed and
-  // `callback` is invoked immediately.
+  // `PreloadDetailsForUpsertPass` call, the cached entry is consumed,
+  // `callback` is invoked immediately, and a new preload refills the cache.
   //
   // If no cached details are present, a network request is dispatched to the
   // Wallet backend, and the resulting token is handed directly to `callback`

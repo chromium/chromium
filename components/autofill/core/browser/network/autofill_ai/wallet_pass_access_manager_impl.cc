@@ -242,23 +242,35 @@ void WalletPassAccessManagerImpl::PreloadDetailsForUpsertPass(
           weak_factory_.GetWeakPtr(), pass_type));
 }
 
+std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+WalletPassAccessManagerImpl::ExtractPreloadedDetailsForUpsertPass(
+    EntityType entity_type) {
+  // Google Wallet `context_token`s are single-use tokens bound to a specific
+  // upsert operation. Once read by an active consumer, the cached entry must
+  // be removed so that subsequent flows do not attempt to reuse an expired or
+  // spent token.
+  absl::flat_hash_map<PassType, GetDetailsForUpsertPassResponse>::node_type
+      node = upsert_details_cache_.extract(PassTypeFromEntityType(entity_type));
+  if (node.empty()) {
+    return std::nullopt;
+  }
+  // A cache hit means some caller opted into preloading this type, so refill
+  // the cache for the next flow instead of leaving it cold.
+  PreloadDetailsForUpsertPass(entity_type);
+  return std::move(node.mapped());
+}
+
 void WalletPassAccessManagerImpl::GetDetailsForUpsertPass(
     EntityType entity_type,
     GetDetailsForUpsertPassCallback callback) {
   CHECK(callback);
   PassType pass_type = PassTypeFromEntityType(entity_type);
 
-  // Google Wallet `context_token`s are single-use tokens bound to a specific
-  // upsert operation. Once read by an active consumer, the cached entry must
-  // be removed so that subsequent flows do not attempt to reuse an expired or
-  // spent token.
-  if (auto it = upsert_details_cache_.find(pass_type);
-      it != upsert_details_cache_.end()) {
-    GetDetailsForUpsertPassResponse response = std::move(it->second);
-    upsert_details_cache_.erase(it);
-
+  if (std::optional<GetDetailsForUpsertPassResponse> cached_response =
+          ExtractPreloadedDetailsForUpsertPass(entity_type)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), *std::move(cached_response)));
     return;
   }
 

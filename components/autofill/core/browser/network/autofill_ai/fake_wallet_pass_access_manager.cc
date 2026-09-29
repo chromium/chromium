@@ -151,16 +151,27 @@ void FakeWalletPassAccessManager::PreloadDetailsForUpsertPass(
           features::debug::kFakeWalletApiResponsesDelayMs.Get()));
 }
 
+std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+FakeWalletPassAccessManager::ExtractPreloadedDetailsForUpsertPass(
+    EntityType entity_type) {
+  absl::flat_hash_map<EntityType, GetDetailsForUpsertPassResponse>::node_type
+      node = fake_upsert_details_cache_.extract(entity_type);
+  if (node.empty()) {
+    return std::nullopt;
+  }
+  PreloadDetailsForUpsertPass(entity_type);
+  return std::move(node.mapped());
+}
+
 void FakeWalletPassAccessManager::GetDetailsForUpsertPass(
     EntityType entity_type,
     GetDetailsForUpsertPassCallback callback) {
   CHECK(callback);
-  if (auto it = fake_upsert_details_cache_.find(entity_type);
-      it != fake_upsert_details_cache_.end()) {
-    GetDetailsForUpsertPassResponse response = std::move(it->second);
-    fake_upsert_details_cache_.erase(it);
+  if (std::optional<GetDetailsForUpsertPassResponse> cached_response =
+          ExtractPreloadedDetailsForUpsertPass(entity_type)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), *std::move(cached_response)));
     return;
   }
 

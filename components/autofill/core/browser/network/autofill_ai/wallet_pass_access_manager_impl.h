@@ -56,6 +56,8 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
   void PreloadDetailsForUpsertPass(EntityType entity_type) override;
+  std::optional<GetDetailsForUpsertPassResponse>
+  ExtractPreloadedDetailsForUpsertPass(EntityType entity_type) override;
   void GetDetailsForUpsertPass(
       EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) override;
@@ -112,10 +114,11 @@ class WalletPassAccessManagerImpl : public EntityDataManager::Observer,
 
   // Cache of preloaded details for upserting passes.
   // Entries are populated by `PreloadDetailsForUpsertPass` and consumed on
-  // read via `GetDetailsForUpsertPass` because Google Wallet `context_token`s
-  // are single-use. Because tokens and disclosure lines validate user consent
-  // for a given pass type and do not depend on client-side entity instances,
-  // entries are not affected by entity data changes.
+  // read via `ExtractPreloadedDetailsForUpsertPass` or
+  // `GetDetailsForUpsertPass` because Google Wallet `context_token`s are
+  // single-use. Because tokens and disclosure lines validate user consent for a
+  // given pass type and do not depend on client-side entity instances, entries
+  // are not affected by entity data changes.
   absl::flat_hash_map<wallet::WalletHttpClient::PassType,
                       GetDetailsForUpsertPassResponse>
       upsert_details_cache_;

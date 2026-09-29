@@ -46,6 +46,8 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
       const EntityInstance::EntityId& entity_id,
       GetUnmaskedEntityInstanceCallback callback) override;
   void PreloadDetailsForUpsertPass(EntityType entity_type) override;
+  std::optional<GetDetailsForUpsertPassResponse>
+  ExtractPreloadedDetailsForUpsertPass(EntityType entity_type) override;
   void GetDetailsForUpsertPass(
       EntityType entity_type,
       GetDetailsForUpsertPassCallback callback) override;
@@ -63,7 +65,7 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
 
   // Cache to store preloaded details for upserting passes.
   // Populated by `PreloadDetailsForUpsertPass` and consumed on read by
-  // `GetDetailsForUpsertPass`.
+  // `ExtractPreloadedDetailsForUpsertPass` or `GetDetailsForUpsertPass`.
   absl::flat_hash_map<EntityType, GetDetailsForUpsertPassResponse>
       fake_upsert_details_cache_;
 
