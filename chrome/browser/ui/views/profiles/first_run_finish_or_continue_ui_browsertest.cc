@@ -81,8 +81,8 @@ class FirstRunFinishOrContinuePixelTest
               return CreateFinishOrContinueStep(
                   host,
                   /*eligibility_callback=*/
-                  base::BindOnce([](bool eligible) { return eligible; },
-                                 eligible),
+                  base::BindRepeating([](bool eligible) { return eligible; },
+                                      eligible),
                   /*query_effects_callback=*/
                   base::BindRepeating([] { return false; }),
                   /*step_completed_callback=*/base::DoNothing(),
