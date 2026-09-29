@@ -1000,6 +1000,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -1074,6 +1075,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     innerComposebox.aimThreadRestoredTabs = [restoredTab];
 
@@ -1101,6 +1103,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(200)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(newTab, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -1120,6 +1123,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -1167,6 +1171,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(autoTab, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -1182,6 +1187,7 @@ suite('ContextualTasksComposeboxTest', () => {
         lastActive: {internalValue: BigInt(50)},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
+        isLoading: false,
       },
       {
         tabId: 3,
@@ -1190,6 +1196,7 @@ suite('ContextualTasksComposeboxTest', () => {
         lastActive: {internalValue: BigInt(25)},
         showInCurrentTabChip: false,
         showInPreviousTabChip: false,
+        isLoading: false,
       },
     ];
     await innerComposebox.updateComplete;
@@ -1218,6 +1225,7 @@ suite('ContextualTasksComposeboxTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: false,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
     searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(tabInfo, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
@@ -1234,6 +1242,7 @@ suite('ContextualTasksComposeboxTest', () => {
       url: 'https://example.com/1',
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: BigInt(1)},
     };
 

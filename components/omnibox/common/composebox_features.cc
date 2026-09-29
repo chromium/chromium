@@ -51,6 +51,12 @@ const base::FeatureParam<bool> kContextManagementInComposeboxTooltips(
     "enable_context_menu_tooltips",
     true);
 
+const base::FeatureParam<bool>
+    kContextManagementInComposeboxFaviconSkeletonLoader(
+        &kContextManagementInComposebox,
+        "enable_favicon_skeleton_loader",
+        false);
+
 const base::FeatureParam<int> kContextMenuAnimationDailyLimit(
     &kContextMenuAnimationLimiting,
     "ContextMenuAnimationDailyLimit",
@@ -69,6 +75,11 @@ bool IsTabDeselectionInComposeboxEnabled() {
 bool IsContextMenuTooltipsInComposeboxEnabled() {
   return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
          kContextManagementInComposeboxTooltips.Get();
+}
+
+bool IsFaviconSkeletonLoaderInComposeboxEnabled() {
+  return base::FeatureList::IsEnabled(kContextManagementInComposebox) &&
+         kContextManagementInComposeboxFaviconSkeletonLoader.Get();
 }
 
 }  // namespace omnibox

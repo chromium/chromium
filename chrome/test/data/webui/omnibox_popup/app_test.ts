@@ -87,6 +87,7 @@ suite('AppTest', function() {
       url: 'https://tab1.com/',
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
       lastActive: {internalValue: 1n},
     };
 

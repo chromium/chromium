@@ -60,6 +60,7 @@ function createTabInfo(id: number, title: string, url: string): TabInfo {
     tabId: id,
     showInCurrentTabChip: false,
     showInPreviousTabChip: false,
+    isLoading: false,
     title,
     url,
     lastActive: {internalValue: 0n},

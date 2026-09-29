@@ -541,6 +541,14 @@ class ContextualSearchboxHandler
   void UpdateAllTabNavigationObservers();
   void OnAnyTabNavigated(content::WebContents* web_contents);
 
+  // Observes tabs last reported to the page as loading, so the page can be
+  // told to refresh when they finish (see `TabInfo.is_loading`).
+  class TabLoadStopObserver;
+  void UpdateTabLoadStopObservers(
+      const std::vector<searchbox::mojom::TabInfoPtr>& tab_infos);
+  void OnTabStoppedLoading();
+
+  std::vector<std::unique_ptr<TabLoadStopObserver>> tab_load_stop_observers_;
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;
 

@@ -128,6 +128,7 @@ suite('ContextualTasksOnboardingTooltipForkTest', () => {
       lastActive: {internalValue: BigInt(100)},
       showInCurrentTabChip: true,
       showInPreviousTabChip: false,
+      isLoading: false,
     };
   }
 

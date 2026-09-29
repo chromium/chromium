@@ -82,6 +82,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -170,6 +171,18 @@ base::TimeTicks GetTabLastActiveTimeTicks(tabs::TabInterface* tab) {
   const base::TimeDelta time_since_active =
       base::Time::Now() - tab->GetLastActiveTime();
   return base::TimeTicks::Now() - time_since_active;
+}
+
+// Returns whether the tab strip would show a loading indicator for
+// `web_contents`. Mirrors `NetworkStateIsAnimated()` in `TabIcon`.
+bool IsTabShowingLoadingIndicator(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return false;
+  }
+  const tabs::TabNetworkState state =
+      tabs::TabNetworkStateForWebContents(web_contents);
+  return state == tabs::TabNetworkState::kWaiting ||
+         state == tabs::TabNetworkState::kLoading;
 }
 
 omnibox::InputType GetInputType(const std::string& type,
@@ -369,6 +382,9 @@ ContextualSearchboxHandler::GetRecentTabInfos(
             chrome::ChromeUINewTabURLAsGURL() &&
         !show_in_current_tab_chip;
     tab_data->last_active = tab_time.time;
+    tab_data->is_loading =
+        omnibox::IsFaviconSkeletonLoaderInComposeboxEnabled() &&
+        IsTabShowingLoadingIndicator(web_contents);
     tabs.push_back(std::move(tab_data));
   }
 
@@ -428,6 +444,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
                                                   duplicate_count);
   }
 
+  UpdateTabLoadStopObservers(tabs);
   std::move(callback).Run(std::move(tabs));
 }
 
@@ -549,6 +566,25 @@ class ContextualSearchboxHandler::AllTabNavigationObserver
 
  private:
   base::RepeatingCallback<void(content::WebContents*)> on_navigation_cb_;
+};
+
+// Notifies when an observed tab stops loading.
+class ContextualSearchboxHandler::TabLoadStopObserver
+    : public content::WebContentsObserver {
+ public:
+  TabLoadStopObserver(content::WebContents* web_contents,
+                      base::RepeatingClosure on_stop_loading_cb)
+      : content::WebContentsObserver(web_contents),
+        on_stop_loading_cb_(std::move(on_stop_loading_cb)) {}
+  TabLoadStopObserver(const TabLoadStopObserver&) = delete;
+  TabLoadStopObserver& operator=(const TabLoadStopObserver&) = delete;
+  ~TabLoadStopObserver() override = default;
+
+  // content::WebContentsObserver:
+  void DidStopLoading() override { on_stop_loading_cb_.Run(); }
+
+ private:
+  base::RepeatingClosure on_stop_loading_cb_;
 };
 
 ContextualSearchboxHandler::ContextualSearchboxHandler(
@@ -779,6 +815,32 @@ void ContextualSearchboxHandler::UpdateAllTabNavigationObservers() {
 
 void ContextualSearchboxHandler::OnAnyTabNavigated(
     content::WebContents* web_contents) {
+  page_->OnTabStripChanged();
+}
+
+void ContextualSearchboxHandler::UpdateTabLoadStopObservers(
+    const std::vector<searchbox::mojom::TabInfoPtr>& tab_infos) {
+  tab_load_stop_observers_.clear();
+  for (const auto& tab_info : tab_infos) {
+    if (!tab_info->is_loading) {
+      continue;
+    }
+    tabs::TabInterface* tab = tabs::TabHandle(tab_info->tab_id).Get();
+    if (!tab || !tab->GetContents()) {
+      continue;
+    }
+    // Unretained is safe: `this` owns the observer, so the callback cannot
+    // outlive it.
+    tab_load_stop_observers_.push_back(std::make_unique<TabLoadStopObserver>(
+        tab->GetContents(),
+        base::BindRepeating(&ContextualSearchboxHandler::OnTabStoppedLoading,
+                            base::Unretained(this))));
+  }
+}
+
+void ContextualSearchboxHandler::OnTabStoppedLoading() {
+  // The page refreshes its tab list in response, which re-reads `is_loading`
+  // and rebuilds `tab_load_stop_observers_`.
   page_->OnTabStripChanged();
 }
 

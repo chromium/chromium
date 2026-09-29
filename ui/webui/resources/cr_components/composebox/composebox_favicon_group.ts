@@ -10,6 +10,8 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import {getCss} from './composebox_favicon_group.css.js';
 import {getHtml} from './composebox_favicon_group.html.js';
 
+// Keep in sync with the per-coin `--skeleton-stagger-delay` rules in
+// composebox_favicon_group.css.
 const MAX_DISPLAY_COUNT = 3;
 
 export class ComposeboxFaviconGroupElement extends CrLitElement {
@@ -69,6 +71,11 @@ export class ComposeboxFaviconGroupElement extends CrLitElement {
         });
       }
     }
+  }
+
+  // Shows a skeleton coin while the tab strip shows the tab as loading.
+  protected isTabLoading_(tab: TabInfo): boolean {
+    return tab.isLoading && !this.submittedTabIds.has(tab.tabId);
   }
 
   protected getFaviconUrl_(tab: TabInfo|string|{url: string, tabId?: number}):

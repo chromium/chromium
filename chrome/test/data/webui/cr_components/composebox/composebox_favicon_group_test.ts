@@ -5,7 +5,22 @@
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+function createTab(overrides: Partial<TabInfo> = {}): TabInfo {
+  return Object.assign(
+      {
+        tabId: 0,
+        title: '',
+        url: 'about:blank',
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        isLoading: false,
+        lastActive: {internalValue: 0n},
+      },
+      overrides);
+}
 
 suite('ComposeboxFaviconGroupTest', () => {
   let element: ComposeboxFaviconGroupElement;
@@ -147,5 +162,51 @@ suite('ComposeboxFaviconGroupTest', () => {
     assertFalse(faviconUrl.includes('data:image/png;base64,wikipedia'));
     assertTrue(faviconUrl.includes('chrome://favicon2/'));
     assertTrue(faviconUrl.includes('pageUrl=https%3A%2F%2Fgoogle.com'));
+  });
+
+  test('Shows skeleton coin only while the tab is loading', async () => {
+    element.tabs = [
+      createTab({tabId: 1, url: 'https://google.com', isLoading: true}),
+      createTab({tabId: 2, url: 'https://youtube.com'}),
+    ];
+    await element.updateComplete;
+
+    const items = element.shadowRoot.querySelectorAll('.favicon-item');
+    assertEquals(2, items.length);
+    assertTrue(items[0]!.classList.contains('loading'));
+    assertFalse(items[1]!.classList.contains('loading'));
+
+    // The tab finishes loading and the page refreshes the tab list.
+    element.tabs = [
+      createTab({tabId: 1, url: 'https://google.com'}),
+      createTab({tabId: 2, url: 'https://youtube.com'}),
+    ];
+    await element.updateComplete;
+    assertEquals(
+        null, element.shadowRoot.querySelector('.favicon-item.loading'));
+  });
+
+  test('Favicon load reply does not change the skeleton state', async () => {
+    const callbacks: Array<(url?: string) => void> = [];
+    element.addEventListener('wait-for-tab-load', (e: Event) => {
+      callbacks.push((e as CustomEvent).detail.onTabLoaded);
+    });
+    element.tabs =
+        [createTab({tabId: 1, url: 'https://google.com', isLoading: true})];
+    await element.updateComplete;
+
+    assertEquals(1, callbacks.length);
+    callbacks[0]!('data:image/png;base64,abc');
+    await element.updateComplete;
+    assertTrue(!!element.shadowRoot.querySelector('.favicon-item.loading'));
+  });
+
+  test('Submitted tabs never show a skeleton coin', async () => {
+    element.submittedTabIds = new Set([1]);
+    element.tabs =
+        [createTab({tabId: 1, url: 'https://google.com', isLoading: true})];
+    await element.updateComplete;
+    assertEquals(
+        null, element.shadowRoot.querySelector('.favicon-item.loading'));
   });
 });

@@ -15,11 +15,16 @@
 }
 
 .favicon-item {
+  /* Skeleton loader motion (see below). cros.ref.motion.duration.long2. */
+  --skeleton-fade-duration: 500ms;
+  /* cros.ref.motion.duration.short4 */
+  --skeleton-swap-duration: 200ms;
+  /* Stagger: each successive placeholder holds 100ms longer before looping.
+   * Delays are set per nth-child below, one per coin up to
+   * MAX_DISPLAY_COUNT in composebox_favicon_group.ts. */
+  --skeleton-stagger-delay: 0ms;
   aspect-ratio: 1/1;
   background-color: #fff;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 16px;
   border-radius: 50%;
   box-sizing: border-box;
   display: inline-block;
@@ -35,15 +40,86 @@
 }
 
 .favicon-item:nth-child(2) {
+  --skeleton-stagger-delay: 100ms;
   z-index: 2;
 }
 
 .favicon-item:nth-child(3) {
+  --skeleton-stagger-delay: 200ms;
   z-index: 1;
 }
 
 .favicon-item:not(:first-child) {
   margin-inline-start: -7px;
+}
+
+/* Skeleton loader for favicon coins, per the Chrome OS motion foundational
+ * skeleton-loader spec (b/553094862):
+ * go/carbon cr-os-motion-work/pages/wip-skeleton-loaders/foundational-spec */
+
+/* Actual content: the favicon. Fades 0% -> 100% when the placeholder is
+ * swapped out. */
+.favicon-item::after {
+  background-image: var(--favicon-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  border-radius: 50%;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity var(--skeleton-swap-duration) linear;
+}
+
+.favicon-item.loading::after {
+  opacity: 0;
+  transition: none;
+}
+
+/* Placeholder: surface-variant coin. Fades current -> 0% when swapped out. */
+.favicon-item::before {
+  background-color: var(--color-sys-surface-variant,
+      var(--cr-fallback-color-surface-variant));
+  border-radius: 50%;
+  content: '';
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity var(--skeleton-swap-duration) linear;
+}
+
+.favicon-item.loading::before {
+  animation: skeleton-looping-opacity calc(2 * var(--skeleton-fade-duration))
+      var(--skeleton-stagger-delay) infinite;
+  opacity: 1;
+  transition: none;
+}
+
+/* Looping opacity: fade down (starting value -> 1/2, emphasized accelerate,
+ * no delay), then fade up (1/2 -> starting value, linear, delayed by long2 so
+ * it starts once fade down ends), then loop. */
+@keyframes skeleton-looping-opacity {
+  0% {
+    /* cros.ref.motion.easing.emphasized.accelerate */
+    animation-timing-function: cubic-bezier(0.3, 0, 0.8, 0.15);
+    opacity: 1;
+  }
+  50% {
+    /* cros.ref.motion.easing.linear */
+    animation-timing-function: linear;
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .favicon-item.loading::before {
+    animation: none;
+  }
 }
 
 #more-items {
