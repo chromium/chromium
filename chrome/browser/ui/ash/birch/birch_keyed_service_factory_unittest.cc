@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/ash/birch/birch_keyed_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -55,6 +57,23 @@ TEST_F(BirchKeyedServiceFactoryTest, NoSupportForGuestProfile) {
   auto* service =
       BirchKeyedServiceFactory::GetInstance()->GetService(guest_profile.get());
   EXPECT_FALSE(service);
+}
+
+TEST_F(BirchKeyedServiceFactoryTest, NoSupportForAshInternalProfile) {
+  // Ash internal profiles -- the signin, lock screen and Shimless RMA app
+  // profiles -- are identified by their directory name and carry no
+  // AnnotatedAccountId. Birch is a user-session feature, so no service should
+  // be built for them.
+  std::unique_ptr<TestingProfile> lock_screen_profile =
+      TestingProfile::Builder()
+          .SetPath(profile_manager()->profiles_dir().AppendASCII(
+              kLockScreenBrowserContextBaseName))
+          .Build();
+  ASSERT_TRUE(lock_screen_profile);
+  ASSERT_FALSE(IsUserBrowserContext(lock_screen_profile.get()));
+
+  EXPECT_FALSE(BirchKeyedServiceFactory::GetInstance()->GetService(
+      lock_screen_profile.get()));
 }
 
 TEST_F(BirchKeyedServiceFactoryTest, NoSupportForOffTheRecordProfile) {
