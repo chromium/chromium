@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_insert/metrics/quick_insert_performance_metrics.h"
 #include "ash/quick_insert/metrics/quick_insert_session_metrics.h"
@@ -458,16 +457,12 @@ void QuickInsertView::SelectMoreResults(QuickInsertSectionType type) {
 }
 
 void QuickInsertView::ToggleGifs(bool is_checked) {
-  if (base::FeatureList::IsEnabled(features::kPickerGifs)) {
-    is_gif_toggle_checked_ = is_checked;
-    if (is_gif_toggle_checked_) {
-      SelectCategoryWithQuery(QuickInsertCategory::kGifs,
-                              search_field_view_->GetQueryText());
-    } else {
-      ResetSelectedCategory(/*reset_query=*/false);
-    }
+  is_gif_toggle_checked_ = is_checked;
+  if (is_gif_toggle_checked_) {
+    SelectCategoryWithQuery(QuickInsertCategory::kGifs,
+                            search_field_view_->GetQueryText());
   } else {
-    ShowEmojiPicker(ui::EmojiPickerCategory::kGifs);
+    ResetSelectedCategory(/*reset_query=*/false);
   }
 }
 

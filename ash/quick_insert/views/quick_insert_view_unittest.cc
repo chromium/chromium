@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/metrics/quick_insert_session_metrics.h"
 #include "ash/quick_insert/mock_quick_insert_asset_fetcher.h"
 #include "ash/quick_insert/model/quick_insert_action_type.h"
@@ -52,7 +51,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
@@ -2848,28 +2846,6 @@ TEST_P(QuickInsertViewEmojiTest,
   EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"a")));
 }
 
-TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPickerGifs);
-  FakeQuickInsertViewDelegate delegate(
-      {.available_categories = {QuickInsertCategory::kEmojisGifs}});
-  auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
-  widget->Show();
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-
-  QuickInsertEmojiBarView* emoji_bar =
-      GetQuickInsertViewFromWidget(*widget)->emoji_bar_view_for_testing();
-  ASSERT_NE(emoji_bar, nullptr);
-  views::View* gifs_button = emoji_bar->gifs_button_for_testing();
-  ViewDrawnWaiter().Wait(gifs_button);
-  LeftClickOn(gifs_button);
-
-  EXPECT_TRUE(widget->IsClosed());
-  EXPECT_THAT(delegate.emoji_picker_category(),
-              Optional(Eq(ui::EmojiPickerCategory::kGifs)));
-  EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"a")));
-}
-
 TEST_F(QuickInsertViewTest,
        KeepsSearchFieldQueryTextAndFocusWhenClickingOnSeeMoreResults) {
   base::test::TestFuture<void> future;
@@ -3259,7 +3235,6 @@ TEST_F(QuickInsertViewTest, ResetsToZeroStateAfterPressingBrowserBack) {
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonWithQueryShowsGifSearchResults) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   base::test::TestFuture<std::u16string_view,
                          QuickInsertViewDelegate::SearchResultsCallback>
       future;
@@ -3306,7 +3281,6 @@ TEST_F(QuickInsertViewTest, CheckingGifButtonWithQueryShowsGifSearchResults) {
 
 TEST_F(QuickInsertViewTest,
        TypingQueryWithGifToggleCheckedShowsGifSearchResults) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   base::test::TestFuture<std::u16string_view,
                          QuickInsertViewDelegate::SearchResultsCallback>
       future;
@@ -3352,7 +3326,6 @@ TEST_F(QuickInsertViewTest,
 }
 
 TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   base::test::TestFuture<std::u16string_view,
                          QuickInsertViewDelegate::SearchResultsCallback>
       future;
@@ -3392,7 +3365,6 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonSearchesNormally) {
 }
 
 TEST_F(QuickInsertViewTest, UncheckingGifButtonWithoutQueryShowsZeroState) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEmojisGifs,
                                QuickInsertCategory::kGifs},
@@ -3411,7 +3383,6 @@ TEST_F(QuickInsertViewTest, UncheckingGifButtonWithoutQueryShowsZeroState) {
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEmojisGifs,
                                QuickInsertCategory::kGifs},
@@ -3431,7 +3402,6 @@ TEST_F(QuickInsertViewTest, CheckingGifButtonDoesNotShowBackButton) {
 }
 
 TEST_F(QuickInsertViewTest, CheckingGifButtonKeepsEmojiBarVisible) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGifs);
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEmojisGifs,
                                QuickInsertCategory::kGifs},

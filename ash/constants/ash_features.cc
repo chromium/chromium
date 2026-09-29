@@ -1462,9 +1462,6 @@ BASE_FEATURE(kPhoneHubMonochromeNotificationIcons,
 BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables GIF search in Picker.
-BASE_FEATURE(kPickerGifs, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate, base::FEATURE_DISABLED_BY_DEFAULT);

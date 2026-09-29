@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/quick_insert/views/quick_insert_emoji_item_view.h"
 #include "ash/quick_insert/views/quick_insert_gif_view.h"
@@ -17,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
@@ -303,42 +301,6 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForShow(ash::kEmojiPickerElementId));
 }
 
-class QuickInsertWithGifsDisabledInteractiveUiTest
-    : public QuickInsertInteractiveUiTest {
- public:
-  QuickInsertWithGifsDisabledInteractiveUiTest() {
-    feature_list_.InitAndDisableFeature(ash::features::kPickerGifs);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsDisabledInteractiveUiTest,
-                       SearchGifs) {
-  ASSERT_TRUE(CreateBrowserWindow(
-      GURL("data:text/html,<input type=\"text\" autofocus/>")));
-  const ui::ElementContext browser_context = GetLastActiveContext();
-  views::Textfield* quick_insert_search_field = nullptr;
-
-  RunTestSequence(
-      InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
-                                       WaitForWebInputFieldFocus())),
-      Do([]() { TogglePickerByAccelerator(); }),
-      AfterShow(ash::kQuickInsertSearchFieldTextfieldElementId,
-                [&quick_insert_search_field](ui::TrackedElement* el) {
-                  quick_insert_search_field = AsView<views::Textfield>(el);
-                }),
-      ObserveState(kSearchFieldFocusedState,
-                   std::ref(quick_insert_search_field)),
-      WaitForState(kSearchFieldFocusedState, true),
-      EnterText(ash::kQuickInsertSearchFieldTextfieldElementId, u"happy"),
-      WaitForShow(ash::kQuickInsertGifElementId),
-      PressButton(ash::kQuickInsertGifElementId),
-      WaitForHide(ash::kQuickInsertElementId),
-      WaitForShow(ash::kEmojiPickerElementId));
-}
-
 // Intercepts network requests to Tenor and respond with fake GIFs.
 // This must be deleted while there's a SingleThreadTaskRunner.
 class FakeTenorServer {
@@ -408,18 +370,7 @@ class FakeTenorServer {
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
-class QuickInsertWithGifsEnabledInteractiveUiTest
-    : public QuickInsertInteractiveUiTest {
- public:
-  QuickInsertWithGifsEnabledInteractiveUiTest()
-      : feature_list_(ash::features::kPickerGifs) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
-                       SearchGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchGifs) {
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -455,8 +406,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
       WaitForHide(ash::kQuickInsertElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
-                       FeatureGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, FeatureGifs) {
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be
   // inserted.
@@ -488,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
       WaitForHide(ash::kQuickInsertElementId));
 }
 
-IN_PROC_BROWSER_TEST_F(QuickInsertWithGifsEnabledInteractiveUiTest,
-                       ToggleGifs) {
+IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, ToggleGifs) {
   AddUrlToHistory(GetActiveUserProfile(), GURL("https://foo.com/history"));
   FakeTenorServer fake_tenor_server;
   // TODO: b/360229206 - Use a contenteditable input field so the file can be

@@ -831,11 +831,6 @@
     "expiry_milestone": 200
   },
   {
-    "name": "ash-picker-gifs",
-    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "ash-split-keyboard-refactor",
     "owners": [
       "jimmyxgong@chromium.org",
