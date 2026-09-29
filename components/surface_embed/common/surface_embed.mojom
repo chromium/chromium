@@ -73,6 +73,9 @@ interface SurfaceEmbedHost {
   AttachConnector(mojo_base.mojom.UnguessableToken content_id,
                   bool is_embed_element_focused);
 
+  // Detaches the currently attached child content, if any.
+  DetachConnector();
+
   // Synchronizes the visual properties of the <embed> element.
   // `is_visible` reports visibility with respect to "visibility:" CSS property;
   // This does not cover the case of "display:none", in which the plugin will

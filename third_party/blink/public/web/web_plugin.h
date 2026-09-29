@@ -137,6 +137,11 @@ class WebPlugin {
                                             bool subtree_throttled,
                                             bool display_locked) {}
 
+  // Called when a `data-*` attribute on the plugin element is added, modified,
+  // or removed. `new_value` is null if the attribute was removed.
+  virtual void DidChangeDataAttribute(const WebString& name,
+                                      const WebString& new_value) {}
+
   virtual WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&,
                                                ui::Cursor*) = 0;
 

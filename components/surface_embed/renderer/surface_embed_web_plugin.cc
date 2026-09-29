@@ -265,6 +265,43 @@ void SurfaceEmbedWebPlugin::UpdateRenderThrottlingStatus(bool is_throttled,
   }
 }
 
+void SurfaceEmbedWebPlugin::DidChangeDataAttribute(
+    const blink::WebString& name,
+    const blink::WebString& new_value) {
+  if (name.Utf8() != "data-content-id") {
+    return;
+  }
+
+  base::UnguessableToken new_contents_id = DecodeContentId(new_value.Utf8());
+  if (new_contents_id == contents_id_) {
+    return;
+  }
+  contents_id_ = new_contents_id;
+
+  if (!container_ || !host_) {
+    return;
+  }
+
+  paint_holding_helper_.ClearPaintHolding(layer_.get());
+  frame_sink_id_ = viz::FrameSinkId();
+  sent_visual_properties_.reset();
+  sent_last_is_visible_.reset();
+  ReleaseCrashedLayer();
+  container_->SetCcLayer(nullptr);
+  container_->ScheduleAnimation();
+
+  if (!contents_id_.is_empty()) {
+    bool is_focused =
+        container_->GetDocument().FocusedElement() == container_->GetElement();
+    host_->AttachConnector(contents_id_, is_focused);
+    host_->OnEmbedElementThrottlingStatusChanged(
+        mojom::RenderThrottlingStatus::New(
+            last_is_throttled_, last_subtree_throttled_, last_display_locked_));
+  } else {
+    host_->DetachConnector();
+  }
+}
+
 blink::WebInputEventResult SurfaceEmbedWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& event,
     ui::Cursor* cursor) {
@@ -416,6 +453,11 @@ void SurfaceEmbedWebPlugin::SynchronizeVisualProperties(
 }
 
 void SurfaceEmbedWebPlugin::OnHostDisconnected() {
+  // Unbind the Mojo endpoints so subsequent methods (e.g.
+  // DidChangeDataAttribute()) know the browser host connection is gone and do
+  // not attempt to use `host_` or overwrite `crashed_layer_`.
+  receiver_.reset();
+  host_.reset();
   // We handle closing the connection unexpectedly via the sad plugin path,
   // since that provides fallback painting behavior suggesting that something
   // went wrong.

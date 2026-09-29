@@ -106,6 +106,7 @@ class CORE_EXPORT HTMLPlugInElement
   void AttachLayoutTree(AttachContext&) override;
 
   // Element functions:
+  void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,

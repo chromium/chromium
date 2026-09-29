@@ -476,8 +476,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTestNoHost, NoCrash) {
   EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
 
   // Changing data-content-id after plugin creation must not crash.
-  // TODO(crbug.com/561637127): Handling data-content-id changes isn't
-  // implemented yet.
   auto child_contents2 = CreateChildWebContents();
   NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
   SurfaceEmbedHandle* embedded_handle2 =
@@ -505,6 +503,56 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
 
   // Expect the stub plugin code to render a red square.
   EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       ChangeDataContentIdChangesAttachedWebContents) {
+  auto child_contents1 = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents1.get());
+
+  WaitForHostCount(kSingleEmbedCount);
+  ASSERT_EQ(kSingleEmbedCount, GetHostCount());
+  EXPECT_NE(nullptr, child_contents1->GetSurfaceEmbedConnector());
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorRED));
+
+  auto child_contents2 = CreateChildWebContents();
+  NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
+  SurfaceEmbedHandle* embedded_handle2 =
+      SurfaceEmbedHandle::CreateForWebContents(child_contents2.get());
+  ASSERT_NE(nullptr, embedded_handle2);
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "document.embeds[0].setAttribute('data-content-id', $1);",
+          embedded_handle2->id().ToString())));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents1->GetSurfaceEmbedConnector() == nullptr &&
+           child_contents2->GetSurfaceEmbedConnector() != nullptr;
+  }));
+  EXPECT_EQ(kSingleEmbedCount, GetHostCount());
+  EXPECT_TRUE(CheckHasPixelInColor(SK_ColorBLUE));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
+                       RemoveDataContentIdDetachesWebContents) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  WaitForHostCount(kSingleEmbedCount);
+  SurfaceEmbedHost* host = GetHost(0);
+  ASSERT_NE(nullptr, host);
+  EXPECT_NE(nullptr, child_contents->GetSurfaceEmbedConnector());
+  EXPECT_TRUE(host->IsAttachedForTesting());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].removeAttribute('data-content-id');"));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return child_contents->GetSurfaceEmbedConnector() == nullptr; }));
+  EXPECT_FALSE(host->IsAttachedForTesting());
 }
 
 // Make sure we don't crash on invalid content ID.
@@ -1408,14 +1456,12 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   ASSERT_NE(embedded_handle, nullptr);
 
   // 4. Attach the inner WebContents to the already focused <embed> by setting
-  // data-content-id and re-triggering plugin creation.
-  EXPECT_TRUE(content::ExecJs(web_contents(),
-                              content::JsReplace(R"(
-        const embed = document.getElementById('my_embed');
-        embed.setAttribute('data-content-id', $1);
-        embed.removeAttribute('type');
-        embed.setAttribute('type', $2);
-      )", embedded_handle->id().ToString(), kInternalPluginMimeType)));
+  // data-content-id.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("document.getElementById('my_embed').setAttribute("
+                         "'data-content-id', $1);",
+                         embedded_handle->id().ToString())));
 
   // 5. Verify that the child WebContents has page focus after attaching to the
   // already focused <embed>.

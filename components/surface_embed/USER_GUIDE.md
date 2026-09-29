@@ -81,10 +81,9 @@ std::string content_id = embedded_handle->id().ToString();
 Surface Embed does not manage the lifecycle of `WebContents`. If the child
 WebContents is destroyed, the `<embed>` will become blank. If the `<embed>` is
 removed, the previously attached `WebContents` will be detached. Changing
-`data-content-id` on an existing plugin is not currently supported
-([crbug.com/561637127](https://crbug.com/561637127)). To embed different
-contents, update `data-content-id`, then remove and restore the `type` attribute
-to force the plugin to be recreated with the new content ID.
+`data-content-id` on an existing `<embed>` will detach the previously attached
+`WebContents` (if any) and attach the new `WebContents` (setting
+`data-content-id` to the same value is a no-op).
 
 ---
 

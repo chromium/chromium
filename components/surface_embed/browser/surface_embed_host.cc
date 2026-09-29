@@ -120,6 +120,12 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
   CHECK(surface_embed_);
 
   CHECK(!content_id.is_empty());
+
+  // If this host already has a child attached, we need to detach it first. Note
+  // that this request comes from the parent side, so we don't notify the
+  // SurfaceEmbed as it initiated the detachment.
+  DetachConnector();
+
   SurfaceEmbedHandle* handle = SurfaceEmbedHandle::FromID(content_id);
   if (!handle) {
     // The child may have been destroyed while the renderer was asynchronously
@@ -138,11 +144,6 @@ void SurfaceEmbedHost::AttachConnector(const base::UnguessableToken& content_id,
     connector->GetDelegate()->DetachedByHost();
     CHECK(!web_contents_to_attach->GetSurfaceEmbedConnector());
   }
-
-  // If this host already has a child attached, we need to detach it first. Note
-  // that this request comes from the parent side, so we don't notify the
-  // SurfaceEmbed as it initiated the detachment.
-  DetachConnector();
 
   if (web_contents_to_attach->IsCrashed()) {
     // The child process may have crashed before the renderer for the parent

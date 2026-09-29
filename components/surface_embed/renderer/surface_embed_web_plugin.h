@@ -67,6 +67,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void UpdateRenderThrottlingStatus(bool is_throttled,
                                     bool subtree_throttled,
                                     bool display_locked) override;
+  void DidChangeDataAttribute(const blink::WebString& name,
+                              const blink::WebString& new_value) override;
   blink::WebInputEventResult HandleInputEvent(
       const blink::WebCoalescedInputEvent& event,
       ui::Cursor* cursor) override;

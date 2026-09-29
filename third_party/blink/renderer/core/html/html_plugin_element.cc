@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -518,6 +519,18 @@ WebPluginContainerImpl* HTMLPlugInElement::OwnedPlugin() const {
   if (view && view->IsPluginView())
     return To<WebPluginContainerImpl>(view);
   return nullptr;
+}
+
+void HTMLPlugInElement::ParseAttribute(
+    const AttributeModificationParams& params) {
+  HTMLFrameOwnerElement::ParseAttribute(params);
+  if (!params.name.LocalName().starts_with("data-")) {
+    return;
+  }
+  if (WebPluginContainerImpl* plugin = OwnedPlugin()) {
+    plugin->Plugin()->DidChangeDataAttribute(params.name.LocalName(),
+                                             params.new_value);
+  }
 }
 
 bool HTMLPlugInElement::IsPresentationAttribute(

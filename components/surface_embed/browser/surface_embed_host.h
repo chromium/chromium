@@ -54,6 +54,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
                            surface_embed) override;
   void AttachConnector(const base::UnguessableToken& content_id,
                        bool is_embed_element_focused) override;
+  void DetachConnector() override;
   void SynchronizeVisualProperties(
       const blink::FrameVisualProperties& visual_properties,
       bool is_visible) override;
@@ -73,10 +74,6 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   void RequestFocusOnEmbedElement() override;
   void AdvanceFocusFromEmbedElement(bool reverse) override;
   bool IsAttachedForTesting() const override;
-
-  // TODO: Update surface_embed.mojom so that this is an override of a virtual
-  // from mojom::SurfaceEmbedHost.
-  void DetachConnector();
 
   void SetDestructionCallbackForTesting(base::OnceClosure callback);
 
