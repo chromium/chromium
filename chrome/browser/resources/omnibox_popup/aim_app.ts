@@ -9,7 +9,6 @@ import '/strings.m.js';
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {VoicePermissionPromptState} from '//resources/cr_components/composebox/composebox_voice_search.js';
-import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -228,7 +227,6 @@ export class OmniboxAimAppElement extends CrLitElement {
   }
 
   protected setPreserveContextOnClose_(preserveContextOnClose: boolean) {
-    assert(document.visibilityState === 'visible');
     this.preserveContextOnClose_ = preserveContextOnClose;
   }
 
