@@ -19,6 +19,7 @@ class DOMQuad;
 class DOMQuadInit;
 class DOMRectReadOnly;
 class ExceptionState;
+class FocusOptions;
 class V8UnionCSSPseudoElementOrDocumentOrElementOrText;
 class V8UnionCSSPseudoElementOrElement;
 
@@ -84,6 +85,7 @@ class CSSPseudoElement final : public ScriptWrappable {
   // PseudoId-based overload: avoids string parsing, for internal use.
   CSSPseudoElement* pseudo(PseudoId pseudo_id,
                            const AtomicString& pseudo_argument = g_null_atom);
+  void focus(const FocusOptions* options);
 
   // Returns the CSSPseudoElement proxy chain for the given PseudoElement,
   // creating it if necessary. Handles nested pseudos (e.g. ::after::marker)

@@ -1100,6 +1100,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_file_reader_sync.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focus_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focus_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focusable.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_focusable.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_font_face_set.cc",

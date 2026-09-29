@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>DocumentOrShadowRoot.activeFocusable with Shadow DOM</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div id="outer-host" tabindex="0">
+  <template shadowrootmode="open">
+    <button id="outer-btn">Outer</button>
+    <div id="inner-host"></div>
+  </template>
+</div>
+<div id="slot-host">
+  <template shadowrootmode="open">
+    <slot></slot>
+  </template>
+  <button id="slotted-btn">Slotted</button>
+</div>
+<div id="delegating-host">
+  <template shadowrootmode="open" shadowrootdelegatesfocus>
+    <button id="first-btn">First</button>
+    <button id="second-btn">Second</button>
+  </template>
+</div>
+
+<script>
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+  assert_not_equals(actual, null);
+  assert_equals(actual.target, target, "target");
+  assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
+  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+}
+
+const outerHost = document.getElementById("outer-host");
+const outerSR = outerHost.shadowRoot;
+const outerBtn = outerSR.getElementById("outer-btn");
+const innerHost = outerSR.getElementById("inner-host");
+
+const innerSR = innerHost.attachShadow({ mode: "closed" });
+const deepBtn = innerSR.appendChild(document.createElement("button"));
+
+const slotHost = document.getElementById("slot-host");
+const slotSR = slotHost.shadowRoot;
+const slottedBtn = document.getElementById("slotted-btn");
+
+test((t) => {
+  t.add_cleanup(() => document.activeElement?.blur());
+
+  // Focusing the host itself sets `target` to the host and `shadowHost` to null.
+  outerHost.focus();
+  assert_focusable(document.activeFocusable, { target: outerHost });
+  assert_equals(document.activeElement, outerHost);
+  assert_equals(outerSR.activeFocusable, null);
+  assert_equals(outerSR.activeElement, null);
+
+  // Focusing inside the open shadow root sets `shadowHost` on document and `target` on outerSR.
+  outerBtn.focus();
+  assert_focusable(document.activeFocusable, { shadowHost: outerHost });
+  assert_equals(document.activeElement, outerHost);
+  assert_focusable(outerSR.activeFocusable, { target: outerBtn });
+  assert_equals(outerSR.activeElement, outerBtn);
+
+  // Focusing inside the nested closed shadow root chains `shadowHost` per tree scope.
+  deepBtn.focus();
+  assert_focusable(document.activeFocusable, { shadowHost: outerHost });
+  assert_equals(document.activeElement, outerHost);
+  assert_focusable(outerSR.activeFocusable, { shadowHost: innerHost });
+  assert_equals(outerSR.activeElement, innerHost);
+  assert_focusable(innerSR.activeFocusable, { target: deepBtn });
+  assert_equals(innerSR.activeElement, deepBtn);
+}, "activeFocusable across host, open shadow root, and nested closed shadow root");
+
+test((t) => {
+  t.add_cleanup(() => slottedBtn.blur());
+
+  slottedBtn.focus();
+  assert_focusable(document.activeFocusable, { target: slottedBtn });
+  assert_equals(document.activeElement, slottedBtn);
+  assert_equals(slotSR.activeFocusable, null);
+  assert_equals(slotSR.activeElement, null);
+}, "activeFocusable when a slotted light DOM element is focused");
+
+test((t) => {
+  const delegatingHost = document.getElementById("delegating-host");
+  const delegatingSR = delegatingHost.shadowRoot;
+  const firstBtn = delegatingSR.getElementById("first-btn");
+  t.add_cleanup(() => {
+    document.activeElement?.blur();
+    delegatingSR.prepend(firstBtn);
+  });
+
+  firstBtn.focus();
+  const focusable = document.activeFocusable;
+  assert_focusable(focusable, { shadowHost: delegatingHost });
+  assert_equals(document.activeElement, delegatingHost);
+  assert_equals(delegatingSR.activeElement, firstBtn);
+
+  // Once the focused element is removed, there is nothing to focus. In
+  // particular, focus() doesn't fall back to the shadow host, which would
+  // delegate focus to another element in its shadow tree.
+  firstBtn.remove();
+  assert_equals(document.activeElement, document.body, "precondition");
+  focusable.focus();
+  assert_equals(document.activeElement, document.body);
+  assert_equals(delegatingSR.activeElement, null);
+
+  // The Focusable still exposes what it exposed when it was created. The
+  // removed element is in the document's tree scope now, but exposing it
+  // would leak what used to be inside the shadow tree.
+  assert_focusable(focusable, { shadowHost: delegatingHost });
+}, "Focusable for an element that was removed from a shadow tree");
+</script>

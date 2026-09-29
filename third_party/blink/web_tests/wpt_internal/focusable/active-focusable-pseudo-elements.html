@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>DocumentOrShadowRoot.activeFocusable with pseudo-elements</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  #scroller {
+    overflow: auto;
+    width: 200px;
+    height: 100px;
+    scroll-marker-group: after;
+  }
+  #scroller::scroll-marker-group {
+    display: flex;
+    height: 30px;
+  }
+  #scroller::scroll-button(block-end) {
+    content: "v";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 30px;
+  }
+  #scroller::scroll-button(block-end):focus {
+    background-color: green;
+  }
+  #scroller.hide-scroll-button::scroll-button(block-end) {
+    display: none;
+  }
+  .item {
+    width: 200px;
+    height: 200px;
+  }
+  .item::scroll-marker {
+    content: "o";
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+  }
+</style>
+
+<div id="scroller">
+  <div id="item1" class="item">Item 1</div>
+  <div id="item2" class="item">Item 2</div>
+</div>
+<div id="shadow-host">
+  <template shadowrootmode="open">
+    <style>
+      #inner-scroller { overflow: auto; width: 100px; height: 100px; scroll-marker-group: after; }
+      #inner-scroller::scroll-marker-group { display: flex; height: 20px; }
+      #inner-item { height: 200px; }
+      #inner-item::scroll-marker { content: "o"; width: 20px; height: 20px; display: inline-block; }
+    </style>
+    <div id="inner-scroller"><div id="inner-item"></div></div>
+  </template>
+</div>
+<button id="reset">Reset</button>
+
+<script>
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+  assert_not_equals(actual, null);
+  assert_equals(actual.target, target, "target");
+  assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
+  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+}
+
+// `document.activeElement.blur()` does not blur a focused pseudo-element, since
+// `activeElement` is its originating element. Move focus to a regular element
+// first, then blur that.
+function resetFocus() {
+  const reset = document.getElementById("reset");
+  reset.focus();
+  reset.blur();
+}
+
+// Clicks ::scroll-button(block-end) of #scroller, which focuses it.
+function clickScrollButton() {
+  return new test_driver.Actions()
+      .pointerMove(15, 15)
+      .pointerDown()
+      .pointerUp()
+      .send();
+}
+
+const FOCUSED_COLOR = "rgb(0, 128, 0)";
+
+test((t) => {
+  const scroller = document.getElementById("scroller");
+  const item1 = document.getElementById("item1");
+  const item2 = document.getElementById("item2");
+  t.add_cleanup(resetFocus);
+
+  const marker1 = item1.pseudo("::scroll-marker");
+  const focusable = new Focusable(marker1);
+  assert_focusable(focusable, { target: item1, pseudoElement: marker1 });
+  focusable.focus();
+  assert_focusable(document.activeFocusable, { target: item1, pseudoElement: marker1 });
+  assert_equals(document.activeElement, scroller);
+
+  const marker2 = item2.pseudo("::scroll-marker");
+  marker2.focus();
+  assert_focusable(document.activeFocusable, { target: item2, pseudoElement: marker2 });
+  assert_equals(document.activeElement, scroller);
+}, "activeFocusable with ::scroll-marker");
+
+test((t) => {
+  const item1 = document.getElementById("item1");
+  t.add_cleanup(() => {
+    resetFocus();
+    item1.removeAttribute("tabindex");
+  });
+
+  // Nested pseudo-elements are distinguished by the CSSPseudoElement itself.
+  const nestedMarker = item1.pseudo("::before").pseudo("::marker");
+  assert_not_equals(nestedMarker, item1.pseudo("::marker"));
+  assert_focusable(new Focusable(nestedMarker), {
+    target: item1,
+    pseudoElement: nestedMarker
+  });
+
+  // Focusing a pseudo-element that doesn't exist is a no-op; it does not fall
+  // back to focusing the (focusable) originating element.
+  item1.tabIndex = 0;
+  assert_equals(document.activeFocusable, null, "precondition");
+  new Focusable(item1.pseudo("::after")).focus();
+  assert_equals(document.activeFocusable, null);
+  assert_equals(document.activeElement, document.body);
+}, "Focusable with nested and non-existent pseudo-elements");
+
+promise_test(async (t) => {
+  const scroller = document.getElementById("scroller");
+  const item1 = document.getElementById("item1");
+  t.add_cleanup(() => {
+    resetFocus();
+    scroller.scrollTop = 0;
+  });
+
+  // ::scroll-button() is not supported by the CSSPseudoElement interface.
+  assert_equals(scroller.pseudo("::scroll-button(block-end)"), null);
+
+  // Clicking the scroll button focuses it.
+  const buttonStyle = getComputedStyle(scroller, "::scroll-button(block-end)");
+  await clickScrollButton();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "clicked scroll button is focused");
+
+  // Just like Event.pseudoTarget, only the originating element is exposed.
+  const focusable = document.activeFocusable;
+  assert_focusable(focusable, { target: scroller });
+  assert_equals(document.activeElement, scroller);
+
+  // focus() still restores focus to the scroll button itself.
+  item1.pseudo("::scroll-marker").focus();
+  assert_not_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is blurred");
+  focusable.focus();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is refocused");
+  assert_focusable(document.activeFocusable, { target: scroller });
+}, "activeFocusable with a pseudo-element that CSSPseudoElement does not support");
+
+// TODO(crbug.com/565786176): This fails until the CSSPseudoElement interface
+// supports ::scroll-button(), which Focusable needs to find a re-created one.
+promise_test(async (t) => {
+  const scroller = document.getElementById("scroller");
+  t.add_cleanup(() => {
+    resetFocus();
+    scroller.classList.remove("hide-scroll-button");
+    scroller.scrollTop = 0;
+  });
+
+  const buttonStyle = getComputedStyle(scroller, "::scroll-button(block-end)");
+  await clickScrollButton();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "clicked scroll button is focused");
+  const focusable = document.activeFocusable;
+
+  // Hiding the scroll button destroys it, and showing it again creates a new
+  // one. The Focusable should still refer to the same scroll button (just like
+  // a CSSPseudoElement would), so focus() should focus the new one.
+  resetFocus();
+  scroller.classList.add("hide-scroll-button");
+  scroller.getBoundingClientRect();
+  scroller.classList.remove("hide-scroll-button");
+  focusable.focus();
+  assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "re-created scroll button is focused");
+  assert_equals(focusable.target, scroller, "target");
+}, "Focusable refers to a ::scroll-button() across re-creation");
+
+test((t) => {
+  const shadowHost = document.getElementById("shadow-host");
+  const sr = shadowHost.shadowRoot;
+  const innerScroller = sr.getElementById("inner-scroller");
+  const innerItem = sr.getElementById("inner-item");
+  t.add_cleanup(resetFocus);
+
+  const innerMarker = innerItem.pseudo("::scroll-marker");
+  new Focusable(innerMarker).focus();
+  assert_focusable(document.activeFocusable, { shadowHost });
+  assert_equals(document.activeElement, shadowHost);
+  assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
+  assert_equals(sr.activeElement, innerScroller);
+
+  // The document's Focusable still focuses the pseudo-element itself.
+  const documentFocusable = document.activeFocusable;
+  resetFocus();
+  documentFocusable.focus();
+  assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
+
+  // That's also the case after the pseudo-element is re-created (here by
+  // re-inserting its originating element), even though the document's
+  // Focusable doesn't expose it.
+  resetFocus();
+  innerItem.remove();
+  innerScroller.appendChild(innerItem);
+  documentFocusable.focus();
+  assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
+  assert_focusable(documentFocusable, { shadowHost });
+}, "activeFocusable does not leak pseudoElement across shadow boundary");
+</script>

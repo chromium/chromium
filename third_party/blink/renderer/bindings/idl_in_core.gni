@@ -176,6 +176,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/dom/events/event_listener_options.idl",
   "//third_party/blink/renderer/core/dom/events/event_modifier_init.idl",
   "//third_party/blink/renderer/core/dom/events/event_target.idl",
+  "//third_party/blink/renderer/core/dom/focusable.idl",
   "//third_party/blink/renderer/core/dom/frame_request_callback.idl",
   "//third_party/blink/renderer/core/dom/function_string_callback.idl",
   "//third_party/blink/renderer/core/dom/geometry_utils.idl",

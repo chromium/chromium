@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focusable and Document.activeFocusable basics</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<button id="btn">Button</button>
+<input id="date-input" type="date">
+<iframe id="frame" srcdoc="<input id='inner-input'>"></iframe>
+
+<script>
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+  assert_not_equals(actual, null);
+  assert_equals(actual.target, target, "target");
+  assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
+  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+}
+
+test((t) => {
+  const btn = document.getElementById("btn");
+  const dateInput = document.getElementById("date-input");
+  t.add_cleanup(() => document.activeElement?.blur());
+
+  assert_equals(document.activeFocusable, null);
+  assert_equals(document.activeElement, document.body);
+
+  new Focusable(btn).focus();
+  assert_focusable(document.activeFocusable, { target: btn });
+  assert_equals(document.activeElement, btn);
+
+  // Built-in control with UA shadow root should report the element itself as target.
+  dateInput.focus();
+  assert_focusable(document.activeFocusable, { target: dateInput });
+  assert_equals(document.activeElement, dateInput);
+
+  dateInput.blur();
+  assert_equals(document.activeFocusable, null);
+  assert_equals(document.activeElement, document.body);
+}, "activeFocusable for basic elements, UA shadow controls, and blur");
+
+test(() => {
+  const btn = document.getElementById("btn");
+  assert_focusable(new Focusable(btn), { target: btn });
+
+  const before = btn.pseudo("::before");
+  assert_focusable(new Focusable(before), { target: btn, pseudoElement: before });
+
+  assert_throws_js(TypeError, () => new Focusable());
+  assert_throws_js(TypeError, () => new Focusable(null));
+  assert_throws_js(TypeError, () => new Focusable(document));
+  assert_throws_js(TypeError, () => new Focusable("::before"));
+}, "Focusable constructor");
+
+promise_test(async (t) => {
+  const frame = document.getElementById("frame");
+  if (!frame.contentDocument || !frame.contentDocument.getElementById("inner-input")) {
+    await new Promise(resolve => frame.addEventListener("load", resolve, { once: true }));
+  }
+  const innerInput = frame.contentDocument.getElementById("inner-input");
+  t.add_cleanup(() => innerInput.blur());
+
+  innerInput.focus();
+  assert_focusable(document.activeFocusable, { target: frame });
+  assert_equals(document.activeElement, frame);
+  assert_focusable(frame.contentDocument.activeFocusable, { target: innerInput });
+  assert_equals(frame.contentDocument.activeElement, innerInput);
+}, "activeFocusable when an element inside an iframe is focused");
+</script>

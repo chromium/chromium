@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/dom/focusable.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
@@ -780,6 +781,26 @@ Element* TreeScope::activeElement() const {
     return element;
   }
   return document_ == this ? document_->body() : nullptr;
+}
+
+Focusable* TreeScope::activeFocusable() const {
+  Document& document = RootNode().GetDocument();
+  Element* focused_element = document.FocusedElement();
+  if (!focused_element && document.GetPage()) {
+    focused_element =
+        document.GetPage()->GetFocusController().FocusedFrameOwnerElement(
+            *document.GetFrame());
+  }
+  // Just like `shadowRoot.activeElement`, if the focused element is not inside
+  // `this` TreeScope (or a descendant shadow tree of `this`), return nullptr
+  // (for example, when querying `shadowRoot.activeFocusable` while focus is in
+  // the outer document, in an unrelated shadow tree, or on a slotted light-DOM
+  // element).
+  if (!focused_element ||
+      !IsInclusiveAncestorTreeScopeOf(focused_element->GetTreeScope())) {
+    return nullptr;
+  }
+  return Focusable::CreateFromElement(*focused_element, *this);
 }
 
 HeapVector<Member<Animation>> TreeScope::getAnimations() {

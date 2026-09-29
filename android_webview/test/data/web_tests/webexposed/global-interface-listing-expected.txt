@@ -977,6 +977,7 @@ interface CSSPseudoElement
     method convertPointFromNode
     method convertQuadFromNode
     method convertRectFromNode
+    method focus
     method getBoxQuads
     method pseudo
 interface CSSRGB : CSSColorValue
@@ -1903,6 +1904,7 @@ interface Document : Node
     attribute @@unscopables
     getter URL
     getter activeElement
+    getter activeFocusable
     getter activeViewTransition
     getter adoptedStyleSheets
     getter alinkColor
@@ -2992,6 +2994,13 @@ interface FocusEvent : UIEvent
     attribute @@toStringTag
     getter relatedTarget
     method constructor
+interface Focusable
+    attribute @@toStringTag
+    getter pseudoElement
+    getter shadowHost
+    getter target
+    method constructor
+    method focus
 interface FontFace
     attribute @@toStringTag
     getter ascentOverride
@@ -9572,6 +9581,7 @@ interface ServiceWorkerRegistration : EventTarget
 interface ShadowRoot : DocumentFragment
     attribute @@toStringTag
     getter activeElement
+    getter activeFocusable
     getter adoptedStyleSheets
     getter clonable
     getter customElementRegistry

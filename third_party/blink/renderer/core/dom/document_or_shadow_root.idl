@@ -15,6 +15,7 @@ interface mixin DocumentOrShadowRoot {
     [Measure] Element? elementFromPoint(double x, double y);
     [Measure] sequence<Element> elementsFromPoint(double x, double y);
     readonly attribute Element? activeElement;
+    [RuntimeEnabled=SequentialFocusPrimitives] readonly attribute Focusable? activeFocusable;
     [SameObject] readonly attribute StyleSheetList styleSheets;
     // PointerLock API
     // https://w3c.github.io/pointerlock/

@@ -202,6 +202,17 @@ CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
   return pseudo(pseudo_id, pseudo_argument);
 }
 
+void CSSPseudoElement::focus(const FocusOptions* options) {
+  if (element_) {
+    // Ensure the underlying PseudoElement and its LayoutObject (e.g., for
+    // ::scroll-marker) are created and up-to-date before resolving it.
+    element_->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
+  }
+  if (PseudoElement* pseudo_element = GetPseudoElement()) {
+    pseudo_element->focusForBindings(options);
+  }
+}
+
 namespace {
 
 // Helper to get the PseudoElement from the originating element hierarchy.

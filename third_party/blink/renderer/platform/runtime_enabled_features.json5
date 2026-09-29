@@ -5784,6 +5784,14 @@
       status: "stable",
     },
     {
+      // Exposes the Focusable interface, DocumentOrShadowRoot.activeFocusable,
+      // CSSPseudoElement.focus(), and sequential focus navigation primitives.
+      // https://crbug.com/565786176
+      name: "SequentialFocusPrimitives",
+      depends_on: ["CSSPseudoElementInterface"],
+      status: "test",
+    },
+    {
       name: "Serial",
       status: "stable",
       base_feature: "WebSerialAPI",

@@ -1,0 +1,17 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=SequentialFocusPrimitives
+]
+interface Focusable {
+    constructor((Element or CSSPseudoElement) target);
+
+    readonly attribute Element? shadowHost;
+    readonly attribute Element? target;
+    readonly attribute CSSPseudoElement? pseudoElement;
+
+    undefined focus(optional FocusOptions options = {});
+};
