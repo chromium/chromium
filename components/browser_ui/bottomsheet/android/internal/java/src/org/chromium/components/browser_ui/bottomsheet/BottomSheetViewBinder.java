@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -58,6 +59,22 @@ public class BottomSheetViewBinder {
                     model.get(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT));
         } else if (BottomSheetProperties.SHEET_FOCUSABLE == propertyKey) {
             view.setSheetFocusable(model.get(BottomSheetProperties.SHEET_FOCUSABLE));
+        } else if (BottomSheetProperties.CONTENT_BOTTOM_PADDING == propertyKey) {
+            view.setContentContainerPaddingBottom(
+                    model.get(BottomSheetProperties.CONTENT_BOTTOM_PADDING));
+        } else if (BottomSheetProperties.BACKGROUND_HEIGHT == propertyKey) {
+            view.updateBackgroundHeight(model.get(BottomSheetProperties.BACKGROUND_HEIGHT));
+        } else if (BottomSheetProperties.TOUCH_HANDLER == propertyKey) {
+            view.setTouchHandler(model.get(BottomSheetProperties.TOUCH_HANDLER));
+        } else if (BottomSheetProperties.HANDLEBAR_CLICK_LISTENER == propertyKey) {
+            view.setHandlebarClickListener(
+                    model.get(BottomSheetProperties.HANDLEBAR_CLICK_LISTENER));
+        } else if (BottomSheetProperties.TOOLBAR_SIZE_CHANGED_CALLBACK == propertyKey) {
+            view.setToolbarSizeChangedCallback(
+                    model.get(BottomSheetProperties.TOOLBAR_SIZE_CHANGED_CALLBACK));
+        } else if (BottomSheetProperties.CURRENT_SHEET_STATE == propertyKey) {
+            view.sendPaneChangeAccessibilityEvent(
+                    model.get(BottomSheetProperties.CURRENT_SHEET_STATE) != SheetState.HIDDEN);
         } else {
             assert false : "Unhandled property key: " + propertyKey;
         }

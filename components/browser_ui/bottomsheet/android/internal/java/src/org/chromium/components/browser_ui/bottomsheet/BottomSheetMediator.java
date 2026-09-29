@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
@@ -28,6 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.TouchHandler;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -37,7 +39,7 @@ import java.util.function.Supplier;
 
 /** Coordinates the bottom sheet UI lifecycle, state transitions, and event notifications. */
 @NullMarked
-class BottomSheetMediator implements BottomSheetView.TouchHandler {
+class BottomSheetMediator implements TouchHandler {
     private static final String TAG = "BottomSheet";
 
     /** Duration for transition to {@link SheetState#FULL}. */
@@ -83,6 +85,7 @@ class BottomSheetMediator implements BottomSheetView.TouchHandler {
      */
     BottomSheetMediator(PropertyModel model) {
         mModel = model;
+        mModel.set(BottomSheetProperties.TOUCH_HANDLER, this);
     }
 
     /**
@@ -284,6 +287,15 @@ class BottomSheetMediator implements BottomSheetView.TouchHandler {
                         : SheetState.NONE; // Not scrolling anymore.
         mModel.set(BottomSheetProperties.CONTAINER_TOUCH_ENABLED, state != SheetState.SCROLLING);
         mCurrentState = state;
+        if (state == SheetState.HALF || state == SheetState.FULL) {
+            // TalkBack will announce the pane title via sendPaneChangeAccessibilityEvent and
+            // shift focus when the state settles. We set the focusability here so it is ready
+            // when the pane change event is dispatched below. We avoid setting a container-level
+            // contentDescription on BottomSheet so that non-interactive descendant views inside
+            // the sheet remain discoverable to screen readers during linear navigation.
+            setSheetFocusable(true);
+        }
+        mModel.set(BottomSheetProperties.CURRENT_SHEET_STATE, state);
     }
 
     /**
@@ -738,6 +750,11 @@ class BottomSheetMediator implements BottomSheetView.TouchHandler {
         mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, height);
     }
 
+    /** Returns the container height from the model. */
+    int getContainerHeight() {
+        return mModel.get(BottomSheetProperties.CONTAINER_HEIGHT);
+    }
+
     /**
      * Sets the sheet layout mode in the model.
      *
@@ -840,6 +857,42 @@ class BottomSheetMediator implements BottomSheetView.TouchHandler {
      */
     void setSheetFocusable(boolean focusable) {
         mModel.set(BottomSheetProperties.SHEET_FOCUSABLE, focusable);
+    }
+
+    /**
+     * Sets bottom padding on the content container in the model.
+     *
+     * @param paddingBottom The bottom padding in pixels.
+     */
+    void setContentBottomPadding(@Px int paddingBottom) {
+        mModel.set(BottomSheetProperties.CONTENT_BOTTOM_PADDING, paddingBottom);
+    }
+
+    /**
+     * Sets the background height in the model.
+     *
+     * @param height The target background height in pixels.
+     */
+    void setBackgroundHeight(int height) {
+        mModel.set(BottomSheetProperties.BACKGROUND_HEIGHT, height);
+    }
+
+    /**
+     * Sets the click listener for the drag handlebar in the model.
+     *
+     * @param listener The click listener.
+     */
+    void setHandlebarClickListener(@Nullable OnClickListener listener) {
+        mModel.set(BottomSheetProperties.HANDLEBAR_CLICK_LISTENER, listener);
+    }
+
+    /**
+     * Sets the callback invoked when the toolbar holder's size changes in the model.
+     *
+     * @param callback The callback to invoke on toolbar size change, or null.
+     */
+    void setToolbarSizeChangedCallback(@Nullable Runnable callback) {
+        mModel.set(BottomSheetProperties.TOOLBAR_SIZE_CHANGED_CALLBACK, callback);
     }
 
     /** Updates the background glow specification in the model based on current content. */

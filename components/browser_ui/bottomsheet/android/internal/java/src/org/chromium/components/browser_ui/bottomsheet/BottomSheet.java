@@ -11,17 +11,12 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
@@ -29,7 +24,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -49,7 +43,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.insets.InsetObserver;
@@ -145,10 +138,6 @@ class BottomSheet extends BottomSheetView
      */
     private float mCurrentOffsetPx;
 
-
-    /** A handle to the FrameLayout that holds the snackbar of the bottom sheet. */
-    private @Nullable FrameLayout mSnackbarContainer;
-
     /**
      * The last offset ratio sent to observers of onSheetOffsetChanged(). This is used to ensure the
      * min and max values are provided at least once (0 and 1).
@@ -216,13 +205,11 @@ class BottomSheet extends BottomSheetView
         mNarrowWidth = res.getDimensionPixelSize(R.dimen.bottom_sheet_narrow_width);
         mDefaultPeekHeight = res.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
         mSheetBgColor = getNonModalBottomSheetBgColor(context);
-        setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
         mModel = buildModel();
         mMediator = new BottomSheetMediator(mModel);
         mMediator.initSwipeDetector(context, this);
         mMediator.setIsHidingSupplier(this::isHiding);
-        setTouchHandler(mMediator);
     }
 
     @Override
@@ -240,6 +227,7 @@ class BottomSheet extends BottomSheetView
                         BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER,
                         v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON))
                 .with(BottomSheetProperties.SHEET_WIDTH_PX, ViewGroup.LayoutParams.MATCH_PARENT)
+                .with(BottomSheetProperties.CONTAINER_HEIGHT, ViewGroup.LayoutParams.MATCH_PARENT)
                 .build();
     }
 
@@ -287,6 +275,8 @@ class BottomSheet extends BottomSheetView
      * @param appHeaderHeight The app header height, in px.
      * @param bottomMargin The extra margin to add to the bottom of sheet container.
      * @param insetObserver An observer for inset changes.
+     * @param isLargeFormFactor Whether the device is on a platform that supports a large form
+     *     factor.
      */
     @Initializer
     public void init(
@@ -305,10 +295,7 @@ class BottomSheet extends BottomSheetView
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
-        setHandlebarClickListener(v -> toggleSheetState());
-
-        mSnackbarContainer = findViewById(R.id.bottom_sheet_snackbar_container);
-        assert mSnackbarContainer != null;
+        mMediator.setHandlebarClickListener(v -> toggleSheetState());
 
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
@@ -414,13 +401,8 @@ class BottomSheet extends BottomSheetView
                 });
 
         // Listen to height changes on the toolbar.
-        addToolbarLayoutChangeListener(
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    // Make sure the size of the layout actually changed.
-                    if (bottom - top == oldBottom - oldTop && right - left == oldRight - oldLeft) {
-                        return;
-                    }
-
+        mMediator.setToolbarSizeChangedCallback(
+                () -> {
                     if (!mMediator.isScrolling() && isRunningSettleAnimation()) return;
 
                     setSheetState(getSheetState(), false);
@@ -603,7 +585,6 @@ class BottomSheet extends BottomSheetView
     private void onSheetClosed(@StateChangeReason int reason) {
         if (!mMediator.onSheetClosed(reason)) return;
         mMediator.setSheetFocusable(false);
-        setContentDescription(null);
     }
 
     /** Cancels and nulls the height animation if it exists. */
@@ -734,11 +715,12 @@ class BottomSheet extends BottomSheetView
         translationY = Math.max(0, translationY);
 
         updateViewport();
-        boolean translationChanged = !MathUtils.areFloatsEqual(translationY, getTranslationY());
+        boolean translationChanged =
+                !MathUtils.areFloatsEqual(translationY, mMediator.getSheetTranslationY());
         boolean heightNeedsUpdate = false;
         if (isFullHeightResizeContent()) {
             @Px int newHeight = getResizingContentContainerHeight();
-            if (isContentContainerHeightDifferent(newHeight)) {
+            if (mMediator.getContainerHeight() != newHeight) {
                 heightNeedsUpdate = true;
             }
         }
@@ -748,12 +730,6 @@ class BottomSheet extends BottomSheetView
         mMediator.setSheetTranslationY(translationY);
 
         updateContentContainerHeight();
-
-        // The snackbar is anchored to the bottom of the BottomSheet, so it needs to be translated
-        // to the inverse of the BottomSheet's translation so it remains visible onscreen.
-        if (mSnackbarContainer != null) {
-            mSnackbarContainer.setTranslationY(-translationY);
-        }
 
         if (reportOpenClosed) {
             // Do open/close computation based on the minimum allowed state by the sheet's content.
@@ -1065,9 +1041,7 @@ class BottomSheet extends BottomSheetView
         }
     }
 
-    @Override
-    public void setSheetLayoutMode(@SheetLayoutMode int mode) {
-        super.setSheetLayoutMode(mode);
+    private void updateSheetLayoutMode(@SheetLayoutMode int mode) {
         mMediator.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
         setBottomMargin(mRequestedBottomMargin);
@@ -1120,17 +1094,7 @@ class BottomSheet extends BottomSheetView
             if (isLargeFormFactorUiEnabled() || isFullHeightResizeContent()) {
                 updateContentContainerHeight();
             }
-            assumeNonNull(content);
-
-            // TalkBack will announce the pane title via sendPaneChangeAccessibilityEvent and
-            // shift focus when the state settles. We set the focusability here so it is ready
-            // when the pane change event is dispatched below. We avoid setting a container-level
-            // contentDescription on BottomSheet so that non-interactive descendant views inside
-            // the sheet remain discoverable to screen readers during linear navigation.
-            mMediator.setSheetFocusable(true);
         }
-
-        sendPaneChangeAccessibilityEvent(state != SheetState.HIDDEN);
 
         mMediator.notifySheetStateChanged(state, reason);
     }
@@ -1186,6 +1150,7 @@ class BottomSheet extends BottomSheetView
         return mIsLargeFormFactor && content != null && content.supportsLargeFormFactor();
     }
 
+    /** Toggles the sheet state between its open states when the handlebar is clicked. */
     public void toggleSheetState() {
         boolean isHalfStateEnabled = isHalfStateEnabled();
         // Early exit if the sheet only supports one open state (FULL).
@@ -1245,7 +1210,6 @@ class BottomSheet extends BottomSheetView
                 (LocalizationUtils.isLayoutRtl() ? -1 : 1)
                         * (mContainerWidth - maxSheetWidth)
                         / 2f);
-        ViewUtils.requestLayout(this, "BottomSheet.sizeAndPositionSheetInParent");
     }
 
     private void ensureContentDesiredHeightIsComputed() {
@@ -1328,11 +1292,17 @@ class BottomSheet extends BottomSheetView
                 getSheetHeightForState(SheetState.FULL));
     }
 
+    /**
+     * Forces the small screen state for testing.
+     *
+     * @param isSmallScreen Whether the screen should be considered small for testing.
+     */
     public static void setSmallScreenForTesting(boolean isSmallScreen) {
         sIsSmallScreenForTesting = isSmallScreen;
         ResettersForTesting.register(() -> sIsSmallScreenForTesting = null);
     }
 
+    /** Returns whether the screen is considered small, disabling the half state. */
     public boolean isSmallScreen() {
         if (sIsSmallScreenForTesting != null) return sIsSmallScreenForTesting;
 
@@ -1363,8 +1333,6 @@ class BottomSheet extends BottomSheetView
                 content == null ? false : content.shouldLongPressMoveSheet();
         mMediator.setShouldLongPressMoveSheet(shouldLongPressMoveSheet);
 
-        updateContentContainerHeight();
-
         if (content != null && isFullHeightWrapContent()) {
             // Listen for layout/size changes.
             content.getContentView().addOnLayoutChangeListener(this);
@@ -1388,16 +1356,11 @@ class BottomSheet extends BottomSheetView
 
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
-        setHandlebarPointerIcon(
-                isLargeFormFactorUiEnabled
-                        ? PointerIcon.getSystemIcon(getContext(), PointerIcon.TYPE_HAND)
-                        : null);
         updateContentContainerHeight();
         sizeAndPositionSheetInParent();
         updateBackgroundColor();
-        setSheetLayoutMode(mode);
+        updateSheetLayoutMode(mode);
         mMediator.notifySheetContentChanged(content);
-        setToolbarBackgroundColor(Color.TRANSPARENT);
     }
 
     private @SheetState int getTargetOrCurrentState() {
@@ -1421,7 +1384,7 @@ class BottomSheet extends BottomSheetView
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
         if (isFullHeightResizeContent()) {
             mMediator.setContainerHeight(getResizingContentContainerHeight());
-            setContentContainerPaddingBottom(0);
+            mMediator.setContentBottomPadding(0);
         } else {
             int targetHeight;
             if (isLargeFormFactorUiEnabled) {
@@ -1437,19 +1400,21 @@ class BottomSheet extends BottomSheetView
             mMediator.setContainerHeight(targetHeight);
 
             @Px int viewportBottomInset = isLargeFormFactorUiEnabled ? 0 : getViewportBottomInset();
-            setContentContainerPaddingBottom(viewportBottomInset);
+            mMediator.setContentBottomPadding(viewportBottomInset);
         }
 
         int targetBgHeight =
                 isLargeFormFactorUiEnabled
                         ? (int) getSheetHeightForState(SheetState.FULL)
                         : ViewGroup.LayoutParams.MATCH_PARENT;
-        updateBackgroundHeight(targetBgHeight);
+        mMediator.setBackgroundHeight(targetBgHeight);
 
         updateCurtainHeight();
 
         if (isLargeFormFactorUiEnabled) {
             applyLargeFormFactorBackgroundBounds();
+        } else {
+            mMediator.setVisibleBackgroundHeight(0);
         }
     }
 
@@ -1476,22 +1441,6 @@ class BottomSheet extends BottomSheetView
         }
 
         mMediator.setVisibleBackgroundHeight(visibleHeight);
-    }
-
-    /**
-     * This is needed so that on layout changes, such as the browser resizing, or moving, the layout
-     * should remain tracked for peeking sheets on large form factors.
-     */
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        if (isLargeFormFactorUiEnabled()) {
-            // Allow the shadow to draw outside the strict layout boundaries of the container.
-            // Since the shadow expands into the container's bottom margin or window insets,
-            // we must also disable clipping on the parent to prevent the shadow from being sliced.
-            updateContainerClipping(true);
-            applyLargeFormFactorBackgroundBounds();
-        }
     }
 
     private void updateViewport() {
@@ -1660,35 +1609,6 @@ class BottomSheet extends BottomSheetView
 
     private void updateA11yPaneTitle(CharSequence msg) {
         mMediator.setAccessibilityPaneTitle(msg);
-    }
-
-    // Suppressing AccessibilityFocus: The bottom sheet uses translationY for animations rather than
-    // standard visibility changes, which causes the Android accessibility framework to fail at
-    // automatically shifting focus to the newly opened pane. We must force focus here to ensure
-    // screen readers don't get stuck on background elements (e.g. the toolbar) when the sheet
-    // opens.
-    @SuppressWarnings("AccessibilityFocus")
-    private void sendPaneChangeAccessibilityEvent(boolean isShowing) {
-        AccessibilityEvent event =
-                AccessibilityEvent.obtain(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
-        if (isShowing) {
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED);
-        } else {
-            event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED);
-        }
-        CharSequence paneTitle = ViewCompat.getAccessibilityPaneTitle(this);
-        if (paneTitle != null) {
-            event.getText().add(paneTitle);
-        }
-        event.setSource(this);
-        AccessibilityState.sendAccessibilityEvent(event);
-        if (isShowing) {
-            this.post(
-                    () -> {
-                        this.performAccessibilityAction(
-                                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-                    });
-        }
     }
 
     private void resetCachedKeyboardState() {

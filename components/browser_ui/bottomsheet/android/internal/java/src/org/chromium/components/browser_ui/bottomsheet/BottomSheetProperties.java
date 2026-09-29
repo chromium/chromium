@@ -10,6 +10,7 @@ import android.view.View.OnClickListener;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.TouchHandler;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
@@ -51,6 +52,16 @@ public class BottomSheetProperties {
             new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey SHEET_FOCUSABLE =
             new WritableBooleanPropertyKey();
+    public static final WritableIntPropertyKey CONTENT_BOTTOM_PADDING =
+            new WritableIntPropertyKey();
+    public static final WritableIntPropertyKey BACKGROUND_HEIGHT = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<TouchHandler> TOUCH_HANDLER =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@Nullable OnClickListener>
+            HANDLEBAR_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@Nullable Runnable>
+            TOOLBAR_SIZE_CHANGED_CALLBACK = new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey CURRENT_SHEET_STATE = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -71,7 +82,13 @@ public class BottomSheetProperties {
                 HANDLEBAR_VISIBLE,
                 CONTENT_TOP_MARGIN,
                 VISIBLE_BACKGROUND_HEIGHT,
-                SHEET_FOCUSABLE
+                SHEET_FOCUSABLE,
+                CONTENT_BOTTOM_PADDING,
+                BACKGROUND_HEIGHT,
+                TOUCH_HANDLER,
+                HANDLEBAR_CLICK_LISTENER,
+                TOOLBAR_SIZE_CHANGED_CALLBACK,
+                CURRENT_SHEET_STATE
             };
 
     private BottomSheetProperties() {}
