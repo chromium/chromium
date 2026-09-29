@@ -455,17 +455,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(loaded_model_);
 
-    if (last_execution_time_) {
-      // The max of this histogram is 3m since only the distribution and count
-      // of smaller values is important.
-      base::UmaHistogramMediumTimes(
-          base::StrCat(
-              {"OptimizationGuide.ModelExecutor.TimeSincePreviousRun.",
-               GetStringNameForOptimizationTarget(optimization_target_)}),
-          base::TimeTicks::Now() - *last_execution_time_);
-    }
-    last_execution_time_ = base::TimeTicks::Now();
-
     for (const InputType& input : inputs) {
       ScopedExecutionStatusResultRecorder status_recorder(optimization_target_);
       // IMPORTANT: Once the arm method is called, disarm must be called when
@@ -585,11 +574,6 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
   // Background thread for model loading file I/O.
   scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner_;
-
-  // The time that the model was last executed. Logged in metrics for the second
-  // and following runs.
-  std::optional<base::TimeTicks> last_execution_time_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The model file path to be loaded. May be nullopt if no model has been
   // downloaded yet.

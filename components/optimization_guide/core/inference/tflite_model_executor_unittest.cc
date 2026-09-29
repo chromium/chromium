@@ -613,12 +613,6 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
   // Ensures pending tasks are processed. They are generating UMA metrics.
   RunUntilIdle();
 
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({"OptimizationGuide.ModelExecutor.TimeSincePreviousRun.",
-                    optimization_guide::GetStringNameForOptimizationTarget(
-                        proto::OptimizationTarget::
-                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
-      0);
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"OptimizationGuide.ModelExecutor.ExecutionStatus.",
                     optimization_guide::GetStringNameForOptimizationTarget(
@@ -680,12 +674,6 @@ TEST_F(TFLiteModelExecutorTest, ExecuteTwiceWithLoadedModel) {
                         proto::OptimizationTarget::
                             OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
       2);
-  histogram_tester.ExpectTotalCount(
-      base::StrCat({"OptimizationGuide.ModelExecutor.TimeSincePreviousRun.",
-                    optimization_guide::GetStringNameForOptimizationTarget(
-                        proto::OptimizationTarget::
-                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
-      1);
   histogram_tester.ExpectTotalCount(
       base::StrCat({"OptimizationGuide.ModelExecutor.ExecutionLatency.",
                     optimization_guide::GetStringNameForOptimizationTarget(

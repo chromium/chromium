@@ -1762,19 +1762,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ModelExecutor.TimeSincePreviousRun.{OptimizationTarget}"
-    units="ms" expires_after="M145">
-  <owner>wittman@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
-  <summary>
-    Records the time duration between runs of the model for
-    {OptimizationTarget}. Recorded once for every model run after the first. In
-    M115+ if batch execution is used, this is recorded once per batch.
-  </summary>
-  <token key="OptimizationTarget" variants="OptimizationTarget"/>
-</histogram>
-
-<histogram
     name="OptimizationGuide.ModelHandler.HandlerCreated.{OptimizationTarget}"
     enum="BooleanCreated" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>
