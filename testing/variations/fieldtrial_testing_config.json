@@ -17765,30 +17765,28 @@
             ]
         }
     ],
-    "SuspiciousSiteWarningSurvey": [
+    "SuspiciousSiteWarnings": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "SuspiciousSiteWarningSurvey_20260817",
+                    "name": "Enabled_20260928",
                     "params": {
                         "SuspiciousSiteWarningSurveyHeedTriggerId": "LZD24fmuf0tK1KeaPYj0Z79hw2qC",
                         "SuspiciousSiteWarningSurveyProceedTriggerId": "HguD8vrc50tK1KeaPYj0R37AzmWa",
                         "probability": "1.0"
                     },
                     "enable_features": [
-                        "SuspiciousSiteWarningSurvey"
+                        "SuspiciousSiteWarningSurvey",
+                        "SuspiciousSiteWarnings"
                     ]
                 }
             ]
-        }
-    ],
-    "SuspiciousSiteWarnings": [
+        },
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "linux",
                 "mac",
