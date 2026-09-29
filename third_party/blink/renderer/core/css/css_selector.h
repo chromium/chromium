@@ -421,6 +421,7 @@ class CORE_EXPORT CSSSelector {
     // Overscroll gesture support.
     kPseudoOverscrollAreaParent,
     kPseudoOverscrollBackdrop,
+    kPseudoOverscrollClosed,
     kPseudoOverscrollOpen,
 
     // :link-to(<navigation-location>)

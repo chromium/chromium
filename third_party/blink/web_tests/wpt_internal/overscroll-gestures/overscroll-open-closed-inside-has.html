@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: :overscroll-open and :overscroll-closed are not valid inside :has()</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test_valid_selector(":overscroll-open");
+  test_valid_selector(":overscroll-closed");
+  test_invalid_selector(":has(:overscroll-open)");
+  test_invalid_selector(":has(:overscroll-closed)");
+</script>

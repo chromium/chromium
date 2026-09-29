@@ -1306,6 +1306,11 @@ bool IsPseudoClassValidWithinHasArgument(CSSSelector& selector) {
     // Limited nested :has() to avoid increasing :has() invalidation complexity.
     case CSSSelector::kPseudoHas:
       return false;
+    // Would allow a cycle, e.g. an overscroll container that stops being one
+    // when it has an open or closed overscroll area.
+    case CSSSelector::kPseudoOverscrollClosed:
+    case CSSSelector::kPseudoOverscrollOpen:
+      return false;
     default:
       return true;
   }

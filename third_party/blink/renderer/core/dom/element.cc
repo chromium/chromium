@@ -9206,6 +9206,13 @@ bool Element::MatchesOverscrollOpen() const {
   return false;
 }
 
+bool Element::MatchesOverscrollClosed() const {
+  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+    return false;
+  }
+  return IsValidOverscrollArea() && !MatchesOverscrollOpen();
+}
+
 void Element::FocusWithinStateChanged() {
   if (GetComputedStyle() && GetComputedStyle()->AffectedByFocusWithin()) {
     StyleChangeType change_type =

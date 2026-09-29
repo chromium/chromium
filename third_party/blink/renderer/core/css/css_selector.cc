@@ -545,6 +545,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoOpen:
     case kPseudoOptional:
     case kPseudoOutOfRange:
+    case kPseudoOverscrollClosed:
     case kPseudoOverscrollOpen:
     case kPseudoParent:
     case kPseudoPart:
@@ -751,6 +752,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"optional", CSSSelector::kPseudoOptional},
     {"out-of-range", CSSSelector::kPseudoOutOfRange},
     {"overscroll-backdrop", CSSSelector::kPseudoOverscrollBackdrop},
+    {"overscroll-closed", CSSSelector::kPseudoOverscrollClosed},
     {"overscroll-open", CSSSelector::kPseudoOverscrollOpen},
     {"past", CSSSelector::kPseudoPastCue},
     {"paused", CSSSelector::kPseudoPaused},
@@ -948,6 +950,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
 
   if ((match->type == CSSSelector::kPseudoOverscrollAreaParent ||
        match->type == CSSSelector::kPseudoOverscrollBackdrop ||
+       match->type == CSSSelector::kPseudoOverscrollClosed ||
        match->type == CSSSelector::kPseudoOverscrollOpen) &&
       !RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -1199,6 +1202,7 @@ void CSSSelector::UpdatePseudoType(AtomicString value,
     case kPseudoOpen:
     case kPseudoOptional:
     case kPseudoOutOfRange:
+    case kPseudoOverscrollClosed:
     case kPseudoOverscrollOpen:
     case kPseudoParent:
     case kPseudoPastCue:
@@ -1992,6 +1996,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoModal:
     case kPseudoMuted:
     case kPseudoOptional:
+    case kPseudoOverscrollClosed:
     case kPseudoOverscrollOpen:
     case kPseudoPermissionGranted:
     case kPseudoPlaceholderShown:

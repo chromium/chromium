@@ -1693,6 +1693,8 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual bool MatchesReadWritePseudoClass() const { return false; }
   virtual bool MatchesValidityPseudoClasses() const { return false; }
   bool MatchesOverscrollOpen() const;
+  // Unlike !MatchesOverscrollOpen(), only true for valid overscroll areas.
+  bool MatchesOverscrollClosed() const;
 
   virtual bool MayTriggerVirtualKeyboard() const;
 

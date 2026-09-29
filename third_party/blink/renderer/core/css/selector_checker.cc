@@ -744,6 +744,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoOnlyChild:
     case CSSSelector::kPseudoOnlyOfType:
     case CSSSelector::kPseudoOptional:
+    case CSSSelector::kPseudoOverscrollClosed:
     case CSSSelector::kPseudoOverscrollOpen:
     case CSSSelector::kPseudoPart:
     case CSSSelector::kPseudoPermissionGranted:
@@ -2996,6 +2997,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoOverscrollOpen:
       return element.MatchesOverscrollOpen();
+    case CSSSelector::kPseudoOverscrollClosed:
+      return element.MatchesOverscrollClosed();
     case CSSSelector::kPseudoOpen:
       probe::ForcePseudoState(&element, CSSSelector::kPseudoOpen,
                               &force_pseudo_state);

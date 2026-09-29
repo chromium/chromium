@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll Gestures: :overscroll-closed</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://open-ui.org/components/overscroll-actions.explainer/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  [overscrollcontainer] {
+    width: 200px;
+    height: 200px;
+    overflow: auto;
+  }
+  [overscrollarea] {
+    width: 100%;
+    height: 100%;
+    right: 100%;
+  }
+  :overscroll-closed {
+    color: green;
+  }
+</style>
+
+<!-- Separate containers, so that restyling one doesn't restyle the others. -->
+<div overscrollcontainer>
+  <div id="closed" overscrollarea></div>
+</div>
+<div overscrollcontainer>
+  <div id="open" overscrollarea></div>
+</div>
+<div overscrollcontainer>
+  <div id="invalid" overscrollarea></div>
+</div>
+<div overscrollcontainer>
+  <div id="dynamic" overscrollarea></div>
+</div>
+<button command="toggle-overscroll" commandfor="closed"></button>
+<button id="open-invoker" command="toggle-overscroll" commandfor="open"></button>
+<button id="dynamic-invoker" command="toggle-popover" commandfor="dynamic"></button>
+
+<script>
+test(t => {
+  const closed = document.getElementById("closed");
+  const open = document.getElementById("open");
+  const invalid = document.getElementById("invalid");
+  const openInvoker = document.getElementById("open-invoker");
+
+  document.body.offsetTop;
+  openInvoker.click();
+  t.add_cleanup(() => openInvoker.click());
+  document.body.offsetTop;
+
+  assert_true(closed.matches(":overscroll-closed"), "Closed area matches");
+  assert_equals(getComputedStyle(closed).color, "rgb(0, 128, 0)",
+                "Closed area is styled");
+  assert_false(open.matches(":overscroll-closed"), "Open area doesn't match");
+  assert_equals(getComputedStyle(open).color, "rgb(0, 0, 0)",
+                "Open area is not styled");
+  assert_false(invalid.matches(":overscroll-closed"),
+               "Area without an invoker doesn't match");
+  assert_equals(getComputedStyle(invalid).color, "rgb(0, 0, 0)",
+                "Area without an invoker is not styled");
+}, ":overscroll-closed matches valid overscroll areas that are not open");
+
+test(t => {
+  const dynamic = document.getElementById("dynamic");
+  const dynamicInvoker = document.getElementById("dynamic-invoker");
+
+  document.body.offsetTop;
+  assert_false(dynamic.matches(":overscroll-closed"),
+               "Area with a non-overscroll invoker doesn't match");
+  assert_equals(getComputedStyle(dynamic).color, "rgb(0, 0, 0)",
+                "Area with a non-overscroll invoker is not styled");
+
+  dynamicInvoker.setAttribute("command", "toggle-overscroll");
+  t.add_cleanup(() => dynamicInvoker.setAttribute("command", "toggle-popover"));
+  document.body.offsetTop;
+  assert_true(dynamic.matches(":overscroll-closed"),
+              "Area matches once its invoker is toggle-overscroll");
+  assert_equals(getComputedStyle(dynamic).color, "rgb(0, 128, 0)",
+                "Area is styled once its invoker is toggle-overscroll");
+
+  dynamicInvoker.remove();
+  t.add_cleanup(() => document.body.append(dynamicInvoker));
+  document.body.offsetTop;
+  assert_false(dynamic.matches(":overscroll-closed"),
+               "Area doesn't match once its invoker is removed");
+  assert_equals(getComputedStyle(dynamic).color, "rgb(0, 0, 0)",
+                "Area is not styled once its invoker is removed");
+}, ":overscroll-closed updates when an area gains or loses its invoker");
+</script>
