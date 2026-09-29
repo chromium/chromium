@@ -207,7 +207,6 @@ void H265Decoder::Reset() {
   parser_.Reset();
   accelerator_->Reset();
 
-  active_sps_.reset();
   decoder_buffer_.reset();
   secure_handle_ = 0;
 
