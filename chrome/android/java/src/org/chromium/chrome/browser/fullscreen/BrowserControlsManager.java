@@ -127,6 +127,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     private boolean mForceRelayoutOnVisibilityChange;
 
+    private @BrowserControlsState int mLastConstraints = BrowserControlsState.BOTH;
+
     private BrowserControlsOffsetTagDefinitions mOffsetTagDefinitions =
             new BrowserControlsOffsetTagDefinitions();
 
@@ -1046,7 +1048,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         // controls visibility when exiting fullscreen, the visibility change might not
         // honor a redraw. We do this through forcing a relayout to avoid the toolbar
         // remains hidden.
-        if ((constraints == BrowserControlsState.SHOWN || constraints == BrowserControlsState.BOTH)
+        boolean shouldForceRelayout =
+                !ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                        || mLastConstraints == BrowserControlsState.HIDDEN;
+        mLastConstraints = constraints;
+        if (shouldForceRelayout
+                && (constraints == BrowserControlsState.SHOWN
+                        || constraints == BrowserControlsState.BOTH)
                 && getAndroidControlsVisibility() != View.VISIBLE) {
             mForceRelayoutOnVisibilityChange = true;
             scheduleVisibilityUpdate();

@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -139,6 +140,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private final SparseArray<BottomControlsLayer> mLayers = new SparseArray<>(STACK_ORDER.length);
     // Recorded the yOffset for all current layers. This only record the yOffset for visible layers.
     private final SparseIntArray mLayerYOffsets = new SparseIntArray(STACK_ORDER.length);
+    // Dispatched yOffset when a layer is hidden. Used to suppress redundant offset updates while
+    // hidden.
+    private final SparseIntArray mDispatchedHiddenYOffsets = new SparseIntArray(STACK_ORDER.length);
     // This stores the temporary offsets during `repositionLayers` and should not be read directly.
     // Allocated as a field to reduce object allocation during repositioning.
     private final SparseIntArray mYOffsetOfLayers = new SparseIntArray(STACK_ORDER.length);
@@ -209,6 +213,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      */
     public void removeLayer(BottomControlsLayer layer) {
         mLayers.remove(layer.getType());
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            mLayerYOffsets.delete(layer.getType());
+            mDispatchedHiddenYOffsets.delete(layer.getType());
+        }
     }
 
     /**
@@ -624,7 +632,18 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     && layer.getLayerVisibility() != LayerVisibility.HIDING) {
                 mLayerYOffsets.delete(layerType);
                 yOffset = layer.getHeight();
+                if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+                    int previousHiddenOffset =
+                            mDispatchedHiddenYOffsets.get(layerType, Integer.MIN_VALUE);
+                    mDispatchedHiddenYOffsets.put(layerType, yOffset);
+                    if (previousHiddenOffset == yOffset) {
+                        continue;
+                    }
+                }
             } else {
+                if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+                    mDispatchedHiddenYOffsets.delete(layerType);
+                }
                 mLayerYOffsets.put(layerType, yOffset);
             }
 

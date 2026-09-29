@@ -32,6 +32,8 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 
 import org.junit.Before;
@@ -1173,5 +1175,34 @@ public class BrowserControlsManagerUnitTest {
                 .onInteractabilityChanged(mTab, true);
 
         assertEquals(0, mBrowserControlsManager.getTopControlOffset());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testOnConstraintsChanged_ForceRelayoutOnlyFromHidden() {
+        remakeWithoutSpy();
+        doCallback((Runnable runnable) -> new Handler(Looper.getMainLooper()).post(runnable))
+                .when(mContainerView)
+                .postOnAnimation(any());
+        Mockito.clearInvocations(mContainerView);
+
+        // Make view invisible so getAndroidControlsVisibility() != View.VISIBLE
+        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
+
+        // Transition from BOTH to SHOWN should NOT force relayout.
+        mControlsDelegate.set(BrowserControlsState.SHOWN);
+        ShadowLooper.idleMainLooper();
+        verify(mContainerView, never()).requestLayout();
+
+        // Transition to HIDDEN, then to SHOWN SHOULD force relayout.
+        mControlsDelegate.set(BrowserControlsState.HIDDEN);
+        ShadowLooper.idleMainLooper();
+        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
+        Mockito.clearInvocations(mContainerView);
+
+        mControlsDelegate.set(BrowserControlsState.SHOWN);
+        ShadowLooper.idleMainLooper();
+        verify(mContainerView).requestLayout();
     }
 }

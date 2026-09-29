@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInf
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
@@ -100,6 +102,7 @@ class BottomControlsMediator
     private @Nullable CurrentTabObserver mTabObserver;
     private @Nullable EdgeToEdgeController mActiveEdgeToEdgeController;
     private boolean mWasNtpScrollOffEnabled;
+    private boolean mIsNtpScrollOffEnabled;
 
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
@@ -112,6 +115,8 @@ class BottomControlsMediator
 
     /** Whether the soft keyboard is visible. */
     private boolean mIsKeyboardVisible;
+
+    private boolean mContentViewScrolling;
 
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
@@ -171,12 +176,17 @@ class BottomControlsMediator
         mBottomControlsShadowHeight = bottomControlsShadowHeight;
 
         mTabSupplier = tabSupplier;
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            mIsNtpScrollOffEnabled = computeIsNtpScrollOffEnabled();
+        }
         mTabObserver =
                 new CurrentTabObserver(
                         tabSupplier,
                         new TabObserver() {
                             @Override
                             public void onContentChanged(Tab tab) {
+                                BottomControlsMediator.this.onContentViewScrollingStateChanged(
+                                        /* scrolling= */ false);
                                 updateEdgeToEdgeAndPadding();
                             }
 
@@ -184,8 +194,29 @@ class BottomControlsMediator
                             public void onUrlUpdated(Tab tab) {
                                 updateEdgeToEdgeAndPadding();
                             }
+
+                            @Override
+                            public void onCrash(Tab tab) {
+                                BottomControlsMediator.this.onContentViewScrollingStateChanged(
+                                        /* scrolling= */ false);
+                            }
+
+                            @Override
+                            public void onHidden(Tab tab, @TabHidingType int type) {
+                                BottomControlsMediator.this.onContentViewScrollingStateChanged(
+                                        /* scrolling= */ false);
+                            }
+
+                            @Override
+                            public void onContentViewScrollingStateChanged(boolean scrolling) {
+                                BottomControlsMediator.this.onContentViewScrollingStateChanged(
+                                        scrolling);
+                            }
                         },
-                        tab -> updateEdgeToEdgeAndPadding());
+                        tab -> {
+                            onContentViewScrollingStateChanged(/* scrolling= */ false);
+                            updateEdgeToEdgeAndPadding();
+                        });
 
         mEdgeToEdgeControllerSupplier = edgeToEdgeControllerSupplier;
         mEdgeToEdgeControllerSupplier.addSyncObserverAndCallIfNonNull(
@@ -259,6 +290,14 @@ class BottomControlsMediator
         }
     }
 
+    void onContentViewScrollingStateChanged(boolean scrolling) {
+        if (mContentViewScrolling == scrolling) return;
+        mContentViewScrolling = scrolling;
+        if (!scrolling && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            updateAndroidViewVisibility();
+        }
+    }
+
     @Override
     public void keyboardVisibilityChanged(boolean isShowing) {
         mIsKeyboardVisible = isShowing;
@@ -325,12 +364,19 @@ class BottomControlsMediator
         return mIsBottomControlsVisible && !mIsKeyboardVisible && !isInFullscreenMode();
     }
 
-    private boolean isNtpScrollOffEnabled() {
+    private boolean computeIsNtpScrollOffEnabled() {
+        if (mLayerType != LayerType.BOTTOM_APP_BAR) return false;
         Tab tab = mTabSupplier.get();
         Context context =
                 mWindowAndroid.getContext() != null ? mWindowAndroid.getContext().get() : null;
-        return mLayerType == LayerType.BOTTOM_APP_BAR
-                && BottomBarConfigUtils.isNtpScrollOffEnabled(tab, context);
+        return BottomBarConfigUtils.isNtpScrollOffEnabled(tab, context);
+    }
+
+    private boolean isNtpScrollOffEnabled() {
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            return mIsNtpScrollOffEnabled;
+        }
+        return computeIsNtpScrollOffEnabled();
     }
 
     private int calculateBottomPadding() {
@@ -357,15 +403,24 @@ class BottomControlsMediator
         // compositor textures, the bottom controls will be drawn *behind* the NTP view, making
         // them invisible. Thus, we must keep the Android view visible and translate it during
         // browser-driven NTP scroll-off.
+        BrowserControlsStateProvider browserControls = getBrowserControls();
+        boolean offsetOverridden =
+                browserControls instanceof BrowserControlsVisibilityManager manager
+                        && manager.offsetOverridden();
         final boolean visible =
                 isCompositedViewVisible()
                         && (mOverlayPanelState == PanelState.CLOSED
                                 || mOverlayPanelState == PanelState.PEEKED)
                         && !mIsInSwipeLayout
-                        && (getBrowserControls().getBottomControlOffset() == 0
-                                || (getBrowserControls() instanceof BrowserControlsVisibilityManager
-                                        && ((BrowserControlsVisibilityManager) getBrowserControls())
-                                                .offsetOverridden()));
+                        && (browserControls.getBottomControlOffset() == 0 || offsetOverridden);
+        if (visible
+                && ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()
+                && mContentViewScrolling
+                && !offsetOverridden
+                && !mModel.get(BottomControlsProperties.ANDROID_VIEW_VISIBLE)
+                && !isNtpScrollOffEnabled()) {
+            return;
+        }
         if (visible) {
             // Translate view so that its bottom is aligned with the "base" y_offset, or the
             // y_offset when the bottom controls aren't offset.
@@ -403,6 +458,9 @@ class BottomControlsMediator
 
     private void updateEdgeToEdgeAndPadding() {
         int androidViewHeight = mBottomControlsHeight;
+        if (ChromeFeatureList.sBottomControlsJankImprovement.isEnabled()) {
+            mIsNtpScrollOffEnabled = computeIsNtpScrollOffEnabled();
+        }
         boolean isNtpScrollOffEnabled = isNtpScrollOffEnabled();
         int bottomPadding = calculateBottomPadding();
 

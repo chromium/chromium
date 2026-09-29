@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,11 +35,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -2212,5 +2215,33 @@ public class BottomControlsStackerUnitTest {
         // restored.
         mBottomControlsStacker.onBottomControlsHeightAnimationEnded();
         assertEquals(offsetTagsInfo.getBottomControlsOffsetTag(), scrollable.mOffsetTag);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void repositionLayers_suppressesRedundantUpdatesWhileHidden() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        TestLayer layer =
+                spy(
+                        new TestLayer(
+                                BOTTOM_LAYER,
+                                50,
+                                LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                                LayerVisibility.VISIBLE));
+        mBottomControlsStacker.addLayer(layer);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        verify(layer, times(1)).onBrowserControlsOffsetUpdate(anyInt());
+
+        // Hide the layer.
+        layer.setVisibility(LayerVisibility.HIDDEN);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        // The transition to HIDDEN should dispatch onBrowserControlsOffsetUpdate once.
+        verify(layer, times(2)).onBrowserControlsOffsetUpdate(anyInt());
+        verify(layer, times(1)).onBrowserControlsOffsetUpdate(50);
+
+        // Subsequent repositionings while still HIDDEN should NOT invoke
+        // onBrowserControlsOffsetUpdate again.
+        onBottomControlsOffsetChanged(0, 0, false);
+        verify(layer, times(2)).onBrowserControlsOffsetUpdate(anyInt());
     }
 }

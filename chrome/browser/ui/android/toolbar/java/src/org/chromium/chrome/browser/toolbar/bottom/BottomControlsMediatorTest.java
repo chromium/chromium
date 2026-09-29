@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -517,5 +518,30 @@ public class BottomControlsMediatorTest {
                 DEFAULT_INSET, /* isDrawingToEdge= */ false, /* isPageOptInToEdge= */ false);
 
         assertEquals(0, mModel.get(BottomControlsProperties.BOTTOM_PADDING));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_CONTROLS_JANK_IMPROVEMENT)
+    public void testAndroidViewVisibility_DeferredWhileScrolling() {
+        mMediator.setBottomControlsVisible(true);
+        ShadowLooper.idleMainLooper();
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Scroll controls off so Android view becomes invisible.
+        doReturn(DEFAULT_HEIGHT).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(DEFAULT_HEIGHT);
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // Start scrolling and bring offset back to 0 mid-scroll.
+        mMediator.onContentViewScrollingStateChanged(true);
+        doReturn(0).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
+        mMediator.onBrowserControlsOffsetUpdate(0);
+
+        // Android view should remain invisible mid-scroll.
+        assertFalse(mModel.get(ANDROID_VIEW_VISIBLE));
+
+        // When scrolling stops, Android view visibility should be restored.
+        mMediator.onContentViewScrollingStateChanged(false);
+        assertTrue(mModel.get(ANDROID_VIEW_VISIBLE));
     }
 }
