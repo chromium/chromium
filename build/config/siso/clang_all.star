@@ -64,7 +64,11 @@ def __filegroups(ctx):
                 "*.modulemap",
                 "bin/clang",
                 "bin/clang++",
-                "bin/clang-*",  # clang-cl, clang-<ver>
+                "bin/clang-cl",
+                "bin/clang-cl.exe",
+                # clang-<ver> is the real binary behind the clang symlinks
+                # when LLVM is built by tools/clang/scripts/build.py.
+                "bin/clang-[0-9]*",
                 "*_ignorelist.txt",
                 # https://crbug.com/335997052
                 "clang_rt.profile*.lib",
