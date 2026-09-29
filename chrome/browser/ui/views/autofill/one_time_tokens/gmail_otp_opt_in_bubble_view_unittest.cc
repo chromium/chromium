@@ -7,12 +7,21 @@
 #include <memory>
 #include <string>
 
-#include "base/test/mock_callback.h"
+#include "base/functional/callback.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -23,11 +32,27 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
 
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::NiceMock;
+
 constexpr std::u16string_view kTestEmail = u"elisa.g.beckett@gmail.com";
+
+class MockWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  MOCK_METHOD(content::WebContents*,
+              OpenURLFromTab,
+              (content::WebContents*,
+               const content::OpenURLParams&,
+               base::OnceCallback<void(content::NavigationHandle&)>),
+              (override));
+};
 
 class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
  public:
@@ -36,6 +61,10 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    web_contents_->SetDelegate(&web_contents_delegate_);
+
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
@@ -50,19 +79,25 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  void CreateAndShowBubble(
-      base::RepeatingClosure link_callback = base::DoNothing()) {
+  void CreateAndShowBubble() {
     auto bubble = std::make_unique<GmailOtpOptInBubbleView>(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        /*web_contents=*/nullptr, std::u16string(kTestEmail),
-        std::move(link_callback));
+        web_contents_.get(), std::u16string(kTestEmail));
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))->Show();
   }
 
   GmailOtpOptInBubbleView* bubble() { return bubble_; }
+  content::WebContents* web_contents() { return web_contents_.get(); }
+  MockWebContentsDelegate& web_contents_delegate() {
+    return web_contents_delegate_;
+  }
 
  private:
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  TestingProfile profile_;
+  NiceMock<MockWebContentsDelegate> web_contents_delegate_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<GmailOtpOptInBubbleView> bubble_ = nullptr;
 };
@@ -94,9 +129,8 @@ TEST_F(GmailOtpOptInBubbleViewTest, RendersTitleHeaderAndButtons) {
             GmailOtpOptInBubbleView::kCloseButtonId);
 }
 
-TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndTriggersLinkCallback) {
-  base::MockRepeatingClosure link_callback;
-  CreateAndShowBubble(link_callback.Get());
+TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndOpensSettingsLink) {
+  CreateAndShowBubble();
 
   views::StyledLabel* styled_label = bubble()->GetDescriptionLabelForTesting();
   ASSERT_NE(styled_label, nullptr);
@@ -110,7 +144,14 @@ TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndTriggersLinkCallback) {
   views::Link* link_view = styled_label->GetFirstLinkForTesting();
   ASSERT_NE(link_view, nullptr);
 
-  EXPECT_CALL(link_callback, Run());
+  EXPECT_CALL(
+      web_contents_delegate(),
+      OpenURLFromTab(web_contents(),
+                     AllOf(Field(&content::OpenURLParams::url,
+                                 GURL("chrome://settings/contactInfo")),
+                           Field(&content::OpenURLParams::disposition,
+                                 WindowOpenDisposition::NEW_FOREGROUND_TAB)),
+                     _));
   link_view->OnKeyPressed(
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
 }

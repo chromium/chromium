@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -34,11 +33,9 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNoThanksButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonId);
 
-  GmailOtpOptInBubbleView(
-      views::BubbleAnchor anchor,
-      content::WebContents* web_contents,
-      const std::u16string& account_email,
-      base::RepeatingClosure learn_more_link_callback = base::DoNothing());
+  GmailOtpOptInBubbleView(views::BubbleAnchor anchor,
+                          content::WebContents* web_contents,
+                          const std::u16string& account_email);
   GmailOtpOptInBubbleView(const GmailOtpOptInBubbleView&) = delete;
   GmailOtpOptInBubbleView& operator=(const GmailOtpOptInBubbleView&) = delete;
   ~GmailOtpOptInBubbleView() override;
@@ -54,6 +51,8 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
   }
 
  private:
+  void OnLearnMoreLinkClicked();
+
   raw_ptr<views::StyledLabel> description_label_ = nullptr;
 };
 
