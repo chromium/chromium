@@ -29,6 +29,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "skia/buildflags.h"
@@ -636,6 +637,7 @@ TEST_F(ResourceBundleImageTest, GetRawDataResourceWhileAddingDataPack) {
           EXPECT_FALSE(resource_bundle->HasDataResource(kMissingResourceId));
           EXPECT_TRUE(
               resource_bundle->GetRawDataResource(kMissingResourceId).empty());
+          base::PlatformThread::YieldCurrentThread();
         }
       }));
 
