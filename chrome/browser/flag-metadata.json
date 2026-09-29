@@ -3949,7 +3949,7 @@
     "owners": [
       "jtanaristy@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-global-privacy-control",
@@ -4536,7 +4536,7 @@
     "owners": [
       "jtanaristy@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-tls13-early-data",
