@@ -313,6 +313,23 @@ suite('PaymentsPageIban', function() {
     await microtasksFinished();
   });
 
+  test(
+      'verifyLocalIbanMenuTitleEscapesHtmlInNicknameAndValue',
+      async function() {
+        const iban =
+            createIbanEntry('FI1410093000123458', 'My <please> IBAN');
+        const page = await createPaymentsPage(
+            /*creditCards=*/[], [iban], /*payOverTimeIssuers=*/[],
+            /*prefValues=*/ {});
+        assertEquals(1, getIbanListItems().length);
+
+        const ibanEntry = getFirstIbanEntry(page.$.paymentsList);
+        const menuButton =
+            ibanEntry.shadowRoot.querySelector<HTMLElement>('#ibanMenu');
+        assertTrue(!!menuButton);
+        assertEquals('More actions for My <please> IBAN', menuButton.title);
+      });
+
   test('verifyRemoveLocalIbanDialogConfirmed', async function() {
     const iban = createIbanEntry('FI1410093000123458', 'NickName');
 

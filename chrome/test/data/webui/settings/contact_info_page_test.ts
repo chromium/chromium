@@ -2349,6 +2349,24 @@ suite('ContactInfoPageAddressTests', function() {
     assertTrue(!!page.shadowRoot!.querySelector('#menuEditAddress'));
   });
 
+  test(
+      'verifyAddressRowMenuTitleEscapesHtmlInAddressSummary',
+      async function() {
+    const address = createAddressEntry();
+    address.metadata!.summaryLabel = 'John <please>';
+    address.metadata!.summarySublabel = ' <door>';
+    const page = await createContactInfoPage([address], {});
+    const addressList = page.$.addressList;
+    const row = addressList.children[0];
+    assertTrue(!!row);
+    const menuButton = row.querySelector<HTMLElement>('.address-menu');
+    assertTrue(!!menuButton);
+    assertEquals(
+        loadTimeData.getStringF(
+            'moreActionsForAddress', 'John <please> <door>'),
+        menuButton.title);
+  });
+
   test('verifyAccountHomeAddressEdit', async function() {
     const openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);

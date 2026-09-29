@@ -35,6 +35,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -630,7 +631,7 @@ export class SettingsContactInfoPageElement extends
       messageKey = 'moreActionsForAddress';
     }
 
-    return this.i18n(messageKey, fullLabel);
+    return this.i18n(messageKey, htmlEscape(fullLabel));
   }
 
   private computeShowGmailOtpFillingToggle_(

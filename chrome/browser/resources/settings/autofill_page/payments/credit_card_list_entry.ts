@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -126,7 +127,7 @@ export class SettingsCreditCardListEntryElement extends
     return this.i18n(
         this.creditCard.cvc ? 'moreActionsForCreditCardWithCvc' :
                               'moreActionsForCreditCard',
-        cardDescription);
+        htmlEscape(cardDescription));
   }
 
   /**

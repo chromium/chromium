@@ -133,6 +133,12 @@ suite('PaymentsPageCardRows', function() {
     await updateCreditCardCallback(creditCard);
     assertEquals(
         'More actions for Visa ending in 1234, CVC saved', menuButton.title);
+
+    // Case 6: a card with a nickname containing HTML tags
+    creditCard = createCreditCardEntry();
+    creditCard.nickname = 'My <please> card';
+    await updateCreditCardCallback(creditCard);
+    assertEquals('More actions for My <please> card', menuButton.title);
   });
 
   test('verifyCreditCardRowButtonIsOutlinkWhenRemote', async function() {

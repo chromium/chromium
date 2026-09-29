@@ -12,6 +12,7 @@ import '../../i18n_setup.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './iban_list_entry.css.js';
@@ -152,7 +153,7 @@ export class SettingsIbanListEntryElement extends
   protected getMoreActionsTitle_(): string {
     return this.i18n(
         'moreActionsForIban',
-        this.iban.nickname || this.getA11yIbanDescription_());
+        htmlEscape(this.iban.nickname || this.getA11yIbanDescription_()));
   }
 
   protected getGooglePayLightModeLogoSrcSet_(): string {
