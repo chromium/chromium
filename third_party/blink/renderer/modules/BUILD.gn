@@ -476,6 +476,7 @@ source_set("unit_tests") {
     "document_metadata/document_metadata_extractor_test.cc",
     "document_metadata/document_metadata_server_test.cc",
     "document_picture_in_picture/picture_in_picture_controller_test.cc",
+    "encoding/text_decoder_test.cc",
     "eventsource/event_source_parser_test.cc",
     "filesystem/dom_file_system_base_test.cc",
     "filesystem/file_writer_test.cc",

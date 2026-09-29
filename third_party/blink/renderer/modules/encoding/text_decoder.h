@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_text_decoder_options.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -46,7 +47,7 @@ namespace blink {
 
 class ExceptionState;
 
-class TextDecoder final : public ScriptWrappable {
+class MODULES_EXPORT TextDecoder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

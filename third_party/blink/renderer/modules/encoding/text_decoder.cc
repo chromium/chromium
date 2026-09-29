@@ -84,7 +84,10 @@ String TextDecoder::decode(std::optional<base::span<const uint8_t>> input,
   DCHECK(options);
   base::span<const uint8_t> input_span =
       input.value_or(base::span<const uint8_t>());
-  if (input_span.size() > std::numeric_limits<uint32_t>::max()) {
+  // Account for up to 3 bytes of partial sequence in TextCodecUtf8 so that
+  // a 16-bit StringImpl allocation never exceeds
+  // partition_alloc::MaxAllocationSize().
+  if (input_span.size() > kStringMaxUCharLength - 3) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return String();

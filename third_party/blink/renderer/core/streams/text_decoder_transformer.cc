@@ -54,7 +54,10 @@ ScriptPromise<IDLUndefined> TextDecoderTransformer::Transform(
   }
 
   DOMArrayPiece array_piece(buffer_source);
-  if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
+  // Account for up to 3 bytes of partial sequence in TextCodecUtf8 so that
+  // a 16-bit StringImpl allocation never exceeds
+  // partition_alloc::MaxAllocationSize().
+  if (array_piece.ByteLength() > kStringMaxUCharLength - 3) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return EmptyPromise();
