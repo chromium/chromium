@@ -701,6 +701,7 @@ void TabContainerImpl::CompleteAnimationAndLayout() {
   SnapToIdealBounds();
 
   SetTabSlotVisibility();
+  UpdateAccessibleTabIndicesIfNeeded();
   SchedulePaint();
 }
 
@@ -871,6 +872,7 @@ void TabContainerImpl::Layout(PassKey) {
   }
 
   SetTabSlotVisibility();
+  UpdateAccessibleTabIndicesIfNeeded();
 }
 
 void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
@@ -1828,6 +1830,22 @@ void TabContainerImpl::SetDropArrow(
 }
 
 void TabContainerImpl::UpdateAccessibleTabIndices() {
+  // Adding, removing or moving a tab changes the position of every tab after
+  // it and the set size of all of them, so the update has to walk the whole
+  // strip. Every such change also invalidates the layout, so do the walk as
+  // part of the next layout instead of once per change: a burst of changes,
+  // e.g. a session restore inserting hundreds of tabs, then walks the strip
+  // once. Assistive technology reads the attributes after the strip has been
+  // laid out.
+  accessible_tab_indices_dirty_ = true;
+  InvalidateLayout();
+}
+
+void TabContainerImpl::UpdateAccessibleTabIndicesIfNeeded() {
+  if (!accessible_tab_indices_dirty_) {
+    return;
+  }
+  accessible_tab_indices_dirty_ = false;
   const int num_tabs = GetTabCount();
   for (int i = 0; i < num_tabs; ++i) {
     GetTabAtModelIndex(i)->GetViewAccessibility().SetPosInSet(i + 1);

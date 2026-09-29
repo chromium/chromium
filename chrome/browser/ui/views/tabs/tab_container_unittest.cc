@@ -40,6 +40,7 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/accessibility/tree/widget_ax_manager_test_api.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -383,6 +384,8 @@ class TabContainerTest : public ChromeViewsTestBase {
 
   // Makes sure that all tabs have the correct AX indices.
   void VerifyTabIndices() {
+    // The indices are refreshed by the next layout.
+    views::test::RunScheduledLayout(tab_container_.get());
     for (int i = 0; i < tab_container_->GetTabCount(); ++i) {
       ui::AXNodeData ax_node_data;
       tab_container_->GetTabAtModelIndex(i)

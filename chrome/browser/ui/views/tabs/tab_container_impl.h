@@ -316,9 +316,12 @@ class TabContainerImpl : public TabContainer,
   // If `tab_data_index` is negative, the arrow will disappear.
   void SetDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
 
-  // Updates the indexes and count for AX data on all tabs. Used by some screen
-  // readers (e.g. ChromeVox).
+  // Marks the indexes and count for AX data on all tabs as stale; they are
+  // refreshed by the next layout. Used by some screen readers (e.g. ChromeVox).
   void UpdateAccessibleTabIndices();
+
+  // Refreshes the AX indexes and count of all tabs if they are stale.
+  void UpdateAccessibleTabIndicesIfNeeded();
 
   bool IsValidModelIndex(int model_index) const;
 
@@ -387,6 +390,10 @@ class TabContainerImpl : public TabContainer,
 
   std::vector<ZOrderableTabContainerElement> z_ordered_children_cache_;
   bool z_order_cache_dirty_ = true;
+
+  // Whether the AX indexes and count of the tabs need to be refreshed by the
+  // next layout.
+  bool accessible_tab_indices_dirty_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_IMPL_H_
