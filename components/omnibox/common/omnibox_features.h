@@ -46,6 +46,9 @@ BASE_DECLARE_FEATURE(kZeroSuggestPrefetchDebouncing);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingForComposebox);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
+// Enables triggering zero-suggest prefetch when a page finishes loading on
+// Android, aligning with Desktop's page-load and tab-switch behavior.
+BASE_DECLARE_FEATURE(kZeroSuggestPrefetchOnPageLoadAndTabSwitch);
 
 // On Device Suggest.
 BASE_DECLARE_FEATURE(kOnDeviceHeadProviderIncognito);

@@ -264,6 +264,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -1448,14 +1449,15 @@ public class ToolbarManager
 
                         refreshSelectedTab(tab);
                         onTabOrModelChanged();
+                        // Trigger zero-suggest prefetch for already-loaded tabs; loading tabs defer
+                        // to onLoadStopped().
                         maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
                         maybeShowGlicIph(tab);
                     }
 
                     /**
-                     * Trigger ZeroSuggest cache refresh in case user is accessing a new tab page.
-                     * Avoid issuing multiple concurrent server requests for the same event to
-                     * reduce server pressure.
+                     * Notifies LocationBarModel observers to prefetch zero-suggest results for the
+                     * active tab.
                      */
                     private void maybeTriggerCacheRefreshForZeroSuggest(GURL url) {
                         if (url != null) {
@@ -1519,6 +1521,13 @@ public class ToolbarManager
                         updateTabLoadingState(true);
                         mLocationBarModel.onPageLoadStopped();
                         mToolbar.onPageLoadStopped();
+                        if (OmniboxFeatures.isZeroSuggestPrefetchOnPageLoadAndTabSwitchEnabled()) {
+                            // Desktop parity: trigger zero-suggest prefetch once document loading
+                            // completes on the active tab.
+                            if (tab != null && tab == mActivityTabProvider.get()) {
+                                maybeTriggerCacheRefreshForZeroSuggest(tab.getUrl());
+                            }
+                        }
                     }
 
                     @Override

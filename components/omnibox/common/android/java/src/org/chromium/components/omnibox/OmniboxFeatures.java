@@ -99,6 +99,11 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN,
                     FeatureState.ENABLED_IN_TEST);
 
+    public static final CachedFlag sZeroSuggestPrefetchOnPageLoadAndTabSwitch =
+            newFlag(
+                    OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH,
+                    FeatureState.ENABLED_IN_TEST);
+
     public static final CachedFlag sUrlBarWithoutLigatures =
             newFlag(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES, FeatureState.ENABLED_IN_PROD);
 
@@ -444,6 +449,14 @@ public class OmniboxFeatures {
     public static void setDebounceKeyboardVisibilityForTesting(@Nullable Boolean value) {
         sDebounceKeyboardVisibilityForTesting = value;
         ResettersForTesting.register(() -> sDebounceKeyboardVisibilityForTesting = null);
+    }
+
+    /**
+     * Returns whether zero-suggest prefetch should be triggered when a page finishes loading on
+     * Android, aligning with Desktop's page-load and tab-switch behavior.
+     */
+    public static boolean isZeroSuggestPrefetchOnPageLoadAndTabSwitchEnabled() {
+        return sZeroSuggestPrefetchOnPageLoadAndTabSwitch.isEnabled();
     }
 
     /**

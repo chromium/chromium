@@ -21,6 +21,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
@@ -42,6 +44,7 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -100,6 +103,7 @@ import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
+import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -143,6 +147,8 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.toolbar.top.ResourceFactory;
+import org.chromium.chrome.browser.toolbar.top.ResourceFactoryJni;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
@@ -173,6 +179,7 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -234,6 +241,8 @@ public class ToolbarManagerUnitTest {
     @Mock private Runnable mOpenGridTabSwitcherHandler;
     @Mock private Tracker mTracker;
     @Mock private TopToolbarSceneLayer.Natives mTopToolbarSceneLayerNatives;
+    @Mock private ResourceFactory.Natives mResourceFactoryJni;
+    @Mock private LocationBarDataProvider.Observer mLocationBarDataProviderObserver;
     @Mock private SceneLayer.Natives mSceneLayerNatives;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
@@ -1543,5 +1552,67 @@ public class ToolbarManagerUnitTest {
         supplier.set(findToolbarManager);
         RobolectricUtil.runAllBackgroundAndUi();
         verify(findToolbarManager, never()).addObserver(any());
+    }
+
+    private ActivityTabProvider.ActivityTabTabObserver setUpForTabLoadStopped(Tab activeTab) {
+        // onLoadStopped() calls mToolbar.onPageLoadStopped(), which triggers bitmap texture
+        // capture (ViewResourceAdapter). Stub the JNI and theme color providers required during
+        // the view drawing and native container resource creation.
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
+        ResettersForTesting.register(() -> ResourceFactoryJni.setInstanceForTesting(null));
+        when(mToolbarThemeColorProvider.getTint()).thenReturn(ColorStateList.valueOf(Color.BLACK));
+        when(mAdjustedToolbarThemeColorProvider.getTint())
+                .thenReturn(ColorStateList.valueOf(Color.BLACK));
+
+        mActivityTabProvider.setForTesting(activeTab);
+        RobolectricUtil.runAllBackgroundAndUi();
+        mToolbarManager
+                .getLocationBarModelForTesting()
+                .addObserver(mLocationBarDataProviderObserver);
+        ActivityTabProvider.ActivityTabTabObserver tabObserver =
+                mToolbarManager.getActivityTabTabObserverForTesting();
+        assertNotNull(tabObserver);
+        return tabObserver;
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
+    public void testOnLoadStopped_zeroSuggestPrefetch_featureEnabled() {
+        Tab tab = mockTab(/* isNtp= */ true);
+        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+
+        tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ true);
+        verify(mLocationBarDataProviderObserver).hintZeroSuggestRefresh();
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
+    public void testOnLoadStopped_zeroSuggestPrefetch_featureDisabled() {
+        Tab tab = mockTab(/* isNtp= */ true);
+        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+
+        tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ true);
+        verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
+    public void testOnLoadStopped_zeroSuggestPrefetch_notDifferentDocument() {
+        Tab tab = mockTab(/* isNtp= */ true);
+        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(tab);
+
+        tabObserver.onLoadStopped(tab, /* toDifferentDocument= */ false);
+        verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.ZERO_SUGGEST_PREFETCH_ON_PAGE_LOAD_AND_TAB_SWITCH)
+    public void testOnLoadStopped_zeroSuggestPrefetch_notActiveTab() {
+        Tab activeTab = mockTab(/* isNtp= */ true);
+        Tab backgroundTab = mockTab(/* isNtp= */ true);
+        ActivityTabProvider.ActivityTabTabObserver tabObserver = setUpForTabLoadStopped(activeTab);
+
+        tabObserver.onLoadStopped(backgroundTab, /* toDifferentDocument= */ true);
+        verify(mLocationBarDataProviderObserver, never()).hintZeroSuggestRefresh();
     }
 }

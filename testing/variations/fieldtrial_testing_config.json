@@ -21453,6 +21453,21 @@
             ]
         }
     ],
+    "ZeroSuggestPrefetchOnPageLoadAndTabSwitch": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ZeroSuggestPrefetchOnPageLoadAndTabSwitch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ZstdForCrossSiteSpeculationRulesPrefetch": [
         {
             "platforms": [

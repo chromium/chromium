@@ -58,6 +58,7 @@ source_set("platform_browser_tests") {
   sources = [
     "prefetch_browsertest.cc",
     "search_prefetch/search_preload_unified_browsertest.cc",
+    "zero_suggest_prefetch/zero_suggest_prefetch_browsertest.cc",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -81,8 +82,10 @@ source_set("platform_browser_tests") {
     "//chrome/test/base:browser_test_waiters",
     "//chrome/test/base:chrome_test_utils",
     "//components/omnibox/browser",
+    "//components/omnibox/common",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/browser:test_support",
+    "//components/search_engines",
   ]
 
   if (use_blink) {

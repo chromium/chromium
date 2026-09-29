@@ -110,6 +110,10 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnSRP, enable_if(!IS_ANDROID));
 // Web (i.e. non-NTP and non-SRP URLs).
 BASE_FEATURE(kZeroSuggestPrefetchingOnWeb, DISABLED);
 
+// Enables triggering zero-suggest prefetch when a page finishes loading on
+// Android, aligning with Desktop's page-load and tab-switch behavior.
+BASE_FEATURE(kZeroSuggestPrefetchOnPageLoadAndTabSwitch, DISABLED);
+
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /
@@ -667,7 +671,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxDebounceKeyboardVisibility,
       &kOmniboxDisableTabsForCanvas,
       &kOmniboxSessionlessVoiceSearch,
-      &kSuppressStatusIconDuringHttpNavigation};
+      &kSuppressStatusIconDuringHttpNavigation,
+      &kZeroSuggestPrefetchOnPageLoadAndTabSwitch};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());
