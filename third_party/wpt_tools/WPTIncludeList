@@ -310,6 +310,7 @@
 ./tools/wpt/browser.py
 ./tools/wpt/commands.json
 ./tools/wpt/create.py
+./tools/wpt/httputils.py
 ./tools/wpt/install.py
 ./tools/wpt/markdown.py
 ./tools/wpt/paths

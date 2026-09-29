@@ -66,7 +66,7 @@ class TestLoaderTestCase(unittest.TestCase):
                     },
                 },
             }))
-        wptlogging.setup({}, {})
+        self.logger = wptlogging.setup({}, {})
 
     @contextlib.contextmanager
     def _make_loader(self, no_expectations=False, **kwargs):
@@ -84,7 +84,8 @@ class TestLoaderTestCase(unittest.TestCase):
                 'tests_path': manifest.tests_root,
                 'metadata_path': manifest.tests_root,
             }
-            yield TestLoader(port, {manifest: test_root},
+            yield TestLoader(port,
+                             self.logger, {manifest: test_root},
                              ['testharness', 'reftest', 'wdspec', 'crashtest'],
                              base_run_info={},
                              **kwargs)
