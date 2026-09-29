@@ -5,6 +5,8 @@
 #ifndef UI_BASE_DEVICE_FORM_FACTOR_H_
 #define UI_BASE_DEVICE_FORM_FACTOR_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 
@@ -30,6 +32,11 @@ using DeviceFormFactorSet = base::EnumSet<DeviceFormFactor,
 // Returns the form factor of current device. For platforms other than Android
 // and iOS, DEVICE_FORM_FACTOR_DESKTOP is always returned.
 COMPONENT_EXPORT(UI_BASE) DeviceFormFactor GetDeviceFormFactor();
+
+// Returns a stable string representation of `DeviceFormFactor` suitable for use
+// in metrics.
+COMPONENT_EXPORT(UI_BASE)
+std::string_view DeviceFormFactorToString(DeviceFormFactor device_form_factor);
 
 }  // namespace ui
 

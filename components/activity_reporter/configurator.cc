@@ -26,6 +26,7 @@
 #include "components/update_client/network.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_handler.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -157,7 +158,7 @@ std::string ActivityReporterConfigurator::GetOSLongName() const {
 
 std::string ActivityReporterConfigurator::GetDeviceFormFactor() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {};
+  return std::string(ui::DeviceFormFactorToString(ui::GetDeviceFormFactor()));
 }
 
 base::flat_map<std::string, std::string>

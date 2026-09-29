@@ -136,6 +136,7 @@ component("base") {
     "class_property.cc",
     "class_property.h",
     "default_style.h",
+    "device_form_factor.cc",
     "device_form_factor.h",
     "device_form_factor_desktop.cc",
     "dragdrop/drop_target_event.cc",

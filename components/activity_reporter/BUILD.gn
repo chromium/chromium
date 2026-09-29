@@ -41,6 +41,7 @@ source_set("activity_reporter") {
       "//base/version_info",
       "//components/policy/core/common",
       "//components/prefs",
+      "//ui/base",
       "//url",
     ]
 
