@@ -8849,14 +8849,6 @@ crbug.com/515670908 [ Release Win11-arm64 ] inspector-protocol/layout-fonts/lang
 crbug.com/515194597 [ Release Win11-arm64 ] virtual/text-antialias/font-fallback.html [ Failure Pass ]
 crbug.com/513985436 [ Release Win11-arm64 ] virtual/text-antialias/selection/khmer-selection.html [ Failure Pass ]
 
-
-# TODO(crbug.com/493947412): Failing on Windows. Re-enable once extension WPT infra is fixed.
-crbug.com/493947412 [ Win ] external/wpt/web-extensions/browser.runtime.extension.html [ Failure ]
-crbug.com/493947412 [ Win ] external/wpt/web-extensions/browser.bookmarks.extension.html [ Failure ]
-crbug.com/493947412 [ Win ] external/wpt/web-extensions/browser.browsingData.extension.html [ Failure ]
-crbug.com/493947412 [ Win ] external/wpt/web-extensions/browser.idle.extension.html [ Failure ]
-crbug.com/493947412 [ Win ] external/wpt/web-extensions/browser.storage.extension.html [ Failure ]
-
 # Gardener 2026-06-01
 crbug.com/517759858 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedFrame-timestamps.html [ Failure ]
 crbug.com/453144946 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Crash Failure Pass ]
